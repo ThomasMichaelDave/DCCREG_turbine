@@ -1,0 +1,67 @@
+# Conventions
+
+The single source for tier tags, symbol hygiene, and working rules. Both the docs and the implementation must follow this file.
+
+---
+
+## 1. Epistemic tags
+
+- **[OC] Operational Core** — standard derivable physics/math; true independent of this project.
+- **[IR] Interpretive Reading** — a modelling / engineering choice; internally consistent, chosen.
+- **[RH] Resonance / Heuristic** — suggestive, not load-bearing.
+
+Apply to every substantive claim in docs and to every modelling choice in code comments. Keep the tiers honest.
+
+---
+
+## 2. Symbol hygiene (mandatory)
+
+**One letter, one meaning.** Never reuse a reserved physics symbol for a geometric quantity.
+
+**Reserved — do NOT repurpose:** `C` (capacitance); `ε₀, ε_r` (permittivity); `A` (area); `V, Q, E, e` (voltage, charge, field, elementary charge); `n` (refractive index); `d` (avoided entirely — ambiguous "diameter" vs "plate separation").
+
+### Project variables (symbol · code name)
+
+| Quantity | Symbol | Code | Notes |
+|:--|:--|:--|:--|
+| Sector count | $N_\text{sec}$ | `Nsec` | integer; **not** `n` |
+| Plate outer diameter | $\varnothing_p$ | `plateDia` | |
+| Plate radius | $R_p$ | `plateR` | $=\varnothing_p/2$ |
+| Ring outer / inner diameter | $\varnothing_{ro},\varnothing_{ri}$ | `ringOuter`,`ringInner` | |
+| **Plate separation (gap)** | $g$ | `gap` | **`g`, never `d`** |
+| Rotor angle | $\theta$ | `rotor` | **not** $\varphi$ (potential) |
+| Sector angular pitch | $s_\theta$ | `pitch` | $=360^\circ/N_\text{sec}$ |
+| Overlap fraction | $f_\text{ov}$ | `fOv` | $[0,1]$ |
+| Metal (kept) area, one plate | $A_m$ | `Ametal` | |
+| Ring area | $A_\text{ring}$ | `Aring` | |
+| Facing overlap area | $A_\text{ov}$ | `Aov` | rotation-dependent |
+| Relative permittivity | $\varepsilon_r$ | `epsR` | |
+| Plate capacitance | $C$ | `cap` | |
+| Plate min/max/ratio | $C_\text{min},C_\text{max},\kappa_C$ | `Cmin,Cmax,Cratio` | $\kappa_C$ = host's `r₁`/`r₂` |
+| Air refractivity | $N_\text{air}$ | `Nrefr` | distinct from `Nsec` |
+| Temperature | $T$ / $T_C$ | `tempK`/`tempC` | |
+| Atmospheric pressure | $P_\text{atm}$ | `pAtm` | hPa; **not** bare `P` (power) |
+| Water-vapour pressure | $p_v$ | `pVap` | hPa; **not** `e` |
+| Saturation vapour pressure | $p_\text{sat}$ | `pSat` | hPa |
+| Relative humidity | RH | `rh` | percent |
+
+### Host-field-id mapping (avoid collisions with the existing simulator)
+
+The host `index.html` already owns the input ids `c1min c1max c2min c2max ca cb cpar`. **New plate inputs take a `p` prefix** so nothing collides and the host's `#{id}-r`/`#{id}-n` + URL-hash machinery is reused verbatim:
+
+`pnsec` · `pdia` · `prouter` · `prinner` · `pgap` · `ptempc` · `ppatm` · `prh`
+
+Non-numeric controls (no `-r`/`-n` pair; serialise into the hash manually): `pdiel` (dielectric `<select>`), `pring` (ring-conductive checkbox), `psrc` (rotor source: manual | plate), `plink` (link C2 to C1).
+
+**Naming note.** The plate swing ratio $\kappa_C = C_\text{max}/C_\text{min}$ is *identically* the quantity the host already displays as **r₁/r₂** and sweeps in its "z vs rotor swing ratio r" chart. Do not introduce a second name in the UI.
+
+---
+
+## 3. Working conventions
+
+- **Derive a coherent frame, then consolidate.** Land changes as small, reviewable commits.
+- **Correct openly** when rigor demands; record the correction and its reason in `CHANGELOG.md`.
+- **Flat filenames.** Git + `CHANGELOG.md` own history — no `_vNN` filename suffixes, no per-file revision tables. A doc may carry a one-line *Status* note (tier + one-line state), nothing more.
+- **Deliverables are markdown;** the app is a single self-contained `index.html` (no build, no bundler, URL-hash state — never `localStorage`).
+- **Cross-reference** docs by repo-relative path.
+- **Producer/consumer discipline** for the physics: the geometry module produces rotor-cap values; `solveDoubler4` consumes them and is never edited by feature work.

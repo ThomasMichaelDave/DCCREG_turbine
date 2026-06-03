@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Symmetric Bennet Doubler — Pump-Action Calculator</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#121821; --panel2:#0e141c; --line:#1e2733;
+    --ink:#cfe2f3; --dim:#7c8ea0; --acc:#7cd0ff;
+    --good:#5fe07a; --warn:#ffd06b; --bad:#ff7a7a; --edge:#c0a8ff;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:13px}
+  body{padding:18px;max-width:1180px;margin:0 auto}
+  h1{font-size:18px;margin:0 0 2px;letter-spacing:.5px}
+  h2{font-size:12px;margin:0 0 8px;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;font-weight:600}
+  header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:14px}
+  .sub{color:var(--dim);font-size:11px}
+  .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:3px;font-size:11px;letter-spacing:.5px;border:1px solid var(--line)}
+  .badge .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .badge.ok{color:var(--good);border-color:#1f4a2c}.badge.ok .dot{background:var(--good);box-shadow:0 0 8px var(--good)}
+  .badge.bad{color:var(--bad);border-color:#4a1f1f}.badge.bad .dot{background:var(--bad);box-shadow:0 0 8px var(--bad)}
+  .badge.warn{color:var(--warn);border-color:#4a3a1f}.badge.warn .dot{background:var(--warn);box-shadow:0 0 8px var(--warn)}
+  .grid{display:grid;grid-template-columns:minmax(320px,1fr) minmax(420px,1.4fr);gap:14px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px}
+  .panel.sub{background:var(--panel2)}
+  .row{display:grid;grid-template-columns:78px 1fr 90px 28px;gap:8px;align-items:center;margin:6px 0}
+  .row label{color:var(--dim);font-size:12px}
+  .row .u{color:var(--dim);font-size:11px}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:#1d2733;border-radius:2px;outline:none}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:var(--acc);cursor:pointer;border:2px solid #0b1620;box-shadow:0 0 6px rgba(124,208,255,.5)}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--acc);cursor:pointer;border:2px solid #0b1620}
+  input[type=number]{background:#0b1118;border:1px solid var(--line);color:var(--ink);font-family:var(--mono);font-size:12px;padding:5px 7px;border-radius:3px;width:100%;text-align:right}
+  input[type=number]:focus{outline:1px solid var(--acc)}
+  .kv{display:grid;grid-template-columns:auto auto;gap:4px 14px;font-size:12px;margin-top:8px}
+  .kv .k{color:var(--dim)}
+  .kv .v{text-align:right}
+  .z-display{font-size:42px;letter-spacing:1px;text-align:center;padding:10px 0 4px;font-weight:600}
+  .z-verdict{text-align:center;font-size:13px;text-transform:uppercase;letter-spacing:3px;margin-bottom:8px}
+  .z-good{color:var(--good)}.z-edge{color:var(--edge)}.z-bad{color:var(--bad)}
+  .meter{position:relative;height:14px;background:#0b1118;border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-top:6px}
+  .meter .fill{height:100%;background:linear-gradient(90deg,var(--good),var(--warn));transition:width .15s}
+  .meter .fill.bad{background:linear-gradient(90deg,var(--bad),#ff4444)}
+  .preset-bar{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  button{background:#0b1118;color:var(--ink);border:1px solid var(--line);padding:6px 10px;font-family:var(--mono);font-size:11px;border-radius:3px;cursor:pointer;letter-spacing:.5px}
+  button:hover{border-color:var(--acc);color:var(--acc)}
+  button.copy{font-size:10px}
+  canvas{display:block;width:100%;height:170px;background:#0b1118;border:1px solid var(--line);border-radius:3px;margin-top:6px}
+  .charts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+  .legend{font-size:10px;color:var(--dim);margin-top:4px;display:flex;gap:12px;flex-wrap:wrap}
+  .legend .sw{display:inline-block;width:10px;height:2px;vertical-align:middle;margin-right:4px}
+  .footer-note{margin-top:14px;padding:10px 12px;font-size:11px;color:var(--dim);background:var(--panel2);border:1px solid var(--line);border-radius:4px;line-height:1.55}
+  .tag{display:inline-block;padding:1px 6px;border:1px solid var(--line);border-radius:2px;font-size:10px;color:var(--dim);margin-left:6px}
+  details{margin-top:10px}
+  details summary{cursor:pointer;color:var(--dim);font-size:11px;letter-spacing:1px;text-transform:uppercase}
+  details[open] summary{color:var(--ink)}
+  .matrix{font-size:11px;color:var(--dim);margin-top:6px;line-height:1.55}
+  .matrix b{color:var(--ink)}
+  .self-test-table{font-size:10.5px;width:100%;margin-top:6px;border-collapse:collapse}
+  .self-test-table th,.self-test-table td{padding:3px 6px;text-align:left;border-bottom:1px dotted var(--line);color:var(--dim)}
+  .self-test-table td:nth-child(2),.self-test-table td:nth-child(3),.self-test-table td:nth-child(4){text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+  .self-test-table .pass{color:var(--good)}.self-test-table .fail{color:var(--bad)}
+  @media (max-width:780px){.grid{grid-template-columns:1fr}.charts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator</span></h1>
+    <div class="sub">ideal-diode switched-capacitor solver · 16-state network search · cross-coupled regenerative</div>
+  </div>
+  <div id="engine-badge" class="badge"><span class="dot"></span><span id="engine-text">checking…</span></div>
+</header>
+
+<div class="grid">
+
+  <!-- ============== INPUTS ============== -->
+  <section class="panel">
+    <h2>Rotor caps <span class="tag" id="r-tag">r₁ = — · r₂ = —</span></h2>
+
+    <div class="row">
+      <label>C1 min</label>
+      <input type="range" id="c1min-r" min="1" max="3000" step="1">
+      <input type="number" id="c1min-n" step="1">
+      <span class="u">pF</span>
+    </div>
+    <div class="row">
+      <label>C1 max</label>
+      <input type="range" id="c1max-r" min="1" max="3000" step="1">
+      <input type="number" id="c1max-n" step="1">
+      <span class="u">pF</span>
+    </div>
+    <div class="row">
+      <label>C2 min</label>
+      <input type="range" id="c2min-r" min="1" max="3000" step="1">
+      <input type="number" id="c2min-n" step="1">
+      <span class="u">pF</span>
+    </div>
+    <div class="row">
+      <label>C2 max</label>
+      <input type="range" id="c2max-r" min="1" max="3000" step="1">
+      <input type="number" id="c2max-n" step="1">
+      <span class="u">pF</span>
+    </div>
+
+    <h2 style="margin-top:14px">Transfer + stray</h2>
+    <div class="row">
+      <label>Ca (1–2)</label>
+      <input type="range" id="ca-r" min="0" max="500" step="1">
+      <input type="number" id="ca-n" step="1">
+      <span class="u">pF</span>
+    </div>
+    <div class="row">
+      <label>Cb (3–4)</label>
+      <input type="range" id="cb-r" min="0" max="500" step="1">
+      <input type="number" id="cb-n" step="1">
+      <span class="u">pF</span>
+    </div>
+    <div class="row">
+      <label>Cpar</label>
+      <input type="range" id="cpar-r" min="0" max="200" step="0.5">
+      <input type="number" id="cpar-n" step="0.5">
+      <span class="u">pF</span>
+    </div>
+
+    <div class="kv">
+      <span class="k">C1 ratio  r₁ = C1<sub>max</sub>/C1<sub>min</sub></span><span class="v" id="r1-val">—</span>
+      <span class="k">C2 ratio  r₂ = C2<sub>max</sub>/C2<sub>min</sub></span><span class="v" id="r2-val">—</span>
+      <span class="k">geometric mean swing</span><span class="v" id="gm-val">—</span>
+    </div>
+
+    <div class="preset-bar">
+      <button data-preset="device">device 160/1000</button>
+      <button data-preset="wide">wide 100/2000</button>
+      <button data-preset="narrow">narrow 400/600</button>
+      <button data-preset="noswing">no swing</button>
+      <button id="copy-url" class="copy">copy share-url</button>
+    </div>
+
+    <details>
+      <summary>Topology &amp; diode schedule</summary>
+      <div class="matrix">
+        <b>Variable caps</b> (rotors, complementary swing):
+        <b>C1</b> node 1↔gnd · <b>C2</b> node 4↔gnd.<br>
+        <b>Fixed transfer caps:</b> <b>Ca</b> nodes 1↔2 · <b>Cb</b> nodes 3↔4.<br>
+        <b>Cpar</b> ties each of nodes 1–4 to gnd.<br>
+        <b>Diodes</b> (anode→cathode, conducting when V<sub>from</sub>≥V<sub>to</sub>):<br>
+        &nbsp;&nbsp;D1: 2→0 · D2: 3→0 · D3: 1→3 · D4: 4→2.<br>
+        Cross-diodes D3/D4 are the regenerative cross-couple — this is what
+        makes the 4-node device pump without needing parasitic asymmetry, unlike the basic 3-node version.<br>
+        <b>Engine:</b> 2 phases / cycle (C1-meshed, C2-meshed). Each phase: per-node charges conserved
+        from previous phase; brute-search all 16 diode on/off states; keep those consistent with the
+        bias signs (off-diodes must satisfy V<sub>from</sub>≤V<sub>to</sub>); among consistent states
+        take the one maximising |V₁|+|V₄|. Iterate 120 cycles; z = median asymptotic ratio.
+      </div>
+      <table class="self-test-table" id="self-test-table"></table>
+    </details>
+  </section>
+
+  <!-- ============== OUTPUTS ============== -->
+  <section class="panel">
+    <h2>Doubler ratio</h2>
+    <div id="z-display" class="z-display">—</div>
+    <div id="z-verdict" class="z-verdict">—</div>
+
+    <div class="kv">
+      <span class="k">growth ×/cycle</span><span class="v" id="growth-val">—</span>
+      <span class="k">% per cycle</span><span class="v" id="pct-val">—</span>
+      <span class="k">cycles to ×10</span><span class="v" id="x10-val">—</span>
+      <span class="k">cycles to ×1000</span><span class="v" id="x1k-val">—</span>
+      <span class="k">C1↔C2 symmetry check</span><span class="v" id="sym-val">—</span>
+    </div>
+
+    <h2 style="margin-top:16px">Transfer-cap headroom</h2>
+    <div class="kv">
+      <span class="k">Ca = Cb now</span><span class="v" id="hr-now">—</span>
+      <span class="k">critical (z = 1)</span><span class="v" id="hr-crit">—</span>
+      <span class="k" id="hr-label">headroom remaining</span><span class="v" id="hr-amt">—</span>
+    </div>
+    <div class="meter" id="hr-bar"><div class="fill" id="hr-fill" style="width:0%"></div></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--good)"></span>pump margin</span>
+      <span><span class="sw" style="background:var(--bad)"></span>stalled / over-loaded</span>
+      <span>sweeps Ca=Cb at fixed rotor swing &amp; Cpar</span>
+    </div>
+  </section>
+</div>
+
+<!-- ============== CHARTS ============== -->
+<div class="charts">
+  <section class="panel sub">
+    <h2>z vs. rotor swing ratio r</h2>
+    <canvas id="chart-r" width="600" height="170"></canvas>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--acc)"></span>z(r) at fixed geometric-mean swing</span>
+      <span><span class="sw" style="background:var(--dim)"></span>z = 1 reference</span>
+      <span><span class="sw" style="background:var(--warn)"></span>current r</span>
+    </div>
+  </section>
+  <section class="panel sub">
+    <h2>z vs. transfer cap Ca = Cb</h2>
+    <canvas id="chart-c" width="600" height="170"></canvas>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--acc)"></span>z(Ca) at current rotors &amp; Cpar</span>
+      <span><span class="sw" style="background:var(--dim)"></span>z = 1 reference</span>
+      <span><span class="sw" style="background:var(--good)"></span>z = 1 crossing</span>
+      <span><span class="sw" style="background:var(--warn)"></span>current value</span>
+    </div>
+  </section>
+</div>
+
+<div class="footer-note">
+  <b>Symmetric 4-node Bennet doubler.</b> Cross-diodes D3 (1→3) and D4 (4→2) provide the regenerative
+  feedback path: when C1 swings to its minimum, |V₁| rises and clamps node 3 through D3, which then
+  delivers charge to C2's swing via Cb. The same loop runs the other way through Ca and D4 on the next
+  half-cycle. The device pumps without parasitic seed (no-swing = z=1 exactly, device = z≈1.20 even
+  with small Cpar), unlike the 3-node basic doubler which needs parasitic symmetry-breaking.
+  Self-test passes if four reference points sit within tolerance — see expandable table.
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   LINEAR ALGEBRA — small dense solve (n ≤ 4)
+   ============================================================ */
+function solveLinear(A, b){
+  const n = b.length;
+  if (n === 0) return [];
+  const m = A.map((row, i) => [...row, b[i]]);
+  for (let i = 0; i < n; i++){
+    let piv = i;
+    for (let k = i+1; k < n; k++) if (Math.abs(m[k][i]) > Math.abs(m[piv][i])) piv = k;
+    [m[i], m[piv]] = [m[piv], m[i]];
+    if (Math.abs(m[i][i]) < 1e-14) return null;
+    for (let k = i+1; k < n; k++){
+      const f = m[k][i] / m[i][i];
+      for (let j = i; j <= n; j++) m[k][j] -= f * m[i][j];
+    }
+  }
+  const x = new Array(n).fill(0);
+  for (let i = n-1; i >= 0; i--){
+    let s = m[i][n];
+    for (let j = i+1; j < n; j++) s -= m[i][j] * x[j];
+    x[i] = s / m[i][i];
+  }
+  return x;
+}
+
+/* ============================================================
+   PHYSICS — 4-node symmetric Bennet doubler
+   ------------------------------------------------------------
+   Nodes 1..4 above ground (0).
+   C1: 1↔0 (variable, rotor)        C2: 4↔0 (variable, rotor)
+   Ca: 1↔2 (fixed)                  Cb: 3↔4 (fixed)
+   Cpar: per-node stray to ground (each of 1..4)
+   D1:2→0  D2:3→0  D3:1→3  D4:4→2  (anode→cathode)
+   "On" diode shorts its endpoints; "off" diode requires
+   V_from ≤ V_to (no forward bias).
+   ============================================================ */
+
+function chargesFromVoltages(V, C1, C2, Ca, Cb, Cpar){
+  const [v1, v2, v3, v4] = V;
+  return [
+    (C1 + Cpar) * v1 + Ca * (v1 - v2),
+    Cpar * v2 + Ca * (v2 - v1),
+    Cpar * v3 + Cb * (v3 - v4),
+    (C2 + Cpar) * v4 + Cb * (v4 - v3),
+  ];
+}
+
+// Solve one phase: given conserved per-node charges Q and the cap
+// values for this phase, find the diode state consistent with the
+// off-diode bias constraints and (among consistent states) the one
+// maximising |V1|+|V4|. Returns the four node voltages.
+function solvePhase(Q, C1, C2, Ca, Cb, Cpar){
+  // Per-node self-cap diagonals:
+  //   K_ii = C_iground + sum of bridging C's
+  const kd1 = C1 + Cpar + Ca;
+  const kd2 = Cpar + Ca;
+  const kd3 = Cpar + Cb;
+  const kd4 = C2 + Cpar + Cb;
+  // Bridging entries: K_12=K_21=-Ca, K_34=K_43=-Cb (others zero).
+
+  let bestV = null, bestMag = -Infinity;
+  const eps = 1e-9;
+
+  for (let s = 0; s < 16; s++){
+    const d1 = (s     ) & 1;
+    const d2 = (s >> 1) & 1;
+    const d3 = (s >> 2) & 1;
+    const d4 = (s >> 3) & 1;
+
+    // Union-find clusters via on-diodes (node 0 = ground).
+    const parent = [0,1,2,3,4];
+    const find = x => { while (parent[x] !== x){ parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
+    const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[ra] = rb; };
+    if (d1) union(2, 0);
+    if (d2) union(3, 0);
+    if (d3) union(1, 3);
+    if (d4) union(4, 2);
+
+    const groundRoot = find(0);
+    const clusterId = {};
+    let nc = 0;
+    for (let i = 1; i <= 4; i++){
+      const r = find(i);
+      if (r === groundRoot) continue;
+      if (!(r in clusterId)) clusterId[r] = nc++;
+    }
+    const nodeCluster = [0, 0, 0, 0, 0];
+    for (let i = 1; i <= 4; i++){
+      const r = find(i);
+      nodeCluster[i] = (r === groundRoot) ? -1 : clusterId[r];
+    }
+
+    let V;
+    if (nc === 0){
+      V = [0, 0, 0, 0];
+    } else {
+      const A = Array.from({length: nc}, () => new Array(nc).fill(0));
+      const rhs = new Array(nc).fill(0);
+      for (let i = 1; i <= 4; i++){
+        const c = nodeCluster[i];
+        if (c >= 0) rhs[c] += Q[i-1];
+      }
+      // Add K contributions for each node in each cluster.
+      const addK = (i, kdiag, neighbour, kOff) => {
+        const c = nodeCluster[i];
+        if (c < 0) return;
+        A[c][c] += kdiag;
+        const cj = nodeCluster[neighbour];
+        if (cj >= 0) A[c][cj] += kOff;
+      };
+      addK(1, kd1, 2, -Ca);
+      addK(2, kd2, 1, -Ca);
+      addK(3, kd3, 4, -Cb);
+      addK(4, kd4, 3, -Cb);
+      const x = solveLinear(A, rhs);
+      if (!x) continue;
+      V = [
+        nodeCluster[1] < 0 ? 0 : x[nodeCluster[1]],
+        nodeCluster[2] < 0 ? 0 : x[nodeCluster[2]],
+        nodeCluster[3] < 0 ? 0 : x[nodeCluster[3]],
+        nodeCluster[4] < 0 ? 0 : x[nodeCluster[4]],
+      ];
+    }
+
+    const [v1, v2, v3, v4] = V;
+    // Off-diode constraints: V_from ≤ V_to.
+    if (!d1 && v2 > eps) continue;             // D1: V2 ≤ 0
+    if (!d2 && v3 > eps) continue;             // D2: V3 ≤ 0
+    if (!d3 && v1 > v3 + eps) continue;        // D3: V1 ≤ V3
+    if (!d4 && v4 > v2 + eps) continue;        // D4: V4 ≤ V2
+    // On-diode V_from = V_to is enforced by construction; the ≥ check is trivial.
+
+    const mag = Math.abs(v1) + Math.abs(v4);
+    if (mag > bestMag){ bestMag = mag; bestV = V; }
+  }
+  return bestV || [0, 0, 0, 0];
+}
+
+// Top-level: iterate two-phase cycles, return median asymptotic
+// ratio of |V1|+|V4|.
+function solveDoubler4(C1min, C1max, C2min, C2max, Ca, Cb, Cpar, opts){
+  const iterations = opts?.iterations ?? 120;
+  const burn       = opts?.burn       ?? 60;
+  // Seed in the down-pumping basin (the diode orientations make the
+  // device clamp V₁, V₄ negative). |V| = 2 to start.
+  let V = [-1, 0, 0, -1];
+  let C1cur = C1max, C2cur = C2min;   // notionally end of phase A
+  const ratios = [];
+  let prevMag = Math.abs(V[0]) + Math.abs(V[3]);
+
+  for (let cyc = 0; cyc < iterations; cyc++){
+    // --- phase B: C1 → min, C2 → max ---
+    let Q = chargesFromVoltages(V, C1cur, C2cur, Ca, Cb, Cpar);
+    V = solvePhase(Q, C1min, C2max, Ca, Cb, Cpar);
+    C1cur = C1min; C2cur = C2max;
+    // --- phase A: C1 → max, C2 → min ---
+    Q = chargesFromVoltages(V, C1cur, C2cur, Ca, Cb, Cpar);
+    V = solvePhase(Q, C1max, C2min, Ca, Cb, Cpar);
+    C1cur = C1max; C2cur = C2min;
+
+    const mag = Math.abs(V[0]) + Math.abs(V[3]);
+    if (cyc >= burn && prevMag > 1e-15 && mag > 1e-15){
+      ratios.push(mag / prevMag);
+    }
+    prevMag = mag;
+
+    // Rescale to keep magnitudes bounded.
+    const maxV = Math.max.apply(null, V.map(Math.abs));
+    if (maxV > 1e6){
+      const s = 1 / maxV;
+      V = V.map(v => v * s);
+      prevMag *= s;
+    } else if (maxV < 1e-6 && maxV > 0){
+      const s = 1 / maxV;
+      V = V.map(v => v * s);
+      prevMag *= s;
+    }
+  }
+  if (ratios.length === 0) return 1.0;
+  ratios.sort((a, b) => a - b);
+  return ratios[Math.floor(ratios.length / 2)];
+}
+
+// Convenience: symmetric rotors and Ca=Cb (most common).
+function zSym(C1min, C1max, C2min, C2max, Ca, Cb, Cpar){
+  return solveDoubler4(C1min, C1max, C2min, C2max, Ca, Cb, Cpar);
+}
+
+/* ============================================================
+   SELF-TEST
+   ============================================================ */
+const VERIFY = [
+  {label:"no-swing  (C1=C2=500 fixed, Ca=Cb=100, Cpar=10)",
+   args:[500,500,500,500,100,100,10], expected:1.000, tol:0.005},
+  {label:"device    (C1,C2: 160–1000, Ca=Cb=100, Cpar=20)",
+   args:[160,1000,160,1000,100,100,20], expected:1.203, tol:0.03},
+  {label:"narrow    (C1,C2: 400–600, Ca=Cb=100, Cpar=20)",
+   args:[400,600,400,600,100,100,20], expected:1.000, tol:0.04},
+  {label:"wide      (C1,C2: 100–2000, Ca=Cb=100, Cpar=20)",
+   args:[100,2000,100,2000,100,100,20], expected:1.438, tol:0.06},
+];
+function runSelfTest(){
+  const rows = [];
+  let allOk = true;
+  for (const t of VERIFY){
+    const z = solveDoubler4.apply(null, t.args);
+    const pass = Math.abs(z - t.expected) <= t.tol;
+    if (!pass) allOk = false;
+    rows.push({...t, got:z, pass});
+  }
+  // Symmetry check: swap (C1min,C1max) ↔ (C2min,C2max).
+  const a = solveDoubler4(160,1000,200,1500,80,120,15);
+  const b = solveDoubler4(200,1500,160,1000,80,120,15);
+  const symOk = Math.abs(a - b) < 0.05 * Math.max(1, Math.abs(a));
+  return {ok: allOk && symOk, rows, symOk, symA:a, symB:b};
+}
+
+/* ============================================================
+   UI
+   ============================================================ */
+const FIELDS = [
+  {id:"c1min", def:160,  min:1,  max:3000, step:1},
+  {id:"c1max", def:1000, min:1,  max:3000, step:1},
+  {id:"c2min", def:160,  min:1,  max:3000, step:1},
+  {id:"c2max", def:1000, min:1,  max:3000, step:1},
+  {id:"ca",    def:100,  min:0,  max:500,  step:1},
+  {id:"cb",    def:100,  min:0,  max:500,  step:1},
+  {id:"cpar",  def:20,   min:0,  max:200,  step:0.5},
+];
+const state = {};
+const $ = id => document.getElementById(id);
+
+function bindField(f){
+  const r = $(f.id+"-r"), n = $(f.id+"-n");
+  r.min = f.min; r.max = f.max; r.step = f.step;
+  n.min = f.min; n.max = f.max; n.step = f.step;
+  const set = (v, src) => {
+    v = Number(v);
+    if (!isFinite(v)) v = f.def;
+    v = Math.max(f.min, Math.min(f.max, v));
+    state[f.id] = v;
+    if (src !== "r") r.value = v;
+    if (src !== "n") n.value = v;
+    scheduleRecompute();
+  };
+  r.addEventListener("input", e => set(e.target.value, "r"));
+  n.addEventListener("input", e => set(e.target.value, "n"));
+  set(state[f.id] ?? f.def);
+}
+
+function loadFromHash(){
+  const h = location.hash.replace(/^#/,"");
+  if (!h) return;
+  const p = new URLSearchParams(h);
+  for (const f of FIELDS){
+    const v = p.get(f.id);
+    if (v != null && isFinite(+v)) state[f.id] = Math.max(f.min, Math.min(f.max, +v));
+  }
+}
+function writeHash(){
+  const p = new URLSearchParams();
+  for (const f of FIELDS) p.set(f.id, state[f.id]);
+  history.replaceState(null, "", "#" + p.toString());
+}
+
+const PRESETS = {
+  device:  {c1min:160, c1max:1000, c2min:160, c2max:1000, ca:100, cb:100, cpar:20},
+  wide:    {c1min:100, c1max:2000, c2min:100, c2max:2000, ca:100, cb:100, cpar:20},
+  narrow:  {c1min:400, c1max:600,  c2min:400, c2max:600,  ca:100, cb:100, cpar:20},
+  noswing: {c1min:500, c1max:500,  c2min:500, c2max:500,  ca:100, cb:100, cpar:10},
+};
+function applyPreset(name){
+  const p = PRESETS[name]; if (!p) return;
+  Object.assign(state, p);
+  for (const f of FIELDS){
+    $(f.id+"-r").value = state[f.id];
+    $(f.id+"-n").value = state[f.id];
+  }
+  scheduleRecompute();
+}
+
+function zNow(){
+  // Ensure min ≤ max.
+  const C1min = Math.min(state.c1min, state.c1max);
+  const C1max = Math.max(state.c1min, state.c1max);
+  const C2min = Math.min(state.c2min, state.c2max);
+  const C2max = Math.max(state.c2min, state.c2max);
+  return solveDoubler4(C1min, C1max, C2min, C2max, state.ca, state.cb, state.cpar);
+}
+
+function findCriticalCa(){
+  // Sweep Ca = Cb together; find value where z(Ca) crosses 1.
+  // z is generally monotone-decreasing in Ca beyond some optimum,
+  // but at very small Ca the loop is weak too. We bracket then bisect.
+  const C1min = Math.min(state.c1min, state.c1max);
+  const C1max = Math.max(state.c1min, state.c1max);
+  const C2min = Math.min(state.c2min, state.c2max);
+  const C2max = Math.max(state.c2min, state.c2max);
+  const f = c => solveDoubler4(C1min, C1max, C2min, C2max, c, c, state.cpar) - 1;
+  const here = state.ca;
+  const fHere = f(here);
+  // search outward
+  if (Math.abs(fHere) < 5e-4) return {ca:here, found:true};
+  // Bias direction: if pumping, look for c > here where z drops; if stalled, look for c < here.
+  let lo, hi;
+  if (fHere > 0){
+    lo = here; hi = here * 2 + 50;
+    let fHi = f(hi);
+    let g = 0;
+    while (fHi > 0 && hi < 5000 && g++ < 20){ hi *= 1.6; fHi = f(hi); }
+    if (fHi > 0) return {ca:Infinity, found:false};
+  } else {
+    hi = here; lo = Math.max(0.1, here * 0.5 - 10);
+    let fLo = f(lo);
+    let g = 0;
+    while (fLo < 0 && lo > 0.1 && g++ < 20){ lo *= 0.6; fLo = f(lo); }
+    if (fLo < 0) return {ca:0, found:false};
+  }
+  for (let i = 0; i < 40; i++){
+    const m = 0.5*(lo+hi);
+    const fm = f(m);
+    if (fm > 0) lo = m; else hi = m;
+    if (Math.abs(hi-lo) < 0.05) break;
+  }
+  return {ca: 0.5*(lo+hi), found:true};
+}
+
+function fmt(v, dp){
+  if (!isFinite(v)) return "—";
+  if (Math.abs(v) >= 1e6) return v.toExponential(2);
+  return v.toFixed(dp ?? 3);
+}
+
+let recomputeTimer = null;
+function scheduleRecompute(){
+  if (recomputeTimer) clearTimeout(recomputeTimer);
+  recomputeTimer = setTimeout(recompute, 60);
+}
+
+function recompute(){
+  const C1min = Math.min(state.c1min, state.c1max);
+  const C1max = Math.max(state.c1min, state.c1max);
+  const C2min = Math.min(state.c2min, state.c2max);
+  const C2max = Math.max(state.c2min, state.c2max);
+  const r1 = C1max / Math.max(1e-6, C1min);
+  const r2 = C2max / Math.max(1e-6, C2min);
+  $("r1-val").textContent = fmt(r1, 3);
+  $("r2-val").textContent = fmt(r2, 3);
+  $("r-tag").textContent = "r₁ = " + fmt(r1, 2) + " · r₂ = " + fmt(r2, 2);
+  const gm1 = Math.sqrt(C1min * C1max);
+  const gm2 = Math.sqrt(C2min * C2max);
+  $("gm-val").textContent = fmt(gm1, 1) + " / " + fmt(gm2, 1) + " pF";
+
+  const z = solveDoubler4(C1min, C1max, C2min, C2max, state.ca, state.cb, state.cpar);
+  $("z-display").textContent = isFinite(z) ? z.toFixed(4) : "—";
+  const v = $("z-verdict");
+  v.classList.remove("z-good","z-edge","z-bad");
+  if (!isFinite(z))      v.textContent = "—";
+  else if (z > 1.001)    { v.textContent = "PUMPING";    v.classList.add("z-good"); }
+  else if (z < 0.999)    { v.textContent = "STALLED";    v.classList.add("z-bad");  }
+  else                   { v.textContent = "KNIFE-EDGE"; v.classList.add("z-edge"); }
+
+  $("growth-val").textContent = fmt(z, 4) + " ×";
+  $("pct-val").textContent    = ((z - 1) * 100).toFixed(2) + " %";
+  if (z > 1.0000001){
+    $("x10-val").textContent  = Math.ceil(Math.log(10)   / Math.log(z)) + "";
+    $("x1k-val").textContent  = Math.ceil(Math.log(1000) / Math.log(z)) + "";
+  } else {
+    $("x10-val").textContent  = "∞";
+    $("x1k-val").textContent  = "∞";
+  }
+
+  // Symmetry sanity check (live): C1↔C2 swap should leave z unchanged.
+  const zSwap = solveDoubler4(C2min, C2max, C1min, C1max, state.cb, state.ca, state.cpar);
+  const symErr = Math.abs(z - zSwap);
+  $("sym-val").textContent = symErr < 0.02 ? ("Δ = " + symErr.toExponential(1) + "  ✓")
+                                            : ("Δ = " + symErr.toExponential(1) + "  ✗");
+
+  // Headroom on Ca = Cb.
+  const hr = findCriticalCa();
+  $("hr-now").textContent = fmt(state.ca, 1) + " pF";
+  if (hr.found && isFinite(hr.ca)){
+    $("hr-crit").textContent = fmt(hr.ca, 1) + " pF";
+    const delta = hr.ca - state.ca;
+    if (z > 1){
+      $("hr-label").textContent = "headroom remaining (Ca to add)";
+      $("hr-amt").textContent   = "+" + fmt(delta, 1) + " pF";
+      const frac = delta / (delta + Math.max(state.ca, 1));
+      $("hr-fill").style.width  = (Math.max(0, Math.min(1, frac)) * 100).toFixed(1) + "%";
+      $("hr-fill").classList.remove("bad");
+    } else {
+      $("hr-label").textContent = "deficit (Ca to remove)";
+      $("hr-amt").textContent   = fmt(delta, 1) + " pF";
+      $("hr-fill").style.width  = "100%";
+      $("hr-fill").classList.add("bad");
+    }
+  } else {
+    $("hr-crit").textContent = "unbounded";
+    $("hr-label").textContent = "headroom";
+    $("hr-amt").textContent  = z > 1 ? "+∞" : "−∞";
+    $("hr-fill").style.width = z > 1 ? "100%" : "0%";
+    $("hr-fill").classList.toggle("bad", z <= 1);
+  }
+
+  drawCharts();
+  writeHash();
+}
+
+/* ============================================================
+   CHARTS — minimal canvas, no libs
+   ============================================================ */
+function clearCanvas(c){
+  const ctx = c.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const w = c.clientWidth, h = c.clientHeight;
+  if (c.width !== Math.round(w*dpr) || c.height !== Math.round(h*dpr)){
+    c.width = Math.round(w*dpr); c.height = Math.round(h*dpr);
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  return {ctx, w, h};
+}
+
+function drawAxes(ctx, w, h, xLabel, yLabel, xs, ys){
+  const padL = 42, padR = 8, padT = 10, padB = 22;
+  const px = w - padL - padR;
+  const py = h - padT - padB;
+  const xmin = xs[0], xmax = xs[1];
+  const ymin = ys[0], ymax = ys[1];
+  const X = x => padL + (x - xmin)/(xmax - xmin) * px;
+  const Y = y => padT + (1 - (y - ymin)/(ymax - ymin)) * py;
+  ctx.strokeStyle = "#1e2733"; ctx.lineWidth = 1;
+  ctx.strokeRect(padL, padT, px, py);
+  ctx.font = "10px ui-monospace,Menlo,monospace"; ctx.fillStyle = "#7c8ea0";
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (let i = 0; i <= 4; i++){
+    const y = ymin + (ymax-ymin)*i/4;
+    const py_ = Y(y);
+    ctx.strokeStyle = "#16202a"; ctx.beginPath();
+    ctx.moveTo(padL, py_); ctx.lineTo(padL+px, py_); ctx.stroke();
+    ctx.fillText(y.toFixed(2), padL-4, py_);
+  }
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  for (let i = 0; i <= 4; i++){
+    const x = xmin + (xmax-xmin)*i/4;
+    const px_ = X(x);
+    ctx.strokeStyle = "#16202a"; ctx.beginPath();
+    ctx.moveTo(px_, padT); ctx.lineTo(px_, padT+py); ctx.stroke();
+    const label = (Math.abs(x) >= 1000) ? x.toFixed(0) : x.toFixed(2);
+    ctx.fillText(label, px_, padT+py+4);
+  }
+  ctx.fillStyle = "#7c8ea0";
+  ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.fillText(xLabel, padL+4, padT+py-12);
+  ctx.save();
+  ctx.translate(10, padT+py/2); ctx.rotate(-Math.PI/2);
+  ctx.textAlign = "center"; ctx.fillText(yLabel, 0, 0);
+  ctx.restore();
+  return {X, Y};
+}
+
+function drawCharts(){ drawChartR(); drawChartC(); }
+
+function drawChartR(){
+  const c = $("chart-r");
+  const {ctx, w, h} = clearCanvas(c);
+  // Sweep swing ratio, keeping the geometric mean of each rotor fixed.
+  const C1min = Math.min(state.c1min, state.c1max);
+  const C1max = Math.max(state.c1min, state.c1max);
+  const C2min = Math.min(state.c2min, state.c2max);
+  const C2max = Math.max(state.c2min, state.c2max);
+  const gm1 = Math.sqrt(C1min * C1max);
+  const gm2 = Math.sqrt(C2min * C2max);
+  const rNow = Math.sqrt(Math.max(C1max/C1min, 1) * Math.max(C2max/C2min, 1));
+  const rMin = 1.0, rMax = Math.max(rNow * 1.5, 25);
+  const N = 36;
+  const pts = [];
+  let ymin = Infinity, ymax = -Infinity;
+  for (let i = 0; i <= N; i++){
+    const rr = rMin + (rMax - rMin) * i / N;
+    const s = Math.sqrt(rr);
+    const c1mi = gm1 / s, c1ma = gm1 * s;
+    const c2mi = gm2 / s, c2ma = gm2 * s;
+    const z = solveDoubler4(c1mi, c1ma, c2mi, c2ma, state.ca, state.cb, state.cpar,
+                            {iterations:60, burn:30});
+    pts.push([rr, z]);
+    if (z < ymin) ymin = z;
+    if (z > ymax) ymax = z;
+  }
+  ymin = Math.min(ymin, 0.95);
+  ymax = Math.max(ymax, 1.10);
+  const yPad = (ymax - ymin) * 0.1;
+  const {X, Y} = drawAxes(ctx, w, h, "r (swing)", "z", [rMin, rMax], [ymin - yPad, ymax + yPad]);
+  ctx.strokeStyle = "#7c8ea0"; ctx.setLineDash([3,3]); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(X(rMin), Y(1)); ctx.lineTo(X(rMax), Y(1)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.strokeStyle = "#7cd0ff"; ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  for (let i = 0; i < pts.length; i++){
+    const [x, y] = pts[i];
+    if (i === 0) ctx.moveTo(X(x), Y(y)); else ctx.lineTo(X(x), Y(y));
+  }
+  ctx.stroke();
+  ctx.strokeStyle = "#ffd06b"; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(X(rNow), Y(ymin-yPad)); ctx.lineTo(X(rNow), Y(ymax+yPad)); ctx.stroke();
+  const zNowVal = solveDoubler4(C1min, C1max, C2min, C2max, state.ca, state.cb, state.cpar);
+  ctx.fillStyle = "#ffd06b"; ctx.beginPath(); ctx.arc(X(rNow), Y(zNowVal), 3, 0, 2*Math.PI); ctx.fill();
+}
+
+function drawChartC(){
+  const c = $("chart-c");
+  const {ctx, w, h} = clearCanvas(c);
+  const C1min = Math.min(state.c1min, state.c1max);
+  const C1max = Math.max(state.c1min, state.c1max);
+  const C2min = Math.min(state.c2min, state.c2max);
+  const C2max = Math.max(state.c2min, state.c2max);
+  const cMax = Math.max(state.ca * 3, 300);
+  const N = 36;
+  const pts = [];
+  let ymin = Infinity, ymax = -Infinity;
+  for (let i = 0; i <= N; i++){
+    const cc = (i / N) * cMax + 0.5;
+    const z = solveDoubler4(C1min, C1max, C2min, C2max, cc, cc, state.cpar,
+                            {iterations:60, burn:30});
+    pts.push([cc, z]);
+    if (z < ymin) ymin = z;
+    if (z > ymax) ymax = z;
+  }
+  ymin = Math.min(ymin, 0.95);
+  ymax = Math.max(ymax, 1.10);
+  const yPad = (ymax - ymin) * 0.1;
+  const {X, Y} = drawAxes(ctx, w, h, "Ca = Cb (pF)", "z", [0, cMax], [ymin - yPad, ymax + yPad]);
+  ctx.strokeStyle = "#7c8ea0"; ctx.setLineDash([3,3]); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(X(0), Y(1)); ctx.lineTo(X(cMax), Y(1)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.strokeStyle = "#7cd0ff"; ctx.lineWidth = 1.6;
+  ctx.beginPath();
+  for (let i = 0; i < pts.length; i++){
+    const [x, y] = pts[i];
+    if (i === 0) ctx.moveTo(X(x), Y(y)); else ctx.lineTo(X(x), Y(y));
+  }
+  ctx.stroke();
+  ctx.strokeStyle = "#ffd06b"; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(X(state.ca), Y(ymin-yPad)); ctx.lineTo(X(state.ca), Y(ymax+yPad)); ctx.stroke();
+  const zHere = solveDoubler4(C1min, C1max, C2min, C2max, state.ca, state.cb, state.cpar);
+  ctx.fillStyle = "#ffd06b"; ctx.beginPath(); ctx.arc(X(state.ca), Y(zHere), 3, 0, 2*Math.PI); ctx.fill();
+  const hr = findCriticalCa();
+  if (hr.found && isFinite(hr.ca) && hr.ca >= 0 && hr.ca <= cMax){
+    ctx.fillStyle = "#5fe07a";
+    ctx.beginPath(); ctx.arc(X(hr.ca), Y(1), 4, 0, 2*Math.PI); ctx.fill();
+    ctx.strokeStyle = "#5fe07a"; ctx.setLineDash([2,3]); ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(X(hr.ca), Y(ymin-yPad)); ctx.lineTo(X(hr.ca), Y(1)); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+function renderSelfTest(test){
+  const tbl = $("self-test-table");
+  let html = "<tr><th>case</th><th>expected</th><th>got</th><th>Δ</th></tr>";
+  for (const r of test.rows){
+    const cls = r.pass ? "pass" : "fail";
+    html += `<tr><td>${r.label}</td><td>${r.expected.toFixed(3)}</td><td>${r.got.toFixed(4)}</td><td class="${cls}">${(r.got - r.expected).toFixed(4)}</td></tr>`;
+  }
+  const symCls = test.symOk ? "pass" : "fail";
+  html += `<tr><td>C1↔C2 swap symmetry</td><td>—</td><td>${test.symA.toFixed(4)} / ${test.symB.toFixed(4)}</td><td class="${symCls}">|Δ| = ${Math.abs(test.symA-test.symB).toExponential(1)}</td></tr>`;
+  tbl.innerHTML = html;
+}
+
+function boot(){
+  const test = runSelfTest();
+  const badge = $("engine-badge"), txt = $("engine-text");
+  if (test.ok){
+    badge.classList.add("ok");
+    txt.textContent = "engine verified";
+  } else {
+    badge.classList.add("bad");
+    txt.textContent = "engine FAILED self-test";
+    console.error("Self-test failed:", test);
+  }
+  renderSelfTest(test);
+
+  for (const f of FIELDS) state[f.id] = f.def;
+  loadFromHash();
+  for (const f of FIELDS) bindField(f);
+
+  document.querySelectorAll("button[data-preset]").forEach(b => {
+    b.addEventListener("click", () => applyPreset(b.dataset.preset));
+  });
+  $("copy-url").addEventListener("click", () => {
+    writeHash();
+    navigator.clipboard?.writeText(location.href);
+    $("copy-url").textContent = "copied!";
+    setTimeout(() => $("copy-url").textContent = "copy share-url", 1200);
+  });
+  window.addEventListener("resize", drawCharts);
+  recompute();
+}
+boot();
+</script>
+</body>
+</html>
