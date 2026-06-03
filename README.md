@@ -2,7 +2,7 @@
 
 A browser-based design tool. A parametric **sectored-disc + ring** capacitor plate, whose geometry, plate gap, and dielectric set the **rotor-capacitance extremes** that drive a **Symmetric Bennet Doubler** switched-capacitor solver. One self-contained `index.html`, no build step.
 
-> **Status.** Host doubler simulator: working, self-tested. **Block C-I** (geometry → rotor-cap front end): *specified, not yet implemented* — see `docs/`.
+> **Status.** Host doubler simulator: working, self-tested. **Block C-I** (geometry → rotor-cap front end): *implemented and self-tested* in `index.html` — see `docs/` for the brief and `CHANGELOG.md` for the audit trail.
 
 ---
 
