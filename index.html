@@ -62,7 +62,23 @@
   .self-test-table th,.self-test-table td{padding:3px 6px;text-align:left;border-bottom:1px dotted var(--line);color:var(--dim)}
   .self-test-table td:nth-child(2),.self-test-table td:nth-child(3),.self-test-table td:nth-child(4){text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
   .self-test-table .pass{color:var(--good)}.self-test-table .fail{color:var(--bad)}
-  @media (max-width:780px){.grid{grid-template-columns:1fr}.charts{grid-template-columns:1fr}}
+  /* --- Block C-I: plate geometry panel --- */
+  .plate-grid{display:grid;grid-template-columns:minmax(300px,1fr) minmax(300px,1fr);gap:14px 22px}
+  select{background:#0b1118;border:1px solid var(--line);color:var(--ink);font-family:var(--mono);font-size:12px;padding:5px 7px;border-radius:3px}
+  select:focus{outline:1px solid var(--acc)}
+  input[type=checkbox]{accent-color:var(--acc);width:14px;height:14px}
+  input:disabled{opacity:.4;cursor:not-allowed}
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .seg button{border:none;border-right:1px solid var(--line);border-radius:0;padding:5px 12px;margin:0}
+  .seg button:last-child{border-right:none}
+  .seg button.active{background:var(--acc);color:#06121c}
+  .seg button.active:hover{color:#06121c}
+  .ctl-row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin:10px 0}
+  .ctl-row .lbl{color:var(--dim);font-size:12px}
+  .ctl-row label.chk{display:inline-flex;gap:6px;align-items:center;color:var(--dim);cursor:pointer;font-size:12px}
+  .warn-list{margin-top:10px;font-size:11px;line-height:1.6}
+  .warn-list .w{color:var(--warn)}.warn-list .e{color:var(--bad)}.warn-list .note{color:var(--dim)}
+  @media (max-width:780px){.grid{grid-template-columns:1fr}.charts{grid-template-columns:1fr}.plate-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -74,6 +90,107 @@
   </div>
   <div id="engine-badge" class="badge"><span class="dot"></span><span id="engine-text">checking…</span></div>
 </header>
+
+<!-- ============== BLOCK C-I: PLATE GEOMETRY → ROTOR CAPACITANCE ============== -->
+<section class="panel" id="plate-panel" style="margin-bottom:14px">
+  <h2>Rotor plate — geometry → capacitance
+    <span class="tag" id="plate-src-tag">source: manual</span></h2>
+
+  <div class="plate-grid">
+    <!-- ---- geometry inputs ---- -->
+    <div>
+      <div class="row">
+        <label>sectors N</label>
+        <input type="range" id="pnsec-r"><input type="number" id="pnsec-n">
+        <span class="u">#</span>
+      </div>
+      <div class="row">
+        <label>plate ⌀</label>
+        <input type="range" id="pdia-r"><input type="number" id="pdia-n">
+        <span class="u plate-len-u">cm</span>
+      </div>
+      <div class="row">
+        <label>ring ⌀ out</label>
+        <input type="range" id="prouter-r"><input type="number" id="prouter-n">
+        <span class="u plate-len-u">cm</span>
+      </div>
+      <div class="row">
+        <label>ring ⌀ in</label>
+        <input type="range" id="prinner-r"><input type="number" id="prinner-n">
+        <span class="u plate-len-u">cm</span>
+      </div>
+      <div class="row">
+        <label>gap g</label>
+        <input type="range" id="pgap-r"><input type="number" id="pgap-n">
+        <span class="u">mm</span>
+      </div>
+
+      <div class="ctl-row">
+        <span class="lbl">rotor source</span>
+        <span class="seg" id="psrc-seg">
+          <button data-psrc="manual">manual</button>
+          <button data-psrc="plate">plate</button>
+        </span>
+        <span class="lbl">length</span>
+        <span class="seg" id="punit-seg">
+          <button data-punit="cm">cm</button>
+          <button data-punit="in">in</button>
+        </span>
+      </div>
+      <div class="ctl-row">
+        <label class="chk"><input type="checkbox" id="pring"> ring conductive (C<sub>min</sub> floor)</label>
+        <label class="chk"><input type="checkbox" id="plink"> link C2 = C1</label>
+      </div>
+    </div>
+
+    <!-- ---- dielectric + readouts ---- -->
+    <div>
+      <div class="ctl-row">
+        <span class="lbl">dielectric</span>
+        <select id="pdiel">
+          <option value="vacuum">Vacuum (εr = 1)</option>
+          <option value="air">Air (live)</option>
+          <option value="kapton">Kapton (εr ≈ 3.4)</option>
+          <option value="mica">Mica (εr ≈ 5.4)</option>
+        </select>
+      </div>
+
+      <div id="plate-env">
+        <div class="row">
+          <label>temp T</label>
+          <input type="range" id="ptempc-r"><input type="number" id="ptempc-n">
+          <span class="u">°C</span>
+        </div>
+        <div class="row">
+          <label>P atm</label>
+          <input type="range" id="ppatm-r"><input type="number" id="ppatm-n">
+          <span class="u">hPa</span>
+        </div>
+        <div class="row">
+          <label>RH</label>
+          <input type="range" id="prh-r"><input type="number" id="prh-n">
+          <span class="u">%</span>
+        </div>
+      </div>
+
+      <div class="kv">
+        <span class="k">εr (relative permittivity)</span><span class="v" id="peps-val">—</span>
+        <span class="k">A<sub>metal</sub> (one plate, kept)</span><span class="v" id="pametal-val">—</span>
+        <span class="k">A<sub>ring</sub> (annulus)</span><span class="v" id="paring-val">—</span>
+        <span class="k">C<sub>min</sub></span><span class="v" id="pcmin-val">—</span>
+        <span class="k">C<sub>max</sub></span><span class="v" id="pcmax-val">—</span>
+        <span class="k">κ<sub>C</sub> = C<sub>max</sub>/C<sub>min</sub> (= host r₁)</span><span class="v" id="pcratio-val">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-list" id="plate-warn"></div>
+
+  <div class="preset-bar">
+    <button data-preset="plate-air">plate · air</button>
+    <button data-preset="plate-mica">plate · mica</button>
+  </div>
+</section>
 
 <div class="grid">
 
@@ -414,6 +531,84 @@ function zSym(C1min, C1max, C2min, C2max, Ca, Cb, Cpar){
 }
 
 /* ============================================================
+   BLOCK C-I — PLATE GEOMETRY → ROTOR CAPACITANCE  (producer)
+   ------------------------------------------------------------
+   Geometry + gap + dielectric -> Cmin/Cmax (pF). These feed the
+   rotor-cap state values consumed by solveDoubler4 (unchanged).
+   Symbol hygiene per CONVENTIONS.md: gap = g (never d); pVap
+   (never e); rotor angle = θ (never phi); p-prefixed plate ids.
+   ============================================================ */
+
+// [OC] CODATA 2018 vacuum permittivity, F/m.
+const eps0 = 8.8541878128e-12;
+// [OC] Smith–Weintraub radio-refractivity constants (N-units).
+//   N_air = K1·P/T + K2·pVap/T²,  P,pVap in hPa, T in K.
+const SW_K1 = 77.6;      // K/hPa  — dry-density term
+const SW_K2 = 3.73e5;    // K²/hPa — water-vapour (dipole) term
+// [OC] Buck (1981) saturation-vapour-pressure over water, hPa / °C.
+const BUCK_A = 6.1121, BUCK_B = 18.678, BUCK_C = 234.5, BUCK_D = 257.14;
+
+// [OC] vacuum/air exact; [IR] solids treated as fixed nominal (band shown,
+// weak humidity drift not modelled live — see brief §3.1).
+const DIELECTRICS = {
+  vacuum: {label:"Vacuum", epsR:1,       live:false, solid:false, band:null},
+  air:    {label:"Air",    epsR:1.000576,live:true,  solid:false, band:null},
+  kapton: {label:"Kapton", epsR:3.4,     live:false, solid:true,  band:[3.0,3.5]},
+  mica:   {label:"Mica",   epsR:5.4,     live:false, solid:true,  band:[5.0,7.0]},
+};
+
+// Length-unit factor: stored plate-diameter numbers are *reinterpreted*
+// in the chosen unit (matches the reference engine — toggling does not
+// rescale the number). [IR]
+function lenToM(unit){ return unit === "in" ? 0.0254 : 0.01; } // cm default
+
+// Port of reference/SectoredDiscCalculator.jsx area math, in SI.
+// kept fraction = ceil(Nsec/2)/Nsec (alternating sectors kept). [OC]
+function plateGeom(s){
+  const u = lenToM(s.punit || "cm");
+  const Nsec = Math.max(2, Math.round(Number(s.pnsec) || 2));
+  const plateR = (Number(s.pdia) || 0) * u / 2;
+  const discArea = Math.PI * plateR * plateR;
+  const keptCount = Math.ceil(Nsec / 2);
+  const Ametal = (keptCount / Nsec) * discArea;            // m²
+  const ro = (Number(s.prouter) || 0) * u / 2;
+  const ri = (Number(s.prinner) || 0) * u / 2;
+  const Aring = Math.max(0, Math.PI * (ro*ro - ri*ri));    // m²; 0 if invalid
+  return {plateR, Nsec, keptCount, discArea, Ametal, Aring};
+}
+
+// [OC] moist-air relative permittivity, εr = 1 + 2·N_air·1e-6.
+function epsAir(tempC, pAtm, rh){
+  const tempK = tempC + 273.15;
+  const pSat = BUCK_A * Math.exp((BUCK_B - tempC/BUCK_C) * (tempC/(BUCK_D + tempC)));
+  const pVap = (rh/100) * pSat;                            // hPa (never `e`)
+  const Nair = SW_K1 * pAtm/tempK + SW_K2 * pVap/(tempK*tempK);
+  return 1 + 2 * Nair * 1e-6;
+}
+
+// Dispatch εr on the selected dielectric. [OC vacuum/air; IR solids]
+function epsRof(s){
+  const d = DIELECTRICS[s.pdiel] || DIELECTRICS.vacuum;
+  if (s.pdiel === "air") return epsAir(Number(s.ptempc), Number(s.ppatm), Number(s.prh));
+  return d.epsR;
+}
+
+// Rotor extremes from geometry. Ring is azimuthally symmetric ⇒ a
+// rotation-independent capacitance floor (the Cmin-setting knob). [IR]
+// C = ε0·εr·A/g ; ×1e12 → pF. [OC]
+function plateCaps(s){
+  const {Ametal, Aring} = plateGeom(s);
+  const er = epsRof(s);
+  const gap_m = (Number(s.pgap) || 0) * 1e-3;              // mm → m
+  const chi = s.pring ? 1 : 0;                             // χ_ring ∈ {0,1}
+  const k = (gap_m > 0) ? eps0 * er / gap_m * 1e12 : Infinity;
+  const Cmax = k * (Ametal + chi * Aring);
+  const Cmin = k * (chi * Aring);
+  const Cratio = Cmin > 0 ? Cmax / Cmin : Infinity;
+  return {Cmin, Cmax, Cratio};
+}
+
+/* ============================================================
    SELF-TEST
    ============================================================ */
 const VERIFY = [
@@ -439,7 +634,26 @@ function runSelfTest(){
   const a = solveDoubler4(160,1000,200,1500,80,120,15);
   const b = solveDoubler4(200,1500,160,1000,80,120,15);
   const symOk = Math.abs(a - b) < 0.05 * Math.max(1, Math.abs(a));
-  return {ok: allOk && symOk, rows, symOk, symA:a, symB:b};
+
+  // --- Block C-I plate-engine self-tests (brief §6.7) ---
+  const plateRows = [];
+  // (a) dry air @ 0 °C, 1013 hPa, 0 % RH → εr ≈ 1.000576. [OC §3.2]
+  const epsDry = epsAir(0, 1013, 0);
+  plateRows.push({label:"dry-air εr  (0 °C, 1013 hPa, 0% RH)",
+                  expected:1.000576, got:epsDry, dp:6, tol:1e-5,
+                  pass:Math.abs(epsDry - 1.000576) <= 1e-5});
+  // (b) fixed geometry: pdia=10cm, N=12, ring off, gap=0.1mm, vacuum.
+  //     Expected Cmax computed independently from C = ε0·Am/g. [OC]
+  const Rt = 0.05, AmT = (Math.ceil(12/2)/12) * Math.PI * Rt*Rt;
+  const expC = eps0 * AmT / 1e-4 * 1e12;                  // pF
+  const gotC = plateCaps({pnsec:12, pdia:10, prouter:0, prinner:0, pgap:0.1,
+                          pdiel:"vacuum", pring:false, punit:"cm"}).Cmax;
+  plateRows.push({label:"fixed-geom Cmax  (10cm, N12, vac, g=0.1mm)",
+                  expected:expC, got:gotC, dp:2, tol:0.5,
+                  pass:Math.abs(gotC - expC) <= 0.5});
+  const plateOk = plateRows.every(r => r.pass);
+
+  return {ok: allOk && symOk && plateOk, rows, symOk, symA:a, symB:b, plateRows};
 }
 
 /* ============================================================
@@ -453,7 +667,23 @@ const FIELDS = [
   {id:"ca",    def:100,  min:0,  max:500,  step:1},
   {id:"cb",    def:100,  min:0,  max:500,  step:1},
   {id:"cpar",  def:20,   min:0,  max:200,  step:0.5},
+  // --- Block C-I plate geometry (p-prefix; hash-serialise for free) ---
+  {id:"pnsec",   def:12,   min:2,    max:48,   step:1},
+  {id:"pdia",    def:10,   min:0.5,  max:50,   step:0.1},
+  {id:"prouter", def:5,    min:0,    max:50,   step:0.1},
+  {id:"prinner", def:2,    min:0,    max:50,   step:0.1},
+  {id:"pgap",    def:0.5,  min:0.01, max:10,   step:0.01},
+  {id:"ptempc",  def:20,   min:-40,  max:60,   step:0.5},
+  {id:"ppatm",   def:1013, min:300,  max:1100, step:1},
+  {id:"prh",     def:50,   min:0,    max:100,  step:1},
 ];
+// Non-numeric plate controls (serialised into the hash manually). [task §7.2]
+const PLATE_CTL_DEFAULTS = {pdiel:"air", pring:true, plink:true, psrc:"manual", punit:"cm"};
+// Rotor-cap field max in plate vs manual mode. [IR §6.5 — raise-max policy:
+// realistic plate caps can exceed the manual 3000 pF range, so in plate mode
+// we widen c1*/c2* max to 10000 pF; values beyond that clamp + warn.]
+const ROTOR_MAX_MANUAL = 3000, ROTOR_MAX_PLATE = 10000;
+const ROTOR_IDS = ["c1min","c1max","c2min","c2max"];
 const state = {};
 const $ = id => document.getElementById(id);
 
@@ -483,18 +713,36 @@ function loadFromHash(){
     const v = p.get(f.id);
     if (v != null && isFinite(+v)) state[f.id] = Math.max(f.min, Math.min(f.max, +v));
   }
+  // Non-numeric plate controls (no -r/-n pair). [task §7.2]
+  if (p.has("pdiel") && DIELECTRICS[p.get("pdiel")]) state.pdiel = p.get("pdiel");
+  if (p.has("psrc"))  state.psrc  = p.get("psrc") === "plate" ? "plate" : "manual";
+  if (p.has("punit")) state.punit = p.get("punit") === "in" ? "in" : "cm";
+  if (p.has("pring")) state.pring = p.get("pring") === "1";
+  if (p.has("plink")) state.plink = p.get("plink") === "1";
 }
 function writeHash(){
   const p = new URLSearchParams();
   for (const f of FIELDS) p.set(f.id, state[f.id]);
+  p.set("pdiel", state.pdiel);
+  p.set("psrc",  state.psrc);
+  p.set("punit", state.punit);
+  p.set("pring", state.pring ? 1 : 0);
+  p.set("plink", state.plink ? 1 : 0);
   history.replaceState(null, "", "#" + p.toString());
 }
 
 const PRESETS = {
-  device:  {c1min:160, c1max:1000, c2min:160, c2max:1000, ca:100, cb:100, cpar:20},
-  wide:    {c1min:100, c1max:2000, c2min:100, c2max:2000, ca:100, cb:100, cpar:20},
-  narrow:  {c1min:400, c1max:600,  c2min:400, c2max:600,  ca:100, cb:100, cpar:20},
-  noswing: {c1min:500, c1max:500,  c2min:500, c2max:500,  ca:100, cb:100, cpar:10},
+  // Electrical presets imply manual rotor source.
+  device:  {psrc:"manual", c1min:160, c1max:1000, c2min:160, c2max:1000, ca:100, cb:100, cpar:20},
+  wide:    {psrc:"manual", c1min:100, c1max:2000, c2min:100, c2max:2000, ca:100, cb:100, cpar:20},
+  narrow:  {psrc:"manual", c1min:400, c1max:600,  c2min:400, c2max:600,  ca:100, cb:100, cpar:20},
+  noswing: {psrc:"manual", c1min:500, c1max:500,  c2min:500, c2max:500,  ca:100, cb:100, cpar:10},
+  // Plate presets drive the rotor caps from geometry. [§6.8]
+  "plate-air":  {psrc:"plate", pdiel:"air",  punit:"cm", pring:true, plink:true,
+                 pnsec:12, pdia:10, prouter:5,   prinner:2,   pgap:0.5,
+                 ptempc:20, ppatm:1013, prh:50},
+  "plate-mica": {psrc:"plate", pdiel:"mica", punit:"cm", pring:true, plink:true,
+                 pnsec:24, pdia:8,  prouter:4,   prinner:1.5, pgap:0.1},
 };
 function applyPreset(name){
   const p = PRESETS[name]; if (!p) return;
@@ -503,7 +751,138 @@ function applyPreset(name){
     $(f.id+"-r").value = state[f.id];
     $(f.id+"-n").value = state[f.id];
   }
+  reflectControls();
   scheduleRecompute();
+}
+
+/* ---- Block C-I: plate control wiring (producer side) ---- */
+
+// Reflect the (disabled) c1*/c2* inputs after the producer drives them.
+function syncFieldInputs(ids){
+  for (const id of ids){
+    const r = $(id+"-r"), n = $(id+"-n");
+    if (r) r.value = state[id];
+    if (n) n.value = state[id];
+  }
+}
+
+// Clamp a value to a rotor field's current min/max. [§6.4/§6.5]
+function clampField(id, value){
+  const f = FIELDS.find(x => x.id === id);
+  return Math.max(f.min, Math.min(f.max, value));
+}
+
+// Raise/lower the rotor-cap field max (raise-max policy). [IR §6.5]
+function setRotorFieldMax(max){
+  for (const id of ROTOR_IDS){
+    const f = FIELDS.find(x => x.id === id);
+    f.max = max;
+    const r = $(id+"-r"), n = $(id+"-n");
+    if (r) r.max = max;
+    if (n) n.max = max;
+    if (state[id] > max) state[id] = max;     // clamp down on shrink
+  }
+  syncFieldInputs(ROTOR_IDS);
+}
+
+// In plate mode the c1*/c2* inputs are derived ⇒ disabled. [§6.4]
+function setRotorInputsDisabled(disabled){
+  for (const id of ROTOR_IDS){
+    const r = $(id+"-r"), n = $(id+"-n");
+    if (r) r.disabled = disabled;
+    if (n) n.disabled = disabled;
+  }
+}
+
+// Push every control's state into the DOM (after presets / hash load).
+function reflectControls(){
+  $("pdiel").value = state.pdiel;
+  $("pring").checked = !!state.pring;
+  $("plink").checked = !!state.plink;
+  document.querySelectorAll("#psrc-seg button").forEach(b =>
+    b.classList.toggle("active", b.dataset.psrc === state.psrc));
+  document.querySelectorAll("#punit-seg button").forEach(b =>
+    b.classList.toggle("active", b.dataset.punit === state.punit));
+  document.querySelectorAll(".plate-len-u").forEach(u => u.textContent = state.punit);
+  $("plate-src-tag").textContent = "source: " + state.psrc;
+  $("plate-env").style.display = state.pdiel === "air" ? "" : "none";
+  const plate = state.psrc === "plate";
+  setRotorFieldMax(plate ? ROTOR_MAX_PLATE : ROTOR_MAX_MANUAL);
+  setRotorInputsDisabled(plate);
+}
+
+function bindPlateControls(){
+  $("pdiel").addEventListener("change", e => {
+    state.pdiel = e.target.value;
+    $("plate-env").style.display = state.pdiel === "air" ? "" : "none";
+    scheduleRecompute();
+  });
+  $("pring").addEventListener("change", e => { state.pring = e.target.checked; scheduleRecompute(); });
+  $("plink").addEventListener("change", e => { state.plink = e.target.checked; scheduleRecompute(); });
+  document.querySelectorAll("#psrc-seg button").forEach(b => b.addEventListener("click", () => {
+    state.psrc = b.dataset.psrc;
+    reflectControls();
+    scheduleRecompute();
+  }));
+  document.querySelectorAll("#punit-seg button").forEach(b => b.addEventListener("click", () => {
+    state.punit = b.dataset.punit;
+    document.querySelectorAll("#punit-seg button").forEach(x =>
+      x.classList.toggle("active", x === b));
+    document.querySelectorAll(".plate-len-u").forEach(u => u.textContent = state.punit);
+    scheduleRecompute();
+  }));
+}
+
+// Producer pre-step + local panel readouts/warnings. Runs at top of
+// recompute(); only the four rotor-cap state values couple to the solver.
+function updatePlate(){
+  const geom = plateGeom(state);
+  const caps = plateCaps(state);
+  const er = epsRof(state);
+  const diel = DIELECTRICS[state.pdiel] || DIELECTRICS.vacuum;
+
+  // --- local readouts ---
+  $("peps-val").textContent = state.pdiel === "air" ? er.toFixed(6)
+                            : er.toFixed(3) + (diel.band ? " ("+diel.band[0]+"–"+diel.band[1]+")" : "");
+  $("pametal-val").textContent = (geom.Ametal * 1e4).toFixed(2) + " cm²";
+  $("paring-val").textContent  = (geom.Aring  * 1e4).toFixed(2) + " cm²";
+  $("pcmin-val").textContent   = fmt(caps.Cmin, 2) + " pF";
+  $("pcmax-val").textContent   = fmt(caps.Cmax, 2) + " pF";
+  $("pcratio-val").textContent = isFinite(caps.Cratio) ? fmt(caps.Cratio, 3) : "∞";
+
+  // --- warnings (§6.6) ---
+  const W = [];
+  if ((state.prinner || 0) >= (state.prouter || 0) && (state.prouter || 0) > 0)
+    W.push(["e", "ring inner ⌀ ≥ outer ⌀ — annulus invalid (A_ring = 0)."]);
+  if ((state.prouter || 0) > (state.pdia || 0))
+    W.push(["w", "ring outer ⌀ exceeds plate ⌀ — ring extends past the disc."]);
+  if ((state.pgap || 0) <= 0)
+    W.push(["e", "gap g ≤ 0 — capacitance undefined."]);
+  // Fringing heuristic: gap ≳ 10% of smallest in-plane feature. [IR §2.1]
+  else {
+    const gap_m = state.pgap * 1e-3;
+    const pitchRad = 2*Math.PI / Math.max(2, Math.round(state.pnsec));
+    const sectorArc = geom.plateR * pitchRad;                 // outer arc width
+    const ringWidth = state.pring ? Math.max(0, (state.prouter - state.prinner)/2 * lenToM(state.punit)) : Infinity;
+    const feat = Math.min(sectorArc || Infinity, ringWidth || Infinity);
+    if (isFinite(feat) && feat > 0 && gap_m > 0.10 * feat)
+      W.push(["w", "gap ≳ 10% of smallest in-plane feature — fringing neglected; C is optimistic."]);
+  }
+  if (!state.pring)
+    W.push(["w", "ring off ⇒ Cmin = 0, κ_C → ∞ (host r₁/r₂ and z blow up). Turn the ring on to set a finite floor."]);
+  if (caps.Cmax > ROTOR_MAX_PLATE)
+    W.push(["w", "Cmax = "+fmt(caps.Cmax,0)+" pF exceeds rotor field max ("+ROTOR_MAX_PLATE+" pF) — clamped when driving the solver."]);
+  if (diel.solid)
+    W.push(["note", "solid dielectric in a rotary context is a what-if: a bonded film can't rotate against both plates (see brief §3.3) — suits fixed / sliding-film geometries."]);
+  $("plate-warn").innerHTML = W.map(([c,m]) => '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
+
+  // --- producer: drive rotor caps in plate mode (solver untouched) ---
+  if (state.psrc === "plate"){
+    state.c1min = clampField("c1min", caps.Cmin);
+    state.c1max = clampField("c1max", caps.Cmax);
+    if (state.plink){ state.c2min = state.c1min; state.c2max = state.c1max; }
+    syncFieldInputs(ROTOR_IDS);
+  }
 }
 
 function zNow(){
@@ -565,6 +944,8 @@ function scheduleRecompute(){
 }
 
 function recompute(){
+  // [§6.4] Producer pre-step: geometry → rotor caps (plate mode only).
+  updatePlate();
   const C1min = Math.min(state.c1min, state.c1max);
   const C1max = Math.max(state.c1min, state.c1max);
   const C2min = Math.min(state.c2min, state.c2max);
@@ -793,6 +1174,10 @@ function renderSelfTest(test){
   }
   const symCls = test.symOk ? "pass" : "fail";
   html += `<tr><td>C1↔C2 swap symmetry</td><td>—</td><td>${test.symA.toFixed(4)} / ${test.symB.toFixed(4)}</td><td class="${symCls}">|Δ| = ${Math.abs(test.symA-test.symB).toExponential(1)}</td></tr>`;
+  for (const r of test.plateRows || []){
+    const cls = r.pass ? "pass" : "fail";
+    html += `<tr><td>${r.label}</td><td>${r.expected.toFixed(r.dp)}</td><td>${r.got.toFixed(r.dp)}</td><td class="${cls}">${(r.got - r.expected).toExponential(1)}</td></tr>`;
+  }
   tbl.innerHTML = html;
 }
 
@@ -810,8 +1195,11 @@ function boot(){
   renderSelfTest(test);
 
   for (const f of FIELDS) state[f.id] = f.def;
+  Object.assign(state, PLATE_CTL_DEFAULTS);   // non-numeric plate controls
   loadFromHash();
   for (const f of FIELDS) bindField(f);
+  bindPlateControls();
+  reflectControls();
 
   document.querySelectorAll("button[data-preset]").forEach(b => {
     b.addEventListener("click", () => applyPreset(b.dataset.preset));
