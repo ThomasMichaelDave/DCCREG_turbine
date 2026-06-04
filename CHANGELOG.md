@@ -5,6 +5,7 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Added
+- **Per-parameter inline help.** A single "? param help" toggle in the header (off by default — zero added clutter) reveals a one-line description under every parameter across all four panels (40 descriptions from one `DESC` map; numeric rows + non-numeric controls). Native `title` tooltips are also set on every label. The toggle state round-trips in the URL hash (`help`).
 - **Block R — Central resonator** (`docs/brief-blockR-central-resonator.md`): an independent producer (never writes the rotor caps, never calls `solveDoubler4`) modelling the `C_R ∥ L` tank formed by the two conical coils (series, aiding) and the through-mica inter-electrode capacitor.
   - **Inductance** via an exact conical loop-stack: HF self-inductance + Maxwell mutual inductance over all turn pairs, with complete elliptic integrals K/E by the **AGM** (no library); decimation to ≤400 nodes for very fine wire (flagged).
   - **Capacitance** `C_R = ε0·εr_mica·A_align/discH` (electrodes fully aligned — locked premise), a Medhurst self-capacitance estimate, and the coil self-resonant frequency.

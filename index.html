@@ -85,6 +85,10 @@
   .xsec-legend{display:none;flex-wrap:wrap;gap:4px 14px;font-size:10.5px;color:var(--dim);margin-top:8px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:4px}
   .xsec-legend.on{display:flex}
   .xsec-legend span.it{display:inline-flex;align-items:center;white-space:nowrap}
+  /* per-parameter inline help (toggled by the '? param help' button) */
+  .row-desc{display:none;grid-column:1/-1;flex-basis:100%;width:100%;color:var(--dim);font-size:10px;line-height:1.45;margin:-3px 0 3px;opacity:.85}
+  body.help-on .row-desc{display:block}
+  #help-toggle.on{border-color:var(--acc);color:var(--acc)}
   @media (max-width:780px){.grid{grid-template-columns:1fr}.charts{grid-template-columns:1fr}.plate-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -95,7 +99,10 @@
     <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator</span></h1>
     <div class="sub">ideal-diode switched-capacitor solver · 16-state network search · cross-coupled regenerative</div>
   </div>
-  <div id="engine-badge" class="badge"><span class="dot"></span><span id="engine-text">checking…</span></div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button id="help-toggle" class="copy" title="Show a one-line description under every parameter">? param help</button>
+    <div id="engine-badge" class="badge"><span class="dot"></span><span id="engine-text">checking…</span></div>
+  </div>
 </header>
 
 <!-- ============== BLOCK C-I: PLATE GEOMETRY → ROTOR CAPACITANCE ============== -->
@@ -1238,6 +1245,7 @@ function loadFromHash(){
   if (p.has("cpl"))   state.couple = p.get("cpl") === "1";
   if (p.has("rcond")) state.rcond = p.get("rcond") === "wire" ? "wire" : "tube";
   if (p.has("rmanod")) state.rmanod = p.get("rmanod") === "1";
+  if (p.has("help"))  state.help = p.get("help") === "1";
 }
 function writeHash(){
   const p = new URLSearchParams();
@@ -1253,6 +1261,7 @@ function writeHash(){
   p.set("cpl",   state.couple ? 1 : 0);
   p.set("rcond", state.rcond);
   p.set("rmanod", state.rmanod ? 1 : 0);
+  p.set("help",  state.help ? 1 : 0);
   history.replaceState(null, "", "#" + p.toString());
 }
 
@@ -1365,6 +1374,9 @@ function reflectControls(){
   document.querySelectorAll(".res-wire").forEach(e => e.style.display = wire ? "" : "none");
   document.querySelectorAll(".res-tube").forEach(e => e.style.display = tube ? "" : "none");
   document.querySelectorAll(".res-manod").forEach(e => e.style.display = manod ? "" : "none");
+  // per-parameter help visibility
+  document.body.classList.toggle("help-on", !!state.help);
+  $("help-toggle").classList.toggle("on", !!state.help);
 }
 
 function bindPlateControls(){
@@ -1465,6 +1477,76 @@ function bindResControls(){
     state.rcond = b.dataset.rcond; reflectControls(); scheduleRecompute();
   }));
   $("rmanod").addEventListener("change", e => { state.rmanod = e.target.checked; reflectControls(); scheduleRecompute(); });
+}
+
+/* ---- per-parameter descriptions (single source of truth) ---- */
+const DESC = {
+  // host rotor caps + transfer/stray
+  c1min:"Rotor C1 minimum capacitance (sectors over gaps). Inherited from the plate when source = plate.",
+  c1max:"Rotor C1 maximum capacitance (full sector overlap). Inherited from the plate geometry.",
+  c2min:"Rotor C2 minimum capacitance (antiphase rotor; = C1 when linked).",
+  c2max:"Rotor C2 maximum capacitance (= C1 when linked).",
+  ca:"Fixed transfer capacitor Ca, nodes 1↔2. User input.",
+  cb:"Fixed transfer capacitor Cb, nodes 3↔4. User input.",
+  cpar:"Stray capacitance from each node to ground. User input.",
+  // Block C-I plate
+  pnsec:"Number of disc sectors; alternating sectors are kept as metal (12 → 6 conductive / 6 gaps).",
+  pdia:"Outer diameter of the rotor capacitor plate. Drives the structural disc ⌀ when coupled.",
+  prouter:"Ring outer diameter (Cmin floor / electrode inner edge). Sets the hub & quadricone ⌀ when coupled.",
+  prinner:"Ring inner diameter (inner edge of the conductive central ring).",
+  pgap:"Electrode-to-stator gap g — the working capacitor gap; smaller gap → larger capacitance.",
+  ptempc:"Air temperature (used only for the live moist-air dielectric).",
+  ppatm:"Atmospheric pressure (Air dielectric only).",
+  prh:"Relative humidity (Air dielectric only).",
+  pdiel:"Gap dielectric: vacuum, live moist-air, or fixed-nominal mica / Kapton.",
+  pring:"Conductive central ring on/off — sets the Cmin floor that keeps the swing ratio finite.",
+  plink:"Link C2 = C1 (symmetric design: one plate geometry feeds both rotors).",
+  psrc:"Rotor-cap source: 'plate' inherits Cmin/Cmax from geometry; 'manual' lets you type them.",
+  punit:"Length unit for the plate / ring diameters (cm or in).",
+  // Block M mechanical core
+  mvoid:"Spherical void diameter — central HV separation between the two electrodes.",
+  mdiscvoid:"Central bore diameter through the disc/septum (the neutral passage).",
+  mdisch:"Dielectric disc (septum) thickness — separates rotors C1 and C2.",
+  mshaft:"Stub-shaft diameter (one per cone apex; never a through-shaft).",
+  mwall:"Wall-budget fraction for the inscribed-void guard (0–0.9).",
+  mdiscdia:"Structural disc outer diameter. Derived from the plate ⌀ when coupled.",
+  munit:"Length unit for the mechanical core (mm or in).",
+  mfit:"Cross-section scale: 'fit' re-frames each redraw; 'lock' keeps the scale so changes read as real growth.",
+  mdims:"Show dimension annotations and the colour/hatch legend on the cross-section.",
+  mcouple:"Couple geometry to the plate: disc ⌀ ← plate ⌀, hub ⌀ ← ring-out ⌀.",
+  // Block R resonator
+  rawg:"Solid-wire gauge (AWG); a smaller number is thicker wire.",
+  rtubeOD:"Tube conductor outer diameter.",
+  rtubeID:"Tube conductor inner (bore) diameter; 0 = solid.",
+  rins:"Insulation / varnish thickness; adds to the winding pitch.",
+  rrpm:"Rotor speed — sets the pulse repetition frequency (PRF = ⌈Nsec/2⌉·rpm/60).",
+  rstray:"Extra stray capacitance added to the resonant tank.",
+  rvpulse:"Drive pulse voltage, for the ½·C·V² pulse-energy readout.",
+  rcondod:"Manual conductor outer diameter (used when 'manual OD' is ticked).",
+  rcond:"Conductor type: solid wire (AWG) or tube.",
+  rmanod:"Override the conductor OD by hand (ignores AWG / tube).",
+};
+// Non-numeric control id → DOM element id to attach its description/tooltip.
+const DESC_CTRL = {pdiel:"pdiel", pring:"pring", plink:"plink", psrc:"psrc-seg", punit:"punit-seg",
+                   mcouple:"mcouple", munit:"munit-seg", mfit:"mfit-seg", mdims:"mdims",
+                   rcond:"rcond-seg", rmanod:"rmanod"};
+
+function injectDescriptions(){
+  for (const f of FIELDS){
+    if (!DESC[f.id]) continue;
+    const n = $(f.id+"-n"); const row = n && n.closest(".row");
+    if (!row) continue;
+    const lab = row.querySelector("label"); if (lab) lab.title = DESC[f.id];
+    const d = document.createElement("div"); d.className = "row-desc"; d.textContent = DESC[f.id];
+    row.appendChild(d);
+  }
+  for (const key in DESC_CTRL){
+    const el = $(DESC_CTRL[key]); if (!el || !DESC[key]) continue;
+    el.title = DESC[key];
+    const row = el.closest(".ctl-row"); if (!row) continue;
+    const d = document.createElement("div"); d.className = "row-desc"; d.textContent = "• " + DESC[key];
+    row.appendChild(d);
+  }
 }
 
 // Format a length (mm internally) into the display unit. [IR]
@@ -2077,15 +2159,22 @@ function boot(){
   Object.assign(state, PLATE_CTL_DEFAULTS);   // non-numeric plate controls
   Object.assign(state, MECH_CTL_DEFAULTS);    // non-numeric mechanical controls
   Object.assign(state, RES_CTL_DEFAULTS);     // non-numeric resonator controls
+  state.help = false;                         // per-parameter help (view toggle)
   loadFromHash();
   for (const f of FIELDS) bindField(f);
   bindPlateControls();
   bindMechControls();
   bindResControls();
+  injectDescriptions();
   reflectControls();
 
   document.querySelectorAll("button[data-preset]").forEach(b => {
     b.addEventListener("click", () => applyPreset(b.dataset.preset));
+  });
+  $("help-toggle").addEventListener("click", () => {
+    state.help = !state.help;
+    reflectControls();
+    writeHash();
   });
   $("copy-url").addEventListener("click", () => {
     writeHash();
