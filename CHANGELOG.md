@@ -5,6 +5,17 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Added
+- **Block M — Rotor mechanical core** implemented in `index.html` as a second, independent producer (never writes the rotor caps, never calls `solveDoubler4`; brief §6.4):
+  - `docs/brief-blockM-rotor-mechanical-core.md` — the implementation brief.
+  - Quadricone + stub-shaft + spherical-void + dielectric-disc geometry ported to vanilla JS (`quadriconeCore`): hub from key sizing (`hubDia = voidDia + shaftDia + 2·keyLen − discH = 2·coneR`), spherical caps + septum belt + bore volumes, and the four hard guards (collar / void-seat / wall / key-fit) + keyway-collar soft guard with a binding-guard readout. **[OC]**
+  - DIN 6885-1 key sizing: `keyLenFor` (≈1.5·D snapped up the standard-length ladder) and a key cross-section table (`keySectionFor`) for the keyway/`t₂`. **[OC]**
+  - HV-geometry distances reported (`clearN`, `clearEE`, `creepEE`) — geometry only, no safe-voltage assertion (deferred). **[OC]**
+  - Inputs `mvoid mdiscvoid mdisch mshaft mwall mdiscdia` added to `FIELDS` (mm); `munit/mfit/mdims` hashed manually. `hubDia` is derived, not an input.
+  - **Live axial cross-section** (`drawCrossSection`, canvas, host idiom): isotropic auto-fit with `fit | lock-scale` toggle, mm scale bar + px/mm, toggle-able dimension annotations, and guard-coloured features. Hooked into `drawCharts()`.
+  - Warn-only coupling vs the C-I plate (`plateDia` vs `discDia`, hub vs electrode annulus) — panels are deliberately not hard-linked (§4 / open fork §7.1).
+  - Preset `rotor-core` (15 cm-class worked example, `hubDia = 150 mm`), leaving electrical/C-I fields untouched.
+  - Self-tests added to `runSelfTest()` (§6.6): `hubDia = 197 mm`, void-partition identity (`2·cap + belt = sphere`), and `keyLenFor(35) → DIN 56` — all passing.
+  - **[IR] correction:** the brief specified a `cm/in` unit toggle, but `mm` is the realistic base for these component sizes (void 50, disc 1000); Block M works in mm with an `mm | in` toggle. Recorded here per the "correct openly" convention.
 - **Block C-I** implemented in `index.html` — *"Rotor plate — geometry → capacitance"* panel (producer/consumer pattern; `solveDoubler4` untouched):
   - Ported the sectored-disc + ring area math from `reference/SectoredDiscCalculator.jsx` to vanilla JS (`plateGeom`, SI; kept fraction = `ceil(Nsec/2)/Nsec`).
   - Capacitance model `C = ε₀·εr·A/g` with rotation extremes `Cmax`/`Cmin` and the ring as the `Cmin` floor (`plateCaps`); azimuthally-symmetric ring ⇒ rotation-independent floor. **[OC/IR]**

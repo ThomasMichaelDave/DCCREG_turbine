@@ -24,8 +24,9 @@ The *methodology* (tier tags, versioned consolidation, open-fork tracking, symbo
 
 | Path | Role |
 |:--|:--|
-| `index.html` | The app — Symmetric Bennet Doubler 4-node simulator (**host**; Block C-I extends it) |
+| `index.html` | The app — Symmetric Bennet Doubler 4-node simulator (**host**; Blocks C-I and M extend it) |
 | `docs/brief-blockC1-geometry-to-rotorcap.md` | Implementation brief for the geometry → rotor-cap module |
+| `docs/brief-blockM-rotor-mechanical-core.md` | Implementation brief for the rotor mechanical core (quadricone + shaft + void + disc) |
 | `reference/SectoredDiscCalculator.jsx` | Area-math source to **port** into `index.html` (reference only — not built/served) |
 | `CONVENTIONS.md` | Epistemic tags + symbol-hygiene table + host-field-id mapping |
 | `CHANGELOG.md` | Human-readable audit trail (git owns the authoritative history) |
@@ -41,11 +42,11 @@ Open `index.html` in any modern browser. No build, no server, no dependencies. S
 
 ## Current task
 
-Implement **Block C-I** per `docs/brief-blockC1-geometry-to-rotorcap.md`: add a plate-geometry panel that computes `Cmin`/`Cmax` and drives the rotor fields, leaving `solveDoubler4` untouched (producer/consumer pattern).
+Blocks **C-I** (geometry → rotor caps) and **M** (rotor mechanical core) are implemented in `index.html`. Both follow the producer/consumer discipline: C-I drives the rotor caps; M is an independent producer (geometry + cross-section readout) that never touches `solveDoubler4`.
 
 ## Verification
 
-The page self-tests on load (engine badge + expandable self-test table). Block C-I must (a) keep the existing self-tests green and (b) add plate-engine self-tests — dry-air ε_r ≈ 1.000576 and a fixed-geometry capacitance check — per brief §6.7. These are deterministic and make a clean pass/fail gate for a commit or PR.
+The page self-tests on load (engine badge + expandable self-test table). The gate is deterministic: the four original solver tests + swap symmetry, the C-I plate tests (dry-air ε_r ≈ 1.000576; fixed-geometry capacitance), and the Block M tests (`hubDia = 197 mm`; void-partition identity; `keyLenFor(35) → DIN 56`) must all pass — badge reads "engine verified".
 
 ## Versioning policy
 
