@@ -4,6 +4,9 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Added
+- **Stator plates in the Block M cross-section** — a fixed stator plate above and below the rotor, each separated from the rotor electrode by the capacitor gap `g` (C-I `pgap`), with **stator ⌀ = rotor/plate ⌀** and a central clearance at the hub for the cone. Drawn as annular bands (`--edge`) with a dashed gap leader; labelled (stator ⌀ · gap g) when dimensions are on. The gap is drawn to scale but clamped to ≥2 px for legibility. **[IR render]**
+
 ### Changed
 - **Blocks C-I ↔ M now geometrically coupled** (user-directed; supersedes the briefs' warn-only "do not hard-link" stance, recorded here per the *correct openly* convention):
   - **Plate ⌀ (`pdia`) → disc ⌀ (`mdiscdia`)** — the outer (electrical) diameter family drives the structural disc.

@@ -1319,6 +1319,30 @@ function drawCrossSection(){
     ctx.restore();
   }
 
+  // 5b) stator plates — one above, one below the rotor, each separated from the
+  //     rotor electrode by the capacitor gap g (C-I pgap). Stator ⌀ = rotor/plate ⌀,
+  //     with a central clearance at the hub so the cone passes through. [IR render]
+  if (plateR > hubR){
+    const gap_mm  = Number(state.pgap) || 0;
+    const gapPx   = Math.max(2, gap_mm * scale);        // [IR] clamp ≥2px for legibility
+    const statorT = Math.max(4, 3*scale);
+    ctx.fillStyle = COL("--edge"); ctx.lineWidth = 0.8;
+    for (const sgn of [1,-1]){
+      const yElec = Z(sgn*discH/2) - sgn*eT;             // electrode outer surface (screen)
+      const yIn   = yElec - sgn*gapPx;                   // stator inner face (across gap g)
+      const yTop  = sgn>0 ? yIn - statorT : yIn;         // screen-top of the band
+      for (const x0 of [hubR, -plateR]){
+        ctx.fillStyle = COL("--edge");   ctx.fillRect(X(x0), yTop, (plateR-hubR)*scale, statorT);
+        ctx.strokeStyle = COL("--ink");  ctx.strokeRect(X(x0), yTop, (plateR-hubR)*scale, statorT);
+      }
+      // gap leader (dashed) on the +x flank, between electrode and stator.
+      ctx.strokeStyle = COL("--dim"); ctx.setLineDash([1,2]);
+      const xg = X(plateR) - 6;
+      ctx.beginPath(); ctx.moveTo(xg, yElec); ctx.lineTo(xg, yIn); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
   // 6) shaft stubs (bore depth insertMax inward + protrusion outward) with keyway.
   const shaftCol = shaftFail ? COL("--bad") : COL("--dim");
   for (const sgn of [1,-1]){
@@ -1348,6 +1372,7 @@ function drawCrossSection(){
     ctx.fillText("hub ⌀ " + mLen(core.hubDia,0), cx, Z(0)+14);
     dimH(apexZ, "coneR " + mLen(core.coneR,0));
     ctx.fillText("void ⌀ " + mLen(core.voidDia,0), cx, Z(voidR)-4);
+    ctx.fillText("stator ⌀ " + mLen(core.plateDia_mm,0) + " · gap g " + fmt(Number(state.pgap)||0,2) + " mm", cx, margin+2);
   }
 
   // 9) scale bar (bottom-left) + px/mm readout.
