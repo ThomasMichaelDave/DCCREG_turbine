@@ -288,7 +288,7 @@
 
   <!-- ============== INPUTS ============== -->
   <section class="panel">
-    <h2>Rotor caps <span class="tag" id="r-tag">r₁ = — · r₂ = —</span></h2>
+    <h2>Rotor caps <span class="tag" id="r-tag">r₁ = — · r₂ = —</span><span class="tag" id="rotor-src-note"></span></h2>
 
     <div class="row">
       <label>C1 min</label>
@@ -904,7 +904,9 @@ const FIELDS = [
   {id:"mdiscdia",  def:1000, min:50,  max:2000, step:1},
 ];
 // Non-numeric plate controls (serialised into the hash manually). [task §7.2]
-const PLATE_CTL_DEFAULTS = {pdiel:"air", pring:true, plink:true, psrc:"manual", punit:"cm"};
+// Rotor caps are inherited from the plate-geometry capacitance by default
+// (psrc:"plate"); only transfer/stray (Ca/Cb/Cpar) stay manual input.
+const PLATE_CTL_DEFAULTS = {pdiel:"air", pring:true, plink:true, psrc:"plate", punit:"cm"};
 // Non-numeric mechanical-core controls (hash-serialised manually).
 // `couple` links the C-I plate geometry to the mechanical core (default on).
 const MECH_CTL_DEFAULTS = {munit:"mm", mfit:"fit", mdims:false, couple:true};
@@ -1048,6 +1050,7 @@ function reflectControls(){
   $("plate-src-tag").textContent = "source: " + state.psrc;
   $("plate-env").style.display = state.pdiel === "air" ? "" : "none";
   const plate = state.psrc === "plate";
+  $("rotor-src-note").textContent = plate ? "← inherited from plate geometry" : "manual input";
   setRotorFieldMax(plate ? ROTOR_MAX_PLATE : ROTOR_MAX_MANUAL);
   setRotorInputsDisabled(plate);
   // --- Block M controls ---

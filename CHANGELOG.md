@@ -4,6 +4,9 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Changed
+- **Rotor caps now inherited from the plate-geometry capacitance by default** (`psrc:"plate"`): `C1/C2 min/max` are driven by the Block C-I `Cmin/Cmax` (both rotors via `plink`, the symmetric design) and their inputs are disabled. Only **transfer + stray (Ca/Cb/Cpar)** stay user input (can't be estimated yet). The manual override toggle remains; the Rotor-caps panel shows an "← inherited from plate geometry" tag.
+
 ### Added
 - **Stator plates in the Block M cross-section** — a fixed stator plate above and below the rotor, each separated from the rotor electrode by the capacitor gap `g` (C-I `pgap`), with **stator ⌀ = rotor/plate ⌀** and a central clearance at the hub for the cone. Drawn as annular bands (`--edge`) with a dashed gap leader; labelled (stator ⌀ · gap g) when dimensions are on. The gap is drawn to scale but clamped to ≥2 px for legibility. **[IR render]**
 
