@@ -238,13 +238,18 @@
           <button data-munit="mm">mm</button>
           <button data-munit="in">in</button>
         </span>
-        <span class="lbl">hub ⌀ is derived (key sizing)</span>
+        <span class="lbl" id="mhub-src">hub ⌀ derived</span>
+      </div>
+      <div class="ctl-row">
+        <label class="chk"><input type="checkbox" id="mcouple"> couple to plate  (disc ⌀ ← plate ⌀ · hub ⌀ ← ring-out ⌀)</label>
       </div>
     </div>
 
     <!-- ---- derived readouts ---- -->
     <div>
       <div class="kv">
+        <span class="k">sectors  (kept / gap)</span><span class="v" id="mr-sectors">—</span>
+        <span class="k">coupling</span><span class="v" id="mr-couple">—</span>
         <span class="k">cone base radius  R<sub>c</sub></span><span class="v" id="mr-cone">—</span>
         <span class="k">hub ⌀  (= 2·R<sub>c</sub>)</span><span class="v" id="mr-hub">—</span>
         <span class="k">cone cap depth</span><span class="v" id="mr-cap">—</span>
@@ -739,15 +744,34 @@ function quadriconeCore(s){
   const shaftDia    = (Number(s.mshaft)    || 0) * u, shaftR = shaftDia/2;
   const discH       = (Number(s.mdisch)    || 0) * u;
   const discVoidDia = (Number(s.mdiscvoid) || 0) * u, discVoidR = discVoidDia/2;
-  const discDia     = (Number(s.mdiscdia)  || 0) * u;
+  let   discDia     = (Number(s.mdiscdia)  || 0) * u;
   const wallFrac    = Number(s.mwall) || 0;
 
   const keyLen = keyLenFor(shaftDia);                 // DIN-snapped
   const sect   = keySectionFor(shaftDia);
 
-  // [OC] key sizing sets the hub; 45° ⇒ coneR = hubDia/2.
-  const hubDia    = voidDia + shaftDia + 2*keyLen - discH;
-  const coneR     = hubDia / 2;
+  // [OC] key-sizing hub — the void+shaft+key assembly footprint (45° ⇒ hub=2·R_c).
+  const keyHub = voidDia + shaftDia + 2*keyLen - discH;
+
+  // Coupling to the C-I plate geometry. [IR — user-directed; overrides the
+  // briefs' warn-only stance]. Ring outer ⌀ sets the quadricone/hub ⌀; plate ⌀
+  // sets the structural disc ⌀. The two diameter families stay distinct (outer
+  // electrical = plate/disc; inner mechanical = hub = ring); key sizing becomes
+  // a boundary condition checked against the ring-imposed hub (guard below).
+  const ciU = s.punit === "in" ? 25.4 : 10;           // C-I diameters are cm/in
+  const plateDia_mm  = (Number(s.pdia)    || 0) * ciU;
+  const ringOuter_mm = (Number(s.prouter) || 0) * ciU;
+  const coupled = !!s.couple && ringOuter_mm > 0 && plateDia_mm > 0;
+
+  let hubDia, coneR;
+  if (coupled){
+    hubDia  = ringOuter_mm;                            // ring ⌀ → quadricone base ⌀
+    coneR   = hubDia / 2;
+    discDia = plateDia_mm;                             // plate ⌀ → disc ⌀
+  } else {
+    hubDia  = keyHub;                                  // key sizing sets the hub
+    coneR   = hubDia / 2;
+  }
   const capDepth  = voidR - discH/2;                  // per cone; valid discH < voidDia
   const insertMax = coneR + discH/2 - voidR;          // bore clears the void pole
   const keyedLen  = insertMax - shaftR;               // collar exists only beyond shaftR
@@ -774,13 +798,16 @@ function quadriconeCore(s){
     {name:"key fit (keyedLen ≥ keyLen)",          margin: keyedLen - keyLen,                         hard:true},
     {name:"keyway collar (R_c−shaftR−t₂ ≥ shaftR)", margin: coneR - shaftR - sect.keywayHubT - shaftR, hard:false},
   ];
+  // Coupled boundary condition: the key-sizing assembly must fit the ring hub. [OC]
+  if (coupled)
+    guards.push({name:"hub fits ring (key sizing ≤ ring ⌀)", margin: hubDia - keyHub, hard:true});
   let bind = guards[0];
   for (const g of guards) if (g.hard && g.margin < bind.margin) bind = g;
   const hardFail = guards.some(g => g.hard && g.margin < 0);
 
   return {voidDia, voidR, shaftDia, shaftR, discH, discVoidDia, discVoidR, discDia, wallFrac,
           keyLen, sect, hubDia, coneR, capDepth, insertMax, keyedLen, collar,
-          clearN, clearEE, creepEE,
+          clearN, clearEE, creepEE, coupled, keyHub, plateDia_mm, ringOuter_mm,
           volCones, volVoid, volCap, volBelt, volBore, volSeptum,
           guards, bind, hardFail};
 }
@@ -861,25 +888,26 @@ const FIELDS = [
   {id:"cpar",  def:20,   min:0,  max:200,  step:0.5},
   // --- Block C-I plate geometry (p-prefix; hash-serialise for free) ---
   {id:"pnsec",   def:12,   min:2,    max:48,   step:1},
-  {id:"pdia",    def:10,   min:0.5,  max:200,  step:0.1},
-  {id:"prouter", def:5,    min:0,    max:50,   step:0.1},
-  {id:"prinner", def:2,    min:0,    max:50,   step:0.1},
+  {id:"pdia",    def:100,  min:0.5,  max:200,  step:0.1},
+  {id:"prouter", def:15,   min:0,    max:100,  step:0.1},
+  {id:"prinner", def:5,    min:0,    max:100,  step:0.1},
   {id:"pgap",    def:0.5,  min:0.01, max:10,   step:0.01},
   {id:"ptempc",  def:20,   min:-40,  max:60,   step:0.5},
   {id:"ppatm",   def:1013, min:300,  max:1100, step:1},
   {id:"prh",     def:50,   min:0,    max:100,  step:1},
   // --- Block M rotor mechanical core (m-prefix; mm; hubDia is derived) ---
-  {id:"mvoid",     def:50,   min:5,   max:200,  step:1},
-  {id:"mdiscvoid", def:25,   min:0,   max:100,  step:1},
-  {id:"mdisch",    def:25,   min:0,   max:200,  step:1},
-  {id:"mshaft",    def:35,   min:3,   max:100,  step:1},
+  {id:"mvoid",     def:40,   min:5,   max:200,  step:1},
+  {id:"mdiscvoid", def:20,   min:0,   max:100,  step:1},
+  {id:"mdisch",    def:10,   min:0,   max:200,  step:1},
+  {id:"mshaft",    def:20,   min:3,   max:100,  step:1},
   {id:"mwall",     def:0.1,  min:0,   max:0.9,  step:0.01},
   {id:"mdiscdia",  def:1000, min:50,  max:2000, step:1},
 ];
 // Non-numeric plate controls (serialised into the hash manually). [task §7.2]
 const PLATE_CTL_DEFAULTS = {pdiel:"air", pring:true, plink:true, psrc:"manual", punit:"cm"};
 // Non-numeric mechanical-core controls (hash-serialised manually).
-const MECH_CTL_DEFAULTS = {munit:"mm", mfit:"fit", mdims:false};
+// `couple` links the C-I plate geometry to the mechanical core (default on).
+const MECH_CTL_DEFAULTS = {munit:"mm", mfit:"fit", mdims:false, couple:true};
 // Rotor-cap field max in plate vs manual mode. [IR §6.5 — raise-max policy:
 // realistic plate caps can exceed the manual 3000 pF range, so in plate mode
 // we widen c1*/c2* max to 10000 pF; values beyond that clamp + warn.]
@@ -923,6 +951,7 @@ function loadFromHash(){
   if (p.has("munit")) state.munit = p.get("munit") === "in" ? "in" : "mm";
   if (p.has("mfit"))  state.mfit  = p.get("mfit") === "lock" ? "lock" : "fit";
   if (p.has("mdims")) state.mdims = p.get("mdims") === "1";
+  if (p.has("cpl"))   state.couple = p.get("cpl") === "1";
 }
 function writeHash(){
   const p = new URLSearchParams();
@@ -935,6 +964,7 @@ function writeHash(){
   p.set("munit", state.munit);
   p.set("mfit",  state.mfit);
   p.set("mdims", state.mdims ? 1 : 0);
+  p.set("cpl",   state.couple ? 1 : 0);
   history.replaceState(null, "", "#" + p.toString());
 }
 
@@ -945,14 +975,15 @@ const PRESETS = {
   narrow:  {psrc:"manual", c1min:400, c1max:600,  c2min:400, c2max:600,  ca:100, cb:100, cpar:20},
   noswing: {psrc:"manual", c1min:500, c1max:500,  c2min:500, c2max:500,  ca:100, cb:100, cpar:10},
   // Plate presets drive the rotor caps from geometry. [§6.8]
-  "plate-air":  {psrc:"plate", pdiel:"air",  punit:"cm", pring:true, plink:true,
+  // Plate-only C-I exploration (small plate) ⇒ decoupled from the mechanical core.
+  "plate-air":  {psrc:"plate", pdiel:"air",  punit:"cm", pring:true, plink:true, couple:false,
                  pnsec:12, pdia:10, prouter:5,   prinner:2,   pgap:0.5,
                  ptempc:20, ppatm:1013, prh:50},
-  "plate-mica": {psrc:"plate", pdiel:"mica", punit:"cm", pring:true, plink:true,
+  "plate-mica": {psrc:"plate", pdiel:"mica", punit:"cm", pring:true, plink:true, couple:false,
                  pnsec:24, pdia:8,  prouter:4,   prinner:1.5, pgap:0.1},
-  // Block M worked 15 cm-class example (hubDia = 150 mm). Leaves the
-  // electrical / C-I fields untouched. [§6.7]
-  "rotor-core": {munit:"mm", mvoid:50, mdiscvoid:25, mdisch:5, mshaft:25, mwall:0.1, mdiscdia:1000},
+  // Coupled rotor: 1 m plate/disc, 12 sectors, ring ⌀ 150 mm → hub ⌀ 150 mm. [§6.7]
+  "rotor-core": {couple:true, punit:"cm", pnsec:12, pdia:100, prouter:15, prinner:5,
+                 munit:"mm", mvoid:40, mdiscvoid:20, mdisch:10, mshaft:20, mwall:0.1, mdiscdia:1000},
 };
 function applyPreset(name){
   const p = PRESETS[name]; if (!p) return;
@@ -1026,6 +1057,12 @@ function reflectControls(){
     b.classList.toggle("active", b.dataset.mfit === state.mfit));
   document.querySelectorAll(".mech-len-u").forEach(u => u.textContent = state.munit);
   $("mdims").checked = !!state.mdims;
+  $("mcouple").checked = !!state.couple;
+  // In coupled mode disc ⌀ is derived (← plate ⌀) and the hub ⌀ comes from ring-out.
+  const md_r = $("mdiscdia-r"), md_n = $("mdiscdia-n");
+  if (md_r) md_r.disabled = !!state.couple;
+  if (md_n) md_n.disabled = !!state.couple;
+  $("mhub-src").textContent = state.couple ? "hub ⌀ ← ring-out ⌀ (coupled)" : "hub ⌀ ← key sizing";
 }
 
 function bindPlateControls(){
@@ -1118,6 +1155,7 @@ function bindMechControls(){
     scheduleRecompute();
   }));
   $("mdims").addEventListener("change", e => { state.mdims = e.target.checked; scheduleRecompute(); });
+  $("mcouple").addEventListener("change", e => { state.couple = e.target.checked; reflectControls(); scheduleRecompute(); });
 }
 
 // Format a length (mm internally) into the display unit. [IR]
@@ -1129,6 +1167,18 @@ function mLen(mm, dp){
 // Render the Block-M readouts + warnings (no solver interaction). §5/§6.5
 function updateMech(){
   const core = quadriconeCore(state);
+  // In coupled mode the disc ⌀ is derived from the plate ⌀ → reflect it into the
+  // (disabled) input so the panel stays consistent. No solver interaction.
+  if (core.coupled){
+    state.mdiscdia = core.discDia / mLenMM(state.munit);
+    syncFieldInputs(["mdiscdia"]);
+  }
+  const Nsec = Math.max(2, Math.round(Number(state.pnsec) || 2));
+  const kept = Math.ceil(Nsec/2);
+  $("mr-sectors").textContent = Nsec + "  (" + kept + " kept / " + (Nsec-kept) + " gap)";
+  $("mr-couple").textContent  = core.coupled
+    ? "disc⌀←" + mLen(core.discDia,0) + " · hub⌀←ring " + mLen(core.hubDia,0)
+    : "off (standalone)";
   $("mr-cone").textContent   = mLen(core.coneR);
   $("mr-hub").textContent    = mLen(core.hubDia);
   $("mr-cap").textContent    = mLen(core.capDepth);
@@ -1156,15 +1206,17 @@ function updateMech(){
     W.push(["e", "cap depth ≤ 0 — no cone cavity."]);
   if (core.voidDia <= core.discVoidDia && core.discVoidDia > 0)
     W.push(["w", "bore ⌀ ≥ void ⌀ — the central bore is wider than the void it passes through."]);
-  // §4 coupling vs the C-I plate (warn-only; panels are not hard-linked).
-  const ciU = state.punit === "in" ? 25.4 : 10;          // C-I diameters are cm/in
-  const plateDia_mm = (Number(state.pdia) || 0) * ciU;
+  // Coupling to the C-I plate geometry (§4).
+  const plateDia_mm = core.plateDia_mm;
   if (plateDia_mm > 0){
-    if (plateDia_mm > core.discDia)
-      W.push(["w", "C-I electrode ⌀ (" + mLen(plateDia_mm,0) + ") overhangs the structural disc ⌀ (" + mLen(core.discDia,0) + ")."]);
     if (core.hubDia >= plateDia_mm)
-      W.push(["w", "hub ⌀ (" + mLen(core.hubDia,0) + ") ≥ C-I electrode ⌀ (" + mLen(plateDia_mm,0) + ") — no annulus [hubDia, plateDia] for the sectored electrode."]);
-    W.push(["note", "coupling is warn-only: the C-I electrode should ring the hub (inner edge ≈ hubDia = " + mLen(core.hubDia,0) + "); C-I models its area from the centre (open fork §7.1)."]);
+      W.push(["w", "hub ⌀ (" + mLen(core.hubDia,0) + ") ≥ electrode ⌀ (" + mLen(plateDia_mm,0) + ") — no annulus [hub, plate] for the sectored electrode."]);
+    else if (!core.coupled && plateDia_mm > core.discDia)
+      W.push(["w", "C-I electrode ⌀ (" + mLen(plateDia_mm,0) + ") overhangs the structural disc ⌀ (" + mLen(core.discDia,0) + ")."]);
+    if (core.coupled)
+      W.push(["note", "coupled: electrode annulus = [hub " + mLen(core.hubDia,0) + ", plate " + mLen(plateDia_mm,0) + "] over " + Nsec + " sectors (" + kept + " kept / " + (Nsec-kept) + " gap). Disc ⌀ tracks plate ⌀; key/void/shaft must fit the ring-set hub (guard above)."]);
+    else
+      W.push(["note", "standalone: tick 'couple to plate' to drive disc ⌀ from plate ⌀ and hub ⌀ from ring-out ⌀."]);
   }
   $("mech-warn").innerHTML = W.map(([c,m]) =>
     '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
@@ -1185,8 +1237,7 @@ function drawCrossSection(){
   const shaftR = core.shaftR, discR = core.discDia/2, hubR = core.hubDia/2;
   const discVoidR = core.discVoidR;
   // electrode outer from the C-I plate (mm) else the disc edge.
-  const ciU = state.punit === "in" ? 25.4 : 10;
-  let plateR = (Number(state.pdia) || 0) * ciU / 2;
+  let plateR = core.plateDia_mm / 2;
   if (!(plateR > 0)) plateR = discR;
 
   if (!(coneR > 0)){                                       // degenerate — nothing sane to draw

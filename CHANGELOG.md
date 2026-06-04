@@ -4,6 +4,15 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Changed
+- **Blocks C-I ↔ M now geometrically coupled** (user-directed; supersedes the briefs' warn-only "do not hard-link" stance, recorded here per the *correct openly* convention):
+  - **Plate ⌀ (`pdia`) → disc ⌀ (`mdiscdia`)** — the outer (electrical) diameter family drives the structural disc.
+  - **Ring-outer ⌀ (`prouter`) → quadricone/hub ⌀** — `hubDia = prouter`, `coneR = hubDia/2`. The hub is no longer *derived* from key sizing; instead the DIN key/void/shaft assembly becomes a **boundary condition** checked against the ring-set hub (new hard guard *"hub fits ring (key sizing ≤ ring ⌀)"*).
+  - Sectors (`pnsec`) remain the primary structural input in C-I (12 → 6 kept/6 gap; 8 → 4/4) and are surfaced in the M panel.
+  - Coupling is a toggle (`couple`, default **on**, hashed as `cpl`); when on, the M disc-⌀ input is disabled and tracks the plate ⌀. Standalone mode (and the Block M self-tests, which exercise the key-sizing hub) are unchanged.
+  - Defaults retuned to a coherent coupled landing device (1 m plate/disc, 12 sectors, ring/hub ⌀ 150 mm, void 40 / shaft 20 / disc-thick 10 mm) so all guards land green; `rotor-core` preset rebuilt as the coupled showcase, `plate-air`/`plate-mica` set `couple:false`.
+  - Ring diameter field maxes raised 50 → 100 cm to allow larger hubs.
+
 ### Added
 - **Block M — Rotor mechanical core** implemented in `index.html` as a second, independent producer (never writes the rotor caps, never calls `solveDoubler4`; brief §6.4):
   - `docs/brief-blockM-rotor-mechanical-core.md` — the implementation brief.
