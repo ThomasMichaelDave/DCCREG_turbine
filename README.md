@@ -27,6 +27,8 @@ The *methodology* (tier tags, versioned consolidation, open-fork tracking, symbo
 | `index.html` | The app — Symmetric Bennet Doubler 4-node simulator (**host**; Blocks C-I and M extend it) |
 | `docs/brief-blockC1-geometry-to-rotorcap.md` | Implementation brief for the geometry → rotor-cap module |
 | `docs/brief-blockM-rotor-mechanical-core.md` | Implementation brief for the rotor mechanical core (quadricone + shaft + void + disc) |
+| `docs/brief-blockR-central-resonator.md` | Implementation brief for the central resonator (conical coil + inter-electrode capacitor) |
+| `docs/report-tool-functioning.md` | Standalone functional report on the whole tool |
 | `reference/SectoredDiscCalculator.jsx` | Area-math source to **port** into `index.html` (reference only — not built/served) |
 | `CONVENTIONS.md` | Epistemic tags + symbol-hygiene table + host-field-id mapping |
 | `CHANGELOG.md` | Human-readable audit trail (git owns the authoritative history) |

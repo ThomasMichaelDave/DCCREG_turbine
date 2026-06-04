@@ -10,13 +10,14 @@
 
 ## 1. Executive summary
 
-The tool is an interactive design calculator for a specific electromechanical device: a **rotary variable capacitor that drives a symmetric 4-node Bennet voltage doubler**. It links three layers that are normally treated separately:
+The tool is an interactive design calculator for a specific electromechanical device: a **rotary variable capacitor that drives a symmetric 4-node Bennet voltage doubler**. It links four layers that are normally treated separately:
 
 1. **Electrical engine (host).** A switched-capacitor network solver that computes the asymptotic per-cycle voltage-gain ratio **z** of a cross-coupled 4-node Bennet doubler from the capacitor values.
 2. **Electrical front end (Block C-I).** A parametric model of the rotor capacitor plate (sectored disc + central ring) that converts *geometry + gap + dielectric* into the rotor capacitance extremes **Cmin / Cmax**. These now **drive the rotor capacitors of the doubler automatically**.
-3. **Mechanical core (Block M).** A parametric model of the rotor's structural body (a 45° "quadricone" pair, stub shafts, a central spherical void, and a dielectric disc/septum), with industry key sizing, feasibility guards, high-voltage clearance/creepage geometry, and a live scale cross-section drawing — now showing the fixed stator plates as well.
+3. **Mechanical core (Block M).** A parametric model of the rotor's structural body (a 45° "quadricone" pair, stub shafts, a central spherical void, and a dielectric disc/septum), with industry key sizing, feasibility guards, high-voltage clearance/creepage geometry, and a live scale cross-section drawing — also showing the fixed stator plates.
+4. **Central resonator (Block R).** A parametric model of the `C_R ∥ L` resonant tank formed by two conical coils (wound on the quadricones, in series) and the through-mica inter-electrode capacitor — giving the resonant frequency, impedance, copper-limited Q, ringdown, and the RPM-driven pulse-train regime. It draws the coil onto the same cross-section.
 
-The two geometry blocks are **coupled**: the capacitor plate diameter sets the structural disc diameter, and the capacitor ring's outer diameter sets the mechanical hub/cone diameter. The single page therefore takes a designer from *physical dimensions* to a *predicted electrical pumping ratio* and a *mechanically-checked, dimensioned cross-section* in one view.
+The geometry blocks are **coupled**: the capacitor plate diameter sets the structural disc diameter, and the capacitor ring's outer diameter sets the mechanical hub/cone diameter (which in turn fixes the resonator coil's geometry). The single page therefore takes a designer from *physical dimensions* to a *predicted electrical pumping ratio*, a *mechanically-checked, dimensioned cross-section*, and a *resonant-tank characterisation* in one view.
 
 The page **self-tests on load**; an "engine verified" badge and an expandable table report a fixed set of deterministic checks. All checks currently pass.
 
@@ -169,6 +170,47 @@ A canvas slice through the shaft axis, mirrored left/right and top/bottom, redra
 
 ---
 
+## 7A. Block R — central resonator (resonant tank)
+
+Models the high-frequency `C_R ∥ L` tank that the charge pump excites. **Independent producer** — it never feeds the solver.
+
+### 7A.1 Topology
+Two conical coils are wound on the quadricones (one per cone) and connected in series, aiding, apex-to-apex; they bridge the two rotor electrodes. A **through-mica capacitor `C_R`** bridges the same two nodes (the electrodes are held **fully aligned** — the locked design premise — so the antiphase pumping comes from *stator* offset and a real inter-electrode capacitor exists). `C_R ∥ L` is a parallel tank that rings at `f0` and decays with `τ` after each drive pulse.
+
+### 7A.2 Inductance (conical loop-stack) **[OC]**
+A single-layer 45° conical helix is treated as an exact stack of coaxial circular loops (pitch = conductor OD + 2·insulation; turns per cone = ⌊slant/pitch⌋). The series inductance is the sum of every loop's HF self-inductance plus twice the Maxwell **mutual inductance** of every loop pair:
+
+```
+L = Σ Lself(r_k) + 2·ΣΣ_{i<j} M(r_i, r_j, |z_i − z_j|)
+Lself = μ0·r·(ln(8r/a) − 2),   M via complete elliptic integrals K,E (AGM, no library)
+```
+
+For very large turn counts the stack is decimated to ≤ 400 nodes for live recompute (flagged). The engine was cross-checked against the Nagaoka/Wheeler solenoid value.
+
+### 7A.3 Capacitance, resonance, loss **[OC; Cself is IR]**
+```
+C_R = ε0·εr_mica·A_align / discH        (through the mica septum; A_align from the corrected C-I area)
+Ctot = C_R + Cself + stray              (Cself = Medhurst estimate, usually negligible)
+f0 = 1/(2π√(L·Ctot)),  Z0 = √(L/Ctot),  τ = 2L/R_ac,  f_d = f0·√(1 − 1/4Q²)
+δ = √(ρ_cu/(π f0 μ0)),  R_ac = ρ_cu·length/(π·OD·δ)   (current on the outer surface at HF)
+```
+
+**Conductor input:** wire (AWG ⇄ ⌀ ⇄ area), tube (OD/ID), or a manual OD. A verified consequence of the skin effect: a **capillary tube ≈ a solid rod** of the same OD in L, C, f0, Z0 and Q (identical RF behaviour) at far less copper and mass — the `wire | tube` toggle shows this directly.
+
+> **Q is copper-only and an upper bound.** The reported Q counts only conductor loss. Real Q is dominated by mica dielectric loss (tanδ) and spark-gap/diode loss, both deferred; the figure is labelled an upper bound and **not** asserted as the operating Q.
+
+### 7A.4 Drive from rotor speed **[OC kinematics; IR regime reading]**
+With ⌈Nsec/2⌉ capacitance phases per revolution:
+```
+prf = ⌈Nsec/2⌉·rpm/60,   ring cycles = f0/prf,   settle = τ·prf
+```
+Since `prf ≪ f0`, the tank is not driven at resonance — each pulse triggers a ringdown. `settle < 1` = rings decay between pulses (isolated); `settle > 1` = successive rings overlap (build-up). The `settle ≈ 1` boundary is the headline drive output.
+
+### 7A.5 Cross-section + legend
+Block R draws the coil onto the shared cross-section as a copper band hugging each cone slant (per-turn hatch; tube vs wire indicated; turns red if the coil guard trips), and introduces a **colour + hatch legend** that keys every drawn region (coil, electrodes, stators, mica disc, hubs, void, shafts) to the readouts that describe it.
+
+---
+
 ## 8. Coupling between the geometry blocks **[IR — user-directed]**
 
 The electrical plate (C-I) and the mechanical core (M) are linked by a toggle ("couple to plate", on by default; shareable in the URL). The two diameter families are kept distinct — an *outer* electrical family and an *inner* mechanical family — and tied as:
@@ -196,9 +238,11 @@ The key consequence: in coupled mode the hub is **no longer derived from key siz
 | Disc ⌀ | **Derived** from plate ⌀ when coupled (else user input) |
 | Hub ⌀ / cone radius | **Derived** — from ring ⌀ when coupled, else from key sizing |
 | Key length + DIN size, keyed length, clearances, creepage, volumes, guard margins | **Derived** (Block M) |
+| Conductor type (wire/tube/manual OD), gauge/tube ⌀, insulation, rotor RPM, stray C, pulse V | **User input** (Block R) |
+| Turns, L, C_R, Ctot, f0, Z0, Q, τ, R_ac, δ, PRF, settle/regime | **Derived** (Block R) |
 | Doubling ratio z and all electrical outputs | **Derived** (host solver) |
 
-**Worked default device (loads on open):** 12 sectors, 1 m plate/disc, ring-outer ⌀ 150 mm → hub ⌀ 150 mm / cone radius 75 mm, gap 0.5 mm, air; void 40 mm, shaft 20 mm, disc thickness 10 mm. This yields inherited rotor caps **Cmin ≈ 278 pF, Cmax ≈ 7237 pF** (swing ratio 26), all mechanical guards green (binding guard: key fit), HV spans clearEE = 40 mm / creepEE = 30 mm, and with Ca = Cb = 100 pF, Cpar = 20 pF a doubling ratio **z ≈ 1.25** (pumping). *(These defaults were chosen so the coupled mechanical guards land valid; they are a starting point, not a recommended operating point.)*
+**Worked default device (loads on open):** 12 sectors, 1 m plate/disc, ring-outer ⌀ 150 mm → hub ⌀ 150 mm / cone radius 75 mm, gap 0.5 mm, air; void 40 mm, shaft 20 mm, disc thickness 10 mm; resonator on a 3 mm/1 mm capillary tube at 3000 rpm. This yields inherited rotor caps **Cmin ≈ 278 pF, Cmax ≈ 7080 pF** (swing ratio ≈ 25), all mechanical guards green (binding guard: key fit), HV spans clearEE = 40 mm / creepEE = 30 mm, and with Ca = Cb = 100 pF, Cpar = 20 pF a doubling ratio **z ≈ 1.25** (pumping); the resonator tank computes **L ≈ 123 µH, C_R ≈ 1.9 nF, f0 ≈ 326 kHz, Z0 ≈ 260 Ω, copper-Q ≈ 1000 (upper bound)**, PRF 300 Hz, settle ≈ 0.3 (isolated ringdown). *(These defaults were chosen so the coupled mechanical guards land valid; they are a starting point, not a recommended operating point.)*
 
 ---
 
@@ -224,6 +268,13 @@ The page runs a deterministic self-test suite on load and shows pass/fail in an 
 - hub-diameter formula: void⌀ 50, shaft⌀ 35, disc thickness 0 → hub⌀ = **197 mm**;
 - void-partition identity: two spherical caps + equatorial belt = full sphere (degenerate bore);
 - DIN key sizing: keyLenFor(35 mm) → **DIN 56**.
+
+**Block R (resonator):**
+- elliptic integrals: K(0) = E(0) = **π/2** (AGM);
+- capillary tank: **C_R ≈ 1.91 nF** and **L ≈ 131 µH** (the validated loop-stack value);
+- skin-effect identity: tube OD3/ID1 vs solid rod OD3 → **equal f0 and Q**;
+- AWG conversion: AWG 20 → **0.812 mm**;
+- drive kinematics: PRF(12 sectors, 3000 rpm) = **300 Hz**.
 
 These checks are deterministic and serve as a clean pass/fail gate for any change.
 

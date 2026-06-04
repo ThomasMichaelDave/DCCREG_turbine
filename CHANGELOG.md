@@ -4,6 +4,18 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Added
+- **Block R — Central resonator** (`docs/brief-blockR-central-resonator.md`): an independent producer (never writes the rotor caps, never calls `solveDoubler4`) modelling the `C_R ∥ L` tank formed by the two conical coils (series, aiding) and the through-mica inter-electrode capacitor.
+  - **Inductance** via an exact conical loop-stack: HF self-inductance + Maxwell mutual inductance over all turn pairs, with complete elliptic integrals K/E by the **AGM** (no library); decimation to ≤400 nodes for very fine wire (flagged).
+  - **Capacitance** `C_R = ε0·εr_mica·A_align/discH` (electrodes fully aligned — locked premise), a Medhurst self-capacitance estimate, and the coil self-resonant frequency.
+  - **LC + loss:** `f0, f_d, Z0, Q (copper-only upper bound), τ, R_dc/R_ac, skin δ`; conductor as **wire (AWG) / tube / manual-OD**, with the verified capillary-tube ≈ solid-rod HF identity (equal f0 & Q at less copper).
+  - **Drive from RPM:** `prf = ⌈Nsec/2⌉·rpm/60`, ring cycles per pulse, `settle = τ·prf` and the isolated-ringdown vs build-up regime.
+  - Adds the coil to the cross-section (copper band hugging each cone slant, per-turn hatch, tube/wire hint, guard-coloured) and a **colour + hatch legend** (`--copper/--steel/--diel`) toggled with the dimensions overlay; swatches tie readouts to drawing regions. Preset `resonator`. Six self-tests (AGM, C_R, validated L, tube≡rod, AWG, PRF).
+  - **Honest correction:** the brief's quoted `L ≈ 235 µH / f0 ≈ 238 kHz` came from a cruder cylindrical estimate; the validated conical loop-stack (cross-checked against Nagaoka) gives `L ≈ 131 µH / f0 ≈ 316 kHz`. The validated value is used and the self-test asserts it. **[corrected openly]**
+
+### Corrected
+- **C-I sectored-metal area** now uses the annulus *outside the ring* (`ring-out → plate`) instead of the full disc, removing a ~2 % overcount (the inner disc is the ring/hub, not free sectors). Slightly lowers `Cmax` (default 7237 → 7080 pF; `Cmin` unchanged) and feeds the corrected `A_align` to Block R. The C-I fixed-geometry self-test (ring off) is unchanged. **[review finding]**
+
 ### Changed
 - **Rotor caps now inherited from the plate-geometry capacitance by default** (`psrc:"plate"`): `C1/C2 min/max` are driven by the Block C-I `Cmin/Cmax` (both rotors via `plink`, the symmetric design) and their inputs are disabled. Only **transfer + stray (Ca/Cb/Cpar)** stay user input (can't be estimated yet). The manual override toggle remains; the Rotor-caps panel shows an "← inherited from plate geometry" tag.
 

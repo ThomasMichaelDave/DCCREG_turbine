@@ -9,6 +9,7 @@
     --bg:#0b0f14; --panel:#121821; --panel2:#0e141c; --line:#1e2733;
     --ink:#cfe2f3; --dim:#7c8ea0; --acc:#7cd0ff;
     --good:#5fe07a; --warn:#ffd06b; --bad:#ff7a7a; --edge:#c0a8ff;
+    --copper:#d08a4e; --steel:#9aa7b4; --diel:#b59a5e;
     --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box}
@@ -80,6 +81,10 @@
   .warn-list .w{color:var(--warn)}.warn-list .e{color:var(--bad)}.warn-list .note{color:var(--dim)}
   #mxsec{height:240px}
   .scale-readout{font-size:10px;color:var(--dim);margin-top:4px}
+  .sw2{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle;border:1px solid var(--line)}
+  .xsec-legend{display:none;flex-wrap:wrap;gap:4px 14px;font-size:10.5px;color:var(--dim);margin-top:8px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:4px}
+  .xsec-legend.on{display:flex}
+  .xsec-legend span.it{display:inline-flex;align-items:center;white-space:nowrap}
   @media (max-width:780px){.grid{grid-template-columns:1fr}.charts{grid-template-columns:1fr}.plate-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -276,11 +281,107 @@
     <span class="scale-readout" id="mxsec-scale">—</span>
   </div>
   <canvas id="mxsec" width="600" height="240"></canvas>
+  <div class="xsec-legend" id="xsec-legend">
+    <span class="it"><span class="sw2" style="background:var(--copper)"></span>resonator coil (L)</span>
+    <span class="it"><span class="sw2" style="background:var(--acc)"></span>rotor electrodes C1/C2</span>
+    <span class="it"><span class="sw2" style="background:var(--edge)"></span>fixed stators (gap g)</span>
+    <span class="it"><span class="sw2" style="background:var(--diel)"></span>mica disc / septum</span>
+    <span class="it"><span class="sw2" style="background:var(--ink)"></span>quadricone hubs</span>
+    <span class="it"><span class="sw2" style="background:var(--bg)"></span>void / bore</span>
+    <span class="it"><span class="sw2" style="background:var(--steel)"></span>stub shafts</span>
+  </div>
 
   <div class="warn-list" id="mech-warn"></div>
 
   <div class="preset-bar">
     <button data-preset="rotor-core">rotor-core (15 cm)</button>
+  </div>
+</section>
+
+<!-- ============== BLOCK R: CENTRAL RESONATOR ============== -->
+<section class="panel" id="res-panel" style="margin-bottom:14px">
+  <h2><span class="sw2" style="background:var(--copper)"></span>Central resonator (conical coil + inter-electrode C)
+    <span class="tag" id="res-regime-tag">—</span></h2>
+
+  <div class="plate-grid">
+    <!-- ---- conductor + drive inputs ---- -->
+    <div>
+      <div class="ctl-row">
+        <span class="lbl">conductor</span>
+        <span class="seg" id="rcond-seg">
+          <button data-rcond="wire">wire (AWG)</button>
+          <button data-rcond="tube">tube</button>
+        </span>
+        <label class="chk"><input type="checkbox" id="rmanod"> manual OD</label>
+      </div>
+
+      <div class="row res-wire">
+        <label>wire AWG</label>
+        <input type="range" id="rawg-r"><input type="number" id="rawg-n">
+        <span class="u">#</span>
+      </div>
+      <div class="row res-tube">
+        <label>tube OD</label>
+        <input type="range" id="rtubeOD-r"><input type="number" id="rtubeOD-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row res-tube">
+        <label>tube ID</label>
+        <input type="range" id="rtubeID-r"><input type="number" id="rtubeID-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row res-manod">
+        <label>manual OD</label>
+        <input type="range" id="rcondod-r"><input type="number" id="rcondod-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>insulation</label>
+        <input type="range" id="rins-r"><input type="number" id="rins-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>rotor speed</label>
+        <input type="range" id="rrpm-r"><input type="number" id="rrpm-n">
+        <span class="u">rpm</span>
+      </div>
+      <div class="row">
+        <label>stray C</label>
+        <input type="range" id="rstray-r"><input type="number" id="rstray-n">
+        <span class="u">pF</span>
+      </div>
+      <div class="row">
+        <label>pulse V</label>
+        <input type="range" id="rvpulse-r"><input type="number" id="rvpulse-n">
+        <span class="u">kV</span>
+      </div>
+    </div>
+
+    <!-- ---- resonator readouts ---- -->
+    <div>
+      <div class="kv">
+        <span class="k">turns N (total) · pitch</span><span class="v" id="rr-turns">—</span>
+        <span class="k">conductor OD · Cu area</span><span class="v" id="rr-cond">—</span>
+        <span class="k">conductor length</span><span class="v" id="rr-len">—</span>
+        <span class="k"><span class="sw2" style="background:var(--copper)"></span>inductance L</span><span class="v" id="rr-L">—</span>
+        <span class="k"><span class="sw2" style="background:var(--acc)"></span>C_R / Cself / Ctot</span><span class="v" id="rr-C">—</span>
+        <span class="k">resonance f₀ · f_d</span><span class="v" id="rr-f0">—</span>
+        <span class="k">coil self-resonance</span><span class="v" id="rr-srf">—</span>
+        <span class="k">impedance Z₀</span><span class="v" id="rr-Z0">—</span>
+        <span class="k">Q (Cu-only, upper bound)</span><span class="v" id="rr-Q">—</span>
+        <span class="k">ringdown τ</span><span class="v" id="rr-tau">—</span>
+        <span class="k">R_dc / R_ac · skin δ</span><span class="v" id="rr-R">—</span>
+        <span class="k">PRF @ rpm · ring cycles</span><span class="v" id="rr-prf">—</span>
+        <span class="k">settle (τ·PRF) · regime</span><span class="v" id="rr-settle">—</span>
+        <span class="k">pulse energy ½CV²</span><span class="v" id="rr-E">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-list" id="res-warn"></div>
+
+  <div class="preset-bar">
+    <button data-preset="resonator">resonator (capillary)</button>
   </div>
 </section>
 
@@ -660,11 +761,14 @@ function plateGeom(s){
   const u = lenToM(s.punit || "cm");
   const Nsec = Math.max(2, Math.round(Number(s.pnsec) || 2));
   const plateR = (Number(s.pdia) || 0) * u / 2;
-  const discArea = Math.PI * plateR * plateR;
-  const keptCount = Math.ceil(Nsec / 2);
-  const Ametal = (keptCount / Nsec) * discArea;            // m²
   const ro = (Number(s.prouter) || 0) * u / 2;
   const ri = (Number(s.prinner) || 0) * u / 2;
+  const discArea = Math.PI * plateR * plateR;
+  const keptCount = Math.ceil(Nsec / 2);
+  // [OC correction] The sectored metal is the annulus OUTSIDE the ring
+  // (ring-out → plate edge); the inner disc is the ring/hub, not free sectors.
+  // Using the full disc overcounts the metal by the inner-radius fraction (~2%).
+  const Ametal = (keptCount / Nsec) * Math.PI * Math.max(0, plateR*plateR - ro*ro);  // m²
   const Aring = Math.max(0, Math.PI * (ro*ro - ri*ri));    // m²; 0 if invalid
   return {plateR, Nsec, keptCount, discArea, Ametal, Aring};
 }
@@ -813,6 +917,151 @@ function quadriconeCore(s){
 }
 
 /* ============================================================
+   BLOCK R — CENTRAL RESONATOR  (independent producer)
+   ------------------------------------------------------------
+   Conical coil (two cones in series, aiding) ∥ a through-mica
+   inter-electrode capacitor C_R form an LC tank, pulse-excited by
+   the spark-gap/diode firing. Consumes coneR/discH from Block M and
+   the aligned electrode area + Nsec from Block C-I. Never writes the
+   rotor fields, never calls solveDoubler4 (cf. M). All mainstream EM:
+   circular-loop self/mutual inductance, parallel-plate C, LC, skin
+   effect. Locked premise: rotor electrodes FULLY ALIGN (antiphase is
+   provided by stator offset), so a real through-mica C_R exists. [OC]
+   ============================================================ */
+const MU0    = 4 * Math.PI * 1e-7;   // [OC] vacuum permeability, H/m
+const RHO_CU = 1.68e-8;              // [OC] annealed-copper resistivity @20°C, Ω·m
+
+// [OC] AWG definition: d = 0.127 mm · 92^((36−AWG)/39).
+function awgToCond(awg){
+  const dmm = 0.127 * Math.pow(92, (36 - awg) / 39);
+  const condOD = dmm / 1e3;
+  return {condOD, condArea: Math.PI * (condOD/2)**2, dmm};
+}
+
+// [OC] complete elliptic integrals K(m), E(m) (m = k²) via the AGM — no library.
+function ellipKE(m){
+  if (m < 0) m = 0; if (m >= 1) m = 1 - 1e-15;
+  let an = 1, bn = Math.sqrt(1 - m), cn = Math.sqrt(m), sumE = 0.5*cn*cn, n = 0;
+  while (Math.abs(an - bn) > 1e-15 && n < 80){
+    const a1 = (an + bn)/2, b1 = Math.sqrt(an*bn), c1 = (an - bn)/2;
+    n++; sumE += Math.pow(2, n-1) * c1 * c1; an = a1; bn = b1;
+  }
+  const K = Math.PI / (2 * an);
+  return {K, E: K * (1 - sumE)};
+}
+// [OC] Maxwell mutual inductance of two coaxial circular loops, axial gap d.
+function Mloop(r1, r2, d){
+  const k2 = 4*r1*r2 / ((r1+r2)**2 + d*d);
+  const k = Math.sqrt(k2);
+  const {K, E} = ellipKE(k2);
+  return MU0 * Math.sqrt(r1*r2) * ((2/k - k)*K - (2/k)*E);
+}
+// [OC] HF self-inductance of one loop (current on the surface), wire radius a.
+function Lself(r, a){ return MU0 * r * (Math.log(8*r/a) - 2); }
+
+// [IR] Medhurst-style single-layer self-capacitance estimate (pF); D,H in cm.
+function medhurstCself(turns){
+  if (turns.length < 2) return 0;
+  let sr = 0, sw = 0, zmin = Infinity, zmax = -Infinity;
+  for (const t of turns){ sr += t.r*t.w; sw += t.w; if (t.z < zmin) zmin = t.z; if (t.z > zmax) zmax = t.z; }
+  const D = 2 * (sr/sw) * 100;                       // cm
+  const H = Math.max(1e-6, (zmax - zmin)) * 100;     // cm
+  const hd = H / D;
+  return D * (0.1126*hd + 0.08 + 0.27/Math.sqrt(hd));// pF
+}
+
+// Resonator producer. Consumes Block M (coneR, discH) + Block C-I (A_align, Nsec).
+function resonatorCore(s){
+  const Mc = quadriconeCore(s);
+  const coneR = Mc.coneR / 1e3, discH = Mc.discH / 1e3;   // m
+  const slant = coneR * Math.SQRT2;
+  const g = plateGeom(s);
+  const Aalign = g.Ametal + g.Aring;                      // m² (corrected annulus + ring)
+  const epsd = DIELECTRICS.mica.epsR;                     // disc = mica [IR — locked premise]
+  const Nsec = Math.max(2, Math.round(Number(s.pnsec) || 2));
+
+  // --- conductor (wire / tube / manual OD) ---
+  let condOD, condArea, awgInfo = null;
+  if (s.rmanod){
+    condOD = (Number(s.rcondod)||0)/1e3; condArea = Math.PI*(condOD/2)**2;
+  } else if (s.rcond === "tube"){
+    condOD = (Number(s.rtubeOD)||0)/1e3; const ID = (Number(s.rtubeID)||0)/1e3;
+    condArea = Math.PI * Math.max(0, (condOD/2)**2 - (ID/2)**2);
+  } else {
+    awgInfo = awgToCond(Number(s.rawg)||20); condOD = awgInfo.condOD; condArea = awgInfo.condArea;
+  }
+  const a = condOD/2;
+  const pitch = condOD + 2*(Number(s.rins)||0)/1e3;       // [OC] winding pitch
+  const NturnPerCone = pitch > 0 ? Math.floor(slant/pitch) : 0;
+
+  // --- build the loop stack (both cones, same sense = aiding) ---
+  let turns = [];
+  for (const sgn of [1,-1]) for (let k = 0; k < NturnPerCone; k++){
+    const rr = coneR - (k+0.5)*pitch/Math.SQRT2;
+    const zz = sgn*(discH/2 + (k+0.5)*pitch/Math.SQRT2);
+    if (rr > a) turns.push({r:rr, z:zz, w:1});            // skip turns smaller than the wire
+  }
+  // [OC perf] decimate to ≤400 nodes if the stack is very large (fine wire).
+  let decimated = false;
+  if (turns.length > 800){
+    decimated = true;
+    const grp = Math.ceil(turns.length/400), red = [];
+    for (let i = 0; i < turns.length; i += grp){
+      const sl = turns.slice(i, i+grp), w = sl.length;
+      red.push({r: sl.reduce((x,t)=>x+t.r,0)/w, z: sl.reduce((x,t)=>x+t.z,0)/w, w});
+    }
+    turns = red;
+  }
+
+  // --- inductance L = Σ self + 2·ΣΣ mutual (weighted) ; conductor length ---
+  let L = 0, length = 0;
+  for (const t of turns){
+    L += t.w*Lself(t.r, a) + (t.w > 1 ? t.w*(t.w-1)*Mloop(t.r, t.r, pitch) : 0);  // intra-group [approx]
+    length += t.w * 2*Math.PI*t.r;
+  }
+  for (let i = 0; i < turns.length; i++) for (let j = i+1; j < turns.length; j++)
+    L += 2 * turns[i].w * turns[j].w * Mloop(turns[i].r, turns[j].r, Math.abs(turns[i].z - turns[j].z));
+  const Nturn = turns.reduce((x,t)=>x+t.w, 0);
+
+  // --- capacitance ---
+  const C_R  = (discH > 0 && Aalign > 0) ? eps0*epsd*Aalign/discH : 0;   // through the mica septum
+  const Cself = medhurstCself(turns) * 1e-12;                            // F
+  const Ctot = C_R + Cself + (Number(s.rstray)||0)*1e-12;
+
+  // --- resonance + (copper-only) loss ---
+  const f0 = (L > 0 && Ctot > 0) ? 1/(2*Math.PI*Math.sqrt(L*Ctot)) : 0;
+  const delta = f0 > 0 ? Math.sqrt(RHO_CU/(Math.PI*f0*MU0)) : 0;          // skin depth @ f0
+  const Rdc = condArea > 0 ? RHO_CU*length/condArea : Infinity;
+  const Rac = (delta > 0 && condOD > 0) ? RHO_CU*length/(Math.PI*condOD*delta) : Infinity; // outer surface
+  const Z0 = (L > 0 && Ctot > 0) ? Math.sqrt(L/Ctot) : 0;
+  const w0 = 2*Math.PI*f0;
+  const Q   = (Rac > 0 && isFinite(Rac)) ? w0*L/Rac : 0;
+  const tau = (Rac > 0 && isFinite(Rac)) ? 2*L/Rac : 0;
+  const fd  = Q > 0.5 ? f0*Math.sqrt(1 - 1/(4*Q*Q)) : 0;
+  const fSRF = (L > 0 && Cself > 0) ? 1/(2*Math.PI*Math.sqrt(L*Cself)) : 0; // coil self-resonance
+  const Vpulse = (Number(s.rvpulse)||0)*1e3;                              // kV → V
+  const Epulse = 0.5*Ctot*Vpulse*Vpulse;
+
+  // --- drive from rotor RPM ---
+  const prf = Math.ceil(Nsec/2) * (Number(s.rrpm)||0) / 60;
+  const ringCycles = prf > 0 ? f0/prf : Infinity;
+  const settle = tau * prf;
+  const regime = settle < 0.8 ? "isolated ringdown" : settle > 1.25 ? "overlapping build-up" : "boundary (settle≈1)";
+
+  // --- guards / notes ---
+  const warns = [];
+  const coilFail = NturnPerCone < 1 || (s.rcond === "tube" && (Number(s.rtubeID)||0) >= (Number(s.rtubeOD)||0));
+  if (NturnPerCone < 1) warns.push(["e", "winding pitch ("+(pitch*1e3).toFixed(2)+" mm) ≥ cone slant — less than one turn; coil non-physical."]);
+  if (s.rcond === "tube" && (Number(s.rtubeID)||0) >= (Number(s.rtubeOD)||0)) warns.push(["e", "tube ID ≥ OD — invalid tube section."]);
+  if (decimated) warns.push(["note", "loop-stack decimated to "+turns.length+" nodes for live recompute — L is approximate."]);
+  warns.push(["note", "Q is copper-limited (upper bound); real Q is set by mica tanδ and spark-gap loss (deferred)."]);
+
+  return {NturnPerCone, Nturn, condOD, condArea, awgInfo, pitch, slant, coneR, discH, turns, decimated,
+          L, length, C_R, Cself, Ctot, f0, fd, fSRF, Z0, Q, tau, Rdc, Rac, delta,
+          prf, ringCycles, settle, regime, Epulse, Aalign, epsd, coilFail, warns};
+}
+
+/* ============================================================
    SELF-TEST
    ============================================================ */
 const VERIFY = [
@@ -870,6 +1119,28 @@ function runSelfTest(){
   // (c) DIN key length: keyLenFor(35) = 56.
   plateRows.push({label:"M: keyLenFor(35) → DIN 56",
                   expected:56, got:keyLenFor(35), dp:0, tol:0, pass:keyLenFor(35)===56});
+
+  // --- Block R resonator self-tests (brief §9.5) ---
+  const ke0 = ellipKE(0);
+  plateRows.push({label:"R: ellipKE(0) → K = E = π/2", expected:Math.PI/2, got:ke0.K, dp:6, tol:1e-6,
+                  pass:Math.abs(ke0.K-Math.PI/2)<1e-6 && Math.abs(ke0.E-Math.PI/2)<1e-6});
+  const RST = {couple:true, punit:"cm", munit:"mm", pnsec:12, pdia:100, prouter:15, prinner:5,
+               mvoid:40, mshaft:20, mdisch:10, mdiscvoid:20, mwall:0.1, mdiscdia:1000,
+               rcond:"tube", rtubeOD:3, rtubeID:1, rins:0, rstray:0, rrpm:3000, rawg:20, rvpulse:10, rmanod:false, rcondod:3};
+  const RC = resonatorCore(RST);
+  plateRows.push({label:"R: capillary C_R ≈ 1.91 nF", expected:1.91, got:RC.C_R*1e9, dp:3, tol:0.05,
+                  pass:Math.abs(RC.C_R*1e9-1.91)<=0.05});
+  // NOTE: brief §9.5 quoted L≈235µH / f0≈238kHz from a cruder cylindrical estimate;
+  // the validated conical loop-stack (Nagaoka-checked) gives L≈131µH / f0≈316kHz. [corrected]
+  plateRows.push({label:"R: capillary L (validated loop-stack)", expected:131.2, got:RC.L*1e6, dp:1, tol:6,
+                  pass:Math.abs(RC.L*1e6-131.2)<=6});
+  const RCrod = resonatorCore(Object.assign({}, RST, {rmanod:true, rcondod:3}));
+  plateRows.push({label:"R: tube OD3/ID1 ≡ rod OD3 (HF f₀,Q)", expected:0, got:Math.abs(RC.f0-RCrod.f0), dp:3, tol:1,
+                  pass:Math.abs(RC.f0-RCrod.f0)<1 && Math.abs(RC.Q-RCrod.Q)<1e-3});
+  plateRows.push({label:"R: awgToCond(20) OD ≈ 0.812 mm", expected:0.812, got:awgToCond(20).condOD*1e3, dp:3, tol:0.005,
+                  pass:Math.abs(awgToCond(20).condOD*1e3-0.812)<=0.005});
+  plateRows.push({label:"R: prf(N12, 3000 rpm) = 300 Hz", expected:300, got:RC.prf, dp:0, tol:0, pass:RC.prf===300});
+
   const plateAll = plateRows.every(r => r.pass);
 
   return {ok: allOk && symOk && plateAll, rows, symOk, symA:a, symB:b, plateRows};
@@ -902,6 +1173,15 @@ const FIELDS = [
   {id:"mshaft",    def:20,   min:3,   max:100,  step:1},
   {id:"mwall",     def:0.1,  min:0,   max:0.9,  step:0.01},
   {id:"mdiscdia",  def:1000, min:50,  max:2000, step:1},
+  // --- Block R central resonator (r-prefix) ---
+  {id:"rawg",      def:20,   min:8,    max:40,    step:1},
+  {id:"rtubeOD",   def:3,    min:0.5,  max:10,    step:0.1},
+  {id:"rtubeID",   def:1,    min:0,    max:8,     step:0.1},
+  {id:"rins",      def:0.05, min:0,    max:1,     step:0.01},
+  {id:"rrpm",      def:3000, min:0,    max:30000, step:50},
+  {id:"rstray",    def:20,   min:0,    max:500,   step:1},
+  {id:"rvpulse",   def:10,   min:0,    max:100,   step:1},
+  {id:"rcondod",   def:3,    min:0.1,  max:12,    step:0.1},
 ];
 // Non-numeric plate controls (serialised into the hash manually). [task §7.2]
 // Rotor caps are inherited from the plate-geometry capacitance by default
@@ -910,6 +1190,8 @@ const PLATE_CTL_DEFAULTS = {pdiel:"air", pring:true, plink:true, psrc:"plate", p
 // Non-numeric mechanical-core controls (hash-serialised manually).
 // `couple` links the C-I plate geometry to the mechanical core (default on).
 const MECH_CTL_DEFAULTS = {munit:"mm", mfit:"fit", mdims:false, couple:true};
+// Non-numeric Block R controls (hash-serialised manually).
+const RES_CTL_DEFAULTS = {rcond:"tube", rmanod:false};
 // Rotor-cap field max in plate vs manual mode. [IR §6.5 — raise-max policy:
 // realistic plate caps can exceed the manual 3000 pF range, so in plate mode
 // we widen c1*/c2* max to 10000 pF; values beyond that clamp + warn.]
@@ -954,6 +1236,8 @@ function loadFromHash(){
   if (p.has("mfit"))  state.mfit  = p.get("mfit") === "lock" ? "lock" : "fit";
   if (p.has("mdims")) state.mdims = p.get("mdims") === "1";
   if (p.has("cpl"))   state.couple = p.get("cpl") === "1";
+  if (p.has("rcond")) state.rcond = p.get("rcond") === "wire" ? "wire" : "tube";
+  if (p.has("rmanod")) state.rmanod = p.get("rmanod") === "1";
 }
 function writeHash(){
   const p = new URLSearchParams();
@@ -967,6 +1251,8 @@ function writeHash(){
   p.set("mfit",  state.mfit);
   p.set("mdims", state.mdims ? 1 : 0);
   p.set("cpl",   state.couple ? 1 : 0);
+  p.set("rcond", state.rcond);
+  p.set("rmanod", state.rmanod ? 1 : 0);
   history.replaceState(null, "", "#" + p.toString());
 }
 
@@ -986,6 +1272,10 @@ const PRESETS = {
   // Coupled rotor: 1 m plate/disc, 12 sectors, ring ⌀ 150 mm → hub ⌀ 150 mm. [§6.7]
   "rotor-core": {couple:true, punit:"cm", pnsec:12, pdia:100, prouter:15, prinner:5,
                  munit:"mm", mvoid:40, mdiscvoid:20, mdisch:10, mshaft:20, mwall:0.1, mdiscdia:1000},
+  // Capillary-tube resonator showcase on the coupled rotor-core base. [§9.6]
+  "resonator":  {couple:true, punit:"cm", pnsec:12, pdia:100, prouter:15, prinner:5,
+                 munit:"mm", mvoid:40, mdiscvoid:20, mdisch:10, mshaft:20, mwall:0.1, mdiscdia:1000,
+                 rcond:"tube", rtubeOD:3, rtubeID:1, rins:0.05, rrpm:3000, rstray:20, rvpulse:10},
 };
 function applyPreset(name){
   const p = PRESETS[name]; if (!p) return;
@@ -1066,6 +1356,15 @@ function reflectControls(){
   if (md_r) md_r.disabled = !!state.couple;
   if (md_n) md_n.disabled = !!state.couple;
   $("mhub-src").textContent = state.couple ? "hub ⌀ ← ring-out ⌀ (coupled)" : "hub ⌀ ← key sizing";
+  $("xsec-legend").classList.toggle("on", !!state.mdims);
+  // --- Block R controls ---
+  document.querySelectorAll("#rcond-seg button").forEach(b =>
+    b.classList.toggle("active", b.dataset.rcond === state.rcond));
+  $("rmanod").checked = !!state.rmanod;
+  const manod = !!state.rmanod, wire = state.rcond === "wire" && !manod, tube = state.rcond === "tube" && !manod;
+  document.querySelectorAll(".res-wire").forEach(e => e.style.display = wire ? "" : "none");
+  document.querySelectorAll(".res-tube").forEach(e => e.style.display = tube ? "" : "none");
+  document.querySelectorAll(".res-manod").forEach(e => e.style.display = manod ? "" : "none");
 }
 
 function bindPlateControls(){
@@ -1157,8 +1456,15 @@ function bindMechControls(){
     document.querySelectorAll("#mfit-seg button").forEach(x => x.classList.toggle("active", x === b));
     scheduleRecompute();
   }));
-  $("mdims").addEventListener("change", e => { state.mdims = e.target.checked; scheduleRecompute(); });
+  $("mdims").addEventListener("change", e => { state.mdims = e.target.checked; reflectControls(); scheduleRecompute(); });
   $("mcouple").addEventListener("change", e => { state.couple = e.target.checked; reflectControls(); scheduleRecompute(); });
+}
+
+function bindResControls(){
+  document.querySelectorAll("#rcond-seg button").forEach(b => b.addEventListener("click", () => {
+    state.rcond = b.dataset.rcond; reflectControls(); scheduleRecompute();
+  }));
+  $("rmanod").addEventListener("change", e => { state.rmanod = e.target.checked; reflectControls(); scheduleRecompute(); });
 }
 
 // Format a length (mm internally) into the display unit. [IR]
@@ -1225,6 +1531,35 @@ function updateMech(){
     '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
 
   return core;
+}
+
+// Frequency / energy formatters for the resonator panel.
+function fmtHz(f){ if (!(f>0)) return "—"; if (f>=1e6) return (f/1e6).toFixed(3)+" MHz"; if (f>=1e3) return (f/1e3).toFixed(1)+" kHz"; return f.toFixed(1)+" Hz"; }
+function fmtE(E){ if (!(E>0)) return "—"; if (E>=1) return E.toFixed(2)+" J"; if (E>=1e-3) return (E*1e3).toFixed(1)+" mJ"; return (E*1e6).toFixed(1)+" µJ"; }
+
+// Block R producer: resonator readouts (no solver interaction). Caches the
+// result for the cross-section coil drawing.
+let lastRes = null;
+function updateResonator(){
+  const R = resonatorCore(state);
+  lastRes = R;
+  $("rr-turns").textContent  = R.Nturn + " turns · pitch " + (R.pitch*1e3).toFixed(2) + " mm" + (R.decimated ? " (decimated)" : "");
+  $("rr-cond").textContent   = (R.condOD*1e3).toFixed(3) + " mm" + (R.awgInfo ? " (AWG "+state.rawg+")" : "") + " · " + (R.condArea*1e6).toFixed(3) + " mm²";
+  $("rr-len").textContent    = R.length.toFixed(2) + " m";
+  $("rr-L").textContent      = R.L>0 ? (R.L*1e6).toFixed(1) + " µH" : "—";
+  $("rr-C").textContent      = "C_R " + (R.C_R*1e9).toFixed(3) + " nF · Cself " + (R.Cself*1e12).toFixed(1) + " pF · Ctot " + (R.Ctot*1e9).toFixed(3) + " nF";
+  $("rr-f0").textContent     = fmtHz(R.f0) + " · f_d " + fmtHz(R.fd);
+  $("rr-srf").textContent    = fmtHz(R.fSRF) + (R.fSRF>0 && R.f0>0 ? "  (f₀/SRF = " + (R.f0/R.fSRF).toFixed(3) + ")" : "");
+  $("rr-Z0").textContent     = R.Z0>0 ? R.Z0.toFixed(0) + " Ω" : "—";
+  $("rr-Q").textContent      = R.Q>0 ? R.Q.toFixed(0) + "  (upper bound)" : "—";
+  $("rr-tau").textContent    = R.tau>0 ? (R.tau*1e6).toFixed(1) + " µs" : "—";
+  $("rr-R").textContent      = (isFinite(R.Rdc)?R.Rdc.toFixed(3):"—") + " / " + (isFinite(R.Rac)?R.Rac.toFixed(3):"—") + " Ω · δ " + (R.delta*1e6).toFixed(1) + " µm";
+  $("rr-prf").textContent    = R.prf.toFixed(1) + " Hz · " + (isFinite(R.ringCycles)?R.ringCycles.toFixed(0):"∞") + " cycles/pulse";
+  $("rr-settle").textContent = R.settle.toFixed(3) + " · " + R.regime;
+  $("rr-E").textContent      = fmtE(R.Epulse);
+  $("res-regime-tag").textContent = R.regime;
+  $("res-warn").innerHTML = R.warns.map(([c,m]) =>
+    '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
 }
 
 // --- live axial cross-section (§5.1) ---
@@ -1346,6 +1681,35 @@ function drawCrossSection(){
     }
   }
 
+  // 5c) resonator coil — copper band hugging each cone slant, hatched per turn. [Block R]
+  if (lastRes && lastRes.NturnPerCone >= 1){
+    const R = lastRes;
+    const bandPx = Math.max(2, R.condOD*1e3*scale);
+    const col = R.coilFail ? COL("--bad") : COL("--copper");
+    const Ndraw = Math.min(R.NturnPerCone, 48);
+    for (const sgn of [1,-1]) for (const side of [1,-1]){
+      const bx = X(side*coneR), by = Z(sgn*discH/2);   // winding base (at hub)
+      const ax = X(0),          ay = Z(sgn*apexZ);      // apex (on axis)
+      const dx = ax-bx, dy = ay-by, len = Math.hypot(dx,dy);
+      if (len < 1) continue;
+      const ux = dx/len, uy = dy/len, px = -uy, py = ux;
+      ctx.strokeStyle = col; ctx.lineWidth = bandPx; ctx.lineCap = "round";
+      ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(ax,ay); ctx.stroke();
+      ctx.lineCap = "butt";
+      if (state.rcond === "tube" && !state.rmanod){     // hollow-tube hint
+        ctx.strokeStyle = COL("--bg"); ctx.lineWidth = Math.max(1, bandPx*0.35);
+        ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(ax,ay); ctx.stroke();
+      }
+      ctx.strokeStyle = COL("--bg"); ctx.lineWidth = 1;  // per-turn hatch
+      for (let i = 0; i < Ndraw; i++){
+        const f = (i+0.5)/Ndraw, mx = bx+ux*len*f, my = by+uy*len*f, tl = bandPx*0.7;
+        ctx.beginPath(); ctx.moveTo(mx-px*tl, my-py*tl); ctx.lineTo(mx+px*tl, my+py*tl); ctx.stroke();
+      }
+    }
+    ctx.fillStyle = col;                                 // apex series-connection nodes
+    for (const sgn of [1,-1]){ ctx.beginPath(); ctx.arc(X(0), Z(sgn*apexZ), Math.max(2, bandPx*0.55), 0, 2*Math.PI); ctx.fill(); }
+  }
+
   // 6) shaft stubs (bore depth insertMax inward + protrusion outward) with keyway.
   const shaftCol = shaftFail ? COL("--bad") : COL("--dim");
   for (const sgn of [1,-1]){
@@ -1458,8 +1822,9 @@ function scheduleRecompute(){
 function recompute(){
   // [§6.4] Producer pre-step: geometry → rotor caps (plate mode only).
   updatePlate();
-  // Block M is an independent producer — readouts only, no solver coupling.
+  // Block M and Block R are independent producers — readouts only, no solver coupling.
   updateMech();
+  updateResonator();
   const C1min = Math.min(state.c1min, state.c1max);
   const C1max = Math.max(state.c1min, state.c1max);
   const C2min = Math.min(state.c2min, state.c2max);
@@ -1711,10 +2076,12 @@ function boot(){
   for (const f of FIELDS) state[f.id] = f.def;
   Object.assign(state, PLATE_CTL_DEFAULTS);   // non-numeric plate controls
   Object.assign(state, MECH_CTL_DEFAULTS);    // non-numeric mechanical controls
+  Object.assign(state, RES_CTL_DEFAULTS);     // non-numeric resonator controls
   loadFromHash();
   for (const f of FIELDS) bindField(f);
   bindPlateControls();
   bindMechControls();
+  bindResControls();
   reflectControls();
 
   document.querySelectorAll("button[data-preset]").forEach(b => {
