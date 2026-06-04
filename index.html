@@ -78,6 +78,8 @@
   .ctl-row label.chk{display:inline-flex;gap:6px;align-items:center;color:var(--dim);cursor:pointer;font-size:12px}
   .warn-list{margin-top:10px;font-size:11px;line-height:1.6}
   .warn-list .w{color:var(--warn)}.warn-list .e{color:var(--bad)}.warn-list .note{color:var(--dim)}
+  #mxsec{height:240px}
+  .scale-readout{font-size:10px;color:var(--dim);margin-top:4px}
   @media (max-width:780px){.grid{grid-template-columns:1fr}.charts{grid-template-columns:1fr}.plate-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -189,6 +191,91 @@
   <div class="preset-bar">
     <button data-preset="plate-air">plate · air</button>
     <button data-preset="plate-mica">plate · mica</button>
+  </div>
+</section>
+
+<!-- ============== BLOCK M: ROTOR MECHANICAL CORE ============== -->
+<section class="panel" id="mech-panel" style="margin-bottom:14px">
+  <h2>Rotor mechanical core (quadricone + shaft + void + disc)
+    <span class="tag" id="mech-bind-tag">hub set by —</span></h2>
+
+  <div class="plate-grid">
+    <!-- ---- mechanical inputs ---- -->
+    <div>
+      <div class="row">
+        <label>void ⌀</label>
+        <input type="range" id="mvoid-r"><input type="number" id="mvoid-n">
+        <span class="u mech-len-u">mm</span>
+      </div>
+      <div class="row">
+        <label>bore ⌀</label>
+        <input type="range" id="mdiscvoid-r"><input type="number" id="mdiscvoid-n">
+        <span class="u mech-len-u">mm</span>
+      </div>
+      <div class="row">
+        <label>disc thick</label>
+        <input type="range" id="mdisch-r"><input type="number" id="mdisch-n">
+        <span class="u mech-len-u">mm</span>
+      </div>
+      <div class="row">
+        <label>shaft ⌀</label>
+        <input type="range" id="mshaft-r"><input type="number" id="mshaft-n">
+        <span class="u mech-len-u">mm</span>
+      </div>
+      <div class="row">
+        <label>wall frac</label>
+        <input type="range" id="mwall-r"><input type="number" id="mwall-n">
+        <span class="u">f<sub>w</sub></span>
+      </div>
+      <div class="row">
+        <label>disc ⌀</label>
+        <input type="range" id="mdiscdia-r"><input type="number" id="mdiscdia-n">
+        <span class="u mech-len-u">mm</span>
+      </div>
+      <div class="ctl-row">
+        <span class="lbl">length</span>
+        <span class="seg" id="munit-seg">
+          <button data-munit="mm">mm</button>
+          <button data-munit="in">in</button>
+        </span>
+        <span class="lbl">hub ⌀ is derived (key sizing)</span>
+      </div>
+    </div>
+
+    <!-- ---- derived readouts ---- -->
+    <div>
+      <div class="kv">
+        <span class="k">cone base radius  R<sub>c</sub></span><span class="v" id="mr-cone">—</span>
+        <span class="k">hub ⌀  (= 2·R<sub>c</sub>)</span><span class="v" id="mr-hub">—</span>
+        <span class="k">cone cap depth</span><span class="v" id="mr-cap">—</span>
+        <span class="k">insertion max (per stub)</span><span class="v" id="mr-insert">—</span>
+        <span class="k">key length  (DIN 6885)</span><span class="v" id="mr-key">—</span>
+        <span class="k">keyed length available</span><span class="v" id="mr-keyed">—</span>
+        <span class="k">collar  (R<sub>c</sub> − shaftR)</span><span class="v" id="mr-collar">—</span>
+        <span class="k">clearN  (electrode → neutral)</span><span class="v" id="mr-clearN">—</span>
+        <span class="k">clearEE  (electrode → electrode)</span><span class="v" id="mr-clearEE">—</span>
+        <span class="k">creepEE  (around septum bore)</span><span class="v" id="mr-creep">—</span>
+        <span class="k">void / cap×2 / septum volume</span><span class="v" id="mr-vols">—</span>
+        <span class="k">binding guard</span><span class="v" id="mr-bind">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ctl-row">
+    <span class="lbl">axial cross-section</span>
+    <span class="seg" id="mfit-seg">
+      <button data-mfit="fit">fit</button>
+      <button data-mfit="lock">lock-scale</button>
+    </span>
+    <label class="chk"><input type="checkbox" id="mdims"> dimensions</label>
+    <span class="scale-readout" id="mxsec-scale">—</span>
+  </div>
+  <canvas id="mxsec" width="600" height="240"></canvas>
+
+  <div class="warn-list" id="mech-warn"></div>
+
+  <div class="preset-bar">
+    <button data-preset="rotor-core">rotor-core (15 cm)</button>
   </div>
 </section>
 
@@ -609,6 +696,96 @@ function plateCaps(s){
 }
 
 /* ============================================================
+   BLOCK M — ROTOR MECHANICAL CORE  (independent producer)
+   ------------------------------------------------------------
+   Quadricone body + stub shafts + spherical void + dielectric
+   disc/septum. NEVER writes the c1/c2 rotor fields, NEVER calls
+   solveDoubler4 (brief §6.4) — only its own panel + cross-section.
+   Symbol hygiene per CONVENTIONS.md / brief §1: `d` forbidden;
+   explicit *Dia names; m-prefixed ids; wallFrac (never `t`).
+   Working length unit = mm. [IR — the brief said cm/in, but mm is
+   the realistic base for these component sizes (void 50, disc 1000);
+   correction recorded in CHANGELOG.]
+   ============================================================ */
+
+// [OC] DIN 6885-1 parallel-key standard lengths ladder (mm).
+const DIN6885_LEN = [6,8,10,12,14,16,18,20,22,25,28,32,36,40,45,50,56,63,70,
+                     80,90,100,110,125,140,160,180,200,220,250,280,320,360,400,450,500];
+// [OC] DIN 6885-1 key cross-section by shaft band: [shaft≤, width b, height h, hub depth t₂] (mm).
+const DIN6885_SECT = [
+  [8,2,2,1.0],[10,3,3,1.4],[12,4,4,1.8],[17,5,5,2.3],[22,6,6,2.8],
+  [30,8,7,3.3],[38,10,8,3.3],[44,12,8,3.3],[50,14,9,3.8],[58,16,10,4.3],
+  [65,18,11,4.4],[75,20,12,4.9],[85,22,14,5.4],[95,25,14,5.4],[110,28,16,6.4],
+  [130,32,18,7.4],[150,36,20,8.4],[170,40,22,9.4],[200,45,25,10.4],
+];
+// [OC] equal-strength key length ≈ 1.571·D; practical L ≈ 1.5·D, snapped UP to DIN ladder.
+function keyLenFor(shaftDia){
+  const target = 1.5 * shaftDia;
+  for (const L of DIN6885_LEN) if (L >= target) return L;
+  return DIN6885_LEN[DIN6885_LEN.length-1];
+}
+function keySectionFor(shaftDia){
+  for (const r of DIN6885_SECT) if (shaftDia <= r[0]) return {keyW:r[1], keyH:r[2], keywayHubT:r[3]};
+  const last = DIN6885_SECT[DIN6885_SECT.length-1];
+  return {keyW:last[1], keyH:last[2], keywayHubT:last[3]};
+}
+// mm per Block-M length unit (working base = mm). [IR]
+function mLenMM(unit){ return unit === "in" ? 25.4 : 1; }
+
+// Quadricone core geometry. All lengths returned in mm. [OC geometry]
+function quadriconeCore(s){
+  const u = mLenMM(s.munit || "mm");
+  const voidDia     = (Number(s.mvoid)     || 0) * u, voidR = voidDia/2;
+  const shaftDia    = (Number(s.mshaft)    || 0) * u, shaftR = shaftDia/2;
+  const discH       = (Number(s.mdisch)    || 0) * u;
+  const discVoidDia = (Number(s.mdiscvoid) || 0) * u, discVoidR = discVoidDia/2;
+  const discDia     = (Number(s.mdiscdia)  || 0) * u;
+  const wallFrac    = Number(s.mwall) || 0;
+
+  const keyLen = keyLenFor(shaftDia);                 // DIN-snapped
+  const sect   = keySectionFor(shaftDia);
+
+  // [OC] key sizing sets the hub; 45° ⇒ coneR = hubDia/2.
+  const hubDia    = voidDia + shaftDia + 2*keyLen - discH;
+  const coneR     = hubDia / 2;
+  const capDepth  = voidR - discH/2;                  // per cone; valid discH < voidDia
+  const insertMax = coneR + discH/2 - voidR;          // bore clears the void pole
+  const keyedLen  = insertMax - shaftR;               // collar exists only beyond shaftR
+  const collar    = coneR - shaftR;
+  const clearN    = voidR;                            // electrode → central neutral
+  const clearEE   = 2 * voidR;                        // electrode → electrode (through void)
+  const creepEE   = 2 * (voidR - discVoidR) + discH;  // surface path around the septum bore
+
+  // Volumes (mm³). [OC]
+  const volCones = (2/3) * Math.PI * coneR**3;
+  const volVoid  = (4/3) * Math.PI * voidR**3;
+  const hcap     = Math.max(0, capDepth);
+  const volCap   = Math.PI * hcap*hcap * (3*voidR - hcap) / 3;     // one spherical cap
+  const a        = Math.min(voidR, discH/2);
+  const volBelt  = Math.PI * (voidR*voidR*(2*a) - (2*a**3)/3);     // sphere belt |z|≤discH/2
+  const volBore  = Math.PI * discVoidR*discVoidR * discH;          // bore cylinder
+  const volSeptum = Math.max(0, volBelt - volBore);
+
+  // Hard/soft guards (§3); margin ≥ 0 ⇒ ok. [OC]
+  const guards = [
+    {name:"collar (shaftDia ≤ R_c)",              margin: coneR - shaftDia,                          hard:true},
+    {name:"void seat (shaftDia ≤ 2·insertMax)",   margin: 2*insertMax - shaftDia,                    hard:true},
+    {name:"wall (voidR ≤ (R_c/√2)(1−f_w))",       margin: (coneR/Math.SQRT2)*(1-wallFrac) - voidR,   hard:true},
+    {name:"key fit (keyedLen ≥ keyLen)",          margin: keyedLen - keyLen,                         hard:true},
+    {name:"keyway collar (R_c−shaftR−t₂ ≥ shaftR)", margin: coneR - shaftR - sect.keywayHubT - shaftR, hard:false},
+  ];
+  let bind = guards[0];
+  for (const g of guards) if (g.hard && g.margin < bind.margin) bind = g;
+  const hardFail = guards.some(g => g.hard && g.margin < 0);
+
+  return {voidDia, voidR, shaftDia, shaftR, discH, discVoidDia, discVoidR, discDia, wallFrac,
+          keyLen, sect, hubDia, coneR, capDepth, insertMax, keyedLen, collar,
+          clearN, clearEE, creepEE,
+          volCones, volVoid, volCap, volBelt, volBore, volSeptum,
+          guards, bind, hardFail};
+}
+
+/* ============================================================
    SELF-TEST
    ============================================================ */
 const VERIFY = [
@@ -653,7 +830,22 @@ function runSelfTest(){
                   pass:Math.abs(gotC - expC) <= 0.5});
   const plateOk = plateRows.every(r => r.pass);
 
-  return {ok: allOk && symOk && plateOk, rows, symOk, symA:a, symB:b, plateRows};
+  // --- Block M mechanical-core self-tests (brief §6.6) ---
+  // (a) hubDia: voidDia=50, shaftDia=35, discH=0 → keyLen=56 → hubDia=197.
+  const hubT = quadriconeCore({mvoid:50, mshaft:35, mdisch:0, mdiscvoid:0, mdiscdia:1000, mwall:0, munit:"mm"}).hubDia;
+  plateRows.push({label:"M: hubDia  (void50, shaft35, discH0)",
+                  expected:197, got:hubT, dp:1, tol:1, pass:Math.abs(hubT-197)<=1});
+  // (b) void-partition identity: 2·cap + belt = sphere (bore = 0). [degenerate]
+  const cT = quadriconeCore({mvoid:50, mshaft:20, mdisch:20, mdiscvoid:0, mdiscdia:1000, mwall:0, munit:"mm"});
+  const partLHS = 2*cT.volCap + cT.volBelt, partRHS = cT.volVoid;
+  plateRows.push({label:"M: void partition  (2·cap + belt = sphere)",
+                  expected:partRHS, got:partLHS, dp:1, tol:1, pass:Math.abs(partLHS-partRHS)<=1});
+  // (c) DIN key length: keyLenFor(35) = 56.
+  plateRows.push({label:"M: keyLenFor(35) → DIN 56",
+                  expected:56, got:keyLenFor(35), dp:0, tol:0, pass:keyLenFor(35)===56});
+  const plateAll = plateRows.every(r => r.pass);
+
+  return {ok: allOk && symOk && plateAll, rows, symOk, symA:a, symB:b, plateRows};
 }
 
 /* ============================================================
@@ -676,9 +868,18 @@ const FIELDS = [
   {id:"ptempc",  def:20,   min:-40,  max:60,   step:0.5},
   {id:"ppatm",   def:1013, min:300,  max:1100, step:1},
   {id:"prh",     def:50,   min:0,    max:100,  step:1},
+  // --- Block M rotor mechanical core (m-prefix; mm; hubDia is derived) ---
+  {id:"mvoid",     def:50,   min:5,   max:200,  step:1},
+  {id:"mdiscvoid", def:25,   min:0,   max:100,  step:1},
+  {id:"mdisch",    def:25,   min:0,   max:200,  step:1},
+  {id:"mshaft",    def:35,   min:3,   max:100,  step:1},
+  {id:"mwall",     def:0.1,  min:0,   max:0.9,  step:0.01},
+  {id:"mdiscdia",  def:1000, min:50,  max:2000, step:1},
 ];
 // Non-numeric plate controls (serialised into the hash manually). [task §7.2]
 const PLATE_CTL_DEFAULTS = {pdiel:"air", pring:true, plink:true, psrc:"manual", punit:"cm"};
+// Non-numeric mechanical-core controls (hash-serialised manually).
+const MECH_CTL_DEFAULTS = {munit:"mm", mfit:"fit", mdims:false};
 // Rotor-cap field max in plate vs manual mode. [IR §6.5 — raise-max policy:
 // realistic plate caps can exceed the manual 3000 pF range, so in plate mode
 // we widen c1*/c2* max to 10000 pF; values beyond that clamp + warn.]
@@ -719,6 +920,9 @@ function loadFromHash(){
   if (p.has("punit")) state.punit = p.get("punit") === "in" ? "in" : "cm";
   if (p.has("pring")) state.pring = p.get("pring") === "1";
   if (p.has("plink")) state.plink = p.get("plink") === "1";
+  if (p.has("munit")) state.munit = p.get("munit") === "in" ? "in" : "mm";
+  if (p.has("mfit"))  state.mfit  = p.get("mfit") === "lock" ? "lock" : "fit";
+  if (p.has("mdims")) state.mdims = p.get("mdims") === "1";
 }
 function writeHash(){
   const p = new URLSearchParams();
@@ -728,6 +932,9 @@ function writeHash(){
   p.set("punit", state.punit);
   p.set("pring", state.pring ? 1 : 0);
   p.set("plink", state.plink ? 1 : 0);
+  p.set("munit", state.munit);
+  p.set("mfit",  state.mfit);
+  p.set("mdims", state.mdims ? 1 : 0);
   history.replaceState(null, "", "#" + p.toString());
 }
 
@@ -743,6 +950,9 @@ const PRESETS = {
                  ptempc:20, ppatm:1013, prh:50},
   "plate-mica": {psrc:"plate", pdiel:"mica", punit:"cm", pring:true, plink:true,
                  pnsec:24, pdia:8,  prouter:4,   prinner:1.5, pgap:0.1},
+  // Block M worked 15 cm-class example (hubDia = 150 mm). Leaves the
+  // electrical / C-I fields untouched. [§6.7]
+  "rotor-core": {munit:"mm", mvoid:50, mdiscvoid:25, mdisch:5, mshaft:25, mwall:0.1, mdiscdia:1000},
 };
 function applyPreset(name){
   const p = PRESETS[name]; if (!p) return;
@@ -809,6 +1019,13 @@ function reflectControls(){
   const plate = state.psrc === "plate";
   setRotorFieldMax(plate ? ROTOR_MAX_PLATE : ROTOR_MAX_MANUAL);
   setRotorInputsDisabled(plate);
+  // --- Block M controls ---
+  document.querySelectorAll("#munit-seg button").forEach(b =>
+    b.classList.toggle("active", b.dataset.munit === state.munit));
+  document.querySelectorAll("#mfit-seg button").forEach(b =>
+    b.classList.toggle("active", b.dataset.mfit === state.mfit));
+  document.querySelectorAll(".mech-len-u").forEach(u => u.textContent = state.munit);
+  $("mdims").checked = !!state.mdims;
 }
 
 function bindPlateControls(){
@@ -885,6 +1102,222 @@ function updatePlate(){
   }
 }
 
+/* ---- Block M: mechanical-core controls, readouts, cross-section ---- */
+
+function bindMechControls(){
+  document.querySelectorAll("#munit-seg button").forEach(b => b.addEventListener("click", () => {
+    state.munit = b.dataset.munit;
+    document.querySelectorAll("#munit-seg button").forEach(x => x.classList.toggle("active", x === b));
+    document.querySelectorAll(".mech-len-u").forEach(u => u.textContent = state.munit);
+    scheduleRecompute();
+  }));
+  document.querySelectorAll("#mfit-seg button").forEach(b => b.addEventListener("click", () => {
+    state.mfit = b.dataset.mfit;
+    mLockScale = null;                       // re-capture on next draw if locking
+    document.querySelectorAll("#mfit-seg button").forEach(x => x.classList.toggle("active", x === b));
+    scheduleRecompute();
+  }));
+  $("mdims").addEventListener("change", e => { state.mdims = e.target.checked; scheduleRecompute(); });
+}
+
+// Format a length (mm internally) into the display unit. [IR]
+function mLen(mm, dp){
+  const u = state.munit === "in" ? 25.4 : 1;
+  return fmt(mm / u, dp ?? 1) + " " + state.munit;
+}
+
+// Render the Block-M readouts + warnings (no solver interaction). §5/§6.5
+function updateMech(){
+  const core = quadriconeCore(state);
+  $("mr-cone").textContent   = mLen(core.coneR);
+  $("mr-hub").textContent    = mLen(core.hubDia);
+  $("mr-cap").textContent    = mLen(core.capDepth);
+  $("mr-insert").textContent = mLen(core.insertMax);
+  $("mr-key").textContent    = mLen(core.keyLen) + "  (b" + core.sect.keyW + "×h" + core.sect.keyH + ")";
+  $("mr-keyed").textContent  = mLen(core.keyedLen);
+  $("mr-collar").textContent = mLen(core.collar);
+  $("mr-clearN").textContent = mLen(core.clearN);
+  $("mr-clearEE").textContent= mLen(core.clearEE);
+  $("mr-creep").textContent  = mLen(core.creepEE);
+  const cm3 = v => (v / 1000).toFixed(1);                 // mm³ → cm³
+  $("mr-vols").textContent   = cm3(core.volVoid) + " / " + cm3(2*core.volCap) + " / " + cm3(core.volSeptum) + " cm³";
+  $("mr-bind").textContent   = core.bind.name + "  (margin " + mLen(core.bind.margin) + ")";
+  $("mr-bind").className      = "v" + (core.bind.margin < 0 ? " fail" : "");
+  $("mech-bind-tag").textContent = "hub set by " + core.bind.name.split(" (")[0];
+
+  // --- warnings ---
+  const W = [];
+  for (const g of core.guards){
+    if (g.margin < 0) W.push([g.hard ? "e" : "w", (g.hard ? "HARD guard tripped: " : "guard: ") + g.name + " — margin " + mLen(g.margin) + "."]);
+  }
+  if (core.discH >= core.voidDia)
+    W.push(["e", "disc thickness ≥ void ⌀ — spherical caps vanish (sphere fully inside the disc)."]);
+  else if (core.capDepth <= 0)
+    W.push(["e", "cap depth ≤ 0 — no cone cavity."]);
+  if (core.voidDia <= core.discVoidDia && core.discVoidDia > 0)
+    W.push(["w", "bore ⌀ ≥ void ⌀ — the central bore is wider than the void it passes through."]);
+  // §4 coupling vs the C-I plate (warn-only; panels are not hard-linked).
+  const ciU = state.punit === "in" ? 25.4 : 10;          // C-I diameters are cm/in
+  const plateDia_mm = (Number(state.pdia) || 0) * ciU;
+  if (plateDia_mm > 0){
+    if (plateDia_mm > core.discDia)
+      W.push(["w", "C-I electrode ⌀ (" + mLen(plateDia_mm,0) + ") overhangs the structural disc ⌀ (" + mLen(core.discDia,0) + ")."]);
+    if (core.hubDia >= plateDia_mm)
+      W.push(["w", "hub ⌀ (" + mLen(core.hubDia,0) + ") ≥ C-I electrode ⌀ (" + mLen(plateDia_mm,0) + ") — no annulus [hubDia, plateDia] for the sectored electrode."]);
+    W.push(["note", "coupling is warn-only: the C-I electrode should ring the hub (inner edge ≈ hubDia = " + mLen(core.hubDia,0) + "); C-I models its area from the centre (open fork §7.1)."]);
+  }
+  $("mech-warn").innerHTML = W.map(([c,m]) =>
+    '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
+
+  return core;
+}
+
+// --- live axial cross-section (§5.1) ---
+let mLockScale = null;
+function drawCrossSection(){
+  const c = $("mxsec");
+  const {ctx, w, h} = clearCanvas(c);
+  const core = quadriconeCore(state);
+  const css = getComputedStyle(document.documentElement);
+  const COL = n => css.getPropertyValue(n).trim();
+
+  const coneR = core.coneR, voidR = core.voidR, discH = core.discH;
+  const shaftR = core.shaftR, discR = core.discDia/2, hubR = core.hubDia/2;
+  const discVoidR = core.discVoidR;
+  // electrode outer from the C-I plate (mm) else the disc edge.
+  const ciU = state.punit === "in" ? 25.4 : 10;
+  let plateR = (Number(state.pdia) || 0) * ciU / 2;
+  if (!(plateR > 0)) plateR = discR;
+
+  if (!(coneR > 0)){                                       // degenerate — nothing sane to draw
+    ctx.fillStyle = COL("--bad"); ctx.font = "12px ui-monospace,monospace";
+    ctx.textAlign = "center"; ctx.fillText("geometry collapsed (hub ⌀ ≤ 0)", w/2, h/2);
+    $("mxsec-scale").textContent = "—";
+    return;
+  }
+
+  const stubOut = Math.max(coneR*0.45, shaftR*1.6);
+  const apexZ   = coneR + discH/2;
+  const totalH  = 2*(apexZ + stubOut);
+  const margin  = 24;
+  let scale = Math.min((w-2*margin)/(2*discR), (h-2*margin)/totalH);
+  if (state.mfit === "lock"){ if (mLockScale == null) mLockScale = scale; scale = mLockScale; }
+  else mLockScale = null;
+
+  const cx = w/2, cy = h/2;
+  const X = x => cx + x*scale;        // signed radius → screen x
+  const Z = z => cy - z*scale;        // axial z (up) → screen y
+
+  // Fill a circular region of the void (radius voidR) clipped to z∈[zLo,zHi].
+  const fillVoidBand = (zLo, zHi, fill, n=44) => {
+    ctx.beginPath();
+    for (let i=0;i<=n;i++){ const z=zLo+(zHi-zLo)*i/n; const x=Math.sqrt(Math.max(0,voidR*voidR-z*z)); ctx.lineTo(X(x),Z(z)); }
+    for (let i=n;i>=0;i--){ const z=zLo+(zHi-zLo)*i/n; const x=Math.sqrt(Math.max(0,voidR*voidR-z*z)); ctx.lineTo(X(-x),Z(z)); }
+    ctx.closePath(); ctx.fillStyle=fill; ctx.fill();
+  };
+  const rect = (x0,x1,z0,z1,fill,stroke) => {
+    ctx.beginPath(); ctx.rect(X(x0), Z(z1), (x1-x0)*scale, (z1-z0)*scale);
+    if (fill){ ctx.fillStyle=fill; ctx.fill(); }
+    if (stroke){ ctx.strokeStyle=stroke; ctx.lineWidth=1; ctx.stroke(); }
+  };
+
+  const wallFail = core.guards.find(g=>g.name.startsWith("wall")).margin < 0;
+  const shaftFail = core.hardFail && !wallFail;            // collar/seat/key colour the shaft
+  const capGone  = core.capDepth <= 0;
+
+  // 1) cone profiles (metal body) — upper & lower triangles.
+  ctx.strokeStyle = COL("--dim"); ctx.lineWidth = 1.2; ctx.fillStyle = COL("--panel2");
+  for (const sgn of [1,-1]){
+    ctx.beginPath();
+    ctx.moveTo(X(-coneR), Z(sgn*discH/2));
+    ctx.lineTo(X( coneR), Z(sgn*discH/2));
+    ctx.lineTo(X(0),      Z(sgn*apexZ));
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+  }
+
+  // 2) dielectric disc.
+  rect(-discR, discR, -discH/2, discH/2, COL("--panel"), COL("--line"));
+
+  // 3) septum belt (void equator filled with dielectric) then bore + caps carved.
+  if (discH > 0) fillVoidBand(-discH/2, discH/2, COL("--line"));         // septum
+  if (!capGone){
+    fillVoidBand( discH/2,  voidR, COL("--bg"));                          // upper cap cavity
+    fillVoidBand(-voidR,  -discH/2, COL("--bg"));                         // lower cap cavity
+  }
+  if (discVoidR > 0) rect(-discVoidR, discVoidR, -discH/2, discH/2, COL("--bg"));  // bore
+
+  // 4) void outline (sphere guide).
+  ctx.strokeStyle = capGone || wallFail ? COL("--bad") : COL("--dim");
+  ctx.lineWidth = 1; ctx.setLineDash([2,3]); ctx.beginPath();
+  for (let i=0;i<=64;i++){ const a=2*Math.PI*i/64; const px=X(voidR*Math.cos(a)), py=Z(voidR*Math.sin(a)); i?ctx.lineTo(px,py):ctx.moveTo(px,py); }
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // 5) sectored electrodes (bands on both faces over [hubR, plateR]), hatched.
+  // Skip if the annulus is inverted (plateR ≤ hubR) — the coupling warning covers it.
+  const eT = Math.max(2.5, 3*scale);                       // visual electrode thickness px
+  ctx.fillStyle = COL("--acc"); ctx.strokeStyle = COL("--acc");
+  if (plateR > hubR) for (const sgn of [1,-1]) for (const side of [1,-1]){
+    const x0 = side>0 ? hubR : -plateR, x1 = side>0 ? plateR : -hubR;
+    const zc = sgn*discH/2;
+    const yTop = Z(zc) - (sgn>0 ? eT : 0);
+    ctx.fillRect(X(x0), yTop, (x1-x0)*scale, eT);
+    // hatch to denote "sectored"
+    ctx.save(); ctx.beginPath(); ctx.rect(X(x0), yTop, (x1-x0)*scale, eT); ctx.clip();
+    ctx.strokeStyle = COL("--bg"); ctx.lineWidth = 0.8;
+    for (let xx = X(x0); xx < X(x1); xx += 5){ ctx.beginPath(); ctx.moveTo(xx, yTop); ctx.lineTo(xx-eT, yTop+eT); ctx.stroke(); }
+    ctx.restore();
+  }
+
+  // 6) shaft stubs (bore depth insertMax inward + protrusion outward) with keyway.
+  const shaftCol = shaftFail ? COL("--bad") : COL("--dim");
+  for (const sgn of [1,-1]){
+    const zIn  = sgn>0 ? apexZ - core.insertMax : -(apexZ - core.insertMax);
+    const zOut = sgn>0 ? apexZ + stubOut       : -(apexZ + stubOut);
+    rect(-shaftR, shaftR, Math.min(zIn,zOut), Math.max(zIn,zOut), shaftCol, COL("--ink"));
+    // keyway notch on +x flank, within the keyed length.
+    const kw = Math.max(1.5, core.sect.keyW*scale);
+    const kzc = sgn>0 ? apexZ - core.insertMax + core.keyLen/2 : -(apexZ - core.insertMax + core.keyLen/2);
+    ctx.fillStyle = COL("--bg");
+    ctx.fillRect(X(shaftR)-kw, Z(kzc)-Math.max(2,core.keyLen*scale/2), kw, Math.max(4,core.keyLen*scale));
+  }
+
+  // 7) central neutral marker.
+  ctx.strokeStyle = COL("--edge"); ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(X(0),Z(0),3,0,2*Math.PI); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(X(0)-6,Z(0)); ctx.lineTo(X(0)+6,Z(0)); ctx.moveTo(X(0),Z(0)-6); ctx.lineTo(X(0),Z(0)+6); ctx.stroke();
+
+  // 8) dimension annotations (toggle).
+  if (state.mdims){
+    ctx.fillStyle = COL("--dim"); ctx.font = "10px ui-monospace,monospace";
+    ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+    const dimH = (z, label) => { ctx.strokeStyle=COL("--line"); ctx.setLineDash([2,2]);
+      ctx.beginPath(); ctx.moveTo(X(-coneR),Z(z)); ctx.lineTo(X(coneR),Z(z)); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillText(label, cx, Z(z)-2); };
+    ctx.fillText("disc ⌀ " + mLen(core.discDia,0), cx, h-margin+12);
+    ctx.fillText("hub ⌀ " + mLen(core.hubDia,0), cx, Z(0)+14);
+    dimH(apexZ, "coneR " + mLen(core.coneR,0));
+    ctx.fillText("void ⌀ " + mLen(core.voidDia,0), cx, Z(voidR)-4);
+  }
+
+  // 9) scale bar (bottom-left) + px/mm readout.
+  const barMM = niceBar(80/scale);                          // ~80 px target
+  const barPx = barMM*scale;
+  const bx = margin, by = h - 12;
+  ctx.strokeStyle = COL("--ink"); ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx+barPx,by);
+  ctx.moveTo(bx,by-3); ctx.lineTo(bx,by+3); ctx.moveTo(bx+barPx,by-3); ctx.lineTo(bx+barPx,by+3); ctx.stroke();
+  ctx.fillStyle = COL("--dim"); ctx.font="10px ui-monospace,monospace"; ctx.textAlign="left";
+  ctx.fillText(mLen(barMM,barMM<10?1:0), bx, by-5);
+  $("mxsec-scale").textContent = "scale " + (state.mfit==="lock"?"(locked) ":"") + scale.toFixed(3) + " px/mm";
+}
+
+// Round to a 1/2/5 × 10ⁿ "nice" number for the scale bar.
+function niceBar(v){
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  const f = v/p;
+  return (f<1.5?1:f<3.5?2:f<7.5?5:10)*p;
+}
+
 function zNow(){
   // Ensure min ≤ max.
   const C1min = Math.min(state.c1min, state.c1max);
@@ -946,6 +1379,8 @@ function scheduleRecompute(){
 function recompute(){
   // [§6.4] Producer pre-step: geometry → rotor caps (plate mode only).
   updatePlate();
+  // Block M is an independent producer — readouts only, no solver coupling.
+  updateMech();
   const C1min = Math.min(state.c1min, state.c1max);
   const C1max = Math.max(state.c1min, state.c1max);
   const C2min = Math.min(state.c2min, state.c2max);
@@ -1067,7 +1502,7 @@ function drawAxes(ctx, w, h, xLabel, yLabel, xs, ys){
   return {X, Y};
 }
 
-function drawCharts(){ drawChartR(); drawChartC(); }
+function drawCharts(){ drawChartR(); drawChartC(); drawCrossSection(); }
 
 function drawChartR(){
   const c = $("chart-r");
@@ -1196,9 +1631,11 @@ function boot(){
 
   for (const f of FIELDS) state[f.id] = f.def;
   Object.assign(state, PLATE_CTL_DEFAULTS);   // non-numeric plate controls
+  Object.assign(state, MECH_CTL_DEFAULTS);    // non-numeric mechanical controls
   loadFromHash();
   for (const f of FIELDS) bindField(f);
   bindPlateControls();
+  bindMechControls();
   reflectControls();
 
   document.querySelectorAll("button[data-preset]").forEach(b => {
