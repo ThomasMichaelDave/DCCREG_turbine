@@ -10,6 +10,8 @@
     --ink:#cfe2f3; --dim:#7c8ea0; --acc:#7cd0ff;
     --good:#5fe07a; --warn:#ffd06b; --bad:#ff7a7a; --edge:#c0a8ff;
     --copper:#d08a4e; --steel:#9aa7b4; --diel:#b59a5e;
+    /* Block D — distributed-electromagnet motor */
+    --cem-coil:#d6953f; --cem-core:#7f8b98; --cem-a:#c0a8ff; --cem-b:#7cd0ff;
     --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box}
@@ -80,6 +82,7 @@
   .warn-list{margin-top:10px;font-size:11px;line-height:1.6}
   .warn-list .w{color:var(--warn)}.warn-list .e{color:var(--bad)}.warn-list .note{color:var(--dim)}
   #mxsec{height:240px}
+  #dtop{height:340px}
   .scale-readout{font-size:10px;color:var(--dim);margin-top:4px}
   .sw2{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle;border:1px solid var(--line)}
   .xsec-legend{display:none;flex-wrap:wrap;gap:4px 14px;font-size:10.5px;color:var(--dim);margin-top:8px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:4px}
@@ -389,6 +392,125 @@
 
   <div class="preset-bar">
     <button data-preset="resonator">resonator (capillary)</button>
+  </div>
+</section>
+
+<!-- ============== BLOCK D: DISTRIBUTED ELECTROMAGNETS (reluctance spin-up motor) ============== -->
+<section class="panel" id="dem-panel" style="margin-bottom:14px">
+  <h2>Distributed electromagnets — reluctance spin-up motor (12 C-EMs, 2 groups)
+    <span class="tag" id="dem-regime-tag">—</span></h2>
+
+  <div class="plate-grid">
+    <!-- ---- drive + cap + coil inputs ---- -->
+    <div>
+      <div class="ctl-row">
+        <span class="lbl">drive</span>
+        <span class="seg" id="ddrive-seg">
+          <button data-ddrive="altStroke">alt-stroke (PRF/2)</button>
+          <button data-ddrive="perStroke">per-stroke (PRF)</button>
+        </span>
+      </div>
+      <div class="row">
+        <label>design RPM</label>
+        <input type="range" id="demRpm-r"><input type="number" id="demRpm-n">
+        <span class="u">rpm</span>
+      </div>
+      <div class="row">
+        <label>events/rev</label>
+        <input type="range" id="demEventsPerRev-r"><input type="number" id="demEventsPerRev-n">
+        <span class="u">#</span>
+      </div>
+      <div class="row">
+        <label>cap C_block</label>
+        <input type="range" id="demCapBlockNF-r"><input type="number" id="demCapBlockNF-n">
+        <span class="u">nF</span>
+      </div>
+      <div class="row">
+        <label>cap rating</label>
+        <input type="range" id="demCapRatingKV-r"><input type="number" id="demCapRatingKV-n">
+        <span class="u">kV</span>
+      </div>
+      <div class="row">
+        <label>DC bias</label>
+        <input type="range" id="demBiasKV-r"><input type="number" id="demBiasKV-n">
+        <span class="u">kV</span>
+      </div>
+      <div class="row">
+        <label>AC ripple</label>
+        <input type="range" id="demRippleV-r"><input type="number" id="demRippleV-n">
+        <span class="u">V</span>
+      </div>
+      <div class="ctl-row">
+        <span class="lbl">cap topology</span>
+        <span class="seg" id="dtopo-seg">
+          <button data-dtopo="perCoil">per-coil ×12</button>
+          <button data-dtopo="perGroup">per-group ×2</button>
+        </span>
+      </div>
+    </div>
+
+    <!-- ---- core / winding inputs + readouts ---- -->
+    <div>
+      <div class="row">
+        <label>pole area A</label>
+        <input type="range" id="demPoleAreaCm2-r"><input type="number" id="demPoleAreaCm2-n">
+        <span class="u">cm²</span>
+      </div>
+      <div class="row">
+        <label>clearance</label>
+        <input type="range" id="demClearanceMm-r"><input type="number" id="demClearanceMm-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>gaps n</label>
+        <input type="range" id="demNGaps-r"><input type="number" id="demNGaps-n">
+        <span class="u">#</span>
+      </div>
+      <div class="row">
+        <label>wire AWG</label>
+        <input type="range" id="demWireAWG-r"><input type="number" id="demWireAWG-n">
+        <span class="u">#</span>
+      </div>
+      <div class="row">
+        <label>turn length</label>
+        <input type="range" id="demTurnLenCm-r"><input type="number" id="demTurnLenCm-n">
+        <span class="u">cm</span>
+      </div>
+
+      <div class="kv">
+        <span class="k">PRF · f_drive</span><span class="v" id="dr-freq">—</span>
+        <span class="k">resonant L_coil · Z₀</span><span class="v" id="dr-lz">—</span>
+        <span class="k">turns N · wire length</span><span class="v" id="dr-turns">—</span>
+        <span class="k">R_coil · Q</span><span class="v" id="dr-rq">—</span>
+        <span class="k">ripple ceiling · now</span><span class="v" id="dr-ripple">—</span>
+        <span class="k">I_circ,max · <b>N·I</b> (limit)</span><span class="v" id="dr-ni">—</span>
+        <span class="k">V_cap,peak  (≤ rating)</span><span class="v" id="dr-vcap">—</span>
+        <span class="k">energy / cap · total (×<span id="dr-ncaps">12</span>)</span><span class="v" id="dr-energy">—</span>
+        <span class="k">cap per group  (6·C_block)</span><span class="v" id="dr-pergroup">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-list" id="dem-warn"></div>
+
+  <div class="ctl-row">
+    <span class="lbl">axial top-view projection</span>
+    <label class="chk"><input type="checkbox" id="dlabels"> labels (angle · polarity)</label>
+    <span class="scale-readout" id="dtop-note">sectors · 6 rotor poles · 12 C-EMs @ C3⁺ instant</span>
+  </div>
+  <canvas id="dtop" width="600" height="340"></canvas>
+  <div class="xsec-legend on" id="dem-legend">
+    <span class="it"><span class="sw2" style="background:var(--cem-core)"></span>C-EM core (laminated steel)</span>
+    <span class="it"><span class="sw2" style="background:var(--cem-coil)"></span>C-EM winding (copper)</span>
+    <span class="it"><span class="sw2" style="background:var(--cem-a)"></span>group A → cap C3 (odd)</span>
+    <span class="it"><span class="sw2" style="background:var(--cem-b)"></span>group B → cap C4 (even)</span>
+    <span class="it"><span class="sw2" style="background:var(--bad)"></span>pole N  ·  <span class="sw2" style="background:var(--good)"></span>pole S  (@ C3⁺)</span>
+    <span class="it"><span class="sw2" style="background:var(--steel)"></span>rotor iron poles (6)</span>
+    <span class="it"><span class="sw2" style="background:var(--acc)"></span>sectored electrode (kept)</span>
+  </div>
+
+  <div class="preset-bar">
+    <button data-preset="spin-up">spin-up (3000 rpm)</button>
   </div>
 </section>
 
@@ -1069,6 +1191,104 @@ function resonatorCore(s){
 }
 
 /* ============================================================
+   BLOCK D — DISTRIBUTED ELECTROMAGNETS  (reluctance spin-up motor)
+   ------------------------------------------------------------
+   12 stator C-shaped electromagnets in two interleaved groups of
+   6: odd positions → group A on transfer cap C3, even → group B on
+   C4. The two transfer caps swing ANTIPHASE (push-pull), so the
+   uniform-wound ring reads N-S-N-S at the C3⁺ stroke (brief §2).
+   A series resonant DC-block cap (default 440 nF / 20 kV) blocks the
+   kV DC bias, passes the low-frequency stepping drive at minimum
+   impedance, and stays a high-Z spectator at the central f0 tank.
+   PARALLEL PRODUCER — never writes the rotor caps, never calls
+   solveDoubler4 (cf. Blocks M and R). Reuses MU0, RHO_CU, awgToCond.
+   Symbol hygiene: `d` forbidden; `dem*` prefix; cap = C, voltage = V.
+   ============================================================ */
+const N_CEM = 12;   // [IR] 12 stator electromagnets (two groups of 6)
+
+// [OC] the 12-pole polarization map (§2): uniform winding, group set by
+// parity, polarity at the C3⁺ stroke. Pure function of the index — the
+// N-S-N-S alternation is a *consequence* of the antiphase A/B grouping.
+function demPolarityMap(){
+  const rows = [];
+  for (let i = 1; i <= N_CEM; i++){
+    const group = (i % 2 === 1) ? "A" : "B";              // odd → A (C3), even → B (C4)
+    const cap   = group === "A" ? "C3" : "C4";
+    const polC3 = group === "A" ? "N" : "S";              // ring = N S N S … at C3⁺
+    rows.push({i, angle:(i-1)*360/N_CEM, group, cap, polC3, polC4:(polC3 === "N" ? "S" : "N")});
+  }
+  return rows;
+}
+
+// Q / turns / voltage budget (brief §4). All SI internally; the closed-form
+// ampere-turn limit N·I = (V_rating−V_bias)·√(C·l_gap/(μ0·A)) is the key
+// result — independent of frequency and turns (§4.3). [OC]
+function demMotor(s){
+  const C       = (Number(s.demCapBlockNF)  || 0) * 1e-9;     // F
+  const Vrating = (Number(s.demCapRatingKV) || 0) * 1e3;      // V
+  const Vbias   = (Number(s.demBiasKV)      || 0) * 1e3;      // V
+  const Vripple =  Number(s.demRippleV)     || 0;             // V
+  const Agap    = (Number(s.demPoleAreaCm2) || 0) * 1e-4;     // m²  (pole-face area A_gap)
+  const nGaps   = Math.max(1, Math.round(Number(s.demNGaps) || 1));
+  const lgap    = nGaps * (Number(s.demClearanceMm) || 0) * 1e-3;  // m  (total air gap)
+  const lturn   = (Number(s.demTurnLenCm)   || 0) * 1e-2;     // m  (mean length per turn)
+  const awg     =  Number(s.demWireAWG)     || 30;
+
+  // --- drive frequency: pin it first (§4.4) ---
+  // PRF = events/rev · rpm / 60. Each group fires on alternate strokes
+  // (push-pull) ⇒ coil current runs at PRF/2; per-stroke commutation ⇒ PRF.
+  const prf    = (Number(s.demEventsPerRev) || 0) * (Number(s.demRpm) || 0) / 60;
+  const fdrive = s.demDriveMode === "perStroke" ? prf : prf / 2;   // altStroke default
+
+  // --- resonant L, characteristic impedance, turns (§4.2) [OC] ---
+  const w  = 2 * Math.PI * fdrive;
+  const L  = (w > 0 && C > 0) ? 1 / (w*w*C) : 0;             // coil resonates with C_block
+  const Z0 = (L > 0 && C > 0) ? Math.sqrt(L / C) : 0;        // = 1/(2π·f·C) at resonance
+  const turns = (L > 0 && Agap > 0) ? Math.sqrt(L * lgap / (MU0 * Agap)) : 0;
+
+  // --- coil resistance and quality factor ---
+  const cond   = awgToCond(awg);
+  const length = turns * lturn;                             // m of wire
+  const Rcoil  = cond.condArea > 0 ? RHO_CU * length / cond.condArea : Infinity;
+  const Q      = (Rcoil > 0 && isFinite(Rcoil)) ? Z0 / Rcoil : 0;
+
+  // --- voltage budget (§4.2/§4.3) — the cap rating is the BINDING limit ---
+  const headroom  = Vrating - Vbias;                        // AC headroom
+  const rippleMax = Q > 0 ? headroom / Q : Infinity;        // ripple ceiling before rating
+  const Icirc     = Z0 > 0 ? headroom / Z0 : 0;             // max circulating current
+  const NI        = headroom * Math.sqrt(C * lgap / (MU0 * Agap));  // closed-form ampere-turns
+  const VcapPeak  = Vbias + Q * Vripple;                    // actual peak cap voltage
+
+  // --- per-coil vs per-group caps (§5): same total stored energy either way ---
+  const perGroup     = s.demCapTopology === "perGroup";
+  const capComponent = perGroup ? 6 * C : C;               // F per physical cap
+  const nCaps        = perGroup ? 2 : N_CEM;
+  const energyPerCap = 0.5 * capComponent * Vrating * Vrating;   // ½·C·V²
+  const energyTotal  = nCaps * energyPerCap;                // lethal kJ-class store
+  const capPerGroup  = 6 * C;                               // F (always reported)
+
+  // --- warnings (§6) ---
+  const warns = [];
+  const overV = VcapPeak > Vrating;
+  if (fdrive <= 0)
+    warns.push(["e", "drive frequency = 0 (rpm or events/rev is zero) — coil cannot be resonated."]);
+  if (Vbias >= Vrating)
+    warns.push(["e", "DC bias ≥ cap rating — no AC headroom; the motor produces no torque."]);
+  if (overV)
+    warns.push(["e", "V_cap,peak " + (VcapPeak/1e3).toFixed(2) + " kV > rating " + (Vrating/1e3).toFixed(0) + " kV — reduce ripple/bias/Q or detune."]);
+  if (Vripple > rippleMax && isFinite(rippleMax) && Vbias < Vrating)
+    warns.push(["w", "ripple " + Vripple.toFixed(0) + " V exceeds the ceiling " + rippleMax.toFixed(0) + " V — the resonant swing reaches the cap rating."]);
+  warns.push(["note", "transfer caps C3/C4 MUST swing antiphase (push-pull) — the N-S-N-S map and every bit of torque rest on it (§2)."]);
+  warns.push(["note", "stored energy ≈ " + energyTotal.toFixed(0) + " J across " + nCaps + " caps on the spinning stator — lethal HV; drives the per-coil vs per-group choice (§5)."]);
+
+  return {prf, fdrive, L, Z0, turns, Rcoil, Q, length, cond,
+          headroom, rippleMax, Icirc, NI, VcapPeak, overV,
+          C, Vrating, Vbias, Vripple, Agap, lgap, nGaps,
+          perGroup, capComponent, nCaps, energyPerCap, energyTotal, capPerGroup,
+          map: demPolarityMap(), warns};
+}
+
+/* ============================================================
    SELF-TEST
    ============================================================ */
 const VERIFY = [
@@ -1148,6 +1368,46 @@ function runSelfTest(){
                   pass:Math.abs(awgToCond(20).condOD*1e3-0.812)<=0.005});
   plateRows.push({label:"R: prf(N12, 3000 rpm) = 300 Hz", expected:300, got:RC.prf, dp:0, tol:0, pass:RC.prf===300});
 
+  // --- Block D distributed-electromagnet self-tests (brief §7) ---
+  const DST = {demRpm:3000, demEventsPerRev:6, demDriveMode:"altStroke", demCapBlockNF:440,
+               demCapRatingKV:20, demCapTopology:"perCoil", demBiasKV:12, demRippleV:250,
+               demPoleAreaCm2:4, demClearanceMm:1, demNGaps:2, demWireAWG:30, demTurnLenCm:12};
+  const DM = demMotor(DST);
+  // 1. resonance round-trip: the returned L reproduces 1/((2π·f)²·C).
+  const D_Lrt = 1 / ((2*Math.PI*DM.fdrive)**2 * DM.C);
+  plateRows.push({label:"D: resonance round-trip  L=1/((2πf)²C)", expected:DM.L, got:D_Lrt, dp:4, tol:1e-6,
+                  pass:Math.abs(DM.L - D_Lrt) <= 1e-6*Math.max(1, DM.L)});
+  // 2. Z0 identity: √(L/C) == 1/(2πfC) at resonance.
+  const D_Z0b = 1 / (2*Math.PI*DM.fdrive*DM.C);
+  plateRows.push({label:"D: Z₀ identity  √(L/C)=1/(2πfC)", expected:D_Z0b, got:DM.Z0, dp:2, tol:1e-3,
+                  pass:Math.abs(DM.Z0 - D_Z0b) <= 1e-6*Math.max(1, D_Z0b)});
+  // 3. ampere-turn invariance: N·I (from separate N and I) equal at PRF and PRF/2.
+  const D_perS = demMotor(Object.assign({}, DST, {demDriveMode:"perStroke"}));
+  const D_altS = demMotor(Object.assign({}, DST, {demDriveMode:"altStroke"}));
+  const D_niP = D_perS.turns * D_perS.Icirc, D_niA = D_altS.turns * D_altS.Icirc;
+  plateRows.push({label:"D: N·I invariance  (PRF vs PRF/2)", expected:D_niA, got:D_niP, dp:1, tol:0.001,
+                  pass:Math.abs(D_niP - D_niA) <= 1e-3*Math.max(1, D_niA)});
+  // 4. voltage-budget guard: pushing ripple past the ceiling flags over-voltage.
+  const D_hi = demMotor(Object.assign({}, DST, {demRippleV: DM.rippleMax*1.1}));
+  plateRows.push({label:"D: over-V flag when ripple>ceiling", expected:1, got:D_hi.overV?1:0, dp:0, tol:0,
+                  pass:D_hi.overV === true});
+  // 5. energy: ½·440nF·(20kV)² = 88 J per coil cap.
+  plateRows.push({label:"D: energy ½·C·V² = 88 J / coil", expected:88.0, got:DM.energyPerCap, dp:1, tol:0.1,
+                  pass:Math.abs(DM.energyPerCap - 88.0) <= 0.1});
+  // 6. antiphase parity: adjacent poles opposite AND group A↔C3, B↔C4 (12-row map).
+  const D_map = demPolarityMap();
+  let D_alt = true, D_grp = true;
+  for (let i = 0; i < D_map.length; i++){
+    const nxt = D_map[(i+1) % D_map.length];
+    if (D_map[i].polC3 === nxt.polC3) D_alt = false;       // adjacent must differ (wrap incl.)
+    if ((D_map[i].group === "A") !== (D_map[i].cap === "C3")) D_grp = false;
+  }
+  plateRows.push({label:"D: N-S-N-S parity (antiphase A↔C3,B↔C4)", expected:1, got:(D_alt&&D_grp)?1:0, dp:0, tol:0,
+                  pass:D_alt && D_grp});
+  // 7. per-group cap = 6·C_block.
+  plateRows.push({label:"D: per-group cap = 6·C_block (nF)", expected:6*440, got:DM.capPerGroup*1e9, dp:1, tol:1e-6,
+                  pass:Math.abs(DM.capPerGroup*1e9 - 6*440) <= 1e-6});
+
   const plateAll = plateRows.every(r => r.pass);
 
   return {ok: allOk && symOk && plateAll, rows, symOk, symA:a, symB:b, plateRows};
@@ -1189,6 +1449,18 @@ const FIELDS = [
   {id:"rstray",    def:20,   min:0,    max:500,   step:1},
   {id:"rvpulse",   def:10,   min:0,    max:100,   step:1},
   {id:"rcondod",   def:3,    min:0.1,  max:12,    step:0.1},
+  // --- Block D distributed electromagnets (dem-prefix; `d` alone forbidden) ---
+  {id:"demRpm",          def:3000, min:0,    max:30000, step:50},
+  {id:"demEventsPerRev", def:6,    min:1,    max:24,    step:1},
+  {id:"demCapBlockNF",   def:440,  min:1,    max:5000,  step:1},
+  {id:"demCapRatingKV",  def:20,   min:1,    max:100,   step:0.5},
+  {id:"demBiasKV",       def:12,   min:0,    max:100,   step:0.5},
+  {id:"demRippleV",      def:250,  min:0,    max:5000,  step:10},
+  {id:"demPoleAreaCm2",  def:4,    min:0.1,  max:50,    step:0.1},
+  {id:"demClearanceMm",  def:1,    min:0.05, max:10,    step:0.05},
+  {id:"demNGaps",        def:2,    min:1,    max:8,     step:1},
+  {id:"demWireAWG",      def:30,   min:8,    max:44,    step:1},
+  {id:"demTurnLenCm",    def:12,   min:1,    max:60,    step:0.5},
 ];
 // Non-numeric plate controls (serialised into the hash manually). [task §7.2]
 // Rotor caps are inherited from the plate-geometry capacitance by default
@@ -1199,6 +1471,8 @@ const PLATE_CTL_DEFAULTS = {pdiel:"air", pring:true, plink:true, psrc:"plate", p
 const MECH_CTL_DEFAULTS = {munit:"mm", mfit:"fit", mdims:false, couple:true};
 // Non-numeric Block R controls (hash-serialised manually).
 const RES_CTL_DEFAULTS = {rcond:"tube", rmanod:false};
+// Non-numeric Block D controls (hash-serialised manually).
+const DEM_CTL_DEFAULTS = {demDriveMode:"altStroke", demCapTopology:"perCoil", dlabels:false};
 // Rotor-cap field max in plate vs manual mode. [IR §6.5 — raise-max policy:
 // realistic plate caps can exceed the manual 3000 pF range, so in plate mode
 // we widen c1*/c2* max to 10000 pF; values beyond that clamp + warn.]
@@ -1245,6 +1519,9 @@ function loadFromHash(){
   if (p.has("cpl"))   state.couple = p.get("cpl") === "1";
   if (p.has("rcond")) state.rcond = p.get("rcond") === "wire" ? "wire" : "tube";
   if (p.has("rmanod")) state.rmanod = p.get("rmanod") === "1";
+  if (p.has("dmode")) state.demDriveMode = p.get("dmode") === "perStroke" ? "perStroke" : "altStroke";
+  if (p.has("dtopo")) state.demCapTopology = p.get("dtopo") === "perGroup" ? "perGroup" : "perCoil";
+  if (p.has("dlab"))  state.dlabels = p.get("dlab") === "1";
   if (p.has("help"))  state.help = p.get("help") === "1";
 }
 function writeHash(){
@@ -1261,6 +1538,9 @@ function writeHash(){
   p.set("cpl",   state.couple ? 1 : 0);
   p.set("rcond", state.rcond);
   p.set("rmanod", state.rmanod ? 1 : 0);
+  p.set("dmode", state.demDriveMode);
+  p.set("dtopo", state.demCapTopology);
+  p.set("dlab",  state.dlabels ? 1 : 0);
   p.set("help",  state.help ? 1 : 0);
   history.replaceState(null, "", "#" + p.toString());
 }
@@ -1285,6 +1565,10 @@ const PRESETS = {
   "resonator":  {couple:true, punit:"cm", pnsec:12, pdia:100, prouter:15, prinner:5,
                  munit:"mm", mvoid:40, mdiscvoid:20, mdisch:10, mshaft:20, mwall:0.1, mdiscdia:1000,
                  rcond:"tube", rtubeOD:3, rtubeID:1, rins:0.05, rrpm:3000, rstray:20, rvpulse:10},
+  // Block D spin-up motor at the brief's worked-example design point (§4.5).
+  "spin-up":    {demRpm:3000, demEventsPerRev:6, demDriveMode:"altStroke", demCapBlockNF:440,
+                 demCapRatingKV:20, demCapTopology:"perCoil", demBiasKV:12, demRippleV:250,
+                 demPoleAreaCm2:4, demClearanceMm:1, demNGaps:2, demWireAWG:30, demTurnLenCm:12},
 };
 function applyPreset(name){
   const p = PRESETS[name]; if (!p) return;
@@ -1374,6 +1658,12 @@ function reflectControls(){
   document.querySelectorAll(".res-wire").forEach(e => e.style.display = wire ? "" : "none");
   document.querySelectorAll(".res-tube").forEach(e => e.style.display = tube ? "" : "none");
   document.querySelectorAll(".res-manod").forEach(e => e.style.display = manod ? "" : "none");
+  // --- Block D controls ---
+  document.querySelectorAll("#ddrive-seg button").forEach(b =>
+    b.classList.toggle("active", b.dataset.ddrive === state.demDriveMode));
+  document.querySelectorAll("#dtopo-seg button").forEach(b =>
+    b.classList.toggle("active", b.dataset.dtopo === state.demCapTopology));
+  $("dlabels").checked = !!state.dlabels;
   // per-parameter help visibility
   document.body.classList.toggle("help-on", !!state.help);
   $("help-toggle").classList.toggle("on", !!state.help);
@@ -1479,6 +1769,16 @@ function bindResControls(){
   $("rmanod").addEventListener("change", e => { state.rmanod = e.target.checked; reflectControls(); scheduleRecompute(); });
 }
 
+function bindDemControls(){
+  document.querySelectorAll("#ddrive-seg button").forEach(b => b.addEventListener("click", () => {
+    state.demDriveMode = b.dataset.ddrive; reflectControls(); scheduleRecompute();
+  }));
+  document.querySelectorAll("#dtopo-seg button").forEach(b => b.addEventListener("click", () => {
+    state.demCapTopology = b.dataset.dtopo; reflectControls(); scheduleRecompute();
+  }));
+  $("dlabels").addEventListener("change", e => { state.dlabels = e.target.checked; scheduleRecompute(); });
+}
+
 /* ---- per-parameter descriptions (single source of truth) ---- */
 const DESC = {
   // host rotor caps + transfer/stray
@@ -1525,11 +1825,27 @@ const DESC = {
   rcondod:"Manual conductor outer diameter (used when 'manual OD' is ticked).",
   rcond:"Conductor type: solid wire (AWG) or tube.",
   rmanod:"Override the conductor OD by hand (ignores AWG / tube).",
+  // Block D distributed-electromagnet motor
+  demRpm:"Design / operating rotor speed — sets the pump PRF (events/rev · rpm / 60).",
+  demEventsPerRev:"Pump firing events per revolution (sets PRF). Default 6 for the 6-rotor-pole machine.",
+  demCapBlockNF:"Series resonant DC-block cap C_block — blocks the kV DC bias, passes the stepping drive.",
+  demCapRatingKV:"Cap voltage rating — the BINDING limit on bias + resonant swing.",
+  demBiasKV:"DC bias across the cap (= transfer-cap voltage). Less bias ⇒ more AC headroom ⇒ more torque.",
+  demRippleV:"AC drive ripple amplitude on the transfer cap; magnified by Q on the resonant cap.",
+  demPoleAreaCm2:"Pole-face area A_gap of each C-EM — larger area ⇒ more ampere-turns at the limit.",
+  demClearanceMm:"Single air-gap clearance (rotor rim → pole face).",
+  demNGaps:"Number of air gaps in the magnetic circuit (l_gap = n · clearance).",
+  demWireAWG:"Winding wire gauge — sets coil resistance hence Q (and the allowable ripple).",
+  demTurnLenCm:"Mean length of one turn — coil wire length = N · this.",
+  demDriveMode:"Coil drive fundamental: alt-stroke (PRF/2, push-pull) or per-stroke (PRF). Sets L by 4×.",
+  demCapTopology:"Resonant cap placement: 12 per-coil caps (440 nF each) or 2 per-group caps (6×, 2.64 µF).",
+  dlabels:"Show per-C-EM angle and polarity (N/S @ C3⁺) labels on the top-view projection.",
 };
 // Non-numeric control id → DOM element id to attach its description/tooltip.
 const DESC_CTRL = {pdiel:"pdiel", pring:"pring", plink:"plink", psrc:"psrc-seg", punit:"punit-seg",
                    mcouple:"mcouple", munit:"munit-seg", mfit:"mfit-seg", mdims:"mdims",
-                   rcond:"rcond-seg", rmanod:"rmanod"};
+                   rcond:"rcond-seg", rmanod:"rmanod",
+                   demDriveMode:"ddrive-seg", demCapTopology:"dtopo-seg", dlabels:"dlabels"};
 
 function injectDescriptions(){
   for (const f of FIELDS){
@@ -1642,6 +1958,109 @@ function updateResonator(){
   $("res-regime-tag").textContent = R.regime;
   $("res-warn").innerHTML = R.warns.map(([c,m]) =>
     '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
+}
+
+/* ---- Block D: distributed-electromagnet motor readouts + top view ---- */
+let lastDem = null;
+function updateDem(){
+  const D = demMotor(state);
+  lastDem = D;
+  const kV = v => (v/1e3).toFixed(2) + " kV";
+  $("dr-freq").textContent  = D.prf.toFixed(1) + " Hz · f_d " + fmtHz(D.fdrive);
+  $("dr-lz").textContent    = (D.L>0 ? D.L.toFixed(3) + " H" : "—") + " · " + (D.Z0>0 ? D.Z0.toFixed(0) + " Ω" : "—");
+  $("dr-turns").textContent = (D.turns>0 ? Math.round(D.turns) + " turns" : "—") + " · " + (D.length>0 ? D.length.toFixed(0) + " m" : "—");
+  $("dr-rq").textContent    = (isFinite(D.Rcoil) ? D.Rcoil.toFixed(1) + " Ω" : "—") + " · Q " + (D.Q>0 ? D.Q.toFixed(1) : "—");
+  $("dr-ripple").textContent = (isFinite(D.rippleMax) ? D.rippleMax.toFixed(0) : "∞") + " V · now " + D.Vripple.toFixed(0) + " V";
+  $("dr-ni").textContent    = (D.Icirc>0 ? D.Icirc.toFixed(2) + " A" : "—") + " · " + (D.NI>0 ? Math.round(D.NI) + " A-t" : "—");
+  $("dr-vcap").textContent  = kV(D.VcapPeak) + " / " + kV(D.Vrating);
+  $("dr-vcap").className     = "v" + (D.overV ? " fail" : "");
+  $("dr-ncaps").textContent = D.nCaps;
+  $("dr-energy").textContent = D.energyPerCap.toFixed(1) + " J · " + D.energyTotal.toFixed(0) + " J total";
+  $("dr-pergroup").textContent = (D.capPerGroup*1e9).toFixed(0) + " nF (" + (D.capPerGroup*1e6).toFixed(2) + " µF)";
+  $("dem-regime-tag").textContent = D.overV ? "OVER-VOLTAGE" : (D.fdrive>0 ? fmtHz(D.fdrive) + " · " + Math.round(D.NI) + " A-t" : "—");
+  $("dem-warn").innerHTML = D.warns.map(([c,m]) =>
+    '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
+  drawDemTopView();
+}
+
+// Axial top-view projection (§8, user-directed): the sectored electrode disc,
+// the 6 salient rotor iron poles, and the 12 stator C-EMs (group A/B colour +
+// N-S-N-S polarity at the C3⁺ instant). Schematic — angular distribution only.
+function drawDemTopView(){
+  const c = $("dtop");
+  const {ctx, w, h} = clearCanvas(c);
+  const css = getComputedStyle(document.documentElement);
+  const COL = n => css.getPropertyValue(n).trim();
+  const cx = w/2, cy = h/2;
+  const Rout = Math.min(w, h)/2 - 22;
+  const map = lastDem ? lastDem.map : demPolarityMap();
+  const Nsec = Math.max(2, Math.round(Number(state.pnsec) || 12));
+  const lab = !!state.dlabels;
+  const A0 = -Math.PI/2;                                   // 0° at top (12 o'clock)
+
+  // radii (px), outer → inner
+  const rCemO = Rout, rCemI = Rout*0.80;                   // stator C-EM ring
+  const rRotO = Rout*0.66, rRotI = Rout*0.30;              // rotor salient poles
+  const rDisc = Rout*0.56;                                 // sectored electrode disc
+  const rHub  = Rout*0.14;
+
+  // 1) sectored electrode disc — alternating kept / gap wedges (from pnsec). [C-I context]
+  for (let k = 0; k < Nsec; k++){
+    const a0 = A0 + k*2*Math.PI/Nsec, a1 = a0 + 2*Math.PI/Nsec;
+    const kept = (k % 2 === 0);
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, rDisc, a0, a1); ctx.closePath();
+    ctx.fillStyle = kept ? COL("--acc") : COL("--panel2");
+    ctx.globalAlpha = kept ? 0.22 : 0.55; ctx.fill(); ctx.globalAlpha = 1;
+    ctx.strokeStyle = COL("--line"); ctx.lineWidth = 0.5; ctx.stroke();
+  }
+
+  // 2) six salient rotor iron poles at 60°. [reluctance rotor §1]
+  ctx.fillStyle = COL("--steel"); ctx.strokeStyle = COL("--dim"); ctx.lineWidth = 1;
+  for (let p = 0; p < 6; p++){
+    const a = A0 + p*2*Math.PI/6;
+    const half = (2*Math.PI/6)*0.30;
+    ctx.beginPath();
+    ctx.arc(cx, cy, rRotI, a-half, a+half);
+    ctx.arc(cx, cy, rRotO, a+half, a-half, true);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+  }
+  // hub
+  ctx.beginPath(); ctx.arc(cx, cy, rHub, 0, 2*Math.PI); ctx.fillStyle = COL("--ink"); ctx.fill();
+
+  // 3) twelve stator C-EMs (outer ring): steel core + copper coil, group tint, N/S.
+  for (const e of map){
+    const a  = (e.angle - 90)*Math.PI/180;
+    const rm = (rCemI + rCemO)/2;
+    const gx = cx + Math.cos(a)*rm, gy = cy + Math.sin(a)*rm;
+    const groupCol = e.group === "A" ? COL("--cem-a") : COL("--cem-b");
+    ctx.save(); ctx.translate(gx, gy); ctx.rotate(a + Math.PI/2);
+    const bw = Rout*0.17, bh = (rCemO - rCemI);
+    // core
+    ctx.fillStyle = COL("--cem-core"); ctx.fillRect(-bw/2, -bh/2, bw, bh);
+    // copper coil flanks
+    ctx.fillStyle = COL("--cem-coil");
+    ctx.fillRect(-bw/2, -bh/2, bw*0.26, bh);
+    ctx.fillRect( bw/2 - bw*0.26, -bh/2, bw*0.26, bh);
+    // group-tinted outline
+    ctx.strokeStyle = groupCol; ctx.lineWidth = 2; ctx.strokeRect(-bw/2, -bh/2, bw, bh);
+    ctx.restore();
+    // polarity chip at the inner tip (N warm, S cool) — the C3⁺ instant.
+    const px = cx + Math.cos(a)*(rCemI - 9), py = cy + Math.sin(a)*(rCemI - 9);
+    ctx.fillStyle = e.polC3 === "N" ? COL("--bad") : COL("--good");
+    ctx.font = "bold 11px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(e.polC3, px, py);
+    // optional angle/index labels outside the ring.
+    if (lab){
+      const lx = cx + Math.cos(a)*(rCemO + 11), ly = cy + Math.sin(a)*(rCemO + 11);
+      ctx.fillStyle = COL("--dim"); ctx.font = "9px ui-monospace,monospace";
+      ctx.fillText("E" + e.i + "·" + e.angle + "°", lx, ly);
+    }
+  }
+
+  // 4) caption.
+  ctx.fillStyle = COL("--dim"); ctx.font = "10px ui-monospace,monospace";
+  ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.fillText(Nsec + " sectors · 6 rotor poles · 12 C-EMs (A→C3 / B→C4) @ C3⁺", 6, 6);
 }
 
 // --- live axial cross-section (§5.1) ---
@@ -1904,9 +2323,10 @@ function scheduleRecompute(){
 function recompute(){
   // [§6.4] Producer pre-step: geometry → rotor caps (plate mode only).
   updatePlate();
-  // Block M and Block R are independent producers — readouts only, no solver coupling.
+  // Block M, R and D are independent producers — readouts only, no solver coupling.
   updateMech();
   updateResonator();
+  updateDem();
   const C1min = Math.min(state.c1min, state.c1max);
   const C1max = Math.max(state.c1min, state.c1max);
   const C2min = Math.min(state.c2min, state.c2max);
@@ -2159,12 +2579,14 @@ function boot(){
   Object.assign(state, PLATE_CTL_DEFAULTS);   // non-numeric plate controls
   Object.assign(state, MECH_CTL_DEFAULTS);    // non-numeric mechanical controls
   Object.assign(state, RES_CTL_DEFAULTS);     // non-numeric resonator controls
+  Object.assign(state, DEM_CTL_DEFAULTS);     // non-numeric Block-D controls
   state.help = false;                         // per-parameter help (view toggle)
   loadFromHash();
   for (const f of FIELDS) bindField(f);
   bindPlateControls();
   bindMechControls();
   bindResControls();
+  bindDemControls();
   injectDescriptions();
   reflectControls();
 
@@ -2182,7 +2604,7 @@ function boot(){
     $("copy-url").textContent = "copied!";
     setTimeout(() => $("copy-url").textContent = "copy share-url", 1200);
   });
-  window.addEventListener("resize", drawCharts);
+  window.addEventListener("resize", () => { drawCharts(); if (lastDem) drawDemTopView(); });
   recompute();
 }
 boot();
