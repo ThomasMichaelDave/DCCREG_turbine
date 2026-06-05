@@ -65,3 +65,24 @@ Non-numeric controls (no `-r`/`-n` pair; serialise into the hash manually): `pdi
 - **Deliverables are markdown;** the app is a single self-contained `index.html` (no build, no bundler, URL-hash state — never `localStorage`).
 - **Cross-reference** docs by repo-relative path.
 - **Producer/consumer discipline** for the physics: the geometry module produces rotor-cap values; `solveDoubler4` consumes them and is never edited by feature work.
+
+---
+
+## 4. Block namespaces
+
+Each producer block owns a prefix; `d` alone stays forbidden (ambiguous diameter / separation).
+
+### Block D — distributed electromagnet motor (prefix `dem*`)
+
+```
+demRpm, demEventsPerRev, demDriveMode, demCapBlockNF, demCapRatingKV,
+demCapTopology, demBiasKV, demRippleV, demPoleAreaCm2, demClearanceMm,
+demNGaps, demWireAWG, demTurnLenCm                         [inputs]
+demPrfHz, demDriveHz, demLcoilH, demTurns, demZ0Ohm, demRcoilOhm,
+demQ, demRippleMaxV, demIcircMaxA, demNI, demVcapPeakKV,
+demEnergyJ, demCapPerGroupUF                               [outputs]
+```
+
+- **Rule:** `d` alone remains forbidden; `dem` is the Block-D prefix. Reserved symbols keep their meaning — `C` (the resonant DC-block cap), `V` (voltages), `A` (pole-face area), `Q` (quality factor, not charge here — disambiguated by context and the `dem`-prefixed code names), `N`·`I` (ampere-turns).
+- **Producer/consumer:** Block D is a **parallel producer** (like Blocks M and R) — it reads electrical/geometry context but **never** writes the rotor caps and **never** calls `solveDoubler4`.
+- The 13 logical output names above are computed inside `demMotor()`; the panel surfaces them in grouped readout rows (`#dr-*`) plus the top-view projection.
