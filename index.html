@@ -99,7 +99,7 @@
 
 <header>
   <div>
-    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator</span></h1>
+    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2</span></h1>
     <div class="sub">ideal-diode switched-capacitor solver · 16-state network search · cross-coupled regenerative</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
@@ -139,6 +139,28 @@
       <div class="row">
         <label>gap g</label>
         <input type="range" id="pgap-r"><input type="number" id="pgap-n">
+        <span class="u">mm</span>
+      </div>
+
+      <h2 style="margin-top:12px">clearances (mm)</h2>
+      <div class="row">
+        <label>void (tank↔stator)</label>
+        <input type="range" id="pvoid-r"><input type="number" id="pvoid-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>stator rim/bus</label>
+        <input type="range" id="pbus-r"><input type="number" id="pbus-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>steel-core band</label>
+        <input type="range" id="pquadfoot-r"><input type="number" id="pquadfoot-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>core clearance</label>
+        <input type="range" id="pquadclr-r"><input type="number" id="pquadclr-n">
         <span class="u">mm</span>
       </div>
 
@@ -192,7 +214,10 @@
 
       <div class="kv">
         <span class="k">εr (relative permittivity)</span><span class="v" id="peps-val">—</span>
-        <span class="k">A<sub>metal</sub> (one plate, kept)</span><span class="v" id="pametal-val">—</span>
+        <span class="k">A<sub>full</sub> (rotor face, for C_R)</span><span class="v" id="pametal-val">—</span>
+        <span class="k">A<sub>active</sub> (pump overlap)</span><span class="v" id="pactive-val">—</span>
+        <span class="k">active band (mm)</span><span class="v" id="pband-val">—</span>
+        <span class="k">A<sub>active</sub>/A<sub>full</sub> (squeeze)</span><span class="v" id="pasqueeze-val">—</span>
         <span class="k">A<sub>ring</sub> (annulus)</span><span class="v" id="paring-val">—</span>
         <span class="k">C<sub>min</sub></span><span class="v" id="pcmin-val">—</span>
         <span class="k">C<sub>max</sub></span><span class="v" id="pcmax-val">—</span>
@@ -886,6 +911,11 @@ function lenToM(unit){ return unit === "in" ? 0.0254 : 0.01; } // cm default
 
 // Port of reference/SectoredDiscCalculator.jsx area math, in SI.
 // kept fraction = ceil(Nsec/2)/Nsec (alternating sectors kept). [OC]
+// v0.2: two distinct areas — the FULL rotor face (rotor↔rotor, feeds C_R) and
+// the ACTIVE rotor↔stator overlap (the only swinging area, feeds the pump).
+// The counter-rotating stator cannot reach the central HV tank (inner void) nor
+// overlap the 6 rim steel cores (outer quad band), so the swinging area is
+// squeezed inward at both ends; C_R keeps the full face (see resonatorCore). [OC]
 function plateGeom(s){
   const u = lenToM(s.punit || "cm");
   const Nsec = Math.max(2, Math.round(Number(s.pnsec) || 2));
@@ -894,12 +924,32 @@ function plateGeom(s){
   const ri = (Number(s.prinner) || 0) * u / 2;
   const discArea = Math.PI * plateR * plateR;
   const keptCount = Math.ceil(Nsec / 2);
-  // [OC correction] The sectored metal is the annulus OUTSIDE the ring
-  // (ring-out → plate edge); the inner disc is the ring/hub, not free sectors.
-  // Using the full disc overcounts the metal by the inner-radius fraction (~2%).
-  const Ametal = (keptCount / Nsec) * Math.PI * Math.max(0, plateR*plateR - ro*ro);  // m²
-  const Aring = Math.max(0, Math.PI * (ro*ro - ri*ri));    // m²; 0 if invalid
-  return {plateR, Nsec, keptCount, discArea, Ametal, Aring};
+  const keptFrac  = keptCount / Nsec;
+
+  // FULL rotor-face sectored area — the annulus OUTSIDE the ring (ring-out →
+  // plate edge), used by C_R only (rotor↔rotor through the mica disc). [OC]
+  const Ametal_full = keptFrac * Math.PI * Math.max(0, plateR*plateR - ro*ro);   // m²
+  const Aring       = Math.max(0, Math.PI * (ro*ro - ri*ri));    // m²; 0 if invalid
+
+  // ACTIVE rotor↔stator overlap (the only swinging area). Clearances are in mm,
+  // converted ×1e-3 to metres, independent of punit (like Block M). [OC]
+  const pvoid    = (Number(s.pvoid) || 0) * 1e-3;               // inner HV clearance (tank → stator inner edge)
+  const pbus     = (Number(s.pbus)  || 0) * 1e-3;              // stator outer bus/rim
+  const quadBand = ((Number(s.pquadfoot)||0) + (Number(s.pquadclr)||0)) * 1e-3;  // steel cores + collision clearance
+  const rActiveInner = ro + pvoid;
+  const rRotorOuter  = plateR - pbus;
+  const rActiveOuter = rRotorOuter - quadBand;
+  // [OC correction of instruction §3.1] guard on the band WIDTH, not on the
+  // squared difference: once rActiveOuter goes negative its square exceeds
+  // rActiveInner², so max(0, rOut²−rIn²) would report a spurious area. The
+  // annulus is valid only while rActiveOuter > rActiveInner.
+  const Ametal_active = (rActiveOuter > rActiveInner)
+        ? keptFrac * Math.PI * (rActiveOuter*rActiveOuter - rActiveInner*rActiveInner)  // m²
+        : 0;
+
+  return {plateR, Nsec, keptCount, keptFrac, discArea,
+          Ametal_full, Ametal_active, Aring,
+          rActiveInner, rActiveOuter, rRotorOuter};
 }
 
 // [OC] moist-air relative permittivity, εr = 1 + 2·N_air·1e-6.
@@ -922,12 +972,12 @@ function epsRof(s){
 // rotation-independent capacitance floor (the Cmin-setting knob). [IR]
 // C = ε0·εr·A/g ; ×1e12 → pF. [OC]
 function plateCaps(s){
-  const {Ametal, Aring} = plateGeom(s);
+  const {Ametal_active, Aring} = plateGeom(s);            // pump uses the ACTIVE overlap [OC]
   const er = epsRof(s);
   const gap_m = (Number(s.pgap) || 0) * 1e-3;              // mm → m
   const chi = s.pring ? 1 : 0;                             // χ_ring ∈ {0,1}
   const k = (gap_m > 0) ? eps0 * er / gap_m * 1e12 : Infinity;
-  const Cmax = k * (Ametal + chi * Aring);
+  const Cmax = k * (Ametal_active + chi * Aring);          // ← active, not full face
   const Cmin = k * (chi * Aring);
   const Cratio = Cmin > 0 ? Cmax / Cmin : Infinity;
   return {Cmin, Cmax, Cratio};
@@ -1105,7 +1155,9 @@ function resonatorCore(s){
   const coneR = Mc.coneR / 1e3, discH = Mc.discH / 1e3;   // m
   const slant = coneR * Math.SQRT2;
   const g = plateGeom(s);
-  const Aalign = g.Ametal + g.Aring;                      // m² (corrected annulus + ring)
+  // C_R is rotor↔rotor through the mica disc — independent of the stator
+  // void/quad-band squeeze. Use the FULL rotor face so C_R and f0 are unchanged. [OC]
+  const Aalign = g.Ametal_full + g.Aring;                 // m² (full face + ring)
   const epsd = DIELECTRICS.mica.epsR;                     // disc = mica [IR — locked premise]
   const Nsec = Math.max(2, Math.round(Number(s.pnsec) || 2));
 
@@ -1368,6 +1420,35 @@ function runSelfTest(){
                   pass:Math.abs(awgToCond(20).condOD*1e3-0.812)<=0.005});
   plateRows.push({label:"R: prf(N12, 3000 rpm) = 300 Hz", expected:300, got:RC.prf, dp:0, tol:0, pass:RC.prf===300});
 
+  // --- Block C-I v0.2: active-overlap squeeze + C_R decoupling (instruction §6) ---
+  const CIv2 = {pnsec:12, pdia:100, prouter:15, prinner:5, pgap:0.5, pdiel:"vacuum",
+                pring:true, punit:"cm", pvoid:20, pbus:9, pquadfoot:94, pquadclr:10};
+  const gCI = plateGeom(CIv2);
+  // 1. squeeze applied: A_active ≈ 0.2211 m² < A_full ≈ 0.3839 m² (ratio ≈ 0.576).
+  plateRows.push({label:"C-I: A_active 0.2211 m² (squeezed < full)", expected:0.2211, got:gCI.Ametal_active, dp:4, tol:0.0023,
+                  pass:Math.abs(gCI.Ametal_active-0.2211)<=0.01*0.2211 && gCI.Ametal_active<gCI.Ametal_full});
+  plateRows.push({label:"C-I: A_full 0.3839 m² (rotor face)", expected:0.3839, got:gCI.Ametal_full, dp:4, tol:0.0039,
+                  pass:Math.abs(gCI.Ametal_full-0.3839)<=0.01*0.3839});
+  // 2. active-band radii: rIn ≈ 0.095 m, rOut ≈ 0.387 m.
+  plateRows.push({label:"C-I: active band rOut 0.387 m (rIn 0.095)", expected:0.387, got:gCI.rActiveOuter, dp:3, tol:0.004,
+                  pass:Math.abs(gCI.rActiveInner-0.095)<=0.001 && Math.abs(gCI.rActiveOuter-0.387)<=0.004});
+  // 3. C_R invariance — the decoupling guard: C_R unchanged when the squeeze grows.
+  const crA = resonatorCore(RST).C_R;
+  const crB = resonatorCore(Object.assign({}, RST, {pvoid:50, pquadfoot:150})).C_R;
+  plateRows.push({label:"C-I: C_R invariant under squeeze (decoupled)", expected:crA*1e9, got:crB*1e9, dp:3, tol:0.01,
+                  pass:Math.abs(crA-crB)<=0.005*Math.max(1e-30, crA)});
+  // 4. pump shrinks with the quad band, by the active-area ratio (ring term cancels in Cmax−Cmin).
+  const cm94 = plateCaps(CIv2), cm0 = plateCaps(Object.assign({}, CIv2, {pquadfoot:0}));
+  const g0 = plateGeom(Object.assign({}, CIv2, {pquadfoot:0}));
+  const aRat = gCI.Ametal_active / g0.Ametal_active;
+  const cRat = (cm94.Cmax - cm94.Cmin) / (cm0.Cmax - cm0.Cmin);
+  plateRows.push({label:"C-I: pump Cmax shrinks ∝ active area", expected:aRat, got:cRat, dp:4, tol:0.01,
+                  pass:cm94.Cmax<cm0.Cmax && Math.abs(cRat-aRat)<=0.01*aRat});
+  // 5. collapse guard: quadfoot 600 mm → A_active = 0 and band inverted.
+  const gCol = plateGeom(Object.assign({}, CIv2, {pquadfoot:600}));
+  plateRows.push({label:"C-I: collapse guard (quadfoot 600 → A_active 0)", expected:0, got:gCol.Ametal_active, dp:4, tol:0,
+                  pass:gCol.Ametal_active===0 && gCol.rActiveOuter<=gCol.rActiveInner});
+
   // --- Block D distributed-electromagnet self-tests (brief §7) ---
   const DST = {demRpm:3000, demEventsPerRev:6, demDriveMode:"altStroke", demCapBlockNF:440,
                demCapRatingKV:20, demCapTopology:"perCoil", demBiasKV:12, demRippleV:250,
@@ -1433,6 +1514,11 @@ const FIELDS = [
   {id:"ptempc",  def:20,   min:-40,  max:60,   step:0.5},
   {id:"ppatm",   def:1013, min:300,  max:1100, step:1},
   {id:"prh",     def:50,   min:0,    max:100,  step:1},
+  // C-I v0.2 active-overlap clearances (mm, independent of punit)
+  {id:"pvoid",     def:20,  min:0,  max:100, step:1},   // inner HV clearance (tank↔stator)
+  {id:"pbus",      def:9,   min:0,  max:50,  step:1},   // stator outer bus width
+  {id:"pquadfoot", def:94,  min:0,  max:300, step:1},   // steel-core footprint band
+  {id:"pquadclr",  def:10,  min:0,  max:50,  step:1},   // collision clearance to steel cores
   // --- Block M rotor mechanical core (m-prefix; mm; hubDia is derived) ---
   {id:"mvoid",     def:40,   min:5,   max:200,  step:1},
   {id:"mdiscvoid", def:20,   min:0,   max:100,  step:1},
@@ -1700,9 +1786,13 @@ function updatePlate(){
   const diel = DIELECTRICS[state.pdiel] || DIELECTRICS.vacuum;
 
   // --- local readouts ---
+  const squeeze = geom.Ametal_full > 0 ? geom.Ametal_active / geom.Ametal_full : 0;
   $("peps-val").textContent = state.pdiel === "air" ? er.toFixed(6)
                             : er.toFixed(3) + (diel.band ? " ("+diel.band[0]+"–"+diel.band[1]+")" : "");
-  $("pametal-val").textContent = (geom.Ametal * 1e4).toFixed(2) + " cm²";
+  $("pametal-val").textContent = (geom.Ametal_full   * 1e4).toFixed(2) + " cm²";
+  $("pactive-val").textContent = (geom.Ametal_active * 1e4).toFixed(2) + " cm²";
+  $("pband-val").textContent   = (geom.rActiveInner*1e3).toFixed(0) + "…" + (geom.rActiveOuter*1e3).toFixed(0) + " mm";
+  $("pasqueeze-val").textContent = fmt(squeeze, 3) + (geom.rActiveOuter <= geom.rActiveInner ? "  (collapsed)" : "");
   $("paring-val").textContent  = (geom.Aring  * 1e4).toFixed(2) + " cm²";
   $("pcmin-val").textContent   = fmt(caps.Cmin, 2) + " pF";
   $("pcmax-val").textContent   = fmt(caps.Cmax, 2) + " pF";
@@ -1732,6 +1822,14 @@ function updatePlate(){
     W.push(["w", "Cmax = "+fmt(caps.Cmax,0)+" pF exceeds rotor field max ("+ROTOR_MAX_PLATE+" pF) — clamped when driving the solver."]);
   if (diel.solid)
     W.push(["note", "solid dielectric in a rotary context is a what-if: a bonded film can't rotate against both plates (see brief §3.3) — suits fixed / sliding-film geometries."]);
+  // --- v0.2 active-overlap squeeze warnings (instruction §5) ---
+  if (geom.rActiveOuter <= geom.rActiveInner)
+    W.push(["e", "Active overlap band collapsed — void + bus + quad band exceed the plate annulus. No pumping area."]);
+  // HV void floor from the Block-D bias, derated 1 kV/mm (sharp tips). [IR]
+  const voidMin = (Number(state.demBiasKV) || 0) / 1;       // mm, at E = 1 kV/mm
+  if ((Number(state.pvoid) || 0) < voidMin)
+    W.push(["w", "void < ~Vbias/1kVmm (" + voidMin.toFixed(0) + " mm); round the stator inner edge into a guard ring (allows ~2 kV/mm → half the gap) or increase void."]);
+  W.push(["note", "C_R uses the full rotor face (decoupled); only C1/C2 see the void + quad-band squeeze."]);
   $("plate-warn").innerHTML = W.map(([c,m]) => '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
 
   // --- producer: drive rotor caps in plate mode (solver untouched) ---
@@ -1795,6 +1893,10 @@ const DESC = {
   prouter:"Ring outer diameter (Cmin floor / electrode inner edge). Sets the hub & quadricone ⌀ when coupled.",
   prinner:"Ring inner diameter (inner edge of the conductive central ring).",
   pgap:"Electrode-to-stator gap g — the working capacitor gap; smaller gap → larger capacitance.",
+  pvoid:"Inner HV clearance from the central quadricone tank to the stator inner edge — sets the active band inner radius.",
+  pbus:"Stator outer bus/rim width — the rotor sectors stop inside it (active band outer bound, before the quad band).",
+  pquadfoot:"Steel-core footprint band at the rim occupied by the 6 rotor quadricones; the counter-rotating stator must clear it.",
+  pquadclr:"Collision clearance between the stator active band and the rotor steel cores.",
   ptempc:"Air temperature (used only for the live moist-air dielectric).",
   ppatm:"Atmospheric pressure (Air dielectric only).",
   prh:"Relative humidity (Air dielectric only).",
