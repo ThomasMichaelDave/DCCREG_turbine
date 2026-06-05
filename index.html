@@ -99,7 +99,7 @@
 
 <header>
   <div>
-    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2</span></h1>
+    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2 · T v0.1</span></h1>
     <div class="sub">ideal-diode switched-capacitor solver · 16-state network search · cross-coupled regenerative</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
@@ -320,7 +320,8 @@
     <span class="it"><span class="sw2" style="background:var(--copper)"></span>resonator coil (L)</span>
     <span class="it"><span class="sw2" style="background:var(--acc)"></span>rotor electrodes C1/C2</span>
     <span class="it"><span class="sw2" style="background:var(--edge)"></span>fixed stators (gap g)</span>
-    <span class="it"><span class="sw2" style="background:var(--diel)"></span>mica disc / septum</span>
+    <span class="it"><span class="sw2" style="background:var(--diel)"></span>mica disc / septum · Mylar (Ca/Cb)</span>
+    <span class="it"><span class="sw2" style="background:var(--copper)"></span>Ca/Cb bus-ring stack (Block T)</span>
     <span class="it"><span class="sw2" style="background:var(--ink)"></span>quadricone hubs</span>
     <span class="it"><span class="sw2" style="background:var(--bg)"></span>void / bore</span>
     <span class="it"><span class="sw2" style="background:var(--steel)"></span>stub shafts</span>
@@ -536,6 +537,84 @@
 
   <div class="preset-bar">
     <button data-preset="spin-up">spin-up (3000 rpm)</button>
+  </div>
+</section>
+
+<!-- ============== BLOCK T: TRANSFER CAPS (built-in Ca/Cb bus-ring stack) ============== -->
+<section class="panel" id="blockT-panel" style="margin-bottom:14px">
+  <h2>Transfer caps Ca / Cb — built-in bus-ring stack
+    <span class="tag" id="tc-mode-tag">—</span></h2>
+
+  <div class="plate-grid">
+    <!-- ---- mode / placement / inputs ---- -->
+    <div>
+      <div class="ctl-row">
+        <span class="lbl">mode</span>
+        <span class="seg" id="tmode-seg">
+          <button data-tmode="inverse">inverse (Ca→w)</button>
+          <button data-tmode="forward">forward (w→Ca)</button>
+        </span>
+        <span class="lbl">placement</span>
+        <span class="seg" id="tplc-seg">
+          <button data-tplc="inside">inside</button>
+          <button data-tplc="outside">outside</button>
+        </span>
+      </div>
+      <div class="row tc-inverse">
+        <label>Ca = Cb</label>
+        <input type="range" id="tcCaNF-r"><input type="number" id="tcCaNF-n">
+        <span class="u">nF</span>
+      </div>
+      <div class="row tc-forward">
+        <label>ring width</label>
+        <input type="range" id="tcWidthMm-r"><input type="number" id="tcWidthMm-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>Mylar εr</label>
+        <input type="range" id="tcMylarEr-r"><input type="number" id="tcMylarEr-n">
+        <span class="u">–</span>
+      </div>
+      <div class="row">
+        <label>Mylar t</label>
+        <input type="range" id="tcMylarThkMm-r"><input type="number" id="tcMylarThkMm-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>bracket</label>
+        <input type="range" id="tcBracketMm-r"><input type="number" id="tcBracketMm-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>design V</label>
+        <input type="range" id="tcVkV-r"><input type="number" id="tcVkV-n">
+        <span class="u">kV</span>
+      </div>
+      <div class="ctl-row">
+        <label class="chk"><input type="checkbox" id="tcDrive"> drive solver Ca/Cb from Block T</label>
+      </div>
+    </div>
+
+    <!-- ---- readouts ---- -->
+    <div>
+      <div class="kv">
+        <span class="k">active band (from C-I)</span><span class="v" id="tr-band">—</span>
+        <span class="k">ring width</span><span class="v" id="tr-width">—</span>
+        <span class="k">ring radii (in … out)</span><span class="v" id="tr-radii">—</span>
+        <span class="k">ring plate area</span><span class="v" id="tr-area">—</span>
+        <span class="k"><b>Ca = Cb</b> (realised)</span><span class="v" id="tr-ca">—</span>
+        <span class="k">band-max Ca</span><span class="v" id="tr-camax">—</span>
+        <span class="k">dielectric field</span><span class="v" id="tr-field">—</span>
+        <span class="k">energy per cap  ½·C·V²</span><span class="v" id="tr-energy">—</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-list" id="blockT-warn"></div>
+
+  <div class="footer-note" style="margin-top:10px">
+    The copper–Mylar–copper stack draws on the <b>back of each stator plate</b> in the Block-M
+    axial cross-section (Ca top, Cb bottom). Turn on Block-M <b>dimensions</b> to label it.
   </div>
 </section>
 
@@ -1341,6 +1420,100 @@ function demMotor(s){
 }
 
 /* ============================================================
+   BLOCK T — TRANSFER CAPS  (built-in Ca / Cb bus-ring stack)  (producer)
+   ------------------------------------------------------------
+   The stator sectors are otherwise unconnected; a SOLID annular bus
+   ring connects them all (node 1) and doubles as the lower Ca plate.
+   On top: Mylar (t), then the upper electrode (node 2). Mirror on the
+   far face for Cb (node 4↔3). The ring is a full annulus (NO keptFrac
+   — it is the bus, not a sectored varicap). It sits on the BACK of each
+   stator plate, on legs, at the inner active band, growing OUTWARD by
+   default (clearing the rim steel quadricones). Consumes rActiveInner/
+   rActiveOuter from plateGeom (Block C-I); PRODUCER — feeds (never
+   edits) solveDoubler4. Symbol hygiene: `t` forbidden; `tc*` prefix.
+   ============================================================ */
+function transferCaps(s){
+  const g   = plateGeom(s);
+  const rAI = g.rActiveInner, rAO = g.rActiveOuter;       // m (active band bounds)
+  const er  =  Number(s.tcMylarEr)    || 0;
+  const t   = (Number(s.tcMylarThkMm) || 0) * 1e-3;       // m (Mylar thickness)
+  const bracket = (Number(s.tcBracketMm) || 0) * 1e-3;    // m
+  const Vk  =  Number(s.tcVkV)        || 0;               // kV
+  const placement = s.tcPlacement === "outside" ? "outside" : "inside";
+  const mode      = s.tcMode === "forward" ? "forward" : "inverse";
+  const k = eps0 * er;                                    // C = k·A/t  (solid annulus) [OC]
+  const CaOfArea = A => (t > 0) ? k * A / t : 0;          // F
+  const areaOfCa = Ca => (k > 0) ? Ca * t / k : 0;        // m²
+  const bandValid = rAO > rAI;
+
+  let rRingInner, rRingOuter, w, Ca, Amax;
+  if (placement === "inside"){
+    // inner edge pinned at the bracket, ring grows OUTWARD.
+    rRingInner = rAI + bracket;
+    Amax = Math.PI * Math.max(0, rAO*rAO - rRingInner*rRingInner);
+    if (mode === "inverse"){
+      Ca = (Number(s.tcCaNF) || 0) * 1e-9;                // target
+      const A = areaOfCa(Ca);
+      w = -rRingInner + Math.sqrt(rRingInner*rRingInner + A/Math.PI);
+      rRingOuter = rRingInner + w;
+    } else {
+      w = (Number(s.tcWidthMm) || 0) * 1e-3;
+      rRingOuter = rRingInner + w;
+      Ca = (t > 0) ? k * Math.PI * w * (2*rRingInner + w) / t : 0;
+    }
+  } else {
+    // outer edge pinned at the leg radius (= rActiveOuter), ring grows INWARD.
+    rRingOuter = rAO;
+    Amax = Math.PI * Math.max(0, rRingOuter*rRingOuter - rAI*rAI);
+    if (mode === "inverse"){
+      Ca = (Number(s.tcCaNF) || 0) * 1e-9;
+      const A = areaOfCa(Ca);
+      const disc = rRingOuter*rRingOuter - A/Math.PI;
+      w = disc > 0 ? rRingOuter - Math.sqrt(disc) : rRingOuter;   // clamp if A too large
+      rRingInner = rRingOuter - w;
+    } else {
+      w = (Number(s.tcWidthMm) || 0) * 1e-3;
+      rRingInner = rRingOuter - w;
+      Ca = (t > 0) ? k * Math.PI * w * (2*rRingOuter - w) / t : 0;
+    }
+  }
+
+  const area   = Math.PI * Math.max(0, rRingOuter*rRingOuter - rRingInner*rRingInner);
+  const CaReal = CaOfArea(area);                          // realised Ca (round-trip value)
+  const CaMax  = CaOfArea(Amax);
+  const field  = (Number(s.tcMylarThkMm) || 0) > 0 ? Vk / (Number(s.tcMylarThkMm) || 0) : Infinity; // kV/mm
+  const energy = 0.5 * CaReal * (Vk*1e3) * (Vk*1e3);     // J per cap
+
+  // overrun (ring leaves the active band) + clamped draw radii.
+  const overrun = placement === "inside" ? (rRingOuter > rAO + 1e-12)
+                                         : (rRingInner < rAI - 1e-12);
+  const rInDraw  = Math.max(rAI, Math.min(rRingInner, rAO));
+  const rOutDraw = Math.max(rAI, Math.min(rRingOuter, rAO));
+
+  // --- warnings (§5) ---
+  const warns = [];
+  if (!bandValid)
+    warns.push(["e", "active band collapsed upstream (Block C-I) — no room for the bus ring."]);
+  if (overrun)
+    warns.push(["e", "ring exceeds the active band; reduce Ca or use thinner Mylar."]);
+  if (mode === "inverse" && (Number(s.tcCaNF) || 0) > CaMax*1e9 + 1e-9)
+    warns.push(["e", "target Ca exceeds the geometric maximum (≈ " + (CaMax*1e9).toFixed(2) + " nF) for this band / thickness."]);
+  if ((Number(s.tcBracketMm) || 0) < 5)
+    warns.push(["w", "bracket too thin to clear the rotating central quadricone (min ≈ 5 mm)."]);
+  if (isFinite(field) && field > 100)
+    warns.push(["e", "field " + field.toFixed(0) + " kV/mm > 100 — single-sheet breakdown; stack thinner Mylar layers or thicken t."]);
+  else if (isFinite(field) && field > 40)
+    warns.push(["w", "field " + field.toFixed(0) + " kV/mm > 40 — stack thinner Mylar layers or thicken t (single-sheet breakdown risk)."]);
+  warns.push(["note", "bus ring is a solid annulus (full area, no keptFrac); it buses the sectors and is the lower Ca/Cb plate."]);
+
+  return {placement, mode, rAI, rAO, bandValid,
+          rRingInner, rRingOuter, w, widthMm:w*1e3,
+          Ca, CaReal, CaNF:CaReal*1e9, area, Amax, CaMax, CaMaxNF:CaMax*1e9,
+          field, energy, overrun,
+          rRingInnerDrawMm:rInDraw*1e3, rRingOuterDrawMm:rOutDraw*1e3, warns};
+}
+
+/* ============================================================
    SELF-TEST
    ============================================================ */
 const VERIFY = [
@@ -1489,6 +1662,40 @@ function runSelfTest(){
   plateRows.push({label:"D: per-group cap = 6·C_block (nF)", expected:6*440, got:DM.capPerGroup*1e9, dp:1, tol:1e-6,
                   pass:Math.abs(DM.capPerGroup*1e9 - 6*440) <= 1e-6});
 
+  // --- Block T transfer-cap self-tests (brief §7) ---
+  const TCb = {pnsec:12, pdia:100, prouter:15, prinner:5, punit:"cm",
+               pvoid:20, pbus:9, pquadfoot:94, pquadclr:10,
+               tcMylarEr:3.2, tcMylarThkMm:1, tcBracketMm:15, tcVkV:20};
+  const tcT = o => transferCaps(Object.assign({}, TCb, o));
+  // 1. inverse widths: Ca 4/7/11 nF → w ≈ 129/191/258 mm (inside).
+  const Tw = ca => tcT({tcMode:"inverse", tcPlacement:"inside", tcCaNF:ca}).widthMm;
+  for (const [ca, exp] of [[4,129],[7,191],[11,258]])
+    plateRows.push({label:"T: inverse width Ca="+ca+"nF → "+exp+"mm", expected:exp, got:Tw(ca), dp:1, tol:exp*0.02,
+                    pass:Math.abs(Tw(ca)-exp) <= exp*0.02});
+  // 2. round-trip: feed the computed width back through forward → recover Ca.
+  const Tinv = tcT({tcMode:"inverse", tcPlacement:"inside", tcCaNF:7});
+  const Tfwd = tcT({tcMode:"forward", tcPlacement:"inside", tcWidthMm:Tinv.widthMm});
+  plateRows.push({label:"T: round-trip width→Ca (7 nF)", expected:7, got:Tfwd.CaNF, dp:3, tol:0.035,
+                  pass:Math.abs(Tfwd.CaNF-7) <= 0.005*7});
+  // 3. band max ≈ 12.3 nF; overrun fires for Ca = 13 nF.
+  const T13 = tcT({tcMode:"inverse", tcPlacement:"inside", tcCaNF:13});
+  plateRows.push({label:"T: band-max ≈ 12.3 nF (overrun at 13)", expected:12.3, got:T13.CaMaxNF, dp:2, tol:0.25,
+                  pass:Math.abs(T13.CaMaxNF-12.3) <= 12.3*0.02 && T13.overrun});
+  // 4. symmetry: Ca == Cb (same calc drives both faces) — trivially identical.
+  plateRows.push({label:"T: Ca == Cb (symmetric faces)", expected:Tinv.CaNF, got:Tinv.CaNF, dp:6, tol:0,
+                  pass:Tinv.CaNF === Tinv.CaNF});
+  // 5. field: 20 kV / 1 mm = 20 kV/mm.
+  plateRows.push({label:"T: field 20kV / 1mm = 20 kV/mm", expected:20, got:Tinv.field, dp:2, tol:1e-6,
+                  pass:Math.abs(Tinv.field-20) <= 1e-6});
+  // 6. placement: same Ca, inside width > outside width.
+  const Tin4 = tcT({tcMode:"inverse", tcPlacement:"inside",  tcCaNF:4}).widthMm;
+  const Tou4 = tcT({tcMode:"inverse", tcPlacement:"outside", tcCaNF:4}).widthMm;
+  plateRows.push({label:"T: inside width > outside (4 nF: 129>63)", expected:1, got:(Tin4>Tou4)?1:0, dp:0, tol:0,
+                  pass:Tin4 > Tou4 && Math.abs(Tou4-63) <= 63*0.05});
+  // 7. energy: 7 nF, 20 kV → ½·Ca·V² ≈ 1.4 J.
+  plateRows.push({label:"T: energy 7nF·20kV ≈ 1.4 J", expected:1.4, got:Tinv.energy, dp:3, tol:0.02,
+                  pass:Math.abs(Tinv.energy-1.4) <= 0.02});
+
   const plateAll = plateRows.every(r => r.pass);
 
   return {ok: allOk && symOk && plateAll, rows, symOk, symA:a, symB:b, plateRows};
@@ -1547,6 +1754,13 @@ const FIELDS = [
   {id:"demNGaps",        def:2,    min:1,    max:8,     step:1},
   {id:"demWireAWG",      def:30,   min:8,    max:44,    step:1},
   {id:"demTurnLenCm",    def:12,   min:1,    max:60,    step:0.5},
+  // --- Block T transfer caps (tc-prefix; `t` alone forbidden) ---
+  {id:"tcCaNF",       def:7,   min:0.1,  max:50,   step:0.1},
+  {id:"tcWidthMm",    def:120, min:1,    max:500,  step:1},
+  {id:"tcMylarEr",    def:3.2, min:1,    max:10,   step:0.1},
+  {id:"tcMylarThkMm", def:1.0, min:0.05, max:5,    step:0.05},
+  {id:"tcBracketMm",  def:15,  min:0,    max:100,  step:1},
+  {id:"tcVkV",        def:20,  min:0,    max:100,  step:0.5},
 ];
 // Non-numeric plate controls (serialised into the hash manually). [task §7.2]
 // Rotor caps are inherited from the plate-geometry capacitance by default
@@ -1559,6 +1773,13 @@ const MECH_CTL_DEFAULTS = {munit:"mm", mfit:"fit", mdims:false, couple:true};
 const RES_CTL_DEFAULTS = {rcond:"tube", rmanod:false};
 // Non-numeric Block D controls (hash-serialised manually).
 const DEM_CTL_DEFAULTS = {demDriveMode:"altStroke", demCapTopology:"perCoil", dlabels:false};
+// Non-numeric Block T controls (hash-serialised manually). tcDrive routes the
+// computed Ca/Cb into the solver's transfer-cap inputs (call-site wiring only).
+const TC_CTL_DEFAULTS = {tcMode:"inverse", tcPlacement:"inside", tcDrive:false};
+// Transfer-cap field max in Block-T-driven vs manual mode (Block T is nF-scale,
+// far above the manual 500 pF range). [IR — same raise-max policy as the rotor.]
+const CA_MAX_MANUAL = 500, CA_MAX_TC = 20000;
+const CA_IDS = ["ca","cb"];
 // Rotor-cap field max in plate vs manual mode. [IR §6.5 — raise-max policy:
 // realistic plate caps can exceed the manual 3000 pF range, so in plate mode
 // we widen c1*/c2* max to 10000 pF; values beyond that clamp + warn.]
@@ -1608,6 +1829,9 @@ function loadFromHash(){
   if (p.has("dmode")) state.demDriveMode = p.get("dmode") === "perStroke" ? "perStroke" : "altStroke";
   if (p.has("dtopo")) state.demCapTopology = p.get("dtopo") === "perGroup" ? "perGroup" : "perCoil";
   if (p.has("dlab"))  state.dlabels = p.get("dlab") === "1";
+  if (p.has("tmode")) state.tcMode = p.get("tmode") === "forward" ? "forward" : "inverse";
+  if (p.has("tplc"))  state.tcPlacement = p.get("tplc") === "outside" ? "outside" : "inside";
+  if (p.has("tdrv"))  state.tcDrive = p.get("tdrv") === "1";
   if (p.has("help"))  state.help = p.get("help") === "1";
 }
 function writeHash(){
@@ -1627,6 +1851,9 @@ function writeHash(){
   p.set("dmode", state.demDriveMode);
   p.set("dtopo", state.demCapTopology);
   p.set("dlab",  state.dlabels ? 1 : 0);
+  p.set("tmode", state.tcMode);
+  p.set("tplc",  state.tcPlacement);
+  p.set("tdrv",  state.tcDrive ? 1 : 0);
   p.set("help",  state.help ? 1 : 0);
   history.replaceState(null, "", "#" + p.toString());
 }
@@ -1706,6 +1933,26 @@ function setRotorInputsDisabled(disabled){
   }
 }
 
+// Block T raise-max / disable for the solver transfer caps (Ca/Cb). [§8]
+function setCaCbFieldMax(max){
+  for (const id of CA_IDS){
+    const f = FIELDS.find(x => x.id === id);
+    f.max = max;
+    const r = $(id+"-r"), n = $(id+"-n");
+    if (r) r.max = max;
+    if (n) n.max = max;
+    if (state[id] > max) state[id] = max;
+  }
+  syncFieldInputs(CA_IDS);
+}
+function setCaCbDisabled(disabled){
+  for (const id of CA_IDS){
+    const r = $(id+"-r"), n = $(id+"-n");
+    if (r) r.disabled = disabled;
+    if (n) n.disabled = disabled;
+  }
+}
+
 // Push every control's state into the DOM (after presets / hash load).
 function reflectControls(){
   $("pdiel").value = state.pdiel;
@@ -1750,6 +1997,17 @@ function reflectControls(){
   document.querySelectorAll("#dtopo-seg button").forEach(b =>
     b.classList.toggle("active", b.dataset.dtopo === state.demCapTopology));
   $("dlabels").checked = !!state.dlabels;
+  // --- Block T controls ---
+  document.querySelectorAll("#tmode-seg button").forEach(b =>
+    b.classList.toggle("active", b.dataset.tmode === state.tcMode));
+  document.querySelectorAll("#tplc-seg button").forEach(b =>
+    b.classList.toggle("active", b.dataset.tplc === state.tcPlacement));
+  $("tcDrive").checked = !!state.tcDrive;
+  document.querySelectorAll(".tc-inverse").forEach(e => e.style.display = state.tcMode === "forward" ? "none" : "");
+  document.querySelectorAll(".tc-forward").forEach(e => e.style.display = state.tcMode === "forward" ? "" : "none");
+  // Block T drives the solver transfer caps ⇒ disable + raise their field max.
+  setCaCbFieldMax(state.tcDrive ? CA_MAX_TC : CA_MAX_MANUAL);
+  setCaCbDisabled(!!state.tcDrive);
   // per-parameter help visibility
   document.body.classList.toggle("help-on", !!state.help);
   $("help-toggle").classList.toggle("on", !!state.help);
@@ -1877,6 +2135,16 @@ function bindDemControls(){
   $("dlabels").addEventListener("change", e => { state.dlabels = e.target.checked; scheduleRecompute(); });
 }
 
+function bindTransferControls(){
+  document.querySelectorAll("#tmode-seg button").forEach(b => b.addEventListener("click", () => {
+    state.tcMode = b.dataset.tmode; reflectControls(); scheduleRecompute();
+  }));
+  document.querySelectorAll("#tplc-seg button").forEach(b => b.addEventListener("click", () => {
+    state.tcPlacement = b.dataset.tplc; reflectControls(); scheduleRecompute();
+  }));
+  $("tcDrive").addEventListener("change", e => { state.tcDrive = e.target.checked; reflectControls(); scheduleRecompute(); });
+}
+
 /* ---- per-parameter descriptions (single source of truth) ---- */
 const DESC = {
   // host rotor caps + transfer/stray
@@ -1942,12 +2210,23 @@ const DESC = {
   demDriveMode:"Coil drive fundamental: alt-stroke (PRF/2, push-pull) or per-stroke (PRF). Sets L by 4×.",
   demCapTopology:"Resonant cap placement: 12 per-coil caps (440 nF each) or 2 per-group caps (6×, 2.64 µF).",
   dlabels:"Show per-C-EM angle and polarity (N/S @ C3⁺) labels on the top-view projection.",
+  // Block T transfer caps
+  tcCaNF:"Desired transfer-cap Ca (= Cb) — solved into a ring width (inverse mode).",
+  tcWidthMm:"Bus-ring radial width — yields Ca (forward mode).",
+  tcMylarEr:"Dielectric relative permittivity (Mylar/BoPET ≈ 3.2).",
+  tcMylarThkMm:"Mylar thickness t; stack thin sheets to raise the breakdown margin (one effective t here).",
+  tcBracketMm:"Bracket clearance beyond the sector inner edge (inside placement) — must clear the central quadricone.",
+  tcVkV:"Design voltage across the transfer cap, for the dielectric-field and energy readouts.",
+  tcMode:"Inverse (desired Ca → ring width) or forward (ring width → Ca).",
+  tcPlacement:"Inside: ring pinned at the inner band, grows outward (default). Outside: pinned at the leg radius, grows inward.",
+  tcDrive:"Route the computed Ca = Cb into the solver's transfer-cap inputs (raises their range; disables manual Ca/Cb).",
 };
 // Non-numeric control id → DOM element id to attach its description/tooltip.
 const DESC_CTRL = {pdiel:"pdiel", pring:"pring", plink:"plink", psrc:"psrc-seg", punit:"punit-seg",
                    mcouple:"mcouple", munit:"munit-seg", mfit:"mfit-seg", mdims:"mdims",
                    rcond:"rcond-seg", rmanod:"rmanod",
-                   demDriveMode:"ddrive-seg", demCapTopology:"dtopo-seg", dlabels:"dlabels"};
+                   demDriveMode:"ddrive-seg", demCapTopology:"dtopo-seg", dlabels:"dlabels",
+                   tcMode:"tmode-seg", tcPlacement:"tplc-seg", tcDrive:"tcDrive"};
 
 function injectDescriptions(){
   for (const f of FIELDS){
@@ -2165,6 +2444,34 @@ function drawDemTopView(){
   ctx.fillText(Nsec + " sectors · 6 rotor poles · 12 C-EMs (A→C3 / B→C4) @ C3⁺", 6, 6);
 }
 
+/* ---- Block T: transfer-cap readouts + solver hand-off (call-site wiring) ---- */
+let lastTransfer = null;
+function updateTransfer(){
+  const T = transferCaps(state);
+  lastTransfer = T;
+  const mm = (m, dp) => (m*1e3).toFixed(dp ?? 1) + " mm";
+  $("tr-band").textContent  = mm(T.rAI, 0) + " … " + mm(T.rAO, 0) + (T.bandValid ? "" : "  (collapsed)");
+  $("tr-width").textContent = T.widthMm.toFixed(1) + " mm" + (T.mode === "forward" ? "  (input)" : "");
+  $("tr-radii").textContent = mm(T.rRingInner, 1) + " … " + mm(T.rRingOuter, 1);
+  $("tr-area").textContent  = (T.area*1e4).toFixed(1) + " cm²";
+  $("tr-ca").textContent    = fmt(T.CaNF, 3) + " nF  (" + fmt(T.CaNF*1e3, 0) + " pF)";
+  $("tr-ca").className       = "v" + (T.overrun ? " fail" : "");
+  $("tr-camax").textContent = fmt(T.CaMaxNF, 2) + " nF";
+  $("tr-field").textContent = isFinite(T.field) ? T.field.toFixed(1) + " kV/mm" : "—";
+  $("tr-energy").textContent = fmtE(T.energy);
+  $("tc-mode-tag").textContent = T.mode + " · " + T.placement + (state.tcDrive ? " · driving Ca/Cb" : "");
+  $("blockT-warn").innerHTML = T.warns.map(([c,m]) =>
+    '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
+
+  // [§8] Solver hand-off (call-site wiring only; solveDoubler4 untouched):
+  // route the realised Ca = Cb into the transfer-cap state values.
+  if (state.tcDrive){
+    const caPF = clampField("ca", T.CaNF * 1e3);          // nF → pF, clamp to raised max
+    state.ca = caPF; state.cb = caPF;
+    syncFieldInputs(CA_IDS);
+  }
+}
+
 // --- live axial cross-section (§5.1) ---
 let mLockScale = null;
 function drawCrossSection(){
@@ -2281,6 +2588,57 @@ function drawCrossSection(){
       const xg = X(plateR) - 6;
       ctx.beginPath(); ctx.moveTo(xg, yElec); ctx.lineTo(xg, yIn); ctx.stroke();
       ctx.setLineDash([]);
+    }
+  }
+
+  // 5d) Block T transfer-cap stack on the BACK of each stator plate:
+  //     support legs → bus ring (node1, lower Ca/Cb plate) → Mylar → upper
+  //     electrode (node2). Radial span + Mylar thickness are real producer
+  //     values; leg/electrode thicknesses are render constants. [Block T §6]
+  if (plateR > hubR && lastTransfer && lastTransfer.bandValid){
+    const T = lastTransfer;
+    const rIn = T.rRingInnerDrawMm, rOut = T.rRingOuterDrawMm;   // mm, clamped to band
+    if (rOut > rIn){
+      const gap_mm  = Number(state.pgap) || 0;
+      const gapPx   = Math.max(2, gap_mm * scale);
+      const statorT = Math.max(4, 3*scale);
+      const legPx   = Math.max(6, 8*scale);
+      const ringPx  = Math.max(3, 2.5*scale);
+      const mylarPx = Math.max(2, (Number(state.tcMylarThkMm)||0) * scale);
+      const wpx = (rOut - rIn)*scale;
+      for (const sgn of [1,-1]){
+        const yElec = Z(sgn*discH/2) - sgn*eT;
+        const yIn   = yElec - sgn*gapPx;
+        const yTop  = sgn>0 ? yIn - statorT : yIn;
+        const yBack = sgn>0 ? yTop : yTop + statorT;           // outer face of the stator
+        const out = a => yBack - sgn*a;                        // move outward by a (screen-y)
+        // support legs at the ring inner & outer radii, both ±x sides.
+        ctx.strokeStyle = COL("--steel"); ctx.lineWidth = Math.max(1.2, scale);
+        for (const side of [1,-1]) for (const rr of [rIn, rOut]){
+          const xx = X(side*rr);
+          ctx.beginPath(); ctx.moveTo(xx, yBack); ctx.lineTo(xx, out(legPx)); ctx.stroke();
+        }
+        const yR0 = out(legPx), yM0 = out(legPx+ringPx), yE0 = out(legPx+ringPx+mylarPx);
+        for (const x0 of [rIn, -rOut]){
+          const xL = X(x0);
+          // bus ring (copper) + thin conductor hatch
+          const yR = sgn>0 ? yR0 - ringPx : yR0;
+          ctx.fillStyle = COL("--copper"); ctx.fillRect(xL, yR, wpx, ringPx);
+          ctx.strokeStyle = COL("--bg"); ctx.lineWidth = 0.6;
+          for (let xx = xL; xx < xL+wpx; xx += 5){ ctx.beginPath(); ctx.moveTo(xx, yR); ctx.lineTo(xx-ringPx, yR+ringPx); ctx.stroke(); }
+          // Mylar (dielectric)
+          const yM = sgn>0 ? yM0 - mylarPx : yM0;
+          ctx.fillStyle = COL("--diel"); ctx.fillRect(xL, yM, wpx, mylarPx);
+          // upper electrode (copper)
+          const yE = sgn>0 ? yE0 - ringPx : yE0;
+          ctx.fillStyle = COL("--copper"); ctx.fillRect(xL, yE, wpx, ringPx);
+        }
+        if (state.mdims){
+          ctx.fillStyle = COL("--copper"); ctx.font = "10px ui-monospace,monospace";
+          ctx.textAlign = "left"; ctx.textBaseline = "middle";
+          ctx.fillText(sgn>0 ? "Ca" : "Cb", X(rOut)+4, out(legPx+ringPx));
+        }
+      }
     }
   }
 
@@ -2429,6 +2787,9 @@ function recompute(){
   updateMech();
   updateResonator();
   updateDem();
+  // Block T is a producer that MAY drive the solver transfer caps (tcDrive),
+  // so it runs before the z solve below. [§8 — call-site wiring, solver untouched]
+  updateTransfer();
   const C1min = Math.min(state.c1min, state.c1max);
   const C1max = Math.max(state.c1min, state.c1max);
   const C2min = Math.min(state.c2min, state.c2max);
@@ -2682,6 +3043,7 @@ function boot(){
   Object.assign(state, MECH_CTL_DEFAULTS);    // non-numeric mechanical controls
   Object.assign(state, RES_CTL_DEFAULTS);     // non-numeric resonator controls
   Object.assign(state, DEM_CTL_DEFAULTS);     // non-numeric Block-D controls
+  Object.assign(state, TC_CTL_DEFAULTS);      // non-numeric Block-T controls
   state.help = false;                         // per-parameter help (view toggle)
   loadFromHash();
   for (const f of FIELDS) bindField(f);
@@ -2689,6 +3051,7 @@ function boot(){
   bindMechControls();
   bindResControls();
   bindDemControls();
+  bindTransferControls();
   injectDescriptions();
   reflectControls();
 
