@@ -4,6 +4,12 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Changed
+- **Block C-I v0.2 — active-overlap squeeze + C_R decoupling.** `plateGeom` now returns **two** areas: `Ametal_full` (the full rotor face) **and** `Ametal_active` (the swinging rotor↔stator overlap band `[ro+void, plateR−bus−(quadfoot+quadclr)]`). The counter-rotating stator can't reach the central HV tank (inner `pvoid`) nor overlap the 6 rim steel cores (outer `pquadfoot + pquadclr`), so the pump area is squeezed inward at both ends.
+  - **`plateCaps` uses the active area** → pump `Cmax` shrinks ≈ ×0.58 at defaults (94 mm steel-core band + 10 mm clearance + 9 mm bus + 20 mm inner void; `A_active ≈ 0.221 m²` vs `A_full ≈ 0.384 m²`).
+  - **`resonatorCore` uses `Ametal_full` for `C_R`** — `C_R` is rotor↔rotor through the mica disc, so it's decoupled from the stator clearances and `C_R`/`f0` stay unchanged (verified by a C_R-invariance self-test). **[OC]**
+  - New `p`-inputs (mm): `pvoid`, `pbus`, `pquadfoot`, `pquadclr`. New readouts: `A_full`, `A_active`, active band (mm), squeeze ratio. Three warnings: band-collapsed (hard), HV-void floor from the Block-D bias at 1 kV/mm (derated), and the standing decoupling note. Five self-tests (squeeze applied, band radii, **C_R invariance**, pump ∝ active area, collapse guard). Page stamped `C-I v0.2`. `solveDoubler4` untouched.
+
 ### Added
 - **Block D — Distributed electromagnets (reluctance spin-up motor)** (`docs/brief-blockD-distributed-electromagnets.md`): a fourth independent producer (never writes the rotor caps, never calls `solveDoubler4`) modelling the 12-C-EM stator reluctance motor that spins the machine up.
   - **Iron-rotor reluctance model:** 12 stator C-electromagnets in two interleaved groups of 6 (odd → group A on transfer cap C3, even → group B on C4), uniform winding. The N-S-N-S ring pattern is a *consequence* of the two transfer caps swinging antiphase (push-pull); a parity self-test asserts the A↔C3 / B↔C4 grouping and the adjacent-pole alternation (the assumption the whole map rests on). **[OC]**

@@ -72,6 +72,22 @@ Non-numeric controls (no `-r`/`-n` pair; serialise into the hash manually): `pdi
 
 Each producer block owns a prefix; `d` alone stays forbidden (ambiguous diameter / separation).
 
+### Block C-I — clearance inputs (`p`-prefix, mm)
+
+```
+pvoid (inner HV clearance, tank↔stator), pbus (stator outer bus),
+pquadfoot (steel-core footprint band), pquadclr (core collision clearance).
+```
+
+Two plate areas now exist and **must not be conflated**:
+
+```
+Ametal_full   = full rotor face  → C_R  (rotor↔rotor, resonatorCore)
+Ametal_active = squeezed overlap → C1/C2 (rotor↔stator, plateCaps)
+```
+
+The active band runs `[ro + pvoid, plateR − pbus − (pquadfoot + pquadclr)]`; clearances are mm regardless of `punit`. The squeeze shrinks the **pump** only — `C_R`/`f0` keep the full face.
+
 ### Block D — distributed electromagnet motor (prefix `dem*`)
 
 ```
