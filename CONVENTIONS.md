@@ -88,6 +88,19 @@ Ametal_active = squeezed overlap → C1/C2 (rotor↔stator, plateCaps)
 
 The active band runs `[ro + pvoid, plateR − pbus − (pquadfoot + pquadclr)]`; clearances are mm regardless of `punit`. The squeeze shrinks the **pump** only — `C_R`/`f0` keep the full face.
 
+### Block T — transfer caps (prefix `tc*`, mm/nF)
+
+```
+tcMode, tcPlacement, tcCaNF, tcWidthMm, tcMylarEr, tcMylarThkMm,
+tcBracketMm, tcVkV                                          [inputs]
+tcWidthOutMm, tcRingInnerMm, tcRingOuterMm, tcCaOutNF,
+tcAreaM2, tcFieldKVmm, tcEnergyJ, tcCaMaxNF                 [outputs]
+```
+
+- Bus ring = **SOLID annulus** (full area, **no keptFrac**) — it buses the sectors and is the lower Ca/Cb plate.
+- Consumes `rActiveInner` / `rActiveOuter` from `plateGeom`. **Producer** — feeds (never edits) `solveDoubler4`; the optional `tcDrive` wiring routes the realised Ca = Cb into the solver's transfer-cap state at the call site only (raises their field max, nF-scale).
+- `t` alone stays forbidden; `tc` is the Block-T prefix.
+
 ### Block D — distributed electromagnet motor (prefix `dem*`)
 
 ```

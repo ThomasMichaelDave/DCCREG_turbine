@@ -4,6 +4,15 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Added
+- **Block T v0.1 — built-in transfer caps Ca / Cb** (`docs/brief-blockT-transfer-caps-v01.md`): a producer that designs the physical transfer caps as a **solid annular bus ring** on legs over the stator sectors + Mylar + upper electrode = Ca (top face) / Cb (bottom face).
+  - **Bus ring is a full annulus (no keptFrac)** — it buses the otherwise-unconnected stator sectors *and* is the lower Ca/Cb plate (node 1 ↔ 2; mirrored 4 ↔ 3). `transferCaps` consumes `rActiveInner`/`rActiveOuter` from `plateGeom` (Block C-I). **[OC]**
+  - **Inverse** (desired Ca → ring width) and **forward** (width → Ca) modes; **inside placement default** (inner edge pinned at `rActiveInner + bracket`, grows outward to clear the rim quadricones, must stay ≤ `rActiveOuter`), **outside** toggle (outer edge pinned at the leg radius, grows inward). Round-trip exact. Worked point: 7 nF → ≈191 mm width at 1 mm Mylar (εr 3.2).
+  - **Outputs:** ring width, inner/outer radii, plate area, realised Ca = Cb, band-max Ca, dielectric field (kV/mm), and ½·C·V² energy. **Five warnings:** band overrun (clamps the drawn ring), Ca above band-max, thin-bracket live-clearance, high-field (>40 warn / >100 bad), and the solid-annulus note.
+  - **§5d cross-section render:** the copper–Mylar–copper sandwich draws on the **back of each stator plate** in the Block-M axial view (legs → bus ring → Mylar → upper electrode), radial span and Mylar thickness tracking the real producer values; `Ca`/`Cb` labelled with the dimensions overlay; legend swatches added.
+  - **Solver hand-off (no `solveDoubler4` edit):** a `tcDrive` toggle routes the realised Ca = Cb into the solver's `ca`/`cb` state at the call site only, raising their field max (Block T is nF-scale, far above the manual 500 pF range) and disabling manual entry — mirroring the rotor-cap raise-max policy.
+  - New `tc*` namespace (CONVENTIONS §4), seven self-tests (inverse widths 129/191/258 mm, round-trip, band-max ≈12.3 nF + overrun, Ca=Cb symmetry, field, inside>outside width, 1.4 J energy). Page stamped `T v0.1`.
+
 ### Changed
 - **Block C-I v0.2 — active-overlap squeeze + C_R decoupling.** `plateGeom` now returns **two** areas: `Ametal_full` (the full rotor face) **and** `Ametal_active` (the swinging rotor↔stator overlap band `[ro+void, plateR−bus−(quadfoot+quadclr)]`). The counter-rotating stator can't reach the central HV tank (inner `pvoid`) nor overlap the 6 rim steel cores (outer `pquadfoot + pquadclr`), so the pump area is squeezed inward at both ends.
   - **`plateCaps` uses the active area** → pump `Cmax` shrinks ≈ ×0.58 at defaults (94 mm steel-core band + 10 mm clearance + 9 mm bus + 20 mm inner void; `A_active ≈ 0.221 m²` vs `A_full ≈ 0.384 m²`).
