@@ -1,0 +1,103 @@
+{
+  "preset": "R1-baseline",
+  "version": "1.0",
+  "date": "2026-06-06",
+  "title": "R1 — reference baseline (100 cm plate, 20 kV, 3000 rpm, Nsec 12)",
+  "description": "Bench-scale baseline. 1 m plate is the practical size ceiling; 20 kV sets a hand-buildable HV regime; 3000 rpm × 6 kept sectors → 300 Hz pump clock; mica disc + conical coil put the ring ~1000× above PRF so pump and ring don't interact. All inheritance links ON, so only primaries are listed; everything else is derived and the magnitudes are asserted in `expect`.",
+  "params": {
+    "pdia": {
+      "value": 100,
+      "why": "1 m plate — bench-scale upper bound (cm)."
+    },
+    "prouter": {
+      "value": 15,
+      "why": "ring-out ⌀ = hub coupling radius (cm)."
+    },
+    "prinner": {
+      "value": 5,
+      "why": "ring-in ⌀ (cm)."
+    },
+    "pgap": {
+      "value": 0.5,
+      "why": "varicap air gap; sets Cmax scale (mm)."
+    },
+    "pnsec": {
+      "value": 12,
+      "why": "12 sectors → 6 kept → ⌈12/2⌉=6 events/rev."
+    },
+    "pdiel": {
+      "value": "vacuum",
+      "why": "varicap medium (εr≈1)."
+    },
+    "rrpm": {
+      "value": 3000,
+      "why": "master machine RPM."
+    },
+    "vhvKV": {
+      "value": 20,
+      "why": "design HV; cascades to void/tcVkV/bias."
+    },
+    "vhvEkVmm": {
+      "value": 1,
+      "why": "conservative air field (use 2.0 only with a guard ring)."
+    },
+    "demQuadConeRmm": {
+      "value": 47,
+      "why": "rotor steel-cone radius → pquadfoot = 94 mm."
+    },
+    "demCapRatingKV": {
+      "value": 30,
+      "why": "resonant-cap rating above the 20 kV bias (free)."
+    },
+    "tcMylarEr": {
+      "value": 3.2,
+      "why": "Mylar dielectric constant."
+    },
+    "tcMylarThkMm": {
+      "value": 1,
+      "why": "1 mm → ~20 kV/mm field, real margin."
+    },
+    "tcRatio": {
+      "value": 1.5,
+      "why": "Ca=Cb=1.5·Cmax — modest reservoir over the varicap."
+    },
+    "mdisch": {
+      "value": 10,
+      "why": "mica disc/septum thickness (mm) → C_R via the conical model."
+    }
+  },
+  "toggles": {
+    "tcFromCmax": true,
+    "demRpmLink": true,
+    "demEvLink": true,
+    "vhvLink": true,
+    "quadLink": true
+  },
+  "expect": {
+    "CmaxNF": {
+      "value": 4.19,
+      "tol": 0.1,
+      "why": "squeezed active area × ε0·εr/gap (+ring)."
+    },
+    "CaNF": {
+      "value": 6.29,
+      "tol": 0.1,
+      "why": "1.5·Cmax (Block-T inverse, within band)."
+    },
+    "prfHz": {
+      "value": 300,
+      "tol": 0,
+      "why": "⌈12/2⌉·3000/60 — exact."
+    },
+    "pvoidMm": {
+      "value": 20,
+      "tol": 0,
+      "why": "20 kV / 1 kV·mm⁻¹."
+    },
+    "f0kHz": {
+      "value": 326,
+      "tol": 0.05,
+      "why": "conical-coil L with C_R (Nagaoka-checked)."
+    }
+  }
+}

@@ -81,6 +81,10 @@
   .ctl-row label.chk{display:inline-flex;gap:6px;align-items:center;color:var(--dim);cursor:pointer;font-size:12px}
   .warn-list{margin-top:10px;font-size:11px;line-height:1.6}
   .warn-list .w{color:var(--warn)}.warn-list .e{color:var(--bad)}.warn-list .note{color:var(--dim)}
+  #preset-notes b{color:var(--ink)}
+  #preset-notes .why{color:var(--dim)}
+  .expect-ok{color:var(--good)}.expect-bad{color:var(--bad)}
+  .pchip{display:inline-block;padding:1px 6px;margin:2px 4px 2px 0;border:1px solid var(--line);border-radius:2px;font-size:10px}
   #mxsec{height:240px}
   #dtop{height:340px}
   .scale-readout{font-size:10px;color:var(--dim);margin-top:4px}
@@ -99,7 +103,7 @@
 
 <header>
   <div>
-    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2 · T v0.1</span></h1>
+    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2 · T v0.1 · flow+presets v0.2</span></h1>
     <div class="sub">ideal-diode switched-capacitor solver · 16-state network search · cross-coupled regenerative</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
@@ -107,6 +111,58 @@
     <div id="engine-badge" class="badge"><span class="dot"></span><span id="engine-text">checking…</span></div>
   </div>
 </header>
+
+<!-- ============== DESIGN FLOW & PRESETS ============== -->
+<section class="panel" id="flow-panel" style="margin-bottom:14px">
+  <h2>Design flow &amp; presets
+    <span class="tag" id="flow-tag">5 links on</span></h2>
+
+  <div class="plate-grid">
+    <!-- ---- design primaries ---- -->
+    <div>
+      <div class="row">
+        <label>design HV</label>
+        <input type="range" id="vhvKV-r"><input type="number" id="vhvKV-n">
+        <span class="u">kV</span>
+      </div>
+      <div class="row">
+        <label>air field E</label>
+        <input type="range" id="vhvEkVmm-r"><input type="number" id="vhvEkVmm-n">
+        <span class="u">kV/mm</span>
+      </div>
+      <div class="row">
+        <label>quad cone R</label>
+        <input type="range" id="demQuadConeRmm-r"><input type="number" id="demQuadConeRmm-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>Ca / Cmax</label>
+        <input type="range" id="tcRatio-r"><input type="number" id="tcRatio-n">
+        <span class="u">×</span>
+      </div>
+      <div class="preset-bar">
+        <button id="loadPresetBtn">Load parameter set</button>
+        <button id="savePresetBtn">Save current as preset</button>
+        <button id="applyR1Btn">apply R1 baseline</button>
+        <input id="presetFile" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+
+    <!-- ---- inheritance toggles ---- -->
+    <div>
+      <div class="ctl-row" style="flex-direction:column;align-items:flex-start;gap:7px">
+        <label class="chk"><input type="checkbox" id="vhvLink"> design-V cascade → void · tcVkV · bias</label>
+        <label class="chk"><input type="checkbox" id="quadLink"> quad band ← 2·cone R (pquadfoot)</label>
+        <label class="chk"><input type="checkbox" id="demRpmLink"> one master RPM → motor RPM</label>
+        <label class="chk"><input type="checkbox" id="demEvLink"> motor events/rev ← ⌈Nsec/2⌉ (R≡D PRF)</label>
+        <label class="chk"><input type="checkbox" id="tcFromCmax"> Ca/Cb ← ratio·Cmax → drive solver</label>
+      </div>
+    </div>
+  </div>
+
+  <div id="preset-notes" class="footer-note" style="display:none"></div>
+  <div class="warn-list" id="flow-warn"></div>
+</section>
 
 <!-- ============== BLOCK C-I: PLATE GEOMETRY → ROTOR CAPACITANCE ============== -->
 <section class="panel" id="plate-panel" style="margin-bottom:14px">
@@ -1514,6 +1570,172 @@ function transferCaps(s){
 }
 
 /* ============================================================
+   DESIGN-FLOW INHERITANCE + PRESETS  (flow+presets v0.2)
+   ------------------------------------------------------------
+   Five default-on, overridable couplings cascade the primaries to
+   the derived (slaved) inputs in one acyclic pass, then the existing
+   producers/consumer run unchanged. Presets are JSON of primaries +
+   toggles + an `expect` block; the calculator verifies the expects so
+   no magnitude is ever hard-coded in prose. solveDoubler4 untouched.
+   ============================================================ */
+const FLOW_TOGGLE_IDS = ["tcFromCmax", "demRpmLink", "demEvLink", "vhvLink", "quadLink"];
+// slaved input id → the toggle that drives it (disabled-with-value while on).
+const FLOW_SLAVES = {
+  pvoid:"vhvLink", tcVkV:"vhvLink", demBiasKV:"vhvLink",
+  pquadfoot:"quadLink", demRpm:"demRpmLink", demEventsPerRev:"demEvLink",
+  tcCaNF:"tcFromCmax",
+};
+const SLAVE_IDS = Object.keys(FLOW_SLAVES);
+// primaries a preset/export carries (the cascade derives the rest).
+const PRIMARY_IDS = ["pdia","prouter","prinner","pgap","pnsec","pdiel","rrpm",
+                     "vhvKV","vhvEkVmm","demQuadConeRmm","tcMylarEr","tcMylarThkMm",
+                     "tcRatio","demCapRatingKV","mdisch"];
+// the explicit set of checkable `expect` outputs (key → pure getter on a state).
+const presetExpectGetters = {
+  CmaxNF:  st => plateCaps(st).Cmax / 1000,        // pF → nF
+  CaNF:    st => transferCaps(st).CaNF,            // realised Ca = Cb (nF)
+  prfHz:   st => demMotor(st).prf,
+  pvoidMm: st => Number(st.pvoid) || 0,
+  f0kHz:   st => resonatorCore(st).f0 / 1000,
+};
+
+// One stable cascade pass (brief A3). Mutates and returns the state. Pure
+// (no DOM): reuses FIELDS clamps so slaved values stay in range. [OC/IR]
+function cascadeState(st){
+  const vhvKV = Number(st.vhvKV) || 0, eK = Number(st.vhvEkVmm) || 1;
+  if (st.vhvLink){
+    st.pvoid     = clampField("pvoid",     eK > 0 ? vhvKV/eK : 0);   // HV gap = V/E [OC]
+    st.tcVkV     = clampField("tcVkV",     vhvKV);
+    st.demBiasKV = clampField("demBiasKV", vhvKV);
+  }
+  if (st.quadLink)   st.pquadfoot       = clampField("pquadfoot",       2*(Number(st.demQuadConeRmm)||0));  // [OC]
+  if (st.demRpmLink) st.demRpm          = clampField("demRpm",          Number(st.rrpm)||0);                 // [IR]
+  if (st.demEvLink)  st.demEventsPerRev = clampField("demEventsPerRev", Math.ceil((Number(st.pnsec)||2)/2)); // [OC]
+  if (st.tcFromCmax){
+    st.tcMode  = "inverse";
+    const caps = plateCaps(st);                                       // needs pvoid/pquadfoot set above
+    st.tcCaNF  = clampField("tcCaNF", (Number(st.tcRatio)||0) * caps.Cmax / 1000);  // Ca = ratio·Cmax [IR]
+  }
+  return st;
+}
+
+// Known non-numeric input ids a preset may set (besides the boolean toggles).
+const PRESET_NONNUM = new Set(["pdiel","psrc","punit","munit","rcond",
+                               "tcMode","tcPlacement","demDriveMode","demCapTopology"]);
+const PRESET_BOOLS  = new Set([...FLOW_TOGGLE_IDS, "tcDrive","pring","plink","couple","rmanod","dlabels","mdims"]);
+
+// Apply a preset object to a state (pure). Returns {warnings, applied, overridden}.
+// Partial presets allowed; bad values warned + skipped, never applied silently. (B4/B5)
+function applyParamPresetTo(st, preset){
+  const warnings = [], applied = [], overridden = [];
+  if (!preset || typeof preset !== "object"){ warnings.push("preset is not an object."); return {warnings, applied, overridden}; }
+  const params = preset.params || {};
+  if (!Object.keys(params).length) warnings.push("empty preset (no params) — nothing applied.");
+  for (const id in params){
+    let v = params[id];
+    if (v && typeof v === "object" && "value" in v) v = v.value;
+    const f = FIELDS.find(x => x.id === id);
+    if (f){
+      const num = Number(v);
+      if (!isFinite(num)){ warnings.push(id + ": not a number — skipped."); continue; }
+      if (num < f.min || num > f.max){ warnings.push(id + ": " + num + " out of range [" + f.min + ", " + f.max + "] — skipped."); continue; }
+      st[id] = num; applied.push(id);
+    } else if (PRESET_NONNUM.has(id)){
+      st[id] = v; applied.push(id);
+    } else {
+      warnings.push(id + ": unknown input id — skipped (typo?).");
+    }
+  }
+  const toggles = preset.toggles || {};
+  for (const id in toggles){
+    if (PRESET_BOOLS.has(id)) st[id] = !!toggles[id];
+    else warnings.push(id + ": unknown toggle — skipped.");
+  }
+  // a preset value targeting an inheritance-ON slaved field is overwritten by the cascade.
+  for (const id in params){
+    if (FLOW_SLAVES[id] && st[FLOW_SLAVES[id]]){
+      overridden.push(id);
+      warnings.push(id + " from preset ignored (" + FLOW_SLAVES[id] + " on); turn it off to honour it.");
+    }
+  }
+  cascadeState(st);
+  return {warnings, applied, overridden};
+}
+
+// Evaluate a preset's `expect` block against a (cascaded) state (pure). (B4.5)
+function evalExpect(st, preset){
+  const out = [];
+  const exp = preset && preset.expect; if (!exp) return out;
+  for (const k in exp){
+    const g = presetExpectGetters[k];
+    const e = exp[k];
+    const val = (e && typeof e === "object") ? e.value : e;
+    const tol = (e && typeof e === "object" && "tol" in e) ? e.tol : 0;
+    if (!g){ out.push({key:k, ok:false, got:NaN, expected:val, tol, unknown:true}); continue; }
+    const got = g(st);
+    const ok = Math.abs(got - val) <= (tol > 0 ? tol*Math.abs(val) : 1e-6*Math.max(1, Math.abs(val)));
+    out.push({key:k, ok, got, expected:val, tol});
+  }
+  return out;
+}
+
+// Build a scaffold preset from a state (primaries + toggles + expect snapshot). (B6)
+function buildPresetFrom(st){
+  const round = (x, d) => { const p = Math.pow(10, d ?? 3); return Math.round(x*p)/p; };
+  const params = {};
+  for (const id of PRIMARY_IDS) params[id] = {value: st[id], why: ""};
+  const toggles = {};
+  for (const id of FLOW_TOGGLE_IDS) toggles[id] = !!st[id];
+  return {
+    preset:"untitled", version:"1.0", date:new Date().toISOString().slice(0,10),
+    title:"", description:"",
+    params, toggles,
+    expect:{
+      CmaxNF:{value:round(presetExpectGetters.CmaxNF(st)), tol:0.1, why:""},
+      CaNF:  {value:round(presetExpectGetters.CaNF(st)),   tol:0.1, why:""},
+      prfHz: {value:round(presetExpectGetters.prfHz(st),0),tol:0.0, why:""},
+      pvoidMm:{value:round(presetExpectGetters.pvoidMm(st),1),tol:0.0,why:""},
+      f0kHz: {value:round(presetExpectGetters.f0kHz(st),0), tol:0.05, why:""},
+    },
+  };
+}
+
+// Worked reference baseline R1 (Part C) — embedded so the self-test can load it
+// without file I/O; also shipped as presets/R1-baseline.json for the Load button.
+const PRESET_R1 = {
+  preset:"R1-baseline", version:"1.0", date:"2026-06-06",
+  title:"R1 — reference baseline (100 cm plate, 20 kV, 3000 rpm, Nsec 12)",
+  description:"Bench-scale baseline. 1 m plate is the practical size ceiling; 20 kV sets a hand-buildable HV regime; 3000 rpm × 6 kept sectors → 300 Hz pump clock; mica disc + conical coil put the ring ~1000× above PRF so pump and ring don't interact. All inheritance links ON, so only primaries are listed; everything else is derived and the magnitudes are asserted in `expect`.",
+  params:{
+    pdia:          {value:100, why:"1 m plate — bench-scale upper bound (cm)."},
+    prouter:       {value:15,  why:"ring-out ⌀ = hub coupling radius (cm)."},
+    prinner:       {value:5,   why:"ring-in ⌀ (cm)."},
+    pgap:          {value:0.5, why:"varicap air gap; sets Cmax scale (mm)."},
+    pnsec:         {value:12,  why:"12 sectors → 6 kept → ⌈12/2⌉=6 events/rev."},
+    pdiel:         {value:"vacuum", why:"varicap medium (εr≈1)."},
+    rrpm:          {value:3000,why:"master machine RPM."},
+    vhvKV:         {value:20,  why:"design HV; cascades to void/tcVkV/bias."},
+    vhvEkVmm:      {value:1.0, why:"conservative air field (use 2.0 only with a guard ring)."},
+    demQuadConeRmm:{value:47,  why:"rotor steel-cone radius → pquadfoot = 94 mm."},
+    demCapRatingKV:{value:30,  why:"resonant-cap rating above the 20 kV bias (free)."},
+    tcMylarEr:     {value:3.2, why:"Mylar dielectric constant."},
+    tcMylarThkMm:  {value:1.0, why:"1 mm → ~20 kV/mm field, real margin."},
+    tcRatio:       {value:1.5, why:"Ca=Cb=1.5·Cmax — modest reservoir over the varicap."},
+    mdisch:        {value:10,  why:"mica disc/septum thickness (mm) → C_R via the conical model."},
+  },
+  toggles:{tcFromCmax:true, demRpmLink:true, demEvLink:true, vhvLink:true, quadLink:true},
+  // Magnitudes live here (checked on load), never in prose. Values are the
+  // calculator's own outputs for these primaries; tol is fractional.
+  expect:{
+    CmaxNF: {value:4.19, tol:0.10, why:"squeezed active area × ε0·εr/gap (+ring)."},
+    CaNF:   {value:6.29, tol:0.10, why:"1.5·Cmax (Block-T inverse, within band)."},
+    prfHz:  {value:300,  tol:0.0,  why:"⌈12/2⌉·3000/60 — exact."},
+    pvoidMm:{value:20,   tol:0.0,  why:"20 kV / 1 kV·mm⁻¹."},
+    f0kHz:  {value:326,  tol:0.05, why:"conical-coil L with C_R (Nagaoka-checked)."},
+  },
+};
+
+/* ============================================================
    SELF-TEST
    ============================================================ */
 const VERIFY = [
@@ -1696,6 +1918,59 @@ function runSelfTest(){
   plateRows.push({label:"T: energy 7nF·20kV ≈ 1.4 J", expected:1.4, got:Tinv.energy, dp:3, tol:0.02,
                   pass:Math.abs(Tinv.energy-1.4) <= 0.02});
 
+  // --- Design-flow + presets self-tests (brief §B8) ---
+  const flowSeed = () => {
+    const st = {};
+    for (const f of FIELDS) st[f.id] = f.def;
+    Object.assign(st, PLATE_CTL_DEFAULTS, MECH_CTL_DEFAULTS, RES_CTL_DEFAULTS, TC_CTL_DEFAULTS, FLOW_CTL_DEFAULTS);
+    return st;
+  };
+  const fOut = st => presetExpectGetters.CmaxNF(st)*1e3 + presetExpectGetters.CaNF(st)*1e3 + presetExpectGetters.f0kHz(st);
+  // 1. export→load round-trip is idempotent (outputs unchanged).
+  const stA = flowSeed(); applyParamPresetTo(stA, PRESET_R1);
+  const stB = flowSeed(); applyParamPresetTo(stB, JSON.parse(JSON.stringify(buildPresetFrom(stA))));
+  plateRows.push({label:"F: export→load round-trip (idempotent)", expected:fOut(stA), got:fOut(stB), dp:3, tol:1e-4,
+                  pass:Math.abs(fOut(stA)-fOut(stB)) <= 1e-6*Math.max(1, Math.abs(fOut(stA)))});
+  // 2. partial load: only the listed input changes.
+  const stP = flowSeed(); applyParamPresetTo(stP, {params:{pdia:80}});
+  plateRows.push({label:"F: partial load (only pdia changes)", expected:80, got:stP.pdia, dp:0, tol:0,
+                  pass:stP.pdia===80 && stP.pnsec===12});
+  // 3. R1 expect all pass.
+  const stR = flowSeed(); applyParamPresetTo(stR, PRESET_R1);
+  const evR = evalExpect(stR, PRESET_R1);
+  plateRows.push({label:"F: R1 expect all within tol", expected:evR.length, got:evR.filter(e=>e.ok).length, dp:0, tol:0,
+                  pass:evR.length>0 && evR.every(e=>e.ok)});
+  // 4. corrupted expect surfaces a ✗.
+  const badR1 = JSON.parse(JSON.stringify(PRESET_R1)); badR1.expect.f0kHz.value = 999;
+  const stC = flowSeed(); applyParamPresetTo(stC, badR1);
+  const f0row = evalExpect(stC, badR1).find(e => e.key==="f0kHz");
+  plateRows.push({label:"F: corrupt expect.f0kHz surfaces ✗", expected:0, got:(f0row&&f0row.ok)?1:0, dp:0, tol:0,
+                  pass:!!f0row && f0row.ok===false});
+  // 5. inheritance overwrite warn: preset pvoid with vhvLink on.
+  const stW = flowSeed(); const rW = applyParamPresetTo(stW, {params:{pvoid:99}, toggles:{vhvLink:true}});
+  const warnedW = rW.warnings.some(w => /pvoid/.test(w) && /vhvLink/.test(w));
+  plateRows.push({label:"F: pvoid+vhvLink → overwrite warn", expected:20, got:stW.pvoid, dp:1, tol:0,
+                  pass:warnedW && Math.abs(stW.pvoid-20) < 1e-9});
+  // 6. unknown key warns, valid keys still apply.
+  const stU = flowSeed(); const rU = applyParamPresetTo(stU, {params:{pnope:1, pdia:90}});
+  plateRows.push({label:"F: unknown key warns, others apply", expected:90, got:stU.pdia, dp:0, tol:0,
+                  pass:stU.pdia===90 && rU.warnings.some(w => /pnope/.test(w))});
+  // 7. bad JSON throws and the state is untouched (parse is in try/catch upstream).
+  let threw7 = false; const stBad = flowSeed(); const snap7 = stBad.pdia;
+  try { JSON.parse("{bad json"); } catch(_) { threw7 = true; }
+  plateRows.push({label:"F: bad JSON throws, state untouched", expected:1, got:(threw7 && stBad.pdia===snap7)?1:0, dp:0, tol:0,
+                  pass:threw7 && stBad.pdia===snap7});
+  // 8. flow identities (carried from v0.1) + idempotent cascade.
+  const stI = flowSeed(); applyParamPresetTo(stI, PRESET_R1);
+  const idOK = (Math.abs(demMotor(stI).prf - resonatorCore(stI).prf) < 1e-9)
+            && (stI.pquadfoot === 2*stI.demQuadConeRmm)
+            && (Math.abs(stI.pvoid - stI.vhvKV/stI.vhvEkVmm) < 1e-9)
+            && (stI.demEventsPerRev === Math.ceil(stI.pnsec/2));
+  const stI2 = JSON.parse(JSON.stringify(stI)); cascadeState(stI2);
+  const idem = Math.abs(fOut(stI)-fOut(stI2)) < 1e-9;
+  plateRows.push({label:"F: flow identities + idempotent cascade", expected:1, got:(idOK&&idem)?1:0, dp:0, tol:0,
+                  pass:idOK && idem});
+
   const plateAll = plateRows.every(r => r.pass);
 
   return {ok: allOk && symOk && plateAll, rows, symOk, symA:a, symB:b, plateRows};
@@ -1746,7 +2021,7 @@ const FIELDS = [
   {id:"demRpm",          def:3000, min:0,    max:30000, step:50},
   {id:"demEventsPerRev", def:6,    min:1,    max:24,    step:1},
   {id:"demCapBlockNF",   def:440,  min:1,    max:5000,  step:1},
-  {id:"demCapRatingKV",  def:20,   min:1,    max:100,   step:0.5},
+  {id:"demCapRatingKV",  def:30,   min:1,    max:100,   step:0.5},
   {id:"demBiasKV",       def:12,   min:0,    max:100,   step:0.5},
   {id:"demRippleV",      def:250,  min:0,    max:5000,  step:10},
   {id:"demPoleAreaCm2",  def:4,    min:0.1,  max:50,    step:0.1},
@@ -1761,6 +2036,11 @@ const FIELDS = [
   {id:"tcMylarThkMm", def:1.0, min:0.05, max:5,    step:0.05},
   {id:"tcBracketMm",  def:15,  min:0,    max:100,  step:1},
   {id:"tcVkV",        def:20,  min:0,    max:100,  step:0.5},
+  // --- Design-flow primaries (flow+presets v0.2) ---
+  {id:"vhvKV",          def:20,  min:0,    max:100,  step:0.5},  // design HV → void, tcVkV, bias
+  {id:"vhvEkVmm",       def:1.0, min:0.1,  max:5,    step:0.1},  // air working field kV/mm
+  {id:"demQuadConeRmm", def:47,  min:0,    max:150,  step:1},    // rotor steel-cone radius → pquadfoot
+  {id:"tcRatio",        def:1.5, min:0.1,  max:10,   step:0.1},  // Ca = tcRatio·Cmax
 ];
 // Non-numeric plate controls (serialised into the hash manually). [task §7.2]
 // Rotor caps are inherited from the plate-geometry capacitance by default
@@ -1776,6 +2056,8 @@ const DEM_CTL_DEFAULTS = {demDriveMode:"altStroke", demCapTopology:"perCoil", dl
 // Non-numeric Block T controls (hash-serialised manually). tcDrive routes the
 // computed Ca/Cb into the solver's transfer-cap inputs (call-site wiring only).
 const TC_CTL_DEFAULTS = {tcMode:"inverse", tcPlacement:"inside", tcDrive:false};
+// Design-flow inheritance toggles (all default-on, overridable). [flow+presets v0.2]
+const FLOW_CTL_DEFAULTS = {tcFromCmax:true, demRpmLink:true, demEvLink:true, vhvLink:true, quadLink:true};
 // Transfer-cap field max in Block-T-driven vs manual mode (Block T is nF-scale,
 // far above the manual 500 pF range). [IR — same raise-max policy as the rotor.]
 const CA_MAX_MANUAL = 500, CA_MAX_TC = 20000;
@@ -1832,6 +2114,7 @@ function loadFromHash(){
   if (p.has("tmode")) state.tcMode = p.get("tmode") === "forward" ? "forward" : "inverse";
   if (p.has("tplc"))  state.tcPlacement = p.get("tplc") === "outside" ? "outside" : "inside";
   if (p.has("tdrv"))  state.tcDrive = p.get("tdrv") === "1";
+  for (const id of FLOW_TOGGLE_IDS) if (p.has(id)) state[id] = p.get(id) === "1";
   if (p.has("help"))  state.help = p.get("help") === "1";
 }
 function writeHash(){
@@ -1854,16 +2137,18 @@ function writeHash(){
   p.set("tmode", state.tcMode);
   p.set("tplc",  state.tcPlacement);
   p.set("tdrv",  state.tcDrive ? 1 : 0);
+  for (const id of FLOW_TOGGLE_IDS) p.set(id, state[id] ? 1 : 0);
   p.set("help",  state.help ? 1 : 0);
   history.replaceState(null, "", "#" + p.toString());
 }
 
 const PRESETS = {
-  // Electrical presets imply manual rotor source.
-  device:  {psrc:"manual", c1min:160, c1max:1000, c2min:160, c2max:1000, ca:100, cb:100, cpar:20},
-  wide:    {psrc:"manual", c1min:100, c1max:2000, c2min:100, c2max:2000, ca:100, cb:100, cpar:20},
-  narrow:  {psrc:"manual", c1min:400, c1max:600,  c2min:400, c2max:600,  ca:100, cb:100, cpar:20},
-  noswing: {psrc:"manual", c1min:500, c1max:500,  c2min:500, c2max:500,  ca:100, cb:100, cpar:10},
+  // Electrical presets imply manual rotor source AND manual transfer caps
+  // (turn off the Ca←Cmax inheritance so the typed ca/cb survive the cascade).
+  device:  {psrc:"manual", tcFromCmax:false, c1min:160, c1max:1000, c2min:160, c2max:1000, ca:100, cb:100, cpar:20},
+  wide:    {psrc:"manual", tcFromCmax:false, c1min:100, c1max:2000, c2min:100, c2max:2000, ca:100, cb:100, cpar:20},
+  narrow:  {psrc:"manual", tcFromCmax:false, c1min:400, c1max:600,  c2min:400, c2max:600,  ca:100, cb:100, cpar:20},
+  noswing: {psrc:"manual", tcFromCmax:false, c1min:500, c1max:500,  c2min:500, c2max:500,  ca:100, cb:100, cpar:10},
   // Plate presets drive the rotor caps from geometry. [§6.8]
   // Plate-only C-I exploration (small plate) ⇒ decoupled from the mechanical core.
   "plate-air":  {psrc:"plate", pdiel:"air",  punit:"cm", pring:true, plink:true, couple:false,
@@ -1952,6 +2237,12 @@ function setCaCbDisabled(disabled){
     if (n) n.disabled = disabled;
   }
 }
+// Disable one numeric field's slider+box (slaved-by-inheritance styling). [flow v0.2]
+function setFieldDisabled(id, disabled){
+  const r = $(id+"-r"), n = $(id+"-n");
+  if (r) r.disabled = disabled;
+  if (n) n.disabled = disabled;
+}
 
 // Push every control's state into the DOM (after presets / hash load).
 function reflectControls(){
@@ -2005,9 +2296,15 @@ function reflectControls(){
   $("tcDrive").checked = !!state.tcDrive;
   document.querySelectorAll(".tc-inverse").forEach(e => e.style.display = state.tcMode === "forward" ? "none" : "");
   document.querySelectorAll(".tc-forward").forEach(e => e.style.display = state.tcMode === "forward" ? "" : "none");
-  // Block T drives the solver transfer caps ⇒ disable + raise their field max.
-  setCaCbFieldMax(state.tcDrive ? CA_MAX_TC : CA_MAX_MANUAL);
-  setCaCbDisabled(!!state.tcDrive);
+  // Block T (or the Cmax inheritance) drives the solver transfer caps ⇒ disable + raise max.
+  const caDriven = !!state.tcDrive || !!state.tcFromCmax;
+  setCaCbFieldMax(caDriven ? CA_MAX_TC : CA_MAX_MANUAL);
+  setCaCbDisabled(caDriven);
+  // --- Design-flow toggles + slaved-field disabling ---
+  for (const id of FLOW_TOGGLE_IDS) { const cb = $(id); if (cb) cb.checked = !!state[id]; }
+  for (const id in FLOW_SLAVES) setFieldDisabled(id, !!state[FLOW_SLAVES[id]]);
+  const nOn = FLOW_TOGGLE_IDS.filter(id => state[id]).length;
+  $("flow-tag").textContent = nOn + "/" + FLOW_TOGGLE_IDS.length + " links on";
   // per-parameter help visibility
   document.body.classList.toggle("help-on", !!state.help);
   $("help-toggle").classList.toggle("on", !!state.help);
@@ -2145,6 +2442,26 @@ function bindTransferControls(){
   $("tcDrive").addEventListener("change", e => { state.tcDrive = e.target.checked; reflectControls(); scheduleRecompute(); });
 }
 
+function bindFlowControls(){
+  for (const id of FLOW_TOGGLE_IDS)
+    $(id).addEventListener("change", e => { state[id] = e.target.checked; reflectControls(); scheduleRecompute(); });
+  $("loadPresetBtn").addEventListener("click", () => $("presetFile").click());
+  $("savePresetBtn").addEventListener("click", savePreset);
+  $("applyR1Btn").addEventListener("click", () => applyParamPreset(PRESET_R1));
+  $("presetFile").addEventListener("change", async e => {
+    const f = e.target.files[0];
+    if (f){
+      try {
+        const preset = JSON.parse(await f.text());
+        applyParamPreset(preset);
+      } catch(err){
+        showPresetError("Could not read preset: " + err.message);
+      }
+    }
+    e.target.value = "";                                  // allow re-loading the same file
+  });
+}
+
 /* ---- per-parameter descriptions (single source of truth) ---- */
 const DESC = {
   // host rotor caps + transfer/stray
@@ -2220,13 +2537,25 @@ const DESC = {
   tcMode:"Inverse (desired Ca → ring width) or forward (ring width → Ca).",
   tcPlacement:"Inside: ring pinned at the inner band, grows outward (default). Outside: pinned at the leg radius, grows inward.",
   tcDrive:"Route the computed Ca = Cb into the solver's transfer-cap inputs (raises their range; disables manual Ca/Cb).",
+  // Design-flow primaries + toggles
+  vhvKV:"Design high voltage across the caps; cascades to the HV void, Block-T design V, and the motor bias.",
+  vhvEkVmm:"Assumed air working field (kV/mm); the HV void = design-HV / this. 1.0 conservative; 2.0 only with a guard ring.",
+  demQuadConeRmm:"Rotor steel-cone radius; the C-I quad-band footprint = 2× this (pquadfoot).",
+  tcRatio:"Transfer-cap reservoir ratio: Ca = Cb = ratio · Cmax (drives Block T inverse when the link is on).",
+  vhvLink:"Cascade the design HV to the HV void, Block-T design V, and the motor DC bias.",
+  quadLink:"Set the C-I quad-band footprint from the motor cone radius (pquadfoot = 2·cone R).",
+  demRpmLink:"Slave the motor RPM to the one master machine RPM (rotor speed).",
+  demEvLink:"Slave the motor events/rev to ⌈Nsec/2⌉ so the R and D pulse rates are identical by construction.",
+  tcFromCmax:"Set Ca = Cb = ratio · Cmax (Block-T inverse) and drive the solver transfer caps.",
 };
 // Non-numeric control id → DOM element id to attach its description/tooltip.
 const DESC_CTRL = {pdiel:"pdiel", pring:"pring", plink:"plink", psrc:"psrc-seg", punit:"punit-seg",
                    mcouple:"mcouple", munit:"munit-seg", mfit:"mfit-seg", mdims:"mdims",
                    rcond:"rcond-seg", rmanod:"rmanod",
                    demDriveMode:"ddrive-seg", demCapTopology:"dtopo-seg", dlabels:"dlabels",
-                   tcMode:"tmode-seg", tcPlacement:"tplc-seg", tcDrive:"tcDrive"};
+                   tcMode:"tmode-seg", tcPlacement:"tplc-seg", tcDrive:"tcDrive",
+                   vhvLink:"vhvLink", quadLink:"quadLink", demRpmLink:"demRpmLink",
+                   demEvLink:"demEvLink", tcFromCmax:"tcFromCmax"};
 
 function injectDescriptions(){
   for (const f of FIELDS){
@@ -2463,13 +2792,75 @@ function updateTransfer(){
   $("blockT-warn").innerHTML = T.warns.map(([c,m]) =>
     '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
 
-  // [§8] Solver hand-off (call-site wiring only; solveDoubler4 untouched):
-  // route the realised Ca = Cb into the transfer-cap state values.
-  if (state.tcDrive){
+  // [§8 / flow A2.1] Solver hand-off (call-site wiring only; solveDoubler4 untouched):
+  // route the realised Ca = Cb into the transfer-cap state values when either the
+  // explicit tcDrive toggle or the Ca←Cmax inheritance is on.
+  if (state.tcDrive || state.tcFromCmax){
     const caPF = clampField("ca", T.CaNF * 1e3);          // nF → pF, clamp to raised max
     state.ca = caPF; state.cb = caPF;
     syncFieldInputs(CA_IDS);
   }
+}
+
+/* ---- Block: preset load / save (local file I/O only; no network/storage) ---- */
+function downloadBlob(text, filename){
+  const blob = new Blob([text], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  a.remove(); URL.revokeObjectURL(url);
+}
+function showPresetError(msg){
+  $("flow-warn").innerHTML = '<div class="e">⚠ ' + msg + '</div>';
+}
+function renderPresetNotes(preset, res, ev){
+  const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  let h = "";
+  if (preset.title) h += "<b>" + esc(preset.title) + "</b><br>";
+  if (preset.description) h += '<span class="why">' + esc(preset.description) + "</span><br>";
+  if (res.applied.length){
+    h += "<div style='margin-top:6px'><b>applied:</b> ";
+    h += res.applied.map(id => {
+      const p = preset.params && preset.params[id];
+      const why = (p && typeof p === "object" && p.why) ? ' title="' + esc(p.why) + '"' : "";
+      return '<span class="pchip"' + why + ">" + esc(id) + " = " + esc(state[id]) + "</span>";
+    }).join("");
+    h += "</div>";
+  }
+  if (res.overridden.length)
+    h += "<div style='margin-top:4px'><b>overridden by inheritance:</b> " + res.overridden.map(esc).join(", ") + "</div>";
+  if (ev.length){
+    h += "<div style='margin-top:6px'><b>expect:</b> ";
+    h += ev.map(e => {
+      const cls = e.ok ? "expect-ok" : "expect-bad";
+      const got = isFinite(e.got) ? (Math.abs(e.got) >= 100 ? e.got.toFixed(1) : e.got.toFixed(3)) : "—";
+      const mark = e.unknown ? "? unknown output" : (e.ok ? "✓" : "✗");
+      return '<span class="pchip ' + cls + '">' + mark + " " + esc(e.key) + ": " + got + " vs " + esc(e.expected) + "</span>";
+    }).join("");
+    h += "</div>";
+  }
+  const pn = $("preset-notes");
+  pn.innerHTML = h; pn.style.display = "";
+}
+// Live loader: apply to the real state, reflect, recompute, check expect, show notes.
+function applyParamPreset(preset){
+  $("flow-warn").innerHTML = "";
+  let res;
+  try { res = applyParamPresetTo(state, preset); }
+  catch(err){ showPresetError("Could not apply preset: " + err.message); return; }
+  // push numeric state → inputs; reflectControls handles non-numeric + toggles.
+  for (const f of FIELDS){ const r = $(f.id+"-r"), n = $(f.id+"-n"); if (r) r.value = state[f.id]; if (n) n.value = state[f.id]; }
+  reflectControls();
+  recompute();                                            // cascade re-runs (idempotent) + hash
+  const ev = evalExpect(state, preset);
+  renderPresetNotes(preset, res, ev);
+  if (res.warnings.length)
+    $("flow-warn").innerHTML = res.warnings.map(w => '<div class="w">⚠ ' + w + "</div>").join("");
+}
+function savePreset(){
+  const preset = buildPresetFrom(state);
+  preset.preset = "current-" + preset.date;
+  downloadBlob(JSON.stringify(preset, null, 2), preset.preset + ".json");
 }
 
 // --- live axial cross-section (§5.1) ---
@@ -2781,6 +3172,10 @@ function scheduleRecompute(){
 }
 
 function recompute(){
+  // [flow A3] One stable cascade pass: primaries → slaved inputs, before any
+  // producer runs. Reflect the slaved values into their (disabled) inputs.
+  cascadeState(state);
+  syncFieldInputs(SLAVE_IDS);
   // [§6.4] Producer pre-step: geometry → rotor caps (plate mode only).
   updatePlate();
   // Block M, R and D are independent producers — readouts only, no solver coupling.
@@ -3044,6 +3439,7 @@ function boot(){
   Object.assign(state, RES_CTL_DEFAULTS);     // non-numeric resonator controls
   Object.assign(state, DEM_CTL_DEFAULTS);     // non-numeric Block-D controls
   Object.assign(state, TC_CTL_DEFAULTS);      // non-numeric Block-T controls
+  Object.assign(state, FLOW_CTL_DEFAULTS);    // design-flow inheritance toggles
   state.help = false;                         // per-parameter help (view toggle)
   loadFromHash();
   for (const f of FIELDS) bindField(f);
@@ -3052,6 +3448,7 @@ function boot(){
   bindResControls();
   bindDemControls();
   bindTransferControls();
+  bindFlowControls();
   injectDescriptions();
   reflectControls();
 
