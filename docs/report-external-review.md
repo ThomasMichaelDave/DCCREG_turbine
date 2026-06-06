@@ -1,7 +1,7 @@
 # External Review Report — Rotary-Varicap Bennet-Doubler Design Calculator
 
 **Artifact under review:** `index.html` — a single, self-contained web page (no build, no server, no dependencies, no network, no `localStorage`).
-**Build stamp:** `C-I v0.2 · T v0.1` (shown in the page header).
+**Build stamp:** `C-I v0.2 · T v0.1 · flow+presets v0.2` (shown in the page header).
 **Companion document:** `docs/report-tool-functioning.md` (deeper functional walk-through of the host solver + Blocks C-I/M; this report supersedes its block coverage and adds Blocks R, D, T and the C-I v0.2 correction).
 **Purpose of this document:** give an external reviewer everything needed to judge the tool's correctness, scope, and honesty — what it claims, how those claims are validated, what was deliberately corrected, and what is explicitly out of scope.
 
@@ -41,6 +41,7 @@ It is an **exploration / sizing tool**, not a manufacturing release and **not a 
 | **R** central resonator | conical-coil `L ∥ C_R` tank, f₀/Q/ringdown | no — readouts + cross-section only |
 | **D** distributed EM motor | 12-C-EM reluctance spin-up, Q/turns/voltage budget | no — readouts + top-view only |
 | **T** transfer caps | bus-ring Ca/Cb geometry → capacitance | optional `tcDrive` toggle writes `ca`/`cb` at call site |
+| **Design flow + presets** | one-pass cascade of primaries → slaved inputs; JSON preset load/save | only via the documented `tcFromCmax`/`tcDrive` call-site wiring |
 
 A reviewer can verify the invariant by confirming `solveDoubler4` and `solvePhase` are byte-identical to the validated host engine; all feature work is upstream of them.
 
@@ -81,12 +82,13 @@ Per the "correct openly" convention, each of these is recorded in `CHANGELOG.md`
 - **C4 — C-I↔M coupling.** User-directed hard link (plate ⌀→disc ⌀, ring-out ⌀→hub ⌀) supersedes the briefs' warn-only stance; the DIN key assembly becomes a boundary condition with a new hard guard. `[IR, user-directed]`
 - **C5 — C-I v0.2 active-band guard.** The instruction's area formula `max(0, rOut² − rIn²)` is insufficient: once `rActiveOuter` goes **negative** its square exceeds `rActiveInner²` and reports a *spurious* pumping area. Replaced with a band-**width** guard (`rActiveOuter > rActiveInner`). **This bug was caught by the v0.2 collapse self-test**, which is itself the evidence the test battery is doing its job. `[OC correction of instruction]`
 - **C6 — Block D top-view.** A user-directed axial top-view projection (sectors + 6 rotor poles + 12 C-EMs in one plane) supersedes the brief's §8 side-view ring. `[IR, user-directed]`
+- **C7 — `demCapRatingKV` default 20 → 30 kV.** With the design-flow `vhvLink` on, `demBiasKV ← vhvKV = 20`; leaving the rating at 20 would give zero AC headroom and a spurious "no torque / over-voltage" Block-D warning on first load. Raising the (free) rating default to 30 lands the default cascade coherently. `[IR, recorded]`
 
 ---
 
 ## 5. Verification status
 
-**All 38 deterministic self-tests pass** (engine badge: *verified*). The battery is the regression gate: any change that breaks a modelled relationship flips the badge red on load. The tests are pure functions of the producer code (no DOM), so they are reproducible headlessly.
+**All 46 deterministic self-tests pass** (engine badge: *verified*). The battery is the regression gate: any change that breaks a modelled relationship flips the badge red on load. The tests are pure functions of the producer code (no DOM), so they are reproducible headlessly.
 
 | Group | Count | Coverage |
 |---|---|---|
@@ -96,6 +98,7 @@ Per the "correct openly" convention, each of these is recorded in `CHANGELOG.md`
 | Block R | 6 | AGM elliptic, C_R, validated L, tube≡rod HF identity, AWG OD, PRF |
 | Block D | 7 | resonance round-trip, Z₀ identity, **N·I invariance**, over-V flag, 88 J energy, N-S-N-S parity, per-group cap |
 | Block T | 7 | inverse widths, round-trip, band-max+overrun, Ca=Cb, field, inside>outside, energy |
+| Design flow + presets | 8 | export→load round-trip, partial load, **R1 expect-pass**, corrupt-expect-surfaces-✗, inheritance-overwrite warn, unknown-key warn, bad-JSON safety, flow identities + idempotent cascade |
 
 The standout tests are the **decoupling/invariance** ones — C-I "C_R invariant under squeeze" proves the squeeze never reaches the resonator, and D "N·I invariance" proves the ampere-turn limit is genuinely frequency-independent (not an algebraic accident of one operating point).
 
@@ -130,7 +133,7 @@ Deliberately out of scope (deferred; **not** modelled, **not** claimed):
 
 1. **Run it:** open `index.html` in any modern browser (offline is fine). Confirm the header badge reads **"engine verified"** and the self-test table (under *Topology & diode schedule*) shows all rows passing.
 2. **Inspect the invariant:** confirm `solveDoubler4` / `solvePhase` are unchanged from the validated host engine; all blocks are upstream producers.
-3. **Re-run the battery headlessly** (optional): extract the `<script>` body, stub a minimal DOM, call `runSelfTest()`, assert `.ok === true`. (This is how the 38/38 result in §5 was produced.)
+3. **Re-run the battery headlessly** (optional): extract the `<script>` body, stub a minimal DOM, call `runSelfTest()`, assert `.ok === true`. (This is how the 46/46 result in §5 was produced.)
 4. **Probe the corrections (§4)** and the **open questions (§7)** — those are where judgment, not arithmetic, is required.
 5. **Share state:** use "copy share-url" to capture any configuration; the URL hash is the full, reproducible parameter set.
 

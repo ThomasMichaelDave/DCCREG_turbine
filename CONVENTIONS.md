@@ -101,6 +101,22 @@ tcAreaM2, tcFieldKVmm, tcEnergyJ, tcCaMaxNF                 [outputs]
 - Consumes `rActiveInner` / `rActiveOuter` from `plateGeom`. **Producer** — feeds (never edits) `solveDoubler4`; the optional `tcDrive` wiring routes the realised Ca = Cb into the solver's transfer-cap state at the call site only (raises their field max, nF-scale).
 - `t` alone stays forbidden; `tc` is the Block-T prefix.
 
+### Design-flow + presets
+
+```
+Masters (primaries): pdia, prouter, prinner, pgap, pnsec, pdiel, rrpm, vhvKV,
+vhvEkVmm, demQuadConeRmm, tcMylarEr, tcMylarThkMm, tcRatio, demCapRatingKV, mdisch.
+Derived (slaved) via five default-on/overridable toggles (cascadeState, one pass):
+  vhvLink    : pvoid, tcVkV, demBiasKV  ← vhvKV (pvoid = vhvKV/vhvEkVmm)
+  quadLink   : pquadfoot                ← 2·demQuadConeRmm
+  demRpmLink : demRpm                   ← rrpm
+  demEvLink  : demEventsPerRev          ← ⌈pnsec/2⌉   (makes R≡D PRF)
+  tcFromCmax : tcCaNF = tcRatio·Cmax    → drives the solver Ca/Cb
+```
+
+- Presets are JSON of **primaries + toggles + an `expect` block**; loaded via "Load parameter set" (`FileReader`), applied to `state`, then the one-pass cascade runs and `expect` is checked within tolerance. "Save current as preset" exports a scaffold. **No magnitude is hard-coded in docs** — the calculator computes it and the preset asserts it (`expect`, with `tol`); checkable outputs are the explicit `presetExpectGetters` set.
+- Persistence is **local file I/O only** (`FileReader` / `Blob`+anchor). No network, no `localStorage`. `solveDoubler4` untouched.
+
 ### Block D — distributed electromagnet motor (prefix `dem*`)
 
 ```
