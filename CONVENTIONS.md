@@ -92,10 +92,13 @@ The active band runs `[ro + pvoid, plateR − pbus − (pquadfoot + pquadclr)]`;
 
 ```
 tcMode, tcPlacement, tcCaNF, tcWidthMm, tcMylarEr, tcMylarThkMm,
-tcBracketMm, tcVkV                                          [inputs]
+tcInnerPinMm (radial inner-pin clearance), tcVkV,
+tcBracketMm (AXIAL Ca/Cb standoff height, mm — cross-section render)  [inputs]
 tcWidthOutMm, tcRingInnerMm, tcRingOuterMm, tcCaOutNF,
 tcAreaM2, tcFieldKVmm, tcEnergyJ, tcCaMaxNF                 [outputs]
 ```
+
+Note: `tcBracketMm` is the **axial** standoff of the Ca/Cb carrier off the stator back (render). The **radial** inner-pin clearance (`rRingInner = rActiveInner + pin`) is `tcInnerPinMm` — the two are distinct and must not be conflated.
 
 - Bus ring = **SOLID annulus** (full area, **no keptFrac**) — it buses the sectors and is the lower Ca/Cb plate.
 - Consumes `rActiveInner` / `rActiveOuter` from `plateGeom`. **Producer** — feeds (never edits) `solveDoubler4`; the optional `tcDrive` wiring routes the realised Ca = Cb into the solver's transfer-cap state at the call site only (raises their field max, nF-scale).

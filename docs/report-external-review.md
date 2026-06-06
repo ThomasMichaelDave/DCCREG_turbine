@@ -1,7 +1,7 @@
 # External Review Report — Rotary-Varicap Bennet-Doubler Design Calculator
 
 **Artifact under review:** `index.html` — a single, self-contained web page (no build, no server, no dependencies, no network, no `localStorage`).
-**Build stamp:** `C-I v0.2 · T v0.1 · flow+presets v0.2` (shown in the page header).
+**Build stamp:** `C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2` (shown in the page header).
 **Companion document:** `docs/report-tool-functioning.md` (deeper functional walk-through of the host solver + Blocks C-I/M; this report supersedes its block coverage and adds Blocks R, D, T and the C-I v0.2 correction).
 **Purpose of this document:** give an external reviewer everything needed to judge the tool's correctness, scope, and honesty — what it claims, how those claims are validated, what was deliberately corrected, and what is explicitly out of scope.
 
@@ -83,12 +83,13 @@ Per the "correct openly" convention, each of these is recorded in `CHANGELOG.md`
 - **C5 — C-I v0.2 active-band guard.** The instruction's area formula `max(0, rOut² − rIn²)` is insufficient: once `rActiveOuter` goes **negative** its square exceeds `rActiveInner²` and reports a *spurious* pumping area. Replaced with a band-**width** guard (`rActiveOuter > rActiveInner`). **This bug was caught by the v0.2 collapse self-test**, which is itself the evidence the test battery is doing its job. `[OC correction of instruction]`
 - **C6 — Block D top-view.** A user-directed axial top-view projection (sectors + 6 rotor poles + 12 C-EMs in one plane) supersedes the brief's §8 side-view ring. `[IR, user-directed]`
 - **C7 — `demCapRatingKV` default 20 → 30 kV.** With the design-flow `vhvLink` on, `demBiasKV ← vhvKV = 20`; leaving the rating at 20 would give zero AC headroom and a spurious "no torque / over-voltage" Block-D warning on first load. Raising the (free) rating default to 30 lands the default cascade coherently. `[IR, recorded]`
+- **C8 — `tcBracketMm` repurposed (radial → axial); radial pin renamed `tcInnerPinMm`.** The cross-section render brief defines `tcBracketMm` as the **axial** Ca/Cb standoff, but Block-T v0.1 already used that id for the **radial** inner-pin clearance. The radial input was renamed to `tcInnerPinMm` (unchanged 15 mm default/behaviour) to free `tcBracketMm` for the brief's axial meaning, honouring its explicit "do not conflate" instruction. `[IR, recorded]`
 
 ---
 
 ## 5. Verification status
 
-**All 46 deterministic self-tests pass** (engine badge: *verified*). The battery is the regression gate: any change that breaks a modelled relationship flips the badge red on load. The tests are pure functions of the producer code (no DOM), so they are reproducible headlessly.
+**All 50 deterministic self-tests pass** (engine badge: *verified*). The battery is the regression gate: any change that breaks a modelled relationship flips the badge red on load. The tests are pure functions of the producer code (no DOM), so they are reproducible headlessly.
 
 | Group | Count | Coverage |
 |---|---|---|
@@ -99,6 +100,7 @@ Per the "correct openly" convention, each of these is recorded in `CHANGELOG.md`
 | Block D | 7 | resonance round-trip, Z₀ identity, **N·I invariance**, over-V flag, 88 J energy, N-S-N-S parity, per-group cap |
 | Block T | 7 | inverse widths, round-trip, band-max+overrun, Ca=Cb, field, inside>outside, energy |
 | Design flow + presets | 8 | export→load round-trip, partial load, **R1 expect-pass**, corrupt-expect-surfaces-✗, inheritance-overwrite warn, unknown-key warn, bad-JSON safety, flow identities + idempotent cascade |
+| Cross-section render | 4 | bracket px→mm round-trip, pole-in-band + band width, motor gap sourced from Block D, legend covers each part once |
 
 The standout tests are the **decoupling/invariance** ones — C-I "C_R invariant under squeeze" proves the squeeze never reaches the resonator, and D "N·I invariance" proves the ampere-turn limit is genuinely frequency-independent (not an algebraic accident of one operating point).
 
@@ -133,7 +135,7 @@ Deliberately out of scope (deferred; **not** modelled, **not** claimed):
 
 1. **Run it:** open `index.html` in any modern browser (offline is fine). Confirm the header badge reads **"engine verified"** and the self-test table (under *Topology & diode schedule*) shows all rows passing.
 2. **Inspect the invariant:** confirm `solveDoubler4` / `solvePhase` are unchanged from the validated host engine; all blocks are upstream producers.
-3. **Re-run the battery headlessly** (optional): extract the `<script>` body, stub a minimal DOM, call `runSelfTest()`, assert `.ok === true`. (This is how the 46/46 result in §5 was produced.)
+3. **Re-run the battery headlessly** (optional): extract the `<script>` body, stub a minimal DOM, call `runSelfTest()`, assert `.ok === true`. (This is how the 50/50 result in §5 was produced.)
 4. **Probe the corrections (§4)** and the **open questions (§7)** — those are where judgment, not arithmetic, is required.
 5. **Share state:** use "copy share-url" to capture any configuration; the URL hash is the full, reproducible parameter set.
 
