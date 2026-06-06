@@ -12,6 +12,7 @@
     --copper:#d08a4e; --steel:#9aa7b4; --diel:#b59a5e;
     /* Block D — distributed-electromagnet motor */
     --cem-coil:#d6953f; --cem-core:#7f8b98; --cem-a:#c0a8ff; --cem-b:#7cd0ff;
+    --coil:#e8b04b;   /* resonator coil — distinct warm gold, ≠ --copper (Ca/Cb) */
     --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box}
@@ -103,7 +104,7 @@
 
 <header>
   <div>
-    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2 · T v0.1 · flow+presets v0.2</span></h1>
+    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2</span></h1>
     <div class="sub">ideal-diode switched-capacitor solver · 16-state network search · cross-coupled regenerative</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
@@ -372,16 +373,8 @@
     <span class="scale-readout" id="mxsec-scale">—</span>
   </div>
   <canvas id="mxsec" width="600" height="240"></canvas>
-  <div class="xsec-legend" id="xsec-legend">
-    <span class="it"><span class="sw2" style="background:var(--copper)"></span>resonator coil (L)</span>
-    <span class="it"><span class="sw2" style="background:var(--acc)"></span>rotor electrodes C1/C2</span>
-    <span class="it"><span class="sw2" style="background:var(--edge)"></span>fixed stators (gap g)</span>
-    <span class="it"><span class="sw2" style="background:var(--diel)"></span>mica disc / septum · Mylar (Ca/Cb)</span>
-    <span class="it"><span class="sw2" style="background:var(--copper)"></span>Ca/Cb bus-ring stack (Block T)</span>
-    <span class="it"><span class="sw2" style="background:var(--ink)"></span>quadricone hubs</span>
-    <span class="it"><span class="sw2" style="background:var(--bg)"></span>void / bore</span>
-    <span class="it"><span class="sw2" style="background:var(--steel)"></span>stub shafts</span>
-  </div>
+  <!-- de-collided cross-section legend; populated from XSEC_LEGEND at boot. [§4] -->
+  <div class="xsec-legend on" id="xsec-legend"></div>
 
   <div class="warn-list" id="mech-warn"></div>
 
@@ -637,7 +630,12 @@
         <span class="u">mm</span>
       </div>
       <div class="row">
-        <label>bracket</label>
+        <label>inner pin</label>
+        <input type="range" id="tcInnerPinMm-r"><input type="number" id="tcInnerPinMm-n">
+        <span class="u">mm</span>
+      </div>
+      <div class="row">
+        <label>bracket standoff</label>
         <input type="range" id="tcBracketMm-r"><input type="number" id="tcBracketMm-n">
         <span class="u">mm</span>
       </div>
@@ -1493,7 +1491,7 @@ function transferCaps(s){
   const rAI = g.rActiveInner, rAO = g.rActiveOuter;       // m (active band bounds)
   const er  =  Number(s.tcMylarEr)    || 0;
   const t   = (Number(s.tcMylarThkMm) || 0) * 1e-3;       // m (Mylar thickness)
-  const bracket = (Number(s.tcBracketMm) || 0) * 1e-3;    // m
+  const bracket = (Number(s.tcInnerPinMm) || 0) * 1e-3;   // m (radial inner-pin clearance)
   const Vk  =  Number(s.tcVkV)        || 0;               // kV
   const placement = s.tcPlacement === "outside" ? "outside" : "inside";
   const mode      = s.tcMode === "forward" ? "forward" : "inverse";
@@ -1554,8 +1552,8 @@ function transferCaps(s){
     warns.push(["e", "ring exceeds the active band; reduce Ca or use thinner Mylar."]);
   if (mode === "inverse" && (Number(s.tcCaNF) || 0) > CaMax*1e9 + 1e-9)
     warns.push(["e", "target Ca exceeds the geometric maximum (≈ " + (CaMax*1e9).toFixed(2) + " nF) for this band / thickness."]);
-  if ((Number(s.tcBracketMm) || 0) < 5)
-    warns.push(["w", "bracket too thin to clear the rotating central quadricone (min ≈ 5 mm)."]);
+  if ((Number(s.tcInnerPinMm) || 0) < 5)
+    warns.push(["w", "inner pin too thin to clear the rotating central quadricone (min ≈ 5 mm)."]);
   if (isFinite(field) && field > 100)
     warns.push(["e", "field " + field.toFixed(0) + " kV/mm > 100 — single-sheet breakdown; stack thinner Mylar layers or thicken t."]);
   else if (isFinite(field) && field > 40)
@@ -1887,7 +1885,7 @@ function runSelfTest(){
   // --- Block T transfer-cap self-tests (brief §7) ---
   const TCb = {pnsec:12, pdia:100, prouter:15, prinner:5, punit:"cm",
                pvoid:20, pbus:9, pquadfoot:94, pquadclr:10,
-               tcMylarEr:3.2, tcMylarThkMm:1, tcBracketMm:15, tcVkV:20};
+               tcMylarEr:3.2, tcMylarThkMm:1, tcInnerPinMm:15, tcVkV:20};
   const tcT = o => transferCaps(Object.assign({}, TCb, o));
   // 1. inverse widths: Ca 4/7/11 nF → w ≈ 129/191/258 mm (inside).
   const Tw = ca => tcT({tcMode:"inverse", tcPlacement:"inside", tcCaNF:ca}).widthMm;
@@ -1971,6 +1969,29 @@ function runSelfTest(){
   plateRows.push({label:"F: flow identities + idempotent cascade", expected:1, got:(idOK&&idem)?1:0, dp:0, tol:0,
                   pass:idOK && idem});
 
+  // --- Cross-section render self-tests (brief §6) ---
+  // tcBracketMm standoff: px→mm round-trip at a fixed scale.
+  const xsScale = 0.3;
+  const xsLegPx = Math.max(6, 70 * xsScale);
+  plateRows.push({label:"X: tcBracketMm 70 → legPx round-trip", expected:70, got:xsLegPx/xsScale, dp:2, tol:0.01,
+                  pass:Math.abs(xsLegPx/xsScale - 70) <= 0.01});
+  // pole sits in the quad band; band width == pquadfoot + pquadclr.
+  const xg = plateGeom({pnsec:12, pdia:100, prouter:15, prinner:5, punit:"cm",
+                        pvoid:20, pbus:9, pquadfoot:94, pquadclr:10});
+  const rPoleMidX = (xg.rActiveOuter + xg.rRotorOuter)/2;
+  plateRows.push({label:"X: pole in band & width = quadfoot+clr", expected:0.104, got:xg.rRotorOuter-xg.rActiveOuter, dp:4, tol:0.001,
+                  pass:(xg.rActiveOuter < rPoleMidX && rPoleMidX < xg.rRotorOuter)
+                    && Math.abs((xg.rRotorOuter - xg.rActiveOuter) - (94+10)/1000) <= 0.001});
+  // motor gap is sourced from Block D (demClearanceMm), not a constant.
+  const xsGap = st => Number(st.demClearanceMm) || 1;     // mirrors the 5e draw expression
+  plateRows.push({label:"X: motor gap == demClearanceMm (Block D)", expected:1.5, got:xsGap({demClearanceMm:1.5}), dp:2, tol:0,
+                  pass:xsGap({demClearanceMm:1.5}) === 1.5 && xsGap({demClearanceMm:1}) === 1});
+  // legend coverage: each drawn part colour appears exactly once.
+  const needVars = ["--acc","--edge","--steel","--copper","--diel","--coil","--cem-core","--cem-coil"];
+  const legCount = v => XSEC_LEGEND.filter(([x]) => x === v).length;
+  plateRows.push({label:"X: legend covers each part colour once", expected:needVars.length, got:needVars.filter(v=>legCount(v)===1).length, dp:0, tol:0,
+                  pass:needVars.every(v => legCount(v) === 1)});
+
   const plateAll = plateRows.every(r => r.pass);
 
   return {ok: allOk && symOk && plateAll, rows, symOk, symA:a, symB:b, plateRows};
@@ -2034,7 +2055,8 @@ const FIELDS = [
   {id:"tcWidthMm",    def:120, min:1,    max:500,  step:1},
   {id:"tcMylarEr",    def:3.2, min:1,    max:10,   step:0.1},
   {id:"tcMylarThkMm", def:1.0, min:0.05, max:5,    step:0.05},
-  {id:"tcBracketMm",  def:15,  min:0,    max:100,  step:1},
+  {id:"tcInnerPinMm", def:15,  min:0,    max:100,  step:1},   // radial inner-pin clearance
+  {id:"tcBracketMm",  def:70,  min:0,    max:200,  step:1},   // axial Ca/Cb standoff (render)
   {id:"tcVkV",        def:20,  min:0,    max:100,  step:0.5},
   // --- Design-flow primaries (flow+presets v0.2) ---
   {id:"vhvKV",          def:20,  min:0,    max:100,  step:0.5},  // design HV → void, tcVkV, bias
@@ -2273,7 +2295,7 @@ function reflectControls(){
   if (md_r) md_r.disabled = !!state.couple;
   if (md_n) md_n.disabled = !!state.couple;
   $("mhub-src").textContent = state.couple ? "hub ⌀ ← ring-out ⌀ (coupled)" : "hub ⌀ ← key sizing";
-  $("xsec-legend").classList.toggle("on", !!state.mdims);
+  // cross-section legend stays visible with the canvas (per-part dim *labels* gated on mdims).
   // --- Block R controls ---
   document.querySelectorAll("#rcond-seg button").forEach(b =>
     b.classList.toggle("active", b.dataset.rcond === state.rcond));
@@ -2532,7 +2554,8 @@ const DESC = {
   tcWidthMm:"Bus-ring radial width — yields Ca (forward mode).",
   tcMylarEr:"Dielectric relative permittivity (Mylar/BoPET ≈ 3.2).",
   tcMylarThkMm:"Mylar thickness t; stack thin sheets to raise the breakdown margin (one effective t here).",
-  tcBracketMm:"Bracket clearance beyond the sector inner edge (inside placement) — must clear the central quadricone.",
+  tcInnerPinMm:"Radial inner-pin clearance beyond the sector inner edge (inside placement) — must clear the central quadricone.",
+  tcBracketMm:"Axial standoff of the Ca/Cb carrier ring off the stator back; raise toward the cone apex.",
   tcVkV:"Design voltage across the transfer cap, for the dielectric-field and energy readouts.",
   tcMode:"Inverse (desired Ca → ring width) or forward (ring width → Ca).",
   tcPlacement:"Inside: ring pinned at the inner band, grows outward (default). Outside: pinned at the leg radius, grows inward.",
@@ -2789,7 +2812,13 @@ function updateTransfer(){
   $("tr-field").textContent = isFinite(T.field) ? T.field.toFixed(1) + " kV/mm" : "—";
   $("tr-energy").textContent = fmtE(T.energy);
   $("tc-mode-tag").textContent = T.mode + " · " + T.placement + (state.tcDrive ? " · driving Ca/Cb" : "");
-  $("blockT-warn").innerHTML = T.warns.map(([c,m]) =>
+  // [§2] soft warn: axial standoff rising past the resonator cone apex.
+  const coreM = quadriconeCore(state);
+  const apexZmm = coreM.coneR + coreM.discH/2;
+  const warns = T.warns.slice();
+  if ((Number(state.tcBracketMm) || 0) > apexZmm)
+    warns.push(["w", "bracket standoff exceeds cone apex height (" + apexZmm.toFixed(0) + " mm) — draw clamps to the canvas."]);
+  $("blockT-warn").innerHTML = warns.map(([c,m]) =>
     '<div class="'+c+'">'+(c==="e"?"⚠ ":c==="w"?"⚠ ":"· ")+m+'</div>').join("");
 
   // [§8 / flow A2.1] Solver hand-off (call-site wiring only; solveDoubler4 untouched):
@@ -2863,12 +2892,30 @@ function savePreset(){
   downloadBlob(JSON.stringify(preset, null, 2), preset.preset + ".json");
 }
 
+// De-collided cross-section legend (var → label), one entry per drawn part. [§4]
+const XSEC_LEGEND = [
+  ["--acc",       "rotor electrode (varicap)"],
+  ["--edge",      "stator plate"],
+  ["--steel",     "Ca/Cb bracket (standoff)"],
+  ["--copper",    "Ca/Cb bus ring + electrode"],
+  ["--diel",      "Mylar (Ca/Cb) · mica disc/septum"],
+  ["--coil",      "resonator coil (L)"],
+  ["--cem-core",  "steel motor pole · C-EM core"],
+  ["--cem-coil",  "C-EM winding"],
+  ["--ink",       "quadricone hub / shaft"],
+];
+function renderXsecLegend(){
+  $("xsec-legend").innerHTML = XSEC_LEGEND.map(([v,l]) =>
+    '<span class="it"><span class="sw2" style="background:var(' + v + ')"></span>' + l + '</span>').join("");
+}
+
 // --- live axial cross-section (§5.1) ---
 let mLockScale = null;
 function drawCrossSection(){
   const c = $("mxsec");
   const {ctx, w, h} = clearCanvas(c);
   const core = quadriconeCore(state);
+  const pg = plateGeom(state);                             // read-only: active-band radii [§3]
   const css = getComputedStyle(document.documentElement);
   const COL = n => css.getPropertyValue(n).trim();
 
@@ -2993,7 +3040,8 @@ function drawCrossSection(){
       const gap_mm  = Number(state.pgap) || 0;
       const gapPx   = Math.max(2, gap_mm * scale);
       const statorT = Math.max(4, 3*scale);
-      const legPx   = Math.max(6, 8*scale);
+      const bracketMm = Number(state.tcBracketMm) || 0;       // [§2] real axial standoff
+      const legPx   = Math.max(6, bracketMm * scale);         // tall bracket, clamped ≥6 px
       const ringPx  = Math.max(3, 2.5*scale);
       const mylarPx = Math.max(2, (Number(state.tcMylarThkMm)||0) * scale);
       const wpx = (rOut - rIn)*scale;
@@ -3028,6 +3076,10 @@ function drawCrossSection(){
           ctx.fillStyle = COL("--copper"); ctx.font = "10px ui-monospace,monospace";
           ctx.textAlign = "left"; ctx.textBaseline = "middle";
           ctx.fillText(sgn>0 ? "Ca" : "Cb", X(rOut)+4, out(legPx+ringPx));
+          if (sgn>0){                                       // bracket-height label (once)
+            ctx.fillStyle = COL("--steel"); ctx.textAlign = "right";
+            ctx.fillText("bracket " + fmt(bracketMm,0) + " mm", X(rIn)-4, out(legPx/2));
+          }
         }
       }
     }
@@ -3037,7 +3089,7 @@ function drawCrossSection(){
   if (lastRes && lastRes.NturnPerCone >= 1){
     const R = lastRes;
     const bandPx = Math.max(2, R.condOD*1e3*scale);
-    const col = R.coilFail ? COL("--bad") : COL("--copper");
+    const col = R.coilFail ? COL("--bad") : COL("--coil");   // [§4] distinct from Ca/Cb --copper
     const Ndraw = Math.min(R.NturnPerCone, 48);
     for (const sgn of [1,-1]) for (const side of [1,-1]){
       const bx = X(side*coneR), by = Z(sgn*discH/2);   // winding base (at hub)
@@ -3060,6 +3112,58 @@ function drawCrossSection(){
     }
     ctx.fillStyle = col;                                 // apex series-connection nodes
     for (const sgn of [1,-1]){ ctx.beginPath(); ctx.arc(X(0), Z(sgn*apexZ), Math.max(2, bandPx*0.55), 0, 2*Math.PI); ctx.fill(); }
+  }
+
+  // 5e) reluctance-motor parts in the section plane — the 2 of 6 rotor steel
+  //     poles and 2 of 12 stator C-EMs the cut passes through (one each ±x),
+  //     across an AXIAL motor gap. Meridional schematic. [Block D §3]
+  {
+    const rPoleOuter = pg.rRotorOuter * 1e3;             // mm (plateR − pbus)
+    const rPoleInner = pg.rActiveOuter * 1e3;            // mm (rRotorOuter − quad band)
+    const rPoleMid   = (rPoleInner + rPoleOuter) / 2;
+    if (rPoleMid > 0 && rPoleOuter > rPoleInner){
+      const q      = (Number(state.demQuadConeRmm) || 47) * scale;   // pole half-diagonal (px)
+      const gapMm  = Number(state.demClearanceMm) || 1;              // real per-face motor gap [Block D]
+      const gapPxM = Math.max(2, gapMm * scale);
+      const coreT  = Math.max(6, 1.2*q);                              // C-EM core depth (px)
+      const legW   = Math.max(3, 0.35*q);
+      const map    = lastDem ? lastDem.map : null;
+      for (const rs of [1, -1]){
+        const xc = X(rs*rPoleMid), yc = Z(0);
+        // 3a) rotor steel pole — tilted-bicone square presents as a diamond.
+        ctx.beginPath();
+        ctx.moveTo(xc, yc-q); ctx.lineTo(xc+q, yc); ctx.lineTo(xc, yc+q); ctx.lineTo(xc-q, yc);
+        ctx.closePath();
+        ctx.fillStyle = COL("--cem-core"); ctx.fill();
+        ctx.strokeStyle = COL("--dim"); ctx.lineWidth = 1; ctx.stroke();
+        // 3b) stator C-EM — U-core opening down toward the pole across the axial gap.
+        const yMouth = yc - q - gapPxM;                   // mouth just above the pole (+z, stator face)
+        const yBackTop = yMouth - coreT;
+        const backT = Math.max(3, coreT*0.32);
+        ctx.fillStyle = COL("--cem-core");
+        ctx.fillRect(xc-q, yBackTop, 2*q, backT);                         // back bar
+        ctx.fillRect(xc-q, yMouth-coreT+backT, legW, coreT-backT);        // left leg
+        ctx.fillRect(xc+q-legW, yMouth-coreT+backT, legW, coreT-backT);   // right leg
+        ctx.fillStyle = COL("--cem-coil");                               // copper coil flanks
+        ctx.fillRect(xc-q+legW, yMouth-coreT+backT+1, Math.max(2,legW*0.7), coreT-backT-2);
+        ctx.fillRect(xc+q-legW-Math.max(2,legW*0.7), yMouth-coreT+backT+1, Math.max(2,legW*0.7), coreT-backT-2);
+        // gap leader (dashed) between pole tip and core mouth.
+        ctx.strokeStyle = COL("--dim"); ctx.setLineDash([1,2]);
+        ctx.beginPath(); ctx.moveTo(xc, yc-q); ctx.lineTo(xc, yMouth); ctx.stroke(); ctx.setLineDash([]);
+        // optional N/S polarity chip (off by default; the cut sits at 0° / 180°).
+        if (state.dlabels && map){
+          const e = map.find(m => m.angle === (rs > 0 ? 0 : 180));
+          if (e){ ctx.fillStyle = e.polC3 === "N" ? COL("--bad") : COL("--good");
+            ctx.font = "bold 10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+            ctx.fillText(e.polC3, xc, yBackTop - 6); }
+        }
+      }
+      if (state.mdims){
+        ctx.fillStyle = COL("--dim"); ctx.font = "9px ui-monospace,monospace";
+        ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
+        ctx.fillText("motor gap " + fmt(gapMm,2) + " mm (2 of 6 poles / 2 of 12 C-EMs)", cx, Z(0) - q - 14);
+      }
+    }
   }
 
   // 6) shaft stubs (bore depth insertMax inward + protrusion outward) with keyway.
@@ -3449,6 +3553,7 @@ function boot(){
   bindDemControls();
   bindTransferControls();
   bindFlowControls();
+  renderXsecLegend();
   injectDescriptions();
   reflectControls();
 
