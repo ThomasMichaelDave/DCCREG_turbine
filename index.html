@@ -1986,6 +1986,14 @@ function runSelfTest(){
   const xsGap = st => Number(st.demClearanceMm) || 1;     // mirrors the 5e draw expression
   plateRows.push({label:"X: motor gap == demClearanceMm (Block D)", expected:1.5, got:xsGap({demClearanceMm:1.5}), dp:2, tol:0,
                   pass:xsGap({demClearanceMm:1.5}) === 1.5 && xsGap({demClearanceMm:1}) === 1});
+  // v0.2 rim clamp: two equal axial gaps straddle the square pole (faces on opposite
+  // sides of the disc plane, each gapPxM clear of the pole). Mirrors the 5e formula.
+  { const sc = 0.3, cy = 100, qx = 47*sc, gpx = Math.max(2, 1*sc);
+    const yTop = cy - qx - gpx, yBot = cy + qx + gpx;
+    const okStraddle = yTop < cy && cy < yBot
+      && Math.abs((cy - qx - yTop) - gpx) <= 1e-9       // top gap == gapPxM
+      && Math.abs((yBot - (cy + qx)) - gpx) <= 1e-9;    // bottom gap == gapPxM
+    plateRows.push({label:"X: rim clamp — two equal gaps straddle pole", expected:1, got:okStraddle?1:0, dp:0, tol:0, pass:okStraddle}); }
   // legend coverage: each drawn part colour appears exactly once.
   const needVars = ["--acc","--edge","--steel","--copper","--diel","--coil","--cem-core","--cem-coil"];
   const legCount = v => XSEC_LEGEND.filter(([x]) => x === v).length;
@@ -3115,53 +3123,62 @@ function drawCrossSection(){
   }
 
   // 5e) reluctance-motor parts in the section plane — the 2 of 6 rotor steel
-  //     poles and 2 of 12 stator C-EMs the cut passes through (one each ±x),
-  //     across an AXIAL motor gap. Meridional schematic. [Block D §3]
+  //     poles and 2 of 12 stator C-EMs the cut passes through (one each ±x).
+  //     v0.2: the pole is an UPRIGHT SQUARE; the C-EM CLAMPS over the rim,
+  //     straddling the pole with TWO axial gaps (= demNGaps). [Block D §3]
   {
-    const rPoleOuter = pg.rRotorOuter * 1e3;             // mm (plateR − pbus)
+    const rPoleOuter = pg.rRotorOuter * 1e3;             // mm (plateR − pbus, rim edge)
     const rPoleInner = pg.rActiveOuter * 1e3;            // mm (rRotorOuter − quad band)
     const rPoleMid   = (rPoleInner + rPoleOuter) / 2;
     if (rPoleMid > 0 && rPoleOuter > rPoleInner){
-      const q      = (Number(state.demQuadConeRmm) || 47) * scale;   // pole half-diagonal (px)
+      const q      = (Number(state.demQuadConeRmm) || 47) * scale;   // pole half-side (px)
       const gapMm  = Number(state.demClearanceMm) || 1;              // real per-face motor gap [Block D]
       const gapPxM = Math.max(2, gapMm * scale);
-      const coreT  = Math.max(6, 1.2*q);                              // C-EM core depth (px)
-      const legW   = Math.max(3, 0.35*q);
+      const faceT  = Math.max(3, 0.30*q);                            // pole-face (jaw tip) thickness
+      const armT   = Math.max(3, 0.30*q);                            // arm / back-iron thickness
+      const coilT  = Math.max(2, 0.45*q);                            // copper winding thickness
       const map    = lastDem ? lastDem.map : null;
       for (const rs of [1, -1]){
         const xc = X(rs*rPoleMid), yc = Z(0);
-        // 3a) rotor steel pole — tilted-bicone square presents as a diamond.
-        ctx.beginPath();
-        ctx.moveTo(xc, yc-q); ctx.lineTo(xc+q, yc); ctx.lineTo(xc, yc+q); ctx.lineTo(xc-q, yc);
-        ctx.closePath();
-        ctx.fillStyle = COL("--cem-core"); ctx.fill();
-        ctx.strokeStyle = COL("--dim"); ctx.lineWidth = 1; ctx.stroke();
-        // 3b) stator C-EM — U-core opening down toward the pole across the axial gap.
-        const yMouth = yc - q - gapPxM;                   // mouth just above the pole (+z, stator face)
-        const yBackTop = yMouth - coreT;
-        const backT = Math.max(3, coreT*0.32);
+        // 3a) rotor steel pole — upright axis-aligned square (flat faces to the jaws).
         ctx.fillStyle = COL("--cem-core");
-        ctx.fillRect(xc-q, yBackTop, 2*q, backT);                         // back bar
-        ctx.fillRect(xc-q, yMouth-coreT+backT, legW, coreT-backT);        // left leg
-        ctx.fillRect(xc+q-legW, yMouth-coreT+backT, legW, coreT-backT);   // right leg
-        ctx.fillStyle = COL("--cem-coil");                               // copper coil flanks
-        ctx.fillRect(xc-q+legW, yMouth-coreT+backT+1, Math.max(2,legW*0.7), coreT-backT-2);
-        ctx.fillRect(xc+q-legW-Math.max(2,legW*0.7), yMouth-coreT+backT+1, Math.max(2,legW*0.7), coreT-backT-2);
-        // gap leader (dashed) between pole tip and core mouth.
+        ctx.fillRect(xc-q, yc-q, 2*q, 2*q);
+        ctx.strokeStyle = COL("--dim"); ctx.lineWidth = 1; ctx.strokeRect(xc-q, yc-q, 2*q, 2*q);
+        // 3b) stator C-EM — C clamped over the rim, mouth toward the axis, spine on the rim.
+        const rSpine = Math.min(rPoleOuter, rPoleMid + q/scale + 6);  // mm
+        const xSpine = X(rs*rSpine);                                  // outboard of xc (rim side)
+        const yTopFace = yc - q - gapPxM;          // inner surface of TOP pole face
+        const yBotFace = yc + q + gapPxM;          // inner surface of BOTTOM pole face
+        const xArmL = Math.min(xc-q, xSpine), xArmW = Math.abs(xSpine - (xc-q));
+        ctx.fillStyle = COL("--cem-core");
+        ctx.fillRect(xc-q, yTopFace-faceT, 2*q, faceT);              // top pole face / jaw
+        ctx.fillRect(xc-q, yBotFace,       2*q, faceT);              // bottom pole face / jaw
+        const yTopArm = yTopFace - faceT - armT, yBotArm = yBotFace + faceT;
+        ctx.fillRect(xArmL, yTopArm, xArmW, armT);                   // top arm
+        ctx.fillRect(xArmL, yBotArm, xArmW, armT);                   // bottom arm
+        ctx.fillRect(xSpine - armT/2, yTopArm, armT, (yBotArm+armT) - yTopArm);  // spine (back iron)
+        // copper winding on each arm, inset from the jaws, clear of the disc.
+        ctx.fillStyle = COL("--cem-coil");
+        const xCoil = xArmL + 0.18*xArmW, wCoil = 0.55*xArmW;
+        ctx.fillRect(xCoil, yTopArm - coilT, wCoil, coilT);
+        ctx.fillRect(xCoil, yBotArm + armT,  wCoil, coilT);
+        // two gap leaders (dashed) — the explicit nGaps = 2 straddle.
         ctx.strokeStyle = COL("--dim"); ctx.setLineDash([1,2]);
-        ctx.beginPath(); ctx.moveTo(xc, yc-q); ctx.lineTo(xc, yMouth); ctx.stroke(); ctx.setLineDash([]);
-        // optional N/S polarity chip (off by default; the cut sits at 0° / 180°).
-        if (state.dlabels && map){
-          const e = map.find(m => m.angle === (rs > 0 ? 0 : 180));
-          if (e){ ctx.fillStyle = e.polC3 === "N" ? COL("--bad") : COL("--good");
-            ctx.font = "bold 10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-            ctx.fillText(e.polC3, xc, yBackTop - 6); }
+        ctx.beginPath(); ctx.moveTo(xc, yc-q); ctx.lineTo(xc, yTopFace);
+        ctx.moveTo(xc, yc+q); ctx.lineTo(xc, yBotFace); ctx.stroke(); ctx.setLineDash([]);
+        // 3c) optional N/S labels at the jaws (top N, bottom S).
+        if (state.dlabels){
+          const eTop = map && map.find(m => m.angle === (rs > 0 ? 0 : 180));
+          const nTop = eTop ? eTop.polC3 : "N", nBot = nTop === "N" ? "S" : "N";
+          ctx.font = "bold 10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillStyle = nTop === "N" ? COL("--bad") : COL("--good"); ctx.fillText(nTop, xc, yTopFace - faceT/2);
+          ctx.fillStyle = nBot === "N" ? COL("--bad") : COL("--good"); ctx.fillText(nBot, xc, yBotFace + faceT/2);
         }
       }
       if (state.mdims){
         ctx.fillStyle = COL("--dim"); ctx.font = "9px ui-monospace,monospace";
         ctx.textAlign = "center"; ctx.textBaseline = "alphabetic";
-        ctx.fillText("motor gap " + fmt(gapMm,2) + " mm (2 of 6 poles / 2 of 12 C-EMs)", cx, Z(0) - q - 14);
+        ctx.fillText("motor: 2 gaps × " + fmt(gapMm,2) + " mm (2 of 6 poles / 2 of 12 C-EMs)", cx, Z(0) - q - faceT - 16);
       }
     }
   }
