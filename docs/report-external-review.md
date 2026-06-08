@@ -1,7 +1,7 @@
 # External Review Report — Rotary-Varicap Bennet-Doubler Design Calculator
 
 **Artifact under review:** `index.html` — a single, self-contained web page (no build, no server, no dependencies, no network, no `localStorage`).
-**Build stamp:** `C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2 · S v0.1` (shown in the page header).
+**Build stamp:** `C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2.2 · S v0.1` (shown in the page header).
 **Companion document:** `docs/report-tool-functioning.md` (deeper functional walk-through of the host solver + Blocks C-I/M; this report supersedes its block coverage and adds Blocks R, D, T and the C-I v0.2 correction).
 **Purpose of this document:** give an external reviewer everything needed to judge the tool's correctness, scope, and honesty — what it claims, how those claims are validated, what was deliberately corrected, and what is explicitly out of scope.
 
@@ -90,7 +90,7 @@ Per the "correct openly" convention, each of these is recorded in `CHANGELOG.md`
 
 ## 5. Verification status
 
-**All 56 deterministic self-tests pass** (engine badge: *verified*). The battery is the regression gate: any change that breaks a modelled relationship flips the badge red on load. The tests are pure functions of the producer code (no DOM), so they are reproducible headlessly.
+**All 62 deterministic self-tests pass** (engine badge: *verified*). The battery is the regression gate: any change that breaks a modelled relationship flips the badge red on load. The tests are pure functions of the producer code (no DOM), so they are reproducible headlessly.
 
 | Group | Count | Coverage |
 |---|---|---|
@@ -101,7 +101,7 @@ Per the "correct openly" convention, each of these is recorded in `CHANGELOG.md`
 | Block D | 7 | resonance round-trip, Z₀ identity, **N·I invariance**, over-V flag, 88 J energy, N-S-N-S parity, per-group cap |
 | Block T | 7 | inverse widths, round-trip, band-max+overrun, Ca=Cb, field, inside>outside, energy |
 | Design flow + presets | 8 | export→load round-trip, partial load, **R1 expect-pass**, corrupt-expect-surfaces-✗, inheritance-overwrite warn, unknown-key warn, bad-JSON safety, flow identities + idempotent cascade |
-| Cross-section render | 5 | bracket px→mm round-trip, pole-in-band + band width, motor gap from Block D, rim-clamp two-equal-gap straddle, legend covers each part once |
+| Cross-section render | 11 | bracket px→mm, pole-in-band + band width, motor gap from Block D, rim-clamp straddle, legend coverage; **v0.2.2 motor:** C-EM mirror symmetry, no-inboard-overrun, spine-clears-disc, pole-fills-band, two-equal-axial-gaps, coil-on-spine |
 | Block S firing sequence | 5 | tracer≡frozen solver, SG3-peak growth≈z, tank kicks monotone, clocking groups/pitch, PRF single-source≡R≡D |
 
 The standout tests are the **decoupling/invariance** ones — C-I "C_R invariant under squeeze" proves the squeeze never reaches the resonator, and D "N·I invariance" proves the ampere-turn limit is genuinely frequency-independent (not an algebraic accident of one operating point).
@@ -137,7 +137,7 @@ Deliberately out of scope (deferred; **not** modelled, **not** claimed):
 
 1. **Run it:** open `index.html` in any modern browser (offline is fine). Confirm the header badge reads **"engine verified"** and the self-test table (under *Topology & diode schedule*) shows all rows passing.
 2. **Inspect the invariant:** confirm `solveDoubler4` / `solvePhase` are unchanged from the validated host engine; all blocks are upstream producers.
-3. **Re-run the battery headlessly** (optional): extract the `<script>` body, stub a minimal DOM, call `runSelfTest()`, assert `.ok === true`. (This is how the 56/56 result in §5 was produced.)
+3. **Re-run the battery headlessly** (optional): extract the `<script>` body, stub a minimal DOM, call `runSelfTest()`, assert `.ok === true`. (This is how the 62/62 result in §5 was produced.)
 4. **Probe the corrections (§4)** and the **open questions (§7)** — those are where judgment, not arithmetic, is required.
 5. **Share state:** use "copy share-url" to capture any configuration; the URL hash is the full, reproducible parameter set.
 
