@@ -90,6 +90,7 @@
   .pchip{display:inline-block;padding:1px 6px;margin:2px 4px 2px 0;border:1px solid var(--line);border-radius:2px;font-size:10px}
   #mxsec{height:240px}
   #dtop{height:340px}
+  #seq-clock{height:520px}
   .scale-readout{font-size:10px;color:var(--dim);margin-top:4px}
   .sw2{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle;border:1px solid var(--line)}
   .xsec-legend{display:none;flex-wrap:wrap;gap:4px 14px;font-size:10.5px;color:var(--dim);margin-top:8px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:4px}
@@ -863,15 +864,19 @@
         <span id="seq-tank-note">f₀/Q from Block R · kick ∝ solver |V| (fork F-S2)</span>
       </div>
     </section>
-    <section class="panel sub">
-      <h2>Mechanical clocking map</h2>
-      <canvas id="seq-clock" width="600" height="300"></canvas>
-      <div class="legend">
-        <span>rings (outer→inner): SG3 · SG2 · SG4 · SG1</span>
-        <span>groups = ⌈Nsec/2⌉ · pitch = 720/Nsec° · reacts to geometry Nsec</span>
-      </div>
-    </section>
   </div>
+
+  <section class="panel sub" style="margin-top:14px">
+    <h2>Mechanical clocking map</h2>
+    <canvas id="seq-clock" width="900" height="520"></canvas>
+    <div class="legend">
+      <span>rings (outer→inner): <span class="sw" style="background:var(--sg3)"></span>SG3 ·
+        <span class="sw" style="background:var(--sg2)"></span>SG2 ·
+        <span class="sw" style="background:var(--sg4)"></span>SG4 ·
+        <span class="sw" style="background:var(--sg1)"></span>SG1</span>
+      <span>groups = ⌈Nsec/2⌉ · pitch = 720/Nsec° · reacts to geometry Nsec</span>
+    </div>
+  </section>
 </section>
 
 <div class="footer-note">
@@ -3822,32 +3827,46 @@ function drawSeqClock(){
   const Nsec = Math.max(2, Math.round(Number(state.pnsec) || 12));
   const groups = Math.ceil(Nsec/2), pitch = 720/Nsec, strokeOff = pitch/2;
   const lag = 0.05*pitch, win = 0.06*pitch, follow = !!state.sfollow;
-  const cx = w*0.5, cy = h*0.52, R = Math.min(w, h)/2 - 16;
+  const cx = w*0.5, cy = h*0.52, R = Math.min(w, h)/2 - 24;
   const A = deg => (deg - 90) * Math.PI/180;             // θ zero at top, clockwise
   const wedge = (r0, r1, ac, col) => {
     const a0 = A(ac - win/2), a1 = A(ac + win/2);
     ctx.beginPath(); ctx.arc(cx, cy, r1, a0, a1); ctx.arc(cx, cy, r0, a1, a0, true);
     ctx.closePath(); ctx.fillStyle = col; ctx.fill();
-    ctx.strokeStyle = COL("--bg"); ctx.lineWidth = 0.6; ctx.stroke();
+    ctx.strokeStyle = COL("--bg"); ctx.lineWidth = 0.8; ctx.stroke();
   };
   // four rings (outer→inner): SG3, SG2, SG4, SG1
-  const rings = [["--sg3", 0, false], ["--sg2", lag, true], ["--sg4", strokeOff, false], ["--sg1", strokeOff+lag, true]];
-  const ringT = R*0.13, ringGap = R*0.04;
+  const rings = [["--sg3","SG3",0,false], ["--sg2","SG2",lag,true], ["--sg4","SG4",strokeOff,false], ["--sg1","SG1",strokeOff+lag,true]];
+  const ringT = R*0.12, ringGap = R*0.035;
   rings.forEach((rg, idx) => {
-    const [v, off, isFollow] = rg;
+    const [v, name, off, isFollow] = rg;
     if (isFollow && !follow) return;
     const r1 = R - idx*(ringT+ringGap), r0 = r1 - ringT;
     // faint ring guide
-    ctx.strokeStyle = COL("--line"); ctx.lineWidth = 0.5;
+    ctx.strokeStyle = COL("--line"); ctx.lineWidth = 0.6;
     ctx.beginPath(); ctx.arc(cx, cy, (r0+r1)/2, 0, 2*Math.PI); ctx.stroke();
     for (let j=0;j<groups;j++) wedge(r0, r1, j*pitch + off, COL(v));
+    // ring name at the 12 o'clock gap (left of the first wedge), once per ring
+    ctx.fillStyle = COL(v); ctx.font = "11px ui-monospace,monospace"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    ctx.fillText(name, cx - 6, cy - (r0+r1)/2);
   });
-  // centre summary
+  // rotation hint at the outer rim (top-right)
+  ctx.fillStyle = COL("--dim"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  ctx.fillText("↻ rotation", cx + R*0.30, cy - R*0.92);
+  // centre disc + summary (clean background, larger text)
   const frot = groups > 0 ? S.prf/groups : 0, Trev = frot>0 ? 1/frot : 0;
-  ctx.fillStyle = COL("--dim"); ctx.font = "9px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-  const lines = ["Nsec "+Nsec+" · groups "+groups, "PRF "+S.prf.toFixed(0)+" · f_rot "+frot.toFixed(0)+" Hz",
-                 "pitch "+pitch.toFixed(0)+"° · off "+strokeOff.toFixed(0)+"°", Trev>0?("T_rev "+(Trev*1e3).toFixed(1)+" ms"):""];
-  lines.forEach((l,i)=> ctx.fillText(l, cx, cy + (i-1.5)*12));
+  const rInner = R - 3*(ringT+ringGap) - ringT;          // inner edge of SG1 ring
+  const hole = Math.max(40, rInner - 8);
+  ctx.fillStyle = COL("--panel"); ctx.beginPath(); ctx.arc(cx, cy, hole, 0, 2*Math.PI); ctx.fill();
+  ctx.strokeStyle = COL("--line"); ctx.lineWidth = 0.8; ctx.stroke();
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  const lines = [
+    ["Nsec " + Nsec + " · " + groups + " groups/rev", "--ink", 12],
+    ["PRF " + S.prf.toFixed(0) + " Hz · f_rot " + frot.toFixed(0) + " Hz", "--dim", 11],
+    ["pitch " + pitch.toFixed(0) + "° · stroke off " + strokeOff.toFixed(0) + "°", "--dim", 11],
+    [Trev>0 ? ("T_rev " + (Trev*1e3).toFixed(1) + " ms") : "", "--dim", 11],
+  ];
+  lines.forEach(([l, c, fs], i) => { if (!l) return; ctx.fillStyle = COL(c); ctx.font = fs + "px ui-monospace,monospace"; ctx.fillText(l, cx, cy + (i-1.5)*17); });
 }
 
 /* ============================================================
