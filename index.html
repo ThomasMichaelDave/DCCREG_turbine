@@ -13,6 +13,8 @@
     /* Block D — distributed-electromagnet motor */
     --cem-coil:#d6953f; --cem-core:#7f8b98; --cem-a:#c0a8ff; --cem-b:#7cd0ff;
     --coil:#e8b04b;   /* resonator coil — distinct warm gold, ≠ --copper (Ca/Cb) */
+    /* Block S — firing sequence / clocking */
+    --sg3:#1f77b4; --sg2:#5fa8d3; --sg4:#d62728; --sg1:#e8857f; --res:#7d3cb5;
     --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box}
@@ -104,7 +106,7 @@
 
 <header>
   <div>
-    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2</span></h1>
+    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2 · S v0.1</span></h1>
     <div class="sub">ideal-diode switched-capacitor solver · 16-state network search · cross-coupled regenerative</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
@@ -809,6 +811,69 @@
   </section>
 </div>
 
+<!-- ============== BLOCK S: FIRING SEQUENCE & CLOCKING ============== -->
+<section class="panel" id="seq-panel" style="margin-top:14px">
+  <h2>Firing sequence &amp; clocking (Block S)
+    <span class="tag" id="seq-tag">—</span></h2>
+
+  <div class="ctl-row">
+    <div class="row" style="min-width:240px">
+      <label>show cycles</label>
+      <input type="range" id="snshow-r"><input type="number" id="snshow-n">
+      <span class="u">cyc</span>
+    </div>
+    <div class="row" style="min-width:240px">
+      <label>tank f₀</label>
+      <input type="range" id="sf0-r"><input type="number" id="sf0-n">
+      <span class="u">kHz</span>
+    </div>
+    <div class="row" style="min-width:240px">
+      <label>tank Q</label>
+      <input type="range" id="sq0-r"><input type="number" id="sq0-n">
+      <span class="u">—</span>
+    </div>
+    <label class="chk"><input type="checkbox" id="sfollow"> show followers (SG1/SG2)</label>
+  </div>
+
+  <div class="charts">
+    <section class="panel sub">
+      <h2>Gap voltages — |V1−V3| (SG3) · |V4−V2| (SG4)</h2>
+      <canvas id="seq-v" width="600" height="190"></canvas>
+      <div class="legend">
+        <span><span class="sw" style="background:var(--sg3)"></span>SG3 (1→3, stroke 1)</span>
+        <span><span class="sw" style="background:var(--sg4)"></span>SG4 (4→2, stroke 2)</span>
+        <span>normalised eigenvector · peaks grow ×z/cycle · diode-ideal (SG clamp = fork F-S1)</span>
+      </div>
+    </section>
+    <section class="panel sub">
+      <h2>Conduction / trigger logic</h2>
+      <canvas id="seq-logic" width="600" height="190"></canvas>
+      <div class="legend">
+        <span><span class="sw" style="background:var(--sg3)"></span>SG3</span>
+        <span><span class="sw" style="background:var(--sg2)"></span>SG2 (follower)</span>
+        <span><span class="sw" style="background:var(--sg4)"></span>SG4</span>
+        <span><span class="sw" style="background:var(--sg1)"></span>SG1 (follower)</span>
+      </div>
+    </section>
+    <section class="panel sub">
+      <h2>Resonator across 5–6 (the only bench-measurable curve)</h2>
+      <canvas id="seq-tank" width="600" height="190"></canvas>
+      <div class="legend">
+        <span><span class="sw" style="background:var(--res)"></span>V(5–6) ring · envelope</span>
+        <span id="seq-tank-note">f₀/Q from Block R · kick ∝ solver |V| (fork F-S2)</span>
+      </div>
+    </section>
+    <section class="panel sub">
+      <h2>Mechanical clocking map</h2>
+      <canvas id="seq-clock" width="600" height="300"></canvas>
+      <div class="legend">
+        <span>rings (outer→inner): SG3 · SG2 · SG4 · SG1</span>
+        <span>groups = ⌈Nsec/2⌉ · pitch = 720/Nsec° · reacts to geometry Nsec</span>
+      </div>
+    </section>
+  </div>
+</section>
+
 <div class="footer-note">
   <b>Symmetric 4-node Bennet doubler.</b> Cross-diodes D3 (1→3) and D4 (4→2) provide the regenerative
   feedback path: when C1 swings to its minimum, |V₁| rises and clamps node 3 through D3, which then
@@ -1009,6 +1074,58 @@ function solveDoubler4(C1min, C1max, C2min, C2max, Ca, Cb, Cpar, opts){
 function zSym(C1min, C1max, C2min, C2max, Ca, Cb, Cpar){
   return solveDoubler4(C1min, C1max, C2min, C2max, Ca, Cb, Cpar);
 }
+
+/* ============================================================
+   BLOCK S — read-only trace of the doubler (presentational sink)
+   ------------------------------------------------------------
+   traceDoubler4 is a SIBLING of solveDoubler4: identical loop, records
+   the per-phase node-voltage trace, reusing the FROZEN primitives
+   (chargesFromVoltages / solvePhase). It does NOT modify them; a self-
+   test asserts its z equals solveDoubler4's so the two cannot diverge.
+   The loop rescales to avoid overflow, so each record carries the
+   running `scale`; the consumer reconstructs growth as V/scale. [OC]
+   ============================================================ */
+function traceDoubler4(C1min, C1max, C2min, C2max, Ca, Cb, Cpar, opts){
+  const iterations = opts?.iterations ?? 120;   // match solver for z-equality
+  const burn       = opts?.burn       ?? 60;
+  let V = [-1, 0, 0, -1];                        // down-pumping seed, |V|=2
+  let C1cur = C1max, C2cur = C2min;              // notional end of phase A
+  const ratios = [], trace = [];
+  let prevMag = Math.abs(V[0]) + Math.abs(V[3]);
+  let cumScale = 1;                              // running rescale product
+  for (let cyc = 0; cyc < iterations; cyc++){
+    // phase B: C1 -> min, C2 -> max
+    let Q = chargesFromVoltages(V, C1cur, C2cur, Ca, Cb, Cpar);
+    V = solvePhase(Q, C1min, C2max, Ca, Cb, Cpar);
+    C1cur = C1min; C2cur = C2max;
+    trace.push({cyc, phase:"B", c1:C1cur, c2:C2cur, V:V.slice(), scale:cumScale});
+    // phase A: C1 -> max, C2 -> min
+    Q = chargesFromVoltages(V, C1cur, C2cur, Ca, Cb, Cpar);
+    V = solvePhase(Q, C1max, C2min, Ca, Cb, Cpar);
+    C1cur = C1max; C2cur = C2min;
+    trace.push({cyc, phase:"A", c1:C1cur, c2:C2cur, V:V.slice(), scale:cumScale});
+
+    const mag = Math.abs(V[0]) + Math.abs(V[3]);
+    if (cyc >= burn && prevMag > 1e-15 && mag > 1e-15) ratios.push(mag/prevMag);
+    prevMag = mag;
+    const maxV = Math.max.apply(null, V.map(Math.abs));
+    if (maxV > 1e6 || (maxV < 1e-6 && maxV > 0)){
+      const s = 1/maxV; V = V.map(v=>v*s); prevMag *= s; cumScale *= s;
+    }
+  }
+  ratios.sort((a,b)=>a-b);
+  const z = ratios.length ? ratios[Math.floor(ratios.length/2)] : 1.0;
+  return {z, trace};
+}
+
+// Single timing source for Block S (PRF = ⌈Nsec/2⌉·RPM/60). Nsec = pnsec
+// (geometry), RPM = rrpm (master). resonatorCore/demMotor compute the same
+// value; a self-test asserts they agree so timing can't silently diverge. [OC]
+function machinePRF(){
+  const groups = Math.ceil((Number(state.pnsec) || 2) / 2);
+  return groups * (Number(state.rrpm) || 0) / 60;
+}
+
 
 /* ============================================================
    BLOCK C-I — PLATE GEOMETRY → ROTOR CAPACITANCE  (producer)
@@ -2000,6 +2117,39 @@ function runSelfTest(){
   plateRows.push({label:"X: legend covers each part colour once", expected:needVars.length, got:needVars.filter(v=>legCount(v)===1).length, dp:0, tol:0,
                   pass:needVars.every(v => legCount(v) === 1)});
 
+  // --- Block S firing-sequence self-tests (brief §6) ---
+  // 1. tracer ≡ frozen solver (z must match within 1e-9).
+  const Sdev = [160,1000,160,1000,100,100,20];
+  const sTr = traceDoubler4(Sdev[0],Sdev[1],Sdev[2],Sdev[3],Sdev[4],Sdev[5],Sdev[6], {iterations:120, burn:60});
+  const sFz = solveDoubler4.apply(null, Sdev);
+  plateRows.push({label:"S: traceDoubler4 z ≡ solveDoubler4", expected:sFz, got:sTr.z, dp:6, tol:1e-9,
+                  pass:Math.abs(sTr.z - sFz) <= 1e-9});
+  // 2. z-growth wired right: median consecutive SG3-peak ratio (from Vtrue) ≈ tracer z.
+  const byc = new Map();
+  for (const r of sTr.trace){ let o=byc.get(r.cyc); if(!o){o={};byc.set(r.cyc,o);} o[r.phase]=r.V.map(v=>v/r.scale); }
+  const sids = [...byc.keys()].sort((a,b)=>a-b);
+  const pk3 = sids.map(c => Math.abs(byc.get(c).B[0] - byc.get(c).B[2]));
+  const grow = []; for (let i=sids.length-30;i<sids.length;i++) if (i>0 && pk3[i-1]>0) grow.push(pk3[i]/pk3[i-1]);
+  grow.sort((a,b)=>a-b); const gMed = grow.length ? grow[Math.floor(grow.length/2)] : 1;
+  plateRows.push({label:"S: SG3-peak growth ≈ tracer z", expected:sTr.z, got:gMed, dp:4, tol:0.01,
+                  pass:Math.abs(gMed - sTr.z) <= 0.01});
+  // 3. tank monotone: with z>1 (device), successive kick amplitudes strictly increasing.
+  const kick = sids.slice(-8).map(c => Math.abs(byc.get(c).B[0]));
+  let mono = true; for (let i=1;i<kick.length;i++) if (!(kick[i] > kick[i-1])) mono = false;
+  plateRows.push({label:"S: tank kicks strictly increasing (z>1)", expected:1, got:mono?1:0, dp:0, tol:0, pass:mono});
+  // 4. clocking geometry: groups = ⌈Nsec/2⌉ and pitch = 720/Nsec for Nsec ∈ {8,12}.
+  const clkGroups = n => Math.ceil(n/2), clkPitch = n => 720/n;   // mirrors drawSeqClock
+  const clkOK = clkGroups(8)===4 && clkPitch(8)===90 && clkGroups(12)===6 && clkPitch(12)===60;
+  plateRows.push({label:"S: clocking groups/pitch (Nsec 8,12)", expected:1, got:clkOK?1:0, dp:0, tol:0, pass:clkOK});
+  // guard: the single PRF source agrees with resonatorCore and demMotor (no divergence).
+  const prfSeed = (()=>{ const st={}; for(const f of FIELDS) st[f.id]=f.def;
+    Object.assign(st, PLATE_CTL_DEFAULTS, MECH_CTL_DEFAULTS, RES_CTL_DEFAULTS, TC_CTL_DEFAULTS, FLOW_CTL_DEFAULTS, SEQ_CTL_DEFAULTS);
+    cascadeState(st); return st; })();
+  const prfShared = Math.ceil((Number(prfSeed.pnsec)||2)/2) * (Number(prfSeed.rrpm)||0)/60;
+  const prfR = resonatorCore(prfSeed).prf, prfD = demMotor(prfSeed).prf;
+  plateRows.push({label:"S: PRF single source ≡ R ≡ D", expected:prfShared, got:prfR, dp:3, tol:1e-6,
+                  pass:Math.abs(prfShared-prfR) <= 1e-6 && Math.abs(prfShared-prfD) <= 1e-6});
+
   const plateAll = plateRows.every(r => r.pass);
 
   return {ok: allOk && symOk && plateAll, rows, symOk, symA:a, symB:b, plateRows};
@@ -2071,6 +2221,11 @@ const FIELDS = [
   {id:"vhvEkVmm",       def:1.0, min:0.1,  max:5,    step:0.1},  // air working field kV/mm
   {id:"demQuadConeRmm", def:47,  min:0,    max:150,  step:1},    // rotor steel-cone radius → pquadfoot
   {id:"tcRatio",        def:1.5, min:0.1,  max:10,   step:0.1},  // Ca = tcRatio·Cmax
+  // --- Block S firing sequence (s-prefix; presentational sink) ---
+  {id:"snshow", def:6,   min:2, max:12,   step:1},   // asymptotic cycles shown
+  {id:"sf0",    def:0,   min:0, max:2000, step:1},   // tank carrier kHz; 0 = auto (Block R f0)
+  {id:"sq0",    def:0,   min:0, max:500,  step:1},   // tank Q; 0 = auto (Block R Q)
+  {id:"svfire", def:0.70,min:0.10, max:0.99, step:0.01},  // reserved/inactive until fork F-S1
 ];
 // Non-numeric plate controls (serialised into the hash manually). [task §7.2]
 // Rotor caps are inherited from the plate-geometry capacitance by default
@@ -2088,6 +2243,8 @@ const DEM_CTL_DEFAULTS = {demDriveMode:"altStroke", demCapTopology:"perCoil", dl
 const TC_CTL_DEFAULTS = {tcMode:"inverse", tcPlacement:"inside", tcDrive:false};
 // Design-flow inheritance toggles (all default-on, overridable). [flow+presets v0.2]
 const FLOW_CTL_DEFAULTS = {tcFromCmax:true, demRpmLink:true, demEvLink:true, vhvLink:true, quadLink:true};
+// Non-numeric Block S controls (sfollow serialised manually like pdiel).
+const SEQ_CTL_DEFAULTS = {sfollow:true};
 // Transfer-cap field max in Block-T-driven vs manual mode (Block T is nF-scale,
 // far above the manual 500 pF range). [IR — same raise-max policy as the rotor.]
 const CA_MAX_MANUAL = 500, CA_MAX_TC = 20000;
@@ -2145,6 +2302,7 @@ function loadFromHash(){
   if (p.has("tplc"))  state.tcPlacement = p.get("tplc") === "outside" ? "outside" : "inside";
   if (p.has("tdrv"))  state.tcDrive = p.get("tdrv") === "1";
   for (const id of FLOW_TOGGLE_IDS) if (p.has(id)) state[id] = p.get(id) === "1";
+  if (p.has("sfollow")) state.sfollow = p.get("sfollow") === "1";
   if (p.has("help"))  state.help = p.get("help") === "1";
 }
 function writeHash(){
@@ -2168,6 +2326,7 @@ function writeHash(){
   p.set("tplc",  state.tcPlacement);
   p.set("tdrv",  state.tcDrive ? 1 : 0);
   for (const id of FLOW_TOGGLE_IDS) p.set(id, state[id] ? 1 : 0);
+  p.set("sfollow", state.sfollow ? 1 : 0);
   p.set("help",  state.help ? 1 : 0);
   history.replaceState(null, "", "#" + p.toString());
 }
@@ -2335,6 +2494,8 @@ function reflectControls(){
   for (const id in FLOW_SLAVES) setFieldDisabled(id, !!state[FLOW_SLAVES[id]]);
   const nOn = FLOW_TOGGLE_IDS.filter(id => state[id]).length;
   $("flow-tag").textContent = nOn + "/" + FLOW_TOGGLE_IDS.length + " links on";
+  // --- Block S ---
+  $("sfollow").checked = !!state.sfollow;
   // per-parameter help visibility
   document.body.classList.toggle("help-on", !!state.help);
   $("help-toggle").classList.toggle("on", !!state.help);
@@ -2478,6 +2639,7 @@ function bindFlowControls(){
   $("loadPresetBtn").addEventListener("click", () => $("presetFile").click());
   $("savePresetBtn").addEventListener("click", savePreset);
   $("applyR1Btn").addEventListener("click", () => applyParamPreset(PRESET_R1));
+  $("sfollow").addEventListener("change", e => { state.sfollow = e.target.checked; scheduleRecompute(); });
   $("presetFile").addEventListener("change", async e => {
     const f = e.target.files[0];
     if (f){
@@ -2568,6 +2730,12 @@ const DESC = {
   tcMode:"Inverse (desired Ca → ring width) or forward (ring width → Ca).",
   tcPlacement:"Inside: ring pinned at the inner band, grows outward (default). Outside: pinned at the leg radius, grows inward.",
   tcDrive:"Route the computed Ca = Cb into the solver's transfer-cap inputs (raises their range; disables manual Ca/Cb).",
+  // Block S firing sequence
+  snshow:"Number of asymptotic pump cycles shown in the linear firing-sequence panels.",
+  sf0:"Resonator-ring carrier for the 5–6 tank panel, kHz; 0 = auto (use the Block-R computed f₀).",
+  sq0:"Resonator-ring quality factor for the tank panel; 0 = auto (use the Block-R computed Q).",
+  svfire:"Spark-gap fire fraction — reserved/inactive until the saturation-clamp fork (F-S1).",
+  sfollow:"Show the follower spark-gap traces (SG1/SG2) in the sequence and clocking panels.",
   // Design-flow primaries + toggles
   vhvKV:"Design high voltage across the caps; cascades to the HV void, Block-T design V, and the motor bias.",
   vhvEkVmm:"Assumed air working field (kV/mm); the HV void = design-HV / this. 1.0 conservative; 2.0 only with a guard ring.",
@@ -2586,7 +2754,7 @@ const DESC_CTRL = {pdiel:"pdiel", pring:"pring", plink:"plink", psrc:"psrc-seg",
                    demDriveMode:"ddrive-seg", demCapTopology:"dtopo-seg", dlabels:"dlabels",
                    tcMode:"tmode-seg", tcPlacement:"tplc-seg", tcDrive:"tcDrive",
                    vhvLink:"vhvLink", quadLink:"quadLink", demRpmLink:"demRpmLink",
-                   demEvLink:"demEvLink", tcFromCmax:"tcFromCmax"};
+                   demEvLink:"demEvLink", tcFromCmax:"tcFromCmax", sfollow:"sfollow"};
 
 function injectDescriptions(){
   for (const f of FIELDS){
@@ -3371,6 +3539,7 @@ function recompute(){
   }
 
   drawCharts();
+  renderSequence();          // Block S — read-only sink, end of the draw pass
   writeHash();
 }
 
@@ -3523,6 +3692,165 @@ function drawChartC(){
 }
 
 /* ============================================================
+   BLOCK S — firing-sequence & clocking panels (read-only sink)
+   ============================================================ */
+const SEQ_RES = 0.04;                                   // post-fire residual (normalised) [IR]
+function seqCOL(){ const css = getComputedStyle(document.documentElement); return n => css.getPropertyValue(n).trim(); }
+// convex within-stroke rise: V ∝ 1/C(τ), anchored residual→peak. [IR]
+function seqRise01(tau, kappa){
+  const s = 1/(1 - (1 - 1/kappa)*tau);
+  return (s - 1) / (kappa - 1);
+}
+let lastSeq = null;
+function renderSequence(){
+  const C1min = Math.min(state.c1min, state.c1max), C1max = Math.max(state.c1min, state.c1max);
+  const C2min = Math.min(state.c2min, state.c2max), C2max = Math.max(state.c2min, state.c2max);
+  const {z, trace} = traceDoubler4(C1min, C1max, C2min, C2max, state.ca, state.cb, state.cpar, {iterations:120, burn:60});
+  const N = Math.max(2, Math.round(Number(state.snshow) || 6));
+  const cyc = new Map();
+  for (const r of trace){                                // reconstruct Vtrue = V/scale
+    let o = cyc.get(r.cyc); if (!o){ o = {}; cyc.set(r.cyc, o); }
+    o[r.phase] = r.V.map(v => v / r.scale);
+  }
+  const ids = [...cyc.keys()].sort((a,b)=>a-b).slice(-N);
+  const peakSG3 = [], peakSG4 = [], kickSG3 = [], kickSG4 = [];
+  for (const c of ids){ const B = cyc.get(c).B, A = cyc.get(c).A;
+    peakSG3.push(Math.abs(B[0]-B[2])); peakSG4.push(Math.abs(A[3]-A[1]));
+    kickSG3.push(Math.abs(B[0]));      kickSG4.push(Math.abs(A[3])); }
+  const prf   = machinePRF();
+  const kappa = C1max / Math.max(1e-9, C1min);
+  const f0 = (Number(state.sf0) > 0 ? Number(state.sf0)*1e3 : (lastRes && lastRes.f0 > 0 ? lastRes.f0 : 238e3));
+  const Q0 = (Number(state.sq0) > 0 ? Number(state.sq0)    : (lastRes && lastRes.Q  > 0 ? lastRes.Q  : 40));
+  lastSeq = {z, peakSG3, peakSG4, kickSG3, kickSG4, prf, kappa, f0, Q0, N};
+  $("seq-tag").textContent = "z = " + z.toFixed(4) + " · PRF " + (prf>0?prf.toFixed(0):"—") + " Hz";
+  $("seq-tank-note").textContent = "f₀≈" + (f0/1e3).toFixed(0) + " kHz · Q≈" + Q0.toFixed(0) + " (Block R) · kick ∝ |V| (fork F-S2)";
+  drawSeqV(); drawSeqLogic(); drawSeqTank(); drawSeqClock();
+}
+
+function drawSeqV(){
+  const S = lastSeq; if (!S) return;
+  const {ctx, w, h} = clearCanvas($("seq-v")); const COL = seqCOL();
+  const N = S.N, norm = Math.max(1e-30, Math.max(...S.peakSG3, ...S.peakSG4));
+  const p3 = S.peakSG3.map(v=>v/norm), p4 = S.peakSG4.map(v=>v/norm);
+  const padL=8, padR=8, padT=20, padB=8, pw=w-padL-padR, ph=h-padT-padB;
+  const X = u => padL + (u/N)*pw, Y = v => padT + (1 - v/1.12)*ph;
+  ctx.strokeStyle = COL("--line"); ctx.strokeRect(padL, padT, pw, ph);
+  const gapVal = (u, peaks, half) => {
+    const k = Math.floor(u); if (k < 0 || k >= peaks.length) return SEQ_RES;
+    const a = k + 0.5*half, b = a + 0.5;
+    if (u >= a && u < b) return SEQ_RES + (peaks[k]-SEQ_RES)*seqRise01((u-a)/0.5, S.kappa);
+    return SEQ_RES;
+  };
+  const trace = (peaks, half, col) => {
+    ctx.strokeStyle = col; ctx.lineWidth = 1.8; ctx.beginPath();
+    const steps = N*60;
+    for (let i=0;i<=steps;i++){ const u=i/steps*N, xx=X(u), yy=Y(gapVal(u,peaks,half)); i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy); }
+    ctx.stroke();
+    ctx.fillStyle = col;
+    for (let k=0;k<N;k++){ const b=k+0.5*half+0.5; ctx.beginPath(); ctx.arc(X(b), Y(peaks[k]), 2.6, 0, 2*Math.PI); ctx.fill(); }
+  };
+  trace(p3, 0, COL("--sg3")); trace(p4, 1, COL("--sg4"));
+  ctx.fillStyle = COL("--dim"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.fillText("peaks grow ×" + S.z.toFixed(3) + "/cycle (= solver z) · normalised eigenvector", padL+2, 3);
+}
+
+function drawSeqLogic(){
+  const S = lastSeq; if (!S) return;
+  const {ctx, w, h} = clearCanvas($("seq-logic")); const COL = seqCOL();
+  const N = S.N, padL=8, padR=8, padT=6, padB=6, pw=w-padL-padR, ph=h-padT-padB;
+  const X = u => padL + (u/N)*pw;
+  const conWin = 0.05, lag = 0.012, follow = !!state.sfollow;
+  // stroke bands
+  for (let k=0;k<N;k++){
+    ctx.fillStyle = COL("--sg3"); ctx.globalAlpha = 0.05; ctx.fillRect(X(k), padT, X(k+0.5)-X(k), ph);
+    ctx.fillStyle = COL("--sg4"); ctx.globalAlpha = 0.05; ctx.fillRect(X(k+0.5), padT, X(k+1)-X(k+0.5), ph);
+  }
+  ctx.globalAlpha = 1;
+  const rows = [["SG3", COL("--sg3"), 0, false], ["SG2", COL("--sg2"), 0, true],
+                ["SG4", COL("--sg4"), 1, false], ["SG1", COL("--sg1"), 1, true]];
+  const rh = ph/rows.length;
+  rows.forEach((r, i) => {
+    const [name, col, half, isFollow] = r;
+    const base = padT + (i+1)*rh - 4;
+    if (isFollow && !follow) return;
+    ctx.fillStyle = col;
+    for (let k=0;k<N;k++){
+      const fire = k + 0.5*half + 0.5 + (isFollow ? lag : 0);
+      ctx.fillRect(X(fire), base - rh*0.7, X(fire+conWin)-X(fire), rh*0.7);
+    }
+    ctx.fillStyle = col; ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    ctx.fillText(name, padL+2, base - rh*0.35);
+  });
+}
+
+function drawSeqTank(){
+  const S = lastSeq; if (!S) return;
+  const {ctx, w, h} = clearCanvas($("seq-tank")); const COL = seqCOL();
+  const N = S.N, T = S.prf > 0 ? 1/S.prf : 1, tEnd = N*T;
+  const kn = Math.max(1e-30, Math.max(...S.kickSG3, ...S.kickSG4));
+  const events = [];
+  for (let k=0;k<N;k++){ events.push([(k+0.5)*T, +S.kickSG3[k]/kn]); events.push([(k+1)*T, -S.kickSG4[k]/kn]); }
+  const tau0 = S.Q0 / (Math.PI * S.f0);
+  const padL=8, padR=8, padT=8, padB=8, pw=w-padL-padR, ph=h-padT-padB, cy=padT+ph/2;
+  const X = t => padL + (t/tEnd)*pw, Yv = v => cy - v*(ph/2*0.92);
+  const envAt = t => { let e=0; for (const [tf,amp] of events) if (t>=tf) e = Math.max(e, Math.abs(amp)*Math.exp(-(t-tf)/tau0)); return e; };
+  const ringAt = t => { let s=0; for (const [tf,amp] of events) if (t>=tf){ const dt=t-tf; s += amp*Math.exp(-dt/tau0)*Math.sin(2*Math.PI*S.f0*dt);} return s; };
+  ctx.strokeStyle = COL("--line"); ctx.beginPath(); ctx.moveTo(padL, cy); ctx.lineTo(padL+pw, cy); ctx.stroke();
+  // ± envelope + fill
+  const M = 600;
+  ctx.fillStyle = COL("--res"); ctx.globalAlpha = 0.10; ctx.beginPath();
+  for (let i=0;i<=M;i++){ const t=i/M*tEnd; i?ctx.lineTo(X(t),Yv(envAt(t))):ctx.moveTo(X(t),Yv(envAt(t))); }
+  for (let i=M;i>=0;i--){ const t=i/M*tEnd; ctx.lineTo(X(t), Yv(-envAt(t))); }
+  ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+  ctx.strokeStyle = COL("--res"); ctx.lineWidth = 1.2;
+  for (const sgn of [1,-1]){ ctx.beginPath(); for (let i=0;i<=M;i++){ const t=i/M*tEnd; i?ctx.lineTo(X(t),Yv(sgn*envAt(t))):ctx.moveTo(X(t),Yv(sgn*envAt(t))); } ctx.stroke(); }
+  // inset: resolved carrier ~30 µs after a mid fire
+  const tz0 = events.length ? events[Math.floor(events.length/2)][0] : 0, win = 30e-6;
+  const ix=padL+pw*0.62, iy=padT+4, iw=pw*0.36, ih=ph*0.42;
+  ctx.strokeStyle = COL("--line"); ctx.strokeRect(ix, iy, iw, ih);
+  ctx.strokeStyle = COL("--res"); ctx.lineWidth = 1; ctx.beginPath();
+  const IM=200; let amax=1e-30; for (let i=0;i<=IM;i++){ amax=Math.max(amax, Math.abs(ringAt(tz0+i/IM*win))); }
+  for (let i=0;i<=IM;i++){ const t=tz0+i/IM*win, xx=ix+i/IM*iw, yy=iy+ih/2-ringAt(t)/amax*(ih/2*0.9); i?ctx.lineTo(xx,yy):ctx.moveTo(xx,yy); }
+  ctx.stroke();
+  ctx.fillStyle = COL("--dim"); ctx.font = "9px ui-monospace,monospace"; ctx.textAlign="left"; ctx.textBaseline="top";
+  ctx.fillText("f₀ ring detail (~30 µs)", ix+3, iy+2);
+}
+
+function drawSeqClock(){
+  const S = lastSeq; if (!S) return;
+  const {ctx, w, h} = clearCanvas($("seq-clock")); const COL = seqCOL();
+  const Nsec = Math.max(2, Math.round(Number(state.pnsec) || 12));
+  const groups = Math.ceil(Nsec/2), pitch = 720/Nsec, strokeOff = pitch/2;
+  const lag = 0.05*pitch, win = 0.06*pitch, follow = !!state.sfollow;
+  const cx = w*0.5, cy = h*0.52, R = Math.min(w, h)/2 - 16;
+  const A = deg => (deg - 90) * Math.PI/180;             // θ zero at top, clockwise
+  const wedge = (r0, r1, ac, col) => {
+    const a0 = A(ac - win/2), a1 = A(ac + win/2);
+    ctx.beginPath(); ctx.arc(cx, cy, r1, a0, a1); ctx.arc(cx, cy, r0, a1, a0, true);
+    ctx.closePath(); ctx.fillStyle = col; ctx.fill();
+    ctx.strokeStyle = COL("--bg"); ctx.lineWidth = 0.6; ctx.stroke();
+  };
+  // four rings (outer→inner): SG3, SG2, SG4, SG1
+  const rings = [["--sg3", 0, false], ["--sg2", lag, true], ["--sg4", strokeOff, false], ["--sg1", strokeOff+lag, true]];
+  const ringT = R*0.13, ringGap = R*0.04;
+  rings.forEach((rg, idx) => {
+    const [v, off, isFollow] = rg;
+    if (isFollow && !follow) return;
+    const r1 = R - idx*(ringT+ringGap), r0 = r1 - ringT;
+    // faint ring guide
+    ctx.strokeStyle = COL("--line"); ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.arc(cx, cy, (r0+r1)/2, 0, 2*Math.PI); ctx.stroke();
+    for (let j=0;j<groups;j++) wedge(r0, r1, j*pitch + off, COL(v));
+  });
+  // centre summary
+  const frot = groups > 0 ? S.prf/groups : 0, Trev = frot>0 ? 1/frot : 0;
+  ctx.fillStyle = COL("--dim"); ctx.font = "9px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  const lines = ["Nsec "+Nsec+" · groups "+groups, "PRF "+S.prf.toFixed(0)+" · f_rot "+frot.toFixed(0)+" Hz",
+                 "pitch "+pitch.toFixed(0)+"° · off "+strokeOff.toFixed(0)+"°", Trev>0?("T_rev "+(Trev*1e3).toFixed(1)+" ms"):""];
+  lines.forEach((l,i)=> ctx.fillText(l, cx, cy + (i-1.5)*12));
+}
+
+/* ============================================================
    BOOT
    ============================================================ */
 function renderSelfTest(test){
@@ -3561,6 +3889,7 @@ function boot(){
   Object.assign(state, DEM_CTL_DEFAULTS);     // non-numeric Block-D controls
   Object.assign(state, TC_CTL_DEFAULTS);      // non-numeric Block-T controls
   Object.assign(state, FLOW_CTL_DEFAULTS);    // design-flow inheritance toggles
+  Object.assign(state, SEQ_CTL_DEFAULTS);     // Block S controls
   state.help = false;                         // per-parameter help (view toggle)
   loadFromHash();
   for (const f of FIELDS) bindField(f);
@@ -3588,7 +3917,7 @@ function boot(){
     $("copy-url").textContent = "copied!";
     setTimeout(() => $("copy-url").textContent = "copy share-url", 1200);
   });
-  window.addEventListener("resize", () => { drawCharts(); if (lastDem) drawDemTopView(); });
+  window.addEventListener("resize", () => { drawCharts(); if (lastDem) drawDemTopView(); if (lastSeq) renderSequence(); });
   recompute();
 }
 boot();

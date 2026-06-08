@@ -120,6 +120,16 @@ Derived (slaved) via five default-on/overridable toggles (cascadeState, one pass
 - Presets are JSON of **primaries + toggles + an `expect` block**; loaded via "Load parameter set" (`FileReader`), applied to `state`, then the one-pass cascade runs and `expect` is checked within tolerance. "Save current as preset" exports a scaffold. **No magnitude is hard-coded in docs** — the calculator computes it and the preset asserts it (`expect`, with `tol`); checkable outputs are the explicit `presetExpectGetters` set.
 - Persistence is **local file I/O only** (`FileReader` / `Blob`+anchor). No network, no `localStorage`. `solveDoubler4` untouched.
 
+### Block S — firing sequence & clocking (prefix `s*`, presentational sink)
+
+```
+snshow, sf0 (0=auto Block-R f₀), sq0 (0=auto Block-R Q), svfire (reserved),
+sfollow (boolean, manual hash)                              [inputs]
+```
+
+- Read-only **sink**: `traceDoubler4` is a byte-frozen-primitive sibling of `solveDoubler4` (a self-test asserts equal `z`); Block S consumes its trace plus geometry `Nsec` (`pnsec`) and the single timing source `machinePRF()` = `⌈pnsec/2⌉·rrpm/60`. It never writes solver state.
+- `s` is the Block-S prefix; never feeds the solver path. Tank f₀/Q default to the live Block-R values (`sf0`/`sq0` = 0 ⇒ auto) — no hard-coded magnitudes.
+
 ### Block D — distributed electromagnet motor (prefix `dem*`)
 
 ```
