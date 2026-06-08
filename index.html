@@ -2295,6 +2295,7 @@ const $ = id => document.getElementById(id);
 
 function bindField(f){
   const r = $(f.id+"-r"), n = $(f.id+"-n");
+  if (!r || !n){ if (state[f.id] == null) state[f.id] = f.def; return; }  // hash-only field (no UI row, e.g. svfire)
   r.min = f.min; r.max = f.max; r.step = f.step;
   n.min = f.min; n.max = f.max; n.step = f.step;
   const set = (v, src) => {
