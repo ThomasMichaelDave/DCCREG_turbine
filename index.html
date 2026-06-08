@@ -91,6 +91,8 @@
   #mxsec{height:240px}
   #dtop{height:340px}
   #seq-clock{height:520px}
+  #seq-v,#seq-tank{height:220px}
+  #seq-logic{height:200px}
   .scale-readout{font-size:10px;color:var(--dim);margin-top:4px}
   .sw2{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle;border:1px solid var(--line)}
   .xsec-legend{display:none;flex-wrap:wrap;gap:4px 14px;font-size:10.5px;color:var(--dim);margin-top:8px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:4px}
@@ -836,35 +838,33 @@
     <label class="chk"><input type="checkbox" id="sfollow"> show followers (SG1/SG2)</label>
   </div>
 
-  <div class="charts">
-    <section class="panel sub">
-      <h2>Gap voltages — |V1−V3| (SG3) · |V4−V2| (SG4)</h2>
-      <canvas id="seq-v" width="600" height="190"></canvas>
-      <div class="legend">
-        <span><span class="sw" style="background:var(--sg3)"></span>SG3 (1→3, stroke 1)</span>
-        <span><span class="sw" style="background:var(--sg4)"></span>SG4 (4→2, stroke 2)</span>
-        <span>normalised eigenvector · peaks grow ×z/cycle · diode-ideal (SG clamp = fork F-S1)</span>
-      </div>
-    </section>
-    <section class="panel sub">
-      <h2>Conduction / trigger logic</h2>
-      <canvas id="seq-logic" width="600" height="190"></canvas>
-      <div class="legend">
-        <span><span class="sw" style="background:var(--sg3)"></span>SG3</span>
-        <span><span class="sw" style="background:var(--sg2)"></span>SG2 (follower)</span>
-        <span><span class="sw" style="background:var(--sg4)"></span>SG4</span>
-        <span><span class="sw" style="background:var(--sg1)"></span>SG1 (follower)</span>
-      </div>
-    </section>
-    <section class="panel sub">
-      <h2>Resonator across 5–6 (the only bench-measurable curve)</h2>
-      <canvas id="seq-tank" width="600" height="190"></canvas>
-      <div class="legend">
-        <span><span class="sw" style="background:var(--res)"></span>V(5–6) ring · envelope</span>
-        <span id="seq-tank-note">f₀/Q from Block R · kick ∝ solver |V| (fork F-S2)</span>
-      </div>
-    </section>
-  </div>
+  <section class="panel sub">
+    <h2>Gap voltages — |V1−V3| (SG3) · |V4−V2| (SG4)</h2>
+    <canvas id="seq-v" width="900" height="220"></canvas>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--sg3)"></span>SG3 (1→3, stroke 1)</span>
+      <span><span class="sw" style="background:var(--sg4)"></span>SG4 (4→2, stroke 2)</span>
+      <span>normalised eigenvector · peaks grow ×z/cycle · diode-ideal (SG clamp = fork F-S1)</span>
+    </div>
+  </section>
+  <section class="panel sub" style="margin-top:14px">
+    <h2>Conduction / trigger logic</h2>
+    <canvas id="seq-logic" width="900" height="200"></canvas>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--sg3)"></span>SG3</span>
+      <span><span class="sw" style="background:var(--sg2)"></span>SG2 (follower)</span>
+      <span><span class="sw" style="background:var(--sg4)"></span>SG4</span>
+      <span><span class="sw" style="background:var(--sg1)"></span>SG1 (follower)</span>
+    </div>
+  </section>
+  <section class="panel sub" style="margin-top:14px">
+    <h2>Resonator across 5–6 (the only bench-measurable curve)</h2>
+    <canvas id="seq-tank" width="900" height="220"></canvas>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--res)"></span>V(5–6) ring · envelope</span>
+      <span id="seq-tank-note">f₀/Q from Block R · kick ∝ solver |V| (fork F-S2)</span>
+    </div>
+  </section>
 
   <section class="panel sub" style="margin-top:14px">
     <h2>Mechanical clocking map</h2>
