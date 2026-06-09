@@ -36,9 +36,9 @@ lag = lag_frac * pitch
 # ---- the four tracks: (name, base radius, colour, within-group offset) ----
 GAPS = [
     ("SG3  1→3",   3.9, "#1f77b4", 0.0),
-    ("SG2  3→rail", 3.1, "#5fa8d3", lag),
+    ("SG1  2→rail", 3.1, "#e8857f", lag),               # SG1 follows SG3 (Ca branch {D1,D3})
     ("SG4  4→2",   2.3, "#d62728", stroke_off),
-    ("SG1  2→rail", 1.5, "#e8857f", stroke_off + lag),
+    ("SG2  3→rail", 1.5, "#5fa8d3", stroke_off + lag),  # SG2 follows SG4 (Cb branch {D2,D4})
 ]
 RING_T = 0.6
 
