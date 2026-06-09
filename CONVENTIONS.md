@@ -55,6 +55,14 @@ Non-numeric controls (no `-r`/`-n` pair; serialise into the hash manually): `pdi
 
 **Naming note.** The plate swing ratio $\kappa_C = C_\text{max}/C_\text{min}$ is *identically* the quantity the host already displays as **r₁/r₂** and sweeps in its "z vs rotor swing ratio r" chart. Do not introduce a second name in the UI.
 
+### Switch naming
+
+`solveDoubler4`'s ideal diodes **`D1–D4`** (`D1:2→0  D2:3→0  D3:1→3  D4:4→2`) are the
+**canonical** switch names. The physical spark-gap commutator aliases them as **SG1–SG4**
+(SG1↔D1 … SG4↔D4); see `docs/commutator-design.md §2`. Use `D1–D4` in engine/solver
+contexts and SG1–4 only when discussing the physical commutator. The solver's ground (0) is
+the physical resonator rail (5–6); it is a near-short at PRF (L1-short argument).
+
 ---
 
 ## 3. Working conventions
