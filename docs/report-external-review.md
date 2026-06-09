@@ -2,7 +2,7 @@
 
 **Artifact under review:** `index.html` — a single, self-contained web page (no build, no server, no dependencies, no network, no `localStorage`).
 **Build stamp:** `C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2.2 · S v0.1 · commutator v0.1` (shown in the page header).
-**Reviewed against:** commit `800d87f` (2026-06-08). Every numeric anchor in this report was re-verified by a headless run of the page's own self-test battery and producer functions on this commit.
+**Reviewed against:** commit `a151539` (2026-06-08). Every numeric anchor in this report was re-verified by a headless run of the page's own self-test battery and producer functions on this commit.
 **Companion document:** `docs/report-tool-functioning.md` — a deeper functional walk-through of the host solver and Blocks C-I/M. This report is the authoritative, current overview: it covers all blocks (host, C-I, M, R, D, T, design-flow, S, and the commutator render) and supersedes the companion's block coverage where they differ.
 **Purpose:** give an external reviewer everything needed to judge the tool's correctness, scope, and honesty — what it claims, how each claim is validated, what was deliberately corrected, and what is explicitly out of scope.
 
@@ -105,7 +105,7 @@ Per the "correct openly" convention each of these is recorded in `CHANGELOG.md` 
 
 ## 5. Verification status
 
-**All 66 deterministic self-tests pass** on commit `7796b72` (engine badge: *verified*). The battery is the regression gate: any change that breaks a modelled relationship flips the badge red on load. The tests are pure functions of the producer code (no DOM), so they reproduce headlessly.
+**All 67 deterministic self-tests pass** on commit `7796b72` (engine badge: *verified*). The battery is the regression gate: any change that breaks a modelled relationship flips the badge red on load. The tests are pure functions of the producer code (no DOM), so they reproduce headlessly.
 
 | Group | Count | Coverage |
 |---|---|---|
@@ -117,7 +117,7 @@ Per the "correct openly" convention each of these is recorded in `CHANGELOG.md` 
 | Block T | 7 | inverse widths, round-trip, band-max + overrun, Ca = Cb, field, inside > outside, energy |
 | Design-flow + presets | 8 | export→load round-trip, partial load, **R1 expect-pass**, corrupt-expect-surfaces-✗, inheritance-overwrite warn, unknown-key warn, bad-JSON safety, flow identities + idempotent cascade |
 | Cross-section render | 11 | bracket px→mm, pole-in-band, motor gap from Block D, rim-clamp straddle, legend coverage; **v0.2.2:** C-EM mirror symmetry, no-inboard-overrun, spine-clears-disc, pole-fills-band, two-equal-axial-gaps, coil-on-spine |
-| Block S firing sequence | 5 | **tracer ≡ frozen solver**, SG3-peak growth ≈ z, tank kicks monotone, clocking groups/pitch, **PRF single-source ≡ R ≡ D** |
+| Block S firing sequence | 6 | **tracer ≡ frozen solver**, SG3-peak growth ≈ z, tank kicks monotone, clocking groups/pitch, **PRF single-source ≡ R ≡ D**, **firing pairing ≡ solver** {SG1,SG3}/{SG2,SG4} |
 | Commutator render | 4 | SG3↔SG4 offset = sector pitch, bar sets axially aligned, no cross-bridge, transfer radius outboard |
 
 The standout rows are the **invariance / decoupling** guards — they prove a *relationship*, not just a point value: C-I "C_R invariant under squeeze" (the squeeze never reaches the resonator), D "N·I invariance" (the ampere-turn limit is genuinely frequency-independent, not an accident of one operating point), S "tracer ≡ frozen solver" and "PRF single-source ≡ R ≡ D" (the visualiser and the timing sources cannot drift from the engine).
@@ -152,9 +152,9 @@ Deliberately out of scope (deferred; **not** modelled, **not** claimed):
 
 ## 8. How to reproduce / review
 
-1. **Run it:** open `index.html` in any modern browser (offline is fine). Confirm the header badge reads **"engine verified"** and the self-test table (under *Topology & diode schedule*) shows all 66 rows passing.
+1. **Run it:** open `index.html` in any modern browser (offline is fine). Confirm the header badge reads **"engine verified"** and the self-test table (under *Topology & diode schedule*) shows all 67 rows passing.
 2. **Inspect the invariant:** confirm the five frozen primitives are unchanged from the validated host engine; all blocks are upstream producers. (`git log -p` on `index.html` filtered to those functions shows no edits.)
-3. **Re-run the battery headlessly:** extract the `<script>` body, stub a minimal DOM, call `runSelfTest()`, assert `.ok === true` and `rows + plateRows` count = 66. This is how every anchor in this report was produced.
+3. **Re-run the battery headlessly:** extract the `<script>` body, stub a minimal DOM, call `runSelfTest()`, assert `.ok === true` and `rows + plateRows` count = 67. This is how every anchor in this report was produced.
 4. **Load the R1 preset:** "Load parameter set" → `presets/R1-baseline.json`; confirm the five `expect` chips report ✓ within tolerance.
 5. **Probe the corrections (§4) and the open questions (§7)** — those are where judgment, not arithmetic, is required.
 6. **Share state:** "copy share-url" captures any configuration; the URL hash is the full, reproducible parameter set.

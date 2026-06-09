@@ -4,6 +4,9 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Fixed
+- **Block S firing pairing** — the conduction panels grouped `{SG3,SG2}`/`{SG4,SG1}` but the solver's per-phase conduction is `{SG1,SG3}` (Ca branch {D1,D3}) and `{SG2,SG4}` (Cb branch {D2,D4}). The return now follows its own cross-couple: **SG1↔SG3, SG2↔SG4**. `seq-clock` rings, `seq-logic` bands, the legend order, and `reference/clocking_map.py` all corrected. Made durable: both panels now derive their grouping from a single `SEQ_GROUPS` source, and a new self-test derives the true pairing from `traceDoubler4` (read-only, by V-equality) and asserts the panels match it — so the grouping can't drift from the engine again. Display-only; `solveDoubler4`/`solvePhase` and the trigger geometry (`pitch`/`strokeOff`/`lag`/`groups`) untouched.
+
 ### Added
 - **Commutator render (commutator v0.1)** — render/consumer visualisation of the physical switching design in `docs/commutator-design.md`; `solveDoubler4` untouched (frozen primitives byte-identical).
   - **Axial companion view (B)** — new "Commutator — axial view" panel (face-on polar canvas): rotor disc + `Nsec` sectors, the 6 floating bars at the transfer radius with ball-electrode ends, the SG3 / SG4 stator sets with the **30° offset drawn**, firing windows + favourable-half shading, and a live **`kphi`** rotor-angle slider that sweeps the bars into the sets. Subset colour/hatch legend.
