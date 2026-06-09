@@ -1,9 +1,9 @@
 # External Review Report — Rotary-Varicap Bennet-Doubler Design Calculator
 
 **Artifact under review:** `index.html` — a single, self-contained web page (no build, no server, no dependencies, no network, no `localStorage`).
-**Build stamp:** `C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2.2 · S v0.1` (shown in the page header).
-**Reviewed against:** commit `7796b72` (2026-06-08). Every numeric anchor in this report was re-verified by a headless run of the page's own self-test battery and producer functions on this commit.
-**Companion document:** `docs/report-tool-functioning.md` — a deeper functional walk-through of the host solver and Blocks C-I/M. This report is the authoritative, current overview: it covers all eight blocks (host, C-I, M, R, D, T, design-flow, S) and supersedes the companion's block coverage where they differ.
+**Build stamp:** `C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2.2 · S v0.1 · commutator v0.1` (shown in the page header).
+**Reviewed against:** commit `800d87f` (2026-06-08). Every numeric anchor in this report was re-verified by a headless run of the page's own self-test battery and producer functions on this commit.
+**Companion document:** `docs/report-tool-functioning.md` — a deeper functional walk-through of the host solver and Blocks C-I/M. This report is the authoritative, current overview: it covers all blocks (host, C-I, M, R, D, T, design-flow, S, and the commutator render) and supersedes the companion's block coverage where they differ.
 **Purpose:** give an external reviewer everything needed to judge the tool's correctness, scope, and honesty — what it claims, how each claim is validated, what was deliberately corrected, and what is explicitly out of scope.
 
 ---
@@ -44,6 +44,7 @@ It is an **exploration / sizing tool** — **not** a manufacturing release and *
 | **T** transfer caps | bus-ring Ca/Cb geometry → capacitance | optional `tcDrive` writes `ca`/`cb` at call site |
 | **Design-flow + presets** | one-pass cascade of primaries → slaved inputs; JSON preset load/save | only via the documented `tcFromCmax`/`tcDrive` call-site wiring |
 | **S** firing sequence | read-only `traceDoubler4` trace → 4 firing/clocking panels | no — pure sink, never writes solver state |
+| **Commutator** render | physical realisation of D1–D4: axial companion + front-view overlay | no — render/consumer, reads geometry only |
 
 A reviewer can verify the invariant directly: the five frozen primitives (`solveLinear`, `chargesFromVoltages`, `solvePhase`, `solveDoubler4`, `zSym`) are **byte-identical** across every feature commit (verified by per-function md5). All feature work is upstream of them.
 
@@ -81,6 +82,9 @@ Five default-on, overridable couplings cascade the design primaries to the slave
 ### Block S — firing sequence & clocking (read-only sink) `[OC] / [IR] / [RH]`
 `traceDoubler4` is a read-only **sibling** of `solveDoubler4` — the identical loop, recording the per-phase node-voltage trace and reusing the frozen `chargesFromVoltages`/`solvePhase`; it carries the running rescale so the consumer reconstructs `Vtrue = V/scale`. A self-test asserts `traceDoubler4.z ≡ solveDoubler4.z` (z = 1.2033 at the device point) within 1e-9. Four full-width canvas panels: `seq-v` (gap voltages with the convex 1/C within-stroke rise, peaks growing ×z/cycle), `seq-logic` (SG3/SG2/SG4/SG1 conduction with stroke bands), `seq-tank` (impulse-kicked damped 5–6 ring whose envelope grows with the pump, plus a resolved-carrier inset), and `seq-clock` (an enlarged polar map: `groups = ⌈Nsec/2⌉`, `pitch = 720/Nsec°`, reacting to geometry `pnsec`). A single timing source `machinePRF() = ⌈pnsec/2⌉·rrpm/60` feeds every panel; a self-test asserts it equals `resonatorCore.prf` and `demMotor.prf`. The tank carrier/decay default to the live Block-R `f₀`/`Q` (`sf0`/`sq0` = 0 ⇒ auto), so no f₀ figure is hard-coded. **[RH]** Caption discipline: only the 5–6 curve is bench-measurable (nodes 1–4 sit on the free counter-rotating stator); the rest is design guidance. The conduction-window/follower-lag angles are display placeholders (open forks F-S1/F-S4).
 
+### Commutator render `[IR]`
+A render/consumer visualisation of the frozen switching design in `docs/commutator-design.md` (the physical realisation of diodes `D1–D4` as a rotary, mechanically-timed electrostatic commutator). Two coordinated views: an **axial companion** (new face-on panel — rotor disc + `Nsec` sectors, 6 floating bars at the transfer radius with ball ends, the SG3/SG4 stator sets with the **30° offset drawn**, firing windows + favourable-half shading, a live `kphi` rotor-angle slider) and **front-view overlay** additions in the cross-section (mirrored top/bottom bar sets, stator electrodes across two series spark-gaps per bar, cross-ecliptic sink routing). A `drawLegend` helper encodes **colour = electrical frame** (rotor / stator / **floating bars** / rail) and **hatch = material**; the floating bars get their own colour — the key distinction. Pure `commutatorGeom(state)`: bar count `⌈Nsec/2⌉`, the 30° offset resident in the stator sets with the bar sets axially aligned, transfer-circle radius `ktransrad` (outboard of `rActiveOuter`). Render-only — `k*` inputs have no solver coupling; the spark-transfer `z_spark` model is left open per the design doc §9.
+
 ---
 
 ## 4. Corrections made openly (reviewer attention)
@@ -101,7 +105,7 @@ Per the "correct openly" convention each of these is recorded in `CHANGELOG.md` 
 
 ## 5. Verification status
 
-**All 62 deterministic self-tests pass** on commit `7796b72` (engine badge: *verified*). The battery is the regression gate: any change that breaks a modelled relationship flips the badge red on load. The tests are pure functions of the producer code (no DOM), so they reproduce headlessly.
+**All 66 deterministic self-tests pass** on commit `7796b72` (engine badge: *verified*). The battery is the regression gate: any change that breaks a modelled relationship flips the badge red on load. The tests are pure functions of the producer code (no DOM), so they reproduce headlessly.
 
 | Group | Count | Coverage |
 |---|---|---|
@@ -114,6 +118,7 @@ Per the "correct openly" convention each of these is recorded in `CHANGELOG.md` 
 | Design-flow + presets | 8 | export→load round-trip, partial load, **R1 expect-pass**, corrupt-expect-surfaces-✗, inheritance-overwrite warn, unknown-key warn, bad-JSON safety, flow identities + idempotent cascade |
 | Cross-section render | 11 | bracket px→mm, pole-in-band, motor gap from Block D, rim-clamp straddle, legend coverage; **v0.2.2:** C-EM mirror symmetry, no-inboard-overrun, spine-clears-disc, pole-fills-band, two-equal-axial-gaps, coil-on-spine |
 | Block S firing sequence | 5 | **tracer ≡ frozen solver**, SG3-peak growth ≈ z, tank kicks monotone, clocking groups/pitch, **PRF single-source ≡ R ≡ D** |
+| Commutator render | 4 | SG3↔SG4 offset = sector pitch, bar sets axially aligned, no cross-bridge, transfer radius outboard |
 
 The standout rows are the **invariance / decoupling** guards — they prove a *relationship*, not just a point value: C-I "C_R invariant under squeeze" (the squeeze never reaches the resonator), D "N·I invariance" (the ampere-turn limit is genuinely frequency-independent, not an accident of one operating point), S "tracer ≡ frozen solver" and "PRF single-source ≡ R ≡ D" (the visualiser and the timing sources cannot drift from the engine).
 
@@ -147,9 +152,9 @@ Deliberately out of scope (deferred; **not** modelled, **not** claimed):
 
 ## 8. How to reproduce / review
 
-1. **Run it:** open `index.html` in any modern browser (offline is fine). Confirm the header badge reads **"engine verified"** and the self-test table (under *Topology & diode schedule*) shows all 62 rows passing.
+1. **Run it:** open `index.html` in any modern browser (offline is fine). Confirm the header badge reads **"engine verified"** and the self-test table (under *Topology & diode schedule*) shows all 66 rows passing.
 2. **Inspect the invariant:** confirm the five frozen primitives are unchanged from the validated host engine; all blocks are upstream producers. (`git log -p` on `index.html` filtered to those functions shows no edits.)
-3. **Re-run the battery headlessly:** extract the `<script>` body, stub a minimal DOM, call `runSelfTest()`, assert `.ok === true` and `rows + plateRows` count = 62. This is how every anchor in this report was produced.
+3. **Re-run the battery headlessly:** extract the `<script>` body, stub a minimal DOM, call `runSelfTest()`, assert `.ok === true` and `rows + plateRows` count = 66. This is how every anchor in this report was produced.
 4. **Load the R1 preset:** "Load parameter set" → `presets/R1-baseline.json`; confirm the five `expect` chips report ✓ within tolerance.
 5. **Probe the corrections (§4) and the open questions (§7)** — those are where judgment, not arithmetic, is required.
 6. **Share state:** "copy share-url" captures any configuration; the URL hash is the full, reproducible parameter set.
@@ -158,7 +163,7 @@ Deliberately out of scope (deferred; **not** modelled, **not** claimed):
 
 ## 9. Provenance and reference inputs
 
-- **In-repo briefs (authoritative for their internals):** `docs/brief-blockC1-geometry-to-rotorcap.md`, `…blockM…`, `…blockR…`, `…blockD…`, `…blockS…`, and the system context `docs/doc-circuit-topology-resonances-materials.md`. The Block-T, design-flow, and cross-section briefs were external working documents; their content and every deviation are recorded in `CHANGELOG.md`.
+- **In-repo briefs (authoritative for their internals):** `docs/brief-blockC1-geometry-to-rotorcap.md`, `…blockM…`, `…blockR…`, `…blockD…`, `…blockS…`, `docs/commutator-design.md` (the frozen switching design — physical realisation of D1–D4), and the system context `docs/doc-circuit-topology-resonances-materials.md`. The Block-T, design-flow, and cross-section briefs were external working documents; their content and every deviation are recorded in `CHANGELOG.md`.
 - **Conventions and audit trail:** `CONVENTIONS.md` (tier tags, symbol hygiene, block namespaces, the producer/consumer rule) and `CHANGELOG.md` (every change with its reason).
 - **Reference prototypes (committed, not served):** `reference/SectoredDiscCalculator.jsx` (C-I area math) and the Block-S Python mirror/plot prototypes `reference/doubler_core.py`, `reference/sg_sequence_from_solver.py`, `reference/clocking_map.py`.
 - **Shipped preset:** `presets/R1-baseline.json` (the worked baseline; the only place its magnitudes live, asserted via `expect`).
