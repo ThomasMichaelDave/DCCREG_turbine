@@ -2,7 +2,7 @@
 
 **Artifact under review:** `index.html` — a single, self-contained web page (no build, no server, no dependencies, no network, no `localStorage`).
 **Build stamp:** `C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2.2 · S v0.1 · commutator v0.1` (shown in the page header).
-**Reviewed against:** commit `a151539` (2026-06-08). Every numeric anchor in this report was re-verified by a headless run of the page's own self-test battery and producer functions on this commit.
+**Reviewed against:** commit `df5b9fe` (2026-06-08). Every numeric anchor in this report was re-verified by a headless run of the page's own self-test battery and producer functions on this commit.
 **Companion document:** `docs/report-tool-functioning.md` — a deeper functional walk-through of the host solver and Blocks C-I/M. This report is the authoritative, current overview: it covers all blocks (host, C-I, M, R, D, T, design-flow, S, and the commutator render) and supersedes the companion's block coverage where they differ.
 **Purpose:** give an external reviewer everything needed to judge the tool's correctness, scope, and honesty — what it claims, how each claim is validated, what was deliberately corrected, and what is explicitly out of scope.
 
