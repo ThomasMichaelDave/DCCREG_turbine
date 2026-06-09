@@ -15,6 +15,8 @@
     --coil:#e8b04b;   /* resonator coil — distinct warm gold, ≠ --copper (Ca/Cb) */
     /* Block S — firing sequence / clocking */
     --sg3:#1f77b4; --sg2:#5fa8d3; --sg4:#d62728; --sg1:#e8857f; --res:#7d3cb5;
+    /* Commutator render — colour = electrical frame */
+    --rotor:#7cd0ff; --stator:#c0a8ff; --floating:#ffd06b; --rail:#5fe07a;
     --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box}
@@ -93,6 +95,7 @@
   #seq-clock{height:520px}
   #seq-v,#seq-tank{height:220px}
   #seq-logic{height:200px}
+  #kcom{height:380px}
   .scale-readout{font-size:10px;color:var(--dim);margin-top:4px}
   .sw2{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle;border:1px solid var(--line)}
   .xsec-legend{display:none;flex-wrap:wrap;gap:4px 14px;font-size:10.5px;color:var(--dim);margin-top:8px;padding:8px 10px;background:var(--panel2);border:1px solid var(--line);border-radius:4px}
@@ -109,7 +112,7 @@
 
 <header>
   <div>
-    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2.2 · S v0.1</span></h1>
+    <h1>SYMMETRIC BENNET DOUBLER <span class="tag">4-node pump-action calculator · C-I v0.2 · T v0.1 · flow+presets v0.2 · xsec v0.2.2 · S v0.1 · commutator v0.1</span></h1>
     <div class="sub">ideal-diode switched-capacitor solver · 16-state network search · cross-coupled regenerative</div>
   </div>
   <div style="display:flex;gap:8px;align-items:center">
@@ -385,6 +388,35 @@
 
   <div class="preset-bar">
     <button data-preset="rotor-core">rotor-core (15 cm)</button>
+  </div>
+</section>
+
+<!-- ============== COMMUTATOR — AXIAL COMPANION VIEW (B) ============== -->
+<section class="panel" id="kcom-panel" style="margin-bottom:14px">
+  <h2>Commutator — axial view
+    <span class="tag" id="kcom-tag">—</span></h2>
+  <div class="ctl-row">
+    <div class="row" style="min-width:240px">
+      <label>transfer r</label>
+      <input type="range" id="ktransrad-r"><input type="number" id="ktransrad-n">
+      <span class="u">mm</span>
+    </div>
+    <div class="row" style="min-width:240px">
+      <label>bar gap</label>
+      <input type="range" id="kbargap-r"><input type="number" id="kbargap-n">
+      <span class="u">mm</span>
+    </div>
+    <div class="row" style="min-width:240px">
+      <label>rotor φ</label>
+      <input type="range" id="kphi-r"><input type="number" id="kphi-n">
+      <span class="u">°</span>
+    </div>
+  </div>
+  <canvas id="kcom" width="900" height="380"></canvas>
+  <div class="footer-note" style="margin-top:8px">
+    Physical realisation of diodes <b>D1–D4</b> (see <code>docs/commutator-design.md</code>): 6 floating bars
+    bridge the stator sets during alignment. The <b>30° SG3↔SG4 offset lives in the stator discs</b>, not the
+    bars (the two bar sets are axially aligned). Render-only — the solver is untouched.
   </div>
 </section>
 
@@ -2153,6 +2185,22 @@ function runSelfTest(){
                     got:(Math.abs(coilXc-xSpinePx)<=gP.coilT && gP.coil.h>gP.coil.w)?1:0, dp:0, tol:0,
                     pass:Math.abs(coilXc-xSpinePx)<=gP.coilT && gP.coil.h>gP.coil.w}); }
 
+  // --- Commutator geometry self-tests (render brief §6; contingent only) ---
+  { const KCs = {pnsec:12, pdia:100, prouter:15, prinner:5, punit:"cm",
+                 pvoid:20, pbus:9, pquadfoot:94, pquadclr:10, ktransrad:520, kphi:0};
+    const kg = commutatorGeom(KCs);
+    // 1. SG3↔SG4 offset = one sector pitch (the 30° lives in the stator sets).
+    plateRows.push({label:"K: SG3↔SG4 offset = sector pitch", expected:kg.sectorPitch, got:kg.sg4Ang-kg.sg3Ang, dp:3, tol:1e-9,
+                    pass:Math.abs((kg.sg4Ang-kg.sg3Ang) - kg.sectorPitch) <= 1e-9});
+    // 2. bar sets axially aligned (top == bottom) — guards against doubling the offset.
+    let aligned = kg.barAngTop.length === kg.barAngBot.length;
+    for (let i=0;i<kg.barAngTop.length;i++) if (Math.abs(kg.barAngTop[i]-kg.barAngBot[i]) > 1e-9) aligned = false;
+    plateRows.push({label:"K: bar sets axially aligned (no double-offset)", expected:1, got:aligned?1:0, dp:0, tol:0, pass:aligned});
+    // 3. no accidental cross-bridge (bar + electrode arcs + guard < sector pitch) [C8].
+    plateRows.push({label:"K: no cross-bridge (arcs+guard < pitch)", expected:1, got:kg.crossBridgeClear?1:0, dp:0, tol:0, pass:kg.crossBridgeClear});
+    // 4. transfer radius outboard of rActiveOuter.
+    plateRows.push({label:"K: transfer radius outboard of rActiveOuter", expected:1, got:kg.outboardOK?1:0, dp:0, tol:0, pass:kg.outboardOK}); }
+
   // --- Block S firing-sequence self-tests (brief §6) ---
   // 1. tracer ≡ frozen solver (z must match within 1e-9).
   const Sdev = [160,1000,160,1000,100,100,20];
@@ -2262,6 +2310,10 @@ const FIELDS = [
   {id:"sf0",    def:0,   min:0, max:2000, step:1},   // tank carrier kHz; 0 = auto (Block R f0)
   {id:"sq0",    def:0,   min:0, max:500,  step:1},   // tank Q; 0 = auto (Block R Q)
   {id:"svfire", def:0.70,min:0.10, max:0.99, step:0.01},  // reserved/inactive until fork F-S1
+  // --- Commutator render (k-prefix; render/consumer only) ---
+  {id:"ktransrad", def:520, min:50,  max:1200, step:1},   // transfer-circle radius (mm), outboard of rActiveOuter
+  {id:"kbargap",   def:2,   min:0.1, max:20,   step:0.1}, // axial series gap (mm); display/derating only
+  {id:"kphi",      def:0,   min:0,   max:360,  step:1},   // view-B live rotor angle (deg)
 ];
 // Non-numeric plate controls (serialised into the hash manually). [task §7.2]
 // Rotor caps are inherited from the plate-geometry capacitance by default
@@ -2773,6 +2825,10 @@ const DESC = {
   sq0:"Resonator-ring quality factor for the tank panel; 0 = auto (use the Block-R computed Q).",
   svfire:"Spark-gap fire fraction — reserved/inactive until the saturation-clamp fork (F-S1).",
   sfollow:"Show the follower spark-gap traces (SG1/SG2) in the sequence and clocking panels.",
+  // Commutator render
+  ktransrad:"Transfer-circle radius (mm) — where the floating bar ends sit; must be outboard of rActiveOuter and clear the C-EM/pole envelope.",
+  kbargap:"Axial spark gap (mm) at each series gap — display / derating only; no solver coupling.",
+  kphi:"Live rotor angle (deg) for the commutator axial view — rotates the bars so they sweep into the stator sets.",
   // Design-flow primaries + toggles
   vhvKV:"Design high voltage across the caps; cascades to the HV void, Block-T design V, and the motor bias.",
   vhvEkVmm:"Assumed air working field (kV/mm); the HV void = design-HV / this. 1.0 conservative; 2.0 only with a guard ring.",
@@ -3123,6 +3179,54 @@ function renderXsecLegend(){
 }
 
 // --- live axial cross-section (§5.1) ---
+/* ============================================================
+   COMMUTATOR RENDER  (consumer — physical realisation of D1–D4)
+   ------------------------------------------------------------
+   Geometry source of truth: docs/commutator-design.md (frozen). This is
+   render-only: it reads geometry/state and draws; it never writes solver
+   inputs or touches solveDoubler4. The 30° firing offset lives ONLY in
+   the stator electrode angles (sg3/sg4); the two bar sets are axially
+   aligned (do not also offset the bars, or the offset doubles). [IR]
+   ============================================================ */
+function commutatorGeom(s){
+  const Nsec = Math.max(2, Math.round(Number(s.pnsec) || 12));
+  const bars = Math.ceil(Nsec / 2);                       // = active-sector count [IR]
+  const sectorPitch = 360 / Nsec;                         // one sector pitch (deg) = SG3↔SG4 offset
+  const kphi = Number(s.kphi) || 0;
+  const barAng = [];                                      // bars rotate with kphi
+  for (let i = 0; i < bars; i++) barAng.push(((i*360/bars + kphi) % 360 + 360) % 360);
+  const sg3Ang = 0, sg4Ang = sectorPitch;                 // stator sets fixed; offset = one pitch
+  const rActiveOuterMm = plateGeom(s).rActiveOuter * 1e3;
+  const transMm = Number(s.ktransrad) || 0;
+  const outboardOK = transMm > rActiveOuterMm;
+  const featMm = 28;                                      // [IR] representative tangential extent (electrode set / bar end)
+  const arcDeg = transMm > 0 ? (featMm/transMm) * (180/Math.PI) : 999;  // subtended angle at the transfer radius
+  const guardDeg = 2;
+  const crossBridgeClear = (2*arcDeg + guardDeg) < sectorPitch;          // C8 no-cross-bridge guard
+  return {Nsec, bars, sectorPitch, kphi, barAng,
+          barAngTop:barAng.slice(), barAngBot:barAng.slice(),            // axially aligned (same angles)
+          sg3Ang, sg4Ang, offset:sectorPitch, favHalfDeg:sectorPitch,
+          rActiveOuterMm, transMm, outboardOK, barArcDeg:arcDeg, elecArcDeg:arcDeg, guardDeg, crossBridgeClear};
+}
+
+// Reusable legend: colour = electrical frame, hatch = material. Draws a small key
+// at (x,y); each item {label, v(CSS var for colour), hatch?}. Shared by both views.
+function drawLegend(ctx, items, x, y, COL){
+  ctx.save(); ctx.font = "10px ui-monospace,monospace"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  const sw = 12, lh = 15;
+  items.forEach((it, i) => {
+    const yy = y + i*lh + sw/2;
+    ctx.fillStyle = COL(it.v); ctx.fillRect(x, yy - sw/2, sw, sw);
+    ctx.strokeStyle = COL("--bg"); ctx.lineWidth = 0.8;
+    if (it.hatch === "diag"){ ctx.beginPath(); for (let o=-sw; o<sw; o+=3){ ctx.moveTo(x+o, yy+sw/2); ctx.lineTo(x+o+sw, yy-sw/2); } ctx.save(); ctx.beginPath(); ctx.rect(x,yy-sw/2,sw,sw); ctx.clip(); ctx.beginPath(); for (let o=-sw; o<sw; o+=3){ ctx.moveTo(x+o, yy+sw/2); ctx.lineTo(x+o+sw, yy-sw/2);} ctx.stroke(); ctx.restore(); }
+    else if (it.hatch === "cross"){ ctx.save(); ctx.beginPath(); ctx.rect(x,yy-sw/2,sw,sw); ctx.clip(); for (let o=0;o<sw;o+=3){ ctx.beginPath(); ctx.moveTo(x,yy-sw/2+o); ctx.lineTo(x+sw,yy-sw/2+o); ctx.moveTo(x+o,yy-sw/2); ctx.lineTo(x+o,yy+sw/2); ctx.stroke(); } ctx.restore(); }
+    else if (it.hatch === "ticks"){ ctx.save(); ctx.beginPath(); ctx.rect(x,yy-sw/2,sw,sw); ctx.clip(); for (let o=1;o<sw;o+=3){ ctx.beginPath(); ctx.moveTo(x+o,yy-sw/2); ctx.lineTo(x+o,yy+sw/2); ctx.stroke(); } ctx.restore(); }
+    ctx.strokeStyle = COL("--line"); ctx.lineWidth = 0.6; ctx.strokeRect(x, yy-sw/2, sw, sw);
+    ctx.fillStyle = COL("--dim"); ctx.fillText(it.label, x + sw + 6, yy);
+  });
+  ctx.restore();
+}
+
 let mLockScale = null;
 // [fix v0.2.2] Pure §5e geometry: the rotor pole + clamp-over-rim C-EM, derived
 // entirely from the rim band [bIn,bOut] so the pole fills the band (never eats the
@@ -3409,6 +3513,54 @@ function drawCrossSection(){
     }
   }
 
+  // 5f) commutator parts (view A) — mirrored top/bottom bar sets at the transfer radius,
+  //     stator electrodes from the leg frame across axial gaps, cross-ecliptic sink routing.
+  //     Overlays the rotor/C-EM at ~75% opacity; the legend (not line weight) disambiguates.
+  //     Geometry from docs/commutator-design.md; render-only. [IR]
+  if (plateR > hubR){
+    const kg = commutatorGeom(state);
+    const transMm = kg.transMm;
+    const zCom = discH/2 + 14;                          // mm, axial offset of a bar set off the mid-plane
+    const ballR = Math.max(2.5, 3*scale);
+    const dropMm = 22, gapMm2 = Number(state.kbargap) || 2;
+    ctx.save(); ctx.globalAlpha = 0.78; ctx.lineWidth = Math.max(1.3, 1.2*scale);
+    for (const sgn of [1, -1]){                          // top (+z) = SG3 set · bottom (−z) = SG4 set
+      const yBar = Z(sgn*zCom);
+      const setCol = COL(sgn > 0 ? "--sg3" : "--sg4");
+      for (const side of [1, -1]){
+        const xIn = X(side*hubR*1.1), xOut = X(side*transMm);
+        // floating bar (radial arm) + ball ends
+        ctx.strokeStyle = COL("--floating"); ctx.beginPath(); ctx.moveTo(xIn, yBar); ctx.lineTo(xOut, yBar); ctx.stroke();
+        ctx.fillStyle = COL("--floating");
+        for (const bx of [xIn, xOut]){ ctx.beginPath(); ctx.arc(bx, yBar, ballR, 0, 2*Math.PI); ctx.fill(); }
+        // stator electrode dropping from the leg frame to face each bar end across an axial gap
+        const yLeg = Z(sgn*(zCom + dropMm));
+        ctx.strokeStyle = setCol;
+        for (const bx of [xIn, xOut]){
+          const yFace = yBar - sgn*(ballR + Math.max(2, gapMm2*scale));
+          ctx.beginPath(); ctx.moveTo(bx, yLeg); ctx.lineTo(bx, yFace); ctx.stroke();
+          ctx.fillStyle = setCol; ctx.beginPath(); ctx.arc(bx, yFace, ballR*0.8, 0, 2*Math.PI); ctx.fill();
+          // spark-gap glyph: two short parallel ticks across the gap
+          ctx.strokeStyle = COL("--dim");
+          ctx.beginPath(); ctx.moveTo(bx-4, (yFace+yBar)/2 - 1); ctx.lineTo(bx+4, (yFace+yBar)/2 - 1);
+          ctx.moveTo(bx-4, (yFace+yBar)/2 + 1); ctx.lineTo(bx+4, (yFace+yBar)/2 + 1); ctx.stroke();
+          ctx.strokeStyle = setCol;
+        }
+      }
+    }
+    // cross-ecliptic sink routing (nodes 2,3) crossing the mid-plane, clear of the windings
+    ctx.strokeStyle = COL("--stator"); ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(X(transMm), Z(zCom)); ctx.lineTo(X(transMm), Z(-zCom)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.restore();
+    if (state.mdims){
+      drawLegend(ctx, [
+        {label:"floating bar", v:"--floating"},
+        {label:"SG3 / SG4 electrode", v:"--stator"},
+        {label:"sink routing (2,3)", v:"--stator"},
+      ], 8, 8, COL);
+    }
+  }
+
   // 6) shaft stubs (bore depth insertMax inward + protrusion outward) with keyway.
   const shaftCol = shaftFail ? COL("--bad") : COL("--dim");
   for (const sgn of [1,-1]){
@@ -3598,6 +3750,7 @@ function recompute(){
 
   drawCharts();
   renderSequence();          // Block S — read-only sink, end of the draw pass
+  renderCommutator();        // commutator axial companion (view B) — render-only
   writeHash();
 }
 
@@ -3922,6 +4075,71 @@ function drawSeqClock(){
   lines.forEach(([l, c, fs], i) => { if (!l) return; ctx.fillStyle = COL(c); ctx.font = fs + "px ui-monospace,monospace"; ctx.fillText(l, cx, cy + (i-1.5)*17); });
 }
 
+/* ---- Commutator axial companion (view B) — the angular story ---- */
+function renderCommutator(){ drawCommutatorAxial(); }
+function drawCommutatorAxial(){
+  const cv = $("kcom"); if (!cv) return;
+  const {ctx, w, h} = clearCanvas(cv); const COL = seqCOL();
+  const g = commutatorGeom(state);
+  const cx = w*0.40, cy = h*0.52, R = Math.min(w*0.78, h)/2 - 16;
+  const A = deg => (deg - 90) * Math.PI/180;              // θ zero at top, clockwise
+  const rDisc = R*0.72, rTrans = R*0.92, rHub = R*0.14;
+  // 1) rotor disc + Nsec sectors (alternating kept/gap faint shading)
+  for (let k=0;k<g.Nsec;k++){
+    const a0 = A(k*360/g.Nsec), a1 = A((k+1)*360/g.Nsec);
+    ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,rDisc,a0,a1); ctx.closePath();
+    ctx.fillStyle = COL("--rotor"); ctx.globalAlpha = (k%2===0)?0.10:0.04; ctx.fill(); ctx.globalAlpha = 1;
+  }
+  ctx.strokeStyle = COL("--line"); ctx.lineWidth = 0.8;
+  ctx.beginPath(); ctx.arc(cx,cy,rDisc,0,2*Math.PI); ctx.stroke();
+  // transfer circle (where the bar ends ride)
+  ctx.strokeStyle = COL("--dim"); ctx.setLineDash([2,3]);
+  ctx.beginPath(); ctx.arc(cx,cy,rTrans,0,2*Math.PI); ctx.stroke(); ctx.setLineDash([]);
+  // hub / rail
+  ctx.beginPath(); ctx.arc(cx,cy,rHub,0,2*Math.PI); ctx.fillStyle = COL("--rail"); ctx.fill();
+  // 2) stator sets (SG3 fixed, SG4 at +pitch) with firing window + favourable half
+  const drawSet = (ang, col, label) => {
+    const fav = g.favHalfDeg, wfire = Math.min(g.barArcDeg + g.elecArcDeg, fav);
+    // favourable-polarity half (leading), faint
+    ctx.beginPath(); ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy, rTrans+R*0.06, A(ang), A(ang+fav)); ctx.closePath();
+    ctx.fillStyle = col; ctx.globalAlpha = 0.10; ctx.fill(); ctx.globalAlpha = 1;
+    // firing window (centred on the set)
+    ctx.beginPath(); ctx.arc(cx,cy, rTrans, A(ang - wfire/2), A(ang + wfire/2));
+    ctx.lineWidth = Math.max(3, R*0.03); ctx.strokeStyle = col; ctx.stroke(); ctx.lineWidth = 1;
+    // stator electrode ball at the set, outboard
+    const ex = cx + Math.cos(A(ang))*(rTrans+R*0.10), ey = cy + Math.sin(A(ang))*(rTrans+R*0.10);
+    ctx.beginPath(); ctx.arc(ex,ey, Math.max(3,R*0.03), 0, 2*Math.PI); ctx.fillStyle = col; ctx.fill();
+    ctx.fillStyle = col; ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(label, cx + Math.cos(A(ang))*(rTrans+R*0.20), cy + Math.sin(A(ang))*(rTrans+R*0.20));
+  };
+  drawSet(g.sg3Ang, COL("--sg3"), "SG3");
+  drawSet(g.sg4Ang, COL("--sg4"), "SG4");
+  // 3) the 6 floating bars (rotate with kphi), ball-electrode ends
+  ctx.lineCap = "round";
+  for (const ba of g.barAng){
+    const a = A(ba);
+    const ix = cx + Math.cos(a)*rHub, iy = cy + Math.sin(a)*rHub;
+    const ox = cx + Math.cos(a)*rTrans, oy = cy + Math.sin(a)*rTrans;
+    ctx.strokeStyle = COL("--floating"); ctx.lineWidth = Math.max(2.5, R*0.022);
+    ctx.beginPath(); ctx.moveTo(ix,iy); ctx.lineTo(ox,oy); ctx.stroke();
+    ctx.fillStyle = COL("--floating");
+    for (const [bx,by] of [[ix,iy],[ox,oy]]){ ctx.beginPath(); ctx.arc(bx,by, Math.max(2.5,R*0.028), 0, 2*Math.PI); ctx.fill(); }
+  }
+  ctx.lineCap = "butt"; ctx.lineWidth = 1;
+  // 4) caption + legend
+  ctx.fillStyle = COL("--dim"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.fillText(g.bars + " bars · SG3↔SG4 offset " + g.sectorPitch.toFixed(0) + "° · transfer r " + g.transMm.toFixed(0) + " mm" + (g.outboardOK ? "" : "  ⚠ inboard"), 8, 6);
+  drawLegend(ctx, [
+    {label:"floating bars", v:"--floating"},
+    {label:"SG3 set (1→3)", v:"--sg3"},
+    {label:"SG4 set (4→2)", v:"--sg4"},
+    {label:"rotor sectors", v:"--rotor"},
+    {label:"hub / rail (5–6)", v:"--rail"},
+  ], w - 150, 12, COL);
+  $("kcom-tag") && ($("kcom-tag").textContent = g.bars + " bars · " + g.sectorPitch.toFixed(0) + "° offset");
+}
+
 /* ============================================================
    BOOT
    ============================================================ */
@@ -3989,7 +4207,7 @@ function boot(){
     $("copy-url").textContent = "copied!";
     setTimeout(() => $("copy-url").textContent = "copy share-url", 1200);
   });
-  window.addEventListener("resize", () => { drawCharts(); if (lastDem) drawDemTopView(); if (lastSeq) renderSequence(); });
+  window.addEventListener("resize", () => { drawCharts(); if (lastDem) drawDemTopView(); if (lastSeq) renderSequence(); renderCommutator(); });
   recompute();
 }
 boot();
