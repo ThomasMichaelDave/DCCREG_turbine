@@ -26,6 +26,7 @@ The *methodology* (tier tags, versioned consolidation, open-fork tracking, symbo
 |:--|:--|
 | `index.html` | The app — Symmetric Bennet Doubler 4-node simulator (**host**; Blocks C-I and M extend it) |
 | `docs/brief-blockC1-geometry-to-rotorcap.md` | Implementation brief for the geometry → rotor-cap module |
+| `docs/commutator-design.md` | Switching design — physical realisation of the solver's diodes D1–D4 (rotary commutator); geometry frozen, transfer model open |
 | `docs/brief-blockM-rotor-mechanical-core.md` | Implementation brief for the rotor mechanical core (quadricone + shaft + void + disc) |
 | `docs/brief-blockR-central-resonator.md` | Implementation brief for the central resonator (conical coil + inter-electrode capacitor) |
 | `docs/report-tool-functioning.md` | Standalone functional report on the whole tool |
@@ -36,7 +37,7 @@ The *methodology* (tier tags, versioned consolidation, open-fork tracking, symbo
 
 ## Read order (fresh agent or contributor)
 
-`README.md` → `CONVENTIONS.md` → `docs/brief-blockC1-geometry-to-rotorcap.md` → `index.html` (host) → `reference/SectoredDiscCalculator.jsx` (math to port).
+`README.md` → `CONVENTIONS.md` → `docs/brief-blockC1-geometry-to-rotorcap.md` → `index.html` (host) → `docs/commutator-design.md` (switching realisation) → `reference/SectoredDiscCalculator.jsx` (math to port).
 
 ## Run
 
