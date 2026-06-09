@@ -902,10 +902,10 @@
     <h2>Mechanical clocking map</h2>
     <canvas id="seq-clock" width="900" height="520"></canvas>
     <div class="legend">
-      <span>rings (outer→inner): <span class="sw" style="background:var(--sg3)"></span>SG3 ·
-        <span class="sw" style="background:var(--sg1)"></span>SG1 ·
-        <span class="sw" style="background:var(--sg4)"></span>SG4 ·
-        <span class="sw" style="background:var(--sg2)"></span>SG2</span>
+      <span>rings (outer→inner): <span class="sw" style="background:var(--sg1)"></span>SG1 ·
+        <span class="sw" style="background:var(--sg3)"></span>SG3 ·
+        <span class="sw" style="background:var(--sg2)"></span>SG2 ·
+        <span class="sw" style="background:var(--sg4)"></span>SG4</span>
       <span>groups = ⌈Nsec/2⌉ · pitch = 720/Nsec° · reacts to geometry Nsec</span>
     </div>
   </section>
@@ -2243,7 +2243,7 @@ function runSelfTest(){
     const condSet = V => { const [v1,v2,v3,v4]=V; const m=Math.max(1e-12,Math.abs(v1),Math.abs(v2),Math.abs(v3),Math.abs(v4)), e=1e-6*m, on=[];
       if(Math.abs(v2)<=e)on.push("sg1"); if(Math.abs(v3)<=e)on.push("sg2"); if(Math.abs(v1-v3)<=e)on.push("sg3"); if(Math.abs(v4-v2)<=e)on.push("sg4"); return on.sort(); };
     const engineGroups = [condSet(bc[lc].A).join("+"), condSet(bc[lc].B).join("+")].sort();
-    const panelGroups  = SEQ_GROUPS.map(g => [g.lead,g.follow].sort().join("+")).sort();
+    const panelGroups  = SEQ_GROUPS.map(g => [g.ret,g.cc].sort().join("+")).sort();   // membership only (not order)
     const okPair = engineGroups.join("|")==="sg1+sg3|sg2+sg4" && JSON.stringify(engineGroups)===JSON.stringify(panelGroups);
     plateRows.push({label:"S: firing pairing matches solver {SG1,SG3}/{SG2,SG4}", expected:1, got:okPair?1:0, dp:0, tol:0, pass:okPair});
   }
@@ -3921,12 +3921,15 @@ function drawChartC(){
    ============================================================ */
 const SEQ_RES = 0.04;                                   // post-fire residual (normalised) [IR]
 // [OC] Firing pairing by transfer-cap branch, solver-verified (see docs/commutator-design.md §4
-// and the "Block-S pairing matches solver" self-test): Ca branch {D1,D3} = SG3 + SG1; Cb branch
-// {D2,D4} = SG4 + SG2. The return follows its OWN cross-couple (SG1↔SG3, SG2↔SG4). Single source
-// for both Block-S panels so the displayed grouping can't drift from the engine again.
+// and the "Block-S pairing matches solver" self-test): Ca branch {D1,D3} = SG1+SG3; Cb branch
+// {D2,D4} = SG2+SG4. The solver only says the pair conducts in the SAME phase — it does NOT order
+// them. Within-pair ORDER is a spark-commutation choice [IR]/[RH]: the RETURN (SG1/SG2) fires at
+// the stroke instant and must fully quench before its CROSS-COUPLE (SG3/SG4) sparks → the
+// cross-couple is offset by `lag`, the deionisation/quench gap (not cosmetic). The returns remain
+// the sfollow-toggleable traces even though they now LEAD in time. Single source for both panels.
 const SEQ_GROUPS = [
-  {stroke:0, lead:"sg3", follow:"sg1"},   // SG3 (1→3) + SG1 (2→rail)  — Ca branch {D1,D3}
-  {stroke:1, lead:"sg4", follow:"sg2"},   // SG4 (4→2) + SG2 (3→rail)  — Cb branch {D2,D4}
+  {stroke:0, ret:"sg1", cc:"sg3"},   // Ca {D1,D3}: SG1 (2→rail) leads · SG3 (1→3) follows after quench
+  {stroke:1, ret:"sg2", cc:"sg4"},   // Cb {D2,D4}: SG2 (3→rail) leads · SG4 (4→2) follows after quench
 ];
 function seqCOL(){ const css = getComputedStyle(document.documentElement); return n => css.getPropertyValue(n).trim(); }
 // convex within-stroke rise: V ∝ 1/C(τ), anchored residual→peak. [IR]
@@ -3999,20 +4002,22 @@ function drawSeqLogic(){
     ctx.fillStyle = COL("--sg4"); ctx.globalAlpha = 0.05; ctx.fillRect(X(k+0.5), padT, X(k+1)-X(k+0.5), ph);
   }
   ctx.globalAlpha = 1;
-  // rows derived from SEQ_GROUPS (single source): lead then follower, per stroke.
+  // rows from SEQ_GROUPS: return leads (at the stroke instant), cross-couple follows at +lag.
+  // [lagged] adds the quench gap; [toggle] = sfollow-gated (the returns). The two flags differ now
+  // (the return leads in time but is still the toggleable trace — the old "follower" name retired).
   const rows = [];
   for (const g of SEQ_GROUPS){
-    rows.push([g.lead.toUpperCase(),   COL("--"+g.lead),   g.stroke, false]);
-    rows.push([g.follow.toUpperCase(), COL("--"+g.follow), g.stroke, true]);
+    rows.push([g.ret.toUpperCase(), COL("--"+g.ret), g.stroke, /*lagged*/false, /*toggle*/true]);
+    rows.push([g.cc.toUpperCase(),  COL("--"+g.cc),  g.stroke, /*lagged*/true,  /*toggle*/false]);
   }
   const rh = ph/rows.length;
   rows.forEach((r, i) => {
-    const [name, col, half, isFollow] = r;
+    const [name, col, half, lagged, toggle] = r;
     const base = padT + (i+1)*rh - 4;
-    if (isFollow && !follow) return;
+    if (toggle && !follow) return;
     ctx.fillStyle = col;
     for (let k=0;k<N;k++){
-      const fire = k + 0.5*half + 0.5 + (isFollow ? lag : 0);
+      const fire = k + 0.5*half + 0.5 + (lagged ? lag : 0);
       ctx.fillRect(X(fire), base - rh*0.7, X(fire+conWin)-X(fire), rh*0.7);
     }
     ctx.fillStyle = col; ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "left"; ctx.textBaseline = "middle";
@@ -4067,12 +4072,13 @@ function drawSeqClock(){
     ctx.closePath(); ctx.fillStyle = col; ctx.fill();
     ctx.strokeStyle = COL("--bg"); ctx.lineWidth = 0.8; ctx.stroke();
   };
-  // four rings derived from SEQ_GROUPS (outer→inner): lead@base, follower@base+lag per group.
+  // four rings from SEQ_GROUPS (outer→inner): return@base (leads), cross-couple@base+lag (quench gap).
+  // 4th flag = sfollow-toggleable (the returns); the offset, not the flag, carries the lead/lag timing.
   const rings = [];
   for (const g of SEQ_GROUPS){
     const base = g.stroke === 0 ? 0 : strokeOff;
-    rings.push(["--"+g.lead,   g.lead.toUpperCase(),   base,     false]);
-    rings.push(["--"+g.follow, g.follow.toUpperCase(), base+lag, true]);
+    rings.push(["--"+g.ret, g.ret.toUpperCase(), base,     true]);    // return leads · toggleable
+    rings.push(["--"+g.cc,  g.cc.toUpperCase(),  base+lag, false]);   // cross-couple follows (+lag)
   }
   const ringT = R*0.12, ringGap = R*0.035;
   rings.forEach((rg, idx) => {
