@@ -115,7 +115,7 @@ Four `<canvas>` in a new `<section class="panel">` titled **"Firing sequence & c
 - Title note: *diode-ideal trajectory; SG firing clamps this at breakdown (fork F-S1).*
 
 ### 5.2 `seq-logic` — conduction logic
-- Four step traces: SG3, SG1, SG4, SG2 (1 = conducting). SG3+SG1 in stroke 1, SG4+SG2 in stroke 2; follower lag small. Toggle SG1/SG2 via `sfollow`.
+- Four step traces: SG1, SG3, SG2, SG4 (1 = conducting). SG1+SG3 in stroke 1 (SG1 leads, SG3 at +lag), SG2+SG4 in stroke 2 (SG2 leads, SG4 at +lag). Toggle SG1/SG2 via `sfollow`.
 - Stroke bands shaded (stroke 1 = SG3 colour, stroke 2 = SG4 colour).
 
 ### 5.3 `seq-tank` — resonator across 5–6
@@ -125,7 +125,7 @@ Four `<canvas>` in a new `<section class="panel">` titled **"Firing sequence & c
 
 ### 5.4 `seq-clock` — polar clocking map
 - Polar canvas. `groups = ⌈Nsec/2⌉` repeats around one revolution; `pitch = 720/Nsec` deg; `stroke_off = pitch/2`; follower `lag` small.
-- Four concentric rings (outer→inner: SG3, SG1, SG4, SG2). Within-group angular offsets: SG3 `0`, SG1 `lag`, SG4 `pitch/2`, SG2 `pitch/2 + lag`. Draw a wedge per group per ring (width = conduction-window angle).
+- Four concentric rings (outer→inner: SG1, SG3, SG2, SG4). Within-group angular offsets: SG1 `0`, SG3 `lag`, SG2 `pitch/2`, SG4 `pitch/2 + lag`. Draw a wedge per group per ring (width = conduction-window angle). `lag` = the return→cross-couple quench gap, ≥ the return's deionisation time **[IR]/[RH]**; the ideal solver does not order the pair (membership only).
 - Theta zero at top, direction = rotation sense. Centre summary: `Nsec`, `groups/rev`, `PRF`, `f_rot`, `T_rev`, `pitch`, `stroke_off`.
 - **Notes:** absolute angular origin is arbitrary (pinned only by a sector-zero reference); the **relative** clocking (pitch, stroke offset, follower lag) is the deliverable. Wedge **width/lag are display placeholders [IR]** — real angles come from the switch-timing sim via `f_rot` (fork F-S4).
 - This panel **reacts to `Nsec`** from geometry — that coupling is its reason to exist.
