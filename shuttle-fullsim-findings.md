@@ -1,90 +1,52 @@
-# shuttle-fullsim — pre-build gate report (T0 HALT + export BLOCKER)
+# shuttle-fullsim — gate report (rev 0.2): LR-value BLOCKER
 
-**Status:** [IR] **HALTED / BLOCKED before build.** The brief places two hard gates *before any `shuttle_core.py` code may exist* (T0 conduction-angle check, §2.2; export sufficiency, constraint #1). Read-only verification against the frozen `reference/doubler_core.py` shows **both gates trip**, so no simulator, campaign, or timing diagram was built. This report returns the two decisions to TMD.
+**Status:** [IR] **BLOCKED before build — missing `LR` value.** Brief rev 0.2 resolved the two rev-0.1 gates (T0 station map re-anchored to SG1-at-C1-max with the shuttle direction reversed; export Gate-2 resolved via option (a), C(θ)/LR parameterised inside `shuttle_core.py`). But the option-(a) resolution adds a hard precondition — constraint #2: *"LR: numeric value read from `docs/commutator-design.md` (resonator section) and cited verbatim (symbol + value + section). If absent there, STOP and report a BLOCKER — do not invent a value."* **That value is absent.** Per the brief I stop here; no `shuttle_core.py`, anchor test, campaign, or timing diagram was built.
 
-Branch: `shuttle-fullsim`, fresh from `main` (`9136624`). `reference/doubler_core.py` untouched (empty diff); `index.html` untouched (out of scope). Tiers: **[OC]** solver-derived / standard · **[IR]** interpretive.
-
----
-
-## Gate 1 — T0 conduction-angle anchor → **HALT**
-
-The brief's station map assumes **SG1 conducts at C1 *minimum*** (the "parallel-dump" reading, inferred from the confirmed {SG1, SG3} pairing). T0 requires checking this against the frozen solver before building. It is **false**: SG1 conducts at C1 **maximum**.
-
-**Phase definitions (verbatim, `doubler_core.solve_doubler4`):**
-- phase **B** — `C1 -> min, C2 -> max` → `solve_phase(Q, C1min, C2max, …)`
-- phase **A** — `C1 -> max, C2 -> min` → `solve_phase(Q, C1max, C2min, …)`
-
-**Conduction (inferred read-only from ideal-diode V-equality — a conducting diode shorts its endpoints; `DIODES = [(2,0),(3,0),(1,3),(4,2)]` = D1..D4):**
-
-| phase | C1cur | C2cur | v2 | conducting |
-|---|---|---|---|---|
-| B | **160 (MIN)** | 1000 | −2.19e5 (≠0 ⇒ D1 off) | **D2, D4** (SG2, SG4) |
-| A | **1000 (MAX)** | 160 | **0.000** (⇒ D1 on) | **D1, D3** (SG1, SG3) |
-
-`D1 = (2→0)` conducts ⟺ `v2 = 0`; `v2 = 0.000` occurs **only in the phase where C1 = 1000 = C1max**.
-
-> **T0 verdict: SG1 conducts at C1 MAXIMUM.** This trips the brief's HALT condition (§2.2): *"If SG1 conducts at C1 maximum instead, HALT and report — the station map shifts half a sector and TMD decides before any build."* `[OC]`
-
-**Consequence.** The hypothesized six-event station map — `SG3a (load, C1 mid-boost) → SG1 (C1 = min, parallel-dump) → SG3b (fire) → [mirror] SG4a → SG2 → SG4b` — is anchored on SG1-at-C1-min. With SG1 at C1-max it shifts **half a sector**, so the entire load/dump/fire ordering and the closure property ("SG4b bucket series-recharges Ca→C1 while C1 is at C_max") must be **re-derived** before any build. This is a TMD decision, per the brief.
+Branch: `shuttle-fullsim` (from `main` `9136624`). `reference/doubler_core.py` untouched (empty diff); `index.html` untouched (out of scope). Tiers: **[OC]** solver/standard · **[IR]** interpretive.
 
 ---
 
-## Gate 2 — Export sufficiency (constraint #1) → **BLOCKER**
+## Prior gates (rev 0.1) — resolved by brief rev 0.2
 
-`shuttle_core.py` must *consume* the frozen solver's exports for **(a)** continuous `C1(θ)/C2(θ)` profiles and **(b)** `LR` (resonator inductor L1, nodes 5–6) parameters. `reference/doubler_core.py` exports **neither**.
+- **T0 (conduction anchor)** — RESOLVED. Rev 0.1 verified SG1/D1 conducts in the phase where **C1 = max** (phase A: C1=1000 → {D1,D3}; phase B: C1=160 → {D2,D4}). Rev 0.2 re-anchors the station map to SG1-at-C1-max and **reverses the shuttle direction** (load from stack nodes 3/2, fire into terminal nodes 1/4). [OC for the phase table; IR for the corrected map]
+- **Export sufficiency** — RESOLVED via option (a): `C1(θ)/C2(θ)`, `Cx(θ)`, and `LR` are parameterised inside the new `shuttle_core.py` (consuming only the frozen scalar device-point values + `solve_doubler4`/`ANCHORS`), with a degenerate-limit anchor test (`z = 1.203 ± 0.03`) as the authorisation. [IR, TMD-approved]
 
-**What `doubler_core.py` exports (verbatim):** `DIODES`; `charges_from_voltages(V, C1, C2, Ca, Cb, Cpar)`; `solve_linear(A, b)`; `solve_phase(Q, C1, C2, Ca, Cb, Cpar, eps=1e-9)` → `bestV` only; `solve_doubler4(C1min, C1max, C2min, C2max, Ca, Cb, Cpar, iterations=120, burn=60, trace=False)` → `z` or `(z, rec)`; `ANCHORS`; `run_self_test()`.
+---
 
-**Missing — verbatim BLOCKER list:**
+## New gate (rev 0.2) — `LR` numeric value → **BLOCKER**
 
+The brief fixes the LR source as `docs/commutator-design.md` and forbids both inventing it and importing from `index.html` (constraint #1). Inspection of `docs/commutator-design.md`:
+
+- The only mentions of the resonator inductor are **qualitative** (lines 27–29):
+  > "*Ground ≡ resonator rail.* The solver's ground (node 0) is physically the resonator rail (nodes 5–6, coil `L_RES`/`L1`). At PRF, `L1` is a near-short — the repo's 'L1-is-a-short-at-PRF' argument …"
+- The **symbol** `L_RES`/`L1` is named, but there is **no numeric value** and **no resonator section** carrying one. (`grep -niE 'induct|µH|nH|henr|L_?RES|L1' docs/commutator-design.md` → only the lines above; no number.)
+
+**BLOCKER (verbatim):**
 ```
-MISSING from reference/doubler_core.py:
-  1. Continuous C1(θ) / C2(θ) capacitance-vs-rotor-angle profiles.
-     doubler_core takes only the discrete scalars C1min, C1max, C2min, C2max and
-     switches between two phases; there is NO rotor angle θ/rotor and NO C(θ) function.
-  2. LR / L1 resonator inductor and nodes 5–6.
-     doubler_core is a purely-capacitive 4-node network (nodes 0–4):
-       DIODES = [(2,0),(3,0),(1,3),(4,2)]; K-matrix = addK(1..4) with Ca/Cb bridges only.
-     No inductor is modelled. The resonator inductance L is computed in resonatorCore()
-     in index.html, NOT in this frozen mirror.
+MISSING: a numeric LR value in docs/commutator-design.md.
+  Present: symbol only — "coil L_RES/L1" + the L1-short-at-PRF argument (lines 27–29).
+  Absent:  any numeric inductance (no µH/nH/H value, no resonator section with a value).
+Constraint #2 forbids inventing a value; constraint #1 forbids sourcing it from index.html.
+=> No compliant source exists. STOP per constraint #2 / acceptance §7.
 ```
 
-**Available:** the baseline `z = 1.203` (via `solve_doubler4`; `ANCHORS` "device" = 1.203 ± 0.03). `[OC]`
-
-> **Gate-2 verdict.** Per constraint #1 (*"if needed quantities are not exported, STOP and report a BLOCKER listing them verbatim"*), the build is blocked: the two quantities the brief says to *consume from the frozen solver* are not there. The frozen 4-node mirror, by design (the L1-short / rail-collapsed-to-ground argument in `docs/commutator-design.md §2`), has no continuous angle profile and no inductor.
+Note `LR` is needed for the §3 LR-modeled steady runs (campaign steps 2–5: pump with LR between nodes 5–6 at the cited value). The degenerate-limit anchor test shorts LR and would not need the value, but §3 specifies the module models LR at the cited value, and constraint #2 is an unconditional precondition — so the build does not start until LR is supplied.
 
 ---
 
-## Decisions returned to TMD
+## Decision returned to TMD (one line unblocks the whole build)
 
-1. **T0 (station map).** SG1 fires at C1 **max**. Re-derive the six-event station map (and the Ca→C1 closure property) for the half-sector-shifted anchor, then re-issue; or revisit whether the shuttle's load/dump/fire ordering survives the shift. No build until this is fixed.
-2. **Exports (source of `C(θ)` and `LR`).** Decide the authorised source, since the frozen solver cannot supply them:
-   - **(a)** parameterise `C1(θ)/C2(θ)` and `LR` **fresh inside the new `shuttle_core.py`** (consuming only the *scalar* device-point cap values + `z` from `doubler_core`, plus an explicit θ-swing shape and an LR value); or
-   - **(b)** **consume `resonatorCore` (and the C-I plate-geometry C(θ) basis) from `index.html`** as a second producer — a larger coupling that needs sign-off; or
-   - **(c)** treat as a genuine blocker and defer LR/`C(θ)` to a model-scope revision.
+Record the authoritative resonator inductance in `docs/commutator-design.md` as **symbol + value + section** (e.g. a one-line "Resonator: `L_RES` ≈ ⟨value⟩ µH" in or near §2), then re-issue. After that, **every other input is present** and the full build proceeds: C(θ) raised-cosine profile (default), `Cx(θ)`/`pCboss`, the §1 reversed-shuttle station map, the threshold-fired gaps with emergent δ, the conservation ledgers, the degenerate-limit anchor, the campaign, and the timing diagram.
 
-No pre-committed **SHUTTLE-{PUMP-CONFIRMED | PUMP-BLOCKED | INDETERMINATE}** branch is declared: the simulation was gated out before T0's downstream campaign could run. A negative/halted result is a deliverable, not a failure.
+**For TMD's reference only (not used here):** a resonator inductance *is* computed in Block R (`resonatorCore` in `index.html`) and reported in `docs/report-external-review.md` as `L ≈ 123 µH` (default coupled tank) / `≈ 131 µH` (capillary self-test config). Per constraints #1/#2 I will neither import that nor adopt it as authoritative — TMD should confirm and record the value in `docs/commutator-design.md`.
+
+No pre-committed **SHUTTLE-{PUMP-CONFIRMED | PUMP-BLOCKED | INDETERMINATE}** branch is declared: the simulation was gated out before the anchor test could run. A halted result is a deliverable, not a failure (acceptance §7: *"LR value cited verbatim … or BLOCKER reported."*).
 
 ---
 
 ## Constraints honoured
 
-- `reference/doubler_core.py` untouched (empty diff); no private symbols imported; no frozen-internal copy-paste; no workaround built.
+- `reference/doubler_core.py` untouched (empty diff); no imports from `index.html`; no invented LR value; no `shuttle_core.py` built.
 - `index.html` untouched (out of scope).
-- Symbol names cited verbatim; `θ`/`rotor`, `Nsec`, gap `g` hygiene respected (and noted absent from the frozen mirror); epistemic tags applied.
+- Symbol names cited verbatim (`L_RES`/`L1`); `θ`/`rotor`, `Nsec`, gap `g` hygiene respected; epistemic tags applied.
 - Branch left for TMD review; **not merged** to `main`.
-
-## Reproduce (read-only)
-
-```
-python3 - <<'PY'
-import sys; sys.path.insert(0, "reference"); import doubler_core as dc
-z, rec = dc.solve_doubler4(160,1000,160,1000,100,100,20, iterations=70, burn=35, trace=True)
-by = {(c,p):(c1,c2,V) for c,p,c1,c2,V in rec}; c = max(k[0] for k in by) - 1
-for ph in ("B","A"):
-    c1,c2,V = by[(c,ph)]
-    d1_on = abs(V[1]) <= 1e-6*max(abs(x) for x in V)   # D1=(2->0) on iff v2==0
-    print(f"phase {ph}: C1={c1} -> D1/SG1 {'ON' if d1_on else 'off'}")
-# -> phase B: C1=160 -> D1/SG1 off ; phase A: C1=1000 -> D1/SG1 ON  => SG1 at C1 MAX
-PY
-```
