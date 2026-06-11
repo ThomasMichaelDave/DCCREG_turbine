@@ -31,6 +31,13 @@ is valid. The 5–6 resonant swing is the measurable output, treated separately 
 pump model. The cross-couples `D3`/`D4` are node-to-node and map to SG3/SG4 unchanged.
 **[OC for the L1-short; IR for the physical layering]**
 
+**Resonator inductance.** `L_RES` (= `L1`, the coil across nodes 5–6) ≈ **123 µH** —
+the value Block R's `resonatorCore` computes for the default coupled tank (also recorded
+in `docs/report-external-review.md`; the capillary self-test config gives ≈ 131 µH).
+TMD-checked and authorised 2026-06-11. **[IR]** This is the value downstream simulations
+(e.g. `shuttle_core.py`) must cite for the 5–6 resonator branch; at PRF it is the near-short
+above, so it bears on the 5–6 ring dynamics, not the charge-pump verdict.
+
 ## 3. Switching regime (frozen)
 
 | Decision | Choice | Consequence |
