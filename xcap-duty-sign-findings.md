@@ -1,74 +1,88 @@
-# xcap-duty-sign — Export-sufficiency screen & BLOCKER
+# xcap-duty-sign — D3/D4 duty-sign findings
 
-**Status:** [IR] **BLOCKER.** Per brief §2 (blocker protocol) the first step is to inspect `reference/doubler_core.py`'s exports and report whether they suffice to reconstruct, per D3/D4 conduction event, the **signed transferred charge** and the **node voltages at conduction onset**. They do **not**: the signed charge is reconstructable, but `dV_k` at conduction onset (and the event angle `θ_k`) are not available without re-implementing solver internals — which §2.2 forbids. So I STOP here; the T2 consumer script and the T3 three-way determination (XCAP-AC-CONFIRMED / XCAP-RATCHET-BLOCKED / XCAP-INDETERMINATE) were **not** executed.
+**Outcome:** **XCAP-RATCHET-BLOCKED** — at the device operating point each cross-couple (D3, D4) conducts the **same sign** of charge every cycle. A two-terminal series ("flying") capacitor in the D3/D4 branch cannot carry this duty: it would charge to one polarity and block steady-state transfer. The current single-gap Cx proposal is **closed** on this necessary-condition screen.
 
-Branch: `xcap-duty-sign`, fresh from `main` (`9136624`). `reference/doubler_core.py` untouched (no diff). `index.html` untouched (out of scope).
+**Scope note (authorised reduction).** The first-pass export screen (§A) found `dV_k` at conduction *onset* not reconstructable from the frozen mirror's exports without re-implementing solver internals (BLOCKER). TMD authorised **option (i): the charge-sign-only screen** — drop the `dV_k` chart/CSV column and the `sign(Q)`↔`sign(dV)` self-assert, and replace it with the **forward-bias fact**: an ideal diode conducts only forward, so `sign(dV_onset) = +` by the conduction condition. The signed transferred charge `Q_k` (the primary duty-sign quantity) **is** reconstructable, so the gate is answered cleanly. `reference/doubler_core.py` is untouched (empty diff); `index.html` untouched (out of scope).
+
+Branch: `xcap-duty-sign`, fresh from `main` (`9136624`). Tiers: **[OC]** solver-derived / standard charge accounting · **[IR]** criterion / display choices.
 
 ---
 
-## 1. What was inspected
+## A. Export screen (why the scope was reduced)
 
-`reference/doubler_core.py` — the frozen Python mirror of `solveDoubler4` (asserted faithful to the JS anchors by its own `run_self_test()`). Inspected as a pure consumer; no import of private symbols, no edit to the core.
+`reference/doubler_core.py` exports (verbatim): `DIODES = [(2,0),(3,0),(1,3),(4,2)]` (D1..D4 anode→cathode); `charges_from_voltages(V, C1, C2, Ca, Cb, Cpar)` → `np.array([q1,q2,q3,q4])` (forward map V→Q); `solve_linear(A, b)`; `solve_phase(Q, C1, C2, Ca, Cb, Cpar, eps=1e-9)` → **`bestV` only** (post-conduction node voltages; the winning diode mask is internal, not returned); `solve_doubler4(C1min, C1max, C2min, C2max, Ca, Cb, Cpar, iterations=120, burn=60, trace=False)` → `z`, or `(z, rec)` with `rec` = `(cycle, phase:"B"|"A", C1cur, C2cur, [v1..v4])` (**post-phase `V`**, two records/cycle); `ANCHORS`; `run_self_test()`. The mirror is the pure electrical solver — **no rotor angle `θ`/`rotor`, no `Nsec`, no gap `g`** (so the brief's `θ_k` is not a solver export).
 
-## 2. Exports available (verbatim symbol names)
+- **Signed transferred charge `Q_k`** — reconstructable from the trace + `charges_from_voltages` (§B). ✔
+- **`dV_k` at conduction onset** — needs the all-off pre-conduction voltages (an inverse charges→voltages solve at the new caps), which no export provides; building it would re-implement `solve_phase`'s internal capacitance-matrix assembly. ✘ → dropped under option (i).
 
-| Symbol | Signature / return | Notes |
-|---|---|---|
-| `DIODES` | `[(2, 0), (3, 0), (1, 3), (4, 2)]` | D1..D4 as (anode → cathode) [OC] |
-| `charges_from_voltages(V, C1, C2, Ca, Cb, Cpar)` | `np.array([q1, q2, q3, q4])` | per-node **stored charge** from node voltages (forward map V→Q only) |
-| `solve_linear(A, b)` | `x` or `None` | generic dense solve |
-| `solve_phase(Q, C1, C2, Ca, Cb, Cpar, eps=1e-9)` | returns **`bestV` = `[v1, v2, v3, v4]` only** | the winning **post-conduction** node voltages. The winning diode mask `d = [d1,d2,d3,d4]` is computed internally (loop `for s in range(16)`) but **not returned**. The capacitance-matrix assembly (`kd1..kd4`, `addK`) is internal. |
-| `solve_doubler4(C1min, C1max, C2min, C2max, Ca, Cb, Cpar, iterations=120, burn=60, trace=False)` | `z`, or `(z, rec)` when `trace=True` | `rec` = list of per-phase records `(cycle:int, phase:"B"|"A", C1cur:float, C2cur:float, V:[v1,v2,v3,v4])`, two per cycle. **`V` is post-phase** (after `solve_phase`). |
-| `ANCHORS`, `run_self_test()` | — | fidelity harness |
+---
 
-**Symbol-hygiene check (per §3):** `doubler_core.py` is the pure *electrical* solver. It contains **no rotor angle** (`θ`/`rotor`), **no sector count** (`Nsec`), **no gap** (`g`). The trace is indexed by `cycle` (int) and `phase` (`"B"`/`"A"`) plus the cap values `C1cur`/`C2cur` — there is no angular coordinate. (Confirmed against the actual code; no assumed names.)
+## B. Method (charge-sign screen) — `d3_duty_sign_from_solver.py`
 
-## 3. Sufficiency for the per-event quantities the brief requires (§2.2 / §2.4)
+Pure consumer of `doubler_core.py` (no core edit, no private symbols). Per cycle, the signed charge through a cross-couple is recovered by **conserved-charge differencing on the event's sink node**, because in the phase that diode conducts its sink node has exactly one delivering diode (the other return is off, verified per event):
 
-### (a) Signed transferred charge `Q_k` — **RECONSTRUCTABLE** [OC]
-In the canonical galvanic cycle each cross-couple's sink node has exactly one delivering diode in the phase it conducts (D2/D1 are off then), so charge into the sink is attributable to D3/D4 alone. Using **only** the exported `charges_from_voltages` and the trace's per-phase recorded caps:
+- **D3** (phase A, sink **node 3**; D2 off): `Q_D3 = q3(V_A) − q3(V_B)`, where `q3(·)` is the node-3 component of `charges_from_voltages` (= `Cpar·v3 + Cb·(v3−v4)`, independent of C1/C2). `q3(V_B)` is the conserved onset charge entering phase A (mirrors the solver's own `Q = charges_from_voltages(V_B, C1min, C2max, …)`).
+- **D4** (phase B, sink **node 2**; D1 off): `Q_D4 = q2(V_B) − q2(V_prevA)`, `q2(·) = Cpar·v2 + Ca·(v2−v1)`.
 
-- D3 conducts in phase **A** (`C1max, C2min`); its sink is node 3. The conserved node-3 charge entering phase A equals the node-3 component of `charges_from_voltages(V_B, C1cur_B, C2cur_B, …)` where `(V_B, C1cur_B=C1min, C2cur_B=C2max)` is the **preceding phase-B record** (this mirrors the solver's own `Q = charges_from_voltages(V, C1cur, C2cur, …)`). Then
-  `Q_D3,k = charges_from_voltages(V_A, C1max, C2min, …)[2] − charges_from_voltages(V_B, C1min, C2max, …)[2]`.
-  Sign convention maps directly: **+ = charge into node 3 = 1 → 3** (the brief's D3 convention). D2-off is verifiable per event (`|v3| ≉ 0`).
-- D4 conducts in phase **B**; sink node 2; analogous differencing on index `[1]`. **+ = 4 → 2**. D1-off verifiable (`|v2| ≉ 0`).
+**Sign convention** (matches brief §2.2 and `DIODES`): `+` = charge **into** the sink = **1→3** for D3, **4→2** for D4 — the diode's forward direction.
 
-This is enough to answer the **primary** ratchet-vs-AC question (the sign sequence `s_k = sign(Q_k)`).
+**Operating point / window.** Device preset: `C1,C2 = 160–1000 pF`, `Ca = Cb = 100`, `Cpar = 20`; measured `z = 1.2033`. Run `iterations = 60` so `max|V| < 1e6` throughout — the solver's overflow rescale never fires, so all cycles share one scale and per-cycle magnitudes are directly comparable (70 already trips the 1e6 rescale). **Steady-state criterion [IR, adjusted, normalised]:** the diode-ideal pump grows ×z per cycle (no fixed magnitude), so convergence is applied to the per-branch ratio `|Q_k|/|Q_{k−1}|` (which → constant `z`), within 1% relative change for 3 consecutive cycles on both branches; then ≥ 20 further cycles form the analysis window. Here the window is **cycles 9–59 (51 events/branch)**.
 
-### (b) `dV_k` at conduction **onset** — **NOT RECONSTRUCTABLE** [BLOCKER]
-"Onset" is the all-diodes-**off** state at the *new* cap values, given the conserved charges, *before* `solve_phase` clamps the conducting diodes. The trace records only **post**-phase `V` (where D3 has already shorted `v1 = v3`, so `V1 − V3 ≈ 0` — the wrong quantity). Recovering the onset `(V1 − V3)` requires an **inverse** map (charges → voltages) at a given cap config with all diodes off. No export provides it:
+**Self-assertions (on load):** event count ≥ 20/branch ✔; every window event forward-signed (`Q_k > 0`) — the forward-bias substitute for the dropped `sign(dV)` check ✔ (0 violations); sink-node not clamped to ground per event ✔ (0 flags).
 
-- `charges_from_voltages` is **forward only** (V → Q).
-- `solve_phase` returns the **winning** (post-conduction) state and offers no way to request the all-off mask; its capacitance matrix (`kd1..kd4`, `addK`) is internal and not exported.
+---
 
-Reconstructing onset voltages would mean **re-implementing `solve_phase`'s internal matrix assembly** in the consumer — reaching into solver internals, which **§2.2 forbids** ("read exported outputs only, never reach into solver internals … Do not work around"). `dV_k` is required by T2.2, charted in T2.4 panel 2, and used in the T2.4 self-assertion (`sign(Q_k)` consistent with `sign(dV_k)` at onset). Without it those tasks cannot be done as specified.
+## C. Result (table evidence)
 
-### (c) Event angle `θ_k` — **not a solver export** [missing]
-There is no rotor angle in this electrical mirror (§2 above). `θ_k` could only be assigned by a design-layer phase→angle mapping (the 30° stroke offset), which is `[IR]` and lives outside `doubler_core.py`.
+`d3_duty_sign_events.csv` (full, 59 events/branch) + `d3_duty_sign_chart.png` (signed `Q_k` and `|Q_k|/|Q_{k−1}|` per branch). Window excerpt:
 
-### (d) Per-event diode mask — inferable, not exported
-`solve_phase` returns `bestV` only. Which diodes conducted is **inferable** from post-`V` equality (`D1: |v2|≈0`, `D2: |v3|≈0`, `D3: |v1−v3|≈0`, `D4: |v4−v2|≈0`), but the explicit winning `d` is not returned.
+| branch | cycle | Q_signed | sign | \|Q_k\|/\|Q_{k−1}\| |
+|---|---|---|---|---|
+| D3 | 9  | 8.178e+02 | + | 1.20835 |
+| D3 | 10 | 9.865e+02 | + | 1.20629 |
+| D3 | 58 | 7.131e+06 | + | 1.20327 |
+| D3 | 59 | 8.581e+06 | + | 1.20327 |
+| D4 | 9  | 7.562e+02 | + | 1.19685 |
+| D4 | 10 | 9.070e+02 | + | 1.19941 |
+| D4 | 58 | 6.501e+06 | + | 1.20327 |
+| D4 | 59 | 7.822e+06 | + | 1.20327 |
 
-## 4. BLOCKER declaration
+- **D3:** 51/51 window events `+` → sign sequence **constant**.
+- **D4:** 51/51 window events `+` → sign sequence **constant**.
+- Magnitude ratio → `z = 1.20327` on both branches (the pump's per-cycle gain); the per-event *direction* never reverses.
 
-Per brief §2.2, the exports are **sufficient** for the signed transferred charge `Q_k` (the primary duty-sign quantity) but **insufficient** for:
+**[OC] corroboration:** this is exactly what the topology forces — D3 `(1→3)` and D4 `(4→2)` are one-way ideal diodes, conducting once per cycle in their forward direction only, so the per-event charge sign is structurally invariant. The screen confirms it on the actual converged cycle (it is not assumed).
 
-1. **`dV_k` at conduction onset** (T2.2 / T2.4) — needs an all-off onset solve the exports do not provide.
-2. **Event angle `θ_k`** (T2.2) — absent from the electrical mirror.
+---
 
-STOP per protocol. No consumer script, no chart/CSV, no XCAP-{AC|RATCHET|INDETERMINATE} determination produced.
+## D. Declared outcome & consequence
 
-## 5. Context for TMD (not a decision taken here)
+**XCAP-RATCHET-BLOCKED** (`s_k` constant across the window for both D3 and D4). Per the brief's pre-committed consequence:
 
-- **The gate is answerable from `Q_k` signs alone**, which *are* reconstructable. As an `[OC]` structural note on the *existing galvanic* cycle: D3 and D4 are one-way ideal diodes that conduct only forward (D3: 1→3 in phase A; D4: 4→2 in phase B), so per-event charge sign is structurally constant → this is *consistent with* an **XCAP-RATCHET-BLOCKED** outcome. The brief rightly insists on measurement (and notes inserting Cx would perturb the cycle), so this is offered as orientation, not a determination.
-- **Unblock options (any one is enough):**
-  - **(i) Charge-sign-only screen** — drop the `dV_k` chart and replace the consistency self-assertion with the forward-bias fact (`sign(dV_onset) = +` by the conduction condition). I can then deliver the three-way determination from `Q_k`. *Cleanest discipline; recommended.*
-  - **(ii) Authorise a consumer-side all-off onset solve** — re-state the documented circuit topology in the new script and solve it with the exported `solve_linear` to recover `dV_k`. This re-derives the network matrix outside the frozen core and stretches "read exported outputs only," so it needs explicit sign-off.
-  - **(iii) Export onset `V` / the winning diode mask from `doubler_core.py`** — disallowed here (the core is frozen).
-- `θ_k`, if wanted, is a separate `[IR]` design-layer mapping; not needed for the duty-sign gate.
+- A two-terminal series flying cap in the D3/D4 branch **cannot carry the duty** (it integrates a one-signed charge and saturates, blocking steady-state transfer). The single-gap `Cx3`/`Cx4` proposal as drawn is closed on this necessary-condition screen.
+- **Viable escapes** (not evaluated here): (a) a **second gap per island** restoring shuttle/reset (bidirectional) behaviour; or (b) **cycle re-derivation** that makes the branch duty AC. Either is a new architecture step.
+- **Caveat (necessary, not sufficient):** this screens the *existing galvanic* cycle. Inserting `Cx3`/`Cx4` would itself perturb the cycle; a Phase-2 Cx-topology model (new module, frozen core untouched) would be needed to settle sufficiency. Out of scope here.
 
-## 6. Constraints honoured
+---
 
-- `reference/doubler_core.py` untouched (empty diff). No private symbols imported; no workaround built.
-- `index.html` untouched (out of scope, §5).
-- Epistemic tags applied; symbol names verified verbatim against the code.
+## E. Reproduce
+
+From repo root, no arguments, deterministic:
+
+```
+python3 d3_duty_sign_from_solver.py
+# device z = 1.2033 ; events D3=59 D4=59 ; window cycles [9..59] = 51
+# D3: signs=+++…+  (constant)
+# D4: signs=+++…+  (constant)
+# reverse-sign events: 0 ; sink-clamp flags: 0
+# OUTCOME: XCAP-RATCHET-BLOCKED
+```
+
+Requires `numpy` + `matplotlib` (the same deps `reference/doubler_core.py` and the other reference `.py` already use). Writes `d3_duty_sign_events.csv` and `d3_duty_sign_chart.png` beside the script.
+
+## F. Constraints honoured
+
+- `reference/doubler_core.py` untouched (empty diff); no private symbols imported; no core workaround.
+- `index.html` untouched (out of scope).
+- All symbol names verified verbatim against the code; epistemic tags applied.
+- Branch left for TMD review; **not merged** to `main`.
