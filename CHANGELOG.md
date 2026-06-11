@@ -4,6 +4,9 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Investigated
+- **xcap duty-sign export screen (BLOCKER)** — `xcap-duty-sign-findings.md` (branch `xcap-duty-sign`). Per the brief's blocker protocol, inspected `reference/doubler_core.py`'s exports before instrumenting. Result: the signed transferred charge per D3/D4 conduction event **is** reconstructable from the exported trace + `charges_from_voltages` (conserved-charge differencing on the sink node), but `dV_k` at conduction **onset** (and the event angle `θ_k`) are **not** available without re-implementing solver internals — disallowed. STOPped per protocol; no consumer script written, no AC/RATCHET/INDETERMINATE determination. `doubler_core.py` untouched; recommendation recorded for TMD (charge-sign-only screen). Not merged.
+
 ### Added
 - **Commutator render (commutator v0.1)** — render/consumer visualisation of the physical switching design in `docs/commutator-design.md`; `solveDoubler4` untouched (frozen primitives byte-identical).
   - **Axial companion view (B)** — new "Commutator — axial view" panel (face-on polar canvas): rotor disc + `Nsec` sectors, the 6 floating bars at the transfer radius with ball-electrode ends, the SG3 / SG4 stator sets with the **30° offset drawn**, firing windows + favourable-half shading, and a live **`kphi`** rotor-angle slider that sweeps the bars into the sets. Subset colour/hatch legend.
