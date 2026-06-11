@@ -4,6 +4,9 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Investigated
+- **shuttle-fullsim Phase-2 gate report (HALT + BLOCKER)** — `shuttle-fullsim-findings.md` (branch `shuttle-fullsim`). The brief's two pre-build gates both trip against the frozen `reference/doubler_core.py`, so no `shuttle_core.py` / campaign / timing diagram was built. **T0 → HALT:** the station map assumes SG1 fires at C1 *minimum* (parallel-dump), but the solver shows SG1/D1 conducts in the phase where C1 = max (D1 on ⟺ v2=0, which occurs only at C1=1000) — the map shifts half a sector; TMD decides. **Exports → BLOCKER (constraint #1):** `doubler_core` exports neither the continuous `C1(θ)/C2(θ)` profiles nor any `LR`/L1 (it is a discrete-scalar, purely-capacitive 4-node mirror with the rail collapsed to ground); only baseline `z = 1.203` is available. `doubler_core.py` and `index.html` untouched; not merged.
+
 ### Added
 - **Commutator render (commutator v0.1)** — render/consumer visualisation of the physical switching design in `docs/commutator-design.md`; `solveDoubler4` untouched (frozen primitives byte-identical).
   - **Axial companion view (B)** — new "Commutator — axial view" panel (face-on polar canvas): rotor disc + `Nsec` sectors, the 6 floating bars at the transfer radius with ball-electrode ends, the SG3 / SG4 stator sets with the **30° offset drawn**, firing windows + favourable-half shading, and a live **`kphi`** rotor-angle slider that sweeps the bars into the sets. Subset colour/hatch legend.
