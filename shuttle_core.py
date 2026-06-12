@@ -370,6 +370,7 @@ def _shuttle_half(V, caps_prev, which, src, isl, snk, P, trace=None, rc=None):
     caps_c = caps_load
     th_fire, ov_fire, fired, boost = None, 0.0, False, P.boost_ratio()
     main_cleared = False                                     # did the MAIN boss move the bucket?
+    jitter_real = 0.0                                        # realised fire-angle jitter (kick train)
     # decide ONCE per event (not per collapse step) whether the main boss is blocked this half:
     # fault-injection forced miss, or arc hold-off recovery failure -> misfire. [OC/IR]
     blocked = False; recovery_miss = False
@@ -392,7 +393,8 @@ def _shuttle_half(V, caps_prev, which, src, isl, snk, P, trace=None, rc=None):
         if (not fired) and (not P.extend_into_collapse) and do_fire and not blocked:
             th_fire = base + TH_COL0 + (TH_COL1 - TH_COL0) * f
             if rc is not None and P.pJitter > 0:             # fire-angle jitter (timing only)
-                th_fire += rc.rng.gauss(0.0, P.pJitter)
+                _j = rc.rng.gauss(0.0, P.pJitter); th_fire += _j
+                jitter_real = _j                            # record the realised jitter offset
                 if th_fire > base + TH_COL1 + 1e-9:          # jittered past the window -> misfire
                     rc.events['misfire'] += 1
                     continue
@@ -436,7 +438,7 @@ def _shuttle_half(V, caps_prev, which, src, isl, snk, P, trace=None, rc=None):
                delta=(None if th_fire is None else th_fire - (base + TH_RET)),
                boost=boost, v_src=Vc[src], v_snk=Vc[snk], v_isl=Vc[isl],
                main_cleared=main_cleared, backstop_fired=backstop_fired,
-               q_trapped=node_charges(Vc, caps_c)[isl])
+               q_trapped=node_charges(Vc, caps_c)[isl], jitter=jitter_real)
     return Vc, led, caps_c
 
 
@@ -674,6 +676,31 @@ def spark_run(P, iterations=120, seed_v=None, growth_lo=6, growth_hi=26):
     z = float(math.exp(np.mean(logs))) if logs else 1.0
     v_clamp = float(np.median(rails[-10:])) if len(rails) >= 10 else (rails[-1] if rails else 0.0)
     return z, v_clamp, leds, rc
+
+
+def export_kick_train(P=None, iterations=120, seed=0, corner='mid', rpm=None, backstop=True):
+    """Additive exporter (resonator-accum brief §2.1): the per-event kick train the 5-6 ring sees,
+    read straight out of the existing `leds` (no change to the hot path; the pump verdicts are
+    untouched). One kick per fired branch per cycle: charge q=fire_out (into the sink/ring), fire
+    angle theta=th_fire, absolute time t=theta/f_cycle(rpm), realised jitter, mode, overvoltage.
+    Defaults build an arc-corner spark run; pass P to export any configured run. [OC]"""
+    if P is None:
+        P = make_params('arc', corner, rpm=(rpm or RPM_REF), backstop=backstop); P.seed = seed
+    z, v_clamp, leds, rc = spark_run(P, iterations=iterations)
+    kicks = []
+    for cyc, led in enumerate(leds):
+        for br in ('A', 'B'):
+            L = led[br]
+            if not L['fired'] or L['th_fire'] is None:
+                continue
+            theta = L['th_fire']
+            kicks.append(dict(cycle=cyc, branch=br, q=L['fire_out'], theta=theta,
+                              t=theta / f_cycle(P.rpm), jitter=L.get('jitter', 0.0),
+                              mode=P.mode, overvoltage=L['overvoltage'],
+                              backstop=L['backstop_fired']))
+    return dict(kicks=kicks, z=z, v_clamp=v_clamp, rpm=P.rpm, mode=P.mode, corner=P.corner,
+                prf=math.ceil(12 / 2) * P.rpm / 60.0, n_fired=len(kicks),
+                misfire=rc.events['misfire'], constrict=rc.events['constrict'])
 
 
 def clamp_provenance(corner='mid'):
