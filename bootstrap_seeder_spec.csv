@@ -1,0 +1,4 @@
+corner,V_floor_seed,V_sustain_fullspeed,seeder_V_inj,seeder_Q_inj_nC,node,retention_floor_rpm
+opt,187,286,286,28.61,1,100
+mid,187,437,437,43.74,1,662
+pess,187,none,none,none,1,none
