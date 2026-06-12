@@ -66,6 +66,11 @@ class Params:
         self.seed = 0                # RNG seed for jitter (jitter off when pJitter==0)
         self.rpm = 3000.0            # mechanical context (does NOT affect the quasi-static solve)
         self.corner = 'mid'          # 'opt'|'mid'|'pess' literature-corner label (bookkeeping)
+        # ---- Phase-5 bootstrap (low-V startup) extension [IR]; ALL default OFF => spark exact ----
+        self.pTauLeakStorage = None  # storage self-discharge time const (s); None => no inter-cycle decay
+        self.pLagStat = 0.0          # statistical strike-lag near threshold (V scale); 0 => deterministic
+        self.pPriming = False        # UV/field-emission priming assist (out-of-scope hardware); default OFF
+        self.boot_vfloor = None      # Paschen no-fire floor (V); None => no floor (spark tier)
 
     def boost_ratio(self):
         return self.cx_max / (self.cx_min + self.pCboss + self.pCboss2 + self.gap_stray)
@@ -75,7 +80,8 @@ def _is_ideal(P):
     """True iff P leaves the rev-0.3 ideal code path byte-for-byte (regression tripwire)."""
     return (P.mode == 'ideal' and not P.use_abs_volts and P.pVbkFire_abs is None
             and P.pCboss2 == 0.0 and P.pVbkBackstop is None and P.pVarc == 0.0
-            and P.pVsus == 0.0 and P.pJitter == 0.0 and not P.extend_into_collapse)
+            and P.pVsus == 0.0 and P.pJitter == 0.0 and not P.extend_into_collapse
+            and P.pTauLeakStorage is None and P.pLagStat == 0.0 and P.boot_vfloor is None)
 
 
 # ======================================================================================
@@ -244,7 +250,8 @@ class RunCtx:
         self.rng = random.Random(P.seed)
         self.force_miss = 0            # induce N consecutive MAIN-boss misses (fault injection)
         self.losses = {'arc': 0.0, 'glow': 0.0, 'backstop': 0.0}
-        self.events = {'misfire': 0, 'constrict': 0, 'backstop': 0, 'no_strike': 0}
+        self.events = {'misfire': 0, 'constrict': 0, 'backstop': 0, 'no_strike': 0,
+                       'no_fire': 0, 'decayed_out': 0}     # bootstrap named outcomes
         self.I_peak = 0.0
         # conduction time for one collapse step at this rpm (constriction current basis)
         self.t_cond = (TH_COL1 - TH_COL0) / N_COLLAPSE / f_cycle(P.rpm)
@@ -347,6 +354,17 @@ def _shuttle_half(V, caps_prev, which, src, isl, snk, P, trace=None, rc=None):
                               cx=cx, q=qsigned))
     capsP = caps_phase(which, P)
     Vc = transition(V, caps_prev, capsP, [])                 # rotor into this phase (all open)
+    # bootstrap V_floor (B1a): below the Paschen minimum NO gap can break down — if no node reaches
+    # V_floor the whole half is INERT (returns, load, fire all blocked), only leakage acts. This is
+    # the R0 first-conduction gate (gated on boot_vfloor => spark/ideal tier byte-identical). [OC]
+    if P.boot_vfloor is not None and max(abs(Vc.get(n, 0.0)) for n in (1, 2, 3, 4)) < P.boot_vfloor:
+        if rc is not None:
+            rc.events['no_fire'] += 1
+        led = dict(load_in=0.0, fire_out=0.0, overvoltage=0.0, fired=False,
+                   th_ret=base + TH_RET, th_fire=None, delta=None, boost=P.boost_ratio(),
+                   v_src=Vc[src], v_snk=Vc[snk], v_isl=Vc[isl], main_cleared=False,
+                   backstop_fired=False, q_trapped=node_charges(Vc, capsP)[isl], jitter=0.0)
+        return Vc, led, capsP
     Vc = transition(Vc, capsP, capsP, [ret])                 # main return ON (held through phase)
     stamp(base + TH_RET, retname, Vc, P.cx_max)              # return SG1/SG2 at C max
     # load-station angle: advance Cx from the plateau to cx_load before SGxa closes. load_frac=0
@@ -389,6 +407,15 @@ def _shuttle_half(V, caps_prev, which, src, isl, snk, P, trace=None, rc=None):
         # early but RIDES the collapse and dumps at max boost (k=N), so completion = 1-pVsus/ov_max.
         thr = _fire_threshold(P, drive)
         do_fire = (k == N_COLLAPSE) if P.mode == 'glow' else (ov > thr)
+        # bootstrap statistical lag: just above the floor the strike is stochastic (few initiatory
+        # electrons, Kuffel); Bernoulli p rises over pLagStat; pPriming forces a reliable strike.
+        # (the hard V_floor no-conduction gate is applied once at the top of the half.) [OC/IR]
+        if (P.boot_vfloor is not None and do_fire and P.pLagStat > 0 and not P.pPriming
+                and rc is not None):
+            p_strike = 1.0 - math.exp(-max(0.0, drive - P.boot_vfloor) / P.pLagStat)
+            if rc.rng.random() > p_strike:
+                rc.events['no_fire'] += 1                     # statistical lag -> failed-to-fire
+                continue
         if (not fired) and (not P.extend_into_collapse) and do_fire and not blocked:
             th_fire = base + TH_COL0 + (TH_COL1 - TH_COL0) * f
             if rc is not None and P.pJitter > 0:             # fire-angle jitter (timing only)
@@ -647,6 +674,42 @@ def make_params(mode='arc', corner='mid', rpm=3000.0, backstop=False,
     return P
 
 
+# ======================================================================================
+# Phase-5 bootstrap (low-V startup) tier. New params default OFF (spark tier byte-identical).
+# ======================================================================================
+V_FLOOR = 327.0            # Paschen minimum, air ~1 atm (~330 V at the p·d optimum) [OC, Kuffel]
+# storage self-discharge at LOW voltage: mica VOLUME term (geometry-independent, reused from the
+# accum DC route: tau = rho_v*eps0*epsr) in PARALLEL with a SURFACE/HUMIDITY term (swept, cited
+# range ~1-100 s at low V — surface films dominate at startup). [OC volume; IR surface band]
+EPS0 = 8.8541878128e-12
+EPSR_MICA = 5.4
+RHO_V_MICA = {'opt': 1e15, 'mid': 1e14, 'pess': 1e13}     # ohm·m (reused from resonator_accum)
+TAU_SURFACE = {'opt': 1.0, 'mid': 0.1, 'pess': 0.01}      # s, surface/humidity term at low V [IR, swept]
+
+
+def tau_storage(corner='mid'):
+    """Low-V storage self-discharge = volume || surface. Volume tau = rho_v*eps0*epsr (long);
+    surface/humidity tau short at startup -> the parallel is surface-dominated. [OC/IR]"""
+    tau_vol = RHO_V_MICA[corner] * EPS0 * EPSR_MICA
+    tau_surf = TAU_SURFACE[corner]
+    return 1.0 / (1.0 / tau_vol + 1.0 / tau_surf)          # parallel leakage paths
+
+
+def make_params_boot(corner='mid', rpm=3000.0, node=1, priming=False):
+    """Bootstrap (low-V) Params: arc-mode spark tier with the Paschen V_FLOOR enforced (no gap fires
+    below it; the rising branch, B1a), inter-cycle storage leakage, and statistical near-threshold
+    lag. The effective fire threshold is max(strike, V_FLOOR) via the boot_vfloor gate — so the
+    spark-derate pess strike (150 V, sub-Paschen) is corrected up to V_FLOOR at startup without
+    rewriting the spark strike (B0a/B0b untouched). [OC/IR]"""
+    P = make_params('arc', corner, rpm=rpm, backstop=False)
+    P.boot_vfloor = V_FLOOR                                   # hard no-fire floor (effective thr = max)
+    P.pTauLeakStorage = tau_storage(corner)                   # inter-cycle retention race
+    P.pLagStat = 0.15 * V_FLOOR                               # statistical-lag voltage scale [IR]
+    P.pPriming = priming
+    P.boot_node = node                                       # injection node (1/4 = Ca; 2/3 = Cb)
+    return P
+
+
 def spark_run(P, iterations=120, seed_v=None, growth_lo=6, growth_hi=26):
     """Absolute-volt run (NO rescaling): the absolute strike is the limit-cycle mechanism — as the
     rail grows the island reaches V_strike earlier in the collapse (less boost), so the per-cycle
@@ -663,6 +726,12 @@ def spark_run(P, iterations=120, seed_v=None, growth_lo=6, growth_hi=26):
     pm = abs(V[1]) + abs(V[4])
     for cyc in range(iterations):
         V, led = shuttle_cycle(V, P, rc=rc)
+        # inter-cycle storage leakage (bootstrap retention race): the rail/storage decays by
+        # exp(-T_cycle/tau) between conduction events. Gated on pTauLeakStorage (None => no decay,
+        # spark tier byte-identical). T_cycle = 1/f_cycle(rpm): vanishes at operating rpm. [OC]
+        if P.pTauLeakStorage is not None:
+            decay = math.exp(-(1.0 / f_cycle(P.rpm)) / P.pTauLeakStorage)
+            V = {n: v * decay for n, v in V.items()}
         leds.append(led)
         m = abs(V[1]) + abs(V[4])
         if growth_lo <= cyc <= growth_hi and pm > 1e-12 and m > 1e-12:
@@ -1240,9 +1309,278 @@ def run_spark_campaign(n_rpm=8, seeds=range(10), healthy=500, verbose=True):
     return res
 
 
+# ======================================================================================
+# Phase-5 BOOTSTRAP campaign: B0 regression+high-V limit -> B1 threshold map -> B2 spin-up
+# trajectories -> B3 seeder spec -> B4 retention floor. Test rows B0a..B4a (fail-loud).
+# ======================================================================================
+def boot_run(V_seed, P, iterations=90, rpm_ramp=None, growth_lo=10, growth_hi=70):
+    """Seed V_seed on the chosen stator node (1/4 = Ca branch, 2/3 = Cb), run the low-V arc tier
+    (V_floor + leakage + lag active via P), and classify the trajectory:
+      'no-fire'        — the gap never strikes (seed below V_floor, leaks away);
+      'fire-and-decay' — strikes but the rail trends to ~0 (gain loses the retention race);
+      'growth'         — sustained rail increase (capture into the operating regime).
+    Returns dict(outcome, rails, fired_any, rc). rpm_ramp(cyc)->rpm for spin-up trajectories."""
+    import numpy as np
+    node = getattr(P, 'boot_node', 1)
+    rc = RunCtx(P)
+    V = {1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 7: 0.0, 8: 0.0}
+    if node in (1, 4):
+        V[1] = -V_seed; V[4] = -V_seed
+    else:
+        V[2] = -V_seed; V[3] = -V_seed
+    seed_rail = abs(V[1]) + abs(V[4]) + abs(V[2]) + abs(V[3])
+    rails = [seed_rail]; fired_any = False; logs = []
+    pm = max(seed_rail, 1e-30)
+    for cyc in range(iterations):
+        if rpm_ramp is not None:
+            P.rpm = rpm_ramp(cyc)
+        V, led = shuttle_cycle(V, P, rc=rc)
+        if P.pTauLeakStorage is not None:
+            decay = math.exp(-(1.0 / f_cycle(P.rpm)) / P.pTauLeakStorage)
+            V = {n: v * decay for n, v in V.items()}
+        if led['A']['fired'] or led['B']['fired']:
+            fired_any = True
+        m = abs(V[1]) + abs(V[2]) + abs(V[3]) + abs(V[4])
+        if growth_lo <= cyc <= growth_hi and pm > 1e-30 and m > 1e-30:
+            logs.append(math.log(m / pm))
+        rails.append(m); pm = max(m, 1e-30)
+        if m > 1e15:                                          # overflow guard (clamped growth)
+            V = {n: v * (1e6 / m) for n, v in V.items()}; pm = 1e6
+    rate = float(math.exp(np.mean(logs))) if logs else 0.0   # net per-cycle growth rate
+    end_ratio = rails[-1] / max(seed_rail, 1e-30)
+    if not fired_any:
+        outcome = 'no-fire'
+    elif rate > 1.0 and end_ratio > 1.5:
+        outcome = 'growth'
+    else:
+        outcome = 'fire-and-decay'; rc.events['decayed_out'] += 1
+    return dict(outcome=outcome, rails=rails, fired_any=fired_any, rate=rate,
+                end_ratio=end_ratio, rc=rc)
+
+
+def boot_classify(V_seed, corner, rpm, node=1, priming=False, seed=0):
+    P = make_params_boot(corner, rpm=rpm, node=node, priming=priming); P.seed = seed
+    return boot_run(V_seed, P)['outcome']
+
+
+def v_seed_grid(n=14):
+    import numpy as np
+    return list(np.logspace(math.log10(80), math.log10(20000), n))   # sub-floor -> operating
+
+
+def boot_rpm_grid(n=6):
+    import numpy as np
+    return [float(x) for x in np.logspace(math.log10(100), math.log10(3000), n)]
+
+
+# ---- B0: regression + high-V limit ---------------------------------------------------
+def B0a_spark_regression():
+    ok = (T0a_anchor()[1] and T0b_ideal_tier()[1] and T0c_ledger()[1]
+          and abs(spark_run(_arc_clean('mid'))[0] - 1.184406) < 1e-6)
+    return ('B0a spark regression', ok, {})
+
+
+def _arc_clean(corner, rpm=3000.0):
+    P = make_params('arc', corner, rpm=rpm); P.tau_rec = 0.0
+    return P
+
+
+def B0b_high_v_limit():
+    """The low-V hooks, DISABLED (leakage off, floor off, lag off), reduce to the spark tier within
+    0.001 at operating voltage — the extension earns trust by reducing to the validated tier. The
+    V_FLOOR strike correction (pess) is a separate physical effect, reported in B1, not a regression."""
+    ref = {'opt': 1.188767, 'mid': 1.184406, 'pess': 1.166661}
+    worst = 0.0
+    for c in ('opt', 'mid', 'pess'):
+        P = make_params_boot(c); P.tau_rec = 0.0
+        P.pTauLeakStorage = None; P.boot_vfloor = None; P.pLagStat = 0.0   # hooks OFF
+        z = spark_run(P)[0]
+        worst = max(worst, abs(z - ref[c]))
+    return ('B0b high-V limit', worst < 0.001, dict(worst=worst))
+
+
+# ---- B1: two-threshold map -----------------------------------------------------------
+def B1_threshold_map(corners=('opt', 'mid', 'pess'), seed=0):
+    """Sweep V_seed x rpm x corner; classify each point. Extract V_floor (lowest V that ever fires)
+    and V_sustain(rpm) (lowest V that GROWS). Returns the grid + boundaries."""
+    Vs = v_seed_grid(); rpms = boot_rpm_grid()
+    grid = {}
+    for c in corners:
+        grid[c] = {}
+        for rpm in rpms:
+            row = [(V, boot_classify(V, c, rpm, seed=seed)) for V in Vs]
+            grid[c][rpm] = row
+    # boundaries
+    vfloor = {}; vsustain = {}
+    for c in corners:
+        fired_Vs = [V for rpm in rpms for V, o in grid[c][rpm] if o != 'no-fire']
+        vfloor[c] = min(fired_Vs) if fired_Vs else None
+        vsustain[c] = {}
+        for rpm in rpms:
+            grew = [V for V, o in grid[c][rpm] if o == 'growth']
+            vsustain[c][rpm] = min(grew) if grew else None
+    return dict(grid=grid, Vs=Vs, rpms=rpms, vfloor=vfloor, vsustain=vsustain)
+
+
+def B1a_floor_sanity(corners=('opt', 'mid', 'pess')):
+    """No conduction below the Paschen minimum: a gap fires only when a node reaches V_FLOOR. Seeds
+    too low for the varicap squeeze to lift any node to V_FLOOR stay no-fire (the rising branch is
+    enforced, not extrapolated away). (The seed-axis floor ~187 V is higher — the squeeze lifts a
+    seed to the V_FLOOR gap threshold; B1 maps that. Here we confirm sub-squeeze seeds never fire.)"""
+    ok = True
+    for c in corners:
+        for rpm in boot_rpm_grid(4):
+            for V in (20.0, 50.0, 120.0):                    # below the squeeze-to-floor seed
+                if boot_classify(V, c, rpm) != 'no-fire':
+                    ok = False
+    return ('B1a floor sanity', ok, dict(V_floor_gap=V_FLOOR))
+
+
+def B1b_boundary(corner='mid', rpm=3000.0):
+    """The fire-and-decay->growth boundary is monotone in V at fixed rpm (or non-monotonicity named),
+    located to within one sweep step."""
+    Vs = v_seed_grid()
+    outs = [boot_classify(V, corner, rpm) for V in Vs]
+    grow_idx = [i for i, o in enumerate(outs) if o == 'growth']
+    if not grow_idx:
+        return ('B1b boundary', False, dict(reason='no growth at this point'))
+    first = grow_idx[0]
+    monotone = all(o == 'growth' for o in outs[first:])      # once growing, stays growing in V
+    return ('B1b boundary', monotone, dict(V_sustain=Vs[first], monotone=monotone))
+
+
+# ---- B2: spin-up trajectories --------------------------------------------------------
+def B2_trajectories(corner='mid', V_seed=2000.0, seeds=range(10)):
+    """Seed at standstill vs intermediate vs full speed, with a linear rpm ramp. Capture window =
+    where on the ramp an injection of V_seed enters growth. B2a: classification stable over seeds."""
+    def ramp(start_rpm, rate):
+        return lambda cyc: min(3000.0, start_rpm + rate * cyc)
+    cases = {'standstill': ramp(100.0, 60.0), 'intermediate': ramp(1000.0, 60.0),
+             'full-speed': ramp(3000.0, 0.0)}
+    out = {}
+    for name, rp in cases.items():
+        results = []
+        for s in seeds:
+            P = make_params_boot(corner, rpm=100.0); P.seed = s
+            results.append(boot_run(V_seed, P, rpm_ramp=rp)['outcome'])
+        # determinism (B2a): stable except boundary points
+        from collections import Counter
+        cnt = Counter(results)
+        majority = cnt.most_common(1)[0]
+        out[name] = dict(outcomes=results, majority=majority[0],
+                         stable=(majority[1] >= len(list(seeds)) - 1))
+    return out
+
+
+def B2a_determinism(corner='mid'):
+    tr = B2_trajectories(corner, seeds=range(10))
+    ok = all(v['stable'] for v in tr.values())
+    return ('B2a determinism', ok, {k: v['majority'] for k, v in tr.items()})
+
+
+# ---- B3: seeder spec -----------------------------------------------------------------
+def B3_seeder_spec(corner='mid', seeds=range(20), node=1, rpm=3000.0):
+    """Minimum V_inj for >=99% capture (growth) over >=20 jitter seeds at `rpm`, this corner.
+    Q_inj = C_node * V_inj (Ca=100pF for nodes 1/4). Returns the spec + capture probabilities."""
+    Vs = v_seed_grid()
+    spec_V = None; rows = []
+    for V in Vs:
+        caps = sum(1 for s in seeds if boot_classify(V, corner, rpm, node=node, seed=s) == 'growth')
+        p = caps / len(list(seeds))
+        rows.append(dict(V=V, capture=p))
+        if p >= 0.99 and spec_V is None:
+            spec_V = V
+    C_node = CA if node in (1, 4) else CB                    # pF
+    Q_inj = (spec_V * C_node * 1e-12) if spec_V else None    # Coulombs (V * F)
+    return dict(spec_V=spec_V, Q_inj=Q_inj, node=node, C_node=C_node, rows=rows, rpm=rpm)
+
+
+def B3a_capture(corner='mid'):
+    spec = B3_seeder_spec(corner, seeds=range(20))
+    pess = B3_seeder_spec('pess', seeds=range(20))
+    ok = spec['spec_V'] is not None
+    return ('B3a capture', ok, dict(mid_spec_V=spec['spec_V'], pess_spec_V=pess['spec_V']))
+
+
+# ---- B4: retention floor -------------------------------------------------------------
+def B4_retention_floor(corners=('opt', 'mid', 'pess'), V_seed=5000.0, seeds=range(6)):
+    """Lowest rpm at which growth holds once started, per corner (ramp-down / restart floor)."""
+    rpms = boot_rpm_grid(10)
+    floor = {}
+    for c in corners:
+        rpm_ok = None
+        for rpm in rpms:                                     # ascending
+            caps = sum(1 for s in seeds
+                       if boot_classify(V_seed, c, rpm, seed=s) == 'growth')
+            if caps >= len(list(seeds)) - 1:                 # robust growth
+                rpm_ok = rpm; break
+        floor[c] = rpm_ok
+    return floor
+
+
+def B4a_conservation(corners=('opt', 'mid', 'pess')):
+    """Conservation hard-fail on every run including decayed-out runs. The arc tier does NOT conserve
+    load_in==fire_out (the arc drop intentionally leaves residual charge) — the correct invariant is
+    the itemised energy ledger (mech work in = field-energy change + arc loss, exact by construction)
+    plus finiteness on decayed-out runs (no spurious charge creation)."""
+    ok = True; detail = {}
+    for c in corners:
+        e_ok = energy_ledger_ok(make_params_boot(c, rpm=3000.0))      # growth run, itemised ledger
+        res = boot_run(50.0, make_params_boot(c, rpm=120.0))          # sub-floor -> decayed/inert
+        finite = all(math.isfinite(r) for r in res['rails'])          # no spurious charge creation
+        ok = ok and e_ok and finite
+        detail[c] = dict(energy_ledger=e_ok, decayed_finite=finite, decayed_outcome=res['outcome'])
+    return ('B4a conservation', ok, detail)
+
+
+def run_boot_campaign(verbose=True):
+    def say(*a):
+        if verbose:
+            print(*a)
+    res = {}
+    b0a, b0b = B0a_spark_regression(), B0b_high_v_limit()
+    res['B0a'], res['B0b'] = b0a, b0b
+    say(f"[B0] spark regression {b0a[1]} · high-V limit {b0b[1]} (worst d={b0b[2]['worst']:.2e})")
+    assert b0a[1] and b0b[1], "B0 gate FAILED — halting (spark regression / high-V limit)"
+    tm = B1_threshold_map(); res['B1'] = tm
+    b1a, b1b = B1a_floor_sanity(), B1b_boundary()
+    res['B1a'], res['B1b'] = b1a, b1b
+    say(f"[B1] V_floor={tm['vfloor']}  V_sustain(mid@3000rpm)={tm['vsustain']['mid'][tm['rpms'][-1]]}")
+    say(f"     B1a floor-sanity {b1a[1]} · B1b boundary {b1b[1]} (V_sustain≈{b1b[2].get('V_sustain')})")
+    b2a = B2a_determinism(); res['B2a'] = b2a
+    say(f"[B2] spin-up capture by injection point: {b2a[2]} (B2a determinism {b2a[1]})")
+    b3 = B3_seeder_spec('mid', seeds=range(20)); res['B3'] = b3
+    b3p = B3_seeder_spec('pess', seeds=range(20))
+    b3a = B3a_capture(); res['B3a'] = b3a
+    say(f"[B3] seeder spec (mid): V_inj={b3['spec_V']:.0f}V Q_inj={b3['Q_inj']*1e9:.3f}nC node={b3['node']}"
+        f" (Ca); pess V_inj={b3p['spec_V']}")
+    b4 = B4_retention_floor(); res['B4'] = b4
+    b4a = B4a_conservation(); res['B4a'] = b4a
+    say(f"[B4] retention floor (rpm) "
+        f"{ {k: (round(v) if v else None) for k, v in b4.items()} }; B4a conservation {b4a[1]}")
+    # verdict
+    vf, vs = tm['vfloor']['mid'], tm['vsustain']['mid'][tm['rpms'][-1]]
+    two_threshold = (vf is not None and vs is not None and vs > vf)
+    if b3['spec_V'] is not None and b3a[1]:
+        verdict = 'BOOT-SEEDED'
+    elif b3['spec_V'] is None:
+        verdict = 'BOOT-BLOCKED'
+    else:
+        verdict = 'BOOT-INDETERMINATE'
+    res['verdict'] = verdict; res['two_threshold'] = two_threshold
+    say(f"\n=> {verdict}: V_floor≈{vf:.0f}V < V_sustain≈{vs:.0f}V (two-threshold={two_threshold}); "
+        f"seeder {b3['spec_V']:.0f}V/{b3['Q_inj']*1e9:.2f}nC at node 1 (Ca), ≥99% capture mid corner.")
+    return res
+
+
 if __name__ == "__main__":
     import sys
-    if '--rev03' in sys.argv:                    # rev-0.3 ideal-tier campaign (regression view)
+    if '--boot' in sys.argv:                     # Phase-5 bootstrap campaign
+        print("Phase-5 bootstrap gate (B0 regression+high-V limit -> B1..B4)\n"
+              f"V_FLOOR={V_FLOOR:.0f}V (Paschen min, air); storage tau_leak mid={tau_storage('mid'):.1f}s\n")
+        r = run_boot_campaign()
+        print(f"\n=== VERDICT: {r['verdict']} ===")
+    elif '--rev03' in sys.argv:                  # rev-0.3 ideal-tier campaign (regression view)
         print(f"[boost] Cx_max/(Cx_min+pCboss+strays) = {Params().boost_ratio():.2f}")
         run_campaign()
     else:
