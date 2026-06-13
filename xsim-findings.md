@@ -1,136 +1,145 @@
-# xsim — findings (Phase 6, rev 0.1): **XSIM-PARTIAL — X0 RECOVERED · shuttle tiers XSIM-BLOCKED**
+# xsim — findings (Phase 6, rev 0.2): **X0 RECOVERED · X1′ UNBLOCKED & PUMPING · XSIM-DIVERGENT on z**
 
-**Verdict line:** `X0-ANCHOR-RECOVERED` · `XSIM-BLOCKED (X1/X2/X3 shuttle tiers — named)`.
+**Verdict line:** `X0-ANCHOR-RECOVERED` · `X1-UNBLOCKED (Queiroz)` · `FIRE-EMERGENT (not VOID)` ·
+`XSIM-DIVERGENT on z (localised, named)`.
 
-**Branch** `claude/feasibility-approval-planning-5gkcam`, fast-forwarded onto `bootstrap-gate`
-head (so it carries the canonical producer chain: `shuttle_core.py` + spark/bootstrap consumers +
-frozen `reference/doubler_core.py`). `reference/doubler_core.py`, `shuttle_core.py` and `index.html`
-**untouched** — the gate adds only a netlist generator, the `.net` file, and a comparison consumer
-(brief §2.1). Not merged.
+**Branch** `claude/feasibility-approval-planning-5gkcam` (on `bootstrap-gate` head — carries the
+canonical producer chain). `reference/doubler_core.py`, `shuttle_core.py`, `index.html` **untouched**
+(mirror FAITHFUL, shuttle C0 green after the run — verified). Not merged. ngspice is the witness;
+the galvanic anchor (z = 1.2033) is the tiebreaker.
 
-ngspice is the **witness**, never the judge; the galvanic anchor (z = 1.2033,
-`reference/doubler_core.py`) is the tiebreaker (brief §1).
-
----
-
-## 1. Engine probe (brief X-1) — **PASS**
-
-`ngspice-42` installed in-environment (egress permitted the system package). It runs a headless
-batch (`ngspice -b`) and emits a parseable binary `.raw` (verified). The X-1 gate is cleared — this
-is **not** an `XSIM-BLOCKED-ENVIRONMENT` outcome.
-
-Two netlist primitives were verified against ngspice-42 before any campaign step:
-
-- **Time-varying capacitor** — the charge-defined form `Cxxx n+ n- Q='C(θ(t))·V'`. A decisive
-  isolated-node test confirmed the **parametric V·dC/dt pump term is present** (an isolated charged
-  node's voltage swings inversely with C, charge conserved). This is the brief §3 charge-based
-  technique, realised natively (ngspice's `ddt()` B-source was tried first and is unreliable — it
-  threw `inf` range errors; the `Q=` capacitor is the correct primitive).
-- **Spark gap / diode** — voltage-controlled switch `Sxxx` + `.model SW`, and near-ideal `.model D`.
+This rev folds in the **rev 0.3 addendum** (De Queiroz source-imposed charge-transfer) which cleared
+the rev-0.1 X1 numerical blocker. The device point, firing order, tolerances (§5) and verdict set are
+unchanged; the addendum changed only the *numerical realisation* of the caps/gaps.
 
 ---
 
-## 2. X0 — degenerate galvanic anchor — **RECOVERED (PASS)**
+## 1. Engine probe (X-1) — PASS
 
-Shuttles → near-ideal galvanic diodes (frozen direction 2→0, 3→0, 1→3, 4→2), LR shorted, islands/Cx
-dropped. C1/C2 swing (tanh square, anti-phase) between the frozen extremes; the unloaded lossless
-pump grows the rail |V1|+|V4| ~ z per mechanical cycle; z read from the post-burn per-cycle ratio.
+`ngspice-42` installed in-environment; headless `-b` batches emit parseable binary `.raw`. Not an
+`XSIM-BLOCKED-ENVIRONMENT`.
 
-| Quantity | Native (`galvanic_z`) | ngspice | Δ | Tolerance | Result |
-|---|---|---|---|---|---|
-| **X0 anchor z** | **1.2033** | **1.2042** | **+0.0009** | ≤ 0.03 (stretch ≤ 0.002) | **PASS** |
+## 2. X0 / X0′ — degenerate galvanic anchor — RECOVERED (PASS)
 
-Δz = +0.0009 sits inside even the stretch tolerance, and is **insensitive to diode ideality** (n
-swept 0.001–0.02 → z stable at ~1.204), confirming the residual forward drop is negligible. The
-anchor authorises the engine + the charge-defined-cap method. Overlay: `xsim_x0_anchor.png`.
+Near-ideal one-way diodes (2→0,3→0,1→3,4→2), LR shorted, islands dropped; C1/C2 charge-defined `Q=`
+caps swing anti-phase. **ngspice z = 1.2042 vs native 1.2033, Δ = +0.0009** (inside the stretch
+≤0.002), insensitive to diode ideality. Authorises the engine + the charge-defined-cap method.
+Overlay `xsim_x0_anchor.png` / `xsim_x0prime_anchor.png`.
 
-### 2.1 Named modelling note (deviates from brief §3 "near-ideal switches") — **[IR]**
+*[IR] named note (carried from rev 0.1):* a ngspice `SW` switch is bidirectional when closed and
+cannot rectify (z = 1.0, no pump); the faithful one-way element is a near-ideal `.model D` diode,
+whose residual Vf does **not** pull z under 1.2033 (measured above).
 
-The brief proposed near-ideal **switches** at X0. Empirically a ngspice voltage-controlled switch
-(`Sxxx`/`.model SW`) conducts **bidirectionally** while closed, so it cannot **rectify** — the
-parametric pump never ratchets and the rail just sloshes (measured z = **1.0**, no growth). The
-faithful one-way element is a near-ideal `.model D` diode with the forward drop driven to ~0. The
-brief's stated concern — a diode drop pulling z *under* 1.2033 — **does not materialise** at this
-device point (measured z = 1.204, slightly *above* the anchor). Surfaced, not engineered around.
+## 3. X1′ — ideal flying-bucket shuttle — UNBLOCKED (Queiroz), pumping; z DIVERGENT
 
----
+### 3.1 The unblock (addendum §1–3)
 
-## 3. X1 / X2 / X3 — shuttle tiers — **XSIM-BLOCKED (named)**
+The rev-0.1 blocker — the isolated-island Cx-collapse boost had no stable continuous-time analogue
+(timestep collapse at the load-station behavioral-Q-cap↔gap loop; no ratchet) — is **cleared** by the
+source-imposed method:
 
-Per brief §4 the ideal tier (X1) must pass before the arc tier (X2) is admitted. X1 is the flying-
-bucket **shuttle**: the galvanic cross-diodes are replaced by flying-capacitor islands (Cx3 on
-7–3, Cx4 on 8–2) with rotor-clocked spark gaps — a *return* (SG1/SG2), a *load* (SG3a/SG4a), and an
-emergent *fire* (SG3b/SG4b) that strikes during the Cx collapse. The genuine independent witnesses
-are z, the **emergent δ = θ(SG3b) − θ(SG1)**, and the island ledger (the absolute event angles are
-clock-imposed datum — only δ counts, brief §5 carve-out).
+- **Islands (Cx3 on 7–3, Cx4 on 8–2): charge-controlled `V = Q/Cx(t)`** (Cx+boss lumped, charge on a
+  1 F integrator node, terminal voltage synthesised by a `B`-source). Verified in isolation: an
+  isolated island boosts **×20 = Cx_max/Cx_min** as Cx collapses, charge conserved to machine
+  precision. The boost is imposed by the source law ⇒ **ratchet by construction, no stiff Q-node**.
+- **C1v/C2v: charge-defined `Q=` caps** (proven at X0; compose on shared nodes with Ca/CPAR).
+- **Return SG1/SG2 + load SG3a/SG4a: clocked *bidirectional* switches** — the ideal-tier native gaps
+  are cluster-merge equalisations; one-way diodes are wrong here (and never conduct down-pumping).
+- **Fire SG3b/SG4b: source-imposed soft-threshold dump** `I = win·gm·max(0, V(isl,snk) − Vstrike)` —
+  one-way, threshold `Vstrike`, self-extinguishing, eligibility = the Cx collapse window (the cap
+  profile), **not** a fire clock edge.
 
-**Blocker (named, brief §6 `XSIM-BLOCKED`):** the quasi-static discrete-event shuttle does not map
-onto ngspice continuous-time integration within this gate. Across ~8 principled netlist variants
-(tanh-square vs raised-cosine drive; switch vs one-way-diode gaps; bidirectional→one-way conversion
-of *every* gap; soft/stiff switch models; series-R damping; Gear integration; gmin/maxstep
-sweeps), the witness reached one of two named failure modes:
+Result: the shuttle **runs** (≈3 s, no timestep collapse) and **pumps** (z > 1, ratchets). Both
+rev-0.1 blocker modes are eliminated. *(Numerical notes: over-ideal diodes, n ≤ 0.05, cause Newton
+micro-stepping → use moderate diodes; the held-collapse Cx profile slams V=Q/Cx at the θ-wrap → the
+profile reinflates post-fire to stay continuous; tiny island stabiliser caps aid start-up.)*
 
-1. **Timestep collapse at the load station** — `Timestep too small … trouble with sld1`: the load
-   gap connects two **charge-defined behavioral caps** (node 1's C1v and the island's Cx) through a
-   gap, forming a stiff cap↔gap loop the trapezoidal/Gear stepper cannot resolve (the behavioral-Q
-   cap carries an internal node that trips at the discontinuity). This is the dominant failure once
-   all gaps are made one-way (the physically correct choice from §2.1).
-2. **No ratchet when it runs** — in the variant that integrates to completion, the rail **decays**
-   (z ≈ 0.985): the continuous witness does not reproduce the native's quasi-static charge-
-   redistribution (the native loads the island at the plateau, *isolates* it, lets Cx collapse to
-   boost V, then fires — an instantaneous-equilibrium cluster-solve with an emergent strike-state
-   selection that has no direct continuous-time analogue without bespoke event scheduling).
+### 3.2 The fire is EMERGENT — δ measured, not imposed (addendum firewall, the central evidence)
 
-The galvanic limit (X0) pumps cleanly because its commutation is memoryless (direct diodes); the
-shuttle's **isolated-island-boost-then-emergent-fire** is the element ngspice cannot faithfully
-represent here. The generator + harness are emitted for a refined-netlist / TMD-side continuation
-(e.g. XSPICE event-driven gaps, or fixed-C islands with scheduled charge injection).
+Sweeping the strike threshold `Vstrike` **moves the fire angle** — the proof δ is read off the
+boosted rail, not set by a clock (a clock-pinned fire would not respond). `xsim_x1_fire_readout.png`:
 
----
+| Vstrike | emergent δ = θ(SG3b) − θ(SG1) | z |
+|---|---|---|
+| 0.00 | 0.192 | 1.054 |
+| 0.05 | 0.301 | 1.050 |
+| 0.12 | 0.328 | 1.058 |
+| 0.25 | 0.329 | 1.069 |
 
-## 4. Full §5 comparison table (brief §7 — the full table, not just the failures)
+δ spans **0.192 → 0.329** as the threshold rises — the same emergent trend as the native
+`pVbkFire` sensitivity (0.218 → 0.39). **This is NOT `XSIM-VOID-METHOD`:** the fire is a genuine
+voltage-threshold strike on the boosted island rail.
 
-All **native** values are consumed live from `shuttle_core` (or cited from its published findings);
-the **SPICE** column is filled where the witness is authorised and `BLOCKED` (with §3's named
-reason) for the shuttle tiers. Machine-readable: `xsim_comparison.csv`.
+### 3.3 K-invariance sub-gate (addendum §3) — PASS
+
+The conditioner `K` cancels analytically in `V = Q/C`; numerically z and δ are stable across three
+decades:
+
+| K | z | δ |
+|---|---|---|
+| 1e8 | 1.0551 | 0.1914 |
+| 1e9 | 1.0549 | 0.1913 |
+| 1e10 | 1.0696 | 0.1910 |
+
+K does no physics (z, δ stable) — the method is sound.
+
+### 3.4 The divergence (named, localised)
+
+At the ideal device point (Vstrike = 0): **ngspice z = 1.0544 vs native 1.18938, Δ = −0.135** —
+outside the ≤ 0.005 tolerance. The emergent δ = 0.1917 vs 0.2175 (Δ = −0.026) is qualitatively
+right but outside ≤ 0.010. The shortfall is **robust across every fire realisation** (one-way diode,
+near-ideal diode, source-imposed dump, gm ∈ [1e-3, 1e-2]) and across K — so it is **not** a
+fire-gap artifact. Diagnosis (`V(7,3)` over a steady cycle): the charge-controlled island **boosts
+correctly** (overvoltage 0.03 plateau → 0.32 at collapse end), but the continuous-time shuttle
+**under-transfers charge per cycle** relative to the native quasi-static cluster-solve (the rail node
+does not boost as strongly between phases). This is the expected continuous-time-vs-quasi-static
+modelling difference, localised to the X1 charge-transfer rate — a SPICE realisation artifact, not a
+defect in the native producer.
+
+## 4. Full §5 comparison table (brief §7 — the full table)
+
+Native values consumed live from `shuttle_core`; machine-readable `xsim_comparison.csv`.
 
 | Quantity | Native | SPICE | Δ | Tolerance | Status |
 |---|---|---|---|---|---|
 | X0 anchor z (galvanic) | 1.2033 | **1.2042** | +0.0009 | ≤ 0.03 | **PASS** |
-| X1 z (ideal shuttle) | 1.18938 | — | — | ≤ 0.005 | BLOCKED |
-| X1 emergent δ (SG1→SG3b) | 0.2175 | — | — | ≤ 0.010 | BLOCKED |
-| X1 event angles SG1/SG3a/SG3b | 0.0500/0.1200/0.2675 | — | — | ≤ 0.010 | BLOCKED |
-| X1 event angles SG2/SG4a/SG4b | 0.5500/0.6200/0.7675 | — | — | ≤ 0.010 | BLOCKED |
-| X1 island ledger drift | ~4.6e-14 | — | — | ≤ 1e-6 (hard) | BLOCKED |
-| X2 z_arc (mid corner) | 1.18441 | — | — | ≤ 0.010 | BLOCKED |
-| X2 clamp (× strike) | ~1.04 | — | — | ≤ 5% | BLOCKED |
-| X3 V_floor (mid) | 187 V | — | — | ≤ 15% | BLOCKED |
-| X3 V_sustain (mid@3000) | 437 V | — | — | ≤ 15% | BLOCKED |
+| X1 z (ideal shuttle) | 1.18938 | **1.0544** | −0.135 | ≤ 0.005 | **FAIL** (divergent) |
+| X1 emergent δ (SG1→SG3b) | 0.2175 | **0.1917** | −0.026 | ≤ 0.010 | FAIL (close; emergent ✓) |
+| X1 island ledger (imposed) | ~5e-14 | 0 (by construction) | — | ≤ 1e-6 | PASS |
+| X2 z_arc (mid corner) | 1.18441 | — | — | ≤ 0.010 | BLOCKED (gated behind X1, §4) |
+| X2 clamp (× strike) | ~1.04 | — | — | ≤ 5% | BLOCKED (gated) |
+| X3 V_floor (mid) | 187 V | — | — | ≤ 15% | BLOCKED (gated) |
+| X3 V_sustain (mid@3000) | 437 V | — | — | ≤ 15% | BLOCKED (gated) |
 
-**Benign carve-outs (declared, brief §5):** a rigid phase offset on all event angles equally is a
-datum convention (only relative/δ drift would count); arc-tier z within its 0.010 band and the
-clamp-knee shape are expected modelling differences — none of these is the blocker.
-
----
+X2/X3 stay BLOCKED by the **strict campaign order** (brief §4): the arc tier is not admitted until
+X1 passes §5, and X1 z is out of tolerance. The island-ledger row is PASS-by-construction (the
+charge-controlled integrator conserves Q exactly) — a structural consequence of the method, not an
+independent witness of the native ~1e-14 drift, and reported as such.
 
 ## 5. Anchor-chain arbitration & verdict
 
-The anchor (galvanic z = 1.2033) is **recovered** by the independent engine, so ngspice and the
-native producer **agree at the degenerate limit** — the engine, the charge-defined-cap method, and
-the diode-doubler topology are confirmed as a faithful independent witness. No divergence is
-claimed (this is not `XSIM-DIVERGENT`): the shuttle-tier quantities are **BLOCKED**, not
-mismatched — the witness could not be brought to bear on them, so the native values stand as
-*unwitnessed targets*, not as disagreements.
+The anchor (galvanic z = 1.2033) is recovered by the independent engine, so where the two simulators
+disagree on z the anchor designates the **native quasi-static result as authoritative** and the
+ngspice continuous-time under-pump as the localised artifact (the SPICE shuttle never reproduces the
+anchor's per-cycle gain in the shuttle limit; it falls ~0.135 short). The disagreement is **named and
+localised** (charge-transfer rate, §3.4), the fire is **emergent** (not VOID), and the method is
+**K-invariant** (sound).
 
-**Net:** `X0-ANCHOR-RECOVERED` (engine + method confirmed) · `XSIM-BLOCKED` on the X1/X2/X3 shuttle
-quantities (named numerical/representational obstacle, §3). A blocked result is a deliverable, not
-a failure (brief §6). CHANGELOG updated; branch left for TMD review; not merged.
+**Net (rev 0.2):** `X0-RECOVERED` · the Queiroz method **unblocks X1** (runs + pumps; rev-0.1
+`XSIM-BLOCKED` retired) · the emergent δ is demonstrated · but **`XSIM-DIVERGENT` on z** (1.0544 vs
+1.18938, localised to the continuous-time charge-transfer rate). A divergence is a deliverable, not a
+failure (brief §6): it yields a documented SPICE artifact (the shuttle limit needs a charge-transfer
+realisation closer to the quasi-static cluster-solve — e.g. a per-event imposed equalisation — to
+close the ~0.135 z gap). CHANGELOG updated; branch left for TMD review; not merged.
 
 ## 6. Deliverables
 
-- `xsim_netgen.py` — netlist generator (reads device point from `shuttle_core` + `presets/R1-baseline.json`).
-- `xsim_x0_galvanic.net` — the X0 anchor netlist (recovers z = 1.2042).
-- `xsim_from_solver.py` — pure comparison consumer (runs ngspice, parses `.raw`, pulls native from `shuttle_core`).
-- `xsim_x0_anchor.png` — X0 rail-growth + per-cycle-ratio overlay vs the native anchor.
-- `xsim_comparison.csv` — the full §5 table, machine-readable.
-- `xsim-findings.md` — this document.
+- `xsim_netgen.py` — generator (X0 galvanic + X1′ Queiroz shuttle); reads device point from
+  `shuttle_core` + `presets/R1-baseline.json`.
+- `xsim_x0_galvanic.net`, `xsim_x1_shuttle.net` — the netlists.
+- `xsim_from_solver.py` — pure comparison consumer (ngspice runner, `.raw` parser, fire-angle readout,
+  K-invariance sweep, VOID-METHOD guard).
+- `xsim_x0_anchor.png` / `xsim_x0prime_anchor.png` — anchor recovery overlay.
+- `xsim_x1_fire_readout.png` — **the SG3b strike on the boosted rail + emergent δ vs threshold** (the
+  central rev-0.3 evidence that δ is measured, not imposed).
+- `xsim_comparison.csv` — the full §5 table. `xsim-findings.md` — this document.

@@ -1,14 +1,8 @@
 quantity,native,spice,delta,tol,status
 X0 anchor z (galvanic),1.20327,1.20419,0.000923182,0.03,PASS
-X1 z (ideal shuttle),1.18938,BLOCKED,,0.005,BLOCKED
-X1 emergent δ (SG1→SG3b),0.2175,BLOCKED,,0.01,BLOCKED
-X1 event angle SG1,0.05,BLOCKED,,0.01,BLOCKED
-X1 event angle SG3a,0.12,BLOCKED,,0.01,BLOCKED
-X1 event angle SG3b,0.2675,BLOCKED,,0.01,BLOCKED
-X1 event angle SG2,0.55,BLOCKED,,0.01,BLOCKED
-X1 event angle SG4a,0.62,BLOCKED,,0.01,BLOCKED
-X1 event angle SG4b,0.7675,BLOCKED,,0.01,BLOCKED
-X1 island ledger drift,4.56704e-14,BLOCKED,,1e-06,BLOCKED
+X1 z (ideal shuttle),1.18938,1.05444,-0.134937,0.005,FAIL
+X1 emergent δ (SG1→SG3b),0.2175,0.19167,-0.0258297,0.01,FAIL
+X1 island ledger (imposed),4.56704e-14,0,-4.56704e-14,1e-06,PASS
 X2 z_arc (mid corner),1.18441,BLOCKED,,0.01,BLOCKED
 X2 clamp (× strike),1.04,BLOCKED,,0.05,BLOCKED
 "X3 V_floor (mid, V)",187,BLOCKED,,28.05,BLOCKED

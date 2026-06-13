@@ -1,0 +1,45 @@
+* xsim X1' — ideal flying-bucket shuttle (Queiroz source-imposed islands; rev 0.3)
+* fire SG3b/SG4b = threshold strike (emergent δ), NOT clocked (addendum §1 firewall)
+.param w=6.28318531e+03 Kc=1.000e+09 Vstr=0.0 gm=1.000e-03
+Vth th 0 PULSE(0 1 0 9.990000e-04 1n 1n 1.000000e-03)
+* rotor caps (charge-defined Q=; pump term native) + fixed strays/transfer caps
+C1v 1 0 Q='(1.600000e-10+8.400000e-10*(0.5*(1+tanh(12.0*sin(w*time)))))*V(1)'
+C2v 4 0 Q='(1.600000e-10+8.400000e-10*(0.5*(1+tanh(12.0*sin(w*time+3.14159265)))))*V(4)'
+Cpar1 1 0 2.000000e-11
+Cpar2 2 0 2.000000e-11
+Cpar3 3 0 2.000000e-11
+Cpar4 4 0 2.000000e-11
+Ca 1 2 1.000000e-10
+Cb 3 4 1.000000e-10
+* Queiroz charge-controlled islands (V=Q/Cx; collapse boost imposed, no stiff Q-node)
+Bc3 c3 0 V='Kc*( (V(th)<0.26)? 1.206000e-09 : ((V(th)<0.44)? (6.600000e-11+1.140000e-09*0.5*(1+cos(3.14159265*(V(th)-0.26)/0.18))) : 1.206000e-09) )'
+Bv3 7 m3 V='V(q3)/V(c3)'
+Vs3 m3 3 0
+Gq3 0 q3 VALUE='Kc*I(Vs3)'
+Cq3 q3 0 1
+Rq3 q3 0 1e15
+Cstab3 7 0 1e-15
+Bc4 c4 0 V='Kc*( (V(th)<0.76)? 1.206000e-09 : ((V(th)<0.94)? (6.600000e-11+1.140000e-09*0.5*(1+cos(3.14159265*(V(th)-0.76)/0.18))) : 1.206000e-09) )'
+Bv4 8 m4 V='V(q4)/V(c4)'
+Vs4 m4 2 0
+Gq4 0 q4 VALUE='Kc*I(Vs4)'
+Cq4 q4 0 1
+Rq4 q4 0 1e15
+Cstab4 8 0 1e-15
+.model GSW SW(vt=0.5 vh=0.2 ron=1 roff=1e9)
+* clocked bidirectional return (clamp) + load (equalize src<->island) gaps
+Bcr1 cr1 0 V='(V(th)>0.05)*(V(th)<0.5)'
+Sret1 2 0 cr1 0 GSW
+Bcr2 cr2 0 V='(V(th)>0.55)*(V(th)<1.0)'
+Sret2 3 0 cr2 0 GSW
+Bcl1 cl1 0 V='(V(th)>0.12)*(V(th)<0.2)'
+Sld1 1 7 cl1 0 GSW
+Bcl2 cl2 0 V='(V(th)>0.62)*(V(th)<0.7)'
+Sld2 4 8 cl2 0 GSW
+* source-imposed threshold fire (emergent angle; eligibility = collapse window)
+Bfr1 7 3 I='(V(th)>0.26)*(V(th)<0.44)*gm*max(0,V(7)-V(3)-Vstr)'
+Bfr2 8 2 I='(V(th)>0.76)*(V(th)<0.94)*gm*max(0,V(8)-V(2)-Vstr)'
+.ic v(1)=-1.0 v(4)=-1.0 v(2)=0 v(3)=0 v(q3)=0 v(q4)=0
+.tran 2.500000e-06 4.500000e-02 uic
+.options reltol=1e-5 abstol=1e-12 vntol=1e-9 gmin=1e-11 maxstep=2.500000e-06
+.end
