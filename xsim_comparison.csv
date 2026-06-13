@@ -3,7 +3,9 @@ X0 anchor z (galvanic),1.20327,1.2033,-4.441e-16,PASS,1.2042,+0.0009232,PASS,0.0
 X1 z (ideal shuttle),1.18938,1.1894,-4.796e-14,PASS,1.0544,-0.1349,FAIL,0.005
 X1 emergent δ (SG1→SG3b),0.2175,0.2175,+0,PASS,0.19167,-0.02583,FAIL,0.01
 X1 island ledger,4.56704e-14,0,-4.567e-14,PASS,0,-4.567e-14,PASS,1e-06
-X2 z_arc (mid corner),1.18441,—,—,BLOCKED,—,—,BLOCKED,0.01
-X2 clamp (× strike),1.04,—,—,BLOCKED,—,—,BLOCKED,0.05
-"X3 V_floor (mid, V)",187,—,—,BLOCKED,—,—,BLOCKED,28.05
-"X3 V_sustain (mid@3000, V)",437,—,—,BLOCKED,—,—,BLOCKED,65.55
+X2 z_arc (opt),1.18877,1.1888,+1.54e-07,PASS,—,—,BLOCKED,0.01
+X2 z_arc (mid),1.18441,1.1844,-6.43e-06,PASS,—,—,BLOCKED,0.01
+X2 z_arc (pess),1.16666,1.1667,+3.552e-07,PASS,—,—,BLOCKED,0.01
+X2 clamp (× strike),1.04,1.0128,-0.02723,PASS,—,—,BLOCKED,0.05
+"X3 V_floor (mid, V)",187,120,-67,FAIL,—,—,BLOCKED,28.05
+"X3 V_sustain (mid@3000, V)",437,160,-277,FAIL,—,—,BLOCKED,65.55
