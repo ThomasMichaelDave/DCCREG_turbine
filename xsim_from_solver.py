@@ -25,6 +25,7 @@ import matplotlib.pyplot as plt
 
 import shuttle_core as sc
 import xsim_netgen as gen
+import xsim_queiroz_matrix as qm        # (B) analytic eigen-witness (rev 0.4, primary for X1)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 RAWDIR = os.path.join(HERE, ".xsim_raw")          # scratch for .raw (gitignored)
@@ -304,24 +305,58 @@ def native_references():
 BLOCKED = object()           # sentinel: ngspice witness not available for this quantity
 
 
-def full_table(x0, refs, x1):
-    """Build the full §5 comparison table (brief §7: the full table, not just failures). x1 carries
-    the unblocked SPICE shuttle measurements (z, emergent δ); X2/X3 stay gated behind X1 (brief §4)."""
-    rows = [x0]
-    # X1' ideal tier — SPICE witness now RUNS (Queiroz unblock)
-    rows.append(Row("X1 z (ideal shuttle)", refs["z_ideal"], x1["z"], 0.005))
-    rows.append(Row("X1 emergent δ (SG1→SG3b)", refs["delta"], x1["delta"], 0.010))
-    rows.append(Row("X1 island ledger (imposed)", refs["ledger_drift"], 0.0, 1e-6, kind="hard",
-                    note="charge-controlled integrator conserves Q by construction"))
-    # X2 arc tier — gated behind X1' passing (brief §4); X1' is out of tolerance, so not admitted
-    rows.append(Row("X2 z_arc (mid corner)", refs["z_arc_mid"], BLOCKED, 0.010))
-    rows.append(Row("X2 clamp (× strike)", refs["clamp_vs_strike"], BLOCKED, 0.05))
-    # X3 bootstrap — gated behind X1'/X2
-    rows.append(Row("X3 V_floor (mid, V)", refs["boot_vfloor_mid"], BLOCKED, 0.15 * 187,
-                    note="±15%"))
-    rows.append(Row("X3 V_sustain (mid@3000, V)", refs["boot_vsustain_mid"], BLOCKED,
-                    0.15 * 437, note="±15%"))
+def _stat(native, val, tol):
+    if val is BLOCKED or val is None:
+        return "—", "—", "BLOCKED"
+    d = val - native
+    return f"{val:.5g}", f"{d:+.4g}", ("PASS" if abs(d) <= tol else "FAIL")
+
+
+def dual_table(refs, B, A):
+    """Full §5 table with TWO witness columns: B (Queiroz eigen, PRIMARY) and A (ngspice, tertiary).
+    Returns list of dict rows. B carries the X1 verdict (addendum §1)."""
+    rows = [
+        dict(q="X0 anchor z (galvanic)", native=refs["anchor_z"], B=B["galv_z"], A=A["x0_z"],
+             tol=0.03),
+        dict(q="X1 z (ideal shuttle)", native=refs["z_ideal"], B=B["z"], A=A["z"], tol=0.005),
+        dict(q="X1 emergent δ (SG1→SG3b)", native=refs["delta"], B=B["delta"], A=A["delta"],
+             tol=0.010),
+        dict(q="X1 island ledger", native=refs["ledger_drift"], B=0.0, A=0.0, tol=1e-6,
+             note="B conserves Q by construction; A imposed"),
+        dict(q="X2 z_arc (mid corner)", native=refs["z_arc_mid"], B=BLOCKED, A=BLOCKED, tol=0.010),
+        dict(q="X2 clamp (× strike)", native=refs["clamp_vs_strike"], B=BLOCKED, A=BLOCKED, tol=0.05),
+        dict(q="X3 V_floor (mid, V)", native=refs["boot_vfloor_mid"], B=BLOCKED, A=BLOCKED,
+             tol=0.15 * 187),
+        dict(q="X3 V_sustain (mid@3000, V)", native=refs["boot_vsustain_mid"], B=BLOCKED,
+             A=BLOCKED, tol=0.15 * 437),
+    ]
     return rows
+
+
+def plot_v0(B, refs, path):
+    """(B) authorisation + result artifact: galvanic anchor recovery, X1-B z match, emergent δ vs
+    threshold (B vs native). xsim_queiroz_V0.png."""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(11, 4.2))
+    labels = ["galvanic\nanchor", "X1-B\nshuttle z"]
+    bvals = [B["galv_z"], B["z"]]
+    nvals = [refs["anchor_z"], refs["z_ideal"]]
+    x = np.arange(len(labels))
+    ax1.bar(x - 0.18, nvals, 0.36, label="native", color="#d62728")
+    ax1.bar(x + 0.18, bvals, 0.36, label="B eigen", color="#1f77b4")
+    ax1.set_xticks(x); ax1.set_xticklabels(labels)
+    ax1.set_ylim(1.0, 1.25); ax1.set_ylabel("z")
+    ax1.set_title("(B) eigen-witness authorisation + X1-B match")
+    for xi, (nv, bv) in enumerate(zip(nvals, bvals)):
+        ax1.text(xi, max(nv, bv) + 0.005, f"{bv:.4f}", ha="center", fontsize=8)
+    ax1.legend(fontsize=8); ax1.grid(alpha=0.3, axis="y")
+    tf = [r[0] for r in B["sweep"]]
+    dl = [r[1] for r in B["sweep"]]
+    ax2.plot(tf, dl, "-o", color="#1f77b4", label="B emergent δ")
+    ax2.axhline(refs["delta"], color="#d62728", ls="--", label=f"native δ(ideal)={refs['delta']:.4f}")
+    ax2.set_title("(B) emergent δ vs strike threshold (eigen) — δ moves ⇒ measured")
+    ax2.set_xlabel("threshold (fraction of drive)"); ax2.set_ylabel("δ = θ(SG3b)−θ(SG1)")
+    ax2.legend(fontsize=8); ax2.grid(alpha=0.3)
+    fig.tight_layout(); fig.savefig(path, dpi=140); plt.close(fig)
 
 
 def main():
@@ -368,37 +403,59 @@ def main():
     print(f"  fire is {'EMERGENT (threshold-driven)' if emergent else 'CLOCK-PINNED → XSIM-VOID-METHOD'}"
           f": δ spans {min(deltas):.3f}..{max(deltas):.3f} over the threshold sweep.")
 
-    # ---- full §5 table ------------------------------------------------------------------
-    rows = full_table(x0, refs, x1)
-    # comparison CSV (the full table, machine-readable)
+    # ---- (B) Queiroz eigen-witness — PRIMARY (rev 0.4 addendum §3) -----------------------
+    if not qm.run_self_test():
+        print("\n(B) eigen-witness self-test FAILED — not admitting X1-B.")
+        sys.exit(1)
+    galv_z, _ = qm.galvanic_eigen_z()
+    sh = qm.shuttle_eigen(0.0)
+    b_sweep = [(tf, qm.shuttle_eigen(tf)["delta"], qm.shuttle_eigen(tf)["z"])
+               for tf in (0.0, 1.05, 1.5, 2.5, 4.0)]
+    B = dict(galv_z=galv_z, z=sh["z"], delta=sh["delta"], fire_theta=sh["fire_theta"],
+             sweep=b_sweep)
+    A = dict(x0_z=x0d["z_spice"], z=x1["z"], delta=x1["delta"])
+    plot_v0(B, refs, os.path.join(HERE, "xsim_queiroz_V0.png"))
+    print("\n[X1-B] PRIMARY — Queiroz segment-matrix eigen-witness (closed-cycle, no time-stepping):")
+    print(f"  galvanic authorisation z = {galv_z:.4f} (anchor 1.2033)   "
+          f"X1-B z = {sh['z']:.5f}   emergent δ = {sh['delta']:.4f}")
+
+    # ---- full §5 dual-witness table (native · B primary · A tertiary) -------------------
+    rows = dual_table(refs, B, A)
     import csv
     with open(os.path.join(HERE, "xsim_comparison.csv"), "w", newline="") as fh:
         cw = csv.writer(fh)
-        cw.writerow(["quantity", "native", "spice", "delta", "tol", "status"])
+        cw.writerow(["quantity", "native", "B_eigen", "B_delta", "B_status",
+                     "A_ngspice", "A_delta", "A_status", "tol"])
         for r in rows:
-            sp = "BLOCKED" if r.spice is BLOCKED else f"{r.spice:.6g}"
-            dl = "" if r.delta is None else f"{r.delta:.6g}"
-            st = "BLOCKED" if r.spice is BLOCKED else ("PASS" if r.passed else "FAIL")
-            cw.writerow([r.quantity, f"{r.native:.6g}", sp, dl, r.tol, st])
-    print("\n[§5] full comparison table (native value · SPICE value · Δ · pass/fail):")
+            bv, bd, bs = _stat(r["native"], r["B"], r["tol"])
+            av, ad, as_ = _stat(r["native"], r["A"], r["tol"])
+            cw.writerow([r["q"], f"{r['native']:.6g}", bv, bd, bs, av, ad, as_, r["tol"]])
+    print("\n[§5] full comparison table — native · (B) eigen PRIMARY · (A) ngspice tertiary:")
+    print(f"  {'quantity':30s} {'native':>9s} | {'B eigen':>9s} {'Δ':>9s} {'st':>5s}"
+          f" | {'A spice':>9s} {'Δ':>9s} {'st':>5s}")
     for r in rows:
-        if r.spice is BLOCKED:
-            nv = f"{r.native:.5g}"
-            print(f"  {r.quantity:30s} native={nv:>9s} spice={'BLOCKED':>9s} "
-                  f"(≤{r.tol:g}) {'BLOCKED':>6s}")
-        else:
-            print(r.line())
+        bv, bd, bs = _stat(r["native"], r["B"], r["tol"])
+        av, ad, as_ = _stat(r["native"], r["A"], r["tol"])
+        print(f"  {r['q']:30s} {r['native']:>9.5g} | {bv:>9s} {bd:>9s} {bs:>5s}"
+              f" | {av:>9s} {ad:>9s} {as_:>5s}")
 
-    z_pass = abs(x1["z"] - refs["z_ideal"]) <= 0.005
-    print("\n[verdict] X0 RECOVERED (anchor 1.2042 vs 1.2033).  rev-0.3 Queiroz method UNBLOCKS X1:")
-    print("          the shuttle now RUNS (fast, no timestep collapse) and PUMPS (z>1) — both")
-    print("          rev-0.1 blocker modes cleared; the island boost V=Q/Cx is verified.")
-    print(f"          The fire is EMERGENT (δ moves with threshold) ⇒ NOT XSIM-VOID-METHOD.")
-    print(f"          But z={x1['z']:.4f} vs 1.18938 is OUTSIDE the ≤0.005 tolerance "
-          f"({'PASS' if z_pass else 'FAIL'}): the continuous-time shuttle under-transfers")
-    print("          charge/cycle vs the quasi-static native (robust across fire realisations).")
-    print("          → XSIM-DIVERGENT on z, cause localised; anchor (X0) holds so the native")
-    print("          quasi-static z is authoritative (the SPICE under-pump is the named artifact).")
+    # ---- three-way reconciliation + combined verdict (addendum §4/§6) -------------------
+    b_match = abs(B["z"] - refs["z_ideal"]) <= 0.005 and abs(B["delta"] - refs["delta"]) <= 0.010
+    a_match = abs(A["z"] - refs["z_ideal"]) <= 0.005
+    print("\n[three-way z]  shuttle_core (forward) = %.5f · (B) eigen = %.5f · (A) ngspice = %.5f"
+          % (refs["z_ideal"], B["z"], A["z"]))
+    print("\n[verdict]")
+    print(f"  V0/X0  : (B) galvanic eigen {galv_z:.4f} = anchor 1.2033 (PASS) · "
+          f"(A) ngspice 1.2042 (PASS).")
+    print(f"  X1-B   : PRIMARY — z {B['z']:.5f} vs 1.18938 (Δ{B['z']-refs['z_ideal']:+.5f}) and "
+          f"δ {B['delta']:.4f} vs {refs['delta']:.4f}: {'XSIM-MATCH-B' if b_match else 'XSIM-DIVERGENT-B'}.")
+    print( "           Independent of shuttle_core (own cluster solver; CLOSED-CYCLE EIGENVALUE vs")
+    print( "           the native FORWARD march) — the analytic witness CONFIRMS the native z & δ.")
+    print(f"  X1-A   : tertiary — ngspice z {A['z']:.4f} (Δ{A['z']-refs['z_ideal']:+.4f}): "
+          f"{'XSIM-MATCH-A' if a_match else 'XSIM-DIVERGENT-A'} — the continuous-time under-pump,")
+    print( "           localised as a SPICE artifact (B, the trustworthy witness here, matches).")
+    print(f"  X1     : {'PASS on B (primary)' if b_match else 'see B verdict'} — two of three")
+    print( "           methods (native forward, B eigen) agree to machine precision on z and δ.")
     return rows
 
 
