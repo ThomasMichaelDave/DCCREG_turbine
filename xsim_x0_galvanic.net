@@ -1,0 +1,27 @@
+* xsim X0 — degenerate galvanic anchor (shuttles -> near-ideal diodes, LR short)
+* must recover z = 1.2033 = reference/doubler_core.py ANCHORS['device']
+.param w=6.28318531e+03
+
+* time-varying rotor caps (charge-defined; parametric V*dC/dt pump term native)
+C1v 1 0 Q='(1.600000e-10+8.400000e-10*(0.5*(1+tanh(12.0*sin(w*time)))))*V(1)'
+C2v 4 0 Q='(1.600000e-10+8.400000e-10*(0.5*(1+tanh(12.0*sin(w*time+3.14159265)))))*V(4)'
+* fixed strays / transfer caps
+Cpar1 1 0 2.000000e-11
+Cpar2 2 0 2.000000e-11
+Cpar3 3 0 2.000000e-11
+Cpar4 4 0 2.000000e-11
+Ca 1 2 1.000000e-10
+Cb 3 4 1.000000e-10
+
+* near-ideal one-way diodes (Vf->0) — a SW switch is bidirectional => no pump [IR]
+.model ND D(is=1e-9 n=0.005 rs=1e-3 cjo=0)
+Dd1 2 0 ND
+Dd2 3 0 ND
+Dd3 1 3 ND
+Dd4 4 2 ND
+
+* seed the down-pumping eigenvector V=[-1,0,0,-1] (brief: galvanic seed)
+.ic v(1)=-1 v(2)=0 v(3)=0 v(4)=-1
+.tran 1.250000e-06 4.800000e-02 uic
+.options reltol=1e-5 abstol=1e-12 vntol=1e-9 gmin=1e-14 maxstep=1.250000e-06
+.end
