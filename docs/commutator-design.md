@@ -130,6 +130,8 @@ vs µs-to-sub-ms arc blow-out — comfortable. **[OC]**
 - **Producer/consumer:** `solveDoubler4` (ideal diode) is the canonical anchor and is never
   edited by this work. A spark-transfer model, if built, is a separate consumer; if it ever
   graduates into `index.html` it gets its own brief.
+- **Design intent [IR]:** HV regime, clamp tiers, and the 5–6 vacuum-glow clamp are locked in
+  `design-intent-lock.md`.
 
 ## 10. Superseded approaches
 
