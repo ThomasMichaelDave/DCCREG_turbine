@@ -200,12 +200,12 @@ The clamp/void decisions add parts the r0.1 layer scheme does not represent. Add
 Bump `varcap-nodeanalysis-layers-r0.x.md` and regenerate the DXF template accordingly, keeping the
 construction/reference and node-map conventions intact.
 
-> **Application status (r0.1):** the layer-scheme additions above are **specified but not yet
-> applied** — the base `varcap-nodeanalysis-layers-r0.1.md` and its DXF-template generator are **not
-> present in this repository** (no copy in the working tree or git history; no DXF tooling). The r0.2
-> bump + DXF regeneration are therefore **pending the base artifacts** and tracked as an open action
-> for TMD (see CHANGELOG). The new-layer names are frozen here so the bump is mechanical once the base
-> file is located.
+> **Application status (r0.2 — APPLIED).** The five layers above are now in the template:
+> `varcap-nodeanalysis-template-r0.2.dxf` (regenerated from the TMD-supplied r0.1 via the pure-additive
+> `varcap-nodeanalysis-template-bump.py`) with the written index `varcap-nodeanalysis-layers-r0.2.md`
+> and a render `varcap-nodeanalysis-template-r0.2.png`. The four firm layers are live; **`CLAMP-SOFT-
+> UPSTREAM` is defined OFF+FROZEN** pending the §6.3/§8 `[OPEN]` upstream-vs-in-void soft-governor
+> decision (name frozen so the choice is a one-flag flip). Existing layers/geometry untouched.
 
 ## 10. One-line summary
 
