@@ -1,0 +1,17 @@
+quantity,placeholder,geometry_r06,note
+C1 min (pF),160,16,
+C1 max (pF),1000,280,
+C2 min (pF),160,16,
+C2 max (pF),1000,280,
+Cx3 min (pF),60,4,
+Cx3 max (pF),1200,88,transfer-cap sizing knob
+Cx4 min (pF),60,4,
+Cx4 max (pF),1200,88,
+Ca (pF),100,309,doubler reservoir
+Cb (pF),100,309,
+C_R (pF),(rail shorted),1477,record only (5-6 rail shorted in the pump)
+Cpar (pF),20,20,
+effective boost (x),17.65,7.33,cx_max/(cx_min+strays); scale-free
+z_pump (ideal 6-node),1.189379,1.207662,THE headline comparison (does the geometry pump?)
+galvanic ceiling z,1.203270,1.334002,each device point's own ceiling; geometry 1.334 ~= chat-side 1.335
+"anchor, Ca/Cb->large",n/a,1.000021,"brief-literal G0: transfer caps short the pump -> ~1.000, not 1.2033"

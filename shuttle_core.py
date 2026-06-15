@@ -34,6 +34,46 @@ CPAR = 20.0
 Z_BASELINE = 1.203               # ANCHORS["device"]; reproduced by the galvanic anchor
 L_RES_UH = 123.0                 # docs/commutator-design.md §2 (TMD-authorised 2026-06-11) [IR]
 
+# ---- device-cap injection hook (additive; geometry-preset consumer) -------- [IR]
+# A SUPPORTED entry point to rebind the frozen device-point scalars above from an
+# external geometry preset (e.g. presets/G1-geometry-r06.json) WITHOUT re-deriving or
+# re-implementing caps_at()/the galvanic map. Defaults capture the constants above, so
+# any caller that never invokes set_device_caps() sees the rev-0.3 device point
+# byte-for-byte (anchor 1.203, --rev03, spark/bootstrap campaigns unchanged).
+# TMD-authorised 2026-06-15 as the one additive change to the frozen solver for the
+# geometry-fed pump run (geom-shuttle-gate); replaces ad-hoc external monkeypatching.
+_DEVICE_DEFAULTS = dict(C1MIN=C1MIN, C1MAX=C1MAX, C2MIN=C2MIN, C2MAX=C2MAX,
+                        CA=CA, CB=CB, CPAR=CPAR)
+
+
+def set_device_caps(**kw):
+    """Rebind the frozen device-point scalars from a preset (pF). Pass only the keys
+    that change (C1MIN/C1MAX/C2MIN/C2MAX/CA/CB/CPAR); None/unknown keys are ignored."""
+    g = globals()
+    for k in _DEVICE_DEFAULTS:
+        v = kw.get(k)
+        if v is not None:
+            g[k] = float(v)
+
+
+def reset_device_caps():
+    """Restore the rev-0.3 frozen device point (the defaults captured at import)."""
+    globals().update(_DEVICE_DEFAULTS)
+
+
+def device_caps_selftest(tol=0.03):
+    """Hook is inert by default and round-trips: reset -> galvanic anchor == Z_BASELINE;
+    set then reset restores every scalar. Returns (ok, info)."""
+    reset_device_caps()
+    ok0, z0 = anchor_test(tol)
+    before = {k: globals()[k] for k in _DEVICE_DEFAULTS}
+    set_device_caps(C1MIN=1.0, C1MAX=2.0, C2MIN=3.0, C2MAX=4.0, CA=5.0, CB=6.0, CPAR=7.0)
+    changed = all(globals()[k] != before[k] for k in _DEVICE_DEFAULTS)
+    reset_device_caps()
+    restored = all(globals()[k] == _DEVICE_DEFAULTS[k] for k in _DEVICE_DEFAULTS)
+    return bool(ok0 and changed and restored), dict(reset_anchor_z=z0, changed=changed,
+                                                    restored=restored)
+
 # ---- shuttle / profile parameters [IR, defaults] -------------------------------
 class Params:
     def __init__(self):
