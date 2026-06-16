@@ -1,0 +1,43 @@
+{
+  "preset": "G3-geometry-v010",
+  "version": "1.0",
+  "date": "2026-06-16",
+  "title": "G3 — v0.10 freeze geometry (12 mm disc; C_R 789 pF)",
+  "description": "Clone of G2-geometry-r2 with the v0.10 freeze C_R revision: the garolite septum disc went 8->12 mm, pinning C_R 960->789 pF at the r387 electrode (f0 637 kHz, Z0 316 ohm). Lowers the single-kick reach floor 108->89 mJ and improves the M2 island-dump match eta 96->99% (648 pF island ~ 789 pF tank). C1/C2 (16/280), Cx (8/648), Ca/Cb (309), Cpar (20) UNCHANGED from G2. G1/G2 NOT mutated (records of the pre-freeze geometries). Consumed by sim/s2recheck_s3_spark.py via Params.cx_min/cx_max (Cx) + set_device_caps (C1/C2/Ca/Cb/Cpar); the tank C_R=789 pF + L_R=79 uH drive the resonator_sim ring. No new hook, no frozen edit.",
+  "params": {
+    "c1min": { "value": 16, "why": "C1 floor (pF): unchanged from G2." },
+    "c1max": { "value": 280, "why": "C1 peak (pF): unchanged from G2; r387, 7.0 mm air." },
+    "c2min": { "value": 16, "why": "C2 floor = C1; unchanged." },
+    "c2max": { "value": 280, "why": "C2 peak = C1; unchanged." },
+    "cx3min": { "value": 8, "why": "Cx3 collapsed (pF): unchanged from G2 (grown island)." },
+    "cx3max": { "value": 648, "why": "Cx3 plateau (pF): unchanged from G2; ~ tank C_R for 99% match." },
+    "cx4min": { "value": 8, "why": "Cx4 = Cx3; unchanged." },
+    "cx4max": { "value": 648, "why": "Cx4 plateau = Cx3; unchanged." },
+    "ca": { "value": 309, "why": "Ca fixed transfer cap (pF): unchanged." },
+    "cb": { "value": 309, "why": "Cb = Ca; unchanged." },
+    "cR": { "value": 789, "why": "C_R rotor-rotor (pF): REVISED 960->789 (12 mm garolite disc at r387; 15 kV/12 mm = 1.25 kV/mm holdoff). RECORD ONLY for the pump (shorts 5-6); sets the S3 ring tank cap -> f0 637 kHz, Z0 316 ohm, reach floor 89 mJ." },
+    "cpar": { "value": 20, "why": "per-node stray (pF): unchanged; solver default CPAR." }
+  },
+  "provenance": {
+    "parent": "G2-geometry-r2.json (not mutated)",
+    "freeze": "varcap design freeze v0.10 (docs/varcap-design-freeze-v0.10.md)",
+    "L_R_uH": 79,
+    "tank": "C_R 789 pF + L_R 79 uH -> f0 637 kHz, Z0 316 ohm (the only change from G2 is the disc 8->12 mm -> C_R 960->789 pF).",
+    "fire_window_kV": "16.6-21 (island fire >=16.6 kV delivers 89 mJ at eta 99%; C1/C2 7 mm air gaps cap the island at ~21 kV)."
+  },
+  "expect": {
+    "c1min": { "value": 16, "tol": 0, "why": "locked; consumer asserts loaded == expect." },
+    "c1max": { "value": 280, "tol": 0, "why": "locked." },
+    "c2min": { "value": 16, "tol": 0, "why": "locked." },
+    "c2max": { "value": 280, "tol": 0, "why": "locked." },
+    "cx3min": { "value": 8, "tol": 0, "why": "locked." },
+    "cx3max": { "value": 648, "tol": 0, "why": "locked." },
+    "cx4min": { "value": 8, "tol": 0, "why": "locked." },
+    "cx4max": { "value": 648, "tol": 0, "why": "locked." },
+    "ca": { "value": 309, "tol": 0, "why": "locked." },
+    "cb": { "value": 309, "tol": 0, "why": "locked." },
+    "cR": { "value": 789, "tol": 0, "why": "locked (record only for the pump; sets the tank)." },
+    "cpar": { "value": 20, "tol": 0, "why": "locked." },
+    "anchorZ": { "value": 1.2033, "tol": 0.03, "why": "G0 degenerate-limit anchor at the G3 caps (= G2/G1; galvanic_z independent of Cx/C_R)." }
+  }
+}
