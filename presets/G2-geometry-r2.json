@@ -1,0 +1,43 @@
+{
+  "preset": "G2-geometry-r2",
+  "version": "1.0",
+  "date": "2026-06-16",
+  "title": "G2 — grown-island geometry (r2 revisions propagated to the pump)",
+  "description": "Clone of G1-geometry-r06 with the resonator-sim-r2 geometry revisions applied so the PUMP runs at the same geometry the tank reach assumes (S2 pump<->tank coupling). Changes from G1: island Cx3/Cx4 grown 4/88 -> 8/648 pF (r_out 232->350, gap 7.6->3 mm, +0.3 mm mica barriers per face); C_R 1477 -> 960 pF (8 mm garolite disc, rotor trimmed to r350; RECORD ONLY - the pump shorts 5-6 so C_R does not feed z); L_R 79 uH (conical) carried as provenance for the S2 ring. C1/C2 (16/280) and Ca/Cb (309) UNCHANGED. G1 is NOT mutated (it remains the record of the pre-revision buildable geometry). Consumed by sim/s2_coupling.py via Params.cx_min/cx_max (Cx) + set_device_caps (C1/C2/Ca/Cb/Cpar); no new hook, no frozen edit.",
+  "params": {
+    "c1min": { "value": 16, "why": "C1 variable floor (pF): unchanged from G1; hub-ring annulus, air, gap 7.0 mm." },
+    "c1max": { "value": 280, "why": "C1 variable peak (pF): unchanged from G1; active band, air, gap 7.0 mm." },
+    "c2min": { "value": 16, "why": "C2 floor = C1; unchanged from G1." },
+    "c2max": { "value": 280, "why": "C2 peak = C1; unchanged from G1." },
+    "cx3min": { "value": 8, "why": "Cx3 island collapsed (pF): grown 4->8 (gap 7.6->3 mm + mica barrier raises the fringe floor)." },
+    "cx3max": { "value": 648, "why": "Cx3 island plateau (pF): grown 88->648 (r_out 232->350, gap 7.6->3 mm, +0.3 mm mica per face) -> now ~ tank C_R for efficient charge-sharing." },
+    "cx4min": { "value": 8, "why": "Cx4 = Cx3 (same 30deg family). Grown floor." },
+    "cx4max": { "value": 648, "why": "Cx4 plateau = Cx3. Grown." },
+    "ca": { "value": 309, "why": "Ca fixed transfer cap (pF): unchanged from G1; mica, gap 4.5 mm." },
+    "cb": { "value": 309, "why": "Cb = Ca; unchanged from G1." },
+    "cR": { "value": 960, "why": "C_R rotor-rotor (pF): revised 1477->960 (8 mm garolite disc, rotor r350). RECORD ONLY: the pump shorts 5-6, so C_R does not feed z; it sets the S2 ring tank cap." },
+    "cpar": { "value": 20, "why": "per-node stray to ground (pF): unchanged from G1; equals solver default CPAR." }
+  },
+  "provenance": {
+    "parent": "G1-geometry-r06.json (not mutated)",
+    "L_R_uH": 79,
+    "L_R_why": "5-6 ring inductance: 36-turn conical bicone loop-sum = 79 uH (r2 R0-confirmed against analytic f0 577.92 kHz). NOT 123 uH (L_RES_UH, stale pre-conical) and NOT 169 uH (cylindrical, falsified). Used by the S2 ring (sim/resonator_sim.py), not by the pump z.",
+    "revisions": "island Cx 4/88->8/648 pF; C_R 1477->960 pF; L_R 79 uH. C1/C2, Ca/Cb, Cpar unchanged.",
+    "boost_note": "boost_ratio = cx_max/(cx_min+strays) jumps with the grown bucket; reported by P1, not asserted here."
+  },
+  "expect": {
+    "c1min": { "value": 16, "tol": 0, "why": "locked input; consumer asserts loaded == expect on load." },
+    "c1max": { "value": 280, "tol": 0, "why": "locked input." },
+    "c2min": { "value": 16, "tol": 0, "why": "locked input." },
+    "c2max": { "value": 280, "tol": 0, "why": "locked input." },
+    "cx3min": { "value": 8, "tol": 0, "why": "locked input (grown)." },
+    "cx3max": { "value": 648, "tol": 0, "why": "locked input (grown)." },
+    "cx4min": { "value": 8, "tol": 0, "why": "locked input (grown)." },
+    "cx4max": { "value": 648, "tol": 0, "why": "locked input (grown)." },
+    "ca": { "value": 309, "tol": 0, "why": "locked input." },
+    "cb": { "value": 309, "tol": 0, "why": "locked input." },
+    "cR": { "value": 960, "tol": 0, "why": "locked input (record only; not consumed by the pump z)." },
+    "cpar": { "value": 20, "tol": 0, "why": "locked input." },
+    "anchorZ": { "value": 1.2033, "tol": 0.03, "why": "G0 degenerate-limit anchor (Ca/Cb -> large, C_R shorted, shuttles -> ideal diodes) must recover the galvanic baseline at the G2 caps." }
+  }
+}
