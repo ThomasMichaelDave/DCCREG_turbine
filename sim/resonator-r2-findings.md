@@ -1,5 +1,12 @@
 # resonator-sim-r2 — findings (r0.2): **TANK-HOLDS-15kV**
 
+> **S2 conditionality update (2026-06-16, routed via TMD):** the parameterised drive is now run through
+> the real pump (`s2-coupling-findings.md`). Under the **M2 island-dump** coupling the pump delivers
+> **124.7 mJ/kick → this `TANK-HOLDS-15kV` STANDS for the eased drive** (the full-drive +25 % headroom
+> below was *paper*). Under the conservative **M1 rail-increment** coupling it delivers 90 mJ → **reach
+> is conditional-unmet** (tank 13.7 kV). The coupling map (M2 vs M1) and the absolute island fire
+> voltage remain TMD/S5 items.
+
 **Verdict:** `TANK-HOLDS-15kV` — the three coordinated geometry changes **close the reach gap** that
 made r0.1 `TANK-UNDERDRIVEN`. The revised tank reaches **18.8 kV (full drive) / 15.4 kV (eased)** —
 both above the softened **15 kV** target at every Q — and the two-tier clamp **holds the tank at
