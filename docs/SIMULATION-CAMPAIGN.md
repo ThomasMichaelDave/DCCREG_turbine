@@ -6,7 +6,11 @@
 > frozen module (`reference/doubler_core.py`, `shuttle_core.py`, `index.html`) was touched to produce it.
 > Mainstream circuit theory / linear algebra / charge conservation only — no DCCREG content.
 
-Generated against the `xsim` branch (head `5e259c3`, rev 0.8). Hashes are short; resolve with `git show`.
+Generated against the `xsim` branch (rev 0.8); **all evidence below is now consolidated onto the
+`sim-evidence-consolidated` branch** (merge of `xsim` + `freeze-v0.10` + `s2recheck-s3-spark` +
+`resonator-accum` + `xcap-duty-sign`, preserving merge history). The originating branch + commit per row
+is retained as **historical provenance** — the hashes still resolve in the merged history. Hashes are
+short; resolve with `git show`.
 
 ---
 
@@ -53,10 +57,17 @@ ancestor of `origin/main`, and it *is* an ancestor of `freeze-v0.10`, `s2recheck
 | **S2 — pump↔tank coupling** | `s2-pump-tank-coupling` | `9d06ff8` | `PUMP-DELIVERS-EASED-ONLY` (M2) / `PUMP-UNDERDELIVERS` (M1) | eased reach real; ~6 % margin the true ceiling | `sim/s2-coupling-findings.md`, `sim/s2_E_deliver.csv`, `sim/s2_coupled_traces.png` |
 | **S3 — reach re-confirm @789 + spark tier** | `s2recheck-s3-spark` | `c1754da` | `REACH-CONFIRMED-789` · `STRIKE-CONFIRMED` · `QUENCH-OK` · `BACKSTOP-CLEAN` · `INTEGRATED-REACH-OK` | 789 pF tank holds; strike 15.5 kV cold (flagged tight) | `sim/s2recheck-s3-findings.md`, `sim/s3_spark.csv`, `sim/s3_spark_traces.png` |
 | **Freeze v0.10** | `freeze-v0.10` | `42797ff` | (snapshot) | C_R 960→789 pF (12 mm disc); 6 gaps placed; fire-gap mount note | `docs/varcap-design-freeze-v0.10.md`, `docs/design-note-SG3b-SG4b-firegap-mount.md` |
+| **4 — resonator accumulator** | `resonator-accum` | `a505339` | `ACCUM-DC-PREFERRED` | DC store ½C_R·V²≈0.38 J usable now; AC/coherent need a kHz-tank redesign (M≈0.06 today) | `resonator-accum-findings.md`, `resonator_accum_routes.csv/png`, `resonator_accum_Mmap.csv/png`, `docs/resonator-battery-hardware.md` |
+| **Screen — d3/d4 duty-sign** | `xcap-duty-sign` | `a8d38eb` | `XCAP-RATCHET-BLOCKED` | same-sign `+` ratchet on D3/D4 ⇒ a 2-terminal series flying cap can't carry it (single-gap Cx closed) | `xcap-duty-sign-findings.md`, `d3_duty_sign_from_solver.py` (+CSV/PNG) |
 
-*Cross-branch note:* Phases 2/3/5/6 artifacts are all present on `xsim` (it descends from that ancestor
-chain). The R/S2/S3 artifacts live on their **sibling** branches off `effcee1` — `xsim` does **not** carry
-them; resolve via the branch named in each row.
+*Consolidation note:* **all rows above are now carried on the single `sim-evidence-consolidated` branch**
+(merge history preserved). The *Branch* + *Head* columns record where each result was **originally**
+produced — historical provenance, and the hashes still resolve in the merged graph. The two `shuttle_core.py`
+producer-side additions (the `set_device_caps` geometry hook from the sim spine, and `resonator-accum`'s
+one-line `jitter_real` / `export_kick_train`) merged as a **non-overlapping union**, both additive and
+inert-by-default; the galvanic anchor re-checks at **z = 1.2033** on the merged tree. `index.html` and
+`reference/doubler_core.py` remain **byte-identical to `effcee1`**. (`resonator-sim` r1, `TANK-UNDERDRIVEN`,
+is intentionally **excluded** — superseded by the r2 row above.)
 
 ---
 
@@ -98,7 +109,7 @@ was measurement loading, not an equation slip.
 `T3 structural (ngspice continuous-time artifact) · V0 CLOSED-LOADED (ideal 1.17138 + loaded 1.1538) ·`
 `SHUTTLE-PUMP-CONFIRMED · spark LOADRETURN-CONDITIONAL/BACKSTOP-CLEAN/SPARK+GLOW-INDETERMINATE ·`
 `BOOT-SEEDED · TANK-HOLDS-15kV · PUMP-DELIVERS-EASED-ONLY · REACH-CONFIRMED-789 · STRIKE-CONFIRMED ·`
-`QUENCH-OK · INTEGRATED-REACH-OK`
+`QUENCH-OK · INTEGRATED-REACH-OK · ACCUM-DC-PREFERRED · XCAP-RATCHET-BLOCKED`
 
 **Caveats preserved (not averaged away):**
 - **X3 pess** ignites only at seed **≥ 1.5×strike** (the `X3-INDETERMINATE`-at-low-seed corner — needs
@@ -108,6 +119,10 @@ was measurement loading, not an equation slip.
 - **STRIKE** clears 15 kV by only ~0.5 kV cold → fire-gap spacing reclassified to bench-tuned/governed
   (freeze §5; `docs/design-note-SG3b-SG4b-firegap-mount.md`).
 - **S2** reach is real only on the **M2/eased** map (~6 % margin); M1 under-delivers.
+- **ACCUM** is `DC-PREFERRED` only — the AC/coherent accumulator routes need a kHz-class tank redesign
+  (M≈0.06 at the present 326 kHz f0); not a green light for incoherent storage as-built.
+- **XCAP** is a **blocking** screen, not a pass — the single-gap Cx proposal is closed on the same-sign
+  duty (escapes: a second gap per island, or a cycle re-derivation).
 
 ---
 
@@ -123,16 +138,20 @@ was measurement loading, not an equation slip.
 
 ---
 
-## 6. Artifact index (by branch)
+## 6. Artifact index (all on `sim-evidence-consolidated`; grouped by originating branch)
 
-- **`xsim` (`5e259c3`)** — `xsim_queiroz_matrix.py` (B witness + Queiroz Fig-1), `xsim_from_solver.py`
+- **witness — orig. `xsim`** — `xsim_queiroz_matrix.py` (B witness + Queiroz Fig-1), `xsim_from_solver.py`
   (A ngspice consumer + §5 table + T3 dt-sweep), `xsim_netgen.py`, `xsim-findings.md`, `xsim_comparison.csv`,
   `xsim_x0/x1/x2/x3_*.png`, `xsim_queiroz_V0.png`, `xsim_dt_sweep.png`; plus the ancestor-phase findings
   (`shuttle-fullsim-findings.md`, `spark-derate-findings.md`, `bootstrap-findings.md`) and their CSV/PNG.
-- **`resonator-sim-r2` (`bd46fb0`)** — `sim/resonator_sim.py`, `sim/resonator-r2-findings.md`, traces/sink.
-- **`s2-pump-tank-coupling` (`9d06ff8`)** — `sim/s2_coupling.py`, `sim/s2-coupling-findings.md`, `presets/G2-geometry-r2.json`.
-- **`s2recheck-s3-spark` (`c1754da`)** — `sim/s2recheck_s3_spark.py`, `sim/s2recheck-s3-findings.md`, `sim/s3_spark.csv/png`, `presets/G3-geometry-v010.json`.
-- **`freeze-v0.10` (`42797ff`)** — `docs/varcap-design-freeze-v0.10.md`, `docs/design-note-SG3b-SG4b-firegap-mount.md`.
+- **resonator tank — orig. `resonator-sim-r2`** — `sim/resonator_sim.py`, `sim/resonator-r2-findings.md`, traces/sink.
+- **pump↔tank — orig. `s2-pump-tank-coupling`** — `sim/s2_coupling.py`, `sim/s2-coupling-findings.md`, `presets/G2-geometry-r2.json`.
+- **reach+spark — orig. `s2recheck-s3-spark`** — `sim/s2recheck_s3_spark.py`, `sim/s2recheck-s3-findings.md`, `sim/s3_spark.csv/png`, `presets/G3-geometry-v010.json`.
+- **freeze docs — orig. `freeze-v0.10`** — `docs/varcap-design-freeze-v0.10.md` (128-line, fire-gap-extended), `docs/design-note-SG3b-SG4b-firegap-mount.md`.
+- **accumulator — orig. `resonator-accum`** — `resonator_accum.py`, `resonator_accum_from_solver.py`, `resonator-accum-findings.md`, `resonator_accum_routes.csv/png`, `resonator_accum_Mmap.csv/png`, `resonator_accum_damping.png`, `docs/resonator-battery-hardware.md`.
+- **duty-sign screen — orig. `xcap-duty-sign`** — `xcap-duty-sign-findings.md`, `d3_duty_sign_from_solver.py` (+CSV/PNG).
+- **geometry chain (carried by the sim track)** — `geom_shuttle_run.py`, `geom-shuttle-findings.md`,
+  `presets/G1-geometry-r06.json`, the `varcap-nodeanalysis-template-r0_6_TMD_layout.dxf`, and this document.
 
-*Provenance-complete:* every scoreboard gate above resolves to a row in §2 with a branch, a commit, and a
-deliverable. No claim without a witness.
+*Provenance-complete:* every scoreboard gate resolves to a row in §2 with an originating branch, a commit,
+and a deliverable now present on the consolidated branch. No claim without a witness.
