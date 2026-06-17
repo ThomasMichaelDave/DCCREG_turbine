@@ -1,0 +1,42 @@
+{
+  "preset": "G1-geometry-r06",
+  "version": "1.0",
+  "date": "2026-06-15",
+  "title": "G1 — geometry-derived caps from DXF r0.6 (Z-stack true-scale)",
+  "description": "First BUILDABLE geometry cap set, extracted from varcap-nodeanalysis-template-r0_6_TMD_layout.dxf via the Z-stack true-scale radii (areas = 6 kept sectors x 30deg annular coverage; gaps/dielectrics read from the dimensioned Z-stack). Replaces the campaign placeholder caps (C1/C2 160/1000, Cx 60/1200, Ca/Cb 100). SCHEMA NOTE: unlike R1-baseline.json (geometry-primary; index.html derives caps via plateCaps()), this preset is consumed by the Python script geom_shuttle_run.py, which has no JS engine, so it carries the RAW caps directly (pF) plus geometry provenance. It is NOT wired into index.html's presetExpectGetters (those five getters are geometry-derived; index.html is untouched/out of scope). Caps inject into the frozen shuttle_core.py via the supported set_device_caps() hook (C1/C2/Ca/Cb/Cpar) and Params.cx_min/cx_max (Cx3/Cx4).",
+  "params": {
+    "c1min": { "value": 16, "why": "C1 variable floor (pF): hub-ring annulus r71-95, continuous always-overlapping; air er 1.0, gap 7.0 mm, band 95-387." },
+    "c1max": { "value": 280, "why": "C1 variable peak (pF): active band r95-387, 6 kept sectors x 30deg; air, gap 7.0 mm." },
+    "c2min": { "value": 16, "why": "C2 floor = C1 (one rotor-driven C(theta); antiphase lives in the stator plates, 30deg apart)." },
+    "c2max": { "value": 280, "why": "C2 peak = C1; band r95-387, air, gap 7.0 mm." },
+    "cx3min": { "value": 4, "why": "Cx3 island collapsed (pF): ~fringe, no dedicated ring on the pickups; air, gap 7.6 mm, band r75-232." },
+    "cx3max": { "value": 88, "why": "Cx3 island plateau (pF): pickup overlap, 6 sectors x 30deg; air, gap 7.6 mm." },
+    "cx4min": { "value": 4, "why": "Cx4 = Cx3 (same 30deg family, no deliberate island offset). Fringe floor." },
+    "cx4max": { "value": 88, "why": "Cx4 plateau = Cx3." },
+    "ca": { "value": 309, "why": "Ca fixed transfer cap (pF): mica er 5.4, gap 4.5 mm, band r110-175." },
+    "cb": { "value": 309, "why": "Cb = Ca (symmetric, as the doubler requires; per TMD section 8 confirm the DXF Z-stack shows only the Ca side shrunk — assume symmetric)." },
+    "cR": { "value": 1477, "why": "C_R rotor-rotor (pF): mica, gap 12.0 mm, band r71-491. RECORD ONLY: the ideal/galvanic pump collapses the 5-6 rail to ground (C_R shorted), so it does not feed z (shuttle_core.py modelling tier; brief G0)." },
+    "cpar": { "value": 20, "why": "per-node stray to ground (pF), standard; equals the solver default CPAR." }
+  },
+  "provenance": {
+    "dxf": "docs/varcap-nodeanalysis-template-r0_6_TMD_layout.dxf",
+    "method": "Z-stack true-scale radii (the only true-scale radial reference; part/concentric views are frame-scaled and must not be used for absolute dimensions). Areas = 6 kept sectors x 30deg annular coverage; gaps and dielectrics read directly from the dimensioned Z-stack.",
+    "phase": "Rotor faces aligned (ND5 == ND6 angularly) -> coherent C_R; C1 and C2 are one rotor-driven C(theta) 30deg apart (antiphase in the stator, not the rotor). Cx3/Cx4 at the same 30deg family with no deliberate offset, so the firing-order lag is NOT pre-encoded as an island offset (see geom_shuttle_run G3)."
+  },
+  "expect": {
+    "c1min": { "value": 16, "tol": 0, "why": "locked input; consumer asserts loaded == expect on load." },
+    "c1max": { "value": 280, "tol": 0, "why": "locked input." },
+    "c2min": { "value": 16, "tol": 0, "why": "locked input." },
+    "c2max": { "value": 280, "tol": 0, "why": "locked input." },
+    "cx3min": { "value": 4, "tol": 0, "why": "locked input." },
+    "cx3max": { "value": 88, "tol": 0, "why": "locked input." },
+    "cx4min": { "value": 4, "tol": 0, "why": "locked input." },
+    "cx4max": { "value": 88, "tol": 0, "why": "locked input." },
+    "ca": { "value": 309, "tol": 0, "why": "locked input." },
+    "cb": { "value": 309, "tol": 0, "why": "locked input." },
+    "cR": { "value": 1477, "tol": 0, "why": "locked input (record only; not consumed by the pump)." },
+    "cpar": { "value": 20, "tol": 0, "why": "locked input." },
+    "anchorZ": { "value": 1.2033, "tol": 0.03, "why": "G0 degenerate-limit anchor (Ca/Cb -> large, C_R shorted, shuttles -> ideal diodes) must recover the galvanic baseline at the geometry C1/C2 caps." },
+    "placeholderZ": { "value": 1.189, "tol": 0.02, "why": "campaign placeholder-cap ideal z_shuttle (Z_IDEAL 1.1893791) — the G1 comparison baseline." }
+  }
+}
