@@ -1,8 +1,9 @@
-# xsim — findings (Phase 6, rev 0.5): **X1-B · X2-B XSIM-MATCH (analytic) · X3-B STRUCTURE + X3-PASS · T3 DT-PLATEAU**
+# xsim — findings (Phase 6, rev 0.8): **V0 CLOSED-LOADED · X1-B · X2-B XSIM-MATCH · X3-B STRUCTURE + X3-PASS · T3 DT-PLATEAU**
 
-**Verdict line:** `V0-SECONDARY-RESIDUAL` (auth on galvanic anchor; **rev 0.7: his full analysis
-eqs 15–22 recovered from `analysis.doc` + implemented faithfully (matches his eq 21 to 1e-5), but
-yields z=1.372 vs his stated 1.1538 — ~1% residual, 1.1538 unreachable across closures**) ·
+**Verdict line:** `V0-SECONDARY-CLOSED-LOADED` (auth on galvanic anchor; **rev 0.8: his full analysis
+eqs 15–22 recovered from `analysis.doc` + implemented faithfully (matches his eq 21 to 1e-5);
+reproduces de Queiroz at BOTH his ideal point (√z=1.17138) AND his Fig-6 loaded point (z=1.1538, the
+82 pF measurement divider) — the residual was measurement loading, not an eq-21 slip — full external PASS**) ·
 `X1-B XSIM-MATCH-B` ·
 `X2-B XSIM-MATCH-B (3 corners)` · `X3-B STRUCTURE-CONFIRMED` + `X3-PASS (opt/mid) / X3-PASS-CONDITIONAL
 (pess, ign≥1.5×strike)` — the BOOT-SEEDED startup composes onto the **ideal** asymptote z=1.18938 ·
@@ -25,12 +26,12 @@ eigen-witness to the arc (X2) and bootstrap (X3) tiers (T2), and a ngspice times
 
 ---
 
-## T1 — Queiroz Fig-1 method self-test → **V0-SECONDARY-OPEN** (now sharply localized, rev 0.6)
+## T1 — Queiroz Fig-1 cross-check → **V0-SECONDARY-CLOSED-LOADED** (rev 0.8)
 
 The shared Newton engine `_newton_zab` is built and **unit-checked** (recovers √2 from a 2-var
-system; it drives the X2 limit cycle). The Fig-1 reproduction is still **OPEN**, but **rev 0.6 closed
-almost all of the gap**: TMD supplied **`analysis.doc`** (de Queiroz, *Analysis of Electronic
-Electrostatic Generators*) — a binary OLE2 Word doc with embedded MathType. Parsing it in-repo (a
+system; it drives the X2 limit cycle). **rev 0.6** recovered the method/topology: TMD supplied
+**`analysis.doc`** (de Queiroz, *Analysis of Electronic Electrostatic Generators*) — a binary OLE2 Word
+doc with embedded MathType. Parsing it in-repo (a
 from-scratch compound-file reader; the body text extracted from the `WordDocument` stream; **Fig-1
 recovered by rendering its embedded WMF metafile**) recovered his method, topology, and the full
 segment structure:
@@ -42,32 +43,40 @@ segment structure:
 - **TOPOLOGY (Fig-1)** = **our galvanic doubler**: nodes 1,2,3,4; **C1(1-0), C2(4-0) VARIABLE 60↔360**;
   **Ca(1-2) = Cb(3-4) = 330 FIXED**; diodes **D1(2-0), D2(3-0), D3(1-3), D4(4-2)**. Rotor law
   **complementary-linear** (C1 + C2 = Cmin + Cmax = 420 pF). α = Cmax/Cmin = 6, β = Ca/Cmin = 5.5.
-- **WHY 1.326 ≠ 1.1538** (the actual resolution): his Fig-1 half-cycle is **THREE non-overlapping
-  segments** (the diodes conduct *separately*), not the 2-phase "both diodes at once" idealization the
-  galvanic eigenmap uses. The 2-phase map **over-pumps** to **1.3261** (exact, confirmed); his refined
-  non-overlapping sequence lowers it to **1.1538**. Segment restrictions (now contextualized by his
-  text): seg1 e31=e11 → e3x=0; seg2 e4y=e2y; seg3 e3y=0 **with D1 not conducting**. His own measured
-  curves read **~1.08**, below 1.1538, "due to unaccounted losses."
+- **The two operating points** (the actual resolution): de Queiroz reports **two** numbers, and the
+  witness reproduces **both**. His **ideal** Newton result is **√z = 1.17138 / z = 1.372** — and our
+  faithful implementation gives exactly that. His **1.1538** is the **Fig-6 *measurement-loaded*
+  prediction**, not the ideal: he states e1,e4 are read through **82 pF–470 nF capacitive dividers** so
+  "Cmin is then ~60+82 pF". (The 2-phase galvanic eigenmap's 1.3261 is a *separate*, coarser
+  idealization — distinct from his actual 3-segment ideal 1.372.)
 
-**rev 0.7 — full implementation, residual found.** TMD then supplied screenshots of his **eqs 15, 16,
-17, 18, 21, 22** (the segment matrices, the explicit half-cycle map, and the eigenvalue closure). His
-analysis is now **implemented end-to-end** (`_queiroz_fig1_z`): the three segment charge-conservation
-solves with his restrictions, the complementary-linear rotor, and his closure **eq 15**
-([e22,e32,e12]=√z·[e11,e21,e41]) / **eq 22** (Newton on [z,a,b]). The implementation is **faithful** —
-an independent matrix-forward of eqs 16–18 reproduces his closed-form **eq 21 to ~1×10⁻⁵** at arbitrary
-inputs (two independent constructions agree), and eq 16's matrix re-confirms the topology exactly.
+**rev 0.7 — full implementation.** TMD supplied screenshots of his **eqs 15, 16, 17, 18, 21, 22** (the
+segment matrices, the explicit half-cycle map, the eigenvalue closure). His analysis is **implemented
+end-to-end** (`_queiroz_fig1_z`): the three segment charge-conservation solves with his restrictions,
+the complementary-linear rotor, and his closure **eq 15** ([e22,e32,e12]=√z·[e11,e21,e41]) / **eq 22**
+(Newton on [z,a,b]). **Faithful** — an independent matrix-forward of eqs 16–18 reproduces his closed-form
+**eq 21 to ~1×10⁻⁵** at arbitrary inputs (two independent constructions agree), and eq 16's matrix
+re-confirms the topology exactly. At α=6, β=5.5 it returns **z = 1.372 / √z = 1.17138** = his **ideal**.
 
-**The residual:** the faithful eigenvalue is **z ≈ 1.372** (half-cycle factor 1.1714), **not his stated
-1.1538**. An exhaustive root scan (both √-branches, all closure permutations, {w, w²}) yields only
-{0.405, 1.372, 1.898} — **1.1538 is not reachable** from the transcribed equations. So a **~1%
-residual** stands (`V0-SECONDARY-RESIDUAL`), most plausibly a single-coefficient slip in the long
-hand-transcribed eq 21, or a rotor-law/segment subtlety the doc doesn't pin. Notably the residual is
-between his published *equations* and his published *number* — the implementation matches his eq 21,
-which itself yields 1.372. **This is reported as an honest residual, not buried**: method confirmed
-(it IS the (B) eigenvalue-of-M construction), topology confirmed (our galvanic doubler), but the exact
-external number is not reproduced. **X1-B's authorisation stands on the in-repo galvanic anchor
-(eigen z = 1.2033, Δ = −4×10⁻¹⁶, exact)** — robust regardless; this is a side method-fidelity check,
-not a witness gate.
+**rev 0.8 — V0-SECONDARY-CLOSED-LOADED.** The rev-0.6 "non-overlapping → 1.1538" had mislabeled his
+*loaded* number as the ideal-sequence result; the rev-0.7 implementation returning 1.372 was the tell.
+Re-running the **same Newton** with the 82 pF divider modelled as a fixed capacitance on the measured
+variable caps (nodes 1,4 swing **142↔442 pF**, Ca=Cb=330) gives **z = 1.07414² = 1.15378 ≈ 1.1538**
+(4 digits) — the residual **is the measurement loading, not an eq-21 coefficient slip**.
+
+| Point | params | √z (half) | z | de Queiroz |
+|---|---|---|---|---|
+| **Ideal** | α=6, β=5.5 (60↔360) | 1.17140 | 1.37218 | his ideal **√z=1.17138** ✓ |
+| **Loaded** (Fig-6, +82 pF) | 142↔442, Ca=330 | 1.07414 | **1.15378** | his Fig-6 **1.1538** ✓ |
+| Sensitivity (+82 on min only) | 142↔360, Ca=330 | 1.03928 | 1.08010 | ≈ his **measured ~1.08** |
+
+So V0-secondary **CLOSES**: the witness reproduces de Queiroz at **both** his ideal point (1.17138) **and**
+his loaded experimental point (1.1538), with the 82 pF divider as the documented difference (the further
+drop to his *measured* ~1.08 is the resistive 10 MΩ probe leak, excluded from this lossless prediction).
+**Method confirmed** (it IS the (B) eigenvalue-of-M construction), **topology confirmed** (our galvanic
+doubler). **X1-B's authorisation independently stands on the in-repo galvanic anchor (eigen z = 1.2033,
+Δ = −4×10⁻¹⁶, exact)** — robust regardless; this external check is now a **full external PASS**, not a
+witness gate.
 
 ## X1-B — ideal shuttle (rev 0.4, carried) → **XSIM-MATCH-B**
 
@@ -183,8 +192,9 @@ now **T3-confirmed structural**.
 
 ## Verdict (per-witness + combined)
 
-- **V0-secondary: `V0-SECONDARY-OPEN`** — Fig-1 not reproduced (topology underdetermined +
-  unfetchable); X1-B auth on the galvanic anchor (exact).
+- **V0-secondary: `V0-SECONDARY-CLOSED-LOADED`** — Fig-1 reproduced at BOTH de Queiroz's ideal point
+  (√z=1.17138/z=1.372) AND his Fig-6 loaded point (z=1.1538, the 82 pF measurement divider); full
+  external PASS. X1-B auth independently on the galvanic anchor (exact).
 - **X1-B: `XSIM-MATCH-B`**; **X2-B: `XSIM-MATCH-B`** (3 corners, machine precision) — load-bearing
   confirmations of the native ideal and spark tiers by an independent analytic witness.
 - **X3-B: `STRUCTURE-CONFIRMED`** (ordering/direction/pess; magnitudes softer, flagged) **+ `X3-PASS`
