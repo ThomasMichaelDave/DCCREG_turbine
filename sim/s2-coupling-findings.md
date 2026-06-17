@@ -1,5 +1,11 @@
 # s2-coupling — findings (r0.1): **PUMP-DELIVERS-EASED-ONLY** (M2) / **PUMP-UNDERDELIVERS** (M1)
 
+> **Fire-gap conditionality CLOSED at v0.10 / 789 pF (2026-06-16, `s2recheck-s3-findings.md`):** the
+> scale-sensitive island-fire-voltage caveat is resolved — at C_R 789 pF the drafted SG3b/SG4b fire gap
+> strikes the island at **17.2 kV** (in the 16.6–21 kV window) → η 99 % → **94 mJ > 89 mJ floor** → the
+> integrated pump→gap→tank→clamp chain holds 15 kV (M2). Reach confirmed with (tight) margin; recommend
+> opening the gap to ~6 mm. M1 remains the conservative bound.
+
 **Verdict (map-dependent):** the real pump's per-cycle delivery to the 5–6 tank **brackets the 108 mJ
 reach floor**, so the coupling-map choice flips the reach. Under **M2 (island-dump**, the migration-doc
 reading) the pump delivers **124.7 mJ → `PUMP-DELIVERS-EASED-ONLY`** (tank reaches 16.1 kV, the two-tier
