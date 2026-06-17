@@ -64,17 +64,41 @@ Air-breakdown gradient: **3.0 kV/mm** sphere-gap (bench-calibrate vs IEC 60052).
 | SG1 | node 2 → rail | 3.00° | C1/Ca disc | ~5–6 mm | 12 mm W-Cu sphere | **placed** |
 | SG2 | node 3 → rail | 33.00° | C2/Cb disc | ~5–6 mm | 12 mm sphere | **placed** |
 | SG3a | node 1 → bar | 7.20° | ~r340–350 | ~4.5–5 mm | 12 mm sphere | **placed** |
-| SG3b | bar → node 3 (FIRE) | 16.05° | outer ~r340–350 | ~5.5 mm* | 12 mm sphere | **placed** |
+| SG3b | bar → node 3 (FIRE) | 16.05° | outer ~r340–350 | **adj.** ~5.3–6.4 mm* | 12 mm W-Cu sphere, wired + governed | **placed** |
 | SG4a | node 4 → bar | 37.20° | ~r340–350 | ~4.5–5 mm | 12 mm sphere | **placed** |
-| SG4b | bar → node 2 (FIRE) | 46.05° | outer ~r340–350 | ~5.5 mm* | 12 mm sphere | **placed** |
+| SG4b | bar → node 2 (FIRE) | 46.05° | outer ~r340–350 | **adj.** ~5.3–6.4 mm* | 12 mm W-Cu sphere, wired + governed | **placed** |
 | BS3 | backstop (misfire) | **19.0°** | outer ~r350–380 | 0.6× strike | 20–30 mm smooth | **TODO** |
 | BS4 | backstop (misfire) | **49.0°** | outer ~r350–380 | 0.6× strike | 20–30 mm smooth | **TODO** |
 | Governor | clamp (upstream/island) | — | island side | — | smooth, 15 kV | [IR] |
 | Crowbar | clamp (last resort) | — | 5–6 void | — | smooth hollow sphere, 16 kV | [IR] |
 
-*Fire-gap spacing relaxes with the wider window: SG3b/SG4b strike target ~16.6–20 kV island → ~5.3–6.4 mm.
-Load/return spacings still need the pump's absolute node voltages. Radial bands governed by **quench** (push
-outboard), bounded by the island r350. Timing: 30° SG3↔SG4 stator offset; 12-sector grid @30°; 6 bars/set.
+*Fire-gap spacing is **no longer a frozen number** — it is reclassified to an **adjustable, bench-tuned
+`[IR]`** electrode (set vs IEC 60052, locked with a jam-nut, adjusted along the gap normal so spacing and
+firing angle stay independent). S3 found the 5.5 mm draft clears 15 kV by only ~0.5 kV cold, right where the
+linear 3 kV/mm strike model starts to roll off; the spacing must be tuned on the bench, not committed in the
+DXF. Strike target ~16.6–20 kV island → ~5.3–6.4 mm. Load/return spacings still need the pump's absolute node
+voltages. Radial bands governed by **quench** (push outboard), bounded by the island r350. Timing: 30°
+SG3↔SG4 stator offset; 12-sector grid @30°; 6 bars/set.
+
+**Fire-gap mount — adjustable + RPM-governed `[IR]`** (sub-assembly; see
+`docs/design-note-SG3b-SG4b-firegap-mount.md`). The fire gap is the machine's voltage relief valve
+(`V_strike` *is* the operating ceiling), and both electrodes sit on counter-rotating bodies — there is no
+centrifugally-quiet side, so the design axis is **rigid vs compliant mount**, not rotor vs stator. The gap
+gets two electrodes: an **outboard set-point** electrode (W-Cu sphere, wired to its node, on a **rigid**
+garolite arm with a Macor/alumina arc collar — RPM-stable bench datum), and an **inboard governor** electrode
+(W-Cu sphere on a **compliant flexure**) whose centrifugal deflection walks it radially *inward* so the gap
+**closes** with overspeed → `V_strike` falls → pumping throttles. Force scales on **ground RPM = relative/2**
+(`F_c ≈ 11–12 kgf` for a 12 mm W-Cu sphere at r≈350 mm, 1500 rpm ground — a 4× correction vs treating the
+relative/commutation rate as ground speed); since `F_c ∝ Ω²` and power `∝ V_strike²·PRF`, the throttle is
+strong above the knee — a passive protective limiter. Set the flexure knee **above** operating speed (idle in
+normal running). Constraints `[IR]`: **fail-safe-wide** (a fatigued flexure must open the gap, never stick it
+closed → no low-V runaway); **per-body flexure matching** (symmetric iris, CG centred — now a rotordynamic
+spec on **two** contra-rotating bodies); flexure preferred over sliding spring (no stiction, fatigue-ratable);
+Macor collar near the tip, garolite structural-run only; **tight, short fire loop** — loop inductance fights
+the blow-out and the quench margin is only ~1.67× at the pessimistic recovery corner `[OC]`; label every
+governor number **ground vs relative** RPM (a silent factor of 2); verify fire-recoil doesn't ring the ~1 kHz
+flexure between shots (`[OC]`, measure). Quench is **preserved/improved** — motion-quench runs on the relative
+sweep (2Ω·r), and contra-rotation doubles the separation speed vs a fixed stator `[OC]`.
 
 ## 6. Materials
 
@@ -85,7 +109,12 @@ barriers: mica. Coil: copper 3/1 mm capillary. Quench: radial forced-air impelle
 ## 7. Freeze status
 
 - **Frozen / validated:** node map, cap geometry & values, **C_R = 789 pF pinned (12 mm disc)**, resonator
-  C_R∥L_R, pump z, firing-station angles, 6 spark gaps placed, clamp architecture, materials.
+  C_R∥L_R, pump z, firing-station angles, 6 spark gaps placed, clamp architecture, materials. Reach (η,
+  floor), pump z, the cap set, and the quench verdict are **unchanged** by the fire-gap mount note.
+- **Reclassified (§5):** SG3b/SG4b **fire-gap spacing** is now an **adjustable, bench-tuned `[IR]`** electrode
+  (set vs IEC 60052, locked), with an added **RPM-governed fire-gap mount** sub-assembly — rigid wired
+  set-point (outboard) + centrifugal flexure governor (inboard); see
+  `docs/design-note-SG3b-SG4b-firegap-mount.md`. Pending mechanical consolidation/feasibility by TMD.
 - **Open before a *permanent* freeze:** (a) BS3/BS4 backstop markers + electrode geometry (§5); (b) one
   combined sim pass — re-confirm S2 reach at C_R = 789 pF (entry gate), then S3 spark tier at the real gaps
   (strike / quench / integrated reach).
@@ -94,5 +123,6 @@ barriers: mica. Coil: copper 3/1 mm capillary. Quench: radial forced-air impelle
 
 ## 8. Artifacts
 
-`varcap-nodeanalysis-template-r0_10_TMD_layout.dxf` · this document · the S2 coupling findings/code · the
-gap-hardware spec.
+`varcap-nodeanalysis-template-r0_10_TMD_layout.dxf` · this document ·
+`docs/design-note-SG3b-SG4b-firegap-mount.md` (fire-gap mount: adjustable + RPM-governed) · the S2 coupling
+findings/code · the gap-hardware spec.
