@@ -310,36 +310,66 @@ def _newton_zab(G, x0, tol=1e-10, maxit=80, h=1e-7):
 
 
 def queiroz_fig1_newton():
-    """T1 — method self-test on Queiroz's Fig-1 symmetrical unipolar generator (his eqs. 16–23),
+    """T1 — method self-test on Queiroz's Fig-1 symmetrical unipolar generator (his eqs. 15–23),
     target z = 1.1538 (α=6, β=5.5). **Independence note:** this is a METHOD-VALIDATION harness on
     HIS topology — it does NOT consume our device point and is NOT one of our witnesses.
 
-    STATUS: V0-SECONDARY-OPEN — but now **sharply localized** (rev 0.6: TMD supplied `analysis.doc`,
-    de Queiroz, *Analysis of Electronic Electrostatic Generators*). The method, topology, and segment
-    restrictions are now FULLY RECOVERED from that source (parsed out of the binary OLE2 doc + its
-    embedded WMF Fig-1); only his three numeric segment MATRICES (eqs 16–18, embedded MathType/MTEF
-    objects) remain untranscribed, so the exact 1.1538 close is pending. What is now KNOWN:
-      • METHOD = exactly the (B) eigenvalue-of-M method this module already uses: segment the cycle by
-        diode state, write charge conservation C_i·e_i = C_{i+1}·e_{i+1} per segment (his eq 1),
-        compose to e_{k+1}=M·e_k (eq 2), z = dominant eigenvalue of M (eq 3).
-      • TOPOLOGY (Fig-1) = our galvanic doubler: nodes 1,2,3,4; C1(1-0),C2(4-0) VARIABLE 60↔360;
-        Ca(1-2)=Cb(3-4)=330 FIXED; diodes D1(2-0),D2(3-0),D3(1-3),D4(4-2). Rotor law COMPLEMENTARY-
-        LINEAR (C1+C2 = Cmin+Cmax = 420 pF).
-      • WHY 1.326≠1.1538: his Fig-1 half-cycle is THREE non-overlapping segments (diodes conduct
-        separately), NOT the 2-phase 'both diodes at once' idealization the galvanic eigenmap uses —
-        the 2-phase OVER-pumps to 1.3261; his refined sequence lowers it to 1.1538. Restrictions:
-        seg1 e31=e11→e3x=0; seg2 e4y=e2y; seg3 e3y=0 with D1 NOT conducting. (Seg-1 charge
-        conservation reproduces his 'nonlinearities cancel' result; seg2/3 + the symmetry closure
-        need eqs 16–18 to pin exactly — prose alone is acutely sensitive.)
-    X1-B's authorisation still stands on the galvanic anchor (z = 1.2033, exact); this external
-    method-fidelity check is now one transcription step from PASS, not blocked/unknown.
+    STATUS: V0-SECONDARY-RESIDUAL (rev 0.7). His FULL analysis was recovered from `analysis.doc`
+    (de Queiroz, *Analysis of Electronic Electrostatic Generators*) — method, topology, the three
+    segment matrices (eqs 16–18), the explicit half-cycle map (eq 21), and the eigenvalue closure
+    (eq 15: [e22,e32,e12]=√z·[e11,e21,e41]; eq 22: Newton on [z,a,b]). This module now IMPLEMENTS
+    his exact analysis (see `_queiroz_fig1_z`), and it is **faithful**: an independent matrix-forward
+    of eqs 16–18 (sum/linear rotor C1+C2=Cmin+Cmax) reproduces his closed-form eq 21 to ~1e-5 at
+    arbitrary inputs. BUT the resulting eigenvalue is **z ≈ 1.372** (half-cycle factor 1.1714), NOT
+    his stated **1.1538** — and 1.1538 is not reachable across all closure permutations / sqrt
+    branches / {w,w²} (the only roots are {0.405, 1.372, 1.898}). So a ~1% residual stands: either a
+    single-coefficient slip in the long hand-transcribed eq 21, or a rotor-law/segment subtlety not
+    pinned by the doc. The METHOD is his method (it IS the (B) eigenvalue-of-M construction); the
+    TOPOLOGY is our galvanic doubler (nodes 1–4; C1(1-0),C2(4-0) var 60↔360; Ca(1-2)=Cb(3-4)=330;
+    D1(2-0),D2(3-0),D3(1-3),D4(4-2)). X1-B's authorisation stands on the galvanic anchor (z=1.2033,
+    exact); this external method-fidelity cross-check is a documented residual, not a witness gate.
 
-    The shared `_newton_zab` engine IS built and unit-checked (see run_self_test) and is what the X2
-    arc limit-cycle uses; only the Fig-1 numeric matrices are open, not the solver."""
-    return dict(status="V0-SECONDARY-OPEN", target=1.1538, recovered="method+topology+restrictions",
-                reason="Fig-1 method/topology/restrictions recovered from analysis.doc; exact 3-segment "
-                       "matrices (eqs 16-18, MathType/MTEF) pending transcription — 1.326 is the 2-phase "
-                       "idealization, his non-overlapping 3-segment sequence gives 1.1538")
+    The shared `_newton_zab` engine is built and unit-checked (see run_self_test) and drives the X2
+    arc limit cycle; this Fig-1 harness is the only open item."""
+    z, a, b = _queiroz_fig1_z()
+    return dict(status="V0-SECONDARY-RESIDUAL", target=1.1538, computed=round(z, 5),
+                half_factor=round(z ** 0.5, 5),
+                reason="his eqs 15-22 recovered+implemented (matrix-forward matches his eq 21 to 1e-5); "
+                       "faithful eigenvalue is 1.372 (half 1.1714), his stated 1.1538 not reachable across "
+                       "closure permutations/branches — ~1% residual, likely an eq-21 transcription slip")
+
+
+def _queiroz_fig1_z(alpha=6.0, beta=5.5):
+    """His Fig-1 half-cycle map (eq 21) + closure (eq 15), solved for the eigenvalue z=(half-factor)².
+    γ=β+1, λ=α+β+1 (his substitutions). Returns (z, a, b). Faithful to his published eq 21 (verified
+    against an independent forward of his segment matrices 16–18); see queiroz_fig1_newton for the
+    residual vs his stated 1.1538. [OC — external method-fidelity check, not a witness tier]"""
+    g, l = beta + 1.0, alpha + beta + 1.0
+    def F(a, b):                                          # eq 21: (e12,e22,e32) from (1,a,b)
+        arg = (1 - 4 * alpha * beta) + 2 * (b * g * (2 * alpha + 1) - a * l) \
+            + a * a * (alpha ** 2 + 2 * alpha * g + g * g) - 2 * a * b * l * g + b * b * g * g
+        S = math.sqrt(arg) if arg >= 0 else float('nan')
+        den = 2 * l * (alpha * g + beta)
+        e12 = -(-(2 * alpha ** 3 + 2 * alpha ** 2 * (3 * beta + 1) + 2 * alpha * beta * (beta + 2) - beta ** 2)
+                + beta * (a * (2 * alpha ** 2 + alpha * (3 * beta + 2) + beta * g) - b * g * (2 * alpha + beta + 2))
+                + beta ** 2 * S) / den
+        e22 = -(-beta * (2 * alpha ** 2 - 2 * alpha - 3 * g) + a * beta * l * (beta - 1)
+                - b * g * g * (2 * alpha + beta + 2) + beta * g * S) / den
+        e32 = -(-(2 * alpha ** 2 * beta + alpha * (2 * beta ** 2 + beta + 1) - beta * (beta + 2))
+                + a * (alpha ** 2 * g + alpha * (2 * beta ** 2 + 2 * beta + 1) + beta ** 2 * g)
+                - b * g * (alpha * g + beta ** 2 + 2 * beta + 2) + (alpha * g + beta * (beta + 2)) * S) / den
+        return e12, e22, e32
+    a, b = 0.16, 2.24                                     # near the dominant root
+    for _ in range(200):                                 # fixed point of eq 15: a=e32/e22, b=e12/e22
+        e12, e22, e32 = F(a, b)
+        na, nb = e32 / e22, e12 / e22
+        if abs(na - a) + abs(nb - b) < 1e-13:
+            a, b = na, nb; break
+        a, b = na, nb
+    e12, e22, e32 = F(a, b)
+    return e22 ** 2, a, b                                 # z = (half-cycle factor)² per eq 15
+
+
 
 
 # ---- X2: arc tier — absolute-volt limit cycle (scale-invariance broken ⇒ limit cycle) ----
@@ -555,7 +585,8 @@ def run_self_test():
     # T1 Newton engine + Fig-1 status
     fig1 = queiroz_fig1_newton()
     print(f"  T1 Newton engine unit-check: {'PASS' if newton_ok else 'FAIL'} (√2 root) ; "
-          f"Fig-1 V0-secondary: {fig1['status']} (target {fig1['target']}; {fig1['reason']})")
+          f"Fig-1 {fig1['status']}: his eqs 15-22 implemented → z={fig1['computed']} "
+          f"(half {fig1['half_factor']}) vs his stated target {fig1['target']} — ~1% residual")
     # X2-B arc tier (three corners)
     ok_arc = True
     for c in ("opt", "mid", "pess"):

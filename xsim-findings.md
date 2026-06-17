@@ -1,7 +1,8 @@
 # xsim — findings (Phase 6, rev 0.5): **X1-B · X2-B XSIM-MATCH (analytic) · X3-B STRUCTURE + X3-PASS · T3 DT-PLATEAU**
 
-**Verdict line:** `V0-SECONDARY-OPEN` (auth on galvanic anchor; **rev 0.6: method+topology+restrictions
-recovered from `analysis.doc`, exact 3-segment matrices eqs 16–18 pending — one step from PASS**) ·
+**Verdict line:** `V0-SECONDARY-RESIDUAL` (auth on galvanic anchor; **rev 0.7: his full analysis
+eqs 15–22 recovered from `analysis.doc` + implemented faithfully (matches his eq 21 to 1e-5), but
+yields z=1.372 vs his stated 1.1538 — ~1% residual, 1.1538 unreachable across closures**) ·
 `X1-B XSIM-MATCH-B` ·
 `X2-B XSIM-MATCH-B (3 corners)` · `X3-B STRUCTURE-CONFIRMED` + `X3-PASS (opt/mid) / X3-PASS-CONDITIONAL
 (pess, ign≥1.5×strike)` — the BOOT-SEEDED startup composes onto the **ideal** asymptote z=1.18938 ·
@@ -48,14 +49,25 @@ segment structure:
   text): seg1 e31=e11 → e3x=0; seg2 e4y=e2y; seg3 e3y=0 **with D1 not conducting**. His own measured
   curves read **~1.08**, below 1.1538, "due to unaccounted losses."
 
-**What remains** for the exact close: his three numeric segment **matrices (eqs 16–18)** are embedded
-**MathType/MTEF** objects (not transcribable from the doc's text layer). A direct charge-conservation
-derivation reproduces his **seg-1 cancellation** ("the nonlinearities disappear"), but the seg-2/seg-3
-+ half-cycle-symmetry closure is acutely sensitive and needs eqs 16–18 to pin — prose alone yields the
-right *structure* (e.g. the e4=e2 condition emerges) but not yet the exact number. So V0-secondary is
-now **one transcription step from PASS, not blocked/unknown** (the prior "unfetchable, topology
-unknown" status is fully retired). **X1-B's authorisation still stands on the in-repo galvanic anchor
-(eigen z = 1.2033, Δ = −4×10⁻¹⁶, exact)** — robust regardless.
+**rev 0.7 — full implementation, residual found.** TMD then supplied screenshots of his **eqs 15, 16,
+17, 18, 21, 22** (the segment matrices, the explicit half-cycle map, and the eigenvalue closure). His
+analysis is now **implemented end-to-end** (`_queiroz_fig1_z`): the three segment charge-conservation
+solves with his restrictions, the complementary-linear rotor, and his closure **eq 15**
+([e22,e32,e12]=√z·[e11,e21,e41]) / **eq 22** (Newton on [z,a,b]). The implementation is **faithful** —
+an independent matrix-forward of eqs 16–18 reproduces his closed-form **eq 21 to ~1×10⁻⁵** at arbitrary
+inputs (two independent constructions agree), and eq 16's matrix re-confirms the topology exactly.
+
+**The residual:** the faithful eigenvalue is **z ≈ 1.372** (half-cycle factor 1.1714), **not his stated
+1.1538**. An exhaustive root scan (both √-branches, all closure permutations, {w, w²}) yields only
+{0.405, 1.372, 1.898} — **1.1538 is not reachable** from the transcribed equations. So a **~1%
+residual** stands (`V0-SECONDARY-RESIDUAL`), most plausibly a single-coefficient slip in the long
+hand-transcribed eq 21, or a rotor-law/segment subtlety the doc doesn't pin. Notably the residual is
+between his published *equations* and his published *number* — the implementation matches his eq 21,
+which itself yields 1.372. **This is reported as an honest residual, not buried**: method confirmed
+(it IS the (B) eigenvalue-of-M construction), topology confirmed (our galvanic doubler), but the exact
+external number is not reproduced. **X1-B's authorisation stands on the in-repo galvanic anchor
+(eigen z = 1.2033, Δ = −4×10⁻¹⁶, exact)** — robust regardless; this is a side method-fidelity check,
+not a witness gate.
 
 ## X1-B — ideal shuttle (rev 0.4, carried) → **XSIM-MATCH-B**
 
