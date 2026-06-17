@@ -1,0 +1,7 @@
+corner,Varc_V,etaFire,Etank_mJ,Earc_mJ,Eloop_mJ,Eresid_mJ,tQuench_us,etaMachine
+opt,20,0.986757,127.88376,0.28411,0.234860,1.19726,0.5300,7.2987
+mid,35,0.985276,127.69181,0.49682,0.234508,1.17685,0.5300,7.2878
+pess,50,0.983796,127.50001,0.70922,0.234156,1.15661,0.5300,7.2768
+#Wmech_stator_mJ,15.9412
+#Wmech_island_literal_mJ,1.5802
+#eta_S2_matched,0.990372
