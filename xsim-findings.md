@@ -1,6 +1,8 @@
 # xsim — findings (Phase 6, rev 0.5): **X1-B · X2-B XSIM-MATCH (analytic) · X3-B STRUCTURE + X3-PASS · T3 DT-PLATEAU**
 
-**Verdict line:** `V0-SECONDARY-OPEN` (auth on galvanic anchor) · `X1-B XSIM-MATCH-B` ·
+**Verdict line:** `V0-SECONDARY-OPEN` (auth on galvanic anchor; **rev 0.6: method+topology+restrictions
+recovered from `analysis.doc`, exact 3-segment matrices eqs 16–18 pending — one step from PASS**) ·
+`X1-B XSIM-MATCH-B` ·
 `X2-B XSIM-MATCH-B (3 corners)` · `X3-B STRUCTURE-CONFIRMED` + `X3-PASS (opt/mid) / X3-PASS-CONDITIONAL
 (pess, ign≥1.5×strike)` — the BOOT-SEEDED startup composes onto the **ideal** asymptote z=1.18938 ·
 `X1-A XSIM-DIVERGENT-A` ·
@@ -22,21 +24,38 @@ eigen-witness to the arc (X2) and bootstrap (X3) tiers (T2), and a ngspice times
 
 ---
 
-## T1 — Queiroz Fig-1 method self-test → **V0-SECONDARY-OPEN** (honest residual)
+## T1 — Queiroz Fig-1 method self-test → **V0-SECONDARY-OPEN** (now sharply localized, rev 0.6)
 
 The shared Newton engine `_newton_zab` is built and **unit-checked** (recovers √2 from a 2-var
-system; it drives the X2 limit cycle). The Fig-1 reproduction, however, is **OPEN**: the addendum
-supplies his segment *restrictions* (e31=e11, e3x=0, e4y=e2y, e3y=0 with D1 off in seg-3, plus the
-cap relations) but **not his Fig-1 circuit topology** — which capacitor sits between which nodes, and
-the three diode placements — and the paper is **unfetchable in-environment** (arxiv/IEEE/coe.ufrj.br
-all return 403). A correct charge-conservation Newton system needs that cap network. Direct
-reconstruction attempts (a symmetric Bennet doubler, C1/C2 60↔360 + Ca=Cb=330, across several
-node/diode arrangements) yield pumping configurations at **z ∈ {1.0, ~2.08}** but not 1.1538 — the
-gain is acutely topology-sensitive and the available spec does not pin it. Per the addendum this is
-reported as an **OPEN residual, not a "topology" hand-wave**: the transcribed constraints are stated;
-the missing piece is named (the Fig-1 cap/diode network). **X1-B's authorisation therefore stands on
-the in-repo galvanic anchor (eigen z = 1.2033, Δ = −4×10⁻¹⁶, exact)** — robust; the external
-method-fidelity check stays explicitly open.
+system; it drives the X2 limit cycle). The Fig-1 reproduction is still **OPEN**, but **rev 0.6 closed
+almost all of the gap**: TMD supplied **`analysis.doc`** (de Queiroz, *Analysis of Electronic
+Electrostatic Generators*) — a binary OLE2 Word doc with embedded MathType. Parsing it in-repo (a
+from-scratch compound-file reader; the body text extracted from the `WordDocument` stream; **Fig-1
+recovered by rendering its embedded WMF metafile**) recovered his method, topology, and the full
+segment structure:
+
+- **METHOD** = *exactly the (B) eigenvalue-of-M method this witness already uses*: segment the cycle
+  by diode state, write charge conservation **C_i·e_i = C_{i+1}·e_{i+1}** per segment (his eq 1),
+  compose to **e_{k+1} = M·e_k** (eq 2), **z = dominant eigenvalue of M** (eq 3). Independent
+  confirmation that our construction is his construction.
+- **TOPOLOGY (Fig-1)** = **our galvanic doubler**: nodes 1,2,3,4; **C1(1-0), C2(4-0) VARIABLE 60↔360**;
+  **Ca(1-2) = Cb(3-4) = 330 FIXED**; diodes **D1(2-0), D2(3-0), D3(1-3), D4(4-2)**. Rotor law
+  **complementary-linear** (C1 + C2 = Cmin + Cmax = 420 pF). α = Cmax/Cmin = 6, β = Ca/Cmin = 5.5.
+- **WHY 1.326 ≠ 1.1538** (the actual resolution): his Fig-1 half-cycle is **THREE non-overlapping
+  segments** (the diodes conduct *separately*), not the 2-phase "both diodes at once" idealization the
+  galvanic eigenmap uses. The 2-phase map **over-pumps** to **1.3261** (exact, confirmed); his refined
+  non-overlapping sequence lowers it to **1.1538**. Segment restrictions (now contextualized by his
+  text): seg1 e31=e11 → e3x=0; seg2 e4y=e2y; seg3 e3y=0 **with D1 not conducting**. His own measured
+  curves read **~1.08**, below 1.1538, "due to unaccounted losses."
+
+**What remains** for the exact close: his three numeric segment **matrices (eqs 16–18)** are embedded
+**MathType/MTEF** objects (not transcribable from the doc's text layer). A direct charge-conservation
+derivation reproduces his **seg-1 cancellation** ("the nonlinearities disappear"), but the seg-2/seg-3
++ half-cycle-symmetry closure is acutely sensitive and needs eqs 16–18 to pin — prose alone yields the
+right *structure* (e.g. the e4=e2 condition emerges) but not yet the exact number. So V0-secondary is
+now **one transcription step from PASS, not blocked/unknown** (the prior "unfetchable, topology
+unknown" status is fully retired). **X1-B's authorisation still stands on the in-repo galvanic anchor
+(eigen z = 1.2033, Δ = −4×10⁻¹⁶, exact)** — robust regardless.
 
 ## X1-B — ideal shuttle (rev 0.4, carried) → **XSIM-MATCH-B**
 

@@ -314,22 +314,32 @@ def queiroz_fig1_newton():
     target z = 1.1538 (α=6, β=5.5). **Independence note:** this is a METHOD-VALIDATION harness on
     HIS topology — it does NOT consume our device point and is NOT one of our witnesses.
 
-    STATUS: V0-SECONDARY-OPEN. The addendum supplies his segment *restrictions* (e31=e11, e3x=0,
-    e4y=e2y, e3y=0 with D1 off in seg-3, and the cap relations) but NOT his Fig-1 circuit topology
-    (which capacitor sits between which nodes, and the three diode placements); the paper itself is
-    unfetchable in-environment (arxiv/IEEE/coe.ufrj.br all 403). A correct charge-conservation
-    Newton system needs that cap network. Reconstruction attempts (a symmetric Bennet doubler with
-    C1,C2 60↔360 + Ca=Cb=330 across several node/diode arrangements) yield pumping configurations at
-    z ∈ {1.0, ~2.08} but not 1.1538 — i.e. the gain is acutely topology-sensitive and the available
-    spec does not pin it. Per the addendum, this is reported as an OPEN residual, NOT papered over
-    with a 'topology' hand-wave: the transcribed constraints are above; the missing piece is named
-    (the Fig-1 cap/diode network). X1-B's authorisation therefore stands on the galvanic anchor
-    (z = 1.2033, exact) alone — robust, but the external method-fidelity check stays explicitly open.
+    STATUS: V0-SECONDARY-OPEN — but now **sharply localized** (rev 0.6: TMD supplied `analysis.doc`,
+    de Queiroz, *Analysis of Electronic Electrostatic Generators*). The method, topology, and segment
+    restrictions are now FULLY RECOVERED from that source (parsed out of the binary OLE2 doc + its
+    embedded WMF Fig-1); only his three numeric segment MATRICES (eqs 16–18, embedded MathType/MTEF
+    objects) remain untranscribed, so the exact 1.1538 close is pending. What is now KNOWN:
+      • METHOD = exactly the (B) eigenvalue-of-M method this module already uses: segment the cycle by
+        diode state, write charge conservation C_i·e_i = C_{i+1}·e_{i+1} per segment (his eq 1),
+        compose to e_{k+1}=M·e_k (eq 2), z = dominant eigenvalue of M (eq 3).
+      • TOPOLOGY (Fig-1) = our galvanic doubler: nodes 1,2,3,4; C1(1-0),C2(4-0) VARIABLE 60↔360;
+        Ca(1-2)=Cb(3-4)=330 FIXED; diodes D1(2-0),D2(3-0),D3(1-3),D4(4-2). Rotor law COMPLEMENTARY-
+        LINEAR (C1+C2 = Cmin+Cmax = 420 pF).
+      • WHY 1.326≠1.1538: his Fig-1 half-cycle is THREE non-overlapping segments (diodes conduct
+        separately), NOT the 2-phase 'both diodes at once' idealization the galvanic eigenmap uses —
+        the 2-phase OVER-pumps to 1.3261; his refined sequence lowers it to 1.1538. Restrictions:
+        seg1 e31=e11→e3x=0; seg2 e4y=e2y; seg3 e3y=0 with D1 NOT conducting. (Seg-1 charge
+        conservation reproduces his 'nonlinearities cancel' result; seg2/3 + the symmetry closure
+        need eqs 16–18 to pin exactly — prose alone is acutely sensitive.)
+    X1-B's authorisation still stands on the galvanic anchor (z = 1.2033, exact); this external
+    method-fidelity check is now one transcription step from PASS, not blocked/unknown.
 
     The shared `_newton_zab` engine IS built and unit-checked (see run_self_test) and is what the X2
-    arc limit-cycle uses; only the Fig-1 *configuration* is open, not the solver."""
-    return dict(status="V0-SECONDARY-OPEN", target=1.1538, recovered=None,
-                reason="Fig-1 cap/diode topology underdetermined by the spec and unfetchable")
+    arc limit-cycle uses; only the Fig-1 numeric matrices are open, not the solver."""
+    return dict(status="V0-SECONDARY-OPEN", target=1.1538, recovered="method+topology+restrictions",
+                reason="Fig-1 method/topology/restrictions recovered from analysis.doc; exact 3-segment "
+                       "matrices (eqs 16-18, MathType/MTEF) pending transcription — 1.326 is the 2-phase "
+                       "idealization, his non-overlapping 3-segment sequence gives 1.1538")
 
 
 # ---- X2: arc tier — absolute-volt limit cycle (scale-invariance broken ⇒ limit cycle) ----
