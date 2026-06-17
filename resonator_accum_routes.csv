@@ -1,0 +1,21 @@
+route,corner,metric,value,note
+DC,opt,E_store_mJ,382.00,1/2 C_R V^2 @20kV
+DC,opt,tau_leak_h,13.281,mica rho_v cited
+DC,opt,transfer_eta,0.9978,"half-cycle LC, Q_loaded"
+DC,mid,E_store_mJ,382.00,1/2 C_R V^2 @20kV
+DC,mid,tau_leak_h,1.328,mica rho_v cited
+DC,mid,transfer_eta,0.9961,"half-cycle LC, Q_loaded"
+DC,pess,E_store_mJ,382.00,1/2 C_R V^2 @20kV
+DC,pess,tau_leak_h,0.133,mica rho_v cited
+DC,pess,transfer_eta,0.9922,"half-cycle LC, Q_loaded"
+incoherent,mid,M_operating,0.059,"326kHz, sub-battery"
+incoherent,mid,M_ge10_triple,f0=10kHz rpm=30000 M=19.1,L_implied=132.6mH
+incoherent,mid,M_ge10_triple,f0=5kHz rpm=10000 M=12.7,L_implied=530.5mH
+incoherent,mid,M_ge10_triple,f0=5kHz rpm=30000 M=38.2,L_implied=530.5mH
+incoherent,mid,M_ge10_triple,f0=2kHz rpm=10000 M=31.8,L_implied=3315.5mH
+incoherent,mid,M_ge10_triple,f0=2kHz rpm=30000 M=95.5,L_implied=3315.5mH
+incoherent,mid,M_ge10_triple,f0=1kHz rpm=3000 M=19.1,L_implied=13261.9mH
+incoherent,mid,M_ge10_triple,f0=1kHz rpm=10000 M=63.7,L_implied=13261.9mH
+incoherent,mid,M_ge10_triple,f0=1kHz rpm=30000 M=191.0,L_implied=13261.9mH
+coherent,mid,kappa_lock_current,None,no lock @326kHz
+coherent,mid,kappa_lock_batterygrade,0.25,lock @2kHz
