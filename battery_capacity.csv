@@ -1,0 +1,16 @@
+element,dim_mm,material,gradient_kVmm,Vbd_kV,Vbd_intrinsic_kV,holds_full_VCR,excluded,source
+C1/C2 varicap gap,0.5,air,3.0,1.50,1.50,False,False,index.html:206 pgap=0.5
+Ca/Cb transfer film,1.0,Mylar,40.0,40.00,40.00,False,False,index.html:666 tcMylarThkMm=1.0
+C_R mica bulk,10.0,mica,40.0,400.00,400.00,True,False,index.html:322 mdisch=10
+C_R edge creepage,30.0,air-surf,1.0,30.00,90.00,True,False,index.html:1351 edgeEE=2*(voidR-discVoidR)+discH
+HV void clearN (e->n),20.0,air,1.0,20.00,60.00,True,False,index.html:1349 voidR=20 (sharp-tip 1kV/mm)
+HV void clearEE (e->e),40.0,air,1.0,40.00,120.00,True,False,index.html:1350 2*voidR=40
+fire gap SG3b/SG4b,6.0,air,3.0,18.00,18.00,False,True,designed 20 kV breakdown (V_bd, inherited) -- EXCLUDED
+commutator kbargap,2.0,air,3.0,6.00,6.00,False,False,index.html:406 kbargap=2 (display-only)
+#bindingElem,HV void clearN (e->n)
+#Vceil_kV,20.00
+#Emax_mJ,157.80
+#Vop_kV,15.0
+#Eop_mJ,88.76
+#marginGarolite_kV,400
+#voltage_margin,1.333
