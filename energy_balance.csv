@@ -1,0 +1,11 @@
+quantity,value,unit,note
+z,1.334002,,4-node galvanic ceiling (G3 caps)
+eta_conv,0.385956,,dE_stored/W_mech = core conversion efficiency
+Etax_over_Wmech,0.614044,,equalization tax fraction
+identity_residual,1.397e-16,,W_mech-(dE+Etax) max
+growth,0.779560,,dE_stored/U_start (== z^2-1 cross-check)
+z2_minus_1,0.779560,,eigen-growth target
+Wmech_per_fire,15.941162,mJ,stator core; anchor rail=15kV
+useful_per_fire,6.152584,mJ,eta*Wmech (stator core)
+Etank_per_kick,88.762500,mJ,1/2 C_R Vpeak^2 (island-boost dominated)
+tau_ripple,7.822087,,complementary-linear sweep
