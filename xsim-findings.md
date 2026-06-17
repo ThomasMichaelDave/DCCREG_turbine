@@ -1,11 +1,18 @@
-# xsim — findings (Phase 6, rev 0.4): **X1-B · X2-B XSIM-MATCH (analytic) · X3-B STRUCTURE · T3 DT-PLATEAU**
+# xsim — findings (Phase 6, rev 0.5): **X1-B · X2-B XSIM-MATCH (analytic) · X3-B STRUCTURE + X3-PASS · T3 DT-PLATEAU**
 
 **Verdict line:** `V0-SECONDARY-OPEN` (auth on galvanic anchor) · `X1-B XSIM-MATCH-B` ·
-`X2-B XSIM-MATCH-B (3 corners)` · `X3-B STRUCTURE-CONFIRMED` · `X1-A XSIM-DIVERGENT-A` ·
+`X2-B XSIM-MATCH-B (3 corners)` · `X3-B STRUCTURE-CONFIRMED` + `X3-PASS (opt/mid) / X3-PASS-CONDITIONAL
+(pess, ign≥1.5×strike)` — the BOOT-SEEDED startup composes onto the **ideal** asymptote z=1.18938 ·
+`X1-A XSIM-DIVERGENT-A` ·
 `T3 DT-PLATEAU (structural)`.
 
-**Branch** `claude/feasibility-approval-planning-5gkcam` (on `bootstrap-gate` head).
-`reference/doubler_core.py`, `shuttle_core.py`, `index.html` **untouched** (mirror FAITHFUL, shuttle
+**Branch** `xsim` — the rev-0.5 witness (`effcee1`) carried onto a clean branch cut at that commit, where
+the X3-PASS composition tier (`bootstrap_asymptote` / `x3_composition`) was added. **Lineage note:** the
+brief assumed a living `xsim` branch off `bootstrap-gate`; in fact rev 0.5 was committed into the linear
+mainline (`main → shuttle-fullsim → spark-derate → bootstrap-gate → … → effcee1`), which is **not** on
+`main` (correct — not merged) but is an ancestor of the later geometry/freeze branches. This `xsim` branch
+re-isolates the campaign at `effcee1`. `reference/doubler_core.py`, `shuttle_core.py`, `index.html`
+**untouched** (mirror FAITHFUL, shuttle
 C0 green). Not merged. (B) keeps its **own** cluster solver — grep-gate clean: **0** calls to
 `shuttle_core.transition`/`_galv_phase`/`spark_run`/`boot_run`; only device-point constants + firing
 order + comparison targets consumed.
@@ -76,6 +83,37 @@ retention model sustains more easily than native's near-floor gain reduction —
 band is not met, but the ordering/direction/pess (the load-bearing structure) is confirmed. Reported
 honestly, not tuned.
 
+## X3-B — bootstrap composition (rev 0.5+) → **X3-PASS (opt/mid) · X3-PASS-CONDITIONAL (pess)**
+
+The structure test above is necessary but not the brief's §3 X3-PASS claim proper, which asks: does the
+per-cycle map, driven through the **BOOT-SEEDED startup transient**, *compose* and land on the **same
+asymptotic z** as X1? Tested directly (`bootstrap_asymptote` / `x3_composition`): seed the rail at
+`seedmul·strike` on nodes 1,4, run the arc limit cycle with the Paschen no-fire floor **enforced** (the
+genuine startup gate) and **no leakage** (decay = 1 — leakage is the *separate* retention-race factor of
+the structure test), and read the per-cycle gain over a **late, post-transient window** (cycles 70–110,
+renorm-robust median of log-gains).
+
+| Corner | seed 0.6× | 1.0× | 1.5× | 3.0× | ignition floor | verdict |
+|---|---|---|---|---|---|---|
+| opt | 1.18938 | 1.18938 | 1.18938 | 1.18938 | ≥0.6×strike | **X3-PASS** |
+| mid | 1.18938 | 1.18938 | 1.18938 | 1.18938 | ≥0.6×strike | **X3-PASS** |
+| pess | no-ign | no-ign | 1.18938 | 1.18938 | ≥1.5×strike | **X3-PASS-CONDITIONAL** |
+
+The late-window asymptote lands on **z = 1.18938 — the X1 *ideal* z — to machine precision** (Δ = 0.000000),
+**seed-independently**, NOT the finite-amplitude `z_arc` of X2. This is physically exact and the headline:
+the arc tier breaks scale-invariance **only through the absolute strike**, so as the seeded rail grows the
+strike becomes a vanishing fraction (`strike/V → 0`) and the limit cycle **recovers the scale-invariant
+ideal asymptote**. The X2 `z_arc` (1.166–1.189) is the *early-window operating gain* at finite amplitude;
+the asymptotic per-cycle map is the ideal — and the bootstrap startup **composes onto it**. So the startup
+transient does not change the asymptote: it only decides *whether* the seed ignites and wins the retention
+race (the structure test).
+
+The lone exception is the **pessimistic corner below ~1.5×strike**, where the seed never crosses the
+Paschen floor and the half stays inert (z ≈ 1.0). This is exactly the brief §3 `X3-INDETERMINATE`
+condition — "the startup needs operating-rpm-before-injection at the pessimistic corner" — **reported per
+corner, not averaged away**: pess requires an elevated seed (or pre-spin before injection) to ignite,
+after which it composes onto the same ideal asymptote.
+
 ## T3 — ngspice dt-sweep diagnostic → **DT-PLATEAU (structural)**
 
 Sweeping the X1-A max-timestep over 1.5 decades (Δt = T/{400,1200,4000,12000}) with the step limit
@@ -105,6 +143,8 @@ Machine-readable: `xsim_comparison.csv`.
 | X2 clamp | ~1.04 | 1.01–1.04 | PASS | — | BLOCKED |
 | X3 V_floor (mid) | 187 V | 120 V (structural) | STRUCT | — | BLOCKED |
 | X3 V_sustain (mid@3000) | 437 V | 160 V (rises w/ rpm↓) | STRUCT | — | BLOCKED |
+| X3 boot asymptote (opt/mid) | →ideal | **1.18938 (0), seed-indep** | **X3-PASS** | — | BLOCKED |
+| X3 boot asymptote (pess) | →ideal | 1.18938 (ign≥1.5×strike) | **PASS-COND** | — | BLOCKED |
 
 **Three independent constructions** agree on X1 (native forward · B eigen) and X2 z_arc (native spark
 · B eigen) to **machine precision**; A's X1 divergence is the **named continuous-time artifact**,
@@ -116,17 +156,23 @@ now **T3-confirmed structural**.
   unfetchable); X1-B auth on the galvanic anchor (exact).
 - **X1-B: `XSIM-MATCH-B`**; **X2-B: `XSIM-MATCH-B`** (3 corners, machine precision) — load-bearing
   confirmations of the native ideal and spark tiers by an independent analytic witness.
-- **X3-B: `STRUCTURE-CONFIRMED`** (ordering/direction/pess; magnitudes softer, flagged).
+- **X3-B: `STRUCTURE-CONFIRMED`** (ordering/direction/pess; magnitudes softer, flagged) **+ `X3-PASS`
+  (opt/mid) / `X3-PASS-CONDITIONAL` (pess)** — the BOOT-SEEDED startup composes through the transient
+  and lands on the **same asymptotic z = 1.18938 (the X1 ideal)** to machine precision, seed-independently
+  (`strike/V → 0` recovers scale-invariance); pess needs ≥1.5×strike seed to ignite (the brief's
+  `X3-INDETERMINATE`-at-low-seed corner, reported not averaged).
 - **X1-A: `XSIM-DIVERGENT-A`**; **T3: `DT-PLATEAU`** — the divergence is structural (continuous-time),
   not a circuit defect and not numerical under-resolution.
-- **Combined: X1 PASS on B · X2 PASS on B · X3 structure on B.** The pump, its emergent clocking, and
-  the arc-tier derating are confirmed as circuit properties by a second, independent (analytic)
-  method. CHANGELOG updated; branch left for TMD review; not merged.
+- **Combined: X1 PASS on B · X2 PASS on B · X3 structure + composition (X3-PASS) on B.** The pump, its
+  emergent clocking, the arc-tier derating, AND the bootstrap startup composing onto the ideal asymptote
+  are confirmed as circuit properties by a second, independent (analytic) method. CHANGELOG updated;
+  branch left for TMD review; not merged.
 
 ## Deliverables
 
 - `xsim_queiroz_matrix.py` — (B) eigen-witness + `_newton_zab` (T1) + `queiroz_fig1_newton` (OPEN) +
-  `arc_limit_cycle` (X2) + `bootstrap_structure`/`boot_classify` (X3); self-test covers all tiers.
+  `arc_limit_cycle` (X2) + `bootstrap_structure`/`boot_classify` (X3 structure) +
+  `bootstrap_asymptote`/`x3_composition` (X3-PASS composition, rev 0.5+); self-test covers all tiers.
 - `xsim_queiroz_V0.png` (auth + emergent δ), `xsim_x2_arc_corners.png`,
   `xsim_x3_bootstrap_structure.png`, `xsim_dt_sweep.png`.
 - `xsim_from_solver.py` (consumer: dual-witness table, three-way z, dt-sweep), `xsim_comparison.csv`,

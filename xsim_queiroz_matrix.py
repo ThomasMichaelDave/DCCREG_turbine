@@ -468,6 +468,62 @@ def bootstrap_structure(corners=("opt", "mid", "pess")):
     return out
 
 
+# ---- X3-PASS: asymptotic-z composition (does the seeded startup land on the same z?) ----
+# The X3 STRUCTURE test (above) checks the two-threshold ordering. This is the brief §3 X3-PASS
+# claim proper: does the per-cycle map, driven through the BOOT-SEEDED startup transient, COMPOSE
+# and land on the SAME asymptotic z as X1? Physically it must: the arc tier breaks scale-invariance
+# only through the ABSOLUTE strike, so as the seeded rail grows the strike becomes a vanishing
+# fraction (strike/V → 0) and the limit cycle recovers the ideal scale-invariant asymptote. The
+# finite-amplitude z_arc (X2) is the early-window operating gain; the late-window asymptote is the
+# ideal z. [OC]
+def bootstrap_asymptote(corner, seedmul, ncyc=120, win=(70, 110)):
+    """Seed the rail (BOOT-SEEDED, seedmul·strike on nodes 1,4), run the arc limit cycle with the
+    Paschen no-fire floor ENFORCED (the genuine startup gate) and NO leakage (decay=1 — leakage is
+    the SEPARATE retention-race factor of the X3 structure test), and read the per-cycle gain over a
+    LATE window (post-transient) as a renorm-robust MEDIAN of log-gains. Returns the late-window z,
+    or None if no growth samples. A non-igniting seed sits at z≈1.0 (never crosses the floor). [OC]"""
+    strike, pVarc = ARC_STRIKE[corner], ARC_PVARC[corner]
+    floor = sc.V_FLOOR
+    cA = lambda c: _shuttle_caps(C1MAX, C2MIN, c, CXMAX)
+    cB = lambda c: _shuttle_caps(C1MIN, C2MAX, CXMAX, c)
+    V = {k: 0.0 for k in NODES}; V[1] = -seedmul * strike; V[4] = -seedmul * strike
+    prev = abs(V[1]) + abs(V[4]); gains = []
+    for cyc in range(ncyc):
+        V, ovA, kA, capsA_end = _arc_phase(V, cB(CXMAX), cA, 7, 3, (2, 0), (1, 7),
+                                           strike, pVarc, floor)
+        V, ovB, kB, _ = _arc_phase(V, capsA_end, cB, 8, 2, (3, 0), (4, 8), strike, pVarc, floor)
+        m = abs(V[1]) + abs(V[4]); renormed = False
+        if m > 1e12:                         # overflow guard, deep in the ideal regime (m >> strike)
+            f = 1e6 / m; V = {kk: v * f for kk, v in V.items()}; m = 1e6; renormed = True
+        if prev > 1e-12 and m > 1e-12 and not renormed and win[0] <= cyc <= win[1]:
+            gains.append(math.log(m / prev))
+        prev = m
+        if m < 1e-12:
+            break
+    return None if not gains else float(math.exp(np.median(gains)))
+
+
+def x3_composition(z_ideal, corners=("opt", "mid", "pess"), seedmuls=(0.6, 1.0, 1.5, 3.0),
+                   tol=1e-3):
+    """X3-PASS classifier: for each corner, sweep BOOT seeds and check the late-window asymptote
+    lands on `z_ideal` (the X1 ideal). `ignites` seeds are those that grow (z>1.01); PASS if every
+    igniting seed lands on z_ideal within tol AND the lowest seed already ignites (seed-independent
+    composition). If ignition needs an ELEVATED seed (e.g. the pess corner) → INDETERMINATE at the
+    low seeds — reported per corner, NOT averaged away (brief §3)."""
+    out = {}
+    for c in corners:
+        res = {sm: bootstrap_asymptote(c, sm) for sm in seedmuls}
+        ign = [sm for sm in seedmuls if res[sm] is not None and res[sm] > 1.01]
+        lands = bool(ign) and all(abs(res[sm] - z_ideal) <= tol for sm in ign)
+        seed_indep = bool(ign) and ign[0] == seedmuls[0]      # lowest seed already composes
+        verdict = ("X3-PASS" if (lands and seed_indep)
+                   else "X3-PASS-CONDITIONAL" if lands       # composes, but needs elevated seed
+                   else "X3-INDETERMINATE")
+        out[c] = dict(res=res, ign_floor=(min(ign) if ign else None), lands=lands,
+                      seed_indep=seed_indep, verdict=verdict)
+    return out
+
+
 def run_self_test():
     # T1 — Newton engine unit-check (a known root) before any use
     root, ok_n, res = _newton_zab(lambda x: [x[0] ** 2 - 2.0, x[1] - x[0]], [1.0, 1.0])
@@ -507,9 +563,17 @@ def run_self_test():
     vss = mid["vsustain"]
     rises = all(x is not None for x in vss.values()) and \
         vss[3000.0] <= vss[1519.0] <= vss[769.0]
-    print(f"  X3-B bootstrap (mid)        : V_floor≈{mid['vfloor']} < V_sustain(3000)≈{vsus3000} "
+    print(f"  X3-B bootstrap structure    : V_floor≈{mid['vfloor']} < V_sustain(3000)≈{vsus3000} "
           f"(native 187<437); V_sustain rises as rpm falls: {vss} ⇒ "
           f"{'STRUCTURE-CONFIRMED' if order_ok and rises else 'STRUCTURE-PARTIAL'}")
+    # X3-B composition: does the BOOT-SEEDED startup compose onto the SAME asymptotic z as X1?
+    x3c = x3_composition(sh["z"])
+    for c in ("opt", "mid", "pess"):
+        r = x3c[c]
+        zs = "/".join("noign" if r["res"][sm] is None or r["res"][sm] <= 1.01
+                      else f"{r['res'][sm]:.5f}" for sm in (0.6, 1.0, 1.5, 3.0))
+        print(f"  X3-B compose z[{c:4s}]        : seeds(.6/1/1.5/3)→{zs}  vs ideal {sh['z']:.5f}  "
+              f"ign≥{r['ign_floor']}×strike  ⇒ {r['verdict']}")
     return ok_g and ok_z and ok_d and newton_ok
 
 
