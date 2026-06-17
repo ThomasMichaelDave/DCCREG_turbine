@@ -1,0 +1,21 @@
+quantity,value,unit
+Lhalf_uH,39.500,uH
+Mmut_uH,11.850,uH
+Ltotal_aiding_uH,102.700,uH
+f0_split_kHz,559.1,kHz
+CR_retune_pF,607.8,pF
+Vnode_split_kV,17.50,kV
+stress_factor,0.500,-
+DOWNBACK_L_add_uH,300.2,uH
+DOWNBACK_L_opp_uH,15.80,uH
+Cself_simple_pF,4.80,pF
+Cself_bifilar_pF,790.2,pF
+fSRF_simple_MHz,8.170,MHz
+fSRF_bifilar_kHz,637.0,kHz
+Ggain,408,-
+fmode_plus_kHz,558.7,kHz
+fmode_minus_kHz,761.4,kHz
+Qsr,408,-
+Vantinode_kV,17.50,kV
+Eint_kVmm,2.92,kV/mm
+#top_verdict,ANTINODE-STRESS-DOMINATES / SIMPLE-DOWNBACK-PREFERRED
