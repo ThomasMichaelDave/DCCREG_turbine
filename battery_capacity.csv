@@ -1,0 +1,17 @@
+element,dim_mm,material,gradient_kVmm,Vbd_kV,holds_full_VCR,excluded,dxf_layer,source
+C1/C2 varicap gap,7.0,air,3.0,21.00,True,False,CAP-C1-OVERLAP,"doc§3: 7.0mm air, 16-280pF; §4 caps island ~21kV"
+Ca/Cb mica barrier,4.5,mica,40.0,180.00,False,False,CAP-Ca-GAP,"doc§3: 4.5mm mica, 309pF"
+Cx3/Cx4 air sub-gap,3.0,air,3.0,9.00,False,False,CAP-Cx3-GAP,"doc§3: 3.0mm air (+0.3mm mica), 8-648pF"
+Cx3/Cx4 mica face,0.3,mica,40.0,12.00,False,False,CAP-Cx3-GAP,"doc§3: 0.3mm mica/face"
+C_R garolite bulk,12.0,garolite,15.0,180.00,True,False,MECH-DIELECTRIC,"doc§3/§6: 12.0mm garolite, 789pF, 1.25kV/mm@15kV"
+C_R edge creepage,12.0,air-surf,1.0,12.00,True,False,MECH-DIELECTRIC,"UNDIMENSIONED in r0_6 (radial); est=septum thickness -- FLAG r0_10"
+fire gap SG3b/SG4b,5.5,air,3.0,16.50,False,True,SG3b-FIRE-GAP,"doc§5: ~5.3-6.4mm, strike 16.6-20kV -- DESIGNED, excluded"
+#bindingElem,C1/C2 7mm air
+#Vceil_kV,21.00
+#Emax_mJ,173.97
+#Vop_kV,15.0
+#Eop_mJ,88.76
+#voltage_margin,1.400
+#marginGarolite_kV,180
+#FLAG_creepage_undimensioned,r0_6_radial_only_needs_r0_10
+#PROVENANCE,brief_v0.11_absent__repo_has_r0_6_DXF+v0.10_doc__index.html_STALE
