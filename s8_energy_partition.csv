@@ -1,0 +1,16 @@
+point,storage_mJ,circulation_mJ,output_W,dissipation_W,diss_frac,resid,tier
+baseline_ALL,88.762,1980.074,0.000,56.084,1.0000,2.31e-06,OC
+couplings_OFF,88.762,0.074,0.000,27.084,1.0000,2.31e-06,OC
+"septum=garolite (baseline)",88.762,1980.074,0.000,56.084,1.0000,2.31e-06,IR
+"septum=mica (5x lower tanD)",88.762,1980.019,0.000,56.084,1.0000,4.75e-08,IR
+"k=0.0",88.762,1980.074,0.000,56.084,1.0000,2.31e-06,IR
+"k=0.3 (base)",88.762,1980.074,0.000,56.084,1.0000,2.31e-06,IR
+"k=0.6",88.762,1980.074,0.000,56.084,1.0000,2.31e-06,IR
+"fire_phase=-15deg",88.762,1980.074,0.000,56.084,1.0000,2.31e-06,IR
+"fire_phase=+15deg",88.762,1980.074,0.000,56.084,1.0000,2.31e-06,IR
+"cap_scale=0.5",88.762,990.074,0.000,56.084,1.0000,2.31e-06,IR
+"cap_scale=2.0",88.762,3960.074,0.000,56.084,1.0000,2.31e-06,IR
+#gate0_z,1.2033
+#verdict,SYNERGY-GENERIC
+#coupled_dielectric_W,0.033
+#stitched_dielectric_W,53.0
