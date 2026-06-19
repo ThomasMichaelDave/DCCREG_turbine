@@ -1,0 +1,15 @@
+point,pressure_Pa,storage_mJ,circulation_mJ,output_W,dissipation_W,belt_in_W,diss_frac,torque_resid,stator_drag_W,margin_W,tier
+full_operating_point,1.0,88.762,22.305,0.9109,16.6794,17.5903,0.9482,1.18e-16,0.5281,+0.3827,OC
+"septum=garolite,P=1Pa(base)",1.0,88.762,22.305,0.9109,16.6794,17.5903,0.9482,1.18e-16,0.5281,+0.3827,IR
+septum=mica (5x lower tanD),1.0,88.762,22.250,0.9109,16.6794,17.5903,0.9482,1.18e-16,0.5281,+0.3827,IR
+pressure=10 Pa,10.0,88.762,22.305,0.9109,17.1859,18.0967,0.9497,1.15e-16,0.7813,+0.1295,IR
+pressure=100 Pa,100.0,88.762,22.305,0.9109,22.2500,23.1609,0.9607,0.00e+00,3.3134,-2.4026,IR
+pressure=0.1 Pa (hard vac),0.1,88.762,22.305,0.9109,16.6288,17.5397,0.9481,1.19e-16,0.5028,+0.4081,IR
+cap_scale=0.5,1.0,88.762,11.189,0.9109,16.6794,17.5903,0.9482,1.18e-16,0.5281,+0.3827,IR
+cap_scale=2.0,1.0,88.762,44.536,0.9109,16.6794,17.5903,0.9482,1.18e-16,0.5281,+0.3827,IR
+#foundation_z,1.33400
+#foundation_eta,0.38596
+#W_coll_emergent_mJ,12.4489
+#E_fire_mJ,13.9506
+#gate0_stub_diss_W,56.084
+#verdict,FULL-CLOSES
