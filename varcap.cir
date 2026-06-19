@@ -1,0 +1,67 @@
+* varcap.cir — v0.2 — electrical single-source-of-truth (SSOT) for the varcap doubler nest
+* =========================================================================================
+* Committed by the solver-foundation audit (Stage A) — previously lived only in
+* /mnt/user-data/outputs, so the corrected topology had no in-repo reference to diff against.
+*
+* TOPOLOGY (v0.2 corrections vs the frozen 4/6-node solvers):
+*   - RETURNS-TO-RAIL, NO GROUND: the doubler return is to the rail node, not a separate
+*     ground. The frozen shuttle_core "collapsed the rail to ground 0"; that is the SAME
+*     node under a gauge choice (the energetics depend only on voltage differences), so the
+*     PUMP CORE (ND1-4) is a relabeling of the frozen 4-node network — not a topology change.
+*   - SPLIT RESONATOR: ND5 - L_R1 - ND9 - C_R - ND10 - L_R2 - ND6 (k=0.3 aiding), replacing
+*     the single L_R (coil-topology / S7). This is an ADDITION on the load side.
+*   - 12 Cem BRANCHES across Ca/Cb (ND11-22): each L_coil + C_block, resonant at PRF (S7).
+*     ADDITIONS on the load side (the motor), high-Z spectators at f0.
+*   - ISLAND bars ND7/ND8 (the flying-bucket shuttle, frozen shuttle_core physics).
+*
+* NODE MAP:
+*   ND1..ND4  stator doubler (C1/C2 stators, Ca/Cb, Cpar)        [frozen 4-node pump core]
+*   ND5/ND6   rotor halves (shaft A / shaft B)                   [+ split-resonator ends]
+*   ND7/ND8   island bars (floating, isolated from ND5)          [shuttle transfer]
+*   ND9/ND10  split-resonator C_R plates                         [ADDITION — load]
+*   ND11..22  12 Cem branch junctions (L_coil + C_block)         [ADDITION — motor]
+*   NDRAIL    the rail return reference (no separate ground)
+*
+* GEOMETRY (current, v0.10 freeze + DXF): C1/C2 16-280 pF, Ca=Cb=309 pF, Cpar=20 pF,
+*   C_R=789 pF (12 mm garolite), L_R1=L_R2 sized to L_total=79 uH (k=0.3 aiding).
+* SWITCHES: spark gaps (V_bk + arc drop + quench at current-zero) -- NOT ideal diodes.
+*
+* This deck is the SSOT for the topology; the audit's incidence matrix is built from it.
+* (Runnable galvanic/linear subsets are in xsim_*.net; the full nonlinear shuttle is
+*  ngspice-blocked, S7 -- so the time-domain nest lives in the custom Python integrators.)
+.param w=6.28318531e+03
+
+* --- pump core (ND1-4): time-varying varicaps + transfer caps + strays ---
+C1v 1 5 Q='(1.6e-11+2.64e-10*(0.5*(1+tanh(12.0*sin(w*time)))))*V(1,5)'
+C2v 4 6 Q='(1.6e-11+2.64e-10*(0.5*(1+tanh(12.0*sin(w*time+3.14159265)))))*V(4,6)'
+Ca  1 2 3.09e-10
+Cb  3 4 3.09e-10
+Cpar1 1 NDRAIL 2.0e-11
+Cpar2 2 NDRAIL 2.0e-11
+Cpar3 3 NDRAIL 2.0e-11
+Cpar4 4 NDRAIL 2.0e-11
+
+* --- commutation spark gaps (returns-to-rail): D1,D2 -> rail ; D3:1->3 ; D4:4->2 ---
+* (modelled as near-ideal 1-way for the galvanic regression; spark-gap V_bk/arc in the audit)
+.model SG D(is=1e-9 n=0.005 rs=1e-3 cjo=0)
+DSG1 2 NDRAIL SG
+DSG2 3 NDRAIL SG
+DSG3 1 3 SG
+DSG4 4 2 SG
+
+* --- split resonator across the rotor halves (ND5..ND9..ND10..ND6) ---
+LR1 5 9 3.04e-5
+CR  9 10 7.89e-10
+LR2 10 6 3.04e-5
+KR  LR1 LR2 0.30
+
+* --- 12 Cem branches across Ca/Cb (ND11-22): L_coil + C_block, resonant at PRF ---
+* (representative; one per node, grouped A on Ca / B on Cb)
+Ccb1 1 11 4.4e-7
+Lcm1 11 2 0.64
+Ccb2 3 12 4.4e-7
+Lcm2 12 4 0.64
+
+* the rail return reference (no separate ground; tie weakly for the solver)
+Rref NDRAIL 0 1e12
+.end

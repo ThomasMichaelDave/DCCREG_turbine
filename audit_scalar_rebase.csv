@@ -1,0 +1,12 @@
+scalar,inherited,recomputed,delta_rel,geometry,topology,switch,tier
+"z (galvanic anchor)",1.203300,1.334002,0.1086,current-16-280/309,v0.2-relabel,spark-gap-mid,OC
+"DOUBLER_ETA",0.385956,0.367890,-0.0468,current-16-280/309,v0.2-relabel,spark-gap-mid,OC
+"USEFUL/fire (mJ)",6.152584,5.864596,-0.0468,current-16-280/309,v0.2-relabel,spark-gap-mid,OC
+"W_mech/fire (mJ)",15.941162,15.941162,0.0000,current-16-280/309,v0.2-relabel,spark-gap-mid,OC
+"W_coll/fire (mJ)",12.448900,12.448900,0.0000,current-16-280/309,v0.2-relabel,spark-gap-mid,OC
+"Q_isl (uC)",1.395100,1.395100,0.0000,current-16-280/309,v0.2-relabel,spark-gap-mid,OC
+#verdict,FOUNDATION-DRIFTS
+#z_anchor_old,1.2033
+#z_anchor_new,1.3340
+#DOUBLER_ETA_old,0.385956
+#DOUBLER_ETA_new,0.3679
