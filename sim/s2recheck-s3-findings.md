@@ -73,6 +73,12 @@ low edge of the window. **Recommend opening SG3b/SG4b toward ~6.0–6.5 mm** (is
 ceiling (max spacing ~6.7 mm). The governor sheds the surplus (sink rises modestly), the crowbar stays
 idle.
 
+> **S5 update (routed to TMD, `s5-operating-point`):** this "15.5 kV tight" caveat is now **RESOLVED and
+> PINNED** — closing the pump↔tank↔clamp loop self-consistently gives `OPERATING-POINT-STABLE` with
+> **+12.2 % / +21.5 % margin at the 6.0 / 6.5 mm gap** (V_fire 18.7 / 20.3 kV, both < 21 kV C1/C2), crowbar
+> idle, across Q = 320/500/900. The fire voltage is gap-set, not anchored. S5 also flags `DIELECTRIC-Q-FLAG`
+> (garolite tanδ caps the AC ring-Q, but the series-DC-hold topology is robust to it).
+
 ---
 
 ## Verdict set + design output
