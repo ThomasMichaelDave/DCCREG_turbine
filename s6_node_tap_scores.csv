@@ -1,0 +1,12 @@
+tap,phase,isolation,vmatch,disturbance,score,gate_ok,note
+"core-direct 9/10 (gap=governor)",2,2,2,1,7,True,"one element fires on (core>15kV) AND (rotor in rising-L); sheds excess THROUGH the Cems"
+"transfer-cap C3/C4 (ride stepping)",2,1,2,1,6,False,"rides the existing C3/C4 stepping; no new gap station but needs gating + detune check"
+"governor re-route (clamp->Cems)",0,2,1,2,5,False,"needs a phase buffer to align the voltage-gated release to a rising-L window"
+#best_node,core-direct 9/10 (gap=governor)
+#regen_station_groupA_deg,16.05
+#regen_station_groupB_deg,46.05
+#rotation_sense,counter
+#surplus_mJ_per_fire,23.33
+#cem_loss_J_per_stroke,17.7
+#surplus_to_loss_ratio,1.3151e-03
+#verdict,COUNTER-ROTATING + REGEN-CLOSES-AT-CORE + REGEN-TRIVIAL
