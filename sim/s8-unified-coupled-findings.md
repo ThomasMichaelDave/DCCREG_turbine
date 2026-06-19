@@ -1,122 +1,105 @@
-# Findings — S8: unified coupled model + four-destination energy ledger
+# Findings — S8 r0.2: unified coupled model, EMERGENT doubler
 
-**Branch** `s8-unified-coupled-ledger` (off `main`). **Verdict:** **`SYNERGY-GENERIC`** — across the whole
-tuning sweep the coupled steady-state dissipation matches the floor; enabling each coupling moves the
-dissipation fraction by < tolerance; **the nest is the sum of its parts.** The conservation guard closes to
-**2.3×10⁻⁶** at every tuning point, so the result is trustworthy and not a numerical phantom. The honest prior
-is **vindicated** — and the one concrete payoff is a debunking: the stitched **53 W garolite dielectric loss
-is a continuous-ring phantom**; the coupled (series-DC) value is **0.03 W**.
+**Branch** `s8-unified-coupled-ledger` rev **r0.2** (off `main`; supersedes r0.1). **Verdict:**
+**`SYNERGY-GENERIC` — now *earned*, not structural.** Plus the load-bearing **sub-result: the emergent
+spark-gap `DOUBLER_ETA` = 0.385**, which **resolves the audit residual *above* its 0.368 floor** — with the
+breakdown threshold *in the solve* the arc loss is ~0.1 %, not the 1.8 % the audit got by over-counting the
+commutation charge. The foundation holds even closer to the ideal 0.386 than the audit suggested.
 
-**What S8 is:** one coupled electromechanical model of the whole nest (split resonator + varicap pump + Cem
-branches + contra-rotation), instrumented to report energy **by destination per cycle** — storage,
-circulation, output, dissipation — replacing the *stitched* S5–S7 budget that solved each box in isolation
-and added them. The question only a coupled model can answer: is `E_diss/E_in` lower/equal/higher than the
-stitched prediction, and if lower, which coupling carries it?
+**Why r0.1 was retracted as the synergy test (a code read found the verdict was assumed):** (1) the dominant
+losses were hard-coded scalars independent of every DOF → flat by construction; (2) output was pinned at 0
+(`P_MOTOR < P_CORE` hard-coded) → `diss_frac ≡ 1` by identity; (3) the guard checked only the fire-ring
+sub-ODE — the machine ledger was tautological (`E_in := E_diss + E_out`). **r0.2 removes all three:** the
+doubler is **unfrozen into the dynamics** (a real spark-gap transfer — hold off to V_bk, fire through V_arc,
+quench at current-zero) so the **C-C tax emerges and responds to V_bk**; **output is emergent**; and the
+guard is **machine-level against an independent belt input**. (The dielectric debunk 53 W → 0.033 W and the
+fire-ring ODE are kept from r0.1 — the parts that were right.)
 
-**Non-negotiable framing honored — no new energy.** Everything is redistribution; the belt sources every watt;
-a "synergy" would be a lower dissipation *fraction* (efficiency), never gain. The **hard conservation guard**
-(a non-closing ledger = a bug, STOP and fix) is what makes the verdict trustworthy — and it earned its keep:
-the first build double-counted the Cem electrical input and mis-booked the C_R chain; the guard fired
-(`CONSERVATION-VIOLATED`, residual 0.24), and the ledger was rebuilt to one consistent energy chain before any
-result was believed.
+**The guard earned its keep, again.** The first r0.2 build double-counted the fire-gap arc (it's *inside* the
+C_R chain that `E_belt_in` already tallies) — the machine guard caught it (`diss_frac = 1.0004 > 1`, residual
+3.6×10⁻⁴), and the fix closed the ledger to **0.0**. A non-closing ledger is a bug, not a discovery.
 
-**Method:** custom Python integrator (SPICE ruled out — the nonlinear shuttle is ngspice-blocked, S7). The
-fast f₀ ring transient (the only stiff part) is integrated at f₀ resolution with the dielectric loss as a
-genuine shunt conductance in the dynamics; the slow Cem/mechanical at the PRF scale; mechanical quasi-static at
-fixed ω_rotor. Consumer of the frozen physics (z from `shuttle_core`, reach from `resonator_sim`) — edits none;
-empty-diff asserted.
+**Consumes the audited foundation:** z-anchor **1.334**, W_mech/W_coll/Q_isl HOLD, C_R 789 pF; `DOUBLER_ETA`
+**recomputed in-model**, not inherited. Frozen solvers byte-identical (empty-diff asserted). No new energy.
 
 ---
 
-## §5 named checks
+## §4 named checks
 
 | # | check | result |
 |---|---|---|
-| 1 | frozen byte-identical empty-diff | ✓ clean (asserted at end) |
-| 2 | **Gate 0** — couplings-off reproduces z, reach, f₀ | z = **1.2033**, f₀ = **637 kHz**, reach **14.95 kV** ✓ |
-| 3 | **conservation guard** < 0.1 % at every tuning point | max residual **2.3×10⁻⁶** ✓ |
-| 4 | baseline partition + dissipation vs stitched | dielectric **0.03 W** vs stitched 53 W (debunked) |
-| 5 | coupled partition — Δ from enabling each coupling | **+0.0000** for k, C(θ), Cems (no synergy) |
-| 6 | tuning-sweep map — sub-stitched minimum? | none; `E_diss/E_in` flat at the floor |
-| 7 | parametric probe `[RH]` | dormant (rotor 300 Hz vs 2·f₀ = 1.27 MHz) |
-| 8 | verdict + which coupling carries it | `SYNERGY-GENERIC` — no coupling carries a synergy |
+| 1 | frozen byte-identical empty-diff | ✓ clean |
+| 2 | **Gate 0** — emergent doubler (ideal limit) reproduces z=**1.334** + η=**0.386** + 15 kV | ✓ (tax frac 0.614) |
+| 3 | emergent spark-gap `DOUBLER_ETA(V_bk)` vs 0.386 and the audit's 0.368 | **0.385** @ design gap — *above* the floor |
+| 4 | machine-level guard `\|E_belt_in − (E_diss+E_out+ΔS)\|/E_belt_in` < 0.1 % (independent) | **0.0** at every point |
+| 5 | four-destination partition, **output as a result** | output **~0 W** (S7 core-limited motor — measured) |
+| 6 | synergy sweep with the emergent C-C tax | `diss_frac` flat at the floor — now **earned** |
+| 7 | parametric probe `[RH]` | dormant (300 Hz vs 2·f₀ 1.27 MHz) |
+| 8 | verdict + emergent-`DOUBLER_ETA` resolution | `SYNERGY-GENERIC` (earned); η = 0.385 |
 
-## Stage A — Gate 0 (couplings off → reproduce the boxes)
+## Stage A — emergent doubler Gate 0
 
-The model reproduces the validated pieces **before** any coupling is believed: galvanic **z = 1.2033**
-(`shuttle_core`, within the 0.03 witness tol), **f₀ = 637 kHz** (L_R 79 µH / C_R 789 pF), **15 kV reach**
-(`resonator_sim`, v_peak 14.95 kV, crowbar idle). Gate 0 **PASS** — the model earns trust.
+The dynamic spark-gap doubler, in the **ideal-diode limit** (V_bk → 0, V_arc → 0, continuous conduction),
+reproduces the frozen boxes **on the current geometry**: emergent **z = 1.3340** (the re-anchored value, not
+the stale 1.2033) and emergent **DOUBLER_ETA = 0.3860** (tax fraction 0.6140) — both to four digits. The
+energy partition (W_mech the constant-Q stroke, E_tax the gap equalization) falls out of the integration. **Gate
+0 PASS** — the model earns trust before any spark-gap or coupling number is believed.
 
-## Stage B — four-destination ledger + hard conservation guard
+## Stage B — emergent spark-gap `DOUBLER_ETA(V_bk)` — the audit residual closed
 
-| destination | baseline (all couplings on) |
-|---|---|
-| **storage** S | 88.76 mJ (C_R at 15 kV) — ∮dS ≈ 0 at steady state |
-| **circulation** (diagnostic) | ~1980 mJ peak-to-peak (the fire-transient reactive slosh — high effective Q) |
-| **output** (contra-rotation) | **~0 W** — the motor is core-loss-limited (S7 BALANCE-FAILS); no net contra-rotation |
-| **dissipation** | **56.1 W** total |
-
-**Conservation guard: residual 2.3×10⁻⁶** (the fire-ring ODE closes to machine precision once the dielectric
-shunt is in the dynamics). **Dissipation breakdown:** C_R chain (doubler C-C tax + dielectric + ring copper +
-governor-shed) ≈ 28 W, **core 15 W**, **rotor drag 10 W**, governor-shed 11 W — and **dielectric 0.033 W**.
-
-**The 53 W phantom, debunked.** The stitched budget booked the garolite dielectric at **~53 W** (= 88 mJ/cycle)
-— but the *whole* C_R energy chain is only ~28 mJ/cycle, so 53 W of dielectric is **physically impossible**: it
-exceeds the entire chain. The coupled value is **0.033 W** — a **1584× over-estimate** in the stitched figure.
-The cause is the **series-DC-hold waveform**: C_R holds 15 kV DC and rings only ~0.5 µs per 1.67 ms fire (duty
-~0.03 %), so the AC voltage that drives tanδ loss is duty-cycled to ~0. This is **the topology already found in
-coil-topology/S5, not a hidden coupling** — and crucially **tanδ is heat, not circulation** (the brief's
-"circulation vs dissipation" question for the 53 W resolves as: it was never 53 W of either; it was a
-continuous-ring booking error).
-
-## Stage C — couplings one at a time
-
-| config | E_diss/E_in | residual | Δ vs OFF |
+| V_bk | η (V_arc 20) | η (35) | η (50) |
 |---|---|---|---|
-| couplings OFF | 1.0000 | 2.3e-06 | — |
-| + k (resonator) | 1.0000 | 2.3e-06 | **+0.0000** |
-| + C(θ) pump | 1.0000 | 2.3e-06 | **+0.0000** |
-| + Cems load+torque | 1.0000 | 2.3e-06 | **+0.0000** |
+| 0–8 kV | 0.3854 | **0.3851** | 0.3847 |
+| 12 kV | 0.4180 | 0.4176 | 0.4172 |
 
-Enabling each coupling moves the dissipation fraction by **less than tolerance** — no inter-box energy exchange
-changes the partition. (The Cems are f₀ spectators — S7 — so they carry no reactive exchange with the ring;
-the resonator k only re-sizes L_total; the varicap C(θ) is the pump, already in the baseline.)
+**At the design gap (V_bk = 6 kV, V_arc = 35 V): emergent `DOUBLER_ETA` = 0.385, arc fraction 0.1 %.** This
+**resolves the audit residual** — and *corrects* it: the audit bolted `E_arc = V_arc·Q_cyc` onto the ideal
+charge flow and got 0.368, but it **over-counted the commutation charge by ~18×** (8.23 µC vs the
+self-consistent ~0.46 µC). With the threshold *in the solve*, the arc loss is only ~0.1 % of W_mech, so
+**`DOUBLER_ETA` effectively holds at ~0.385**, very close to the ideal 0.386. The threshold does *not* add tax
+(it can only reduce it: at high V_bk the gaps hold off, transfer less, and η *rises* to 0.42 — a different
+regime). **v0.11 should consume 0.385, not the audit's 0.368.**
 
-## Stage D — tuning sweep (the synergy question)
+## Stage C — machine-level conservation guard
 
-`E_diss/E_in` and the total dissipation (56.1 W) are **flat across every DOF**: septum (garolite ↔ mica), k
-(0.0 / 0.3 / 0.6), Cem fire-station phase (±15°), cap-family scale (0.5× / 2×). **No sub-stitched minimum
-exists** — the floor *is* the minimum. The **U-tube / local-wrong probe** comes back negative: deliberately
-detuning a local element off its isolated optimum does **not** lower the global dissipation fraction. Notably
-the **septum material is not load-bearing** at this operating point (garolite vs mica both give ~0.03 W
-dielectric) — the stitched "swings the tank loss ~5×" applied only to the continuous-ring phantom.
+`E_belt_in` is computed **independently** = the belt's mechanical work (varicap reaction W_mech + island
+collapse + rotor drag + Cem-drive mechanical). The four destinations: storage **88.76 mJ**, circulation
+**1980 mJ** (the fire-transient reactive slosh), **output ~0 W**, dissipation **138.1 W**. The machine ledger
+closes to **residual 0.0** (< 0.1 %). **Output ~0 is a *result*** — the S7 pump-/core-limited motor (the Cems
+draw 14 W but their 15 W core loss alone exceeds it, so no net contra-rotation) — **not** the r0.1 hard-coded
+0.
+
+## Stage D — synergy sweep (now a real test)
+
+`diss_frac` is flat (≈ 1.000) across every DOF — V_bk, septum, k, fire-phase, cap-scale — **but this is now
+earned, not structural:** the emergent C-C tax genuinely *responds* (η_doubler varies **0.385 → 0.418** over
+V_bk), yet the **dissipation fraction stays at the floor** because the output is ~0. In a no-consumer machine
+the belt input becomes essentially all heat regardless of how the tax is tuned — so a flat `diss_frac` is the
+correct, measured answer. The U-tube/local-wrong probe is negative: no coupling drops the global fraction
+below the floor.
 
 ## Stage E — parametric probe `[RH]`
 
-The rotor modulation (~300 Hz) is **2.4×10⁻⁴ of 2·f₀ (1.27 MHz)** — the parametric channel is **dormant** by
-~3.5 decades. A hypothetical modulation lock at f₀/2 (319 kHz) would open it, but that is a *different machine*
-(an exploratory redesign, out of scope). **No parametric gain at the design point** — the time-varying
-varicaps charge the ring, they do not parametrically pump it. (Guard applies here too: any apparent gain would
-have to trace to mechanical work in.)
+Rotor modulation (~300 Hz) is 2.4×10⁻⁴ of 2·f₀ (1.27 MHz) — **dormant** by ~3.5 decades. No parametric gain at
+the design point (would need a redesign to a faster modulation lock; the guard applies — any gain must trace
+to belt work).
 
-## Verdict
+## Verdict + roadmap
 
-**`SYNERGY-GENERIC`.** Across the sweep the coupled `E_diss/E_in` matches the floor; no coupling carries a
-synergy; tuning only redistributes within the floor; the belt supplies the full piecewise dissipation. **The
-conservation-tuning question is closed** — TMD's U-tube intuition does not pay out here: the nest is the sum of
-its parts, the floor is real, and the only levers are the **floor** ones (septum → dielectric is already
-negligible; lamination/flux → core; vacuum → windage). This **vindicates the stitched budget** and clears the
-path to the v0.11 freeze + the material/lamination budgets with confidence the piecewise numbers hold.
-
-**The one correction the coupled model makes** (not a synergy, an accounting fix): the S5 garolite "53 W" was a
-continuous-ring phantom; the real series-DC dielectric is 0.03 W, and the septum material is not the
-load-bearing loss the stitched budget assumed. The dominant floor terms are the **doubler C-C tax, the Cem core
-loss, and the drag** — exactly where the S7 levers point.
+**`SYNERGY-GENERIC` (earned).** With the dominant C-C tax now emergent and able to respond to V_bk, the
+dissipation fraction is still flat at the floor — the nest is the sum of its parts, the belt supplies the full
+dissipation, and **this time it is measured, not assumed**. No coupling carries a synergy. **Sub-result
+(independent of the synergy verdict): emergent `DOUBLER_ETA` = 0.385** — it *resolves the audit residual above
+its 0.368 floor* (the audit over-counted the arc charge), so the foundation holds even closer to 0.386 than the
+audit indicated. **v0.11 consumes 0.385**, the z-anchor 1.334, and the unchanged W_mech/W_coll/Q_isl; the
+hold-power floor is re-stated on 0.385 (a ~0.3 W-class change vs the 0.368 assumption), and S5–S8's qualitative
+verdicts stand. This is the last analysis in the arc → **v0.11 (the reconvergence freeze)** next, then Phase 6
+full-deck SPICE on the current topology, then the mechanical budgets.
 
 ## Deliverables
 
-`sim/s8_unified_coupled.py` (coupled integrator: Gate-0 regression, four-destination ledger, hard conservation
-guard, tuning sweep, `[RH]` parametric probe) · this findings doc · `s8_energy_partition.csv` (per tuning
-point, with the guard residual) · `s8_partition.png` (four destinations + the 53 W-vs-0.03 W phantom) ·
-`s8_diss_frac_sweep.png` (dissipation fraction over tuning vs the stitched line) · `s8_conservation_guard.png`
-(the guard closing at every point). Frozen empty-diff asserted. **Not merged.**
+`sim/s8_unified_coupled.py` **r0.2** (multi-rate integrator: emergent spark-gap doubler, kept fire-ring ODE,
+emergent Cem output, four-destination ledger, **machine-level** guard, sweep, `[RH]` probe; Gate-0 on 1.334) ·
+this findings doc (r0.2) · `s8_energy_partition.csv` (with the machine-level residual) ·
+`s8_doubler_eta_vs_vbk.csv` (the emergent η(V_bk), the audit residual closed) · `s8r02_eta_and_sweep.png`.
+Frozen empty-diff asserted. **Not merged.**
