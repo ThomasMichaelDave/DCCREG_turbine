@@ -1,0 +1,18 @@
+phase,key,value,unit,tier
+1A,galvanic_z,1.2042,-,OC
+1B,L_total_uH,79.00,uH,OC
+1B,f0_split_kHz,631.9,kHz,OC
+1B,node_transient_kV,17.5,kV,OC
+1C,Z_cem_PRF_ohm,40.2,ohm,OC
+1C,Z_cem_f0_ohm,2.562e+06,ohm,OC
+1C,reach_v_peak_kV,14.95,kV,OC
+1C,P_motor_lo_W,3.69,W,IR-EST
+1C,P_motor_hi_W,14.00,W,IR-EST
+2A,windage_1pa_W,0.056,W,IR-EST
+2A,windage_100pa_W,5.627,W,IR-EST
+2A,core_W,15.0,W,IR-EST
+2A,drag_total_W,15.6-21.1,W,IR-EST
+2B,stator_drag_W,18.3,W,IR-EST
+2B,margin_W,-4.3,W,IR-EST
+2C,spinup_min,inf,min,IR-EST
+#verdict,OPPOINT-HOLDS + BALANCE-FAILS
