@@ -1,18 +1,12 @@
-# DXF punch-list — what the EE-schematic DXF (the brief's r0_13/r0_15) must contain
+# DXF flags — r0.15 EE schematic (for the next drawing rev)
 
-**Status:** the recon is BLOCKED on a schematic DXF that has never been committed. Two briefs (r0_15, then r0_13) assumed it exists; an exhaustive scan of all git history finds only radial-layout templates. To unblock `TOPOLOGY-CONFIRMED` and v0.11, an EE-schematic DXF must be committed with:
+The r0.15 schematic is committed and confirms the deck graph (TOPOLOGY-CONFIRMED). One soft flag remains for cosmetic cleanup (does **not** block the lock):
 
-1. **Drawn nets** (wires/polylines + symbol terminals), not just layer-named bodies — so
-   connectivity can be traced by spatial junction (the methodological point of r0.2).
-2. **The split resonator** — nodes ND9/ND10 with L_R1(5-9) + C_R(9-10) + L_R2(10-6).
-   (Absent from every committed DXF; the radial templates draw a single hub coil.)
-3. **The 24 motor components** — L_A1-6/C_AR1-6 (nodes 11-16, across Ca: coil-outer ND1,
-   cap-inner ND2) and L_B1-6/C_BR1-6 (nodes 17-22, across Cb: ND4/ND3). The 12 quadricore
-   irons + 440 nF caps. (Undrafted in every committed DXF.)
-4. **The four [?] gaps as drawn nets** — SG3a 1-7, SG4a 4-8 (load), BS3 3-7, BS4 2-8
-   (backstop, blocking the reverse of the 7->3 / 8->2 fire) — to confirm the freeze-§5 +
-   physics resolution against the actual drawing.
+## FLAG — ND7/ND8 label-position asymmetry (DXF, soft)
 
-**Latest committed DXF:** `varcap-nodeanalysis-template-r0.2.dxf` (49 layers, radial layout, no ND9/10, no motor, 0 INSERTs). It is a geometry template (node->component via layer names), not a wired schematic — sufficient for r0.1's layer-name recon, not for r0.2's net-for-net diff.
+- ND7 label @ (1574.389168460322, 1436.72634823195), ND8 label @ (1855.705060494227, 1435.87167619824). Under the A/B mirror about the schematic centre (x=1793), ND8 should sit near x=2012 but is at x=1856 (~157 off). Every other node pair mirrors exactly.
+- **Classification:** a label-POSITION asymmetry, not a proven connectivity error. The island ND8's connectivity (Cx4 8-2, SG4a 4-8, SG4b 8-2, BS4 2-8 — the group-B mirror of ND7) is coherent with freeze §5 and the deck. Likely a drafting-layout choice (the island body drawn at its physical position). **Action:** verify the ND8 label/body placement in the next rev for visual symmetry; no deck change needed.
 
-Once committed, re-run `python3 sim/topology_recon.py` — the gate auto-detects the schematic (ND9/10 + motor) and proceeds to the net-trace.
+## Method note (not a flag)
+
+The doubler/commutation symbols are drawn as raw primitives (lines/circles/splines), not blocks with named terminals, so an isolated per-symbol terminal trace is not robustly extractable. Those edges are confirmed by node-layout + symmetry + freeze §5 + the spatially-separable traced subset (C_R, SG1, SG2, C2). For a future fully-automated net-for-net diff, drawing the components as blocks with attributed terminals would let the tracer resolve every edge unambiguously.
