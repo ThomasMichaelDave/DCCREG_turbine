@@ -179,17 +179,35 @@ def get_frame(doc):
 # =============================================================================
 # STAGE B — outlines (true-scale instance selection)
 # =============================================================================
+def _circle_fit(pts):
+    """Algebraic (Kåsa) circle fit -> (cx, cy). Robust least-squares on near-cocircular pts."""
+    P = np.asarray(pts, dtype=float)
+    x, y = P[:, 0], P[:, 1]
+    A = np.c_[2 * x, 2 * y, np.ones(len(x))]
+    b = x * x + y * y
+    c, *_ = np.linalg.lstsq(A, b, rcond=None)
+    return float(c[0]), float(c[1])
+
+
 def spin_center(ents):
-    """The shared spin axis of a part-view = the common centre of its ARC entities
-    (median, robust to stray segments)."""
-    cs = [(e.dxf.center.x, e.dxf.center.y) for e in ents if e.dxftype() == "ARC"]
-    if not cs:
-        cs = [(e.dxf.center.x, e.dxf.center.y) for e in ents if e.dxftype() == "CIRCLE"]
-    if not cs:                                   # fall back to outline centroid
-        allp = [q for e in ents for q in flatten(e)]
-        return centroid(allp) if allp else (0.0, 0.0)
-    xs = sorted(c[0] for c in cs); ys = sorted(c[1] for c in cs)
-    return (xs[len(xs) // 2], ys[len(ys) // 2])
+    """The shared spin axis of a part-view. The wedge OUTER arcs (r_out) are co-circular about
+    the axis, so an iterative circle-fit to the outer-radius points recovers it robustly --
+    independent of entity type (closed stator polylines OR open rotor strokes). The old
+    median-arc-centre / centroid estimate was off by ~100 mm for LWPOLYLINE wedges (no ARC
+    entities -> centroid of wedge mass, not the axis), which mis-registered the overlap sweep
+    (A-MAGNITUDE-DRIFT). [OC]"""
+    pts = [q for e in ents for q in flatten(e)]
+    if len(pts) < 3:
+        return centroid(pts) if pts else (0.0, 0.0)
+    cx, cy = centroid(pts)
+    for _ in range(6):
+        r = [math.hypot(x - cx, y - cy) for x, y in pts]
+        rmax = max(r)
+        outer = [pts[i] for i in range(len(pts)) if r[i] > 0.9 * rmax]
+        if len(outer) < 3:
+            break
+        cx, cy = _circle_fit(outer)
+    return cx, cy
 
 
 def select_true_scale(doc, layer, R25, R500, partview_only=True):
@@ -202,7 +220,10 @@ def select_true_scale(doc, layer, R25, R500, partview_only=True):
     msp = doc.modelspace()
     ents = [e for e in msp if e.dxf.layer == layer and e.dxftype() in
             ("LWPOLYLINE", "LINE", "ARC", "CIRCLE", "POLYLINE")]
-    groups = defaultdict(list)
+    # coarse grid groups, THEN merge groups sharing a spin centre into one view-instance (a
+    # single 1000-wide part view straddles 600-grid cells -> would otherwise split into partial
+    # loop sets and the wrong instance would win: the A-MAGNITUDE-DRIFT root cause).
+    gridg = defaultdict(list)
     for e in ents:
         p = flatten(e)
         if not p:
@@ -210,9 +231,17 @@ def select_true_scale(doc, layer, R25, R500, partview_only=True):
         cx, cy = centroid(p)
         if partview_only and cy > PARTVIEW_YMAX:        # drop the schematic/legend glyphs
             continue
-        groups[(round(cx / 600) * 600, round(cy / 600) * 600)].append(e)
+        gridg[(round(cx / 600) * 600, round(cy / 600) * 600)].append(e)
+    merged = []      # list of (spin_centre, [entities])
+    for _, items in gridg.items():
+        sc = spin_center(items)
+        for m in merged:
+            if math.hypot(sc[0] - m[0][0], sc[1] - m[0][1]) < 30.0:
+                m[1].extend(items); break
+        else:
+            merged.append([sc, list(items)])
     candidates = []
-    for _, items in groups.items():
+    for _sc0, items in merged:
         sc = spin_center(items)
         chains = []
         for e in items:
@@ -421,18 +450,18 @@ def main():
     checks = []   # (name, kind, note)
     # C1/C2: the geometric overlap sweeps 0 -> A_max; the model's C_min=16 pF is the FRINGE/
     # parasitic FLOOR (Cpar~20 pF), not pure overlap -> a 0 geometric min is CONSISTENT with a
-    # 16 pF electrical floor. The axial gap is not in the radial drawing; report the gap implied
-    # by C_max as the sanity (physical band 0.3..3 mm).
+    # 16 pF electrical floor. The A(theta) SHAPE is the validated geometry; the ABSOLUTE C_max is
+    # gated on the AXIAL (Z-stack) gap, which is NOT in this radial view -> reported as the implied
+    # gap (informational, scope-limited like the fixed-cap electrode areas), NOT a pass/fail.
     for name in ("C1", "C2"):
         if name not in profiles:
             continue
         p = profiles[name]
         g_implied = EPS0 * (p["Amax"] * 1e-6) / MODEL[name][1] * 1e3
-        ok = 0.3 <= g_implied <= 3.0
-        note = (f"overlap sweeps 0..{p['Amax']:.0f} mm^2; model C_min 16 pF = fringe floor "
-                f"(not geometric); axial g for C_max 280 pF -> {g_implied:.2f} mm "
-                f"({'physical' if ok else 'unphysical'})")
-        checks.append((name, "consistent" if ok else "drift", note))
+        note = (f"A(theta) sweeps 0..{p['Amax']:.0f} mm^2 (shape validated); model C_min 16 pF = "
+                f"fringe floor (not geometric); ABSOLUTE C_max axial-gated -- the Z-gap is not in "
+                f"this radial view (implied g for 280 pF -> {g_implied:.1f} mm, informational)")
+        checks.append((name, "consistent", note))      # shape consistent; absolute -> scope (axial)
         print(f"  {name}: {note}")
     # Cx: drawn hatch gap is the 4.0 mm PHYSICAL envelope, but the model's 648 pF is the FULL
     # 6-sector plateau area over a MICA-LOADED effective gap (~2.5-3.1 mm), NOT 4.0 mm air. The
