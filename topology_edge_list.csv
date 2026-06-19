@@ -1,0 +1,46 @@
+component,node_a,node_b,group,source,authority,qmark_resolved
+C1,1,5,core,both,"freeze-nodemap+r0_6",False
+C2,4,6,core,both,"freeze-nodemap+r0_6",False
+Ca,1,2,core,both,"freeze-nodemap+r0_6",False
+Cb,3,4,core,both,"freeze-nodemap+r0_6",False
+Cx3,7,3,core,both,"freeze-nodemap+r0_6",False
+Cx4,8,2,core,both,"freeze-nodemap+r0_6",False
+SG1,2,5,comm,both,"freeze-§5 (node2->rail)",False
+SG2,3,6,comm,both,"freeze-§5 (node3->rail)",False
+SG3a,1,7,comm,both,"freeze-§5 (node1->bar)",True
+SG3b,7,3,comm,both,"freeze-§5 (bar->node3 FIRE)",False
+BS3,3,7,comm,both,"physics (blocks reverse of 7->3)",True
+SG4a,4,8,comm,both,"freeze-§5 (node4->bar)",True
+SG4b,8,2,comm,both,"freeze-§5 (bar->node2 FIRE)",False
+BS4,2,8,comm,both,"physics (blocks reverse of 8->2)",True
+L_R1,5,9,reson,both,"coil-topology/S7",False
+L_R2,10,6,reson,both,"coil-topology/S7",False
+C_R,9,10,reson,both,"freeze-§3 (C_R hemispheres 9/10)",False
+K1,,,reson,both,"coupling L_R1-L_R2 k=0.3",False
+L_A1,1,11,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+C_AR1,11,2,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+L_A2,1,12,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+C_AR2,12,2,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+L_A3,1,13,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+C_AR3,13,2,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+L_A4,1,14,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+C_AR4,14,2,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+L_A5,1,15,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+C_AR5,15,2,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+L_A6,1,16,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+C_AR6,16,2,motorA,deck+BlockD(no DXF),"Block-D + manifest",False
+L_B1,4,17,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+C_BR1,17,3,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+L_B2,4,18,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+C_BR2,18,3,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+L_B3,4,19,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+C_BR3,19,3,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+L_B4,4,20,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+C_BR4,20,3,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+L_B5,4,21,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+C_BR5,21,3,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+L_B6,4,22,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+C_BR6,22,3,motorB,deck+BlockD(no DXF),"Block-D + manifest",False
+#dxf,r0_6_radial_layout (r0_15_EE_schematic ABSENT)
+#motor_in_dxf,NO (24 Cems undrafted)
+#qmarks_resolved,SG3a=1-7;SG4a=4-8;BS3=3-7;BS4=2-8

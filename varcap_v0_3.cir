@@ -1,0 +1,58 @@
+* varcap.cir v0.3 — RECONCILED topology graph (node-for-node manifest of record)
+* =============================================================================
+* Reconciled against the AVAILABLE authorities: r0_6 DXF layer encoding + the
+* freeze-doc (varcap-design-freeze-v0.10.md) node map / spark-gap table + the
+* Block-D Cem map + charge-pump physics. The four [?] gaps are CLEARED:
+*   SG3a=1-7  SG4a=4-8  (load, freeze-§5)  ;  BS3=3-7  BS4=2-8  (backstop, blocks
+*   the reverse of the 7->3 / 8->2 fires -- physics).
+* PROVENANCE FLAGS (verdict TOPOLOGY-INCOMPLETE):
+*   - the DXF r0_15 EE schematic is ABSENT (only the r0_6 radial layout exists);
+*   - the 24 MOTOR components (L_A/C_AR/L_B/C_BR) are UNDRAFTED in any DXF;
+*   - the split coil L_R1/L_R2 is not yet in the DXF (single hub coil drawn).
+*   Full CONFIRMED waits on drafting the motor + an EE-schematic DXF.
+*
+* NODES: 1-4 stator | 5/6 shafts | 7/8 islands | 9/10 C_R hemispheres | 11-22 Cem junctions
+.subckt varcap_nest 1 2 3 4 5 6 7 8 9 10
+C1 1 5   * core  (freeze-nodemap+r0_6)
+C2 4 6   * core  (freeze-nodemap+r0_6)
+Ca 1 2   * core  (freeze-nodemap+r0_6)
+Cb 3 4   * core  (freeze-nodemap+r0_6)
+Cx3 7 3   * core  (freeze-nodemap+r0_6)
+Cx4 8 2   * core  (freeze-nodemap+r0_6)
+SG1 2 5   * comm  (freeze-§5 (node2->rail))
+SG2 3 6   * comm  (freeze-§5 (node3->rail))
+SG3a 1 7   * comm  (freeze-§5 (node1->bar))  [?]-CLEARED
+SG3b 7 3   * comm  (freeze-§5 (bar->node3 FIRE))
+BS3 3 7   * comm  (physics (blocks reverse of 7->3))  [?]-CLEARED
+SG4a 4 8   * comm  (freeze-§5 (node4->bar))  [?]-CLEARED
+SG4b 8 2   * comm  (freeze-§5 (bar->node2 FIRE))
+BS4 2 8   * comm  (physics (blocks reverse of 8->2))  [?]-CLEARED
+L_R1 5 9   * reson  (coil-topology/S7)
+L_R2 10 6   * reson  (coil-topology/S7)
+C_R 9 10   * reson  (freeze-§3 (C_R hemispheres 9/10))
+K1 L_R1 L_R2 0.30
+L_A1 1 11   * motorA  (Block-D + manifest)
+C_AR1 11 2   * motorA  (Block-D + manifest)
+L_A2 1 12   * motorA  (Block-D + manifest)
+C_AR2 12 2   * motorA  (Block-D + manifest)
+L_A3 1 13   * motorA  (Block-D + manifest)
+C_AR3 13 2   * motorA  (Block-D + manifest)
+L_A4 1 14   * motorA  (Block-D + manifest)
+C_AR4 14 2   * motorA  (Block-D + manifest)
+L_A5 1 15   * motorA  (Block-D + manifest)
+C_AR5 15 2   * motorA  (Block-D + manifest)
+L_A6 1 16   * motorA  (Block-D + manifest)
+C_AR6 16 2   * motorA  (Block-D + manifest)
+L_B1 4 17   * motorB  (Block-D + manifest)
+C_BR1 17 3   * motorB  (Block-D + manifest)
+L_B2 4 18   * motorB  (Block-D + manifest)
+C_BR2 18 3   * motorB  (Block-D + manifest)
+L_B3 4 19   * motorB  (Block-D + manifest)
+C_BR3 19 3   * motorB  (Block-D + manifest)
+L_B4 4 20   * motorB  (Block-D + manifest)
+C_BR4 20 3   * motorB  (Block-D + manifest)
+L_B5 4 21   * motorB  (Block-D + manifest)
+C_BR5 21 3   * motorB  (Block-D + manifest)
+L_B6 4 22   * motorB  (Block-D + manifest)
+C_BR6 22 3   * motorB  (Block-D + manifest)
+.ends
