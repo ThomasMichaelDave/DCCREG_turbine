@@ -71,6 +71,21 @@ def Cmax_from_geom(r_inMm, r_outMm, g_vMm, n_kept=6, N_sec=12):
     return EPS0 * (A * 1e-6) / (g_vMm * 1e-3) * 1e12                       # pF
 
 
+# the ROTOR body is the active-band outer + the bus margin (ref-radii: R387 active-band outer ->
+# R491 rotor outer after bus -> R500 plate edge). The rim mass/stress is at R491, not R387. The
+# search still OPTIMISES r_outMm (the active band); only the REPORTED diameter + the rim carry the
+# bus -- a constant multiplier, so the optimum r_outMm is unchanged. [OC] geometry definition.
+BUS_MARGIN = 0.27                                          # 491/387 - 1
+
+
+def rotor_outMm(d):
+    return d["r_outMm"] * (1.0 + BUS_MARGIN)
+
+
+def rotor_dia_mm(d):
+    return 2.0 * d["r_outMm"] * (1.0 + BUS_MARGIN)
+
+
 def z_eta_Wmech(C1min, C1max, Ca, Cpar):
     """FROZEN-SOLVER AUTHORITY (I2): z + eta from doubler_core for the CHOSEN ratios. z/eta are
     scale-free (ratios only) -> cached by the normalized ratio tuple. Returns (z, eta)."""
@@ -178,7 +193,7 @@ def invariants(d):
     out["I8_dc_trapped_tank"] = (i8, 1.0 if i8 else -1.0, "tank held DC (tan-delta duty-limited)")
 
     # --- I9 mechanical: rim speed < limit; supercritical; vacuum <= spec ---
-    rim = OMEGA * (d["r_outMm"] * 1e-3)
+    rim = OMEGA * (rotor_outMm(d) * 1e-3)              # rim at the ROTOR body (R491), not R387
     sl9 = (RIM_HARD - rim) / RIM_HARD
     superc = d.get("supercritical", True)
     vac_ok = d.get("vacuum_Pa", 1.0) <= VAC_SPEC_PA
@@ -272,7 +287,7 @@ def objective_value(d, objective):
     C1max = d["_C1max"]; eta = d["_eta"]
     W_mech = 15.941e-3 * (C1max / 280.0)
     if objective == "min_diameter":
-        return d["r_outMm"] * 2.0
+        return rotor_dia_mm(d)
     if objective == "max_eta":
         return -eta
     if objective == "max_rpm":
@@ -282,7 +297,7 @@ def objective_value(d, objective):
     if objective == "max_energy_density":
         vol = math.pi * (d["r_outMm"] * 1e-3) ** 2 * 0.05     # rough disc volume
         return -(0.5 * d["C_R_pF"] * 1e-12 * d["V_targetV"] ** 2) / vol
-    return d["r_outMm"] * 2.0
+    return rotor_dia_mm(d)
 
 
 def search(objective, base, grid):
@@ -322,13 +337,21 @@ def main():
     print("\n[check 2] REGRESSION ANCHOR — the established ~1000 mm / 15 kV machine:")
     anc = dict(ESTABLISHED)
     inv = invariants(anc)
+    anc_dia = rotor_dia_mm(anc)
     print(f"  synthesized C1_max = {anc['_C1max']:.0f} pF (target 280) | z={anc['_z']:.4f} "
-          f"eta={anc['_eta']:.4f} | rotor dia {2*anc['r_outMm']:.0f} mm")
+          f"eta={anc['_eta']:.4f} | rotor dia {anc_dia:.0f} mm (active band {2*anc['r_outMm']:.0f} "
+          f"+ {BUS_MARGIN*100:.0f}% bus -> R491 rotor)")
     anc_feasible = feasible(inv)
     for k, (ok, sl, det) in inv.items():
         print(f"    {'PASS' if ok else 'FAIL':4s} {k:22s} slack {sl:+.2f}  {det}")
-    if not (abs(anc["_C1max"] - 280) < 5 and anc_feasible):
-        print("  -> REGRESSION-FAIL: the established machine does not reproduce/pass. STOP.")
+    # the canary now checks the DIMENSION too: the established rotor must reproduce at ~982 mm
+    # (it would fail at the active-band 774 mm if the bus were dropped -- that is the canary's job).
+    dia_ok = 960 <= anc_dia <= 1010
+    print(f"  [check 2] rotor-diameter assertion: {anc_dia:.0f} mm in [960,1010] "
+          f"{'PASS' if dia_ok else 'FAIL'} (vs the R491 rotor ~982 mm)")
+    if not (abs(anc["_C1max"] - 280) < 5 and anc_feasible and dia_ok):
+        print("  -> REGRESSION-FAIL: the established machine does not reproduce/pass "
+              f"(C1_max/z/eta or rotor dia {anc_dia:.0f} mm != ~982). STOP.")
         return 1
     print(f"  -> regression anchor REPRODUCES (280 pF, z 1.334) and is FEASIBLE; binding = "
           f"{binding(inv)}")
@@ -360,7 +383,7 @@ def main():
         bc, why = binding_active(d, obj, base, grid)
         results[obj] = (d, inv, bc)
         print(f"  searched {n_eval} candidates, {n_feas} feasible.")
-        print(f"  OPTIMAL free vars: rotor dia {2*d['r_outMm']:.0f} mm | g_v {d['g_vMm']:.1f} mm | "
+        print(f"  OPTIMAL free vars: rotor dia {rotor_dia_mm(d):.0f} mm | g_v {d['g_vMm']:.1f} mm | "
               f"C_min {d['C1min_pF']:.0f} pF | rpm {d['rpm']:.0f} | C_max {d['_C1max']:.0f} pF | "
               f"z {d['_z']:.4f} eta {d['_eta']:.4f}")
         print(f"  >>> BINDING CONSTRAINT: {bc}  [{why}]  ({inv[bc][2]})")
@@ -371,8 +394,9 @@ def main():
 
     # ---- infeasible-goal probe (exercise the SYNTH-INFEASIBLE path + the named blocker) ----
     print("\n" + "=" * 92)
-    print("INFEASIBLE-GOAL PROBE: demand a tiny rotor (dia <= 300 mm, r_out <= 150) at 15 kV:")
-    tiny = dict(r_outMm=[150], g_vMm=[3.0, 5.0, 7.0], C1min_pF=[20, 30], rpm=[3000])
+    print("INFEASIBLE-GOAL PROBE: demand a tiny rotor (dia <= 300 mm rotor = r_out <= 118 mm "
+          "after the 27% bus) at 15 kV:")
+    tiny = dict(r_outMm=[118], g_vMm=[3.0, 5.0, 7.0], C1min_pF=[20, 30], rpm=[3000])
     bt, ne, nf = search("min_diameter", base, tiny)
     if bt is None:
         # name the blocker: the PHYSICAL root-cause invariant (z-collapse etc.), prioritised over
@@ -381,7 +405,7 @@ def main():
         fails = Counter()
         for g_v in tiny["g_vMm"]:
             for C1min in tiny["C1min_pF"]:
-                dprobe = make_design(base, r_outMm=150, g_vMm=g_v, C1min_pF=C1min)
+                dprobe = make_design(base, r_outMm=118, g_vMm=g_v, C1min_pF=C1min)
                 for k, v in invariants(dprobe).items():
                     if not v[0]:
                         fails[k] += 1
@@ -409,7 +433,7 @@ def main():
         for o in results:
             if results[o]:
                 d, inv, bc = results[o]
-                print(f"    {o:16s}: dia {2*d['r_outMm']:.0f} mm, z {d['_z']:.3f}, eta {d['_eta']:.3f} "
+                print(f"    {o:16s}: dia {rotor_dia_mm(d):.0f} mm, z {d['_z']:.3f}, eta {d['_eta']:.3f} "
                       f"-> BOUND BY {bc}")
     else:
         verdict = "SYNTH-INFEASIBLE"
@@ -434,7 +458,7 @@ def _emit(results, anc, anc_inv):
         for o, r in results.items():
             if r:
                 d, inv, bc = r
-                w.writerow([o, f"{2*d['r_outMm']:.0f}", f"{d['g_vMm']:.1f}", f"{d['C1min_pF']:.0f}",
+                w.writerow([o, f"{rotor_dia_mm(d):.0f}", f"{d['g_vMm']:.1f}", f"{d['C1min_pF']:.0f}",
                             f"{d['_C1max']:.0f}", f"{d['_z']:.4f}", f"{d['_eta']:.4f}", bc, "IR"])
     p2 = os.path.join(ROOT, "synth_compliance.csv")
     with open(p2, "w", newline="") as f:
@@ -454,13 +478,13 @@ def _emit(results, anc, anc_inv):
         for r_out in [120, 150, 175, 200, 250, 300, 350, 387, 450, 500]:
             dd = make_design(dict(ESTABLISHED), r_outMm=r_out, g_vMm=g_v, C1min_pF=20)
             C1max = Cmax_from_geom(dd["r_inMm"], r_out, g_v); z, _ = z_eta_Wmech(20, C1max, dd["Ca_pF"], dd["Cpar_pF"])
-            dias.append(2 * r_out); zs.append(z)
+            dias.append(2 * r_out * (1.0 + BUS_MARGIN)); zs.append(z)
         ax.plot(dias, zs, "o-", color=col, label=f"g_v={g_v:.0f} mm", ms=3)
     ax.axhspan(Z_BAND[0], Z_BAND[1], alpha=0.12, color="#2a9d8f", label=f"I3 z-band {Z_BAND}")
     ax.axhline(Z_BAND[0], ls="--", color="#e76f51", lw=1)
     for o, r in results.items():
         if r:
-            ax.scatter([2 * r[0]["r_outMm"]], [r[0]["_z"]], marker="*", s=180, zorder=5,
+            ax.scatter([rotor_dia_mm(r[0])], [r[0]["_z"]], marker="*", s=180, zorder=5,
                        edgecolor="k", label=f"{o} opt")
     ax.set_xlabel("rotor diameter (mm)"); ax.set_ylabel("doubler z (frozen solver)")
     ax.set_title("DESIGN-SYNTH: the I3 z-band edge limits the minimum size (scale-free derivation)")
