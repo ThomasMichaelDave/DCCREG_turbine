@@ -1,0 +1,4 @@
+objective,rotor_dia_mm,g_v_mm,C_min_pF,C_max_pF,z,eta,binding_constraint,tier
+min_diameter,500,3.0,20,248,1.2723,0.4410,I3_scalefree_z,IR
+max_eta,700,5.0,50,316,1.2254,0.5262,I3_scalefree_z,IR
+max_rpm,500,3.0,20,248,1.2723,0.4410,I9_mechanical,IR
