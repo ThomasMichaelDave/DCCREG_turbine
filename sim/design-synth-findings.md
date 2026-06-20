@@ -13,6 +13,28 @@ per candidate — it never re-derives, fits, or overrides them — so flexibilit
 feasible region the invariants define. The frozen solvers keep *intent* and *geometry* from ever
 trading places.
 
+> **r0.2 correction (bus margin) — `CANARY-RESTORED`.** r0.1 reported the rotor diameter as the
+> *active-band* diameter (`r_out × 2`) with **no bus margin**, and computed the rim at `r_out` — so the
+> established machine "reproduced" at 774 mm instead of its real **~982 mm** rotor (R387 active-band
+> outer → **R491 rotor outer after the 27 % bus** → R500 plate edge), and I9's rim margin was
+> overstated. The synthesis *logic* is unchanged (z-band, bindings, infeasible-naming are ratio-based,
+> bus-independent). Fixed: `BUS_MARGIN = 0.27`, every reported diameter = `2·r_out·(1+bus)`, the rim is
+> at the **rotor body** (R491), and the **canary now asserts the rotor diameter** (~982 mm) — it
+> correctly **fails at 774 mm if the bus is dropped** (verified). Corrected table:
+>
+> | item | r0.1 (no bus) | r0.2 (corrected) |
+> |---|---|---|
+> | established rotor (canary) | 774 mm | **983 mm** ✓ (assertion live, [960,1010]) |
+> | min_diameter @ 15 kV | 500 mm | **635 mm** (r_out 250) — bound by I3 |
+> | max_eta | 700 mm | **889 mm** (r_out 350) — bound by I3 |
+> | max_rpm rim @ 6000 rpm | 157 m/s | **199 m/s** (at the 200 m/s wall) |
+> | max_rpm I9 ceiling | "9000 rpm" | **~6000 rpm** (rim binds at the rotor radius) |
+>
+> The infeasible probe is re-stated in the corrected definition: "rotor dia ≤ 300 mm" is now
+> `r_out ≤ 118 mm` (was 150); blocker unchanged (z → 1.0, **I3**). z/η and all binding constraints are
+> identical to r0.1. The synthesizer's diameters are now comparable to the parametric reference, the
+> HTML sizer, and the worked example (all apply bus ≈ 0.27–0.29).
+
 ---
 
 ## §5 named checks
