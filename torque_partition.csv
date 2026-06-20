@@ -1,0 +1,10 @@
+quantity,mJ_per_cycle,tier
+belt_in(torque integral),28.8735,OC
+dissipation,28.8735,OC
+doubler C-C tax,9.7886,OC
+reach dielectric+copper,12.6351,OC
+island transfer loss,0.1888,OC
+governor shed,4.4068,OC
+drag,1.8542,OC
+guard_residual,9.61e-16,OC
+#verdict,GUARD-CLOSES + SELF-SPIN-INDETERMINATE,

@@ -1,0 +1,6 @@
+element,gap_mm,area_mm2,epsr,nominal_pF,tier
+Ca,1.0,NA,NA,NA,OC
+Cb,1.0,NA,NA,NA,OC
+C_R,12.0,NA,NA,NA,OC
+Cx3,4.0 envelope (3.0 air + 0.3 mica/face),,5.4,,OC (radial overlap A(theta) in geom_profiles; dielectric -> sim)
+Cx4,4.0 envelope (3.0 air + 0.3 mica/face),,5.4,,OC (radial overlap A(theta) in geom_profiles; dielectric -> sim)
