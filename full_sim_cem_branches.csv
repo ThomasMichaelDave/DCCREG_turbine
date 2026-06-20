@@ -1,0 +1,10 @@
+branch,I_peak_mA,NI_At,B_peak_mT,copper_W,core_W,output_share_W,tier
+L_A1/C_AR1,107.54,114.4,71.89,0.2325,0.0807,0.1518,OC
+L_A2/C_AR2,107.54,114.4,71.89,0.2325,0.0807,0.1518,OC
+L_A3/C_AR3,107.54,114.4,71.89,0.2325,0.0807,0.1518,OC
+L_A4/C_AR4,107.54,114.4,71.89,0.2325,0.0807,0.1518,OC
+L_A5/C_AR5,107.54,114.4,71.89,0.2325,0.0807,0.1518,OC
+L_A6/C_AR6,107.54,114.4,71.89,0.2325,0.0807,0.1518,OC
+#note,bank B (L_B/C_BR) mirrors bank A (group A/B alternate at PRF_branch)
+#f_res_Hz,299.9
+#Z_f0_ohm,2.563e+06
