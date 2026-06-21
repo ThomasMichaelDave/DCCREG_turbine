@@ -320,6 +320,85 @@ def search(objective, base, grid):
 
 
 # =============================================================================
+# Programmatic API (the HTML/Pyodide shell calls THESE) -- I/O-free, JSON-serialisable.
+# Logic UNCHANGED: these only EXPOSE what the CLI already computes (the invariant battery,
+# the search, the frozen-solver calls). The frozen solvers stay the sole authority on
+# z/eta/W_coll; this wrapper never substitutes its own.
+# =============================================================================
+DEFAULT_GRID = dict(r_outMm=[150, 200, 250, 300, 350, 387, 450, 500],
+                    g_vMm=[3.0, 5.0, 7.0, 10.0],
+                    C1min_pF=[20, 30, 50, 80],
+                    rpm=[3000, 6000, 9000, 12000])
+_BLOCKER_PRIORITY = ["I3_scalefree_z", "I4_insulate_first", "I9_mechanical",
+                     "I10_shuttle_integrity", "I7_motor_matched", "I5_tax_managed",
+                     "I6_parasitic_floor", "I8_dc_trapped_tank", "I2_solver_authority",
+                     "I1_conservation"]
+
+
+def established_anchor():
+    """The established ratio set (the canary). evaluate_design(established_anchor()) must return
+    rotor ~983 mm, z 1.334, eta 0.386, feasible on all 10."""
+    return dict(ESTABLISHED)
+
+
+def _result(d, inv, bc):
+    """Pack a design + its invariant battery into a JSON-serialisable dict (for Pyodide -> JS)."""
+    sh = d["_sh"]
+    return dict(
+        r_outMm=float(d["r_outMm"]), rotor_outMm=float(rotor_outMm(d)),
+        rotor_dia_mm=float(rotor_dia_mm(d)), active_dia_mm=float(2.0 * d["r_outMm"]),
+        bus_margin=float(BUS_MARGIN), r_inMm=float(d["r_inMm"]),
+        g_vMm=float(d["g_vMm"]), rpm=float(d["rpm"]),
+        C1max_pF=float(d["_C1max"]), C1min_pF=float(d["C1min_pF"]), Ca_pF=float(d["Ca_pF"]),
+        Cpar_pF=float(d["Cpar_pF"]), Cx_maxMm=float(d["Cx_maxMm"]), C_R_pF=float(d["C_R_pF"]),
+        z=float(d["_z"]), eta=float(d["_eta"]),
+        W_coll_mJ=float(sh["W_coll"] * 1e3), E_fire_mJ=float(sh["E_fire"] * 1e3),
+        C_fire_pF=float(sh["C_fire"]), Vstar_kV=float(sh["Vstar"] / 1e3),
+        invariants={k: {"pass": bool(v[0]), "slack": round(float(v[1]), 4), "value": v[2]}
+                    for k, v in inv.items()},
+        binding_constraint=bc, feasible=bool(feasible(inv)),
+    )
+
+
+def evaluate_design(free_vars):
+    """Run the full invariant battery on one free-var set (merged onto the established anchor).
+    z/eta/W_coll come from the FROZEN solvers. JSON-serialisable. Accepts the internal design
+    keys (r_outMm, g_vMm, C1min_pF, Ca_pF, Cpar_pF, Cx_maxMm, C_R_pF, rpm, ...)."""
+    d = make_design(ESTABLISHED, **(dict(free_vars) if free_vars else {}))
+    inv = invariants(d)
+    bc = binding(inv) if feasible(inv) else None
+    return _result(d, inv, bc)
+
+
+def synthesize(goal, objective):
+    """Search the free space for the objective subject to all invariants. Returns the optimal
+    design dict (same shape as evaluate_design, + binding_why/n_eval/n_feasible) or
+    {feasible:False, blocking_invariant:...}."""
+    base = make_design(ESTABLISHED, **(dict(goal) if goal else {}))
+    best, n_eval, n_feas = search(objective, base, DEFAULT_GRID)
+    if best is None:
+        from collections import Counter
+        fails = Counter()
+        for r_out in DEFAULT_GRID["r_outMm"]:
+            for g_v in DEFAULT_GRID["g_vMm"]:
+                for C1min in DEFAULT_GRID["C1min_pF"]:
+                    dprobe = make_design(base, r_outMm=r_out, g_vMm=g_v, C1min_pF=C1min)
+                    for k, v in invariants(dprobe).items():
+                        if not v[0]:
+                            fails[k] += 1
+        blocker = next((k for k in _BLOCKER_PRIORITY if fails.get(k)),
+                       (fails.most_common(1)[0][0] if fails else None))
+        return dict(feasible=False, blocking_invariant=blocker, objective=objective,
+                    n_eval=n_eval, n_feasible=0)
+    d, val, inv = best
+    bc, why = binding_active(d, objective, base, DEFAULT_GRID)
+    res = _result(d, inv, bc)
+    res["binding_why"] = why; res["objective"] = objective
+    res["n_eval"] = n_eval; res["n_feasible"] = n_feas
+    return res
+
+
+# =============================================================================
 # MAIN
 # =============================================================================
 def main():

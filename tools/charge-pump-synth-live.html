@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Charge-Pump Synthesizer — LIVE (Pyodide-backed)</title>
+<!--
+  charge-pump-synth-live.html — the design synthesizer as an interactive instrument, backed by
+  the REAL design_synth.py + the frozen solvers, running client-side in Pyodide. The HTML is a
+  thin shell: ALL z/eta/W_coll and the invariant logic are the repo's Python (doubler_core /
+  shuttle_core / design_synth), loaded UNMODIFIED and CALLED -- never re-implemented in JS (the
+  design-synth I2 invariant). JS only collects inputs, draws the SVG/lamps, and formats what the
+  Python returns. Serve from the repo root (e.g. `python3 -m http.server` then open
+  /tools/charge-pump-synth-live.html) so the page can fetch the frozen .py from ../.
+-->
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#121821; --panel2:#0e141c; --line:#1e2733; --ink:#c9d6e2;
+    --mut:#7e8b99; --mono:'DejaVu Sans Mono','SFMono-Regular',Menlo,Consolas,monospace;
+    --amber:#ffb454; --amber-dim:#7a5a26; --brass:#b8975a; --acc:#7cd0ff;
+    --good:#46c46a; --bad:#e5484d; --warn:#e0a83a;
+  }
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:13px}
+  .wrap{max-width:1180px;margin:0 auto;padding:18px}
+  h1{font-size:16px;letter-spacing:.04em;margin:0 0 2px;color:#dfe8f1}
+  .sub{color:var(--mut);font-size:11.5px;margin-bottom:14px}
+  .brass{color:var(--brass);text-transform:uppercase;letter-spacing:.08em;font-size:10.5px}
+  .grid{display:grid;grid-template-columns:300px 1fr 300px;gap:14px}
+  @media(max-width:980px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:13px}
+  .panel.sub{background:var(--panel2)}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:7px 0}
+  label.ctl{display:block;margin:9px 0}
+  label.ctl .lab{display:flex;justify-content:space-between;font-size:11px;color:var(--mut)}
+  label.ctl .lab b{color:var(--amber);font-weight:400}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:#1d2733;border-radius:2px;outline:none;margin-top:5px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;border:2px solid #0b1620}
+  select,button{background:#0b1118;border:1px solid var(--line);color:var(--ink);font-family:var(--mono);font-size:12px;padding:6px 8px;border-radius:3px}
+  button{cursor:pointer}button:hover{border-color:var(--acc)}
+  button.primary{background:#13202c;border-color:#2a4a5e;color:#cfe9ff}
+  .readout{font-size:21px;color:var(--amber);text-shadow:0 0 7px rgba(255,180,84,.25)}
+  .readout small{font-size:11px;color:var(--mut)}
+  .kv{display:flex;justify-content:space-between;font-size:12px;margin:4px 0}
+  .kv b{color:#dfe8f1;font-weight:400}
+  .lamp{display:flex;align-items:center;gap:7px;font-size:11px;margin:3px 0}
+  .dot{width:8px;height:8px;border-radius:50%;background:#333;flex:none}
+  .dot.ok{background:var(--good);box-shadow:0 0 6px var(--good)}
+  .dot.no{background:var(--bad);box-shadow:0 0 6px var(--bad)}
+  .dot.bind{background:var(--warn);box-shadow:0 0 8px var(--warn)}
+  .lamp .nm{color:var(--ink);min-width:118px}
+  .lamp .sl{color:var(--mut);font-size:10px;margin-left:auto}
+  .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:12px;padding:3px 9px;font-size:10.5px}
+  .badge .dot{width:7px;height:7px}
+  .verdict{font-size:14px;padding:9px;border-radius:5px;text-align:center;letter-spacing:.05em;margin-top:8px}
+  .verdict.ok{background:#10241a;color:#8be0a0;border:1px solid #1f4a2c}
+  .verdict.no{background:#2a1416;color:#f0a0a3;border:1px solid #4a1f1f}
+  .bind{background:#241d10;border:1px solid #4a3a1f;border-radius:5px;padding:8px;margin-top:8px;font-size:11.5px}
+  .bind b{color:var(--warn)}
+  .spin{display:inline-block;width:11px;height:11px;border:2px solid #2a3a48;border-top-color:var(--acc);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .foot{color:var(--mut);font-size:10.5px;line-height:1.6;margin-top:16px;border-top:1px solid var(--line);padding-top:10px}
+  .foot b{color:#9fb0bf;font-weight:400}
+  #boot{font-size:12px;color:var(--mut)}
+  #boot .ok{color:var(--good)}#boot .no{color:var(--bad)}
+  svg text{font-family:var(--mono)}
+  code{color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px">
+    <div>
+      <h1>CHARGE-PUMP SYNTHESIZER — <span style="color:var(--amber)">LIVE</span></h1>
+      <div class="sub">A constrained dimension-chooser. The dimensions are yours; the rules &amp; derivations are
+        hard constraints. z / η / W_coll are the <b style="color:var(--acc)">running frozen solvers</b>, not constants.</div>
+    </div>
+    <div id="solverBadge" class="badge"><span class="dot"></span><span id="solverTxt">SOLVER: booting…</span></div>
+  </div>
+
+  <div id="boot" class="panel" style="margin-bottom:14px">booting Pyodide…</div>
+
+  <div class="grid" id="app" style="display:none">
+    <!-- ============ FREE VARIABLES ============ -->
+    <div class="panel">
+      <div class="brass">Free variables — your decision space</div>
+      <label class="ctl"><span class="lab">scale · r_out (active band) <b id="v_r_out">387 mm</b></span>
+        <input type="range" id="r_outMm" min="120" max="500" step="1" value="387"></label>
+      <label class="ctl"><span class="lab">varicap gap · g_v <b id="v_g_v">7.0 mm</b></span>
+        <input type="range" id="g_vMm" min="3" max="12" step="0.5" value="7"></label>
+      <label class="ctl"><span class="lab">geometric C_min <b id="v_c1min">16 pF</b></span>
+        <input type="range" id="C1min_pF" min="6" max="120" step="1" value="16"></label>
+      <label class="ctl"><span class="lab">transfer cap · Ca <b id="v_ca">309 pF</b></span>
+        <input type="range" id="Ca_pF" min="100" max="600" step="1" value="309"></label>
+      <label class="ctl"><span class="lab">parasitic floor · C_par <b id="v_cpar">20 pF</b></span>
+        <input type="range" id="Cpar_pF" min="20" max="80" step="1" value="20"></label>
+      <label class="ctl"><span class="lab">island · C_x,max <b id="v_cx">471 pF</b></span>
+        <input type="range" id="Cx_maxMm" min="200" max="900" step="1" value="471"></label>
+      <label class="ctl"><span class="lab">tank · C_R <b id="v_cr">789 pF</b></span>
+        <input type="range" id="C_R_pF" min="300" max="1500" step="1" value="789"></label>
+      <label class="ctl"><span class="lab">drive · rpm <b id="v_rpm">3000</b></span>
+        <input type="range" id="rpm" min="1500" max="14000" step="100" value="3000"></label>
+      <div class="row" style="margin-top:12px">
+        <button id="reset">↺ reset to anchor</button>
+        <span id="liveSpin"></span>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <select id="objective">
+          <option value="min_diameter">objective: min diameter</option>
+          <option value="max_eta">objective: max η (min tax)</option>
+          <option value="max_rpm">objective: max rpm</option>
+          <option value="min_belt_power">objective: min belt power</option>
+        </select>
+        <button class="primary" id="solve">⤓ Solve</button>
+      </div>
+    </div>
+
+    <!-- ============ ROTOR + READOUTS ============ -->
+    <div class="panel">
+      <div class="brass">Rotor cross-section — bus-corrected (R491 body, not the R387 active band)</div>
+      <svg id="rotor" viewBox="0 0 320 320" width="100%" height="300" style="display:block;margin:6px auto"></svg>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
+        <div class="panel sub"><div class="brass">rotor diameter</div>
+          <div class="readout"><span id="r_dia">—</span><small> mm</small></div>
+          <div class="kv"><span>active band</span><b id="r_active">—</b></div>
+          <div class="kv"><span>+ bus 0.27</span><b id="r_bus">R491</b></div></div>
+        <div class="panel sub"><div class="brass">pump · frozen solver</div>
+          <div class="readout"><span id="r_z">—</span><small> z</small></div>
+          <div class="kv"><span>η (net elec.)</span><b id="r_eta">—</b></div>
+          <div class="kv"><span>C_max (geom)</span><b id="r_cmax">—</b></div></div>
+        <div class="panel sub"><div class="brass">shuttle · frozen solver</div>
+          <div class="readout"><span id="r_wcoll">—</span><small> mJ W_coll</small></div>
+          <div class="kv"><span>E_fire</span><b id="r_efire">—</b></div>
+          <div class="kv"><span>C_fire</span><b id="r_cfire">—</b></div></div>
+        <div class="panel sub"><div class="brass">drive</div>
+          <div class="readout"><span id="r_rpm">—</span><small> rpm</small></div>
+          <div class="kv"><span>rim @ R491</span><b id="r_rim">—</b></div>
+          <div class="kv"><span>V_target</span><b>15 kV</b></div></div>
+      </div>
+      <div id="verdict" class="verdict">—</div>
+      <div id="bindLine" class="bind" style="display:none"></div>
+    </div>
+
+    <!-- ============ INVARIANT BATTERY ============ -->
+    <div class="panel">
+      <div class="brass">Invariant battery — every candidate must pass</div>
+      <div id="lamps" style="margin-top:6px"></div>
+      <div class="panel sub" style="margin-top:10px">
+        <div class="brass">canary (on load)</div>
+        <div id="canary" style="font-size:11px;margin-top:5px">running…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot" id="foot" style="display:none">
+    <b>The solver is the real one.</b> z / η / W_coll are live <code>doubler_core</code> / <code>shuttle_core</code>
+    outputs for your chosen ratios — not constants. This is the upgrade over the previous static synthesizer (which
+    held the anchor). &nbsp;<b>Frozen files stay frozen.</b> The page fetches the repo's read-only
+    <code>doubler_core.py</code> / <code>shuttle_core.py</code> / <code>design_synth.py</code> and calls them
+    unmodified; the on-load canary (established → z 1.334, η 0.386, ~983 mm) catches a vendoring/version drift before
+    you trust a number. &nbsp;<b>The conservation lamp (I1) is a consistency-check-that-trips</b> (its +5 % self-test
+    fires) — <i>not</i> an independent physics validation; it is not "BALANCED". &nbsp;If Pyodide or numpy fails to
+    load, the page says so plainly and does <b>not</b> fall back to hard-coded z/η.
+  </div>
+</div>
+
+<script type="module">
+const PYODIDE_CDN = "https://cdn.jsdelivr.net/pyodide/v0.26.2/full/";
+// the REAL frozen repo files (fetched from ../ — no vendored copies, so no drift is possible)
+const REPO_FILES = {
+  "/repo/reference/doubler_core.py":          "../reference/doubler_core.py",
+  "/repo/shuttle_core.py":                     "../shuttle_core.py",
+  "/repo/energy_balance_from_solver.py":       "../energy_balance_from_solver.py",
+  "/repo/sim/island_charging_cosim.py":        "../sim/island_charging_cosim.py",
+  "/repo/sim/design_synth.py":                 "../sim/design_synth.py",
+  "/repo/presets/G3-geometry-v010.json":       "../presets/G3-geometry-v010.json",
+};
+const FREE_KEYS = ["r_outMm","g_vMm","C1min_pF","Ca_pF","Cpar_pF","Cx_maxMm","C_R_pF","rpm"];
+const $ = id => document.getElementById(id);
+const boot = $("boot");
+let py=null, _eval=null, _synth=null, solving=false;
+
+function setSolver(state, txt){
+  const b=$("solverBadge"); b.className="badge "+(state||"");
+  $("solverTxt").textContent=txt;
+}
+function bootMsg(html){ boot.innerHTML = html; }
+
+async function start(){
+  try{
+    bootMsg("booting Pyodide…");
+    const { loadPyodide } = await import(PYODIDE_CDN+"pyodide.mjs");
+    py = await loadPyodide({ indexURL: PYODIDE_CDN });
+    bootMsg("loading numpy (frozen solvers need it)…");
+    await py.loadPackage("numpy");
+    bootMsg("fetching the frozen repo files…");
+    py.FS.mkdirTree("/repo/reference"); py.FS.mkdirTree("/repo/sim"); py.FS.mkdirTree("/repo/presets");
+    for(const [dst,src] of Object.entries(REPO_FILES)){
+      const r = await fetch(src);
+      if(!r.ok) throw new Error("fetch "+src+" → "+r.status+" (serve from the repo root over http)");
+      py.FS.writeFile(dst, await r.text());
+    }
+    bootMsg("importing design_synth + building the bridge…");
+    await py.runPythonAsync(`
+import sys, json
+sys.path.insert(0,'/repo/sim'); sys.path.insert(0,'/repo'); sys.path.insert(0,'/repo/reference')
+import design_synth as _ds
+def _eval(js):  return json.dumps(_ds.evaluate_design(json.loads(js)))
+def _synth(js, obj): return json.dumps(_ds.synthesize(json.loads(js), obj))
+def _anchor():  return json.dumps(_ds.established_anchor())
+`);
+    _eval = py.globals.get("_eval"); _synth = py.globals.get("_synth");
+    // ---- the on-load canary ----
+    bootMsg("running the canary…");
+    const anchor = JSON.parse(py.globals.get("_anchor")());
+    const c = JSON.parse(_eval(JSON.stringify(anchor)));
+    const okDia = c.rotor_dia_mm>=960 && c.rotor_dia_mm<=1010;
+    const okZ = Math.abs(c.z-1.334)<5e-3, okEta = Math.abs(c.eta-0.386)<3e-3;
+    const allPass = Object.values(c.invariants).every(v=>v.pass);
+    const canOk = okDia&&okZ&&okEta&&allPass&&c.feasible;
+    $("canary").innerHTML = (canOk?'<span style="color:var(--good)">CANARY PASS</span>':'<span style="color:var(--bad)">CANARY FAIL</span>')+
+      ` — rotor ${c.rotor_dia_mm.toFixed(0)} mm, z ${c.z.toFixed(4)}, η ${c.eta.toFixed(4)}, `+
+      `${Object.values(c.invariants).filter(v=>v.pass).length}/10 invariants. `+
+      (canOk?'In-browser solver reproduces the established machine.':'In-browser numbers DISAGREE with the established anchor — do not trust.');
+    if(!canOk){ setSolver("","SOLVER: CANARY-FAIL"); $("solverBadge").querySelector(".dot").className="dot no"; }
+    else { setSolver("","SOLVER: live"); $("solverBadge").querySelector(".dot").className="dot ok"; }
+    boot.style.display="none"; $("app").style.display=""; $("foot").style.display="";
+    wireUI(); render(c);
+  }catch(e){
+    bootMsg('<span class="no">Pyodide/solver did not load:</span> '+e.message+
+      '<br><span class="ok">Honesty rule:</span> the page does NOT fall back to hard-coded z/η. '+
+      'Serve from the repo root (<code>python3 -m http.server</code>) with network access to the Pyodide CDN, then reload.');
+    setSolver("","SOLVER: down"); $("solverBadge").querySelector(".dot").className="dot no";
+  }
+}
+
+function readFree(){
+  const fv={};
+  for(const k of FREE_KEYS) fv[k]=parseFloat($(k).value);
+  return fv;
+}
+function labels(){
+  $("v_r_out").textContent=$("r_outMm").value+" mm";
+  $("v_g_v").textContent=parseFloat($("g_vMm").value).toFixed(1)+" mm";
+  $("v_c1min").textContent=$("C1min_pF").value+" pF";
+  $("v_ca").textContent=$("Ca_pF").value+" pF";
+  $("v_cpar").textContent=$("Cpar_pF").value+" pF";
+  $("v_cx").textContent=$("Cx_maxMm").value+" pF";
+  $("v_cr").textContent=$("C_R_pF").value+" pF";
+  $("v_rpm").textContent=$("rpm").value;
+}
+
+let t=null;
+function liveEval(){
+  labels();
+  if(!_eval) return;
+  clearTimeout(t);
+  t=setTimeout(async ()=>{
+    $("liveSpin").innerHTML='<span class="spin"></span>';
+    await new Promise(r=>setTimeout(r,0));
+    try{ const res=JSON.parse(_eval(JSON.stringify(readFree()))); render(res); }
+    catch(e){ console.error(e); }
+    $("liveSpin").innerHTML="";
+  },180);
+}
+
+async function doSolve(){
+  if(!_synth||solving) return;
+  solving=true; const btn=$("solve"); const old=btn.textContent;
+  btn.innerHTML='<span class="spin"></span> solving…';
+  await new Promise(r=>setTimeout(r,20));
+  try{
+    const goal={ Cx_maxMm:parseFloat($("Cx_maxMm").value), C_R_pF:parseFloat($("C_R_pF").value),
+                 Cpar_pF:parseFloat($("Cpar_pF").value), Ca_pF:parseFloat($("Ca_pF").value) };
+    const res=JSON.parse(_synth(JSON.stringify(goal), $("objective").value));
+    if(res.feasible===false){
+      $("verdict").className="verdict no";
+      $("verdict").textContent="SYNTH-INFEASIBLE — blocked by "+res.blocking_invariant;
+      $("bindLine").style.display="";
+      $("bindLine").innerHTML="No dimension set meets the goal under the invariants. <b>Blocking invariant: "+
+        res.blocking_invariant+"</b> — relax that rule (e.g. higher-z family, smaller stray, lower z) and re-Solve.";
+    } else {
+      // push the synthesized free vars back onto the sliders, then render
+      for(const k of FREE_KEYS){ if(res[k]!==undefined && $(k)) $(k).value=res[k]; }
+      labels(); render(res, true);
+    }
+  }catch(e){ console.error(e); }
+  btn.textContent=old; solving=false;
+}
+
+function lamp(name, v){
+  const cls = v.pass ? (v.binding?"bind":"ok") : "no";
+  return `<div class="lamp"><span class="dot ${cls}"></span><span class="nm">${name}</span>`+
+    `<span class="sl">${v.pass?(v.binding?"BINDING":"slack "+v.slack):"FAIL"}</span></div>`;
+}
+
+function render(d, fromSolve){
+  // readouts
+  $("r_dia").textContent=d.rotor_dia_mm.toFixed(0);
+  $("r_active").textContent=d.active_dia_mm.toFixed(0)+" mm";
+  $("r_z").textContent=d.z.toFixed(4);
+  $("r_eta").textContent=d.eta.toFixed(4);
+  $("r_cmax").textContent=d.C1max_pF.toFixed(0)+" pF";
+  $("r_wcoll").textContent=d.W_coll_mJ.toFixed(2);
+  $("r_efire").textContent=d.E_fire_mJ.toFixed(2)+" mJ";
+  $("r_cfire").textContent=d.C_fire_pF.toFixed(0)+" pF";
+  $("r_rpm").textContent=d.rpm.toFixed(0);
+  const omega=d.rpm*2*Math.PI/60, rim=omega*d.rotor_outMm*1e-3;
+  $("r_rim").textContent=rim.toFixed(0)+" m/s";
+  // invariant lamps, with the binding one flagged
+  const inv=d.invariants, bc=d.binding_constraint;
+  Object.keys(inv).forEach(k=>{ inv[k].binding = (k===bc); });
+  $("lamps").innerHTML=Object.entries(inv)
+    .sort((a,b)=>a[0].localeCompare(b[0]))
+    .map(([k,v])=>lamp(k.replace(/^I\d+_/,m=>m), v)).join("");
+  // verdict
+  if(d.feasible){ $("verdict").className="verdict ok"; $("verdict").textContent="FEASIBLE — all 10 invariants hold"; }
+  else { $("verdict").className="verdict no"; $("verdict").textContent="INFEASIBLE — an invariant fails"; }
+  // binding line
+  if(bc){ $("bindLine").style.display=""; const det=inv[bc]?inv[bc].value:"";
+    $("bindLine").innerHTML="<b>Binding constraint: "+bc+"</b>"+(fromSolve&&d.binding_why?` &nbsp;[${d.binding_why}]`:"")+
+      "<br><span style='color:var(--mut)'>"+det+"</span>"; }
+  else $("bindLine").style.display="none";
+  drawRotor(d);
+}
+
+function drawRotor(d){
+  const svg=$("rotor"); const C=160, R=150;
+  // radii in mm: active in (R95-ish), active out (r_out), rotor out (r_out*1.27), plate edge (~r_out*1.29)
+  const rOut=d.r_outMm, rotorOut=d.rotor_outMm, plate=rOut*(500/387), rIn=d.r_inMm;
+  const sc=R/(plate*1.02);
+  const ring=(r,col,w,dash)=>`<circle cx="${C}" cy="${C}" r="${(r*sc).toFixed(1)}" fill="none" stroke="${col}" stroke-width="${w}" ${dash?`stroke-dasharray="${dash}"`:""}/>`;
+  // 6 alternating active wedges (illustrative)
+  let wedges="";
+  for(let i=0;i<6;i++){ const a0=(i*60-15)*Math.PI/180, a1=(i*60+15)*Math.PI/180;
+    const ri=rIn*sc, ro=rOut*sc;
+    const p=(r,a)=>`${(C+r*Math.cos(a)).toFixed(1)},${(C+r*Math.sin(a)).toFixed(1)}`;
+    wedges+=`<path d="M ${p(ri,a0)} L ${p(ro,a0)} A ${ro} ${ro} 0 0 1 ${p(ro,a1)} L ${p(ri,a1)} A ${ri} ${ri} 0 0 0 ${p(ri,a0)} Z" fill="#13202c" stroke="#2a4a5e" stroke-width="0.7"/>`;
+  }
+  svg.innerHTML =
+    ring(plate,"#1e2733",1)+                         // plate edge R500
+    `<circle cx="${C}" cy="${C}" r="${(rotorOut*sc).toFixed(1)}" fill="#0e141c" stroke="${d.invariants.I9_mechanical&&!d.invariants.I9_mechanical.pass?'var(--bad)':'var(--brass)'}" stroke-width="2"/>`+ // rotor body R491
+    wedges +
+    ring(rIn,"#3a4a5a",0.8,"3 3")+                   // active inner R95
+    `<circle cx="${C}" cy="${C}" r="2" fill="var(--amber)"/>`+
+    `<text x="${C}" y="18" fill="var(--brass)" font-size="9" text-anchor="middle">R491 ROTOR · ${d.rotor_dia_mm.toFixed(0)} mm dia</text>`+
+    `<text x="${C}" y="${C+R-2}" fill="var(--mut)" font-size="8" text-anchor="middle">active band ${d.active_dia_mm.toFixed(0)} mm</text>`;
+}
+
+function wireUI(){
+  for(const k of FREE_KEYS) $(k).addEventListener("input", liveEval);
+  $("reset").addEventListener("click", async ()=>{
+    const a=JSON.parse(py.globals.get("_anchor")());
+    for(const k of FREE_KEYS){ if(a[k]!==undefined) $(k).value=a[k]; }
+    $("objective").value="min_diameter"; liveEval();
+  });
+  $("solve").addEventListener("click", doSolve);
+  labels();
+}
+
+start();
+</script>
+</body>
+</html>
