@@ -1,0 +1,37 @@
+module,class,computes,io_clean,verdict_earned,live_or_offline
+reference/doubler_core.py,FROZEN-ANCHOR,direct 4-node Bennet doubler z & node trace (solve_doubler4/solve_phase),yes (pure numpy),anchor z1.334/eta0.386,LIVE (fast; called by resonant cores)
+shuttle_core.py,FROZEN-ANCHOR,"direct shuttle + sparking-backstop baseline; the 8-gap arrangement (SG/BS, branch A 1->7->3)",yes,BACKSTOP-CLEAN,OFFLINE anchor (the gap roles feed firing-geometry)
+sim/resonator_sim.py,FROZEN-ANCHOR,standalone parallel-RLC tank transient (RK4) + clamp; f0/Z0/eta_match,yes (standalone),resonator-r2: TANK settles 15kV,OFFLINE transient; closed-form f0/eta_match LIVE
+index.html,FROZEN(STALE),"the HTML assistant: runs the OLD DIRECT machine (eta 0.386), FIELDS/state/bindField/Pyodide",n/a,-- the rewrite target --,STALE -> rewrite to the resonant machine
+reference/island_resonant_core.py,LIVE-CORE,LC half-cycle ring: C_eff/Z/t_half/i_pk/Q closed_form + integrated [SOLVER] loss + conservation,yes (I/O-free),RESONANT-TRANSFER-MODELED,LIVE per-eval
+reference/doubler_resonant_core.py,LIVE-CORE,"resonant Bennet cycle (over-transfer alpha, diode clamp); z(alpha); guard",yes (I/O-free),Z-RETUNED (SUPERSEDED by commutator-real),LIVE; superseded as operating model
+reference/commutator_real_core.py,LIVE-CORE,V_strike spark-gap holdoff + Fowler-Nordheim FE/arc budget; alpha_max/eta_real; guard,yes (I/O-free),BRIGADE-RECOVERABLE (eta~0.70),LIVE per-eval (the operating model)
+sim/design_synth.py,SYNTH-GLUE,invariant battery I1-I10 + geometry search + binding-constraint reporter; ESTABLISHED anchor inlined,import-clean; git-diff subprocess in REPORT path (offline),DESIGN-SYNTH feasible,LIVE-ish: gate the subprocess git-diff out of live
+sim/firing_geometry.py,OFFLINE-SWEEP,DXF-station clock + electrode-overlap window + cross-fire lookup (A1-A5),yes,STATIONS-CONFIRMED + HINTS,OFFLINE -> CLOSED FORM: overlap_deg=(d_ball+2g_lat)/r; cross-fire margin vs station spacing
+sim/commutator_real.py,OFFLINE-SWEEP,V_strike sweep + FE-budget grid (driver over commutator_real_core),yes,BRIGADE-RECOVERABLE,"OFFLINE -> CLOSED FORM: alpha_max(V_strike); eta_real(V_strike,FE)"
+sim/doubler_resonant.py,OFFLINE-SWEEP,z(alpha) naive-vs-diode-limited driver (over doubler_resonant_core),yes,Z-RETUNED,OFFLINE (diagnostic; superseded)
+sim/brigade_tax_localize.py,OFFLINE-SWEEP,localize the doubler C-C tax per phase transfer (consumes frozen trace),reads presets/G3 JSON,sum-check 19.58 mJ/cyc,OFFLINE -> CLOSED FORM: per-transfer tax (A 11.19 / B 8.39 mJ; C_eff 68.6pF)
+sim/resonant_brigade.py,OFFLINE-SWEEP,recovered-eta-vs-N + worth-it + clocking (over island_resonant_core),yes,RESONANT-BRIGADE-MODELED,OFFLINE -> worth-it floor invariant
+sim/resonant_island.py,OFFLINE-SWEEP,eta-vs-Q island sweep + decomposition (over island_resonant_core),yes,RESONANT-TRANSFER-MODELED,OFFLINE -> f_rec(Q) closed form
+energy_balance_from_solver.py,CONSUMER,electromechanical energy decomposition; eta=dE/W_mech; the tax fraction,reads presets/G3 JSON,ENERGY-BALANCE-CLOSES,"OFFLINE consumer -> anchor numbers (W_mech 15.94, eta 0.386)"
+sim/sch_to_netlist.py,TOOL,reconstruct connectivity from the KiCad schematic geometry (pin-exact 86/86),reads .kicad_sch,(netlist-correction),OFFLINE tool (topology of record)
+sim/netlist_gaps.py,TOOL,8-gap consistency check + rectifier-role map (from schematic),via sch_to_netlist,8/8 consistent,OFFLINE tool
+sim/rederive_from_gaps.py,TOOL,regen topology_edge_list.csv + re-run the verdict chain on real gaps,writes CSV,chain re-confirmed,OFFLINE tool
+sim/torque_sim.py,ARCHIVAL,retarding-torque / mechanical sweep,yes,torque-sim,OFFLINE archival
+sim/geom_extract.py,ARCHIVAL,"DXF geometry extraction (Cx, areas)",reads DXF,GEOMETRY-CONSISTENT,OFFLINE archival
+sim/geom_validate.py,ARCHIVAL,analytic-vs-swept area/cap validation,reads DXF,A-magnitude resolved,OFFLINE archival
+sim/battery_capacity.py,ARCHIVAL,"insulation/creepage battery (V_bd, gaps)",reads DXF/doc,caps battery,OFFLINE archival (feeds I4)
+sim/fire_tank_transfer.py,ARCHIVAL,island->tank fire ODE; arc corners; eta_fire,reads presets/G3,fire-tank,OFFLINE archival
+sim/island_charging_cosim.py,ARCHIVAL,island charge/mech co-sim to steady state,reads presets/G3,island-charging,OFFLINE archival
+sim/s2_coupling.py,ARCHIVAL,S2 M1/M2 coupling framing,yes,s2-coupling,OFFLINE archival
+sim/s2recheck_s3_spark.py,ARCHIVAL,"spark-gap strike (12mm spheres, 3kV/mm)",yes,s2recheck-s3,OFFLINE archival (fire-gauge)
+sim/s5_operating_point.py,ARCHIVAL,S5 operating point,yes,s5-operating-point,OFFLINE archival
+sim/s6_regen_coupling.py,ARCHIVAL,S6 regen/commutation sense,yes,s6-regen-coupling,OFFLINE archival
+sim/s7_expanded_oppoint.py,ARCHIVAL,S7 expanded operating point + drag,yes,s7-oppoint-drag,OFFLINE archival
+sim/s8_unified_coupled.py,ARCHIVAL,S8 unified coupled sim,yes,s8-unified-coupled,OFFLINE archival
+sim/series_resonator_output.py,ARCHIVAL,series-resonator output stage,reads presets/G3,series-resonator,OFFLINE archival
+sim/topology_recon.py,ARCHIVAL,r0.15 DXF topology reconstruction,reads DXF,topology-recon,OFFLINE archival (superseded by sch_to_netlist)
+sim/coil_topology.py,ARCHIVAL,coil/winding topology,yes,coil,OFFLINE archival
+reference/clocking_map.py,ARCHIVAL,clocking/station map helper,yes,-,OFFLINE helper
+reference/sg_sequence_from_solver.py,ARCHIVAL,SG conduction sequence from the trace,yes,-,OFFLINE helper
+energy/bootstrap/xsim helpers,ARCHIVAL,"bootstrap_from_solver, geom_shuttle_run, shuttle_timing_from_solver, spark_derate_from_solver, xsim_* (queiroz matrix / netgen / from_solver)",mixed,-,OFFLINE archival/validation
