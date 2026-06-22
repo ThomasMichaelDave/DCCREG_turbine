@@ -1,0 +1,7 @@
+transfer,tax_mJ_per_cycle,share_pct,dV_kV,C_eff_pF,tier
+phaseA equalization,11.1893,57.2,18.061,68.61,ME
+phaseB equalization,8.3878,42.8,15.637,68.61,ME
+#sum_check_mJ_per_cycle,19.5772
+#target_mJ_per_cycle,19.5780
+#tax_per_fire_mJ,9.789
+#concentration,2 transfers = 100%; 2 >= 80%
