@@ -49,7 +49,11 @@ ESTABLISHED = dict(
     Cx_maxMm=471.0, g_islMm=4.0, C_R_pF=789.0, f0_kHz=637.0, k_split=0.30,
     g_sgMm=0.5, rpm=3000.0, stageN=2, V_targetV=15e3, V_strikeV=20e3, V_ceilV=21e3,
     Lx_mH=1.0,   # series island inductor (resonant transfer) -- KiCad Lx3/Lx4 [resonant-island]
+    brigadeL_mH=1.0,  # series brigade inductors on the 2 dominant doubler transfers [resonant-brigade]
 )
+# brigade transfer effective C: a TOPOLOGY constant (Ca/Cb/Cpar fixed), both dominant phase
+# transfers share it (brigade_tax_localize.py -> 68.6 pF), so their t1/2 co-exist trivially. [OC]
+C_EFF_BRIGADE_PF = 68.6
 # ---- rule thresholds (the invariants' constants, from the campaign) --------- [OC]/[IR]
 Z_BAND = (1.20, 1.45)               # validated doubler z band (device 1.203 .. wide 1.438)  [OC]
 CPAR_FLOOR_pF = 20.0                # stray floor; C_min cannot go below it (I6)              [OC]
@@ -217,14 +221,22 @@ def invariants(d):
     timing_ok = cf["t_half"] <= win_s
     current_ok = cf["i_pk"] <= 100.0
     voltage_ok = dVr <= d["V_ceilV"]
-    i10 = strike_ok and reaches and timing_ok and current_ok and voltage_ok
+    # brigade multi-resonant clocking [resonant-brigade]: both dominant doubler transfers ring at
+    # t1/2 = pi*sqrt(L_brig*C_eff_brig); they share C_eff (topology constant) -> co-exist; require
+    # both <= the SG window at the design rpm (alongside the island t1/2 -- all co-exist at one rpm).
+    L_brig = d.get("brigadeL_mH", 1.0) * 1e-3
+    cf_brig = irc.closed_form(C_EFF_BRIGADE_PF * 1e-12, 1e6 * 1e-12, 5e3, L_brig, 2.0)
+    brig_clock_ok = cf_brig["t_half"] <= win_s and cf["t_half"] <= win_s   # all t1/2 co-exist
+    i10 = strike_ok and reaches and timing_ok and current_ok and voltage_ok and brig_clock_ok
     sl10 = (d["V_ceilV"] - d["V_strikeV"]) / d["V_ceilV"]
     out["I10_shuttle_integrity"] = (i10, sl10 if i10 else -1.0,
                                     f"strike {d['V_strikeV']/1e3:.0f}/{d['V_ceilV']/1e3:.0f}kV; "
                                     f"V* {sh['Vstar']/1e3:.1f}->C_fire {sh['C_fire']:.0f}pF; "
                                     f"resonant Lx {Lx*1e3:.2f}mH: t1/2 {cf['t_half']*1e6:.1f}/{win_s*1e6:.0f}us"
                                     f"({'ok' if timing_ok else 'OVER'}) i_pk {cf['i_pk']:.1f}A"
-                                    f"({'ok' if current_ok else 'OVER'})")
+                                    f"({'ok' if current_ok else 'OVER'}); brigade Lx {L_brig*1e3:.2f}mH "
+                                    f"t1/2 {cf_brig['t_half']*1e6:.1f}us x2 co-exist"
+                                    f"({'ok' if brig_clock_ok else 'CLASH'})")
 
     # --- I1 conservation, real (+5% trip) -- the per-cycle ledger + the non-tautology test ---
     i1_ok, resid, trip = conservation(d, W_mech, eta, sh)

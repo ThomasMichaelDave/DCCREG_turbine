@@ -7,5 +7,5 @@ I6_parasitic_floor,True,+11.396,C_par=20>=20pF; eff C_min=40pF (geom 20+stray); 
 I7_motor_matched,True,+0.400,out=3.73<=net=6.22mJ f_res=300Hz specratio=8000,OC
 I8_dc_trapped_tank,True,+1.000,tank held DC (tan-delta duty-limited),OC
 I9_mechanical,True,+0.003,"rim=199m/s (<200.0, soft 150.0) supercritical=True vac<=10.0Pa",OC
-I10_shuttle_integrity,True,+0.048,strike 20/21kV; V* 2.7->C_fire 64pF; resonant Lx 1.00mH: t1/2 2.2/139us(ok) i_pk 3.4A(ok),OC
+I10_shuttle_integrity,True,+0.048,strike 20/21kV; V* 2.7->C_fire 64pF; resonant Lx 1.00mH: t1/2 2.2/139us(ok) i_pk 3.4A(ok); brigade Lx 1.00mH t1/2 0.8us x2 co-exist(ok),OC
 I1_conservation,True,+1.000,resid=0.0e+00 +5%trip=fires,OC
