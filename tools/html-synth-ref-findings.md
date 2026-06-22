@@ -66,6 +66,17 @@ source** — with the value table cross-referencing both SSOT artifacts:
   set; K1 the coupling element correctly flagged as no-net). TMD remains the design authority on the
   final schematic aesthetic; this draft **derives from the netlist** so the two cannot silently diverge.
 
+  **r0.3 redraw (per TMD review of the reference schematic).** The first pass drew a netlist *wire-map*
+  (unreadable). It is now a **proper symbol schematic matching the reference layout**: the shuttle with
+  the doubler cross (Cx3/SG3a/SG3b/BS3 · Cx4/SG4a/SG4b/BS4, islands ND7/ND8) at the **top**, the two Cem
+  ladders (L_A1–6/C_AR1–6 · L_B1–6/C_BR1–6, mid-nodes ND11–22) on the **flanks**, the 4-node core +
+  Ca/Cb/C1/C2/SG1/SG2 in the **middle**, and the L_R1–C_R–L_R2 resonator at the **bottom** — with real
+  capacitor/varicap/inductor/spark-gap symbols and my part-number labels. **The part values are inherited
+  from the solver:** the cap values carry `id="sv_*"` placeholders, and when the **reference drawer
+  opens it fills them from the live `evaluate_design` result** (C1/C2 ← C1max, Ca/Cb ← Ca, Cx3/Cx4 ←
+  Cx_max, C_R ← C_R) — so the schematic's numbers track the current design. The fixed design constants
+  (L_R 39.5 µH, Cem coil 0.64 H, C_block 440 nF) are annotated statically. Connectivity still MATCHes.
+
 **Glossary (D) verified** against the netlist + DXF — all nine free-var mappings check out with **no
 corrections**: `r_out`→R387, `g_v`→ND1↔ND9 gap, `C_min`→C1/C2 nodes, `Ca`→Ca 1‑2/Cb 3‑4, `C_par`→(not
 drawn), `C_x,max`→Cx3 7‑3/Cx4 8‑2 (ND7/ND8 bars), `C_R`→nodes 9‑10 (12 mm septum), `rpm`→PRF/rim.

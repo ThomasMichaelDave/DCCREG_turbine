@@ -206,7 +206,7 @@ const REPO_FILES = {
 const FREE_KEYS = ["r_outMm","g_vMm","C1min_pF","Ca_pF","Cpar_pF","Cx_maxMm","C_R_pF","rpm"];
 const $ = id => document.getElementById(id);
 const boot = $("boot");
-let py=null, _eval=null, _synth=null, solving=false;
+let py=null, _eval=null, _synth=null, solving=false, lastDesign=null;
 
 function setSolver(state, txt){
   const b=$("solverBadge"); b.className="badge "+(state||"");
@@ -350,6 +350,18 @@ function render(d, fromSolve){
       "<br><span style='color:var(--mut)'>"+det+"</span>"; }
   else $("bindLine").style.display="none";
   drawRotor(d);
+  lastDesign=d;                                          // remember for the reference drawer's values
+}
+
+// inherit the live solver values into the schematic's sv_* placeholders
+function fillSchematicValues(d){
+  if(!d) return;
+  const set=(id,t)=>{ const e=document.getElementById(id); if(e) e.textContent=t; };
+  const pf=x=>`${Math.round(x)} pF`;
+  set("sv_C1",pf(d.C1max_pF)); set("sv_C2",pf(d.C1max_pF));
+  set("sv_Ca",pf(d.Ca_pF));    set("sv_Cb",pf(d.Ca_pF));
+  set("sv_Cx3",pf(d.Cx_maxMm));set("sv_Cx4",pf(d.Cx_maxMm));
+  set("sv_CR",pf(d.C_R_pF));
 }
 
 function drawRotor(d){
@@ -411,6 +423,8 @@ async function openRef(){
             : `<span style="color:var(--warn)">artifact deferred — ${src} (run gen_artifacts.py)</span>`; }
       catch{ $(id).innerHTML=`<span style="color:var(--warn)">artifact deferred — ${src}</span>`; }
     }
+    fillSchematicValues(lastDesign);                     // inherit the live solver values
+
     const r=await fetch("./reference.md");
     $("refBody").innerHTML = r.ok ? mdToHtml(await r.text())
       : '<span style="color:var(--warn)">reference.md not reachable (serve from the repo root)</span>';

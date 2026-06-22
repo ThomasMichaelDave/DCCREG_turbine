@@ -103,60 +103,165 @@ def load_edges():
     return rows
 
 
-def gen_schematic():
+def gen_schematic(values=None):
+    """Draw a READABLE schematic matching the reference layout (shuttle top, the two Cem ladders
+    on the flanks, the 4-node core + Ca/Cb/C1/C2/SG1/SG2 in the middle, the L_R1-C_R-L_R2 resonator
+    at the bottom) with real component symbols. Part numbers are fixed labels; the CAP VALUES carry
+    `id="sv_*"` placeholders the live drawer overrides from the solver (`values`, else the anchor).
+    Still connectivity-checked against the netlist of record."""
     rows = load_edges()
     nodes = set()
     for c, a, b in rows:
-        if a:
-            nodes.add(a)
-        if b:
-            nodes.add(b)
-    # --- connectivity check (against the netlist itself) ---
-    n_comp = len(rows)
-    expect_nodes = {str(i) for i in range(1, 23)}
-    bad_ends = [(c, a, b) for c, a, b in rows if (a and a not in expect_nodes) or (b and b not in expect_nodes)]
-    no_net = [c for c, a, b in rows if not a and not b]      # e.g. K1 (coupling, no nodes)
-    check = dict(n_components=n_comp, n_nodes=len(nodes & expect_nodes),
-                 nodes_ok=(nodes & expect_nodes) == expect_nodes,
-                 bad_endpoints=bad_ends, no_net=no_net,
-                 ok=(n_comp == 42 and (nodes & expect_nodes) == expect_nodes and not bad_ends))
-    # --- layout: structured columns by subsystem ---
-    pos = {}
-    pos.update({"1": (160, 90), "2": (160, 200), "3": (320, 200), "4": (320, 90)})   # 4-node core
-    pos.update({"5": (90, 145), "7": (160, 300), "8": (320, 300)})                    # rail-5 / islands
-    pos.update({"6": (390, 145)})
-    pos.update({"9": (210, 380), "10": (270, 380)})                                   # tank
-    for i in range(11, 17):   # bank A 11-16
-        pos[str(i)] = (40, 70 + (i-11)*40)
-    for i in range(17, 23):   # bank B 17-22
-        pos[str(i)] = (440, 70 + (i-17)*40)
-    W, H = 480, 440
-    parts = [f'<rect width="{W}" height="{H}" fill="#0b0f14"/>',
-             f'<text x="{W/2}" y="18" fill="#b8975a" font-size="12" text-anchor="middle" '
-             f'font-family="monospace">SCHEMATIC — from topology_edge_list.csv (netlist of record)</text>']
-    # component edges
-    colby = lambda c: ("#7cd0ff" if c.startswith(("C1","C2","Ca","Cb")) else
-                       "#e0a83a" if c.startswith(("Cx","SG","BS")) else
-                       "#7d3cb5" if c.startswith(("C_R","L_R")) else
-                       "#8ab" if c.startswith(("L_A","L_B","C_AR","C_BR")) else "#5fa8d3")
-    for c, a, b in rows:
-        if a in pos and b in pos:
-            (x1, y1), (x2, y2) = pos[a], pos[b]
-            mx, my = (x1+x2)/2, (y1+y2)/2
-            parts.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{colby(c)}" '
-                         f'stroke-width="1" opacity="0.65"/>'
-                         f'<text x="{mx}" y="{my-2}" fill="{colby(c)}" font-size="6.5" '
-                         f'text-anchor="middle" font-family="monospace">{c}</text>')
-    # nodes
-    for n, (x, y) in pos.items():
-        parts.append(f'<circle cx="{x}" cy="{y}" r="9" fill="#121821" stroke="#2a4a5e" '
-                     f'stroke-width="1"/><text x="{x}" y="{y+3}" fill="#dfe8f1" font-size="8" '
-                     f'text-anchor="middle" font-family="monospace">{n}</text>')
-    # check stamp
-    stamp = f"connectivity: {n_comp} components, {check['n_nodes']}/22 nodes — {'MATCH' if check['ok'] else 'MISMATCH'}"
-    parts.append(f'<text x="{W/2}" y="{H-8}" fill="{"#46c46a" if check["ok"] else "#e5484d"}" '
-                 f'font-size="8.5" text-anchor="middle" font-family="monospace">{stamp}</text>')
-    svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" font-family="monospace">' + "".join(parts) + "</svg>"
+        if a: nodes.add(a)
+        if b: nodes.add(b)
+    n_comp = len(rows); expect = {str(i) for i in range(1, 23)}
+    bad = [(c, a, b) for c, a, b in rows if (a and a not in expect) or (b and b not in expect)]
+    no_net = [c for c, a, b in rows if not a and not b]
+    check = dict(n_components=n_comp, n_nodes=len(nodes & expect), nodes_ok=(nodes & expect) == expect,
+                 bad_endpoints=bad, no_net=no_net,
+                 ok=(n_comp == 42 and (nodes & expect) == expect and not bad))
+
+    v = dict(C1="280 pF", Ca="309 pF", Cx="471 pF", CR="789 pF", LR="39.5 µH",
+             Lcoil="0.64 H", Cblk="440 nF", gap="0.5 mm")
+    if values:
+        v.update(values)
+
+    # ---------- colours + symbol helpers ----------
+    WIRE, CAP, COILM, COILR, GAP, NODE, LBL, VAL, NDC = (
+        "#46627a", "#7cd0ff", "#8fb0c8", "#b48ad0", "#e0a83a", "#0e141c", "#cfe9ff", "#ffb454", "#b8975a")
+    P = []
+    def wire(x1, y1, x2, y2, col=WIRE, w=1.2):
+        P.append(f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{col}" stroke-width="{w}"/>')
+    def label(x, y, t, col=LBL, sz=9, anc="middle"):
+        P.append(f'<text x="{x}" y="{y}" fill="{col}" font-size="{sz}" text-anchor="{anc}">{t}</text>')
+    def value(x, y, vid, t, anc="middle"):
+        P.append(f'<text id="{vid}" x="{x}" y="{y}" fill="{VAL}" font-size="8" text-anchor="{anc}">{t}</text>')
+    def node(x, y, nd):
+        P.append(f'<circle cx="{x}" cy="{y}" r="3.2" fill="{NDC}"/>')
+        label(x + 9, y + 3, f"ND{nd}", NDC, 8, "start")
+    def mnode(x, y, nd):                                          # ladder mid-node: label below
+        P.append(f'<circle cx="{x}" cy="{y}" r="3" fill="{NDC}"/>')
+        label(x, y + 12, f"ND{nd}", NDC, 6.5)
+    def cap_v(cx, cy, name, vid=None, val=None, varicap=False):   # vertical cap, leads up/down
+        wire(cx, cy-13, cx, cy-4); wire(cx, cy+4, cx, cy+13)
+        P.append(f'<line x1="{cx-9}" y1="{cy-4}" x2="{cx+9}" y2="{cy-4}" stroke="{CAP}" stroke-width="1.6"/>')
+        P.append(f'<line x1="{cx-9}" y1="{cy+4}" x2="{cx+9}" y2="{cy+4}" stroke="{CAP}" stroke-width="1.6"/>')
+        if varicap:
+            P.append(f'<line x1="{cx-11}" y1="{cy+9}" x2="{cx+11}" y2="{cy-9}" stroke="{CAP}" stroke-width="1" marker-end="url(#ar)"/>')
+        label(cx-13, cy+2, name, LBL, 8.5, "end")
+        if vid: value(cx+13, cy+2, vid, val, "start")
+    def cap_h(cx, cy, name, vid=None, val=None):                  # horizontal cap, leads left/right
+        wire(cx-13, cy, cx-4, cy); wire(cx+4, cy, cx+13, cy)
+        P.append(f'<line x1="{cx-4}" y1="{cy-9}" x2="{cx-4}" y2="{cy+9}" stroke="{CAP}" stroke-width="1.6"/>')
+        P.append(f'<line x1="{cx+4}" y1="{cy-9}" x2="{cx+4}" y2="{cy+9}" stroke="{CAP}" stroke-width="1.6"/>')
+        label(cx, cy-12, name, LBL, 8.5)
+        if vid: value(cx, cy+18, vid, val)
+    def coil_h(x1, x2, cy, name, val, col=COILM):                 # horizontal inductor (4 humps)
+        n = 4; step = (x2 - x1) / n; r = step / 2
+        d = f'M {x1} {cy} '
+        for i in range(n):
+            xa = x1 + i*step
+            d += f'A {r} {r} 0 0 1 {xa+step} {cy} '
+        P.append(f'<path d="{d}" fill="none" stroke="{col}" stroke-width="1.4"/>')
+        label((x1+x2)/2, cy-9, name, LBL, 8)
+        label((x1+x2)/2, cy+15, val, VAL, 7.5)
+    def gap_v(cx, cy, name):                                      # vertical spark gap (tip-to-tip)
+        wire(cx, cy-13, cx, cy-5); wire(cx, cy+5, cx, cy+13)
+        P.append(f'<path d="M {cx-6} {cy-5} L {cx+6} {cy-5} L {cx} {cy-0.5} Z" fill="{GAP}"/>')
+        P.append(f'<path d="M {cx-6} {cy+5} L {cx+6} {cy+5} L {cx} {cy+0.5} Z" fill="{GAP}"/>')
+        label(cx+10, cy+2, name, GAP, 8, "start")
+    def gap_seg(x1, y1, x2, y2, name, val=None):                  # a gap drawn mid a sloped wire
+        mx, my = (x1+x2)/2, (y1+y2)/2
+        wire(x1, y1, x2, y2, GAP, 1.2)
+        P.append(f'<circle cx="{mx}" cy="{my}" r="2.6" fill="none" stroke="{GAP}" stroke-width="1.2"/>')
+        label(mx, my-5, name, GAP, 7.5)
+    def cr_sym(cx, cy, vid, val):                                 # C_R resonator: cap inside a diamond
+        P.append(f'<path d="M {cx} {cy-15} L {cx+15} {cy} L {cx} {cy+15} L {cx-15} {cy} Z" '
+                 f'fill="none" stroke="{COILR}" stroke-width="1.2"/>')
+        P.append(f'<line x1="{cx-6}" y1="{cy-7}" x2="{cx-6}" y2="{cy+7}" stroke="{CAP}" stroke-width="1.5"/>')
+        P.append(f'<line x1="{cx+6}" y1="{cy-7}" x2="{cx+6}" y2="{cy+7}" stroke="{CAP}" stroke-width="1.5"/>')
+        wire(cx-21, cy, cx-15, cy); wire(cx+15, cy, cx+21, cy)
+        label(cx, cy-20, "C_R", LBL, 9); value(cx, cy+28, vid, val)
+
+    W, H = 680, 760
+    P.append(f'<rect width="{W}" height="{H}" fill="#0b0f14"/>')
+    P.append('<defs><marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">'
+             f'<path d="M0 0 L6 3 L0 6 Z" fill="{CAP}"/></marker></defs>')
+    label(W/2, 22, "SCHEMATIC — varicap doubler + shuttle + Cem motor + resonator", NDC, 12)
+    label(W/2, 36, "(structure from topology_edge_list.csv; part values inherited from the solver)", "#7e8b99", 8.5)
+
+    # ============ key node coordinates ============
+    N = {"1": (175, 470), "2": (305, 470), "3": (375, 470), "4": (505, 470),
+         "5": (110, 690), "6": (570, 690), "7": (230, 120), "8": (450, 120),
+         "9": (300, 690), "10": (380, 690)}
+    for i in range(11, 17): N[str(i)] = (235, 250 + (i-11)*34)     # left bank mid-nodes
+    for i in range(17, 23): N[str(i)] = (445, 250 + (i-17)*34)     # right bank mid-nodes
+
+    # ============ SHUTTLE (top) ============
+    node(*N["7"], "7"); node(*N["8"], "8")
+    # SG3a: node1 -> island7 (left)
+    gap_seg(N["1"][0], 250, N["7"][0], N["7"][1]+8, "SG3a")
+    wire(N["1"][0], 250, N["1"][0], N["1"][1])                     # down the node1 bus
+    # Cx3 / SG3b / BS3: island7 -> node3 (cross to the right); draw as a small stacked group
+    label(N["7"][0]-6, N["7"][1]-14, "Cx3", LBL, 8.5, "end"); value(N["7"][0]-6, N["7"][1]-25, "sv_Cx3", v["Cx"], "end")
+    P.append(f'<line x1="{N["7"][0]-10}" y1="{N["7"][1]-6}" x2="{N["7"][0]-10}" y2="{N["7"][1]+6}" stroke="{CAP}" stroke-width="1.5"/>')
+    P.append(f'<line x1="{N["7"][0]-4}" y1="{N["7"][1]-6}" x2="{N["7"][0]-4}" y2="{N["7"][1]+6}" stroke="{CAP}" stroke-width="1.5"/>')
+    gap_seg(N["7"][0], N["7"][1]+8, N["3"][0], 250, "SG3b")        # 7 -> 3 (the cross, right-down)
+    gap_seg(N["7"][0]+12, N["7"][1]+16, N["3"][0]-8, 258, "BS3")  # backstop (parallel)
+    wire(N["3"][0], 250, N["3"][0], N["3"][1])                     # node3 bus down
+    # SG4a: node4 -> island8 (right)
+    gap_seg(N["4"][0], 250, N["8"][0], N["8"][1]+8, "SG4a")
+    wire(N["4"][0], 250, N["4"][0], N["4"][1])
+    # Cx4 / SG4b / BS4: island8 -> node2 (cross to the left)
+    label(N["8"][0]+6, N["8"][1]-14, "Cx4", LBL, 8.5, "start"); value(N["8"][0]+6, N["8"][1]-25, "sv_Cx4", v["Cx"], "start")
+    P.append(f'<line x1="{N["8"][0]+10}" y1="{N["8"][1]-6}" x2="{N["8"][0]+10}" y2="{N["8"][1]+6}" stroke="{CAP}" stroke-width="1.5"/>')
+    P.append(f'<line x1="{N["8"][0]+4}" y1="{N["8"][1]-6}" x2="{N["8"][0]+4}" y2="{N["8"][1]+6}" stroke="{CAP}" stroke-width="1.5"/>')
+    gap_seg(N["8"][0], N["8"][1]+8, N["2"][0], 250, "SG4b")        # 8 -> 2 (the cross, left-down)
+    gap_seg(N["8"][0]-12, N["8"][1]+16, N["2"][0]+8, 258, "BS4")
+    wire(N["2"][0], 250, N["2"][0], N["2"][1])
+
+    # ============ Cem ladders (flanks) ============
+    # left bank A: node1 bus (x=175) -> L_Ai -> ND(11-16) -> C_ARi -> node2 bus (x=305)
+    for i in range(11, 17):
+        y = N[str(i)][1]
+        coil_h(175, 235, y, f"L_A{i-10}", v["Lcoil"], COILM)
+        mnode(235, y, str(i))
+        cap_h(280, y, f"C_AR{i-10}", None, None)
+        wire(245, y, 305, y) if False else None
+    wire(175, 250, 175, N["1"][1]); wire(305, 250, 305, N["2"][1])   # the two buses to core
+    for i in range(11, 17):
+        wire(305, N[str(i)][1], 305, N[str(i)][1])
+    # right bank B: node4 bus (x=505) -> L_Bi -> ND(17-22) -> C_BRi -> node3 bus (x=375)
+    for i in range(17, 23):
+        y = N[str(i)][1]
+        coil_h(445, 505, y, f"L_B{i-16}", v["Lcoil"], COILM)
+        mnode(445, y, str(i))
+        cap_h(400, y, f"C_BR{i-16}", None, None)
+    wire(505, 250, 505, N["4"][1]); wire(375, 250, 375, N["3"][1])
+
+    # ============ core + transfer ============
+    for k in ("1", "2", "3", "4"): node(*N[k], k)
+    cap_h((N["1"][0]+N["2"][0])/2, N["1"][1], "Ca", "sv_Ca", v["Ca"]); wire(N["1"][0]+13, N["1"][1], (N["1"][0]+N["2"][0])/2-13, N["1"][1]); wire((N["1"][0]+N["2"][0])/2+13, N["1"][1], N["2"][0], N["2"][1])
+    cap_h((N["3"][0]+N["4"][0])/2, N["4"][1], "Cb", "sv_Cb", v["Ca"]); wire(N["3"][0], N["3"][1], (N["3"][0]+N["4"][0])/2-13, N["4"][1]); wire((N["3"][0]+N["4"][0])/2+13, N["4"][1], N["4"][0], N["4"][1])
+    # C1 (1-5) far left varicap, C2 (4-6) far right
+    wire(N["1"][0], N["1"][1], 70, N["1"][1]); wire(70, N["1"][1], 70, 560)
+    cap_v(70, 575, "C1", "sv_C1", v["C1"], varicap=True); wire(70, 590, 70, N["5"][1]); wire(70, N["5"][1], N["5"][0], N["5"][1])
+    wire(N["4"][0], N["4"][1], 610, N["4"][1]); wire(610, N["4"][1], 610, 560)
+    cap_v(610, 575, "C2", "sv_C2", v["C1"], varicap=True); wire(610, 590, 610, N["6"][1]); wire(610, N["6"][1], N["6"][0], N["6"][1])
+    # SG1 (2-5), SG2 (3-6)
+    wire(N["2"][0], N["2"][1], N["2"][0], 560); gap_v(N["2"][0], 575, "SG1"); wire(N["2"][0], 590, N["2"][0], N["5"][1]); wire(N["2"][0], N["5"][1], N["5"][0], N["5"][1])
+    wire(N["3"][0], N["3"][1], N["3"][0], 560); gap_v(N["3"][0], 575, "SG2"); wire(N["3"][0], 590, N["3"][0], N["6"][1]); wire(N["3"][0], N["6"][1], N["6"][0], N["6"][1])
+
+    # ============ resonator (bottom) ============
+    node(*N["5"], "5"); node(*N["6"], "6"); node(*N["9"], "9"); node(*N["10"], "10")
+    coil_h(N["5"][0], N["9"][0]-22, N["5"][1], "L_R1", v["LR"], COILR); wire(N["9"][0]-22, N["5"][1], N["9"][0]-21, N["5"][1])
+    cr_sym((N["9"][0]+N["10"][0])/2, N["5"][1], "sv_CR", v["CR"])
+    coil_h(N["10"][0]+22, N["6"][0], N["5"][1], "L_R2", v["LR"], COILR); wire(N["10"][0], N["5"][1], N["10"][0]+22, N["5"][1])
+
+    # connectivity stamp
+    label(W/2, H-10, f"connectivity vs netlist: {n_comp} components, {check['n_nodes']}/22 nodes — "
+          f"{'MATCH' if check['ok'] else 'MISMATCH'}", "#46c46a" if check["ok"] else "#e5484d", 9)
+    svg = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" font-family="monospace">' + "".join(P) + "</svg>"
     open(os.path.join(HERE, "schematic.svg"), "w").write(svg)
     return check
 
