@@ -1,40 +1,48 @@
 component,node_a,node_b,source,confirm_method
-C1,21,1,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C2,23,2,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-Ca1,21,4,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-Cb1,23,10,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-Cx3,22,19,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-Cx4,24,20,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_AR1,3,4,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_AR2,5,4,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_AR3,6,4,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_AR5,7,4,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_AR6,8,4,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_BR1,9,10,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_BR2,11,10,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_BR3,12,10,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_BR4,13,10,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_BR5,14,10,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_BR6,15,10,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C_R1,16,17,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-C__AR4,18,4,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-Lx3,19,10,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-Lx4,20,4,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_A1,21,3,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_A2,21,5,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_A3,21,6,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_A4,21,18,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_A5,21,7,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_A6,21,8,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_B1,23,9,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_B2,23,11,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_B3,23,12,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_B4,23,13,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_B5,23,14,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_B6,23,15,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_R1,1,16,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-L_R2,2,17,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-SG3a1,21,22,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-SG4a1,23,24,"KiCad DCCREG_Turbine_circuit.net (37-comp, Lx3/Lx4 added)",kicad netlist
-#status,KiCad netlist of record — 37 components, 24 nets; series Lx3/Lx4 added (resonant island)
-#supersedes,r0.15 22-node topology (re-opened by the efficiency fix; merges on TMD sign-off)
+BS3,7,3,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+BS4,8,2,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C1,R-A,1,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C2,R-B,4,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_AR1,n19,2,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_AR2,n10,2,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_AR3,n09,2,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_AR5,n14,2,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_AR6,n22,2,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_BR1,3,n21,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_BR2,3,n11,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_BR3,3,n20,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_BR4,3,n03,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_BR5,3,n12,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_BR6,3,n15,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C_R1,n18,n00,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+C__AR4,n13,2,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+Ca1,1,2,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+Cb1,3,4,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+Cx3,7,n17,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+Cx4,n23,8,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_A1,1,n19,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_A2,1,n10,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_A3,1,n09,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_A4,1,n13,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_A5,1,n14,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_A6,1,n22,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_B1,n21,4,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_B2,n11,4,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_B3,n20,4,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_B4,n03,4,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_B5,n12,4,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_B6,n15,4,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_R1,R-A,n18,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+L_R2,n00,R-B,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+Lx3,n17,3,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+Lx4,2,n23,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+SG1,2,R-A,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+SG2,3,R-B,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+SG3a1,1,7,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+SG3b1,7,3,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+SG4a1,4,8,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+SG4b1,8,2,"KiCad DCCREG_Turbine_circuit.kicad_sch (43-comp, all 8 gaps)",schematic geometry (pin-exact)
+#components,43
+#nets,24
+#pin_calibration,86/86
+#nodes,1=A-rail 4=B-rail 2=AR-bank 3=BR-bank 7=island-A 8=island-B R-A/R-B=resonator ends
