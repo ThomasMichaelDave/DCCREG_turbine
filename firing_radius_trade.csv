@@ -1,0 +1,10 @@
+r_mm,spacing_deg,overlap_deg_at_12mm,A2_margin_deg,max_ball_mm,t_overlap_us_3000rpm,max_rpm_A1
+250,2.95,3.21,-0.26,10.5,178.3,30000
+300,2.95,2.67,0.28,13.0,148.5,30000
+350,2.95,2.29,0.66,16.0,127.3,30000
+387,2.95,2.07,0.88,17.5,115.2,30000
+450,2.95,1.78,1.17,21.0,99.0,30000
+491,2.95,1.63,1.32,23.0,90.8,30000
+#verdict,STATIONS-CONFIRMED + HINTS
+#baseline_eta_real,0.7034
+#tightest_spacing_deg,2.95 (SG3b-BS3)
