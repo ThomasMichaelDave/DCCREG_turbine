@@ -183,6 +183,26 @@ def gen_schematic(values=None):
         wire(cx-21, cy, cx-15, cy); wire(cx+15, cy, cx+21, cy)
         label(cx, cy-20, "C_R", LBL, 9); value(cx, cy+28, vid, val)
 
+    def vcap_h(x1, x2, y, name, vid=None, val=None, varicap=False, lblside="top"):
+        cx = (x1 + x2) / 2
+        wire(x1, y, cx-4, y); wire(cx+4, y, x2, y)
+        P.append(f'<line x1="{cx-4}" y1="{y-8}" x2="{cx-4}" y2="{y+8}" stroke="{CAP}" stroke-width="1.6"/>')
+        P.append(f'<line x1="{cx+4}" y1="{y-8}" x2="{cx+4}" y2="{y+8}" stroke="{CAP}" stroke-width="1.6"/>')
+        if varicap:
+            P.append(f'<line x1="{cx-10}" y1="{y+8}" x2="{cx+10}" y2="{y-8}" stroke="{CAP}" stroke-width="1" marker-end="url(#ar)"/>')
+        if lblside == "top":
+            label(cx, y-12, name, LBL, 8.5)
+            if vid: value(cx, y-22, vid, val)
+        else:
+            label(cx, y+15, name, LBL, 8.5)
+            if vid: value(cx, y+25, vid, val)
+    def gap_h(x1, x2, y, name, lbl_above=True):                  # horizontal spark gap (tip-to-tip)
+        cx = (x1 + x2) / 2
+        wire(x1, y, cx-5, y); wire(cx+5, y, x2, y)
+        P.append(f'<path d="M {cx-5} {y-6} L {cx-5} {y+6} L {cx-0.5} {y} Z" fill="{GAP}"/>')
+        P.append(f'<path d="M {cx+5} {y-6} L {cx+5} {y+6} L {cx+0.5} {y} Z" fill="{GAP}"/>')
+        label(cx, y-9 if lbl_above else y+15, name, GAP, 8)
+
     W, H = 680, 760
     P.append(f'<rect width="{W}" height="{H}" fill="#0b0f14"/>')
     P.append('<defs><marker id="ar" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">'
@@ -197,28 +217,46 @@ def gen_schematic(values=None):
     for i in range(11, 17): N[str(i)] = (235, 250 + (i-11)*34)     # left bank mid-nodes
     for i in range(17, 23): N[str(i)] = (445, 250 + (i-17)*34)     # right bank mid-nodes
 
-    # ============ SHUTTLE (top) ============
-    node(*N["7"], "7"); node(*N["8"], "8")
-    # SG3a: node1 -> island7 (left)
-    gap_seg(N["1"][0], 250, N["7"][0], N["7"][1]+8, "SG3a")
-    wire(N["1"][0], 250, N["1"][0], N["1"][1])                     # down the node1 bus
-    # Cx3 / SG3b / BS3: island7 -> node3 (cross to the right); draw as a small stacked group
-    label(N["7"][0]-6, N["7"][1]-14, "Cx3", LBL, 8.5, "end"); value(N["7"][0]-6, N["7"][1]-25, "sv_Cx3", v["Cx"], "end")
-    P.append(f'<line x1="{N["7"][0]-10}" y1="{N["7"][1]-6}" x2="{N["7"][0]-10}" y2="{N["7"][1]+6}" stroke="{CAP}" stroke-width="1.5"/>')
-    P.append(f'<line x1="{N["7"][0]-4}" y1="{N["7"][1]-6}" x2="{N["7"][0]-4}" y2="{N["7"][1]+6}" stroke="{CAP}" stroke-width="1.5"/>')
-    gap_seg(N["7"][0], N["7"][1]+8, N["3"][0], 250, "SG3b")        # 7 -> 3 (the cross, right-down)
-    gap_seg(N["7"][0]+12, N["7"][1]+16, N["3"][0]-8, 258, "BS3")  # backstop (parallel)
-    wire(N["3"][0], 250, N["3"][0], N["3"][1])                     # node3 bus down
-    # SG4a: node4 -> island8 (right)
-    gap_seg(N["4"][0], 250, N["8"][0], N["8"][1]+8, "SG4a")
-    wire(N["4"][0], 250, N["4"][0], N["4"][1])
-    # Cx4 / SG4b / BS4: island8 -> node2 (cross to the left)
-    label(N["8"][0]+6, N["8"][1]-14, "Cx4", LBL, 8.5, "start"); value(N["8"][0]+6, N["8"][1]-25, "sv_Cx4", v["Cx"], "start")
-    P.append(f'<line x1="{N["8"][0]+10}" y1="{N["8"][1]-6}" x2="{N["8"][0]+10}" y2="{N["8"][1]+6}" stroke="{CAP}" stroke-width="1.5"/>')
-    P.append(f'<line x1="{N["8"][0]+4}" y1="{N["8"][1]-6}" x2="{N["8"][0]+4}" y2="{N["8"][1]+6}" stroke="{CAP}" stroke-width="1.5"/>')
-    gap_seg(N["8"][0], N["8"][1]+8, N["2"][0], 250, "SG4b")        # 8 -> 2 (the cross, left-down)
-    gap_seg(N["8"][0]-12, N["8"][1]+16, N["2"][0]+8, 258, "BS4")
-    wire(N["2"][0], 250, N["2"][0], N["2"][1])
+    # ============ SHUTTLE (top) — each island as a clean BOX (matches the reference) ============
+    # Left island: rails ND7 (left) and node3 (right); the three parallel 7<->3 elements as rungs
+    # (Cx3 top, SG3b middle, BS3 bottom). SG3a hangs off ND7 down to node1; the node3 rail crosses
+    # down-right to node3. Right island mirrors (Cx4/SG4b/BS4, ND8 right rail, SG4a to node4, the
+    # node2 rail crosses down-left to node2).
+    def island(L, R, top, lab, ndlab, ndx, ndside):
+        # L,R = x of the two rails; top = y of the top rung; lab = (Cx,SGb,BS) names
+        yC, ySG, yBS = top, top+30, top+58
+        P.append(f'<rect x="{L}" y="{top-10}" width="{R-L}" height="{yBS-top+20}" fill="none" '
+                 f'stroke="#2a3a48" stroke-width="0.8"/>')
+        wire(L, yC, L, yBS); wire(R, yC, R, yBS)                   # the two rails
+        vcap_h(L, R, yC, lab[0], lab[3], v["Cx"], varicap=True, lblside="top")   # Cx (top edge)
+        gap_h(L, R, ySG, lab[1])                                   # SGb (middle)
+        gap_h(L, R, yBS, lab[2], lbl_above=False)                  # BS (bottom)
+        # the island node label on its own rail
+        P.append(f'<circle cx="{ndx}" cy="{ySG}" r="3" fill="{NDC}"/>')
+        label(ndx + (10 if ndside > 0 else -10), ySG-6, ndlab, NDC, 8, "start" if ndside > 0 else "end")
+        return yC, ySG, yBS
+
+    def sg_a(x, yBS, name, side):                                 # the load gap from a rail to the core
+        wire(x, yBS, x, yBS+12)
+        P.append(f'<path d="M {x-5} {yBS+15} L {x+5} {yBS+15} L {x} {yBS+19} Z" fill="{GAP}"/>')
+        P.append(f'<path d="M {x-5} {yBS+31} L {x+5} {yBS+31} L {x} {yBS+27} Z" fill="{GAP}"/>')
+        label(x + (9 if side > 0 else -9), yBS+26, name, GAP, 8, "start" if side > 0 else "end")
+        return yBS + 34                                           # y where the wire continues to the core
+
+    TOP = 84
+    # left island: ND7 rail at x=175 (above node1 bus), node3 rail at x=275 (crosses to node3)
+    L7, R7 = 175, 275
+    yC, ySG, yBS = island(L7, R7, TOP, ("Cx3", "SG3b", "BS3", "sv_Cx3"), "ND7", L7, -1)
+    yc1 = sg_a(L7, yBS, "SG3a", -1); wire(L7, yc1, L7, N["1"][1])         # SG3a: ND7 -> node1
+    wire(R7, yBS, R7, yBS+30); wire(R7, yBS+30, N["3"][0], N["3"][1])     # node3 rail crosses to node3
+
+    # right island: ND8 rail at x=505, node2 rail at x=405 (crosses to node2)
+    L8, R8 = 405, 505
+    island(L8, R8, TOP, ("Cx4", "SG4b", "BS4", "sv_Cx4"), "ND8", R8, +1)
+    yc4 = sg_a(R8, yBS, "SG4a", +1); wire(R8, yc4, R8, N["4"][1])         # SG4a: ND8 -> node4
+    wire(L8, yBS, L8, yBS+30); wire(L8, yBS+30, N["2"][0], N["2"][1])     # node2 rail crosses to node2
+    # node2 rail crosses down-left to node2
+    wire(L8, 108, L8, 135); wire(L8, 135, N["2"][0], N["2"][1])
 
     # ============ Cem ladders (flanks) ============
     # left bank A: node1 bus (x=175) -> L_Ai -> ND(11-16) -> C_ARi -> node2 bus (x=305)
