@@ -1,11 +1,11 @@
 invariant,anchor_pass,anchor_slack,detail,tier
-I2_solver_authority,True,+1.000,z=1.2723 eta=0.4410 W_coll=11.08mJ (frozen),OC
-I3_scalefree_z,True,+0.289,"z=1.2723 in (1.2, 1.45)",OC
-I4_insulate_first,True,+1.639,gap V_bd=39.6kV>15 septum 60kV coil-split=True,OC
-I5_tax_managed,True,+1.940,eta=0.441 (>= 0.15); stageN=2,OC
-I6_parasitic_floor,True,+11.396,C_par=20>=20pF; eff C_min=40pF (geom 20+stray); mod-margin 11.4,OC
-I7_motor_matched,True,+0.400,out=3.73<=net=6.22mJ f_res=300Hz specratio=8000,OC
-I8_dc_trapped_tank,True,+1.000,tank held DC (tan-delta duty-limited),OC
-I9_mechanical,True,+0.003,"rim=199m/s (<200.0, soft 150.0) supercritical=True vac<=10.0Pa",OC
-I10_shuttle_integrity,True,+0.048,strike 20<ceil 21kV; V*=2.7->C_fire 64pF,OC
-I1_conservation,True,+1.000,resid=0.0e+00 +5%trip=fires,OC
+I2_solver_authority,True,+1.000,z=1.2723 eta=0.4410 W_coll=11.08mJ (frozen; structural +/-1),OC
+I3_scalefree_z,True,+0.060,"z=1.2723 in band (1.2, 1.45); nearer edge 1.20; slack 0.060",OC
+I4_insulate_first,True,+1.639,"gap V_bd 39.6/15kV (V_target bound); septum 60kV, coil-split=True; slack 1.639",OC
+I5_tax_managed,True,+1.940,eta 0.441/0.15 (eta_min bound); stageN=2; slack 1.940,OC
+I6_parasitic_floor,True,+11.396,"C_par 20/20pF (floor bound); eff C_min 40pF (geom 20+stray); mod-margin (C_max-C_par)/C_par slack 11.4 [large=loose, by design]",OC
+I7_motor_matched,True,+0.400,"out 3.73/6.22mJ (pump_net bound); f_res 300Hz, specratio 8000; slack 0.400",OC
+I8_dc_trapped_tank,True,+1.000,tank held DC (tan-delta duty-limited; structural +/-1),OC
+I9_mechanical,True,+0.003,"rim 199/200 m/s (limit; soft 150); supercritical=True, vac<=10.0Pa; slack 0.003",OC
+I10_shuttle_integrity,True,+0.048,strike 20/21kV (ceiling bound); V* 2.7->C_fire 64pF; slack 0.048,OC
+I1_conservation,True,+1.000,"ledger resid 0.0e+00, +5% trip fires (consistency-check-that-trips; structural +/-1)",OC

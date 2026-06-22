@@ -127,7 +127,17 @@ def shuttle_Wcoll(Cx_maxMm):
 # the INVARIANT BATTERY (each -> dict(ok, slack, detail)); slack normalized [0,1+], <0 = fail
 # =============================================================================
 def invariants(d):
-    """Run all 10 invariants on a candidate design dict d. Returns {name: (ok, slack, detail)}."""
+    """Run all 10 invariants on a candidate design dict d. Returns {name: (ok, slack, detail)}.
+
+    SLACK CONVENTION (uniform, [ME]): slack = signed fractional HEADROOM to that invariant's bound,
+    normalized by the bound -- `(safe-side margin)/|bound|`. `0` = at the wall (binding), `<0` =
+    violated, `0.10` = 10% headroom. For the TWO-SIDED band (I3 z) the headroom is to the NEARER
+    edge, normalized by that edge (NOT the band width) -- so it is apples-to-apples with the
+    one-sided limits (rim, V_ceil, V_target, eta_min, pump_net). Structural invariants (I1, I2, I8)
+    keep +/-1 (no margin defined). Each `detail` carries the value/bound + the slack so the
+    reference panel can show the reference inline. NOTE: I6 reads LARGE and that is correct -- the
+    modulation headroom is genuinely big (~17x C_par at the anchor); I6 rarely binds because it
+    genuinely isn't tight (its teeth are indirect: as C_max->C_par the z collapses, caught by I3)."""
     out = {}
     OMEGA = d["rpm"] * 2 * math.pi / 60.0
     C1max = Cmax_from_geom(d["r_inMm"], d["r_outMm"], d["g_vMm"], d["n_kept"], d["N_sec"])
@@ -139,12 +149,15 @@ def invariants(d):
     # --- I2 frozen-solver authority: z/eta/W_coll are valid numbers from the solvers ---
     i2 = z > 0 and 0 < eta < 1 and sh["W_coll"] > 0
     out["I2_solver_authority"] = (i2, 1.0 if i2 else -1.0,
-                                  f"z={z:.4f} eta={eta:.4f} W_coll={sh['W_coll']*1e3:.2f}mJ (frozen)")
+                                  f"z={z:.4f} eta={eta:.4f} W_coll={sh['W_coll']*1e3:.2f}mJ "
+                                  f"(frozen; structural +/-1)")
 
-    # --- I3 scale-free z within the validated band ---
-    sl3 = min(z - Z_BAND[0], Z_BAND[1] - z) / (Z_BAND[1] - Z_BAND[0])
-    out["I3_scalefree_z"] = (Z_BAND[0] <= z <= Z_BAND[1], sl3,
-                             f"z={z:.4f} in {Z_BAND}")
+    # --- I3 scale-free z within the validated band (slack -> the NEARER edge, not band width) ---
+    i3 = Z_BAND[0] <= z <= Z_BAND[1]
+    edge = Z_BAND[0] if (z - Z_BAND[0]) < (Z_BAND[1] - z) else Z_BAND[1]   # the nearer band edge
+    sl3 = (min(z - Z_BAND[0], Z_BAND[1] - z) / abs(edge)) if i3 else -1.0
+    out["I3_scalefree_z"] = (i3, sl3,
+                             f"z={z:.4f} in band {Z_BAND}; nearer edge {edge:.2f}; slack {sl3:.3f}")
 
     # --- I4 insulate-first (BEFORE sizing): gap holds V_target, septum holds, coil antinode out ---
     V_bd_gap = K_VAC * d["g_sgMm"] ** 0.6 * 1e3            # vacuum breakdown of the spark gap (V)
@@ -153,15 +166,17 @@ def invariants(d):
     sep_ok = sep_hold > d["V_targetV"]
     coil_ok = d["k_split"] > 0.0                          # split -> antinode out of winding (S7)
     i4 = gap_ok and sep_ok and coil_ok
-    sl4 = (V_bd_gap - d["V_targetV"]) / d["V_targetV"]
+    sl4 = (V_bd_gap - d["V_targetV"]) / d["V_targetV"]   # headroom of the gap hold over V_target
     out["I4_insulate_first"] = (i4, sl4 if i4 else -1.0,
-                                f"gap V_bd={V_bd_gap/1e3:.1f}kV>{d['V_targetV']/1e3:.0f} "
-                                f"septum {sep_hold/1e3:.0f}kV coil-split={coil_ok}")
+                                f"gap V_bd {V_bd_gap/1e3:.1f}/{d['V_targetV']/1e3:.0f}kV (V_target bound); "
+                                f"septum {sep_hold/1e3:.0f}kV, coil-split={coil_ok}; slack {sl4 if i4 else -1.0:.3f}")
 
     # --- I5 tax managed (eta from staging; tax must not dominate the useful output) ---
     i5 = eta >= ETA_MIN_USEFUL
-    out["I5_tax_managed"] = (i5, (eta - ETA_MIN_USEFUL) / ETA_MIN_USEFUL,
-                             f"eta={eta:.3f} (>= {ETA_MIN_USEFUL}); stageN={d['stageN']}")
+    sl5 = (eta - ETA_MIN_USEFUL) / ETA_MIN_USEFUL        # headroom of eta over eta_min
+    out["I5_tax_managed"] = (i5, sl5,
+                             f"eta {eta:.3f}/{ETA_MIN_USEFUL} (eta_min bound); stageN={d['stageN']}; "
+                             f"slack {sl5:.3f}")
 
     # --- I6 parasitic floor: the EFFECTIVE C_min = C1min(geom) + C_par >= C_par always; the real
     #     constraint is that the design cannot pretend the stray away (C_par >= the ~20 pF floor),
@@ -173,8 +188,9 @@ def invariants(d):
     # swing collapses); large when C_max >> C_par, -> 0 as C_max -> C_par (then I3's z also fails).
     sl6 = (C1max - d["Cpar_pF"]) / max(d["Cpar_pF"], 1e-9)
     out["I6_parasitic_floor"] = (cpar_ok, sl6,
-                                 f"C_par={d['Cpar_pF']:.0f}>={CPAR_FLOOR_pF:.0f}pF; eff C_min="
-                                 f"{eff_min:.0f}pF (geom {C1min:.0f}+stray); mod-margin {sl6:.1f}")
+                                 f"C_par {d['Cpar_pF']:.0f}/{CPAR_FLOOR_pF:.0f}pF (floor bound); eff C_min "
+                                 f"{eff_min:.0f}pF (geom {C1min:.0f}+stray); mod-margin (C_max-C_par)/C_par "
+                                 f"slack {sl6:.1f} [large=loose, by design]")
 
     # --- I7 motor matched: output <= pump net; f_res=PRF; spectator at f0 ---
     W_mech = 15.941e-3 * (C1max / 280.0)                  # W_mech scales with C area  [OC scale-free]
@@ -184,36 +200,40 @@ def invariants(d):
     fres_ok = abs(f_res - PRF_BRANCH) < 1.0
     z_f0 = d.get("Zf0_ratio", 8000.0)                    # spectator ratio at f0 (coil-topology)
     i7 = motor_out <= pump_net and fres_ok and z_f0 > F0_SPECTATOR_MIN
-    out["I7_motor_matched"] = (i7, (pump_net - motor_out) / max(pump_net, 1e-12),
-                               f"out={motor_out*1e3:.2f}<=net={pump_net*1e3:.2f}mJ f_res={f_res:.0f}Hz "
-                               f"specratio={z_f0:.0f}")
+    sl7 = (pump_net - motor_out) / max(pump_net, 1e-12)   # headroom of pump_net over motor output
+    out["I7_motor_matched"] = (i7, sl7,
+                               f"out {motor_out*1e3:.2f}/{pump_net*1e3:.2f}mJ (pump_net bound); "
+                               f"f_res {f_res:.0f}Hz, specratio {z_f0:.0f}; slack {sl7:.3f}")
 
     # --- I8 DC-trapped tank: dielectric duty-limited, not the voltage lever (structural) ---
     i8 = d.get("tank_DC", True)
-    out["I8_dc_trapped_tank"] = (i8, 1.0 if i8 else -1.0, "tank held DC (tan-delta duty-limited)")
+    out["I8_dc_trapped_tank"] = (i8, 1.0 if i8 else -1.0,
+                                 "tank held DC (tan-delta duty-limited; structural +/-1)")
 
     # --- I9 mechanical: rim speed < limit; supercritical; vacuum <= spec ---
     rim = OMEGA * (rotor_outMm(d) * 1e-3)              # rim at the ROTOR body (R491), not R387
-    sl9 = (RIM_HARD - rim) / RIM_HARD
+    sl9 = (RIM_HARD - rim) / RIM_HARD                    # headroom of the rim under the hard limit
     superc = d.get("supercritical", True)
     vac_ok = d.get("vacuum_Pa", 1.0) <= VAC_SPEC_PA
     i9 = rim < RIM_HARD and superc and vac_ok
     out["I9_mechanical"] = (i9, sl9 if i9 else -1.0,
-                            f"rim={rim:.0f}m/s (<{RIM_HARD}, soft {RIM_SOFT}) "
-                            f"supercritical={superc} vac<={VAC_SPEC_PA}Pa")
+                            f"rim {rim:.0f}/{RIM_HARD:.0f} m/s (limit; soft {RIM_SOFT:.0f}); "
+                            f"supercritical={superc}, vac<={VAC_SPEC_PA}Pa; slack {sl9 if i9 else -1.0:.3f}")
 
     # --- I10 shuttle integrity: island strike < ceiling; collapse reaches V_strike ---
     strike_ok = d["V_strikeV"] < d["V_ceilV"]
     reaches = sh["C_fire"] > 0 and d["V_strikeV"] > sh["Vstar"]   # collapse boosts V* -> V_strike
     i10 = strike_ok and reaches
-    out["I10_shuttle_integrity"] = (i10, (d["V_ceilV"] - d["V_strikeV"]) / d["V_ceilV"],
-                                    f"strike {d['V_strikeV']/1e3:.0f}<ceil {d['V_ceilV']/1e3:.0f}kV; "
-                                    f"V*={sh['Vstar']/1e3:.1f}->C_fire {sh['C_fire']:.0f}pF")
+    sl10 = (d["V_ceilV"] - d["V_strikeV"]) / d["V_ceilV"]   # headroom of strike under the node ceiling
+    out["I10_shuttle_integrity"] = (i10, sl10,
+                                    f"strike {d['V_strikeV']/1e3:.0f}/{d['V_ceilV']/1e3:.0f}kV (ceiling bound); "
+                                    f"V* {sh['Vstar']/1e3:.1f}->C_fire {sh['C_fire']:.0f}pF; slack {sl10:.3f}")
 
     # --- I1 conservation, real (+5% trip) -- the per-cycle ledger + the non-tautology test ---
     i1_ok, resid, trip = conservation(d, W_mech, eta, sh)
     out["I1_conservation"] = (i1_ok, 1.0 if i1_ok else -1.0,
-                              f"resid={resid:.1e} +5%trip={'fires' if trip else 'FLAT'}")
+                              f"ledger resid {resid:.1e}, +5% trip {'fires' if trip else 'FLAT'} "
+                              f"(consistency-check-that-trips; structural +/-1)")
     return out
 
 

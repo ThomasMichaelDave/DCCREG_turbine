@@ -64,6 +64,14 @@
   #boot .ok{color:var(--good)}#boot .no{color:var(--bad)}
   svg text{font-family:var(--mono)}
   code{color:var(--acc)}
+  #refBody h1{font-size:15px;color:#dfe8f1;margin:14px 0 4px}
+  #refBody h2{font-size:13px;color:var(--brass);margin:16px 0 4px;border-top:1px solid var(--line);padding-top:8px}
+  #refBody table{border-collapse:collapse;width:100%;margin:6px 0;font-size:10.5px}
+  #refBody th,#refBody td{border:1px solid var(--line);padding:3px 5px;text-align:left;vertical-align:top}
+  #refBody th{color:var(--brass);background:#0e141c}
+  #refBody em{color:var(--mut);font-style:normal}
+  #refBody strong{color:#dfe8f1;font-weight:400}
+  #art_schem svg,#art_xsec svg{width:100%;height:auto;display:block}
 </style>
 </head>
 <body>
@@ -74,7 +82,28 @@
       <div class="sub">A constrained dimension-chooser. The dimensions are yours; the rules &amp; derivations are
         hard constraints. z / η / W_coll are the <b style="color:var(--acc)">running frozen solvers</b>, not constants.</div>
     </div>
-    <div id="solverBadge" class="badge"><span class="dot"></span><span id="solverTxt">SOLVER: booting…</span></div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <button id="refBtn" title="reference: every value → the schematic + cross-section">ⓘ reference</button>
+      <div id="solverBadge" class="badge"><span class="dot"></span><span id="solverTxt">SOLVER: booting…</span></div>
+    </div>
+  </div>
+
+  <!-- on-demand reference drawer (closed by default; single source = tools/reference.md) -->
+  <div id="refOverlay" style="display:none;position:fixed;inset:0;background:rgba(4,8,12,.72);z-index:50">
+    <div id="refDrawer" style="position:absolute;top:0;right:0;bottom:0;width:min(760px,94vw);background:var(--panel);
+         border-left:1px solid var(--line);overflow:auto;padding:18px 22px;box-shadow:-8px 0 30px rgba(0,0,0,.5)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="brass">reference — value ↔ schematic ↔ cross-section</div>
+        <button id="refClose">✕ close</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 14px">
+        <div class="panel sub"><div class="brass" style="margin-bottom:4px">schematic (netlist of record)</div>
+          <div id="art_schem">loading…</div></div>
+        <div class="panel sub"><div class="brass" style="margin-bottom:4px">cross-section (from DXF)</div>
+          <div id="art_xsec">loading…</div></div>
+      </div>
+      <div id="refBody" style="font-size:12px;line-height:1.55">loading reference…</div>
+    </div>
   </div>
 
   <div id="boot" class="panel" style="margin-bottom:14px">booting Pyodide…</div>
@@ -117,7 +146,7 @@
     <!-- ============ ROTOR + READOUTS ============ -->
     <div class="panel">
       <div class="brass">Rotor cross-section — bus-corrected (R491 body, not the R387 active band)</div>
-      <svg id="rotor" viewBox="0 0 320 320" width="100%" height="300" style="display:block;margin:6px auto"></svg>
+      <svg id="rotor" viewBox="0 0 320 372" width="100%" height="345" style="display:block;margin:6px auto"></svg>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
         <div class="panel sub"><div class="brass">rotor diameter</div>
           <div class="readout"><span id="r_dia">—</span><small> mm</small></div>
@@ -324,29 +353,74 @@ function render(d, fromSolve){
 }
 
 function drawRotor(d){
-  const svg=$("rotor"); const C=160, R=150;
-  // radii in mm: active in (R95-ish), active out (r_out), rotor out (r_out*1.27), plate edge (~r_out*1.29)
+  // A: viewBox 320x372 with top/bottom label gutters. Centre offset down (CY=188); the OUTERMOST
+  // ring (plate edge) is kept <= R_MAX=132 so the rotor top >= y56 / bottom <= y320, leaving the
+  // dia label (y30, top gutter) and the active-band label (y356, bottom gutter) clear of the render.
+  const svg=$("rotor"); const CX=160, CY=188, R_MAX=132;
   const rOut=d.r_outMm, rotorOut=d.rotor_outMm, plate=rOut*(500/387), rIn=d.r_inMm;
-  const sc=R/(plate*1.02);
-  const ring=(r,col,w,dash)=>`<circle cx="${C}" cy="${C}" r="${(r*sc).toFixed(1)}" fill="none" stroke="${col}" stroke-width="${w}" ${dash?`stroke-dasharray="${dash}"`:""}/>`;
+  const sc=R_MAX/(plate*1.02);                       // plate edge is the outer ring -> ~129 < R_MAX
+  const ring=(r,col,w,dash)=>`<circle cx="${CX}" cy="${CY}" r="${(r*sc).toFixed(1)}" fill="none" stroke="${col}" stroke-width="${w}" ${dash?`stroke-dasharray="${dash}"`:""}/>`;
   // 6 alternating active wedges (illustrative)
   let wedges="";
   for(let i=0;i<6;i++){ const a0=(i*60-15)*Math.PI/180, a1=(i*60+15)*Math.PI/180;
     const ri=rIn*sc, ro=rOut*sc;
-    const p=(r,a)=>`${(C+r*Math.cos(a)).toFixed(1)},${(C+r*Math.sin(a)).toFixed(1)}`;
+    const p=(r,a)=>`${(CX+r*Math.cos(a)).toFixed(1)},${(CY+r*Math.sin(a)).toFixed(1)}`;
     wedges+=`<path d="M ${p(ri,a0)} L ${p(ro,a0)} A ${ro} ${ro} 0 0 1 ${p(ro,a1)} L ${p(ri,a1)} A ${ri} ${ri} 0 0 0 ${p(ri,a0)} Z" fill="#13202c" stroke="#2a4a5e" stroke-width="0.7"/>`;
   }
+  const i9bad = d.invariants.I9_mechanical && !d.invariants.I9_mechanical.pass;
   svg.innerHTML =
     ring(plate,"#1e2733",1)+                         // plate edge R500
-    `<circle cx="${C}" cy="${C}" r="${(rotorOut*sc).toFixed(1)}" fill="#0e141c" stroke="${d.invariants.I9_mechanical&&!d.invariants.I9_mechanical.pass?'var(--bad)':'var(--brass)'}" stroke-width="2"/>`+ // rotor body R491
+    `<circle cx="${CX}" cy="${CY}" r="${(rotorOut*sc).toFixed(1)}" fill="#0e141c" stroke="${i9bad?'var(--bad)':'var(--brass)'}" stroke-width="2"/>`+ // rotor body R491
     wedges +
     ring(rIn,"#3a4a5a",0.8,"3 3")+                   // active inner R95
-    `<circle cx="${C}" cy="${C}" r="2" fill="var(--amber)"/>`+
-    `<text x="${C}" y="18" fill="var(--brass)" font-size="9" text-anchor="middle">R491 ROTOR · ${d.rotor_dia_mm.toFixed(0)} mm dia</text>`+
-    `<text x="${C}" y="${C+R-2}" fill="var(--mut)" font-size="8" text-anchor="middle">active band ${d.active_dia_mm.toFixed(0)} mm</text>`;
+    `<circle cx="${CX}" cy="${CY}" r="2" fill="var(--amber)"/>`+
+    `<text x="${CX}" y="30" fill="var(--brass)" font-size="10" text-anchor="middle">R491 ROTOR · ${d.rotor_dia_mm.toFixed(0)} mm dia</text>`+
+    `<text x="${CX}" y="356" fill="var(--mut)" font-size="9" text-anchor="middle">active band ${d.active_dia_mm.toFixed(0)} mm (R387)</text>`;
+}
+
+// ---- reference drawer: render tools/reference.md (the single source) + the two SSOT SVGs ----
+function mdToHtml(md){
+  const esc=s=>s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const inline=s=>esc(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+    .replace(/`(.+?)`/g,"<code>$1</code>").replace(/(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g,"<em>$1</em>");
+  const lines=md.split("\n"); let html="",i=0;
+  while(i<lines.length){
+    const l=lines[i];
+    if(/^\|/.test(l)){                                   // a markdown table block
+      const rows=[]; while(i<lines.length && /^\|/.test(lines[i])){ rows.push(lines[i]); i++; }
+      const cells=r=>r.split("|").slice(1,-1).map(c=>c.trim());
+      html+="<table>"; rows.forEach((r,ri)=>{
+        if(/^\|[\s:|-]+\|$/.test(r)) return;             // the --- separator row
+        const tag=ri===0?"th":"td";
+        html+="<tr>"+cells(r).map(c=>`<${tag}>${inline(c)}</${tag}>`).join("")+"</tr>";
+      }); html+="</table>"; continue;
+    }
+    if(/^# /.test(l)) html+=`<h1>${inline(l.slice(2))}</h1>`;
+    else if(/^## /.test(l)) html+=`<h2>${inline(l.slice(3))}</h2>`;
+    else if(l.trim()==="") html+="";
+    else html+=`<p style="margin:5px 0">${inline(l)}</p>`;
+    i++;
+  }
+  return html;
+}
+async function openRef(){
+  $("refOverlay").style.display="block";
+  try{
+    for(const [id,src] of [["art_schem","./schematic.svg"],["art_xsec","./cross-section.svg"]]){
+      try{ const r=await fetch(src); $(id).innerHTML = r.ok ? await r.text()
+            : `<span style="color:var(--warn)">artifact deferred — ${src} (run gen_artifacts.py)</span>`; }
+      catch{ $(id).innerHTML=`<span style="color:var(--warn)">artifact deferred — ${src}</span>`; }
+    }
+    const r=await fetch("./reference.md");
+    $("refBody").innerHTML = r.ok ? mdToHtml(await r.text())
+      : '<span style="color:var(--warn)">reference.md not reachable (serve from the repo root)</span>';
+  }catch(e){ $("refBody").textContent="reference unavailable: "+e.message; }
 }
 
 function wireUI(){
+  $("refBtn").addEventListener("click", openRef);
+  $("refClose").addEventListener("click", ()=>$("refOverlay").style.display="none");
+  $("refOverlay").addEventListener("click", e=>{ if(e.target.id==="refOverlay") $("refOverlay").style.display="none"; });
   for(const k of FREE_KEYS) $(k).addEventListener("input", liveEval);
   $("reset").addEventListener("click", async ()=>{
     const a=JSON.parse(py.globals.get("_anchor")());
