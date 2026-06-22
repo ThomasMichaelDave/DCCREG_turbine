@@ -1,0 +1,30 @@
+section,key,value,unit,note
+per_transfer,phaseA equalization,11.1893,mJ/cycle,direct C-C tax
+per_transfer,phaseA equalization_Q,1908.9,,ring Q (R=2ohm)
+per_transfer,phaseA equalization_t_half_us,0.823,us,
+per_transfer,phaseA equalization_i_pk,4.73,A,
+per_transfer,phaseA equalization_recovered,11.1709,mJ/cycle,
+per_transfer,phaseA equalization_worth_it,True,,E_loss < tax
+per_transfer,phaseA equalization_guard_resid,1.14e-12,,closes
+per_transfer,phaseA equalization_guard_trips,True,,+5% R
+per_transfer,phaseB equalization,8.3878,mJ/cycle,direct C-C tax
+per_transfer,phaseB equalization_Q,1908.9,,ring Q (R=2ohm)
+per_transfer,phaseB equalization_t_half_us,0.823,us,
+per_transfer,phaseB equalization_i_pk,4.09,A,
+per_transfer,phaseB equalization_recovered,8.3740,mJ/cycle,
+per_transfer,phaseB equalization_worth_it,True,,E_loss < tax
+per_transfer,phaseB equalization_guard_resid,7.98e-13,,closes
+per_transfer,phaseB equalization_guard_trips,True,,+5% R
+eta_vs_N,N=0,0.38596,,recovered 0.000 mJ/cycle
+eta_vs_N,N=1,0.73634,,recovered 11.171 mJ/cycle
+eta_vs_N,N=2,0.99899,,recovered 19.545 mJ/cycle
+arc_floor,opt,0.0462,mJ/cycle,V_arc=20.0V; eta_ceiling 0.9975
+arc_floor,mid,0.0809,mJ/cycle,V_arc=35.0V; eta_ceiling 0.9965
+arc_floor,pess,0.1156,mJ/cycle,V_arc=50.0V; eta_ceiling 0.9954
+ledger,recovered,19.5450,mJ/cycle,aggregate
+ledger,residual,0.00e+00,,Sum recovered = Sum(tax-loss)
+#verdict,RESONANT-BRIGADE-MODELED
+#eta_direct,0.385956
+#eta_upper_bound_N2,0.99899
+#timing,co-exist (all t_half ~0.82us < 278us)
+#caveat,recovered-eta is an UPPER BOUND conditional on z surviving a doubler re-sim (brigade equalization IS the pump mechanism; frozen doubler_core not re-derived)
