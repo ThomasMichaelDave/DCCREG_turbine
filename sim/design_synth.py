@@ -38,6 +38,7 @@ sys.path.insert(0, os.path.join(ROOT, "reference"))
 import doubler_core as dc           # FROZEN AUTHORITY: z, the phase solve
 import energy_balance_from_solver as eb   # the d/2 V^2 dC decomposition (eta, W_mech)
 import island_charging_cosim as ic        # FROZEN shuttle (W_coll/E_fire/C_fire) -- run, not edited
+import island_resonant_core as irc       # NEW resonant island transfer (Lx) -- the efficiency fix
 
 EPS0 = 8.8541878128e-12
 
@@ -47,6 +48,7 @@ ESTABLISHED = dict(
     C1min_pF=16.0, C1max_pF=280.0, Ca_pF=309.0, Cpar_pF=20.0,
     Cx_maxMm=471.0, g_islMm=4.0, C_R_pF=789.0, f0_kHz=637.0, k_split=0.30,
     g_sgMm=0.5, rpm=3000.0, stageN=2, V_targetV=15e3, V_strikeV=20e3, V_ceilV=21e3,
+    Lx_mH=1.0,   # series island inductor (resonant transfer) -- KiCad Lx3/Lx4 [resonant-island]
 )
 # ---- rule thresholds (the invariants' constants, from the campaign) --------- [OC]/[IR]
 Z_BAND = (1.20, 1.45)               # validated doubler z band (device 1.203 .. wide 1.438)  [OC]
@@ -202,13 +204,27 @@ def invariants(d):
                             f"rim={rim:.0f}m/s (<{RIM_HARD}, soft {RIM_SOFT}) "
                             f"supercritical={superc} vac<={VAC_SPEC_PA}Pa")
 
-    # --- I10 shuttle integrity: island strike < ceiling; collapse reaches V_strike ---
+    # --- I10 shuttle integrity: island strike < ceiling; collapse reaches V_strike; AND the
+    #     resonant-island sub-checks (the series Lx transfer, KiCad 37-comp topology): t1/2 fits the
+    #     SG conduction window, i_pk within rating, ring node within insulation. [resonant-island] ---
     strike_ok = d["V_strikeV"] < d["V_ceilV"]
     reaches = sh["C_fire"] > 0 and d["V_strikeV"] > sh["Vstar"]   # collapse boosts V* -> V_strike
-    i10 = strike_ok and reaches
-    out["I10_shuttle_integrity"] = (i10, (d["V_ceilV"] - d["V_strikeV"]) / d["V_ceilV"],
-                                    f"strike {d['V_strikeV']/1e3:.0f}<ceil {d['V_ceilV']/1e3:.0f}kV; "
-                                    f"V*={sh['Vstar']/1e3:.1f}->C_fire {sh['C_fire']:.0f}pF")
+    # resonant Lx sub-checks
+    Lx = d.get("Lx_mH", 1.0) * 1e-3
+    C_src = d["Cx_maxMm"] * 1e-12; C_bank = 2640e-9; dVr = 5e3   # island -> bank, ~5 kV [IR seq->TMD]
+    cf = irc.closed_form(C_src, C_bank, dVr, Lx, 20.0)
+    win_s = 5.0 / (d["rpm"] / 60.0 * 360.0)                       # 5deg SG window [IR/EST]
+    timing_ok = cf["t_half"] <= win_s
+    current_ok = cf["i_pk"] <= 100.0
+    voltage_ok = dVr <= d["V_ceilV"]
+    i10 = strike_ok and reaches and timing_ok and current_ok and voltage_ok
+    sl10 = (d["V_ceilV"] - d["V_strikeV"]) / d["V_ceilV"]
+    out["I10_shuttle_integrity"] = (i10, sl10 if i10 else -1.0,
+                                    f"strike {d['V_strikeV']/1e3:.0f}/{d['V_ceilV']/1e3:.0f}kV; "
+                                    f"V* {sh['Vstar']/1e3:.1f}->C_fire {sh['C_fire']:.0f}pF; "
+                                    f"resonant Lx {Lx*1e3:.2f}mH: t1/2 {cf['t_half']*1e6:.1f}/{win_s*1e6:.0f}us"
+                                    f"({'ok' if timing_ok else 'OVER'}) i_pk {cf['i_pk']:.1f}A"
+                                    f"({'ok' if current_ok else 'OVER'})")
 
     # --- I1 conservation, real (+5% trip) -- the per-cycle ledger + the non-tautology test ---
     i1_ok, resid, trip = conservation(d, W_mech, eta, sh)
