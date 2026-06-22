@@ -1,0 +1,150 @@
+(kicad_symbol_lib
+	(version 20231120)
+	(generator "dccreg_gaps_handwritten")
+	(generator_version "8.0")
+
+	(symbol "Spark_Gap"
+		(pin_names (offset 1.016))
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(property "Reference" "SG"
+			(at 0 3.81 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "Spark_Gap"
+			(at 0 -3.81 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(effects (font (size 1.27 1.27)) (hide yes))
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(effects (font (size 1.27 1.27)) (hide yes))
+		)
+		(property "Description" "DCCREG sparking commutation gap: holds off until V_strike, arcs, self-quenches at current-zero. Hard rectifier (NOT a diode -- a V_strike holdoff). Ref prefix SG."
+			(at 0 0 0)
+			(effects (font (size 1.27 1.27)) (hide yes))
+		)
+		(property "ki_keywords" "spark gap commutation rectifier SG V_strike DCCREG"
+			(at 0 0 0)
+			(effects (font (size 1.27 1.27)) (hide yes))
+		)
+		(property "Gap_Type" "sparking"
+			(at 0 -5.84 0)
+			(effects (font (size 1.0 1.0)) (hide yes))
+		)
+		(property "V_strike" "20kV"
+			(at 0 5.84 0)
+			(effects (font (size 1.0 1.0)) (hide yes))
+		)
+		(symbol "Spark_Gap_0_1"
+			(polyline
+				(pts (xy -2.54 2.54) (xy -2.54 -2.54) (xy 0 0) (xy -2.54 2.54))
+				(stroke (width 0.2032) (type default))
+				(fill (type none))
+			)
+			(polyline
+				(pts (xy 2.54 2.54) (xy 2.54 -2.54) (xy 0 0) (xy 2.54 2.54))
+				(stroke (width 0.2032) (type default))
+				(fill (type none))
+			)
+			(polyline
+				(pts (xy 0 0) (xy 0 0))
+				(stroke (width 0.2032) (type default))
+				(fill (type none))
+			)
+		)
+		(symbol "Spark_Gap_1_1"
+			(pin passive line
+				(at -7.62 0 0)
+				(length 5.08)
+				(name "A" (effects (font (size 1.27 1.27))))
+				(number "1" (effects (font (size 1.27 1.27))))
+			)
+			(pin passive line
+				(at 7.62 0 180)
+				(length 5.08)
+				(name "B" (effects (font (size 1.27 1.27))))
+				(number "2" (effects (font (size 1.27 1.27))))
+			)
+		)
+	)
+
+	(symbol "FE_Gap"
+		(pin_names (offset 1.016))
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(property "Reference" "BS"
+			(at 0 3.81 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Value" "FE_Gap"
+			(at 0 -3.81 0)
+			(effects (font (size 1.27 1.27)))
+		)
+		(property "Footprint" ""
+			(at 0 0 0)
+			(effects (font (size 1.27 1.27)) (hide yes))
+		)
+		(property "Datasheet" ""
+			(at 0 0 0)
+			(effects (font (size 1.27 1.27)) (hide yes))
+		)
+		(property "Description" "DCCREG field-emission backstop gap: Fowler-Nordheim soft, voltage-dependent bleed (J ~ E^2 exp(-B/E)), onset ~0.6*V_strike. A controlled leakage clamp, NOT a hard strike. Ref prefix BS (or FE)."
+			(at 0 0 0)
+			(effects (font (size 1.27 1.27)) (hide yes))
+		)
+		(property "ki_keywords" "field emission Fowler-Nordheim backstop leakage gap BS FE DCCREG"
+			(at 0 0 0)
+			(effects (font (size 1.27 1.27)) (hide yes))
+		)
+		(property "Gap_Type" "field_emission"
+			(at 0 -5.84 0)
+			(effects (font (size 1.0 1.0)) (hide yes))
+		)
+		(property "V_onset" "12kV(0.6xV_strike)"
+			(at 0 5.84 0)
+			(effects (font (size 1.0 1.0)) (hide yes))
+		)
+		(symbol "FE_Gap_0_1"
+			(polyline
+				(pts (xy -3.81 2.54) (xy -1.27 0) (xy -3.81 -2.54))
+				(stroke (width 0.2032) (type default))
+				(fill (type none))
+			)
+			(polyline
+				(pts (xy 1.27 2.54) (xy 1.27 -2.54))
+				(stroke (width 0.2032) (type default))
+				(fill (type none))
+			)
+			(polyline
+				(pts (xy -1.27 0) (xy 0.0 0))
+				(stroke (width 0.1524) (type dot))
+				(fill (type none))
+			)
+			(polyline
+				(pts (xy -0.5 0.6) (xy 0.0 0) (xy -0.5 -0.6))
+				(stroke (width 0.1524) (type default))
+				(fill (type none))
+			)
+		)
+		(symbol "FE_Gap_1_1"
+			(pin passive line
+				(at -7.62 0 0)
+				(length 3.81)
+				(name "TIP" (effects (font (size 1.27 1.27))))
+				(number "1" (effects (font (size 1.27 1.27))))
+			)
+			(pin passive line
+				(at 7.62 0 180)
+				(length 6.35)
+				(name "PLATE" (effects (font (size 1.27 1.27))))
+				(number "2" (effects (font (size 1.27 1.27))))
+			)
+		)
+	)
+)
