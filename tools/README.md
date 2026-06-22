@@ -42,8 +42,25 @@ worse than one that says it's down.
   first time, then cached); it pushes the optimal dimensions back onto the sliders.
 - **Invariant lamps** (right): green = pass, amber = the **binding** constraint, red = fail. Slack is the
   uniform "fraction of headroom to the bound."
-- **"ⓘ reference"** opens the drawer (closed by default) mapping every value to the schematic node and the
-  cross-section feature, with both SSOT-generated artifacts.
+- **"ⓘ reference"** opens the drawer (closed by default): the **schematic container** (hosts the KiCad
+  `varcap.svg`, click-to-enlarge), the **legend + live-value table** (label-matched to the schematic),
+  the **consistency stamp** (KiCad netlist ↔ design topology), the cross-section, and the glossary.
+
+## The schematic is KiCad's (TMD authors; the tool hosts + checks)
+
+The container hosts the KiCad SVG and verifies its netlist against the design topology — it does **not**
+draw a schematic. TMD re-exports on a design change:
+
+```bash
+kicad-cli sch export svg     --output tools/            varcap.kicad_sch   # -> tools/varcap.svg
+kicad-cli sch export netlist --format spice --output tools/schematic.cir   varcap.kicad_sch
+git add tools/varcap.svg tools/schematic.cir && git commit
+```
+
+The container is a **drop-in**: once `tools/varcap.svg` is committed it appears in the slot with no code
+change (until then the slot shows the labelled interim stand-in `tools/schematic.svg`). The stamp reads
+**MATCH** (KiCad netlist = the 42-component / 22-node design graph), **⚠ MISMATCH** (re-export needed),
+or **AWAITING-KICAD** (no `tools/schematic.cir` committed yet).
 
 ## Troubleshooting
 

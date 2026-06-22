@@ -93,17 +93,31 @@
     <div id="refDrawer" style="position:absolute;top:0;right:0;bottom:0;width:min(760px,94vw);background:var(--panel);
          border-left:1px solid var(--line);overflow:auto;padding:18px 22px;box-shadow:-8px 0 30px rgba(0,0,0,.5)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div class="brass">reference — value ↔ schematic ↔ cross-section</div>
+        <div class="brass">reference — schematic · legend+live values · cross-section</div>
         <button id="refClose">✕ close</button>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 14px">
-        <div class="panel sub"><div class="brass" style="margin-bottom:4px">schematic (netlist of record)</div>
-          <div id="art_schem">loading…</div></div>
-        <div class="panel sub"><div class="brass" style="margin-bottom:4px">cross-section (from DXF)</div>
-          <div id="art_xsec">loading…</div></div>
+      <!-- SCHEMATIC CONTAINER: hosts the KiCad-exported tools/varcap.svg (drop-in); legend+live values; consistency stamp -->
+      <div class="panel sub" style="margin:6px 0 12px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div class="brass">schematic <span id="schemSrc" style="color:var(--mut)"></span></div>
+          <button id="schemZoom" style="font-size:10px">⤢ enlarge</button>
+        </div>
+        <div id="schemSlot" style="margin:6px 0;background:#0b0f14;border:1px solid var(--line);border-radius:4px;min-height:60px;cursor:zoom-in">loading…</div>
+        <div id="schemStamp" style="font-size:10.5px;margin:4px 0 8px">checking…</div>
+        <div class="brass" style="margin:8px 0 3px">legend + live values <span style="color:var(--mut)">(refs match the schematic labels)</span></div>
+        <table id="legendTable" style="border-collapse:collapse;width:100%;font-size:10.5px"></table>
+        <div id="labelMismatch" style="font-size:10px;color:var(--mut);margin-top:6px"></div>
+      </div>
+      <div class="panel sub" style="margin-bottom:12px">
+        <div class="brass" style="margin-bottom:4px">cross-section (from the DXF)</div>
+        <div id="art_xsec">loading…</div>
       </div>
       <div id="refBody" style="font-size:12px;line-height:1.55">loading reference…</div>
     </div>
+  </div>
+  <!-- click-to-enlarge lightbox -->
+  <div id="lightbox" style="display:none;position:fixed;inset:0;background:rgba(2,5,8,.92);z-index:60;cursor:zoom-out">
+    <div id="lightboxBody" style="position:absolute;inset:24px;overflow:auto;display:flex;align-items:center;justify-content:center"></div>
   </div>
 
   <div id="boot" class="panel" style="margin-bottom:14px">booting Pyodide…</div>
@@ -415,26 +429,99 @@ function mdToHtml(md){
   }
   return html;
 }
-async function openRef(){
-  $("refOverlay").style.display="block";
-  try{
-    for(const [id,src] of [["art_schem","./schematic.svg"],["art_xsec","./cross-section.svg"]]){
-      try{ const r=await fetch(src); $(id).innerHTML = r.ok ? await r.text()
-            : `<span style="color:var(--warn)">artifact deferred — ${src} (run gen_artifacts.py)</span>`; }
-      catch{ $(id).innerHTML=`<span style="color:var(--warn)">artifact deferred — ${src}</span>`; }
-    }
-    fillSchematicValues(lastDesign);                     // inherit the live solver values
-
-    const r=await fetch("./reference.md");
-    $("refBody").innerHTML = r.ok ? mdToHtml(await r.text())
-      : '<span style="color:var(--warn)">reference.md not reachable (serve from the repo root)</span>';
-  }catch(e){ $("refBody").textContent="reference unavailable: "+e.message; }
+// ---- the schematic container ----
+const pf = x => (x==null||isNaN(x)) ? "—" : `${Math.round(x)} pF`;
+// the legend (static role) + which solver field feeds the live value; refs match the schematic labels
+const LEGEND = [
+  {ref:"C1 / C2",      labels:["C1","C2"],            role:"doubler input caps (the 4-node binding gap)", val:d=>pf(d.C1min_pF)},
+  {ref:"Cx3 / Cx4",    labels:["Cx3","Cx4"],          role:"island — flying-bucket pickup",               val:d=>pf(d.Cx_maxMm)},
+  {ref:"Ca / Cb",      labels:["Ca","Cb"],            role:"bucket-brigade transfer caps",                val:d=>pf(d.Ca_pF)},
+  {ref:"C_R",          labels:["C_R"],                role:"resonator tank",                              val:d=>pf(d.C_R_pF)},
+  {ref:"L_R1 / L_R2",  labels:["L_R1","L_R2"],        role:"split resonator coils (aiding)",              val:()=>"39.5 µH · static"},
+  {ref:"SG1–4 / BS3–4",labels:["SG1","SG2","SG3a","SG3b","SG4a","SG4b","BS3","BS4"], role:"rotary self-break spark gaps + bias", val:()=>"— commutation"},
+  {ref:"C_max",        labels:[],                     role:"varicap aligned max (derived; not a part)",   val:d=>pf(d.C1max_pF)},
+];
+function renderLegend(d, svgText){
+  const rows=LEGEND.map(L=>{
+    const v = d ? L.val(d) : "—";
+    return `<tr><td style="border:1px solid var(--line);padding:3px 5px"><code>${L.ref}</code></td>`+
+      `<td style="border:1px solid var(--line);padding:3px 5px">${L.role}</td>`+
+      `<td style="border:1px solid var(--line);padding:3px 5px;color:var(--amber)">${v}</td></tr>`;
+  });
+  $("legendTable").innerHTML =
+    '<tr><th style="border:1px solid var(--line);padding:3px 5px;color:var(--brass)">ref</th>'+
+    '<th style="border:1px solid var(--line);padding:3px 5px;color:var(--brass)">component (role)</th>'+
+    '<th style="border:1px solid var(--line);padding:3px 5px;color:var(--brass)">live value</th></tr>'+rows.join("");
+  // label-mismatch: every table label must appear in the schematic SVG text (derived rows excepted)
+  const txt = (svgText||"").replace(/<[^>]+>/g," ");
+  const missing=[];
+  for(const L of LEGEND) for(const lab of L.labels) if(!new RegExp(`(^|[\\s>(])${lab.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&")}([\\s<).,]|$)`).test(txt)) missing.push(lab);
+  $("labelMismatch").innerHTML = missing.length
+    ? `⚠ table refs not found in the schematic: <span style="color:var(--warn)">${[...new Set(missing)].join(", ")}</span> — reconcile the KiCad refdes to the table`
+    : `label match: every table ref is present in the schematic ✓`;
+}
+// the consistency check: KiCad SPICE netlist (tools/schematic.cir) vs the topology of record
+async function consistencyCheck(){
+  let cir=null, topo=null;
+  try{ const r=await fetch("./schematic.cir"); if(r.ok) cir=await r.text(); }catch{}
+  try{ const r=await fetch("../topology_edge_list.csv"); if(r.ok) topo=await r.text(); }catch{}
+  if(!topo){ return {state:"err", msg:"topology_edge_list.csv not reachable (serve from repo root)"}; }
+  // parse topology: lines comp,a,b ; skip header/#
+  const tcomp=new Set(), tnodes=new Set();
+  topo.split("\n").forEach(l=>{ const c=l.split(","); if(!c[0]||c[0][0]==="#"||c[0]==="component")return;
+    tcomp.add(c[0].trim()); if(c[1]&&c[1].trim())tnodes.add(c[1].trim()); if(c[2]&&c[2].trim())tnodes.add(c[2].trim()); });
+  if(!cir){ return {state:"awaiting", tcomp:tcomp.size, tnodes:tnodes.size}; }
+  // parse SPICE: component lines = first token (refdes) + node tokens; skip .commands/comments
+  const ccomp=new Set(), cnodes=new Set();
+  cir.split("\n").forEach(l=>{ l=l.trim(); if(!l||l[0]==="."||l[0]==="*"||l[0]==="+")return;
+    const t=l.split(/\s+/); ccomp.add(t[0]);
+    if(t[0][0].toUpperCase()==="K") return;            // mutual coupling: refs inductors, not nodes
+    if(t.length<3)return; cnodes.add(t[1]); cnodes.add(t[2]); });
+  ["0","gnd","GND"].forEach(g=>cnodes.delete(g));
+  const ok = (ccomp.size===tcomp.size) && (cnodes.size===tnodes.size);
+  return {state: ok?"match":"mismatch", ccomp:ccomp.size, cnodes:cnodes.size, tcomp:tcomp.size, tnodes:tnodes.size};
 }
 
+async function openRef(){
+  $("refOverlay").style.display="block";
+  // 1. the schematic slot: KiCad varcap.svg (drop-in) -> interim schematic.svg -> placeholder
+  let svgText=null, src="";
+  try{ const r=await fetch("./varcap.svg"); if(r.ok){ svgText=await r.text(); src="KiCad export (varcap.svg)"; } }catch{}
+  if(svgText==null){ try{ const r=await fetch("./schematic.svg"); if(r.ok){ svgText=await r.text(); src="interim — KiCad export pending"; } }catch{} }
+  if(svgText==null){
+    $("schemSlot").innerHTML='<div style="padding:18px;color:var(--warn);font-size:11px">schematic pending KiCad export — run the two kicad-cli commands (see tools/README.md) and commit <code>tools/varcap.svg</code></div>';
+    $("schemSrc").textContent="(no SVG)";
+  } else {
+    $("schemSlot").innerHTML=svgText; $("schemSrc").textContent="· "+src;
+    if(src.startsWith("interim")) $("schemSrc").style.color="var(--warn)";
+  }
+  fillSchematicValues(lastDesign);                       // interim art shows live values too (harmless)
+  renderLegend(lastDesign, svgText);                     // live value table + label-match
+  // 2. consistency stamp
+  const c=await consistencyCheck();
+  const S=$("schemStamp");
+  if(c.state==="match") S.innerHTML=`<span style="color:var(--good)">schematic ↔ design: MATCH</span> (${c.ccomp} components, ${c.cnodes}/${c.tnodes} nodes)`;
+  else if(c.state==="mismatch") S.innerHTML=`<span style="color:var(--bad)">⚠ schematic ↔ design: MISMATCH</span> — KiCad ${c.ccomp} comp/${c.cnodes} nodes vs design ${c.tcomp}/${c.tnodes}; re-export from KiCad`;
+  else if(c.state==="awaiting") S.innerHTML=`<span style="color:var(--warn)">AWAITING-KICAD</span> — design topology of record: ${c.tcomp} components, ${c.tnodes} nodes; commit <code>tools/schematic.cir</code> to enable the check`;
+  else S.innerHTML=`<span style="color:var(--warn)">${c.msg}</span>`;
+  // 3. cross-section + glossary
+  try{ const r=await fetch("./cross-section.svg"); $("art_xsec").innerHTML = r.ok ? await r.text() : '<span style="color:var(--warn)">cross-section.svg absent (run gen_artifacts.py)</span>'; }catch{ $("art_xsec").textContent="cross-section unavailable"; }
+  try{ const r=await fetch("./reference.md"); $("refBody").innerHTML = r.ok ? mdToHtml(await r.text()) : '<span style="color:var(--warn)">reference.md not reachable (serve from the repo root)</span>'; }catch(e){ $("refBody").textContent="reference unavailable: "+e.message; }
+}
+
+function openLightbox(){
+  const svg=$("schemSlot").querySelector("svg"); if(!svg) return;
+  const clone=svg.cloneNode(true); clone.removeAttribute("width"); clone.removeAttribute("height");
+  clone.style.width="auto"; clone.style.height="92vh"; clone.style.maxWidth="96vw";
+  $("lightboxBody").innerHTML=""; $("lightboxBody").appendChild(clone); $("lightbox").style.display="block";
+}
 function wireUI(){
   $("refBtn").addEventListener("click", openRef);
   $("refClose").addEventListener("click", ()=>$("refOverlay").style.display="none");
   $("refOverlay").addEventListener("click", e=>{ if(e.target.id==="refOverlay") $("refOverlay").style.display="none"; });
+  $("schemSlot").addEventListener("click", openLightbox);
+  $("schemZoom").addEventListener("click", e=>{ e.stopPropagation(); openLightbox(); });
+  $("lightbox").addEventListener("click", ()=>$("lightbox").style.display="none");
   for(const k of FREE_KEYS) $(k).addEventListener("input", liveEval);
   $("reset").addEventListener("click", async ()=>{
     const a=JSON.parse(py.globals.get("_anchor")());

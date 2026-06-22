@@ -62,13 +62,43 @@ apples-to-apples with the one-sided limits.
 **Binding = the least slack** (now apples-to-apples). At the established anchor the ranking is
 **I10 (0.048) < I3 (0.080) < I9 (0.23) < I7 (0.40) < …** → the machine is **shuttle-strike-bound**.
 
-## The two artifacts
+## The schematic (KiCad is the source) + the legend/value table
+
+**KiCad is the schematic source of record.** TMD authors `varcap.kicad_sch` and exports the SVG + a
+SPICE netlist; the tool **hosts** the SVG (drop-in slot in the reference drawer) and **checks** the
+netlist against the design topology — it no longer draws or lays out a schematic. The legend below is
+the static **role** of each part; the **live value** column is pulled from the same `evaluate_design`
+dict the calculator calls, cross-referenced to the schematic **by label** (the human reads `C_R` on the
+drawing and finds `C_R` in the table — robust to layout edits). The schematic art is **fixed** (the
+clean KiCad layout); the live numbers live in the table.
+
+| ref (matches the schematic) | component (role) | live value |
+|---|---|---|
+| C1 / C2 | doubler input caps (the 4-node binding gap) | solver `C1min` |
+| Cx3 / Cx4 | island — flying-bucket pickup | solver `Cx_max` |
+| Ca / Cb | bucket-brigade transfer caps | solver `Ca` |
+| C_R | resonator tank | solver `C_R` |
+| L_R1 / L_R2 | split resonator coils (aiding) | **static** 39.5 µH |
+| SG1–4 / BS3–4 | rotary self-break spark gaps + bias | — commutation |
+| C_max (derived) | varicap aligned max | solver `_C1max` |
+
+**The consistency check** parses the KiCad SPICE netlist (`tools/schematic.cir`) and verifies it
+matches the design topology of record (`topology_edge_list.csv`) — **component count + node count** —
+so the drawn schematic is *proven* to be the design's electrical graph, not just a picture. Until TMD
+commits the exports the container shows the interim stand-in and an **AWAITING-KICAD** stamp.
+
+### KiCad export (TMD, build-time — re-run on a design change)
+
+```bash
+kicad-cli sch export svg     --output tools/            varcap.kicad_sch   # -> tools/varcap.svg
+kicad-cli sch export netlist --format spice --output tools/schematic.cir   varcap.kicad_sch
+git add tools/varcap.svg tools/schematic.cir && git commit   # the container drops them in, no code change
+```
+
+## The cross-section artifact
 
 - **`cross-section.svg`** — generated from the DXF ref-radii (R25/R95/R387/R491/R500) with the named
   features: the 6 varicap plate wedges (ND1/ND9, R95–R387), the island bars (ND7/ND8, ~R350), the C_R
-  septum (12 mm, centre), and the 12 Cem cores (~R440).
-- **`schematic.svg`** — generated from `topology_edge_list.csv`: the 4-node doubler core (1‑2‑3‑4), the
-  rail (5‑6), the islands (7/8), the tank (9‑10), and the two Cem banks (11‑16 / 17‑22), with the
-  connectivity check stamped (42 components, 22/22 nodes, MATCH).
-
-Regenerate both with `python3 tools/gen_artifacts.py` whenever the DXF or the netlist updates.
+  septum (12 mm, centre), and the 12 Cem cores (~R440). Regenerate with `python3 tools/gen_artifacts.py`
+  when the DXF updates. *(`tools/schematic.svg` remains only as the labelled interim stand-in until the
+  KiCad `varcap.svg` lands.)*
