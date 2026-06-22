@@ -1,0 +1,27 @@
+section,key,value,unit,note
+anchor,direct_z,1.33400,,alpha->0 (= frozen 1.334)
+anchor,direct_eta,0.38596,,alpha->0 (= 0.386)
+vstrike_sweep,Vs=0.0kV,0.2771,alpha_max,z=1.5727 eta_gross=0.4040
+vstrike_sweep,Vs=7.5kV,0.5129,alpha_max,z=1.8883 eta_gross=0.4743
+vstrike_sweep,Vs=12.0kV,0.6283,alpha_max,z=2.0915 eta_gross=0.5419
+vstrike_sweep,Vs=15.0kV,0.6984,alpha_max,z=2.2328 eta_gross=0.5975
+vstrike_sweep,Vs=20.0kV,0.8067,alpha_max,z=2.4784 eta_gross=0.7092
+vstrike_sweep,Vs=22.5kV,0.8577,alpha_max,z=2.6061 eta_gross=0.7739
+vstrike_sweep,Vs=30.0kV,0.9990,alpha_max,z=3.0000 eta_gross=0.9982
+budget,FE=10uA/window(278us),0.7043,eta_real,recov_gross=10.30 E_FE=0.111 E_arc=0.046 net=10.15 -> RECOVERABLE
+budget,FE=10uA/sector(1.67ms),0.6868,eta_real,recov_gross=10.30 E_FE=0.667 E_arc=0.046 net=9.59 -> RECOVERABLE
+budget,FE=30uA/window(278us),0.6973,eta_real,recov_gross=10.30 E_FE=0.334 E_arc=0.046 net=9.92 -> RECOVERABLE
+budget,FE=30uA/sector(1.67ms),0.6450,eta_real,recov_gross=10.30 E_FE=2.000 E_arc=0.046 net=8.26 -> RECOVERABLE
+budget,FE=100uA/window(278us),0.6729,eta_real,recov_gross=10.30 E_FE=1.112 E_arc=0.046 net=9.15 -> RECOVERABLE
+budget,FE=100uA/sector(1.67ms),0.4986,eta_real,recov_gross=10.30 E_FE=6.668 E_arc=0.046 net=3.59 -> BOUNDED
+budget,FE=300uA/window(278us),0.6031,eta_real,recov_gross=10.30 E_FE=3.336 E_arc=0.046 net=6.92 -> RECOVERABLE
+budget,FE=300uA/sector(1.67ms),0.0803,eta_real,recov_gross=10.30 E_FE=20.003 E_arc=0.046 net=-9.75 -> PRICE-CONFIRMED
+central,eta_real,0.6973,,"30uA backstop, window dwell -> the recommended anchor"
+#verdict,BRIGADE-RECOVERABLE
+#diode_artifact_eta,0.404
+#naive_eta,0.999
+#real_anchor_eta,0.6973
+#alpha_max_diode,0.28
+#alpha_max_vstrike20kV,0.8067
+#decision,KEEP Ca/Cb brigade inductors
+#netlist_missing,SG3b;SG4b;FE/BS3;FE/BS4;SG1;SG2 (recommend custom spark-gap + FE-gap symbols)
