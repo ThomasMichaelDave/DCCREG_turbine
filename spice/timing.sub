@@ -1,0 +1,8 @@
+* timing.sub — rotary gap arming from the DXF station angles (rotor angle = time at design rpm)
+* The firing sequence is the GEOMETRY: each gap arms over its DXF window [theta_on,theta_off]/omega.
+* PWL arming nodes (1 armed / 0 idle); the gap subckt strike is gated by its arm node. NOT a knob.
+* DXF stations (deg, 60deg sector): SG1 3.0 SG3a 7.2 SG3b 16.05 BS3 19 SG2 33 SG4a 37.2 SG4b 46.05 BS4 49
+.subckt timing arm_sg1 arm_sg3a arm_sg3b arm_sg2 arm_sg4a arm_sg4b PARAMS: TREV=20m
+* one electrical sector = 60deg; per-rev TREV=60/(rpm/60)/6 ... arming windows scale with TREV.
+* (placeholder PWL stubs -- the staged S0/S2 decks don't need timing; S3 would.)
+.ends timing

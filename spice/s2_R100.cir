@@ -1,0 +1,14 @@
+* S2 resonant transfer: C_src -> Lx -> R -> diode (current-zero self-quench) -> C_bank
+Csrc src 0 1n ic=1000
+Cbank bnk 0 1n ic=0
+Lx src mid 1m
+Rr mid a 100.0
+D1 a bnk DI
+.model DI D(IS=1e-12 N=0.001 RS=1e-6)
+.control
+tran 0.5n 8u uic
+meas tran thalf WHEN i(Lx)=0 CROSS=1
+meas tran vbank FIND v(bnk) AT=6u
+wrdata s2_R100.dat i(Lx)
+.endc
+.end

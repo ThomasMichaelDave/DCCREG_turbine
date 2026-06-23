@@ -1,0 +1,8 @@
+* varicap.sub — time-varying plate capacitor C(theta), theta=omega*t (the C(theta) geometry)
+* GOVERNING LAW: i = d/dt[C(theta)*V] = C*dV/dt + V*dC/dt (the 2nd term is the electromechanical
+* work). Implemented charge-defined via ddt() so the work term is present. NB: numerically fragile
+* in a full pumping network (see findings -- the flagged SPICE limitation). C(theta)=Cmid+Camp*cos.
+.subckt varicap a b PARAMS: CMID=148p CAMP=132p FMOD=50 PH=0
+  Bq a b I='ddt( (CMID + CAMP*cos(6.283185*FMOD*time + PH)) * v(a,b) )'
+  Cstab a b 1p
+.ends varicap

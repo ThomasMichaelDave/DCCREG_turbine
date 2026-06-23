@@ -1,0 +1,11 @@
+* sparkgap.sub — self-break spark gap (Paschen holdoff + current-zero self-quench + arc drop)
+* GOVERNING LAW: conducts when |V_gap| >= V_strike (Paschen, from gap geometry); a real diode
+* path self-quenches at current-zero (one-way). Arc drop = V_arc. Built from physics, NOT Python.
+* Implemented as a voltage-armed switch (strike) feeding a current-zero-quenching diode + arc source.
+.subckt sparkgap a b PARAMS: VSTRIKE=20k VARC=30
+  Sstk a n1 a b swmod
+  .model swmod SW(vt={VSTRIKE} vh={VSTRIKE*0.05} ron=0.5 roff=1G)
+  Darc n1 n2 dmod
+  .model dmod D(IS=1e-12 N=0.001 RS=0.5)
+  Varc n2 b DC {VARC}
+.ends sparkgap

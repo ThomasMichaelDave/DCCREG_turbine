@@ -1,0 +1,8 @@
+* S0 linear: LC tank free ring -> f0 (waveform dumped, period from zero-crossings)
+L1 a 0 0.001
+C1 a 0 7.89e-10 ic=1
+.control
+tran 5n 30u uic
+wrdata s0_tank.dat v(a)
+.endc
+.end

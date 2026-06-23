@@ -1,0 +1,6 @@
+* fe_backstop.sub — Fowler-Nordheim field-emission soft bleed (the BS3/BS4 backstop)
+* GOVERNING LAW: J = A*E^2*exp(-B/E) -> I = A*V^2*exp(-B/V) (onset ~0.6*V_strike). A B-source.
+* A,B set from the FN law + a designed leakage at V_strike (an [IR] coefficient), NOT from Python.
+.subckt fe_backstop a b PARAMS: AFN=1e-13 BFN=60k
+  Bfn a b I='AFN*pow(v(a,b),2)*exp(-BFN/(abs(v(a,b))+1))'
+.ends fe_backstop

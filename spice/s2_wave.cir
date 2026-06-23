@@ -1,0 +1,12 @@
+* S2 R=2 over-transfer waveforms (for the plot)
+Csrc src 0 1n ic=1000
+Cbank bnk 0 1n ic=0
+Lx src mid 1m
+Rr mid a 2
+D1 a bnk DI
+.model DI D(IS=1e-12 N=0.001 RS=1e-6)
+.control
+tran 0.5n 6u uic
+wrdata s2_wave.dat v(src) v(bnk) i(Lx)
+.endc
+.end
