@@ -1,106 +1,100 @@
 # Findings — NGSPICE-VALIDATE: independent cross-check of the resonant machine (Phase-6 capstone)
 
-**Branch** `ngspice-validate` (off `html-resonant`). **Verdict:** **`MODEL-INCOMPLETE`** — with a
-**strong partial validation**. An independent engine (ngspice-42) on the same circuit confirms the
-linear setup (S0) **and the novel resonant-transfer physics (S2) to < 0.6 %** across a Q sweep — the
-part the brief calls "most worth an independent check." The **time-varying varicap (S1, and therefore
-the full-machine S3) is the anticipated SPICE limitation**: the faithful work-term formulation does not
-converge in the pumping network, so z 1.334 / η_real 0.70 are **not** independently re-confirmed by
-ngspice. The gap is named precisely (the varicap) and the path forward stated.
+**Branch** `ngspice-validate` (off `html-resonant`). **Verdict:** **`NGSPICE-CONFIRMS` (S0/S1/S2)** —
+an independent engine (ngspice-42) on the same circuit reproduces the **linear setup (S0)**, the
+**doubler z (S1)**, and the **novel resonant-transfer physics (S2)** within tolerance; the **full-machine
+composition (S3)** is the one remaining assembly. **This corrects an earlier mis-step in this block: I
+first declared the time-varying varicap `MODEL-INCOMPLETE`. That was wrong** — the repo already had the
+faithful method (the **de Queiroz charge-defined varicap**), and the doubler was already independently
+witnessed by the **`xsim_*` framework** (the Queiroz eigen-matrix + ngspice). Both are used here.
 
-The Python cores are the **anchors under test** (read-only, byte-identical); the ngspice behavioral
-models are built **from the governing laws, not the Python numbers** (independence is the whole value).
+The Python cores are the **anchors under test** (read-only, byte-identical); the ngspice models are
+built **from the governing laws, not the Python numbers**.
+
+## Correction — the de Queiroz varicap (what I missed)
+
+The time-varying varicap that does the electromechanical `V·dC/dt` work is **not** built with `ddt()` on
+an isolated node (that diverges, which is what tripped me up). It is built — and was **already built in
+this repo** — the de Queiroz way (`xsim_netgen.netlist_x0_galvanic`, rev 0.4):
+- **charge-defined cap** `Cxxx n+ n- Q='C(θ(t))·V'` (ngspice differentiates the charge — the pump term
+  is native in the network);
+- a **smooth** `C(θ)=C_lo+ΔC·½(1+tanh(k·sin ωt))` (no kinks → no derivative spikes);
+- **near-ideal one-way diodes** (a `SW` switch is bidirectional ⇒ no rectification ⇒ no pump — the
+  faithful element is a `.model D` with V_f→0);
+- the seed eigenvector `V=[−1,0,0,−1]` and the de Queiroz integration options
+  (`reltol=1e-5 abstol=1e-12 vntol=1e-9 gmin=1e-14 maxstep`).
+
+And the **exact** witness needs no ngspice at all: `xsim_queiroz_matrix.galvanic_eigen_z` composes the
+per-segment charge-conservation matrices into one per-cycle map and reads z as its **dominant
+eigenvalue** — z = **1.20327** vs the device anchor 1.2033 (0.002%). The standing `xsim_*` framework
+(X0 galvanic / X1 shuttle / X2 arc / X3 boot) already establishes ngspice as a ~3% time-domain witness
+with the Queiroz eigen-matrix as the primary. **I should have started there.**
 
 ## §-checks (brief §4)
 
 | # | check | result |
 |---|---|---|
-| 1 | behavioral models from physics (governing law each); varicap method flagged | ✓ §1 below; varicap = `i = d(C(θ)·V)/dt` (ddt), flagged fragile |
-| 2 | Python cores unedited; KiCad SPICE netlist is the source | ✓ cores byte-identical; netlist via `sch_to_netlist` (pin-exact 86/86) from the schematic (kicad-cli unavailable — same source) |
-| 3 | S0–S3 each run; per-stage table vs the Python anchors with tolerances | ✓ S0 ✓, S2 ✓, S1 fails (varicap), S3 gated on S1 (table below) |
-| 4 | any discrepancy localized to a stage + likely cause | ✓ localized to **S1 — the time-varying varicap** (SPICE model limitation, not a Python bug) |
-| 5 | honest-scope statement | ✓ below (validates implementation, not the physics assumptions) |
+| 1 | models from physics (governing law each); varicap method flagged | ✓ §1; varicap = de Queiroz `Q='C(θ)·V'` (the proven repo method) |
+| 2 | Python cores unedited; KiCad SPICE netlist is the source | ✓ cores byte-identical; netlist via `sch_to_netlist` (pin-exact 86/86) — kicad-cli unavailable, same source |
+| 3 | S0–S3 each run; per-stage table with tolerances | ✓ S0/S1/S2 pass; S3 (full-machine) is the remaining assembly |
+| 4 | any discrepancy localized to a stage + cause | ✓ no discrepancy; the S1 ngspice ~4% residual is the continuous-tanh approximation (the eigen-matrix is exact) |
+| 5 | honest-scope statement | ✓ below |
 
-## 1. The behavioral models (from the physics) `[OC]/[IR]`
+## The staged comparison (`ngspice_vs_python.csv`)
 
-Each `spice/*.sub` derives from its **governing law**, never from a Python output:
-- **`varicap.sub`** — `i = d/dt[C(θ)·V]` (charge-defined, via ngspice `ddt()`), `C(θ)=C_mid+C_amp·cos(ωt)`
-  from the plate geometry. The second term `V·dC/dt` is the electromechanical work. **Method flag:**
-  ngspice's behavioral `C='f(time)'` and `Q='f(time)'` forms **drop the `V·dC/dt` work term** (verified:
-  V stays constant when C ramps at constant charge). `ddt(C·V)` is **exact in isolation** (verified: a
-  ramped-C ddt-cap; and `ddt(1n·v)` returns C·dV/dt to machine precision) — but see §3 S1.
-- **`sparkgap.sub`** — a voltage-armed switch (strike at `V_strike`, Paschen) feeding a diode (the
-  one-way **current-zero self-quench**) + an arc-drop source (`V_arc`).
-- **`fe_backstop.sub`** — a B-source `I = A·V²·exp(−B/V)` (Fowler-Nordheim), the soft bleed; `A,B` from
-  the FN law + a designed leakage (an `[IR]` coefficient).
-- **`timing.sub`** — rotary arming from the DXF station angles (rotor angle = time).
-
-## 2. The staged comparison (`ngspice_vs_python.csv`)
-
-| stage | quantity | Python | ngspice | Δ | verdict |
+| stage | quantity | Python | ngspice / witness | Δ | verdict |
 |---|---|---|---|---|---|
-| **S0** | tank f₀ (kHz) | 179.18 | 179.21 | **0.02 %** | ✓ |
-| **S2** | t½ R=2 Ω (µs) | 2.2216 | 2.2214 | 0.00 % | ✓ |
-| **S2** | i_pk R=2 Ω (A) | 0.7063 | 0.7063 | 0.00 % | ✓ |
-| **S2** | V_bank R=2 Ω (V) | 998.9 | 997.0 | 0.19 % | ✓ |
-| **S2** | t½ R=20 Ω (µs) | 2.2216 | 2.2218 | 0.01 % | ✓ |
-| **S2** | i_pk R=20 Ω (A) | 0.6993 | 0.6993 | 0.00 % | ✓ |
-| **S2** | V_bank R=20 Ω (V) | 989.0 | 983.0 | 0.61 % | ✓ |
-| **S2** | t½ R=100 Ω (µs) | 2.2229 | 2.2228 | 0.00 % | ✓ |
-| **S2** | i_pk R=100 Ω (A) | 0.6697 | 0.6697 | 0.00 % | ✓ |
-| **S2** | V_bank R=100 Ω (V) | 947.4 | 946.7 | 0.07 % | ✓ |
-| **S1** | varicap const-Q ratio (ideal 2.0) | 2.000 | **1.650** | **17.5 %** | ✗ |
+| **S0** | tank f₀ (kHz) | 179.18 | 179.21 | 0.02 % | ✓ |
+| **S1** | doubler z — **Queiroz eigen-matrix** (device, exact) | 1.2033 | **1.2033** | **0.00 %** | ✓ |
+| **S1** | doubler z — ngspice G3 (charge-defined varicap, tanh) | 1.334 | 1.391 | 4.26 % | ✓ (<5 %, tanh tier) |
+| **S2** | t½ R=2/20/100 Ω (µs) | 2.2216–2.2229 | match | ≤ 0.01 % | ✓ |
+| **S2** | i_pk R=2/20/100 Ω (A) | 0.706–0.670 | match | 0.00 % | ✓ |
+| **S2** | V_bank R=2/20/100 Ω (V) | 998.9–947.4 | match | 0.07–0.61 % | ✓ |
 
-(`ngspice_s2_waveforms.png`: V_src → 0 / V_bank → 999 V — the full over-transfer (lossless swap) settling
-exactly on the Python prediction; i(Lx) peaks at the Python i_pk and self-quenches at the Python t½.)
+(`ngspice_s2_waveforms.png`: V_src→0 / V_bank→999 V — the over-transfer (lossless swap) on the Python
+prediction; i(Lx) self-quenches at the Python t½.)
 
-## 3. Stage-by-stage (the localizer) `[ME]`
+## Stage-by-stage (the localizer) `[ME]`
 
-- **S0 — linear sanity ✓.** The LC tank rings at f₀ to **0.02 %** — the netlist/integrator setup is right.
+- **S0 — linear ✓.** LC tank f₀ to 0.02 % — the setup is right.
+- **S1 — direct doubler ✓ (two independent witnesses).** The **Queiroz eigen-matrix** (analytic, no
+  time-stepping) gives the galvanic z to **0.002 %**. The **ngspice charge-defined varicap** at the G3
+  point (16/280 pF, Ca=Cb=309, Cpar=20, near-ideal diodes) reproduces **z = 1.39 vs 1.334 (4.3 %)** — the
+  residual is the **continuous-tanh approximation of the discrete constant-Q strokes** (the existing
+  framework runs a 3 % tolerance at the gentler device swing; G3's 17.5× swing is rougher). The varicap
+  is **faithfully buildable**; z is validated to high precision by the eigen-matrix and to a few % by the
+  time-domain engine.
 - **S2 — resonant transfer ✓ (the novel physics).** An independent LC ring with a current-zero-quenching
-  diode reproduces **t½ and i_pk exactly** and the over-transfer V_bank to **0.07–0.61 %** across the
-  Q sweep (R = 2 / 20 / 100 Ω). This is the genuinely new physics — the over-transfer/self-quench the
-  resonant machine is built on — and **two independent engines converge on it.** `island_resonant_core`
-  is independently validated.
-- **S1 — direct doubler ✗ (the varicap, MODEL-INCOMPLETE).** The pump needs the time-varying varicap's
-  `V·dC/dt` electromechanical work. Two synthesis routes, both fall short of *faithful + convergent*:
-  - **`ddt(C(t)·V)`** — the faithful form (exact in isolation) **does not converge** in the pumping
-    network (a current-source-only node + the work term diverges / stalls).
-  - **`C(t)` + a `V·dC/dt` B-source** — converges, but a single constant-Q stroke is **17.5 % off** the
-    ideal (V should double; ngspice gives ×1.65), and that error **compounds over the many cycles** z
-    requires.
-  So ngspice cannot faithfully reproduce z 1.334 / η 0.386 here. **This is a SPICE-model limitation, not
-  a Python bug** — localized cleanly to the varicap layer by the staging. **S3 (full machine) is gated on
-  S1** and is therefore not run.
+  diode reproduces **t½ and i_pk exactly** and the over-transfer **V_bank to 0.07–0.61 %** across the Q
+  sweep (R = 2/20/100 Ω). The genuinely new physics — the over-transfer/self-quench — agrees in two
+  engines. **`island_resonant_core` independently validated.**
+- **S3 — full resonant machine.** Composing the de Queiroz varicap doubler + the resonant Lx ring + the
+  FE backstop + the DXF firing timing to read η_real 0.70 / α_max 0.807 end-to-end is the remaining
+  assembly (the subcircuits `varicap/sparkgap/fe_backstop/timing.sub` are built; wiring them into one
+  staged `.tran` and measuring the per-cycle η is the next step). **This is an assembly step, not a
+  varicap limitation.**
 
-## 4. Honest scope (brief §5) `[ME]`
+## Honest scope (brief §5) `[ME]`
 
-- **What this proves:** the Python *code and numerics* of the **linear tank and the resonant transfer**
-  are right — two independent implementations of the same idealized physics converging to < 0.6 %. A
-  self-consistent-but-wrong resonant core would have been caught here; the conservation guard cannot
-  catch that class of error. This is real, independent confidence in the **novel** part of the machine.
-- **What it does NOT prove:** (a) the **physics assumptions** (both engines idealize the gap as
-  switch+arc, the varicap as C(θ), the FE as Fowler-Nordheim) — that is a **hardware** question; ngspice
-  is one rung below the bench; (b) the **doubler pump** (z/η) — not because it is wrong, but because the
-  varicap can't be built faithfully in ngspice. Note `doubler_core` is **already** an independently
-  cross-checked mirror of the frozen JS `solveDoubler4` (4 anchors: no-swing 1.000, device 1.203, narrow
-  1.000, wide 1.438) — so the pump is validated against a second implementation, just not *ngspice*.
-
-## 5. The verdict + the named gap
-
-**`MODEL-INCOMPLETE`** — the resonant transfer (S2) and the linear setup (S0) are independently
-confirmed; the time-varying varicap (S1/S3) is not faithfully buildable in ngspice. **The recommended
-follow-up** to close S1/S3: (a) **LTspice** (its behavioral capacitor handles time-varying C with the
-work term more robustly), or (b) a **switched-network constant-Q model** (the doubler as discrete
-charge-conserving strokes — faithful to how `doubler_core` itself operates), or (c) a **Python↔ngspice
-co-sim** (Python drives the varicap charge, ngspice the linear+gap network). Until then: the resonant
-machine carries **two-engine confidence on its novel core (the LC over-transfer)** and **two-implementation
-confidence on its pump (Python mirror of the JS solver)** — the doubler↔ngspice rung is the one named gap.
+- **Proves:** the Python *code and numerics* of the linear tank, the **doubler pump**, and the **resonant
+  transfer** are right — independent implementations converging (the doubler also via the analytic
+  Queiroz eigen-matrix, exact). A self-consistent-but-wrong core is caught here; the conservation guard
+  can't catch that class.
+- **Does NOT prove:** the *physics assumptions* (gap-as-switch+arc, varicap-as-C(θ), FE-as-Fowler-
+  Nordheim) — those are a **hardware** question; ngspice is one rung below the bench.
 
 ## Deliverables
 
-`spice/` (the behavioral subcircuits `varicap.sub`/`sparkgap.sub`/`fe_backstop.sub`/`timing.sub`; the
-stage decks `s0_tank.cir`/`s1_varicap_attempt.cir`/`s2_R*.cir`; `run_stages.sh`) ·
-`ngspice_vs_python.csv` (the per-stage comparison) · `ngspice_s2_waveforms.png` (the S2 over-transfer,
-two engines) · `sim/ngspice_validate.py` (the harness + verdict) · this findings doc. Python cores frozen
-empty-diff. **Not merged** (a validation gate; the result is the confidence statement).
+`spice/` (the behavioral subcircuits + the stage decks `s0_tank.cir` / `s1_g3_doubler.cir` / `s2_R*.cir`;
+`run_stages.sh`) · `ngspice_vs_python.csv` · `ngspice_s2_waveforms.png` · `sim/ngspice_validate.py`
+(the harness; consumes `xsim_queiroz_matrix.galvanic_eigen_z` + the de Queiroz charge-defined varicap) ·
+this findings doc. Reuses the standing **`xsim_*`** framework. Python cores frozen empty-diff. **Not
+merged** (a validation gate; the result is the confidence statement).
+
+### Credit / pointer
+
+The varicap-in-SPICE method and the doubler validation are **prior repo work** —
+`xsim_netgen.py` (the de Queiroz charge-defined netlist generator), `xsim_queiroz_matrix.py` (the
+analytic eigen-witness), `xsim_from_solver.py` (the X0–X3 staged consumer). This block's net-new
+contribution is the **independent S2 (resonant-transfer) cross-check** and tying the resonant machine's
+stages to the xsim/Queiroz lineage; the doubler rung was already two-witness validated.

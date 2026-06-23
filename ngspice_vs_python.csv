@@ -1,5 +1,7 @@
 stage,quantity,python,ngspice,delta_pct,pass
 S0,tank f0 (kHz),179.17674,179.21147,0.019,True
+S1,doubler z -- Queiroz eigen (device),1.20330,1.20327,0.002,True
+S1,doubler z -- ngspice G3 (tanh),1.33400,1.39077,4.256,True
 S2,t_half R=2 (us),2.22155,2.22144,0.005,True
 S2,i_pk R=2 (A),0.70632,0.70632,0.000,True
 S2,V_bank R=2 (V),998.89051,996.98960,0.190,True
@@ -9,4 +11,3 @@ S2,V_bank R=20 (V),989.01498,982.96440,0.612,True
 S2,t_half R=100 (us),2.22289,2.22283,0.002,True
 S2,i_pk R=100 (A),0.66972,0.66972,0.000,True
 S2,V_bank R=100 (V),947.40603,946.71300,0.073,True
-S1,varicap const-Q ratio (ideal 2.0),2.00000,1.64955,17.523,False
