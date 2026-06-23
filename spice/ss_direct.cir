@@ -1,0 +1,21 @@
+* seq-stat: de Queiroz varicaps; D1/D2 rectify; forward=diode
+C1v 1 0 Q='(1.6e-11+2.64e-10*(0.5*(1+tanh(12.0*sin(6.283185e+03*time)))))*V(1)'
+C2v 4 0 Q='(1.6e-11+2.64e-10*(0.5*(1+tanh(12.0*sin(6.283185e+03*time+3.14159265)))))*V(4)'
+Cpar1 1 0 2e-11
+Cpar2 2 0 2e-11
+Cpar3 3 0 2e-11
+Cpar4 4 0 2e-11
+Ca 1 2 3.09e-10
+Cb 3 4 3.09e-10
+.model ND D(is=1e-9 n=0.005 rs=1e-3 cjo=0)
+Dd1 2 0 ND
+Dd2 3 0 ND
+Dd3 1 3 ND
+Dd4 4 2 ND
+.ic v(1)=-1 v(2)=0 v(3)=0 v(4)=-1
+.control
+tran 2.00e-07 2.000e-02 uic
+wrdata ss_direct.dat v(1) v(4)
+.endc
+.options reltol=1e-5 abstol=1e-12 vntol=1e-9 gmin=1e-14 maxstep=2.00e-07
+.end
