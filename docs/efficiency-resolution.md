@@ -81,10 +81,15 @@ agreement is the confidence.
 
 ## 7. Design implications
 
-- **The Ca/Cb brigade inductors do not deliver.** They were kept on the strength of the 0.404 → 0.70 recovery,
-  which does not exist. The machine **simplifies to the direct doubler + the island resonant transfer**
-  (pending the re-examination — see the wrap-up brief).
-- **Keep the island Cx/Lx** — the real recovery.
+- **The brigade resonant recovery does not deliver** (the 0.404 → 0.70 path is forbidden). **CORRECTION
+  (TMD):** the brigade **inductors `L_A1–6`/`L_B1–6` are the stator electromagnet COILS** (the Block-D
+  reluctance spin-up motor C-EMs) — **essential, they stay.** What the simplification removes is the
+  brigade **CAPS `C_AR1–6`/`C_BR1–6`** (the per-coil resonant DC-block/transfer caps that were sized for
+  the forbidden doubler-tax recovery). The coupling reverts to the direct Ca/Cb path.
+  ⚠ **Flag (Block-D §6):** a coil is a near-short at DC, so removing the per-coil series cap removes the
+  *mandatory* DC block — the coils then need a re-arranged DC block (e.g. one per group), not a bare
+  deletion. TMD's call on the block arrangement.
+- **Keep the island Cx/Lx** — the real recovery. **Keep the L_A/L_B coils** — the motor.
 - **Correct η 0.70 → ~0.45–0.50** everywhere it propagated (HTML operating rung + dual-canary, synthesiser
   established anchor, rules-of-thumb).
 - The bench remains the final court on the *physics assumptions* (gap-as-switch, C(θ), FN backstop); this

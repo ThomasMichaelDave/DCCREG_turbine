@@ -67,21 +67,22 @@ S3 either/or + sequenced-statistical conservation arbiter.)
 
 ## 4. The Ca/Cb simplification — flagged, NOT executed (gated on TMD) `[IR]`
 
-The Ca/Cb **brigade inductors** (`L_A1–6`, `L_B1–6` in the schematic) were kept for the **0.404 → 0.70
-recovery that does not exist**. Removing them **reverts the doubler core to the frozen direct
-equalization** (already validated, z 1.334 / η 0.386); **the island `Cx`/`Lx` stays** (the real, S2-
-validated recovery). The machine then **simplifies to the frozen direct doubler + the island resonant
-transfer — a fully validated configuration, no new physics.** **The actual topology change is a separate
+The brigade **resonant recovery** (the 0.404 → 0.70 path) does not exist. **CORRECTION (TMD): the brigade
+inductors `L_A1–6`/`L_B1–6` are the stator electromagnet COILS** (Block-D reluctance-motor C-EMs) —
+**essential, they stay**; it is the brigade **caps `C_AR1–6`/`C_BR1–6`** (the per-coil resonant DC-block/
+transfer caps, sized for the forbidden recovery) that come out. The doubler coupling reverts to the direct
+Ca/Cb path (validated, z 1.334 / η 0.386); the island `Cx`/`Lx` stays (the real, S2-validated recovery). **The actual topology change is a separate
 design brief on TMD's sign-off.** Touch-points this would change:
 
-| touch-point | change if Ca/Cb inductors removed |
+| touch-point | change |
 |---|---|
-| **KiCad schematic** (`DCCREG_Turbine_circuit.kicad_sch`) | delete `L_A1–6` / `L_B1–6` (12 brigade inductors); the rotor→bank coupling reverts to the direct Ca/Cb path; re-export the netlist (43 → 31 components) |
-| **DXF** (`docs/kicad/*.dxf`, firing stations) | unchanged (the gaps/stations are not the brigade inductors); the SG3b/SG4b island fires + Lx3/Lx4 stay |
-| **`topology_edge_list.csv`** | regenerate from the simplified schematic (drop the 12 L_A/L_B edges) |
-| **`design_synth` `ESTABLISHED`** | drop `brigadeL_mH`; the I10 **brigade multi-resonant clocking** sub-check (the L_A/L_B t½ co-existence) is removed (the island Lx clocking stays) |
-| **resonator sizing** | unchanged — the tank (`C_R`/`L_R`) and the island transfer are untouched; the bank `C_AR/C_BR` stay (they are the transfer banks, not the inductors) |
-| **the operating η** | **unchanged at ≈ 0.50** — the brigade inductors never contributed (their recovery was the forbidden path); removing them is a *simplification*, not an efficiency loss |
+| **CORRECTION (TMD)** | the brigade **inductors `L_A1–6`/`L_B1–6` are the stator electromagnet COILS** (Block-D reluctance-motor C-EMs) — **ESSENTIAL, they stay.** The simplification removes the brigade **CAPS** |
+| **KiCad schematic** | delete the brigade caps **`C_AR1–6` / `C_BR1–6`** (×12, the per-coil resonant DC-block/transfer caps); keep the 12 `L_A/L_B` coils; re-export the netlist (43 → 31 components) |
+| **⚠ DC-block (Block-D §6)** | a coil is a near-short at DC; removing the per-coil series cap removes the *mandatory* DC block. The coils need a re-arranged block (e.g. one per group / a single series-resonant block per branch), **not** a bare deletion — TMD's call |
+| **the doubler coupling** | reverts to the direct **Ca/Cb** path (the validated lumped doubler); confirm the coupling-C budget after the bank caps go |
+| **`topology_edge_list.csv`** | regenerate from the simplified schematic (drop the 12 `C_AR/C_BR` cap edges; the `L_A/L_B` coil edges stay) |
+| **island Cx/Lx, gaps, resonator** | **unchanged** — the island recovery and the commutation are untouched |
+| **the operating η** | **unchanged at ≈ 0.50** — the brigade caps' resonant recovery was the forbidden path; removing them is a simplification, not an efficiency loss |
 
 **The decision is TMD's**; the implication (revert to direct + island, fully validated, η unchanged) is
 mapped so it is informed. This brief only flags it.
