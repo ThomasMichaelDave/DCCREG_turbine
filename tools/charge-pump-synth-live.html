@@ -96,7 +96,7 @@
         <div class="brass">reference — schematic · legend+live values · cross-section</div>
         <button id="refClose">✕ close</button>
       </div>
-      <!-- SCHEMATIC CONTAINER: hosts the KiCad-exported tools/varcap.svg (drop-in); legend+live values; consistency stamp -->
+      <!-- SCHEMATIC CONTAINER: the real KiCad export (tools/schematic.svg, re-tagged with live sv_<REF> value slots by gen_artifacts.py); legend+live values from REF_MAP; fail-closed consistency stamp -->
       <div class="panel sub" style="margin:6px 0 12px">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div class="brass">schematic <span id="schemSrc" style="color:var(--mut)"></span></div>
@@ -429,15 +429,41 @@ function render(d, fromSolve){
   lastDesign=d;                                          // remember for the reference drawer's values
 }
 
-// inherit the live solver values into the schematic's sv_* placeholders
+// ===========================================================================
+// REF_MAP — the single authoritative reference-designator -> live-value map. [kicad-overlay]
+// One entry per component KiCad draws (the 43-comp / 8-gap export). `val(d)` returns the live
+// solver value where the solver computes one (caps/island L/gap V_strike), else the fixed design
+// constant (motor coils, DC-block caps, resonator coils — Block-D/static, marked `static`).
+// fillSchematicValues, the legend, and the consistency stamp ALL read this map (no second list).
+// ===========================================================================
+const _pf = x => (x==null||isNaN(x)) ? "—" : `${Math.round(x)} pF`;
+const _mh = x => (x==null||isNaN(x)) ? "—" : `${(+x).toFixed(2)} mH`;
+const _kv = x => (x==null||isNaN(x)) ? "—" : `${Math.round(x)} kV`;
+const REF_MAP = (()=>{
+  const M = {};
+  const add = (refs, fam, role, val, flag) => refs.forEach(r => M[r] = {fam, role, val, flag});
+  add(["C1","C2"],        "C1 / C2",     "doubler input varicaps (the 4-node binding gap)", d=>_pf(d.C1max_pF));
+  add(["Ca1","Cb1"],      "Ca / Cb",     "bucket-brigade transfer caps",                    d=>_pf(d.Ca_pF));
+  add(["Cx3","Cx4"],      "Cx3 / Cx4",   "island — flying-bucket pickup (varicap)",         d=>_pf(d.Cx_maxMm));
+  add(["C_R1"],           "C_R1",        "resonator tank cap",                              d=>_pf(d.C_R_pF));
+  add(["Lx3","Lx4"],      "Lx3 / Lx4",   "series island inductor (resonant transfer)",      d=>_mh(d.Lx_mH));
+  add(["L_R1","L_R2"],    "L_R1 / L_R2", "split resonator coils (aiding)",                  ()=>"39.5 µH", "static");
+  add(["L_A1","L_A2","L_A3","L_A4","L_A5","L_A6"], "L_A1–6", "stator C-EM motor coils, bank A", ()=>"0.64 H", "static");
+  add(["L_B1","L_B2","L_B3","L_B4","L_B5","L_B6"], "L_B1–6", "stator C-EM motor coils, bank B", ()=>"0.64 H", "static");
+  add(["C_AR1","C_AR2","C_AR3","C__AR4","C_AR5","C_AR6"], "C_AR1–6", "per-coil series DC-block caps, bank A", ()=>"440 nF", "static");
+  add(["C_BR1","C_BR2","C_BR3","C_BR4","C_BR5","C_BR6"], "C_BR1–6", "per-coil series DC-block caps, bank B", ()=>"440 nF", "static");
+  add(["SG1","SG2","SG3a1","SG3b1","SG4a1","SG4b1"], "SG1–4", "rotary self-break spark gaps (V_strike)", d=>_kv(d.V_strike_kV));
+  add(["BS3","BS4"],      "BS3 / BS4",   "field-emission backstops (FE onset 0.6·V_strike)", d=>_kv(0.6*d.V_strike_kV), "derived");
+  return M;
+})();
+
+// inherit the live solver values into the schematic's sv_<REF> slots (every drawn component)
 function fillSchematicValues(d){
   if(!d) return;
-  const set=(id,t)=>{ const e=document.getElementById(id); if(e) e.textContent=t; };
-  const pf=x=>`${Math.round(x)} pF`;
-  set("sv_C1",pf(d.C1max_pF)); set("sv_C2",pf(d.C1max_pF));
-  set("sv_Ca",pf(d.Ca_pF));    set("sv_Cb",pf(d.Ca_pF));
-  set("sv_Cx3",pf(d.Cx_maxMm));set("sv_Cx4",pf(d.Cx_maxMm));
-  set("sv_CR",pf(d.C_R_pF));
+  for(const ref in REF_MAP){
+    const e=document.getElementById("sv_"+ref);
+    if(e) e.textContent = REF_MAP[ref].val(d);
+  }
 }
 
 function drawRotor(d){
@@ -492,79 +518,82 @@ function mdToHtml(md){
   return html;
 }
 // ---- the schematic container ----
-const pf = x => (x==null||isNaN(x)) ? "—" : `${Math.round(x)} pF`;
-// the legend (static role) + which solver field feeds the live value; refs match the schematic labels
-const LEGEND = [
-  {ref:"C1 / C2",      labels:["C1","C2"],            role:"doubler input caps (the 4-node binding gap)", val:d=>pf(d.C1min_pF)},
-  {ref:"Cx3 / Cx4",    labels:["Cx3","Cx4"],          role:"island — flying-bucket pickup",               val:d=>pf(d.Cx_maxMm)},
-  {ref:"Ca / Cb",      labels:["Ca","Cb"],            role:"bucket-brigade transfer caps",                val:d=>pf(d.Ca_pF)},
-  {ref:"C_R",          labels:["C_R"],                role:"resonator tank",                              val:d=>pf(d.C_R_pF)},
-  {ref:"L_R1 / L_R2",  labels:["L_R1","L_R2"],        role:"split resonator coils (aiding)",              val:()=>"39.5 µH · static"},
-  {ref:"SG1–4 / BS3–4",labels:["SG1","SG2","SG3a","SG3b","SG4a","SG4b","BS3","BS4"], role:"rotary self-break spark gaps + bias", val:()=>"— commutation"},
-  {ref:"C_max",        labels:[],                     role:"varicap aligned max (derived; not a part)",   val:d=>pf(d.C1max_pF)},
-];
+// the legend is GROUPED FROM REF_MAP (one family per row) — same source as the overlay + stamp.
+function legendRows(){
+  const seen=new Set(), rows=[];
+  for(const ref in REF_MAP){
+    const m=REF_MAP[ref]; if(seen.has(m.fam)) continue; seen.add(m.fam);
+    rows.push({fam:m.fam, role:m.role, flag:m.flag, refs:Object.keys(REF_MAP).filter(r=>REF_MAP[r].fam===m.fam), val:m.val});
+  }
+  return rows;
+}
 function renderLegend(d, svgText){
-  const rows=LEGEND.map(L=>{
+  const rows=legendRows().map(L=>{
     const v = d ? L.val(d) : "—";
-    return `<tr><td style="border:1px solid var(--line);padding:3px 5px"><code>${L.ref}</code></td>`+
+    const tag = L.flag ? ` <span style="color:var(--mut)">· ${L.flag}</span>` : "";
+    return `<tr><td style="border:1px solid var(--line);padding:3px 5px"><code>${L.fam}</code></td>`+
       `<td style="border:1px solid var(--line);padding:3px 5px">${L.role}</td>`+
-      `<td style="border:1px solid var(--line);padding:3px 5px;color:var(--amber)">${v}</td></tr>`;
+      `<td style="border:1px solid var(--line);padding:3px 5px;color:var(--amber)">${v}${tag}</td></tr>`;
   });
   $("legendTable").innerHTML =
-    '<tr><th style="border:1px solid var(--line);padding:3px 5px;color:var(--brass)">ref</th>'+
+    '<tr><th style="border:1px solid var(--line);padding:3px 5px;color:var(--brass)">family</th>'+
     '<th style="border:1px solid var(--line);padding:3px 5px;color:var(--brass)">component (role)</th>'+
     '<th style="border:1px solid var(--line);padding:3px 5px;color:var(--brass)">live value</th></tr>'+rows.join("");
-  // label-mismatch: every table label must appear in the schematic SVG text (derived rows excepted)
+  // label-mismatch: every REF_MAP refdes must appear in the schematic SVG text
   const txt = (svgText||"").replace(/<[^>]+>/g," ");
-  const missing=[];
-  for(const L of LEGEND) for(const lab of L.labels) if(!new RegExp(`(^|[\\s>(])${lab.replace(/[.*+?^${}()|[\\]\\\\]/g,"\\\\$&")}([\\s<).,]|$)`).test(txt)) missing.push(lab);
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  const missing=Object.keys(REF_MAP).filter(ref=>!new RegExp(`(^|[\\s>(])${esc(ref)}([\\s<).,]|$)`).test(txt));
   $("labelMismatch").innerHTML = missing.length
-    ? `⚠ table refs not found in the schematic: <span style="color:var(--warn)">${[...new Set(missing)].join(", ")}</span> — reconcile the KiCad refdes to the table`
-    : `label match: every table ref is present in the schematic ✓`;
+    ? `⚠ REF_MAP refs not drawn in the schematic: <span style="color:var(--warn)">${[...new Set(missing)].join(", ")}</span> — reconcile the KiCad refdes to REF_MAP`
+    : `label match: every REF_MAP ref (${Object.keys(REF_MAP).length}) is drawn in the schematic ✓`;
 }
-// the consistency check: KiCad SPICE netlist (tools/schematic.cir) vs the topology of record
-async function consistencyCheck(){
-  let cir=null, topo=null;
-  try{ const r=await fetch("./schematic.cir"); if(r.ok) cir=await r.text(); }catch{}
+// the consistency stamp (fail-closed): reconcile the THREE sets BY LABEL —
+//   DRAWN  = reference designators in the KiCad schematic.svg
+//   MAPPED = keys of REF_MAP (each drawn part must have a live value, and vice-versa)
+//   NETLIST = components in the netlist of record (topology_edge_list.csv)
+// green only when all three agree; any drawn-but-unmapped / mapped-but-undrawn / netlist-only ref
+// is listed (never a silent blank). [kicad-overlay]
+const _REFDES = /^(C\d|C_AR\d|C__AR\d|C_BR\d|C_R\d|Ca\d|Cb\d|Cx\d|Lx\d|L_A\d|L_B\d|L_R\d|SG\d[a-z]?\d?|BS\d)$/;
+async function consistencyCheck(svgText){
+  let topo=null;
   try{ const r=await fetch("../topology_edge_list.csv"); if(r.ok) topo=await r.text(); }catch{}
   if(!topo){ return {state:"err", msg:"topology_edge_list.csv not reachable (serve from repo root)"}; }
-  // parse topology: lines comp,a,b ; skip header/#
-  const tcomp=new Set(), tnodes=new Set();
-  topo.split("\n").forEach(l=>{ const c=l.split(","); if(!c[0]||c[0][0]==="#"||c[0]==="component")return;
-    tcomp.add(c[0].trim()); if(c[1]&&c[1].trim())tnodes.add(c[1].trim()); if(c[2]&&c[2].trim())tnodes.add(c[2].trim()); });
-  if(!cir){ return {state:"awaiting", tcomp:tcomp.size, tnodes:tnodes.size}; }
-  // parse SPICE: component lines = first token (refdes) + node tokens; skip .commands/comments
-  const ccomp=new Set(), cnodes=new Set();
-  cir.split("\n").forEach(l=>{ l=l.trim(); if(!l||l[0]==="."||l[0]==="*"||l[0]==="+")return;
-    const t=l.split(/\s+/); ccomp.add(t[0]);
-    if(t[0][0].toUpperCase()==="K") return;            // mutual coupling: refs inductors, not nodes
-    if(t.length<3)return; cnodes.add(t[1]); cnodes.add(t[2]); });
-  ["0","gnd","GND"].forEach(g=>cnodes.delete(g));
-  const ok = (ccomp.size===tcomp.size) && (cnodes.size===tnodes.size);
-  return {state: ok?"match":"mismatch", ccomp:ccomp.size, cnodes:cnodes.size, tcomp:tcomp.size, tnodes:tnodes.size};
+  const netlist=new Set();
+  topo.split("\n").forEach(l=>{ const c=l.split(","); if(!c[0]||c[0][0]==="#"||c[0]==="component")return; netlist.add(c[0].trim()); });
+  // DRAWN: the KiCad refdes <text> elements in the schematic SVG
+  const drawn=new Set();
+  if(svgText){ const re=/<text[^>]*>([^<]*)<\/text>/g; let m;
+    while((m=re.exec(svgText))){ const t=m[1].trim(); if(_REFDES.test(t)) drawn.add(t); } }
+  if(!drawn.size){ return {state:"err", msg:"no refdes parsed from schematic.svg (KiCad export missing?)"}; }
+  const mapped=new Set(Object.keys(REF_MAP));
+  const diff=(a,b)=>[...a].filter(x=>!b.has(x)).sort();
+  const issues=[];
+  const dnm=diff(drawn,mapped);   if(dnm.length) issues.push(`drawn but unmapped: ${dnm.join(", ")}`);
+  const mnd=diff(mapped,drawn);   if(mnd.length) issues.push(`mapped but not drawn: ${mnd.join(", ")}`);
+  const nnd=diff(netlist,drawn);  if(nnd.length) issues.push(`in netlist, not drawn: ${nnd.join(", ")}`);
+  const dnn=diff(drawn,netlist);  if(dnn.length) issues.push(`drawn, not in netlist: ${dnn.join(", ")}`);
+  return {state: issues.length?"mismatch":"match", ndrawn:drawn.size, nmap:mapped.size, nnet:netlist.size, issues};
 }
 
 async function openRef(){
   $("refOverlay").style.display="block";
-  // 1. the schematic slot: KiCad varcap.svg (drop-in) -> interim schematic.svg -> placeholder
+  // 1. the schematic slot: the REAL KiCad export, re-tagged with live value slots (tools/schematic.svg
+  //    via gen_artifacts.py). The interim hand-drawn draft is retired (regenerate with --interim).
   let svgText=null, src="";
-  try{ const r=await fetch("./varcap.svg"); if(r.ok){ svgText=await r.text(); src="KiCad export (varcap.svg)"; } }catch{}
-  if(svgText==null){ try{ const r=await fetch("./schematic.svg"); if(r.ok){ svgText=await r.text(); src="interim — KiCad export pending"; } }catch{} }
+  try{ const r=await fetch("./schematic.svg"); if(r.ok){ svgText=await r.text(); src="real KiCad layout (DCCREG_Turbine_circuit)"; } }catch{}
   if(svgText==null){
-    $("schemSlot").innerHTML='<div style="padding:18px;color:var(--warn);font-size:11px">schematic pending KiCad export — run the two kicad-cli commands (see tools/README.md) and commit <code>tools/varcap.svg</code></div>';
+    $("schemSlot").innerHTML='<div style="padding:18px;color:var(--warn);font-size:11px">schematic.svg not reachable — run <code>python3 tools/gen_artifacts.py</code> (re-tags the KiCad export) and serve from the repo root</div>';
     $("schemSrc").textContent="(no SVG)";
   } else {
     $("schemSlot").innerHTML=svgText; $("schemSrc").textContent="· "+src;
-    if(src.startsWith("interim")) $("schemSrc").style.color="var(--warn)";
   }
-  fillSchematicValues(lastDesign);                       // interim art shows live values too (harmless)
+  fillSchematicValues(lastDesign);                       // drive every sv_<REF> slot from the solver
   renderLegend(lastDesign, svgText);                     // live value table + label-match
-  // 2. consistency stamp
-  const c=await consistencyCheck();
+  // 2. consistency stamp (SVG <-> REF_MAP <-> netlist of record, by label)
+  const c=await consistencyCheck(svgText);
   const S=$("schemStamp");
-  if(c.state==="match") S.innerHTML=`<span style="color:var(--good)">schematic ↔ design: MATCH</span> (${c.ccomp} components, ${c.cnodes}/${c.tnodes} nodes)`;
-  else if(c.state==="mismatch") S.innerHTML=`<span style="color:var(--bad)">⚠ schematic ↔ design: MISMATCH</span> — KiCad ${c.ccomp} comp/${c.cnodes} nodes vs design ${c.tcomp}/${c.tnodes}; re-export from KiCad`;
-  else if(c.state==="awaiting") S.innerHTML=`<span style="color:var(--warn)">AWAITING-KICAD</span> — design topology of record: ${c.tcomp} components, ${c.tnodes} nodes; commit <code>tools/schematic.cir</code> to enable the check`;
+  if(c.state==="match") S.innerHTML=`<span style="color:var(--good)">schematic ↔ values ↔ netlist: MATCH</span> (${c.ndrawn} drawn = ${c.nmap} mapped = ${c.nnet} netlist)`;
+  else if(c.state==="mismatch") S.innerHTML=`<span style="color:var(--bad)">⚠ MISMATCH</span> — ${c.ndrawn} drawn / ${c.nmap} mapped / ${c.nnet} netlist · <span style="color:var(--warn)">${c.issues.join(" · ")}</span>`;
   else S.innerHTML=`<span style="color:var(--warn)">${c.msg}</span>`;
   // 3. cross-section + glossary
   try{ const r=await fetch("./cross-section.svg"); $("art_xsec").innerHTML = r.ok ? await r.text() : '<span style="color:var(--warn)">cross-section.svg absent (run gen_artifacts.py)</span>'; }catch{ $("art_xsec").textContent="cross-section unavailable"; }

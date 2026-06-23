@@ -59,25 +59,42 @@ numpy-wise. Renamed-function calls use the version-agnostic shim
   first time, then cached); it pushes the optimal dimensions back onto the sliders.
 - **Invariant lamps** (right): green = pass, amber = the **binding** constraint, red = fail. Slack is the
   uniform "fraction of headroom to the bound."
-- **"ⓘ reference"** opens the drawer (closed by default): the **schematic container** (hosts the KiCad
-  `varcap.svg`, click-to-enlarge), the **legend + live-value table** (label-matched to the schematic),
-  the **consistency stamp** (KiCad netlist ↔ design topology), the cross-section, and the glossary.
+- **"ⓘ reference"** opens the drawer (closed by default): the **schematic container** (the real KiCad
+  layout with live values, click-to-enlarge), the **legend + live-value table** (from `REF_MAP`,
+  label-matched to the schematic), the **consistency stamp** (schematic ↔ values ↔ netlist), the
+  cross-section, and the glossary.
 
-## The schematic is KiCad's (TMD authors; the tool hosts + checks)
+## The schematic is KiCad's (TMD authors; the tool hosts + overlays live values)
 
-The container hosts the KiCad SVG and verifies its netlist against the design topology — it does **not**
-draw a schematic. TMD re-exports on a design change:
+The container shows the **real KiCad export** with every component's **live solver value** overlaid — it
+does **not** draw a schematic. The pipeline (`tools/gen_artifacts.py`):
 
 ```bash
-kicad-cli sch export svg     --output tools/            varcap.kicad_sch   # -> tools/varcap.svg
-kicad-cli sch export netlist --format spice --output tools/schematic.cir   varcap.kicad_sch
-git add tools/varcap.svg tools/schematic.cir && git commit
+# TMD re-exports the SVG on a design change (KiCad GUI or, where available, kicad-cli):
+#   kicad-cli sch export svg --output docs/kicad/  DCCREG_Turbine_circuit.kicad_sch
+# then re-tag it with live value slots (re-binds every sv_<REF> from the fresh export):
+python3 tools/gen_artifacts.py          # docs/kicad/DCCREG_Turbine_circuit.svg -> tools/schematic.svg
+git add docs/kicad/DCCREG_Turbine_circuit.svg tools/schematic.svg && git commit
 ```
 
-The container is a **drop-in**: once `tools/varcap.svg` is committed it appears in the slot with no code
-change (until then the slot shows the labelled interim stand-in `tools/schematic.svg`). The stamp reads
-**MATCH** (KiCad netlist = the 42-component / 22-node design graph), **⚠ MISMATCH** (re-export needed),
-or **AWAITING-KICAD** (no `tools/schematic.cir` committed yet).
+`gen_artifacts.py` lays a white backing rect and, for **every** drawn reference designator, injects a
+`<text id="sv_<REF>">` value slot anchored to KiCad's own refdes position; the page's `fillSchematicValues`
+drives each slot from the solver via the authoritative **`REF_MAP`** (one entry per component). Because the
+slots are **re-derived from the export**, a re-export (e.g. the Ca/Cb cut → one DC-block cap per branch)
+re-binds automatically on a re-run — no hand-editing.
+
+The **consistency stamp** reconciles three sets **by label**: refdes **drawn** in the SVG = keys in
+**`REF_MAP`** = components in the **netlist of record** (`topology_edge_list.csv`). It reads **MATCH** (all
+three agree — currently 43 = 43 = 43), or **⚠ MISMATCH** listing the offending refs (a drawn part with no
+live value, a mapped value with no drawn part, or a netlist component not drawn) — never a silent blank.
+
+> **Note (KiCad export):** this sheet's export shows **reference designators only** (component values are
+> hidden), so values are *injected* anchored to each refdes rather than re-tagged onto an existing value
+> text. And the KiCad **`.net`** netlister under-exports the gaps (only the two `SolderJumper` gaps);
+> `topology_edge_list.csv` (the geometric extraction, all 8 gaps) is the netlist of record. The refdes
+> **`C__AR4`** carries a stray double underscore vs its `C_AR{1,2,3,5,6}` siblings — handled verbatim in
+> `REF_MAP`; **TMD to normalize in KiCad.** The interim hand-drawn draft is retired (regenerate with
+> `python3 tools/gen_artifacts.py --interim`).
 
 ## Troubleshooting
 
@@ -85,7 +102,9 @@ or **AWAITING-KICAD** (no `tools/schematic.cir` committed yet).
 - **stuck "booting…"** → offline / a proxy is blocking the Pyodide CDN.
 - **port busy** → `python3 -m http.server 8001` (or any free port).
 - **reference SVGs missing** → run `python3 tools/gen_artifacts.py` to regenerate `cross-section.svg`
-  (from the DXF) and `schematic.svg` (from `topology_edge_list.csv`).
+  (from the DXF) and `schematic.svg` (the re-tagged KiCad export).
+- **schematic shows no values** → values come from the live solver; if the slots read `--`, the canary
+  is down (Pyodide didn't load) — fix that first.
 
 ## Files
 
@@ -94,8 +113,8 @@ or **AWAITING-KICAD** (no `tools/schematic.cir` committed yet).
 | `charge-pump-synth-live.html` | the instrument (single file; fetches the frozen `.py` from `../`) | — |
 | `reference.md` | the reference text (rendered into the ⓘ drawer) | this file |
 | `cross-section.svg` | the ref-radii + named features | the DXF (via `gen_artifacts.py`) |
-| `schematic.svg` | the nodes + components | `topology_edge_list.csv` (via `gen_artifacts.py`) |
-| `gen_artifacts.py` | regenerates the two SVGs + the connectivity check | — |
+| `schematic.svg` | the real KiCad layout + live `sv_<REF>` value slots | `docs/kicad/DCCREG_Turbine_circuit.svg` (via `gen_artifacts.py`) |
+| `gen_artifacts.py` | re-tags the KiCad SVG + regenerates the cross-section + reconciles vs the netlist | — |
 
 The frozen solvers (`reference/doubler_core.py`, `shuttle_core.py`) are **read-only** and stay
 byte-identical; the page loads them unmodified.

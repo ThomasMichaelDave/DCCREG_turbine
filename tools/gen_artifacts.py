@@ -16,12 +16,14 @@ Read-only over the DXF + the CSV; emits two SVGs + prints the connectivity check
 import csv
 import math
 import os
+import re
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DXF = os.path.join(ROOT, "docs", "varcap-nodeanalysis-template-r0.15_TMD_layout.dxf")
 EDGES = os.path.join(ROOT, "topology_edge_list.csv")
+KICAD_SVG = os.path.join(ROOT, "docs", "kicad", "DCCREG_Turbine_circuit.svg")  # the real KiCad export (SSOT visual)
 
 
 # =============================================================================
@@ -103,8 +105,69 @@ def load_edges():
     return rows
 
 
+# =============================================================================
+# 2a. THE REAL KiCad EXPORT -> re-tagged live overlay  [kicad-overlay]
+# =============================================================================
+# Reference designators KiCad draws (the export shows refdes only -- values are hidden in this
+# sheet, so we ANCHOR a live value slot to each refdes position rather than re-tag a value text
+# that isn't there; binding stays by id/label, re-derived on every re-export).
+REFDES = re.compile(r'^(C\d|C_AR\d|C__AR\d|C_BR\d|C_R\d|Ca\d|Cb\d|Cx\d|Lx\d'
+                    r'|L_A\d|L_B\d|L_R\d|SG\d[a-z]?\d?|BS\d)$')
+
+
+def _kicad_texts(svg):
+    """Every KiCad <text> = (content, x, y, font_size). KiCad emits each label twice: an invisible
+    <text> (the machine-readable string + position) immediately followed by a <g class="stroked-text">
+    of glyph paths (the visible drawing). We read the <text> layer."""
+    out = []
+    for m in re.finditer(r'<text\s+x="([\d.]+)"\s+y="([\d.]+)"([^>]*)>([^<]*)</text>', svg):
+        x, y, attrs, content = float(m.group(1)), float(m.group(2)), m.group(3), m.group(4)
+        fs = re.search(r'font-size="([\d.]+)"', attrs)
+        out.append((content, x, y, float(fs.group(1)) if fs else 1.6933))
+    return out
+
+
+def tag_kicad_svg():
+    """Post-process the real KiCad SVG into tools/schematic.svg: (1) lay a white backing rect so the
+    black KiCad strokes read in the dark drawer; (2) for every drawn reference designator, inject a
+    live value slot `<text id="sv_<REF>">` anchored just below KiCad's own refdes position, which the
+    page's fillSchematicValues drives from the solver. Re-running on a fresh export re-binds every slot
+    automatically (positions + ref set are re-read from the export -- nothing is hand-placed). [kicad-overlay]"""
+    svg = open(KICAD_SVG, encoding="utf-8").read()
+    vb = re.search(r'viewBox="([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)"', svg)
+    _, _, vw, vh = (float(g) for g in vb.groups())
+
+    refs = [(c, x, y, fs) for (c, x, y, fs) in _kicad_texts(svg) if REFDES.match(c)]
+    drawn = sorted(c for c, _, _, _ in refs)
+
+    # 1. white backing rect, inserted right after the opening <svg ...> tag
+    rect = f'\n<rect x="0" y="0" width="{vw}" height="{vh}" fill="#ffffff"/>'
+    svg = re.sub(r'(<svg\b[^>]*>)', r'\1' + rect, svg, count=1)
+
+    # 2. one live value slot per drawn refdes, anchored a line below KiCad's refdes text.
+    #    Placeholder "--" until fillSchematicValues fills it; blue so a live value reads vs the black refdes.
+    slots = ['\n<g class="sv-overlay" fill="#0b66b0" font-family="sans-serif">']
+    for c, x, y, fs in sorted(refs):
+        vid = f"sv_{c}"
+        slots.append(f'<text id="{vid}" x="{x:.4f}" y="{y + 1.55 * fs:.4f}" '
+                     f'font-size="{0.92 * fs:.4f}" text-anchor="middle">--</text>')
+    slots.append('</g>\n')
+    svg = svg.replace("</svg>", "".join(slots) + "</svg>")
+
+    open(os.path.join(HERE, "schematic.svg"), "w", encoding="utf-8").write(svg)
+
+    # consistency: the drawn refdes set vs the netlist of record (topology_edge_list.csv)
+    topo = sorted({r[0] for r in load_edges()})
+    only_drawn = sorted(set(drawn) - set(topo))
+    only_topo = sorted(set(topo) - set(drawn))
+    return dict(drawn=drawn, n_drawn=len(drawn), n_topo=len(topo),
+                only_drawn=only_drawn, only_topo=only_topo,
+                ok=(not only_drawn and not only_topo))
+
+
 def gen_schematic(values=None):
-    """Draw a READABLE schematic matching the reference layout (shuttle top, the two Cem ladders
+    """[INTERIM / offline fallback -- retired from the live tool by kicad-overlay; kept behind --interim.]
+    Draw a READABLE schematic matching the reference layout (shuttle top, the two Cem ladders
     on the flanks, the 4-node core + Ca/Cb/C1/C2/SG1/SG2 in the middle, the L_R1-C_R-L_R2 resonator
     at the bottom) with real component symbols. Part numbers are fixed labels; the CAP VALUES carry
     `id="sv_*"` placeholders the live drawer overrides from the solver (`values`, else the anchor).
@@ -307,9 +370,21 @@ def gen_schematic(values=None):
 if __name__ == "__main__":
     radii = gen_cross_section()
     print(f"cross-section.svg <- DXF ref-radii {radii} + named features")
-    chk = gen_schematic()
-    print(f"schematic.svg <- netlist of record: {chk['n_components']} components, "
-          f"{chk['n_nodes']}/22 nodes, nodes_ok={chk['nodes_ok']}, "
-          f"bad_endpoints={chk['bad_endpoints']}, no-net(K1 etc.)={chk['no_net']}")
-    print(f"CONNECTIVITY CHECK: {'PASS — schematic matches the netlist' if chk['ok'] else 'FAIL'}")
-    sys.exit(0 if chk["ok"] else 1)
+
+    if "--interim" in sys.argv:                                  # offline fallback: the hand-drawn draft
+        chk = gen_schematic()
+        print(f"schematic.svg <- INTERIM hand-drawn: {chk['n_components']} components, "
+              f"{chk['n_nodes']}/22 nodes, nodes_ok={chk['nodes_ok']}")
+        print(f"CONNECTIVITY CHECK: {'PASS' if chk['ok'] else 'FAIL'}")
+        sys.exit(0 if chk["ok"] else 1)
+
+    # default: the REAL KiCad export, re-tagged with live value slots
+    k = tag_kicad_svg()
+    print(f"schematic.svg <- REAL KiCad export, {k['n_drawn']} refdes re-tagged as sv_<REF> live slots")
+    print(f"  reconcile vs netlist of record (topology_edge_list.csv, {k['n_topo']} comps): "
+          f"{'MATCH' if k['ok'] else 'MISMATCH'}")
+    if k["only_drawn"]:
+        print(f"  drawn but NOT in netlist: {k['only_drawn']}")
+    if k["only_topo"]:
+        print(f"  in netlist but NOT drawn: {k['only_topo']}")
+    sys.exit(0 if k["ok"] else 1)
