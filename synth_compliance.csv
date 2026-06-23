@@ -8,4 +8,7 @@ I7_motor_matched,True,+0.400,out=3.73<=net=6.22mJ f_res=300Hz specratio=8000,OC
 I8_dc_trapped_tank,True,+1.000,tank held DC (tan-delta duty-limited),OC
 I9_mechanical,True,+0.003,"rim=199m/s (<200.0, soft 150.0) supercritical=True vac<=10.0Pa",OC
 I10_shuttle_integrity,True,+0.048,strike 20/21kV; V* 2.7->C_fire 64pF; resonant Lx 1.00mH: t1/2 2.2/139us(ok) i_pk 3.4A(ok); brigade Lx 1.00mH t1/2 0.8us x2 co-exist(ok),OC
+I11_crossfire,True,+0.297,overlap 2.07deg < SG3b-BS3 2.95deg (margin +0.88deg),OC
+I12_resonant_timing,True,+1.000,overlap 58us >= fire need (t1/2 2.2us); margin +53us,OC
+I13_fe_budget,True,+0.828,eta_real 0.706 > direct 0.386 (FE 0.07+arc 0.05mJ; alpha_max 0.807),OC
 I1_conservation,True,+1.000,resid=0.0e+00 +5%trip=fires,OC

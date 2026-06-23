@@ -38,7 +38,8 @@ sys.path.insert(0, os.path.join(ROOT, "reference"))
 import doubler_core as dc           # FROZEN AUTHORITY: z, the phase solve
 import energy_balance_from_solver as eb   # the d/2 V^2 dC decomposition (eta, W_mech)
 import island_charging_cosim as ic        # FROZEN shuttle (W_coll/E_fire/C_fire) -- run, not edited
-import island_resonant_core as irc       # NEW resonant island transfer (Lx) -- the efficiency fix
+import island_resonant_core as irc       # resonant island transfer (Lx) -- the efficiency fix
+import commutator_real_core as crc       # the REAL commutator (V_strike holdoff + FE) -- OPERATING [html-resonant]
 
 EPS0 = 8.8541878128e-12
 
@@ -50,10 +51,59 @@ ESTABLISHED = dict(
     g_sgMm=0.5, rpm=3000.0, stageN=2, V_targetV=15e3, V_strikeV=20e3, V_ceilV=21e3,
     Lx_mH=1.0,   # series island inductor (resonant transfer) -- KiCad Lx3/Lx4 [resonant-island]
     brigadeL_mH=1.0,  # series brigade inductors on the 2 dominant doubler transfers [resonant-brigade]
+    # ---- the commutation / firing tier (the resonant operating machine) ---- [html-resonant]
+    r_gapMm=387.0,    # gap placement radius (BS3/SG3b ~r350-380; active-band-outer R387)  [IR]
+    d_ballMm=12.0,    # W-Cu sphere-gap ball diameter (doc freeze §5)                       [IR]
+    g_latMm=1.0,      # lateral striking clearance per side                                 [IR]
+    FE_uA=30.0,       # designed field-emission backstop leakage at V_strike                [IR]
 )
 # brigade transfer effective C: a TOPOLOGY constant (Ca/Cb/Cpar fixed), both dominant phase
 # transfers share it (brigade_tax_localize.py -> 68.6 pF), so their t1/2 co-exist trivially. [OC]
 C_EFF_BRIGADE_PF = 68.6
+
+# ---- firing-geometry CLOSED FORMS (distilled from sim/firing_geometry.py; live, no sweep) [ME] ----
+SG3B_BS3_SPACING_DEG = 2.95     # the tightest DXF station spacing (cross-fire pair)         [ME]
+T_STRIKE_S = 0.10e-6            # breakdown formative time                                   [IR]
+T_COND_S = 2.0e-6              # arc/transfer conduction dwell                              [IR]
+
+
+def overlap_deg(d_ballMm, r_gapMm, g_latMm):
+    """Electrode-overlap window (deg): (d_ball + 2 g_lat)/r. firing_geometry closed form. [OC]"""
+    return math.degrees((d_ballMm + 2.0 * g_latMm) / r_gapMm)
+
+
+_op_cache = {}
+
+
+def operating_point(d):
+    """The RESONANT operating machine (live cores + firing closed forms): the V_strike spark-gap
+    holdoff (commutator_real_core) gives alpha_max / eta_real ~0.70; the FE/arc budget; the
+    firing-geometry cross-fire + overlap/t1/2 margins. The DIRECT z/eta (frozen doubler_core) stays
+    the regression anchor (set in invariants). Returns a JSON-friendly dict. [OC]/[ME]"""
+    V_strike = d["V_strikeV"]; V_peak = d.get("V_targetV", 15e3)
+    vsr = V_strike / V_peak
+    rpm = d["rpm"]; d_ball = d["d_ballMm"]; r = d["r_gapMm"]; g_lat = d["g_latMm"]
+    Lx = d.get("Lx_mH", 1.0) * 1e-3
+    FE = d.get("FE_uA", 30.0) * 1e-6
+    # firing geometry (cheap closed forms)
+    ov_deg = overlap_deg(d_ball, r, g_lat)
+    omega = rpm * 2.0 * math.pi / 60.0
+    t_overlap = math.radians(ov_deg) / omega
+    cf = irc.closed_form(d["Cx_maxMm"] * 1e-12, 2640e-9, 5e3, Lx, 20.0)   # island ring t1/2 (Lx)
+    t_need = T_STRIKE_S + cf["t_half"] + T_COND_S
+    # commutator (cache by V_strike ratio + the FE dwell; the heavy part depends only on vsr)
+    key = round(vsr, 4)
+    if key not in _op_cache:
+        _op_cache[key] = crc.solve_doubler_commutator(crc.G3, 0.999, vsr)
+    rop = _op_cache[key]
+    bc = crc.fe_arc_budget(rop["eta_gross"], rop["alpha_med"], vsr, I_ref=FE, k=3.0, t_dwell=t_overlap)
+    return dict(alpha_max=float(rop["alpha_med"]), z_resonant=float(rop["z"]),
+                eta_gross=float(rop["eta_gross"]), eta_real=float(bc["eta_real"]),
+                E_FE_mJ=float(bc["E_FE"]), E_arc_mJ=float(bc["E_arc"]),
+                overlap_deg=float(ov_deg), t_overlap_us=float(t_overlap * 1e6),
+                spacing_deg=SG3B_BS3_SPACING_DEG,
+                crossfire_margin_deg=float(SG3B_BS3_SPACING_DEG - ov_deg),
+                t_half_us=float(cf["t_half"] * 1e6), a1_margin_us=float((t_overlap - t_need) * 1e6))
 # ---- rule thresholds (the invariants' constants, from the campaign) --------- [OC]/[IR]
 Z_BAND = (1.20, 1.45)               # validated doubler z band (device 1.203 .. wide 1.438)  [OC]
 CPAR_FLOOR_pF = 20.0                # stray floor; C_min cannot go below it (I6)              [OC]
@@ -238,6 +288,27 @@ def invariants(d):
                                     f"t1/2 {cf_brig['t_half']*1e6:.1f}us x2 co-exist"
                                     f"({'ok' if brig_clock_ok else 'CLASH'})")
 
+    # --- the RESONANT operating machine (live cores + firing closed forms) [html-resonant] ------
+    op = operating_point(d); d["_op"] = op
+
+    # --- I11 cross-fire (firing-geometry A2): the electrode overlap must clear the SG3b-BS3 pair ---
+    i11 = op["crossfire_margin_deg"] > 0.0
+    out["I11_crossfire"] = (i11, op["crossfire_margin_deg"] / SG3B_BS3_SPACING_DEG,
+                            f"overlap {op['overlap_deg']:.2f}deg < SG3b-BS3 {op['spacing_deg']:.2f}deg "
+                            f"(margin {op['crossfire_margin_deg']:+.2f}deg)")
+
+    # --- I12 resonant-timing (firing-geometry A1, a GUARD that should never bind): overlap >> t1/2 -
+    i12 = op["a1_margin_us"] > 0.0
+    out["I12_resonant_timing"] = (i12, min(1.0, op["a1_margin_us"] / 50.0) if i12 else -1.0,
+                                  f"overlap {op['t_overlap_us']:.0f}us >= fire need "
+                                  f"(t1/2 {op['t_half_us']:.1f}us); margin {op['a1_margin_us']:+.0f}us")
+
+    # --- I13 FE-budget: the resonant recovery (after the FE bleed + arc) must beat the direct floor -
+    i13 = op["eta_real"] > USEFUL_FRAC
+    out["I13_fe_budget"] = (i13, (op["eta_real"] - USEFUL_FRAC) / USEFUL_FRAC if i13 else -1.0,
+                            f"eta_real {op['eta_real']:.3f} > direct {USEFUL_FRAC:.3f} "
+                            f"(FE {op['E_FE_mJ']:.2f}+arc {op['E_arc_mJ']:.2f}mJ; alpha_max {op['alpha_max']:.3f})")
+
     # --- I1 conservation, real (+5% trip) -- the per-cycle ledger + the non-tautology test ---
     i1_ok, resid, trip = conservation(d, W_mech, eta, sh)
     out["I1_conservation"] = (i1_ok, 1.0 if i1_ok else -1.0,
@@ -348,14 +419,115 @@ def search(objective, base, grid):
 
 
 # =============================================================================
+# Programmatic API — the HTML/Pyodide shell calls THESE (I/O-free, JSON-serialisable).
+# DUAL RETURN: the resonant OPERATING machine (eta~0.70, what the HTML shows) AND the frozen
+# DIRECT regression (z(a->0)=1.334, the canary). The frozen solvers stay the sole authority.
+# No subprocess/file I/O here -- the git-diff frozen-check lives in main() (offline). [html-resonant]
+# =============================================================================
+DEFAULT_GRID = dict(r_outMm=[150, 200, 250, 300, 350, 387, 450, 500],
+                    g_vMm=[3.0, 5.0, 7.0, 10.0],
+                    C1min_pF=[20, 30, 50, 80],
+                    rpm=[3000, 6000, 9000, 12000])
+_BLOCKER_PRIORITY = ["I3_scalefree_z", "I4_insulate_first", "I9_mechanical",
+                     "I10_shuttle_integrity", "I11_crossfire", "I13_fe_budget",
+                     "I12_resonant_timing", "I7_motor_matched", "I5_tax_managed",
+                     "I6_parasitic_floor", "I8_dc_trapped_tank", "I2_solver_authority",
+                     "I1_conservation"]
+
+Z_REG_TARGET, ETA_REG_TARGET = 1.334, 0.386      # the frozen direct-limit regression rung
+
+
+def established_anchor():
+    """The established resonant machine (the canary). evaluate_design(established_anchor()) must
+    return rotor ~983 mm, the DIRECT regression z 1.334/eta 0.386, AND the resonant operating
+    eta_real ~0.70 -- feasible on all invariants."""
+    return dict(ESTABLISHED)
+
+
+def _result(d, inv, bc):
+    """Pack a design + its battery into a JSON dict for Pyodide->JS, with the DUAL anchor:
+    .operating (resonant machine) and .regression (frozen direct-limit canary)."""
+    sh = d["_sh"]; op = d.get("_op") or operating_point(d)
+    z_dir = float(d["_z"]); eta_dir = float(d["_eta"])
+    return dict(
+        r_outMm=float(d["r_outMm"]), rotor_outMm=float(rotor_outMm(d)),
+        rotor_dia_mm=float(rotor_dia_mm(d)), active_dia_mm=float(2.0 * d["r_outMm"]),
+        bus_margin=float(BUS_MARGIN), r_inMm=float(d["r_inMm"]),
+        g_vMm=float(d["g_vMm"]), rpm=float(d["rpm"]),
+        C1max_pF=float(d["_C1max"]), C1min_pF=float(d["C1min_pF"]), Ca_pF=float(d["Ca_pF"]),
+        Cpar_pF=float(d["Cpar_pF"]), Cx_maxMm=float(d["Cx_maxMm"]), C_R_pF=float(d["C_R_pF"]),
+        # the commutation / firing tier inputs (echoed for the HTML)
+        Lx_mH=float(d.get("Lx_mH", 1.0)), V_strike_kV=float(d["V_strikeV"] / 1e3),
+        r_gapMm=float(d["r_gapMm"]), d_ballMm=float(d["d_ballMm"]), FE_uA=float(d["FE_uA"]),
+        # DIRECT machine (regression numbers)
+        z=z_dir, eta=eta_dir,
+        W_coll_mJ=float(sh["W_coll"] * 1e3), E_fire_mJ=float(sh["E_fire"] * 1e3),
+        C_fire_pF=float(sh["C_fire"]), Vstar_kV=float(sh["Vstar"] / 1e3),
+        # ---- DUAL ANCHOR ----
+        operating=dict(eta_real=op["eta_real"], alpha_max=op["alpha_max"],
+                       z_resonant=op["z_resonant"], eta_gross=op["eta_gross"],
+                       E_FE_mJ=op["E_FE_mJ"], E_arc_mJ=op["E_arc_mJ"],
+                       overlap_deg=op["overlap_deg"], crossfire_margin_deg=op["crossfire_margin_deg"],
+                       t_overlap_us=op["t_overlap_us"], t_half_us=op["t_half_us"],
+                       a1_margin_us=op["a1_margin_us"]),
+        regression=dict(z_direct=z_dir, eta_direct=eta_dir,
+                        z_target=Z_REG_TARGET, eta_target=ETA_REG_TARGET,
+                        reproduces=bool(abs(z_dir - Z_REG_TARGET) < 5e-3
+                                        and abs(eta_dir - ETA_REG_TARGET) < 5e-3)),
+        invariants={k: {"pass": bool(v[0]), "slack": round(float(v[1]), 4), "value": v[2]}
+                    for k, v in inv.items()},
+        binding_constraint=bc, feasible=bool(feasible(inv)),
+    )
+
+
+def evaluate_design(free_vars):
+    """Run the full battery on one free-var set (merged onto the established anchor). Returns the
+    DUAL anchor (resonant operating + direct regression) + the I1-I13 invariants. JSON-serialisable;
+    no I/O. Accepts the design keys incl. the commutation/firing tier (Lx_mH, V_strikeV, r_gapMm,
+    d_ballMm, FE_uA)."""
+    d = make_design(ESTABLISHED, **(dict(free_vars) if free_vars else {}))
+    inv = invariants(d)
+    bc = binding(inv) if feasible(inv) else None
+    return _result(d, inv, bc)
+
+
+def synthesize(goal, objective):
+    """Search the free space for the objective subject to all invariants. Returns the optimal design
+    (same shape as evaluate_design, + binding_why/n_eval/n_feasible) or {feasible:False, ...}."""
+    base = make_design(ESTABLISHED, **(dict(goal) if goal else {}))
+    best, n_eval, n_feas = search(objective, base, DEFAULT_GRID)
+    if best is None:
+        from collections import Counter
+        fails = Counter()
+        for r_out in DEFAULT_GRID["r_outMm"]:
+            for g_v in DEFAULT_GRID["g_vMm"]:
+                for C1min in DEFAULT_GRID["C1min_pF"]:
+                    dprobe = make_design(base, r_outMm=r_out, g_vMm=g_v, C1min_pF=C1min)
+                    for k, v in invariants(dprobe).items():
+                        if not v[0]:
+                            fails[k] += 1
+        blocker = next((k for k in _BLOCKER_PRIORITY if fails.get(k)),
+                       (fails.most_common(1)[0][0] if fails else None))
+        return dict(feasible=False, blocking_invariant=blocker, objective=objective,
+                    n_eval=n_eval, n_feasible=0)
+    d, val, inv = best
+    bc, why = binding_active(d, objective, base, DEFAULT_GRID)
+    res = _result(d, inv, bc)
+    res["binding_why"] = why; res["objective"] = objective
+    res["n_eval"] = n_eval; res["n_feasible"] = n_feas
+    return res
+
+
+# =============================================================================
 # MAIN
 # =============================================================================
 def main():
     print("=" * 92)
     print("DESIGN-SYNTH — a constrained dimension-chooser (free dimensions, invariant rules)")
     print("=" * 92)
+    # frozen COMPUTATIONAL anchors (index.html retired by html-resonant -> no longer an anchor)
     diff = subprocess.run(["git", "diff", "--name-only", "--", "shuttle_core.py", "reference/",
-                           "index.html", "sim/resonator_sim.py"],
+                           "sim/resonator_sim.py"],
                           cwd=ROOT, capture_output=True, text=True).stdout.strip()
     print(f"\n[check 1] frozen empty-diff: {'PASS' if diff == '' else 'FAIL ' + diff}")
     print("[check 1] frozen solvers CALLED per candidate (doubler_core z/eta, shuttle W_coll); "
@@ -469,7 +641,7 @@ def main():
 
     _emit(results, anc, inv)
     diff = subprocess.run(["git", "diff", "--name-only", "--", "shuttle_core.py", "reference/",
-                           "index.html", "sim/resonator_sim.py"],
+                           "sim/resonator_sim.py"],
                           cwd=ROOT, capture_output=True, text=True).stdout.strip()
     assert diff == "", f"frozen drift: {diff}"
     print("\n[frozen empty-diff final assert] PASS")
