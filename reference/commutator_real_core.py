@@ -27,6 +27,11 @@ Tiers: [OC] derivable · [IR] design/empirical (V_strike, FN coeffs) · [ME] met
 """
 import numpy as np
 
+# numpy 2.0 renamed trapz -> trapezoid AND removed trapz; Pyodide 0.26.2 ships numpy 1.26 (trapz
+# only), the CLI ships 2.x (trapezoid only). Resolve at import so the live cores run on BOTH.
+# [numpy-pyodide-compat] -- version-safe; do not replace with a bare np.trapezoid/np.trapz.
+_trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))
+
 import doubler_core as dc                 # FROZEN anchor (read-only)
 import doubler_resonant_core as drc       # the alpha over-transfer cycle (reused)
 import island_resonant_core as irc        # the validated guard (reused unmodified)
@@ -129,7 +134,7 @@ def fe_arc_budget(eta_gross, alpha, Vs_rel, I_ref=30e-6, k=3.0, t_dwell=SG_WINDO
     N = 400
     ts = np.linspace(0.0, T_HALF, N)
     Vt = Vpk * np.sin(np.pi * ts / T_HALF)
-    e_swing = float(np.trapezoid([Vt[i] * fn_current(Vt[i], A, B) for i in range(N)], ts))
+    e_swing = float(_trapz([Vt[i] * fn_current(Vt[i], A, B) for i in range(N)], ts))
     e_dwell = Vpk * fn_current(Vpk, A, B) * t_dwell                     # held-state bleed
     E_FE = 2.0 * (e_swing + e_dwell) * 1e3                              # mJ/cycle, x2 islands
     fired = alpha >= Vs_rel * 0.0 + 1e-9 and alpha < 0.999             # V_strike-limited -> gap fires

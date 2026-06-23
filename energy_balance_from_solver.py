@@ -44,6 +44,10 @@ import sys
 
 import numpy as np
 
+# numpy 2.0 renamed trapz -> trapezoid (Pyodide 1.26 has only trapz; the CLI 2.x only trapezoid).
+# Resolve at import so this runs on BOTH. [numpy-pyodide-compat]
+_trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "reference"))
 import doubler_core as dc  # FROZEN producer (mirror of index.html solveDoubler4)
 
@@ -147,7 +151,7 @@ def tau_profile(C1lo, C1hi, Ca, Cb, Cpar, Vpost_phaseA, n=200):
         U[k] = field_energy(V, C1, C2, Ca, Cb, Cpar)
     tau = np.gradient(U, th)            # tau(theta) = dU/dtheta at constant Q
     W = float(U[-1] - U[0])             # = integral tau dtheta
-    mean = float(np.trapezoid(tau, th)) # mean over Dtheta=1 == W
+    mean = float(_trapz(tau, th)) # mean over Dtheta=1 == W
     ripple = float((tau.max() - tau.min()) / (abs(mean) + 1e-30))
     return dict(theta=th, tau=tau, Wstroke=W, mean=mean, ripple=ripple)
 

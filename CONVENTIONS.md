@@ -73,6 +73,7 @@ the physical resonator rail (5–6); it is a near-short at PRF (L1-short argumen
 - **Deliverables are markdown;** the app is a single self-contained `index.html` (no build, no bundler, URL-hash state — never `localStorage`).
 - **Cross-reference** docs by repo-relative path.
 - **Producer/consumer discipline** for the physics: the geometry module produces rotor-cap values; `solveDoubler4` consumes them and is never edited by feature work.
+- **numpy version-agnostic in the live cores.** Every module the live HTML loads (`design_synth` + the `reference/` cores it imports) must run under **both** the CLI numpy (2.x) and **Pyodide 0.26.2's numpy (pinned 1.26.4)** — the two are on opposite sides of the numpy-2.0 rename and share no single name for renamed functions. Use the version-agnostic shim (`_trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))`), never a bare `np.trapezoid`/`np.trapz`. The standing guard is `make pyodide-parity` (runs the cores + dual canary under both numpys → `numpy_parity.txt`). A version-fragile name in a **frozen** core is **flagged, not edited**.
 
 ---
 

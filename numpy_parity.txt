@@ -1,0 +1,105 @@
+numpy_parity.txt -- the two-version Pyodide-numpy pass table  [numpy-pyodide-compat]
+generated: 2026-06-23T10:22:00Z  by sim/run_pyodide_parity.sh
+parity target: numpy 1.26.4 (Pyodide 0.26.2 bundle)  |  CLI: Python 3.11.15
+
+########################################################################
+## A. PARITY VENV  (.pyodide-parity, numpy 1.26.4 -- the Pyodide proxy) ##
+########################################################################
+PYODIDE-PARITY GUARD  (numpy 1.26.4; trapz=trapz)
+========================================================================
+Python mirror vs frozen JS solveDoubler4 anchors:
+  no-swing  z =  1.0000  expected  1.000 ±0.005  PASS
+  device    z =  1.2033  expected  1.203 ±0.030  PASS
+  narrow    z =  1.0000  expected  1.000 ±0.040  PASS
+  wide      z =  1.4379  expected  1.438 ±0.060  PASS
+  -> mirror is FAITHFUL
+  [PASS] doubler_core.run_self_test (4 anchors)
+  [PASS] island_resonant_core.integrate (the LC ring)
+doubler_resonant_core self-tests:
+Python mirror vs frozen JS solveDoubler4 anchors:
+  no-swing  z =  1.0000  expected  1.000 ±0.005  PASS
+  device    z =  1.2033  expected  1.203 ±0.030  PASS
+  narrow    z =  1.0000  expected  1.000 ±0.040  PASS
+  wide      z =  1.4379  expected  1.438 ±0.060  PASS
+  -> mirror is FAITHFUL
+  [PASS] direct-limit alpha->0: z=1.3340 (exp 1.334), eta=0.3860 (exp 0.386)
+  [PASS] rectification clamp pins z across Q: z(alpha=.5/.9/.999) = 1.5727/1.5727/1.5727
+  [PASS] guard: ring closes 9.4e-12 + trips (0.043); over-transfer feeds back (unclamped z 1.868->1.908)
+  -> FAITHFUL — resonant model regression-locked to the frozen doubler
+  [PASS] doubler_resonant_core.run_self_test
+commutator_real_core self-tests:
+Python mirror vs frozen JS solveDoubler4 anchors:
+  no-swing  z =  1.0000  expected  1.000 ±0.005  PASS
+  device    z =  1.2033  expected  1.203 ±0.030  PASS
+  narrow    z =  1.0000  expected  1.000 ±0.040  PASS
+  wide      z =  1.4379  expected  1.438 ±0.060  PASS
+  -> mirror is FAITHFUL
+  [PASS] direct-limit alpha->0: z=1.3340 eta=0.3860 (exp 1.334/0.386)
+  [PASS] diode-limit V_strike->0: z=1.5727 eta=0.4040 (exp 1.573/0.404 = doubler-resonant)
+  [PASS] V_strike headroom: alpha_max=0.807 (>> diode 0.28), z=2.478, eta_gross=0.709
+  [PASS] guard: ring closes 9.4e-12 + trips (0.043); FE loss perturbable (E_FE 0.334->0.350 mJ under +5% FE leakage)
+  -> FAITHFUL — real commutator anchored to the frozen doubler
+  [PASS] commutator_real_core.run_self_test (exercises _trapz in fe_arc_budget)
+  [PASS] commutator_real_core.fe_arc_budget (_trapz live)
+  [PASS] energy_balance_from_solver.selftests
+  [PASS] energy_balance.tau_profile (_trapz live)
+  [PASS] shuttle_core import (frozen anchor)
+  [PASS] island_charging_cosim import
+  [PASS] dual canary: operating eta 0.5180 in (0.44, 0.55)
+  [PASS] dual canary: regression z 1.3336 == 1.334
+  [PASS] dual canary: regression eta 0.3863 == 0.386
+  [PASS] dual canary: feasible + all 13 invariants pass
+========================================================================
+RESULT under numpy 1.26.4: ALL GREEN (13/13)
+
+########################################################################
+## B. CLI numpy  (the validation environment, numpy 2.x)              ##
+########################################################################
+PYODIDE-PARITY GUARD  (numpy 2.4.6; trapz=trapezoid)
+========================================================================
+Python mirror vs frozen JS solveDoubler4 anchors:
+  no-swing  z =  1.0000  expected  1.000 ±0.005  PASS
+  device    z =  1.2033  expected  1.203 ±0.030  PASS
+  narrow    z =  1.0000  expected  1.000 ±0.040  PASS
+  wide      z =  1.4379  expected  1.438 ±0.060  PASS
+  -> mirror is FAITHFUL
+  [PASS] doubler_core.run_self_test (4 anchors)
+  [PASS] island_resonant_core.integrate (the LC ring)
+doubler_resonant_core self-tests:
+Python mirror vs frozen JS solveDoubler4 anchors:
+  no-swing  z =  1.0000  expected  1.000 ±0.005  PASS
+  device    z =  1.2033  expected  1.203 ±0.030  PASS
+  narrow    z =  1.0000  expected  1.000 ±0.040  PASS
+  wide      z =  1.4379  expected  1.438 ±0.060  PASS
+  -> mirror is FAITHFUL
+  [PASS] direct-limit alpha->0: z=1.3340 (exp 1.334), eta=0.3860 (exp 0.386)
+  [PASS] rectification clamp pins z across Q: z(alpha=.5/.9/.999) = 1.5727/1.5727/1.5727
+  [PASS] guard: ring closes 9.4e-12 + trips (0.043); over-transfer feeds back (unclamped z 1.868->1.908)
+  -> FAITHFUL — resonant model regression-locked to the frozen doubler
+  [PASS] doubler_resonant_core.run_self_test
+commutator_real_core self-tests:
+Python mirror vs frozen JS solveDoubler4 anchors:
+  no-swing  z =  1.0000  expected  1.000 ±0.005  PASS
+  device    z =  1.2033  expected  1.203 ±0.030  PASS
+  narrow    z =  1.0000  expected  1.000 ±0.040  PASS
+  wide      z =  1.4379  expected  1.438 ±0.060  PASS
+  -> mirror is FAITHFUL
+  [PASS] direct-limit alpha->0: z=1.3340 eta=0.3860 (exp 1.334/0.386)
+  [PASS] diode-limit V_strike->0: z=1.5727 eta=0.4040 (exp 1.573/0.404 = doubler-resonant)
+  [PASS] V_strike headroom: alpha_max=0.807 (>> diode 0.28), z=2.478, eta_gross=0.709
+  [PASS] guard: ring closes 9.4e-12 + trips (0.043); FE loss perturbable (E_FE 0.334->0.350 mJ under +5% FE leakage)
+  -> FAITHFUL — real commutator anchored to the frozen doubler
+  [PASS] commutator_real_core.run_self_test (exercises _trapz in fe_arc_budget)
+  [PASS] commutator_real_core.fe_arc_budget (_trapz live)
+  [PASS] energy_balance_from_solver.selftests
+  [PASS] energy_balance.tau_profile (_trapz live)
+  [PASS] shuttle_core import (frozen anchor)
+  [PASS] island_charging_cosim import
+  [PASS] dual canary: operating eta 0.5180 in (0.44, 0.55)
+  [PASS] dual canary: regression z 1.3336 == 1.334
+  [PASS] dual canary: regression eta 0.3863 == 0.386
+  [PASS] dual canary: feasible + all 13 invariants pass
+========================================================================
+RESULT under numpy 2.4.6: ALL GREEN (13/13)
+
+VERDICT: NUMPY-COMPAT-CLEAN -- green under BOTH numpy 1.26 (Pyodide) and CLI 2.x.

@@ -3,3 +3,6 @@ __pycache__/
 
 # xsim ngspice scratch
 .xsim_raw/
+
+# numpy-1.26 parity venv (the Pyodide-numpy proxy); recreate with `make pyodide-parity-venv`
+.pyodide-parity/

@@ -34,6 +34,23 @@ python3 -m http.server 8000
 The page **never** falls back to hard-coded z/η — a synthesizer that quietly stops using the solver is
 worse than one that says it's down.
 
+### numpy parity — the live cores must run on Pyodide's numpy *and* the CLI's
+
+The cores are validated on the **CLI numpy (2.x)** but **run in-browser on Pyodide 0.26.2's numpy
+(1.26.4)**. The numpy-2.0 rename means a name can work on one side and crash the other (e.g. `np.trapezoid`
+exists only on 2.x, `np.trapz` only on 1.x — they share **no** single name). A 2.0-only name sails the CLI
+and then hard-fails the browser load with `SOLVER: down`. The guard against that whole class:
+
+```bash
+make pyodide-parity        # runs every live core + the dual canary under BOTH numpy 1.26 and 2.x
+```
+
+This builds a `.pyodide-parity/` venv pinned to **numpy 1.26.4** (the Pyodide 0.26.2 bundle — the local
+proxy for the in-browser numpy), runs `sim/pyodide_parity.py` under it **and** under the CLI numpy, and
+writes `numpy_parity.txt` (the two-version pass table). Green on both ⇒ the in-browser load is guaranteed
+numpy-wise. Renamed-function calls use the version-agnostic shim
+`_trapz = getattr(np, "trapezoid", getattr(np, "trapz", None))`, never a bare `np.trapezoid`/`np.trapz`.
+
 ## Using it
 
 - **Free-variable sliders** (left) roam the dimension space; each change calls `evaluate_design` live
