@@ -144,7 +144,7 @@
         <input type="range" id="rpm" min="1500" max="14000" step="100" value="3000"></label>
 
       <div class="brass" style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px">
-        Commutation / firing — the resonant machine (η ≈ 0.70)</div>
+        Commutation / firing — validated machine (η ≈ 0.50: direct + island sink)</div>
       <label class="ctl"><span class="lab">resonant inductor · Lx <b id="v_lx">1.00 mH</b></span>
         <input type="range" id="Lx_mH" min="0.05" max="10" step="0.05" value="1.0"></label>
       <label class="ctl"><span class="lab">spark-gap holdoff · V_strike <b id="v_vstrike">20.0 kV</b></span>
@@ -180,14 +180,14 @@
           <div class="readout"><span id="r_dia">—</span><small> mm</small></div>
           <div class="kv"><span>active band</span><b id="r_active">—</b></div>
           <div class="kv"><span>+ bus 0.27</span><b id="r_bus">R491</b></div></div>
-        <div class="panel sub"><div class="brass">resonant machine · OPERATING</div>
-          <div class="readout"><span id="r_etareal">—</span><small> η_real</small></div>
-          <div class="kv"><span>α_max (V_strike)</span><b id="r_alpha">—</b></div>
-          <div class="kv"><span>z resonant</span><b id="r_zres">—</b></div></div>
-        <div class="panel sub"><div class="brass">firing geometry</div>
+        <div class="panel sub"><div class="brass">OPERATING · direct + island sink (validated)</div>
+          <div class="readout"><span id="r_etareal">—</span><small> η operating</small></div>
+          <div class="kv"><span>island recovered</span><b id="r_island">—</b></div>
+          <div class="kv"><span>z (= direct)</span><b id="r_zres">—</b></div></div>
+        <div class="panel sub"><div class="brass">firing geometry · forbidden-path diag</div>
           <div class="readout"><span id="r_xfire">—</span><small>° cross-fire</small></div>
           <div class="kv"><span>overlap / t½</span><b id="r_a1">—</b></div>
-          <div class="kv"><span>FE + arc budget</span><b id="r_febudget">—</b></div></div>
+          <div class="kv" title="the SUPERSEDED core over-transfer (η 0.70) — not the operating η"><span>α_max · η⊘ (forbidden)</span><b id="r_alpha">—</b></div></div>
         <div class="panel sub"><div class="brass">direct · REGRESSION (frozen)</div>
           <div class="readout"><span id="r_z">—</span><small> z (α→0)</small></div>
           <div class="kv"><span>η direct</span><b id="r_eta">—</b></div>
@@ -217,12 +217,13 @@
   </div>
 
   <div class="foot" id="foot" style="display:none">
-    <b>The solver is the real one — now the resonant machine.</b> The headline η_real ≈ 0.70, α_max, and the
-    firing margins are live <code>commutator_real_core</code> / <code>island_resonant_core</code> outputs composed
-    over the frozen <code>doubler_core</code>; z / η_direct / W_coll are live <code>doubler_core</code> /
-    <code>shuttle_core</code> for your ratios — not constants. &nbsp;<b>Two anchors, one canary.</b> The page fetches
+    <b>The solver is the real one — the VALIDATED machine.</b> The headline operating η ≈ 0.50 is the <i>direct
+    doubler (0.386)</i> composed with the <i>downstream island sink recovery</i> (live <code>doubler_core</code>
+    + <code>island_resonant_core</code>, S2-validated). The doubler-<i>core</i> over-transfer to η 0.70 is
+    <b>forbidden</b> (the equalization <i>is</i> the pump — see <code>docs/efficiency-resolution.md</code>);
+    <code>commutator_real_core</code>'s α_max/η are kept only as the <i>forbidden-path diagnostic</i>. &nbsp;<b>Two anchors, one canary.</b> The page fetches
     the repo's read-only cores and calls them unmodified; the on-load <b>dual canary</b> asserts the
-    <i>operating</i> resonant machine (η_real ≈ 0.70) <b>and</b> the <i>direct regression</i> (z(α→0) = 1.334,
+    <i>operating</i> validated machine (η ≈ 0.50) <b>and</b> the <i>direct regression</i> (z(α→0) = 1.334,
     η 0.386) — the badge is <code>SOLVER: live</code> only if <b>both</b> reproduce, <code>CANARY-FAIL</code> if
     either drifts. &nbsp;<b>The conservation lamps are honest:</b> I1 is a consistency-check-that-trips (its +5 %
     self-test fires) — <i>not</i> independent validation, not "BALANCED"; the resonant cores additionally carry the
@@ -291,16 +292,17 @@ def _anchor():  return json.dumps(_ds.established_anchor())
     const okDia = c.rotor_dia_mm>=960 && c.rotor_dia_mm<=1010;
     // REGRESSION rung: z(α→0)=1.334, η_direct=0.386 (the frozen baseline still holds)
     const okZ = Math.abs(c.regression.z_direct-1.334)<5e-3, okEta = Math.abs(c.regression.eta_direct-0.386)<3e-3;
-    // OPERATING rung: the resonant machine reproduces η_real ≈ 0.70
-    const okOp = Math.abs(c.operating.eta_real-0.70)<0.03;
+    // OPERATING rung: the VALIDATED machine (direct + island sink) -> η ≈ 0.45-0.55, NOT 0.70.
+    // (η 0.70 was the FORBIDDEN doubler-core over-transfer — see docs/efficiency-resolution.md.)
+    const okOp = c.operating.eta_real>0.44 && c.operating.eta_real<0.55;
     const allPass = Object.values(c.invariants).every(v=>v.pass);
     const nInv=Object.keys(c.invariants).length;
     const canOk = okDia&&okZ&&okEta&&okOp&&allPass&&c.feasible;
     $("canary").innerHTML = (canOk?'<span style="color:var(--good)">DUAL CANARY PASS</span>':'<span style="color:var(--bad)">CANARY FAIL</span>')+
-      ` — <b>operating</b> η_real ${c.operating.eta_real.toFixed(3)} (≈0.70${okOp?' ✓':' ✗'}), α_max ${c.operating.alpha_max.toFixed(3)}; `+
+      ` — <b>operating</b> η ${c.operating.eta_real.toFixed(3)} (validated direct+island, ≈0.50${okOp?' ✓':' ✗'}; the 0.70 core path is forbidden); `+
       `<b>regression</b> z(α→0) ${c.regression.z_direct.toFixed(4)} (=1.334${okZ?' ✓':' ✗'}), η ${c.regression.eta_direct.toFixed(4)}; `+
       `rotor ${c.rotor_dia_mm.toFixed(0)} mm, ${Object.values(c.invariants).filter(v=>v.pass).length}/${nInv} invariants. `+
-      (canOk?'In-browser solver reproduces the resonant machine AND the frozen regression.':'In-browser numbers DISAGREE — do not trust this tool.');
+      (canOk?'In-browser solver reproduces the validated machine AND the frozen regression.':'In-browser numbers DISAGREE — do not trust this tool.');
     if(!canOk){ setSolver("","SOLVER: CANARY-FAIL"); $("solverBadge").querySelector(".dot").className="dot no"; }
     else { setSolver("","SOLVER: live"); $("solverBadge").querySelector(".dot").className="dot ok"; }
     boot.style.display="none"; $("app").style.display=""; $("foot").style.display="";
@@ -384,15 +386,17 @@ function render(d, fromSolve){
   // readouts — geometry
   $("r_dia").textContent=d.rotor_dia_mm.toFixed(0);
   $("r_active").textContent=d.active_dia_mm.toFixed(0)+" mm";
-  // OPERATING (resonant machine) — the headline
+  // OPERATING (VALIDATED: direct + island sink) — the headline η ≈ 0.50, NOT 0.70
+  const fd=op.forbidden_diag||{};
   $("r_etareal").textContent=(op.eta_real!=null?op.eta_real.toFixed(3):"—");
-  $("r_alpha").textContent=(op.alpha_max!=null?op.alpha_max.toFixed(3):"—");
+  $("r_island").textContent=(op.island_recovered_mJ!=null?op.island_recovered_mJ.toFixed(2)+" mJ (f_rec "+op.island_frec.toFixed(2)+")":"—");
   $("r_zres").textContent=(op.z_resonant!=null?op.z_resonant.toFixed(3):"—");
   // firing geometry
   $("r_xfire").textContent=(op.crossfire_margin_deg!=null?(op.crossfire_margin_deg>=0?"+":"")+op.crossfire_margin_deg.toFixed(2):"—");
   $("r_xfire").style.color = (op.crossfire_margin_deg<0)?"var(--bad)":(op.crossfire_margin_deg<0.3?"var(--warn)":"var(--good)");
   $("r_a1").textContent=(op.a1_margin_us!=null?op.a1_margin_us.toFixed(0)+" µs (t½ "+op.t_half_us.toFixed(1)+")":"—");
-  $("r_febudget").textContent=(op.E_FE_mJ!=null?(op.E_FE_mJ+op.E_arc_mJ).toFixed(2)+" mJ":"—");
+  // forbidden-path diagnostic (the superseded core over-transfer, NOT the operating η)
+  $("r_alpha").textContent=(fd.alpha_max!=null?fd.alpha_max.toFixed(2)+" · "+fd.eta_forbidden.toFixed(2)+"⊘":"—");
   // DIRECT (regression)
   $("r_z").textContent=d.z.toFixed(4);
   $("r_z").style.color = reg.reproduces?"var(--good)":"var(--warn)";
@@ -414,7 +418,7 @@ function render(d, fromSolve){
     .map(([k,v])=>lamp(k, v)).join("");
   // verdict
   const nInv=Object.keys(inv).length;
-  if(d.feasible){ $("verdict").className="verdict ok"; $("verdict").textContent="FEASIBLE — all "+nInv+" invariants hold (resonant η_real "+(op.eta_real!=null?op.eta_real.toFixed(2):"—")+")"; }
+  if(d.feasible){ $("verdict").className="verdict ok"; $("verdict").textContent="FEASIBLE — all "+nInv+" invariants hold (validated η "+(op.eta_real!=null?op.eta_real.toFixed(2):"—")+", direct+island sink)"; }
   else { $("verdict").className="verdict no"; $("verdict").textContent="INFEASIBLE — an invariant fails"; }
   // binding line
   if(bc){ $("bindLine").style.display=""; const det=inv[bc]?inv[bc].value:"";

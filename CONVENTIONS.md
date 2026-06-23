@@ -152,3 +152,17 @@ demEnergyJ, demCapPerGroupUF                               [outputs]
 - **Rule:** `d` alone remains forbidden; `dem` is the Block-D prefix. Reserved symbols keep their meaning — `C` (the resonant DC-block cap), `V` (voltages), `A` (pole-face area), `Q` (quality factor, not charge here — disambiguated by context and the `dem`-prefixed code names), `N`·`I` (ampere-turns).
 - **Producer/consumer:** Block D is a **parallel producer** (like Blocks M and R) — it reads electrical/geometry context but **never** writes the rotor caps and **never** calls `solveDoubler4`.
 - The 13 logical output names above are computed inside `demMotor()`; the panel surfaces them in grouped readout rows (`#dr-*`) plus the top-view projection.
+
+
+## Working rule — resonant tax-recovery is a property of sinks (the equalization-is-the-pump principle)
+
+> **A resonant pump's own equalization cannot be resonated for energy recovery — the equalization *is* the
+> pump.** Resonating it clamps it (ratchet, tax lost) or breaks the ratchet (pump dies); sequencing and
+> statistics only sample those two arms, never a recovering third. **Only a downstream sink transfer recovers
+> freely.**
+
+Established by: `doubler-resonant` (diode α_max 0.28 ceiling) + `ngspice-s3` (the static either/or) +
+`seq-stat-commutation` (the sequenced-statistical conservation arbiter). The corollary for design: resonant
+recovery (Lx) belongs on **sinks** (the island Cx/Lx, validated S2), **not** on the rectifying pump transfers
+(Ca/Cb). Authoritative record: `docs/efficiency-resolution.md`. The machine's operating η is **≈ 0.45–0.50**
+(direct 0.386 + island sink), **not** 0.70.

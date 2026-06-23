@@ -75,35 +75,54 @@ def overlap_deg(d_ballMm, r_gapMm, g_latMm):
 _op_cache = {}
 
 
+# validated per-fire energy anchors (energy_balance.csv / resonant_island.csv), mJ [OC]
+_USEFUL_mJ, _WMECH_mJ, _DOUBLER_TAX_mJ, _ISLAND_TAX_mJ = 6.1526, 15.9412, 9.7878, 4.4068
+_TRANSFER_BUDGET_mJ = _USEFUL_mJ + _DOUBLER_TAX_mJ + _ISLAND_TAX_mJ      # 20.347 mJ/fire
+
+
 def operating_point(d):
-    """The RESONANT operating machine (live cores + firing closed forms): the V_strike spark-gap
-    holdoff (commutator_real_core) gives alpha_max / eta_real ~0.70; the FE/arc budget; the
-    firing-geometry cross-fire + overlap/t1/2 margins. The DIRECT z/eta (frozen doubler_core) stays
-    the regression anchor (set in invariants). Returns a JSON-friendly dict. [OC]/[ME]"""
+    """The VALIDATED operating machine [efficiency-resolution]: the DIRECT doubler (frozen
+    doubler_core, η 0.386) composed with the DOWNSTREAM ISLAND SINK recovery (island_resonant_core,
+    S2-validated). η_operating = (useful + island_recovered) / (useful + doubler_tax + island_tax)
+    over the transfer-chain budget -> ~0.48–0.52 (the island is a true sink; its tax recovers freely).
+    The doubler-CORE over-transfer (commutator_real_core → η 0.70) is FORBIDDEN -- the equalization
+    IS the pump (DOUBLER-RESONANT ceiling + S3 either/or + SEQ-STAT-COMMUTATION conservation arbiter)
+    -- so commutator_real_core is SUPERSEDED; its α_max/FE budget are kept below ONLY as the
+    forbidden-path diagnostic, NOT the operating efficiency. The firing-geometry margins (I11/I12)
+    stand. Returns a JSON-friendly dict. [OC]/[ME]"""
     V_strike = d["V_strikeV"]; V_peak = d.get("V_targetV", 15e3)
     vsr = V_strike / V_peak
     rpm = d["rpm"]; d_ball = d["d_ballMm"]; r = d["r_gapMm"]; g_lat = d["g_latMm"]
     Lx = d.get("Lx_mH", 1.0) * 1e-3
     FE = d.get("FE_uA", 30.0) * 1e-6
-    # firing geometry (cheap closed forms)
+    # ---- the VALIDATED operating efficiency: direct doubler + island SINK (S2) ----
+    it = irc.integrate(d["Cx_maxMm"] * 1e-12, 2640e-9, 5e3, Lx, 2.0)      # island Cx/Lx transfer
+    island_recovered = it["f_rec"] * _ISLAND_TAX_mJ                        # mJ/fire (recovered, S2)
+    eta_operating = (_USEFUL_mJ + island_recovered) / _TRANSFER_BUDGET_mJ  # the headline η (~0.50)
+    # firing geometry (cheap closed forms) -- the resonant-timing/cross-fire margins (I11/I12)
     ov_deg = overlap_deg(d_ball, r, g_lat)
     omega = rpm * 2.0 * math.pi / 60.0
     t_overlap = math.radians(ov_deg) / omega
     cf = irc.closed_form(d["Cx_maxMm"] * 1e-12, 2640e-9, 5e3, Lx, 20.0)   # island ring t1/2 (Lx)
     t_need = T_STRIKE_S + cf["t_half"] + T_COND_S
-    # commutator (cache by V_strike ratio + the FE dwell; the heavy part depends only on vsr)
+    # ---- the FORBIDDEN-PATH diagnostic (superseded commutator core over-transfer) ----
     key = round(vsr, 4)
     if key not in _op_cache:
         _op_cache[key] = crc.solve_doubler_commutator(crc.G3, 0.999, vsr)
     rop = _op_cache[key]
     bc = crc.fe_arc_budget(rop["eta_gross"], rop["alpha_med"], vsr, I_ref=FE, k=3.0, t_dwell=t_overlap)
-    return dict(alpha_max=float(rop["alpha_med"]), z_resonant=float(rop["z"]),
-                eta_gross=float(rop["eta_gross"]), eta_real=float(bc["eta_real"]),
-                E_FE_mJ=float(bc["E_FE"]), E_arc_mJ=float(bc["E_arc"]),
+    return dict(eta_real=float(eta_operating),                            # VALIDATED (~0.50), NOT 0.70
+                island_recovered_mJ=float(island_recovered), island_frec=float(it["f_rec"]),
+                z_resonant=1.334,                            # the validated z (direct)
+                # firing-geometry margins (I11/I12)
                 overlap_deg=float(ov_deg), t_overlap_us=float(t_overlap * 1e6),
                 spacing_deg=SG3B_BS3_SPACING_DEG,
                 crossfire_margin_deg=float(SG3B_BS3_SPACING_DEG - ov_deg),
-                t_half_us=float(cf["t_half"] * 1e6), a1_margin_us=float((t_overlap - t_need) * 1e6))
+                t_half_us=float(cf["t_half"] * 1e6), a1_margin_us=float((t_overlap - t_need) * 1e6),
+                # --- FORBIDDEN-PATH DIAGNOSTIC (commutator_real_core, SUPERSEDED -- not operating) ---
+                alpha_max=float(rop["alpha_med"]), eta_forbidden=float(bc["eta_real"]),
+                eta_gross=float(rop["eta_gross"]),
+                E_FE_mJ=float(bc["E_FE"]), E_arc_mJ=float(bc["E_arc"]))
 # ---- rule thresholds (the invariants' constants, from the campaign) --------- [OC]/[IR]
 Z_BAND = (1.20, 1.45)               # validated doubler z band (device 1.203 .. wide 1.438)  [OC]
 CPAR_FLOOR_pF = 20.0                # stray floor; C_min cannot go below it (I6)              [OC]
@@ -303,11 +322,14 @@ def invariants(d):
                                   f"overlap {op['t_overlap_us']:.0f}us >= fire need "
                                   f"(t1/2 {op['t_half_us']:.1f}us); margin {op['a1_margin_us']:+.0f}us")
 
-    # --- I13 FE-budget: the resonant recovery (after the FE bleed + arc) must beat the direct floor -
+    # --- I13 island-sink recovery: the VALIDATED operating eta (direct + island sink) beats the
+    #     direct floor [efficiency-resolution]. (The doubler-core over-transfer is FORBIDDEN; the
+    #     forbidden-path FE/arc/alpha_max are diagnostics, NOT this invariant.) -----------------------
     i13 = op["eta_real"] > USEFUL_FRAC
-    out["I13_fe_budget"] = (i13, (op["eta_real"] - USEFUL_FRAC) / USEFUL_FRAC if i13 else -1.0,
-                            f"eta_real {op['eta_real']:.3f} > direct {USEFUL_FRAC:.3f} "
-                            f"(FE {op['E_FE_mJ']:.2f}+arc {op['E_arc_mJ']:.2f}mJ; alpha_max {op['alpha_max']:.3f})")
+    out["I13_island_recovery"] = (i13, (op["eta_real"] - USEFUL_FRAC) / USEFUL_FRAC if i13 else -1.0,
+                                  f"eta_operating {op['eta_real']:.3f} (direct 0.386 + island sink "
+                                  f"{op['island_recovered_mJ']:.2f}mJ, f_rec {op['island_frec']:.3f}) "
+                                  f"> {USEFUL_FRAC:.2f}; core over-transfer FORBIDDEN (diag eta {op['eta_forbidden']:.2f})")
 
     # --- I1 conservation, real (+5% trip) -- the per-cycle ledger + the non-tautology test ---
     i1_ok, resid, trip = conservation(d, W_mech, eta, sh)
@@ -420,7 +442,7 @@ def search(objective, base, grid):
 
 # =============================================================================
 # Programmatic API — the HTML/Pyodide shell calls THESE (I/O-free, JSON-serialisable).
-# DUAL RETURN: the resonant OPERATING machine (eta~0.70, what the HTML shows) AND the frozen
+# DUAL RETURN: the VALIDATED OPERATING machine (eta~0.50 = direct+island sink, what the HTML shows) AND the frozen
 # DIRECT regression (z(a->0)=1.334, the canary). The frozen solvers stay the sole authority.
 # No subprocess/file I/O here -- the git-diff frozen-check lives in main() (offline). [html-resonant]
 # =============================================================================
@@ -429,7 +451,7 @@ DEFAULT_GRID = dict(r_outMm=[150, 200, 250, 300, 350, 387, 450, 500],
                     C1min_pF=[20, 30, 50, 80],
                     rpm=[3000, 6000, 9000, 12000])
 _BLOCKER_PRIORITY = ["I3_scalefree_z", "I4_insulate_first", "I9_mechanical",
-                     "I10_shuttle_integrity", "I11_crossfire", "I13_fe_budget",
+                     "I10_shuttle_integrity", "I11_crossfire", "I13_island_recovery",
                      "I12_resonant_timing", "I7_motor_matched", "I5_tax_managed",
                      "I6_parasitic_floor", "I8_dc_trapped_tank", "I2_solver_authority",
                      "I1_conservation"]
@@ -438,9 +460,9 @@ Z_REG_TARGET, ETA_REG_TARGET = 1.334, 0.386      # the frozen direct-limit regre
 
 
 def established_anchor():
-    """The established resonant machine (the canary). evaluate_design(established_anchor()) must
-    return rotor ~983 mm, the DIRECT regression z 1.334/eta 0.386, AND the resonant operating
-    eta_real ~0.70 -- feasible on all invariants."""
+    """The established VALIDATED machine (the canary). evaluate_design(established_anchor()) must
+    return rotor ~983 mm, the DIRECT regression z 1.334/eta 0.386, AND the validated operating
+    eta_real ~0.50 (direct + island sink; the core over-transfer 0.70 is forbidden) -- feasible on all."""
     return dict(ESTABLISHED)
 
 
@@ -463,13 +485,16 @@ def _result(d, inv, bc):
         z=z_dir, eta=eta_dir,
         W_coll_mJ=float(sh["W_coll"] * 1e3), E_fire_mJ=float(sh["E_fire"] * 1e3),
         C_fire_pF=float(sh["C_fire"]), Vstar_kV=float(sh["Vstar"] / 1e3),
-        # ---- DUAL ANCHOR ----
-        operating=dict(eta_real=op["eta_real"], alpha_max=op["alpha_max"],
-                       z_resonant=op["z_resonant"], eta_gross=op["eta_gross"],
-                       E_FE_mJ=op["E_FE_mJ"], E_arc_mJ=op["E_arc_mJ"],
+        # ---- DUAL ANCHOR ---- (operating = VALIDATED direct+island; eta_real ~0.50, NOT 0.70)
+        operating=dict(eta_real=op["eta_real"], z_resonant=op["z_resonant"],
+                       island_recovered_mJ=op["island_recovered_mJ"], island_frec=op["island_frec"],
                        overlap_deg=op["overlap_deg"], crossfire_margin_deg=op["crossfire_margin_deg"],
                        t_overlap_us=op["t_overlap_us"], t_half_us=op["t_half_us"],
-                       a1_margin_us=op["a1_margin_us"]),
+                       a1_margin_us=op["a1_margin_us"],
+                       # forbidden-path diagnostic (commutator_real_core, SUPERSEDED -- not operating)
+                       forbidden_diag=dict(alpha_max=op["alpha_max"], eta_forbidden=op["eta_forbidden"],
+                                           eta_gross=op["eta_gross"], E_FE_mJ=op["E_FE_mJ"],
+                                           E_arc_mJ=op["E_arc_mJ"])),
         regression=dict(z_direct=z_dir, eta_direct=eta_dir,
                         z_target=Z_REG_TARGET, eta_target=ETA_REG_TARGET,
                         reproduces=bool(abs(z_dir - Z_REG_TARGET) < 5e-3

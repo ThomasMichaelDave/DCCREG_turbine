@@ -1,6 +1,9 @@
 # Variable Capacitor → Symmetric Bennet Doubler
 
-A browser-based design tool. A parametric **sectored-disc + ring** capacitor plate, whose geometry, plate gap, and dielectric set the **rotor-capacitance extremes** that drive a **Symmetric Bennet Doubler** switched-capacitor solver. One self-contained `index.html`, no build step.
+A browser-based design tool.
+
+> **Efficiency (validated):** the machine is the **direct Bennet doubler (η 0.386) + the downstream island resonant sink** → **η ≈ 0.45–0.50** (computed in `sim/design_synth.py`). The earlier **η ≈ 0.70** (doubler-core over-transfer) is **forbidden** and superseded — the authoritative record is [`docs/efficiency-resolution.md`](docs/efficiency-resolution.md).
+ A parametric **sectored-disc + ring** capacitor plate, whose geometry, plate gap, and dielectric set the **rotor-capacitance extremes** that drive a **Symmetric Bennet Doubler** switched-capacitor solver. One self-contained `index.html`, no build step.
 
 > **Status.** Host doubler simulator: working, self-tested. **Block C-I** (geometry → rotor-cap front end): *implemented and self-tested* in `index.html` — see `docs/` for the brief and `CHANGELOG.md` for the audit trail.
 
