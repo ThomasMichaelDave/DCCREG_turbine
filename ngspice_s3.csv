@@ -1,0 +1,4 @@
+stage,quantity,python,ngspice,delta_pct,pass
+tripwire,doubler z (varicap intact),1.33400,1.39083,4.260,True
+S3-A,z_res (Lx+diodes, clamp),2.47800,1.39208,43.822,False
+S3-B,z_res (Lx+V_strike gaps),2.47800,1.00914,59.276,False

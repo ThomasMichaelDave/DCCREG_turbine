@@ -1,0 +1,25 @@
+* S3-A: doubler + Lx resonant equalization (diodes clamp at 0)
+C1v 1 0 Q='(1.6e-11+2.64e-10*(0.5*(1+tanh(12.0*sin(6.283185e+03*time)))))*V(1)'
+C2v 4 0 Q='(1.6e-11+2.64e-10*(0.5*(1+tanh(12.0*sin(6.283185e+03*time+3.14159265)))))*V(4)'
+Cpar1 1 0 2e-11
+Cpar2 2 0 2e-11
+Cpar3 3 0 2e-11
+Cpar4 4 0 2e-11
+Ca 1 2 3.09e-10
+Cb 3 4 3.09e-10
+.model ND D(is=1e-9 n=0.005 rs=1e-3 cjo=0)
+Lx1 2 a1 1e-4
+Dd1 a1 0 ND
+Lx2 3 a2 1e-4
+Dd2 a2 0 ND
+Lx3 1 a3 1e-4
+Dd3 a3 3 ND
+Lx4 4 a4 1e-4
+Dd4 a4 2 ND
+.ic v(1)=-1 v(2)=0 v(3)=0 v(4)=-1
+.control
+tran 1e-7 1.2e-2 uic
+wrdata s3_A.dat v(1) v(4)
+.endc
+.options reltol=1e-4 abstol=1e-11 vntol=1e-8 gmin=1e-13 maxstep=1e-7
+.end
