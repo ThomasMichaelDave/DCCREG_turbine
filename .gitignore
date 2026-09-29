@@ -6,3 +6,6 @@ __pycache__/
 
 # numpy-1.26 parity venv (the Pyodide-numpy proxy); recreate with `make pyodide-parity-venv`
 .pyodide-parity/
+spice/ia_raw/
+spice/ia_*.dat
+sim/.ia_campaign.json
