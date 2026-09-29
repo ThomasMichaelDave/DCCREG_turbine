@@ -1,0 +1,14 @@
+* H1 S2 reproduction through the ISLAND-ASDRAWN one-way gap element (R = RON)
+.include sparkgap_bidir.sub
+Varm arm 0 1
+Csrc src 0 1n ic=1000
+Cbank bnk 0 1n ic=0
+Lx src a 1m
+Xg a bnk arm gap_oneway PARAMS: RON=20.0
+.control
+tran 0.5n 8u uic
+meas tran thalf WHEN i(Lx)=0 CROSS=1
+meas tran vbank FIND v(bnk) AT=6u
+.endc
+.options reltol=1e-6
+.end

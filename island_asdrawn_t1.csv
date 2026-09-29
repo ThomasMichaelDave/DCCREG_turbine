@@ -1,0 +1,89 @@
+run,scope,node,partner,charge_C,share_of_Lx3
+R2a_rel5,stroke,3,Lx3 (in),6.870689e-06,1
+R2a_rel5,stroke,3,Cb1,4.012834e-06,0.5841
+R2a_rel5,stroke,3,C_BR1-6 (motor bank),4.167231e-08,0.0061
+R2a_rel5,stroke,3,Cpar3,2.375972e-06,0.3458
+R2a_rel5,stroke,3,SG2 (+stray),2.375872e-07,0.0346
+R2a_rel5,stroke,3,SG3b1/BS3 (+strays),2.026210e-07,0.0295
+R2a_rel5,stroke,4,C2 (-> ref -> C1 chain),1.692995e-06,0.2464
+R2a_rel5,stroke,4,Cpar4,2.116241e-06,0.3080
+R2a_rel5,stroke,4,SG4a1 (+stray) -> mirror island/Ca1,2.452700e-07,0.0357
+R2a_rel5,stroke,4,L_B1-6 (motor return),-4.167231e-08,-0.0061
+R2a_rel5,load_window,3,Lx3 (in),6.032588e-06,1
+R2a_rel5,load_window,3,Cb1,-8.543100e-07,-0.1416
+R2a_rel5,load_window,3,C_BR1-6 (motor bank),4.772431e-06,0.7911
+R2a_rel5,load_window,3,Cpar3,1.981958e-06,0.3285
+R2a_rel5,load_window,3,SG2 (+stray),2.019675e-07,0.0335
+R2a_rel5,load_window,3,"SG3b1/BS3 (+strays, island gaps)",-6.941757e-08,-0.0115
+R2a_rel5,load_window,4,C2 (-> ref -> C1 chain),1.629804e-06,0.2702
+R2a_rel5,load_window,4,Cpar4,2.037253e-06,0.3377
+R2a_rel5,load_window,4,SG4a1 (+stray) -> mirror island/Ca1,2.510637e-07,0.0416
+R2a_rel5,load_window,4,L_B1-6 (motor return),-4.772430e-06,-0.7911
+R2a_rel5,t_half,,measured_us,0.6872,
+R2a_rel5,t_half,,model_closed_form_us,2.1559,
+R2b,stroke,3,Lx3 (in),4.491323e-05,1
+R2b,stroke,3,Cb1,2.634782e-05,0.5866
+R2b,stroke,3,C_BR1-6 (motor bank),9.119234e-08,0.0020
+R2b,stroke,3,Cpar3,1.549530e-05,0.3450
+R2b,stroke,3,SG2 (+stray),1.549519e-06,0.0345
+R2b,stroke,3,SG3b1/BS3 (+strays),1.429059e-06,0.0318
+R2b,stroke,4,C2 (-> ref -> C1 chain),1.103196e-05,0.2456
+R2b,stroke,4,Cpar4,1.378994e-05,0.3070
+R2b,stroke,4,SG4a1 (+stray) -> mirror island/Ca1,1.617109e-06,0.0360
+R2b,stroke,4,L_B1-6 (motor return),-9.119150e-08,-0.0020
+R2b,load_window,3,Lx3 (in),3.900857e-05,1
+R2b,load_window,3,Cb1,-1.186807e-06,-0.0304
+R2b,load_window,3,C_BR1-6 (motor bank),2.619705e-05,0.6716
+R2b,load_window,3,Cpar3,1.306284e-05,0.3349
+R2b,load_window,3,SG2 (+stray),1.350961e-06,0.0346
+R2b,load_window,3,"SG3b1/BS3 (+strays, island gaps)",-4.088317e-07,-0.0105
+R2b,load_window,4,C2 (-> ref -> C1 chain),1.051174e-05,0.2695
+R2b,load_window,4,Cpar4,1.313966e-05,0.3368
+R2b,load_window,4,SG4a1 (+stray) -> mirror island/Ca1,1.358845e-06,0.0348
+R2b,load_window,4,L_B1-6 (motor return),-2.619705e-05,-0.6716
+R2b,t_half,,measured_us,0.6905,
+R2b,t_half,,model_closed_form_us,2.1559,
+R1a,stroke,3,Lx3 (in),9.229923e-06,1
+R1a,stroke,3,Cb1,5.440669e-06,0.5895
+R1a,stroke,3,C_BR1-6 (motor bank),0.000000e+00,0.0000
+R1a,stroke,3,Cpar3,3.191077e-06,0.3457
+R1a,stroke,3,SG2 (+stray),3.190822e-07,0.0346
+R1a,stroke,3,SG3b1/BS3 (+strays),2.790634e-07,0.0302
+R1a,stroke,4,C2 (-> ref -> C1 chain),2.271147e-06,0.2461
+R1a,stroke,4,Cpar4,2.838930e-06,0.3076
+R1a,stroke,4,SG4a1 (+stray) -> mirror island/Ca1,3.305921e-07,0.0358
+R1a,stroke,4,L_B1-6 (motor return),0.000000e+00,0.0000
+R1a,load_window,3,Lx3 (in),7.953726e-06,1
+R1a,load_window,3,Cb1,4.885826e-06,0.6143
+R1a,load_window,3,C_BR1-6 (motor bank),0.000000e+00,0.0000
+R1a,load_window,3,Cpar3,2.867042e-06,0.3605
+R1a,load_window,3,SG2 (+stray),2.925656e-07,0.0368
+R1a,load_window,3,"SG3b1/BS3 (+strays, island gaps)",-9.156515e-08,-0.0115
+R1a,load_window,4,C2 (-> ref -> C1 chain),2.040649e-06,0.2566
+R1a,load_window,4,Cpar4,2.550807e-06,0.3207
+R1a,load_window,4,SG4a1 (+stray) -> mirror island/Ca1,2.943704e-07,0.0370
+R1a,load_window,4,L_B1-6 (motor return),0.000000e+00,0.0000
+R1a,t_half,,measured_us,0.6886,
+R1a,t_half,,model_closed_form_us,2.1559,
+R1b,stroke,3,Lx3 (in),2.348429e-05,1
+R1b,stroke,3,Cb1,1.382169e-05,0.5886
+R1b,stroke,3,C_BR1-6 (motor bank),0.000000e+00,0.0000
+R1b,stroke,3,Cpar3,8.101917e-06,0.3450
+R1b,stroke,3,SG2 (+stray),8.101596e-07,0.0345
+R1b,stroke,3,SG3b1/BS3 (+strays),7.501761e-07,0.0319
+R1b,stroke,4,C2 (-> ref -> C1 chain),5.765855e-06,0.2455
+R1b,stroke,4,Cpar4,7.207310e-06,0.3069
+R1b,stroke,4,SG4a1 (+stray) -> mirror island/Ca1,8.485228e-07,0.0361
+R1b,stroke,4,L_B1-6 (motor return),0.000000e+00,0.0000
+R1b,load_window,3,Lx3 (in),2.011778e-05,1
+R1b,load_window,3,Cb1,1.229624e-05,0.6112
+R1b,load_window,3,C_BR1-6 (motor bank),0.000000e+00,0.0000
+R1b,load_window,3,Cpar3,7.280949e-06,0.3619
+R1b,load_window,3,SG2 (+stray),7.536283e-07,0.0375
+R1b,load_window,3,"SG3b1/BS3 (+strays, island gaps)",-2.090450e-07,-0.0104
+R1b,load_window,4,C2 (-> ref -> C1 chain),5.188068e-06,0.2579
+R1b,load_window,4,Cpar4,6.485076e-06,0.3224
+R1b,load_window,4,SG4a1 (+stray) -> mirror island/Ca1,6.231011e-07,0.0310
+R1b,load_window,4,L_B1-6 (motor return),0.000000e+00,0.0000
+R1b,t_half,,measured_us,0.6892,
+R1b,t_half,,model_closed_form_us,2.1559,
