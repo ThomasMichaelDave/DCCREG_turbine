@@ -788,6 +788,7 @@ class Sim:
         self.trace = None                           # per-grid-point record (eigen cycle)
         self.ring_frac = 48.0                       # steps per fastest live oscillation (M3 knob)
         self.chop_log = None                        # gate E3: |i| at every extinction / i_pk
+        self._trv_done = set()
         self.patterns = []
 
     # ---- phase / K ----
@@ -975,6 +976,9 @@ class Sim:
         for n in list(self.gs):
             if not self.armed(n, th):
                 del self.gs[n]
+        for n in list(self._trv_done):
+            if not self.armed(n, th):
+                self._trv_done.discard(n)
 
     def event(self, th, strike=False):
         """Complementarity over armed gaps with inductor currents HELD (dynamic Lx open for the
@@ -1407,7 +1411,9 @@ class Sim:
         if ev is not None:
             for n in ev["gaps"]:                          # ring ended on the transfer zero
                 if n not in ev["trv"] and n in self.gap_by and n not in self._keep_lit():
-                    ev["trv"][n] = self._trv_probe(th, K, n, ev)
+                    p_ = self._trv_probe(th, K, n, ev)
+                    if p_ is not None:
+                        ev["trv"][n] = p_
                     t_q.setdefault(n, t)
             ev.update(t_ring=t, t_quench=t_q, i_pk=peak, drv=self.net.inds[drv][0], e_ring=e_ring,
                       e_motor=e_m, trace=trace[:: max(1, len(trace) // 400)])
@@ -1493,7 +1499,9 @@ class Sim:
             if self.gap_by[n][3] == "rect_latch":
                 self.latched.add(n)
             if ev is not None and n in ev["gaps"] and n not in ev["trv"]:
-                ev["trv"][n] = self._trv_probe(th, K, n, ev)
+                p_ = self._trv_probe(th, K, n, ev)
+                if p_ is not None:
+                    ev["trv"][n] = p_
         for n in fwd:
             self.cond.add(n); changed = True
         for n in lz:                                   # a lit rd / sr gap's current zero
@@ -1506,7 +1514,9 @@ class Sim:
                 if ev is not None and n in ev["gaps"]:
                     ev["ext"][n] = dict(t=t, nhalf=s["nhalf"])
                     if n not in ev["trv"]:
-                        ev["trv"][n] = self._trv_probe(th, K, n, ev)
+                        p_ = self._trv_probe(th, K, n, ev)
+                        if p_ is not None:
+                            ev["trv"][n] = p_
                 if self.gap_by[n][3] == "sr" and self.gap_by[n][6]["holdoff"] > 0:
                     s.update(st="off", t_ext=t)
                 else:
@@ -1542,6 +1552,12 @@ class Sim:
             ev["e_alg"] += e_alg; ev["n_reign"] += 1
 
     def _trv_probe(self, th, K, n, ev):
+        if n in self._trv_done:                   # one probe per gap per window: the strike
+            return None
+        self._trv_done.add(n)
+        return self._trv_probe1(th, K, n, ev)
+
+    def _trv_probe1(self, th, K, n, ev):
         """Open-circuit TRV probe [ME]: from the state at gap n's current zero, the post-zero network
         (n open, every other switch frozen) evolves freely for T_TRV; returns the reverse peak of
         V_gap(n) over its pre-closure V_f, and when it occurs. Diagnostic only: the state is not
@@ -1736,8 +1752,13 @@ def taped_cycle(sim, k, record=False, events=False):
     pts = []
     E0 = sim.energy(); m0 = sim.state_mag()
     x0 = _statevec(sim)
+    npt = [0]
+    every = 1 if record == "all" else 2          # waveform / eta(cut) sampling: every 2nd grid point
 
     def on_point(s, th):
+        npt[0] += 1
+        if record == "ledger" or (npt[0] % every and abs(th - 60.0 * (k + 1)) > 1e-9):
+            return
         V = s.voltages()
         ph = s.phase(th)
         pts.append(dict(th=60.0 if (ph < 1e-9 and th > 60.0 * k + 30.0) else float(ph),
@@ -1785,7 +1806,7 @@ def monodromy(net, cfg, settle=None, maxit=None, tol=1e-12, seed_v=-1.0, sim=Non
     eigen-state, so its record is the steady waveform. Returns dict (z, v, sim, rec, ...)."""
     cont = sim.mode == "cont" if sim is not None else bool(cfg.get("motor") and net.meta.get("motor"))
     settle = (6 if cont else 2) if settle is None else settle
-    maxit = (24 if cont else 10) if maxit is None else maxit
+    maxit = (12 if cont else 10) if maxit is None else maxit
     if sim is None:
         sim = make_sim(net, cfg)
         seed(sim, seed_v)
@@ -2001,7 +2022,12 @@ def _eval_one(cfg, lx=None, galvanic=None, log=None, full=True, events=True):
     net = build_net(cfg, lx=lx, galvanic=galvanic)
     mono = monodromy(net, cfg, log=log, record=full, events=events and full)
     out = dict(z=mono["z"], converged=mono["converged"], align=mono["align"])
-    if full:
+    if full == "ledger":
+        rec = mono["rec"]; led = rec["ledger"]
+        W = led["W"]; dE = rec["E1"] - rec["E0"]
+        out.update(ledger=dict(W=W, dE=dE, eta_at_cut=dE / W if W else None,
+                               by_frac={k: v / W for k, v in rec["by"].items()} if W else {}))
+    elif full:
         out.update(summarize(net, cfg, mono, mono["rec"]))
     return out, net
 
@@ -2040,7 +2066,7 @@ def evaluate(config=None, twins=True, log=None):
         tw = {}
         for name, kw in (("G", dict(lx=0.0)), ("G0", dict(galvanic=True))):
             t1 = time.time()
-            r, _ = _eval_one(cfg, log=log, full=True, events=False, **kw)
+            r, _ = _eval_one(cfg, log=log, full="ledger", events=False, **kw)
             tw[name] = dict(z=r["z"], converged=r["converged"], dz=res["z"] - r["z"],
                             eta_at_cut=r["ledger"]["eta_at_cut"],
                             deta=(res["ledger"]["eta_at_cut"] or 0) - (r["ledger"]["eta_at_cut"] or 0),

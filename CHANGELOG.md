@@ -5,6 +5,22 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **PUMP-CALC (brief r0.1) → `PUMP-CALC-PARTIAL`.** Added the in-browser pump-action calculator for the drawn pump (`sim/pump_engine.py`, `tools/pump-calc.html` + `.worker.js`, `presets/pump/`, `sim/pump-calc-findings.md`).
+  - **Engine:** one exact engine, derived from the r0.2 solver under gate E0 (max rel 9.5e-14; the §1 anchors G1 1.255991 and R1b 1.354261 are reproduced).
+    - numpy-only expm, balanced Padé (E1 7.9e-16).
+    - Gap models per class: valve, arc, M-RD, M-SR.
+    - z by monodromy (P0: equals the iteration to 4e-14).
+    - No chop (E3 ≤ 6e-5) and conservation ≤ 3e-13 (E4).
+  - **Page:** fail-closed on K1–K4, with K1 also checked on the JS `solveDoubler4`. The standard evaluation takes 9.4 s in Pyodide (P1).
+  - **Motor-in fails M3 and M2:** Δz 0.022 at dθ/2, and the pattern never repeats. The motor toggle therefore shows "not converged", never a number; P2 is missed.
+  - **Findings for TMD:**
+    - The §1 anchors used C1/C2 at shuttle_core's defaults (160–1000 pF), not the canary caps.
+    - r0.2's float-mod arming arms one grid step late (the robust G1 differs by +1.1e-5).
+    - With the load gap alone in M-RD(→0), the one-way fire and rail valves rectify the ring (+0.075 in z).
+    - R1 is first-order in dθ (7e-4 at 0.05°).
+    - E5: the exact engine differs from the Pass A ngspice harness by about ±0.05 (a tier offset) and depends strongly on the C1/C2 schedule (tanh vs raised-cosine: 2.23 vs 1.42).
+    - E6: at 2 Ω the lit load arc never meets I_hold < 0.95, so M-RD and M-SR collapse onto M-RD(→0).
+  - Frozen empty-diff asserted vs 8cd181e. Not merged.
 - **ISLAND-ASDRAWN Pass A′ → `CONDITIONAL-ON-RECOVERY (t_rec ≤ 0.1 µs)` · `MOTOR-NOT-ASSESSED` · not `STRAY-DEPENDENT`** (`sim/island_gapbracket.py`, `sim/island-gapbracket-findings.md`). This re-grades Pass A's `SINK-PARTIAL` (302f9f2) under physical commutation of the load gaps. It imports the r0.1 ngspice harness read-only and rewrites only the gap elements (new decks `spice/ia2_*`).
   - **Gates H0–H5, H7 and H8 pass; H6 (motor convergence) fails on G1m → `MOTOR-NOT-ASSESSED`.** H0 reproduces Pass A and D1 to ≤ 1e-4. H1 limits: M-SR → M-OW, M-RD(→0) → D1. H5: an independent event engine agrees within 0.5 %. H3 ledger residual ≤ 0.66 % of E_diss.
   - **P1 ✓:** the one-way load gap blocks a reverse TRV of 1.41 × V_f within 0.35–0.38 µs, i.e. it is a rectifier.

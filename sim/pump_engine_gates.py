@@ -428,12 +428,14 @@ def gate_P0(quick=False):
 # ======================================================================================
 def gate_P(quick=False):
     """P1 standard evaluation (motor out, one gap model, twins) <= 10 s in Pyodide; P2 motor-in
-    <= 60 s. CPython measured here; Pyodide via Node (PYODIDE_DIR, default the local copy)."""
+    (the page's path: the main machine, then its d-theta/2 check only if it converged) <= 60 s.
+    CPython measured here; Pyodide 0.26.2 via Node (PYODIDE_DIR, default the local copy), with an
+    RSS watchdog (3 GB) so a runaway wasm heap cannot take the host down."""
     out = {}
-    t = time.time(); r = pe.evaluate({}); out["P1_cpython_s"] = time.time() - t
-    t = time.time(); r = pe.evaluate(dict(motor=True, motor_topology="per_branch")); out["P2_cpython_s"] = time.time() - t
+    t = time.time(); pe.evaluate({}); out["P1_cpython_s"] = time.time() - t
+    t = time.time(); r = pe.evaluate(dict(motor=True, motor_topology="per_branch"), twins=False)
+    out["P2_cpython_s"] = time.time() - t; out["P2_converged"] = r["converged"]
     pyo = os.environ.get("PYODIDE_DIR", "/tmp/claude-0/pyo/pyodide")
-    node_js = os.path.join(HERE, "..", "tools", "pump-calc.node-bench.mjs")
     out["pyodide"] = None
     if os.path.isdir(pyo):
         script = f"""
@@ -441,12 +443,13 @@ import {{ loadPyodide }} from "{pyo}/pyodide.mjs";
 import fs from "fs";
 const R = "{ROOT}/";
 const files = ["sim/pump_engine.py","shuttle_core.py","reference/doubler_core.py","reference/island_resonant_core.py",
-  "spice/timing.sub","topology_edge_list.csv","sim/design_synth.py","energy_balance_from_solver.py",
-  "sim/island_charging_cosim.py","reference/commutator_real_core.py"];
+  "spice/timing.sub","topology_edge_list.csv"];
+const t0 = Date.now();
 const py = await loadPyodide({{ indexURL: "{pyo}/" }});
 await py.loadPackage("numpy");
 for (const d of ["/repo/sim","/repo/reference","/repo/spice"]) py.FS.mkdirTree(d);
 for (const f of files) py.FS.writeFile("/repo/"+f, fs.readFileSync(R+f, "utf8"));
+const boot = (Date.now() - t0) / 1000;
 const r = await py.runPythonAsync(`
 import sys, time, json
 sys.path[:0] = ['/repo/sim','/repo','/repo/reference']
@@ -454,19 +457,31 @@ import pump_engine as pe
 out = {{}}
 t=time.time(); c=pe.canaries(); out['canaries_s']=time.time()-t; out['canaries_pass']=c['pass_']
 t=time.time(); r=pe.evaluate({{}}); out['P1_s']=time.time()-t; out['z']=r['z']
-t=time.time(); r=pe.evaluate({{'motor': True, 'motor_topology': 'per_branch'}}); out['P2_s']=time.time()-t; out['z_motor']=r['z']
+t=time.time(); r=pe.evaluate({{'motor': True, 'motor_topology': 'per_branch'}}, twins=False); out['P2_s']=time.time()-t; out['motor_converged']=r['converged']
 json.dumps(out)
 `);
-console.log(r);
+console.log(JSON.stringify(Object.assign({{boot_s: boot}}, JSON.parse(r))));
 """
         path = "/tmp/claude-0/pc/pump_bench.mjs"
         os.makedirs(os.path.dirname(path), exist_ok=True)
         open(path, "w").write(script)
+        proc = subprocess.Popen(["node", path], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        peak = 0; t0 = time.time(); killed = False
+        while proc.poll() is None:
+            try:
+                rss = int(open(f"/proc/{proc.pid}/status").read().split("VmRSS:")[1].split()[0])
+                peak = max(peak, rss)
+                if rss > 3_000_000 or time.time() - t0 > 1500:
+                    proc.kill(); killed = True
+            except Exception:
+                pass
+            time.sleep(1)
+        so = proc.stdout.read()
         try:
-            rr = subprocess.run(["node", path], capture_output=True, text=True, timeout=1800)
-            out["pyodide"] = json.loads(rr.stdout.strip().splitlines()[-1])
-        except Exception as e:
-            out["pyodide"] = dict(error=str(e))
+            out["pyodide"] = json.loads(so.strip().splitlines()[-1])
+        except Exception:
+            out["pyodide"] = dict(error="killed by watchdog" if killed else so[-300:])
+        out["pyodide_peak_rss_MB"] = peak / 1024
     py_ = out.get("pyodide") or {}
     p1 = py_.get("P1_s"); p2 = py_.get("P2_s")
     out["P1_pass"] = bool(p1 is not None and p1 <= 10.0)
@@ -563,6 +578,11 @@ def main():
     G = {}
     t00 = time.time()
 
+    def save():
+        if a.out:
+            G["total_s"] = time.time() - t00
+            open(a.out, "w").write(json.dumps(pe._jsonable(G), indent=1, default=str))
+
     def run(name, fn):
         if only and name not in only:
             return
@@ -573,19 +593,20 @@ def main():
             G[name]["gate_s"] = time.time() - t
         print(f"   {name}: {G[name].get('pass_', 'report') if isinstance(G[name], dict) else G[name]}"
               f" ({time.time() - t:.0f} s)", file=sys.stderr, flush=True)
+        save()
     run("K", gate_K)
     run("E0", lambda: gate_E0(a.quick))
     run("E1", gate_E1)
     run("E2", gate_E2)
     if not only or "E3" in only or "E4" in only:
         t = time.time(); e3, e4 = gate_E3_E4(); G["E3"], G["E4"] = e3, e4
-        print(f"   E3: {e3['pass_']}  E4: {e4['pass_']} ({time.time() - t:.0f} s)", file=sys.stderr)
+        print(f"   E3: {e3['pass_']}  E4: {e4['pass_']} ({time.time() - t:.0f} s)", file=sys.stderr); save()
     run("E5", gate_E5)
     run("E6", lambda: gate_E6(a.quick))
     run("M1", gate_M1)
     if not only or "M2" in only or "M3" in only:
         t = time.time(); m2, m3 = gate_M2_M3(a.quick); G["M2"], G["M3"] = m2, m3
-        print(f"   M2: {m2['pass_']}  M3: {m3['pass_']} ({time.time() - t:.0f} s)", file=sys.stderr)
+        print(f"   M2: {m2['pass_']}  M3: {m3['pass_']} ({time.time() - t:.0f} s)", file=sys.stderr); save()
     run("P0", lambda: gate_P0(a.quick))
     run("P", lambda: gate_P(a.quick))
     run("N", gate_N)
