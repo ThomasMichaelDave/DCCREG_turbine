@@ -1,0 +1,25 @@
+{
+ "preset": "default-drawn-R1-ringdown",
+ "version": "1.0",
+ "date": "2026-09-30",
+ "engine": "sim/pump_engine.py (pump-calc r0.1)",
+ "title": "Drawn pump, Lx 1 mH, load + fire gaps M-RD(->0) (the D-GAPDEFAULT suggestion)",
+ "description": "Load and fire gaps ring down to extinction (I_hold -> 0: the ring-down limit, relaxed exactly); rails and backstops valve. The conservative, physically admissible load/fire model suggested for D-GAPDEFAULT [IR, TMD-gated].",
+ "config": {
+  "gm_load": "ringdown",
+  "gm_fire": "ringdown"
+ },
+ "twins": true,
+ "expect": {
+  "z": {
+   "value": 1.3255676407407146,
+   "tol": 1e-09,
+   "why": "this engine"
+  },
+  "G": {
+   "value": 1.3259206294521697,
+   "tol": 1e-09,
+   "why": "its G twin"
+  }
+ }
+}

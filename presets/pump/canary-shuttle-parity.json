@@ -1,0 +1,18 @@
+{
+ "preset": "canary-shuttle-parity",
+ "version": "1.0",
+ "date": "2026-09-30",
+ "engine": "sim/pump_engine.py (pump-calc r0.1)",
+ "title": "K3 canary \u2014 direct island on the shuttle schedule",
+ "description": "This engine executing shuttle_core's own schedule and topology (Lx shorted); must equal shuttle_core's steady z (r0.2 H4). Checked against the worker's K3 row, not an evaluate config.",
+ "canary": "K3",
+ "config": {},
+ "twins": false,
+ "expect": {
+  "z": {
+   "value": 1.2983502589,
+   "tol": 1e-09,
+   "why": "K3: shuttle_core.shuttle_run / steady_capture"
+  }
+ }
+}

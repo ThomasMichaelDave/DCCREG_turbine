@@ -1,0 +1,21 @@
+{
+ "preset": "canary-core-station",
+ "version": "1.0",
+ "date": "2026-09-30",
+ "engine": "sim/pump_engine.py (pump-calc r0.1)",
+ "title": "K2 canary \u2014 bare core, station-armed (the DXF-phased machine)",
+ "description": "The same core with the rectifiers armed at the DXF stations (return 3.0 deg, cross-couple 7.2 deg, mirror 33/37.2 deg). r0.2 finding, confirmed by an independent KKT solve: z = 1.5225272.",
+ "config": {
+  "topology": "core",
+  "simultaneous": false,
+  "dth": 1.0
+ },
+ "twins": false,
+ "expect": {
+  "z": {
+   "value": 1.5225272,
+   "tol": 1e-06,
+   "why": "K2: the r0.2 station-armed galvanic z"
+  }
+ }
+}

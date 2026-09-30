@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PUMP-CALC — drawn pump</title>
+<link rel="icon" href="data:,">
+<!--
+  tools/pump-calc.html — the pump-action calculator for the DRAWN pump (doubler + islands + all eight
+  gaps; tank collapsed). One exact engine: sim/pump_engine.py, run in Pyodide in a worker
+  (tools/pump-calc.worker.js). Fail-closed: the K1-K4 canaries run before any number is shown.
+  Serve from the repo root:  python3 -m http.server 8000  →  http://localhost:8000/tools/pump-calc.html
+  Reuse ledger (copied with attribution, never edited in place): see sim/pump-calc-findings.md.
+-->
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#121821; --panel2:#0e141c; --line:#1e2733; --ink:#c9d6e2;
+    --mut:#7e8b99; --mono:'DejaVu Sans Mono','SFMono-Regular',Menlo,Consolas,monospace;
+    --amber:#ffb454; --brass:#b8975a; --acc:#7cd0ff; --good:#46c46a; --bad:#e5484d; --warn:#e0a83a;
+    --grid:#16202a; --axis:#7c8ea0;
+    --c1:#7cd0ff; --c2:#ffb454; --c3:#46c46a; --c4:#e5484d; --c5:#c792ea; --c6:#f7768e; --c7:#9ece6a; --c8:#e0af68;
+  }
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:12.5px}
+  .wrap{max-width:1320px;margin:0 auto;padding:16px}
+  h1{font-size:16px;letter-spacing:.04em;margin:0 0 2px;color:#dfe8f1}
+  .sub{color:var(--mut);font-size:11.5px;margin-bottom:12px}
+  .brass{color:var(--brass);text-transform:uppercase;letter-spacing:.08em;font-size:10.5px}
+  .grid{display:grid;grid-template-columns:330px 1fr;gap:14px}
+  @media(max-width:1000px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin-bottom:12px}
+  .panel.sub{background:var(--panel2)}
+  details summary{cursor:pointer;color:var(--brass);text-transform:uppercase;letter-spacing:.08em;font-size:10.5px;margin:6px 0}
+  .f{display:grid;grid-template-columns:1fr 92px;align-items:center;gap:6px;margin:3px 0;font-size:11.5px}
+  .f label{color:var(--mut)}
+  .f input,.f select{width:100%;box-sizing:border-box}
+  input,select,button{background:#0b1118;border:1px solid var(--line);color:var(--ink);font-family:var(--mono);font-size:11.5px;padding:4px 6px;border-radius:3px}
+  button{cursor:pointer}button:hover{border-color:var(--acc)}
+  button.primary{background:#13202c;border-color:#2a4a5e;color:#cfe9ff;padding:7px 12px}
+  button:disabled{opacity:.5;cursor:default}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}
+  .readout{font-size:26px;color:var(--amber);text-shadow:0 0 7px rgba(255,180,84,.25)}
+  .readout small{font-size:11px;color:var(--mut)}
+  .kv{display:flex;justify-content:space-between;font-size:12px;margin:3px 0;gap:10px}
+  .kv b{color:#dfe8f1;font-weight:400}
+  .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:12px;padding:3px 9px;font-size:10.5px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#333;flex:none;display:inline-block}
+  .dot.ok{background:var(--good);box-shadow:0 0 6px var(--good)}
+  .dot.no{background:var(--bad);box-shadow:0 0 6px var(--bad)}
+  .dot.warn{background:var(--warn);box-shadow:0 0 6px var(--warn)}
+  .lamp{display:flex;align-items:center;gap:7px;font-size:11px;margin:3px 0}
+  .lamp .nm{min-width:150px}
+  .lamp .sl{color:var(--mut);font-size:10.5px}
+  .verdict{font-size:14px;padding:8px;border-radius:5px;text-align:center;letter-spacing:.05em;margin-top:6px}
+  .verdict.ok{background:#10241a;color:#8be0a0;border:1px solid #1f4a2c}
+  .verdict.no{background:#2a1416;color:#f0a0a3;border:1px solid #4a1f1f}
+  .verdict.warn{background:#241d10;color:#f0d090;border:1px solid #4a3a1f}
+  table.t{border-collapse:collapse;width:100%;font-size:10.8px}
+  table.t th,table.t td{border:1px solid var(--line);padding:3px 5px;text-align:right;white-space:nowrap}
+  table.t th{color:var(--brass);background:var(--panel2);font-weight:400}
+  table.t td:first-child,table.t th:first-child{text-align:left}
+  td.pass{color:var(--good)} td.fail{color:var(--bad)} td.flag{color:var(--warn)}
+  canvas{width:100%;display:block;background:var(--panel2);border:1px solid var(--line);border-radius:4px}
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:800px){.cols2{grid-template-columns:1fr}}
+  .note{color:var(--mut);font-size:10.8px;line-height:1.5}
+  .spin{display:inline-block;width:11px;height:11px;border:2px solid #2a3a48;border-top-color:var(--acc);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  #boot{font-size:12px;color:var(--mut)}
+  code{color:var(--acc)}
+  .scroll{overflow-x:auto}
+  #schemSlot svg{width:100%;height:auto;display:block}
+  .greyed{opacity:.35}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="row" style="justify-content:space-between;align-items:flex-end">
+    <div>
+      <h1>PUMP-CALC — the drawn pump <span style="color:var(--amber)">(doubler + islands + 8 gaps)</span></h1>
+      <div class="sub">Does it pump, by how much, and where does the energy go? One exact engine
+        (<code>sim/pump_engine.py</code>, Pyodide). Tank collapsed — core effects out of scope.</div>
+    </div>
+    <div class="row">
+      <button id="btnSchem">schematic</button>
+      <div id="engineBadge" class="badge"><span class="dot"></span><span id="engineTxt">ENGINE: booting…</span></div>
+    </div>
+  </div>
+
+  <div id="boot" class="panel">booting…</div>
+
+  <div class="grid" id="app" style="display:none">
+    <!-- ================= INPUTS ================= -->
+    <div>
+      <div class="panel">
+        <div class="brass">Preset</div>
+        <div class="row">
+          <select id="presetSel" style="flex:1"></select>
+          <button id="btnPreset">load</button>
+        </div>
+        <div id="presetNote" class="note"></div>
+        <div class="row" style="margin-top:8px">
+          <button class="primary" id="btnCompute">▶ compute</button>
+          <label class="note"><input type="checkbox" id="twins" checked> twins (G, G0)</label>
+          <span id="busy"></span>
+        </div>
+        <div id="progress" class="note"></div>
+      </div>
+      <div class="panel" id="inputs"></div>
+    </div>
+
+    <!-- ================= RESULTS ================= -->
+    <div>
+      <div class="panel">
+        <div class="cols2">
+          <div>
+            <div class="brass">Floquet multiplier z (cut-invariant)</div>
+            <div class="readout"><span id="zOut">—</span><small id="zSub"></small></div>
+            <div class="kv"><span>pumping margin z − 1</span><b id="marginOut">—</b></div>
+            <div class="kv"><span>monodromy</span><b id="monoOut">—</b></div>
+            <div id="pumpLamp" class="verdict">—</div>
+          </div>
+          <div>
+            <div class="brass">Twin panel (same gap models)</div>
+            <table class="t" id="twinTable"></table>
+            <div class="note" id="twinNote">G: Lx shorted. G0: islands → ideal station valves (1→3, 4→2).
+              Δη at the stated cut (0°). "Does Lx help, under this gap model?"</div>
+            <div class="brass" style="margin-top:8px">instant preview (JS, bare core)</div>
+            <div class="kv"><span>solveDoubler4 (simultaneous 4-node)</span><b id="jsZ">—</b></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="brass">Energy ledger per cycle — cut at 0° (sector start)</div>
+        <div class="cols2">
+          <table class="t" id="ledgerTable"></table>
+          <div>
+            <canvas id="cvEta" height="170"></canvas>
+            <div class="note" id="etaNote">η(cut) over the sector from the eigen-mode. η of an unloaded, growing pump
+              with sequential events is cut-dependent [OC]: no single headline η until D-CUT.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="brass">Waveforms — the eigen-mode over one sector (normalised)</div>
+        <div class="cols2">
+          <div><canvas id="cvV" height="200"></canvas><div class="note">node voltages 1, 2, 3, 4, 7, 8 (÷ max)</div></div>
+          <div><canvas id="cvG" height="200"></canvas><div class="note">gap voltages, all 8 gaps (anode − cathode, ÷ max)</div></div>
+        </div>
+        <div class="cols2" style="margin-top:8px">
+          <div><canvas id="cvT" height="190"></canvas><div class="note">conduction (solid bars), gap events (ticks; tall = the strike) over the arming windows (faint) — Block S adapted to the 8 drawn gaps</div></div>
+          <div><canvas id="cvC" height="190"></canvas><div class="note">station clock — the DXF 8-gap station table (spice/timing.sub), one 60° sector</div></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="brass">Gap events — one row per conduction episode (the strike + its quasi-static re-closures)</div>
+        <div class="scroll"><table class="t" id="evTable"></table></div>
+        <div class="note" id="scaleNote"></div>
+      </div>
+
+      <div class="cols2">
+        <div class="panel">
+          <div class="brass">Lamps</div>
+          <div id="lamps"></div>
+        </div>
+        <div class="panel">
+          <div class="brass">Canaries (fail-closed, run in the worker before any display)</div>
+          <table class="t" id="selfTest"></table>
+          <div class="note" id="engineVer"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="brass">Sweep — z against one input (z = 1 crossing marked)</div>
+        <div class="row">
+          <select id="swKey"></select>
+          <input id="swFrom" type="number" step="any" style="width:80px" placeholder="from">
+          <input id="swTo" type="number" step="any" style="width:80px" placeholder="to">
+          <input id="swN" type="number" value="7" min="2" max="41" style="width:55px">
+          <button id="btnSweep">sweep</button>
+        </div>
+        <canvas id="cvSweep" height="200"></canvas>
+        <div class="note" id="swNote"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="schemOverlay" style="display:none;position:fixed;inset:0;background:rgba(4,8,12,.8);z-index:50">
+    <div style="position:absolute;inset:18px;background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:auto;padding:14px">
+      <div class="row" style="justify-content:space-between">
+        <div class="brass">schematic — live values (tank greyed "collapsed — core effects out of scope"; motor greyed when off)</div>
+        <button id="schemClose">✕ close</button>
+      </div>
+      <div id="schemStamp" class="note">checking…</div>
+      <div id="schemSlot" style="background:#0b0f14;border:1px solid var(--line);border-radius:4px;min-height:60px">loading…</div>
+      <table class="t" id="legendTable" style="margin-top:8px"></table>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px">
+    <b>Engine</b> sim/pump_engine.py — derived from the r0.2 exact event-driven KCL solver
+    (sim/island_asdrawn.py @ 8cd181e) under gate E0; M-RD/M-SR gap rules from sim/island_gapbracket.py.
+    z is the spectral radius of the composed one-cycle map (monodromy), checked against the plain
+    iteration (gate P0). <b>Out of scope, by design:</b> the tank (L_R1, C_R1, L_R2 collapsed, R-A = R-B =
+    reference), governor and crowbar (D-GOVERNOR), motor torque and mechanics, geometry/mechanical
+    blocks, gap physics beyond the selected gap model. <b>TMD-gated:</b> D-CUT (no headline η),
+    D-GAPDEFAULT (the load/fire default shown is M-OW valve), D-SCALE (kV/A/µC readouts anchored at
+    the load-gap strike = V_strike), D-CANARY.
+  </div>
+</div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+
+/* =====================================================================================
+   REUSED FROM index.html @ 8cd181e (copied with attribution; the retired 4-node calculator):
+   solveLinear, chargesFromVoltages, solvePhase, solveDoubler4 — the simultaneous two-phase
+   galvanic doubler (the JS twin of doubler_core). K1's JS side and the instant bare-core preview.
+   ===================================================================================== */
+// BEGIN solveDoubler4 (index.html @ 8cd181e, unmodified)
+function solveLinear(A, b){
+  const n = b.length;
+  if (n === 0) return [];
+  const m = A.map((row, i) => [...row, b[i]]);
+  for (let i = 0; i < n; i++){
+    let piv = i;
+    for (let k = i+1; k < n; k++) if (Math.abs(m[k][i]) > Math.abs(m[piv][i])) piv = k;
+    [m[i], m[piv]] = [m[piv], m[i]];
+    if (Math.abs(m[i][i]) < 1e-14) return null;
+    for (let k = i+1; k < n; k++){
+      const f = m[k][i] / m[i][i];
+      for (let j = i; j <= n; j++) m[k][j] -= f * m[i][j];
+    }
+  }
+  const x = new Array(n).fill(0);
+  for (let i = n-1; i >= 0; i--){
+    let s = m[i][n];
+    for (let j = i+1; j < n; j++) s -= m[i][j] * x[j];
+    x[i] = s / m[i][i];
+  }
+  return x;
+}
+function chargesFromVoltages(V, C1, C2, Ca, Cb, Cpar){
+  const [v1, v2, v3, v4] = V;
+  return [
+    (C1 + Cpar) * v1 + Ca * (v1 - v2),
+    Cpar * v2 + Ca * (v2 - v1),
+    Cpar * v3 + Cb * (v3 - v4),
+    (C2 + Cpar) * v4 + Cb * (v4 - v3),
+  ];
+}
+function solvePhase(Q, C1, C2, Ca, Cb, Cpar){
+  const kd1 = C1 + Cpar + Ca;
+  const kd2 = Cpar + Ca;
+  const kd3 = Cpar + Cb;
+  const kd4 = C2 + Cpar + Cb;
+  let bestV = null, bestMag = -Infinity;
+  const eps = 1e-9;
+  for (let s = 0; s < 16; s++){
+    const d1 = (s     ) & 1;
+    const d2 = (s >> 1) & 1;
+    const d3 = (s >> 2) & 1;
+    const d4 = (s >> 3) & 1;
+    const parent = [0,1,2,3,4];
+    const find = x => { while (parent[x] !== x){ parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
+    const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[ra] = rb; };
+    if (d1) union(2, 0);
+    if (d2) union(3, 0);
+    if (d3) union(1, 3);
+    if (d4) union(4, 2);
+    const groundRoot = find(0);
+    const clusterId = {};
+    let nc = 0;
+    for (let i = 1; i <= 4; i++){
+      const r = find(i);
+      if (r === groundRoot) continue;
+      if (!(r in clusterId)) clusterId[r] = nc++;
+    }
+    const nodeCluster = [0, 0, 0, 0, 0];
+    for (let i = 1; i <= 4; i++){
+      const r = find(i);
+      nodeCluster[i] = (r === groundRoot) ? -1 : clusterId[r];
+    }
+    let V;
+    if (nc === 0){
+      V = [0, 0, 0, 0];
+    } else {
+      const A = Array.from({length: nc}, () => new Array(nc).fill(0));
+      const rhs = new Array(nc).fill(0);
+      for (let i = 1; i <= 4; i++){
+        const c = nodeCluster[i];
+        if (c >= 0) rhs[c] += Q[i-1];
+      }
+      const addK = (i, kdiag, neighbour, kOff) => {
+        const c = nodeCluster[i];
+        if (c < 0) return;
+        A[c][c] += kdiag;
+        const cj = nodeCluster[neighbour];
+        if (cj >= 0) A[c][cj] += kOff;
+      };
+      addK(1, kd1, 2, -Ca);
+      addK(2, kd2, 1, -Ca);
+      addK(3, kd3, 4, -Cb);
+      addK(4, kd4, 3, -Cb);
+      const x = solveLinear(A, rhs);
+      if (!x) continue;
+      V = [
+        nodeCluster[1] < 0 ? 0 : x[nodeCluster[1]],
+        nodeCluster[2] < 0 ? 0 : x[nodeCluster[2]],
+        nodeCluster[3] < 0 ? 0 : x[nodeCluster[3]],
+        nodeCluster[4] < 0 ? 0 : x[nodeCluster[4]],
+      ];
+    }
+    const [v1, v2, v3, v4] = V;
+    if (!d1 && v2 > eps) continue;
+    if (!d2 && v3 > eps) continue;
+    if (!d3 && v1 > v3 + eps) continue;
+    if (!d4 && v4 > v2 + eps) continue;
+    const mag = Math.abs(v1) + Math.abs(v4);
+    if (mag > bestMag){ bestMag = mag; bestV = V; }
+  }
+  return bestV || [0, 0, 0, 0];
+}
+function solveDoubler4(C1min, C1max, C2min, C2max, Ca, Cb, Cpar, opts){
+  const iterations = opts?.iterations ?? 120;
+  const burn       = opts?.burn       ?? 60;
+  let V = [-1, 0, 0, -1];
+  let C1cur = C1max, C2cur = C2min;
+  const ratios = [];
+  let prevMag = Math.abs(V[0]) + Math.abs(V[3]);
+  for (let cyc = 0; cyc < iterations; cyc++){
+    let Q = chargesFromVoltages(V, C1cur, C2cur, Ca, Cb, Cpar);
+    V = solvePhase(Q, C1min, C2max, Ca, Cb, Cpar);
+    C1cur = C1min; C2cur = C2max;
+    Q = chargesFromVoltages(V, C1cur, C2cur, Ca, Cb, Cpar);
+    V = solvePhase(Q, C1max, C2min, Ca, Cb, Cpar);
+    C1cur = C1max; C2cur = C2min;
+    const mag = Math.abs(V[0]) + Math.abs(V[3]);
+    if (cyc >= burn && prevMag > 1e-15 && mag > 1e-15){
+      ratios.push(mag / prevMag);
+    }
+    prevMag = mag;
+    const maxV = Math.max.apply(null, V.map(Math.abs));
+    if (maxV > 1e6){
+      const s = 1 / maxV;
+      V = V.map(v => v * s);
+      prevMag *= s;
+    } else if (maxV < 1e-6 && maxV > 0){
+      const s = 1 / maxV;
+      V = V.map(v => v * s);
+      prevMag *= s;
+    }
+  }
+  if (ratios.length === 0) return 1.0;
+  ratios.sort((a, b) => a - b);
+  return ratios[Math.floor(ratios.length / 2)];
+}
+// END solveDoubler4
+
+/* =====================================================================================
+   INPUTS — FIELDS / state / bindField / URL-hash (pattern REUSED from index.html @ 8cd181e:
+   FIELDS, loadFromHash, writeHash, bindField, clampField, syncFieldInputs; adapted to the
+   engine's config keys and to select/bool inputs). No localStorage.
+   ===================================================================================== */
+const CLS = ["rail", "load", "fire", "backstop"];
+const MODELS = [["valve","valve (M-OW, one-way)"],["arc","sustained arc"],["ringdown","ring-down (M-RD)"],["recover","symmetric recovering (M-SR)"]];
+const GROUPS = [
+  ["Capacitors (pF)", [
+    ["C1min","C1 min",0.1,5000,0.1],["C1max","C1 max",0.1,5000,0.1],["C2min","C2 min",0.1,5000,0.1],["C2max","C2 max",0.1,5000,0.1],
+    ["Ca","Ca1",0,5000,1],["Cb","Cb1",0,5000,1],["Cpar","Cpar (nodes 1–4)",0,500,0.5],
+    ["cx_max","Cx max (plateau)",1,5000,1],["cx_min","Cx min (collapsed)",0.1,5000,0.1],
+    ["pCboss","boss stray ∥ Cx",0,100,0.5],["pCboss2","2nd boss stray",0,100,0.5],
+    ["gap_stray","gap-electrode stray",0,100,0.1],["island_stray","7/8/n17/n23 → ref",0,100,0.5],
+    ["!profile","C1/C2 profile",[["shuttle","shuttle raised-cosine"],["tanh","tanh (Pass A)"]]],["tanh_k","tanh steepness",1,50,0.5]]],
+  ["Islands", [["Lx_mH","Lx3 / Lx4 (mH)",0,100,0.01],["R_lx","Lx ESR (Ω)",0,1000,0.1]]],
+  ["Gap models (per class)", [
+    ...CLS.map(c => ["!gm_"+c, c+" model", MODELS]),
+    ...CLS.map(c => ["ih_"+c, c+" I_hold / i_pk1", 0, 5, 0.01]),
+    ...CLS.map(c => ["trec_"+c, c+" t_rec (µs)", 0, 100, 0.01]),
+    ...CLS.map(c => ["?latch_"+c, c+" valve latches after quench"]),
+    ["holdoff_us","M-SR holdoff (µs)",0,100,0.1]]],
+  ["Timing (DXF stations, deg in the 60° sector)", [
+    ["st_SG1","SG1",0,60,0.01],["st_SG3a","SG3a",0,60,0.01],["st_SG3b","SG3b",0,60,0.01],["st_BS3","BS3",0,60,0.01],
+    ["st_SG2","SG2",0,60,0.01],["st_SG4a","SG4a",0,60,0.01],["st_SG4b","SG4b",0,60,0.01],["st_BS4","BS4",0,60,0.01],
+    ["win_end","window end (deg)",0,30,0.1],["?simultaneous","simultaneous (all armed always)"],
+    ["!arming","arming test",[["robust","robust (phase-exact)"],["r02","r02 (r0.2 float semantics)"]]],
+    ["rpm","rpm",100,20000,10],["dth","grid dθ (deg)",0.005,1,0.005]]],
+  ["Motor branches", [["?motor","motor in (continuous mode)"],
+    ["!motor_topology","topology",[["per_coil","per-coil caps (as drawn, 43)"],["per_branch","one cap per 6-coil branch [IR, 33]"]]],
+    ["L_motor","L (H)",0.001,10,0.01],["C_motor_nF","C (nF)",1,10000,1],["R_motor","R_COIL (Ω)",0,1000,0.1]]],
+  ["Topology & twins", [["!topology","machine",[["drawn","drawn pump (43 parts)"],["core","bare 4-node core (solve_doubler4 topology)"]]],
+    ["?galvanic","G0 as the main machine (islands → valves)"]]],
+  ["Scale anchor & lamps geometry", [["V_strike_kV","V_strike (kV, D-SCALE)",0.1,200,0.1],
+    ["?use_geom","C1/C2 max from geometry (design_synth.Cmax_from_geom)"],
+    ["r_inMm","r_in (mm)",1,2000,1],["r_outMm","r_out (mm)",1,2000,1],["g_vMm","g_v (mm)",0.1,50,0.1],
+    ["n_kept","n_kept",1,48,1],["N_sec","N_sec",2,96,1],
+    ["d_ballMm","d_ball (mm)",1,100,0.5],["r_gapMm","r_gap (mm)",10,2000,1],["g_latMm","g_lat (mm)",0,20,0.1]]],
+];
+const FIELDS = [];          // numeric: {id, min, max, step}
+const CHOICES = {};         // id -> options
+const BOOLS = new Set();
+let DEFAULTS = null;
+const state = {};
+
+function buildInputs(){
+  const host = $("inputs"); host.innerHTML = "";
+  GROUPS.forEach(([title, items], gi) => {
+    const d = document.createElement("details"); if (gi < 3) d.open = true;
+    d.innerHTML = `<summary>${title}</summary>`;
+    for (const it of items){
+      const row = document.createElement("div"); row.className = "f";
+      let id = it[0], ctl;
+      if (id[0] === "!"){ id = id.slice(1); CHOICES[id] = it[2];
+        ctl = `<select id="in_${id}">${it[2].map(([v,l]) => `<option value="${v}">${l}</option>`).join("")}</select>`;
+      } else if (id[0] === "?"){ id = id.slice(1); BOOLS.add(id);
+        ctl = `<input type="checkbox" id="in_${id}" style="width:auto;justify-self:end">`;
+      } else { FIELDS.push({id, min: it[2], max: it[3], step: it[4]});
+        ctl = `<input type="number" id="in_${id}" min="${it[2]}" max="${it[3]}" step="${it[4]}">`;
+      }
+      row.innerHTML = `<label for="in_${id}">${it[1]}</label>${ctl}`;
+      d.appendChild(row);
+    }
+    host.appendChild(d);
+  });
+  for (const f of FIELDS) bindField(f);
+  for (const id in CHOICES) $("in_"+id).addEventListener("change", e => { state[id] = e.target.value; onInput(); });
+  for (const id of BOOLS) $("in_"+id).addEventListener("change", e => { state[id] = e.target.checked; onInput(); });
+}
+function bindField(f){                          // index.html bindField pattern (number input only)
+  const n = $("in_"+f.id);
+  n.addEventListener("input", e => {
+    let v = Number(e.target.value);
+    if (!isFinite(v)) return;
+    state[f.id] = clampField(f.id, v); onInput();
+  });
+}
+function clampField(id, value){
+  const f = FIELDS.find(x => x.id === id);
+  return f ? Math.max(f.min, Math.min(f.max, value)) : value;
+}
+function syncFieldInputs(){
+  for (const f of FIELDS){ const n = $("in_"+f.id); if (n) n.value = state[f.id]; }
+  for (const id in CHOICES){ const n = $("in_"+id); if (n) n.value = state[id]; }
+  for (const id of BOOLS){ const n = $("in_"+id); if (n) n.checked = !!state[id]; }
+}
+function loadFromHash(){
+  const h = location.hash.replace(/^#/, ""); if (!h) return;
+  const p = new URLSearchParams(h);
+  for (const f of FIELDS){ const v = p.get(f.id); if (v != null && isFinite(+v)) state[f.id] = clampField(f.id, +v); }
+  for (const id in CHOICES){ const v = p.get(id); if (v != null && CHOICES[id].some(o => o[0] === v)) state[id] = v; }
+  for (const id of BOOLS){ if (p.has(id)) state[id] = p.get(id) === "1"; }
+  if (p.has("twins")) $("twins").checked = p.get("twins") === "1";
+}
+function writeHash(){
+  const p = new URLSearchParams();
+  for (const f of FIELDS) if (state[f.id] !== DEFAULTS[f.id]) p.set(f.id, state[f.id]);
+  for (const id in CHOICES) if (state[id] !== DEFAULTS[id]) p.set(id, state[id]);
+  for (const id of BOOLS) if (!!state[id] !== !!DEFAULTS[id]) p.set(id, state[id] ? 1 : 0);
+  if (!$("twins").checked) p.set("twins", 0);
+  history.replaceState(null, "", "#" + p.toString());
+}
+function config(){
+  const c = {};
+  for (const k in DEFAULTS) if (state[k] !== undefined && state[k] !== DEFAULTS[k]) c[k] = state[k];
+  return c;
+}
+let recomputeTimer = null;                      // index.html scheduleRecompute (debounce)
+function scheduleRecompute(){ if (recomputeTimer) clearTimeout(recomputeTimer); recomputeTimer = setTimeout(jsPreview, 60); }
+function onInput(){ writeHash(); scheduleRecompute(); markStale(); }
+function markStale(){ if (lastRes) $("zSub").textContent = "  (inputs changed — compute)"; }
+
+function jsPreview(){
+  const a = [Math.min(state.C1min,state.C1max), Math.max(state.C1min,state.C1max),
+             Math.min(state.C2min,state.C2max), Math.max(state.C2min,state.C2max), state.Ca, state.Cb, state.Cpar];
+  $("jsZ").textContent = solveDoubler4(...a).toFixed(7);
+}
+
+/* =====================================================================================
+   CHART HELPERS — REUSED from index.html @ 8cd181e (clearCanvas, drawAxes, niceBar, fmt;
+   colours from CSS variables).
+   ===================================================================================== */
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function clearCanvas(c){
+  const ctx = c.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const w = c.clientWidth, h = c.clientHeight;
+  if (c.width !== Math.round(w*dpr) || c.height !== Math.round(h*dpr)){
+    c.width = Math.round(w*dpr); c.height = Math.round(h*dpr);
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  return {ctx, w, h};
+}
+function drawAxes(ctx, w, h, xLabel, yLabel, xs, ys){
+  const padL = 42, padR = 8, padT = 10, padB = 22;
+  const px = w - padL - padR, py = h - padT - padB;
+  const [xmin, xmax] = xs, [ymin, ymax] = ys;
+  const X = x => padL + (x - xmin)/(xmax - xmin) * px;
+  const Y = y => padT + (1 - (y - ymin)/(ymax - ymin)) * py;
+  ctx.strokeStyle = css("--line"); ctx.lineWidth = 1; ctx.strokeRect(padL, padT, px, py);
+  ctx.font = "10px ui-monospace,Menlo,monospace"; ctx.fillStyle = css("--axis");
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (let i = 0; i <= 4; i++){
+    const y = ymin + (ymax-ymin)*i/4, py_ = Y(y);
+    ctx.strokeStyle = css("--grid"); ctx.beginPath(); ctx.moveTo(padL, py_); ctx.lineTo(padL+px, py_); ctx.stroke();
+    ctx.fillText(fmt(y, Math.abs(ymax-ymin) < 0.05 ? 4 : 2), padL-4, py_);
+  }
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  for (let i = 0; i <= 4; i++){
+    const x = xmin + (xmax-xmin)*i/4, px_ = X(x);
+    ctx.strokeStyle = css("--grid"); ctx.beginPath(); ctx.moveTo(px_, padT); ctx.lineTo(px_, padT+py); ctx.stroke();
+    ctx.fillText(Math.abs(x) >= 1000 ? x.toFixed(0) : fmt(x, 2), px_, padT+py+4);
+  }
+  ctx.fillStyle = css("--axis"); ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.fillText(xLabel, padL+4, padT+py-12);
+  ctx.save(); ctx.translate(10, padT+py/2); ctx.rotate(-Math.PI/2); ctx.textAlign = "center"; ctx.fillText(yLabel, 0, 0); ctx.restore();
+  return {X, Y, padL, padT, px, py};
+}
+function niceBar(v){ const p = Math.pow(10, Math.floor(Math.log10(v))); const f = v/p; return (f<1.5?1:f<3.5?2:f<7.5?5:10)*p; }
+function fmt(v, dp){ if (v == null || !isFinite(v)) return "—"; if (Math.abs(v) >= 1e6 || (Math.abs(v) < 1e-3 && v !== 0)) return v.toExponential(2); return v.toFixed(dp ?? 3); }
+const COLS = ["--c1","--c2","--c3","--c4","--c5","--c6","--c7","--c8"];
+function lines(cv, xs, series, xLabel, yLabel, yr, legend){
+  const {ctx, w, h} = clearCanvas(cv);
+  let lo = Infinity, hi = -Infinity;
+  for (const s of series) for (const y of s) if (isFinite(y)){ lo = Math.min(lo, y); hi = Math.max(hi, y); }
+  if (yr){ lo = yr[0]; hi = yr[1]; }
+  if (!(hi > lo)){ hi = lo + 1; }
+  const pad = (hi - lo) * 0.06;
+  const A = drawAxes(ctx, w, h, xLabel, yLabel, [xs[0], xs[xs.length-1]], [lo - pad, hi + pad]);
+  series.forEach((s, k) => {
+    ctx.strokeStyle = css(COLS[k % COLS.length]); ctx.lineWidth = 1.3; ctx.beginPath();
+    s.forEach((y, i) => { const X = A.X(xs[i]), Y = A.Y(y); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); });
+    ctx.stroke();
+  });
+  if (legend){
+    ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "left"; ctx.textBaseline = "top";
+    legend.forEach((l, k) => { ctx.fillStyle = css(COLS[k % COLS.length]); ctx.fillText(l, A.padL + 6 + (k % 4) * 64, A.padT + 3 + Math.floor(k / 4) * 12); });
+  }
+  return A;
+}
+
+/* =====================================================================================
+   ENGINE WORKER — boot + fail-closed badge (states copied from charge-pump-synth-live.html:
+   booting / live / CANARY-FAIL / down; no silent fallback)
+   ===================================================================================== */
+let worker = null, canaryOK = false, lastRes = null, reqId = 0, pending = {};
+function setBadge(cls, txt){ $("engineBadge").querySelector(".dot").className = "dot " + cls; $("engineTxt").textContent = txt; }
+function boot(){
+  worker = new Worker("./pump-calc.worker.js");
+  worker.onmessage = ev => onWorker(ev.data);
+  worker.onerror = e => { setBadge("no", "ENGINE: down"); $("boot").innerHTML = '<span style="color:var(--bad)">worker error:</span> ' + (e.message || e); };
+  const q = new URLSearchParams(location.search);
+  worker.postMessage({type: "init", pyodide: q.get("pyodide") || undefined});
+}
+function onWorker(m){
+  if (m.type === "boot"){ $("boot").textContent = m.msg; return; }
+  if (m.type === "down"){
+    setBadge("no", "ENGINE: down");
+    $("boot").innerHTML = '<span style="color:var(--bad)">The engine did not load:</span> ' + m.error +
+      '<br>Honesty rule: the page does not fall back to any hard-coded number. Serve from the repo root (python3 -m http.server) with access to the Pyodide CDN, then reload.';
+    return;
+  }
+  if (m.type === "canaries"){
+    DEFAULTS = m.result.defaults;
+    for (const k in DEFAULTS) state[k] = DEFAULTS[k];
+    buildInputs(); loadFromHash(); syncFieldInputs(); jsPreview(); buildSweepKeys(); buildPresets();
+    renderCanaries(m.result);
+    canaryOK = m.ok && jsK1ok;
+    if (!canaryOK){ setBadge("no", "ENGINE: CANARY-FAIL"); $("boot").innerHTML = '<span style="color:var(--bad)">CANARY-FAIL</span> — the in-browser engine disagrees with the canaries. No numbers are shown.'; $("app").style.display = ""; $("btnCompute").disabled = true; $("btnSweep").disabled = true; return; }
+    setBadge("ok", "ENGINE: live · canaries K1–K4 pass");
+    $("boot").style.display = "none"; $("app").style.display = "";
+    compute();
+    return;
+  }
+  if (m.type === "progress"){ $("progress").textContent = m.msg; return; }
+  if (m.type === "result" || m.type === "error"){
+    const cb = pending[m.id]; delete pending[m.id];
+    if (cb) cb(m);
+  }
+}
+function request(kind, payload){
+  return new Promise(res => { const id = ++reqId; pending[id] = res; worker.postMessage(Object.assign({type: kind, id}, payload)); });
+}
+
+/* =====================================================================================
+   CANARIES / SELF-TEST TABLE — the VERIFY + runSelfTest/renderSelfTest pattern REUSED from
+   index.html @ 8cd181e, carrying K1–K4 (K1 on BOTH engines: pump_engine and the JS
+   solveDoubler4 above).
+   ===================================================================================== */
+let jsK1ok = false;
+function renderCanaries(r){
+  const c = r.canaries; const rows = c.rows;
+  const k1js = solveDoubler4(16, 280, 16, 280, 309, 309, 20);
+  jsK1ok = Math.abs(k1js - 1.3340016) / 1.3340016 <= 1e-6;
+  let h = "<tr><th>id</th><th>check</th><th>expected</th><th>got</th><th>tol</th><th></th></tr>";
+  const f = v => Array.isArray(v) ? v.map(x => x.toPrecision(9)).join(" / ") : (typeof v === "number" ? v.toPrecision(11) : v);
+  for (const x of rows){
+    h += `<tr><td>${x.id}</td><td style="text-align:left;white-space:normal">${x.check}</td><td>${f(x.expected)}</td><td>${f(x.got)}</td><td>${x.tol}</td><td class="${x.pass ? "pass" : "fail"}">${x.pass ? "PASS" : "FAIL"}</td></tr>`;
+  }
+  h += `<tr><td>K1-JS</td><td style="text-align:left">always-armed galvanic z, JS solveDoubler4 (index.html)</td><td>1.3340016</td><td>${k1js.toPrecision(11)}</td><td>1e-6</td><td class="${jsK1ok ? "pass" : "fail"}">${jsK1ok ? "PASS" : "FAIL"}</td></tr>`;
+  const st = r.selftest;
+  h += `<tr><td>ST</td><td style="text-align:left">engine on-load self-test (${st.rows.length} checks)</td><td>—</td><td>—</td><td>—</td><td class="${st.pass_ ? "pass" : "fail"}">${st.pass_ ? "PASS" : "FAIL"}</td></tr>`;
+  $("selfTest").innerHTML = h;
+  $("engineVer").textContent = r.version + ". Build-time gates (E0–E6, M1–M3, P0–P2, N, F, Z): sim/pump-calc-findings.md.";
+}
+
+/* =====================================================================================
+   COMPUTE + RENDER
+   ===================================================================================== */
+let busy = false;
+async function compute(){
+  if (!canaryOK || busy) return;
+  busy = true; $("btnCompute").disabled = true; $("busy").innerHTML = '<span class="spin"></span>';
+  const cfg = config();
+  const t0 = performance.now();
+  const m = await request("evaluate", {config: cfg, twins: $("twins").checked && !state.motor});
+  let mm = null;
+  if (m.type === "result" && state.motor && m.result.converged){
+    // runtime M3 for the motor-in machine: dθ/2 must agree to 1e-3, else "not converged"
+    $("progress").textContent = "motor in: M3 check at dθ/2…";
+    mm = await request("evaluate", {config: Object.assign({}, cfg, {dth: (state.dth || 0.05) / 2}), twins: false});
+  }
+  busy = false; $("btnCompute").disabled = false; $("busy").innerHTML = "";
+  if (m.type === "error"){ $("progress").innerHTML = '<span style="color:var(--bad)">engine error:</span> ' + m.error; return; }
+  const res = m.result;
+  res.m3 = null;
+  if (state.motor){
+    const ok = res.converged && mm && mm.type === "result" && mm.result.converged && Math.abs(mm.result.z - res.z) < 1e-3;
+    res.m3 = {ok, z2: mm && mm.result ? mm.result.z : null};
+  }
+  $("progress").textContent = `computed in ${((performance.now() - t0)/1000).toFixed(1)} s (engine ${res.time_total_s.toFixed(1)} s)`;
+  lastRes = res; $("zSub").textContent = "";
+  render(res);
+  if (activePreset) checkPreset(activePreset, res);
+}
+
+function numOK(res){ return res.converged && (res.m3 == null || res.m3.ok); }
+
+function render(res){
+  const ok = numOK(res);
+  if (ok){
+    $("zOut").textContent = res.z.toFixed(10);
+    $("marginOut").textContent = (res.margin >= 0 ? "+" : "") + res.margin.toFixed(10);
+    const L = $("pumpLamp");
+    L.className = "verdict " + (res.pumps ? "ok" : "no");
+    L.textContent = res.pumps ? "PUMPS (z > 1)" : "DOES NOT PUMP (z ≤ 1)";
+  } else {
+    $("zOut").textContent = "not converged"; $("marginOut").textContent = "—";
+    const L = $("pumpLamp"); L.className = "verdict warn";
+    L.textContent = res.m3 && !res.m3.ok ? "NOT CONVERGED — motor-in M3 (dθ vs dθ/2) fails: no number is shown" : "NOT CONVERGED — the switching pattern did not repeat: no number is shown";
+  }
+  const h = res.mono_hist || [];
+  $("monoOut").textContent = `${h.length} taped cycle(s), sub-dominant ratio ${fmt(res.sub_ratio, 3)}${res.complex ? ", complex λ" : ""}`;
+  // twins
+  let tt = "<tr><th>machine</th><th>z</th><th>Δz (main − twin)</th><th>η @ cut 0°</th><th>Δη</th></tr>";
+  tt += `<tr><td>main</td><td>${ok ? res.z.toFixed(8) : "—"}</td><td></td><td>${ok ? fmt(res.ledger.eta_at_cut, 4) : "—"}</td><td></td></tr>`;
+  for (const [k, lab] of [["G", "G (Lx shorted)"], ["G0", "G0 (station valves)"]]){
+    const t = res.twins && res.twins[k];
+    if (!t){ tt += `<tr><td>${lab}</td><td colspan="4" style="text-align:center;color:var(--mut)">${state.motor ? "not run with the motor in" : "off"}</td></tr>`; continue; }
+    tt += `<tr><td>${lab}</td><td>${t.converged ? t.z.toFixed(8) : "not converged"}</td><td>${ok && t.converged ? (t.dz >= 0 ? "+" : "") + t.dz.toFixed(6) : "—"}</td><td>${fmt(t.eta_at_cut, 4)}</td><td>${ok && t.converged ? (t.deta >= 0 ? "+" : "") + t.deta.toFixed(4) : "—"}</td></tr>`;
+  }
+  $("twinTable").innerHTML = tt;
+  renderLedger(res, ok); renderEta(res, ok); renderWaves(res); renderEvents(res, ok); renderLamps(res); drawClock(res);
+}
+
+function renderLedger(res, ok){
+  const L = res.ledger, W = L.W;
+  const pc = x => (100 * x / W).toFixed(3) + " %";
+  let h = "<tr><th>term (cut 0°)</th><th>scale-free</th><th>÷ W_mech</th><th>scaled (mJ)</th></tr>";
+  const s2 = res.scaled ? res.scaled.scale_V_per_unit ** 2 * 1e3 : null;
+  const rowf = (n, v) => `<tr><td>${n}</td><td>${fmt(v)}</td><td>${pc(v)}</td><td>${s2 ? fmt(v * s2, 3) : "—"}</td></tr>`;
+  h += rowf("W_mech (Σ strokes ΔU)", W);
+  for (const k in (L.W_by || {})) h += rowf("&nbsp;&nbsp;W by " + k, L.W_by[k]);
+  h += rowf("stored growth ΔE", L.dE);
+  h += rowf("dissipated E_diss", L.E_diss);
+  h += rowf("&nbsp;&nbsp;gap dumps (Schur)", L.gap);
+  h += rowf("&nbsp;&nbsp;Lx ESR (ring i²R)", L.esr);
+  h += rowf("&nbsp;&nbsp;relaxation (ring-down)", L.relax);
+  h += rowf("&nbsp;&nbsp;motor copper", L.motor);
+  h += `<tr><td>residual (W − ΔE − E_diss)/W</td><td colspan="3">${L.resid.toExponential(2)}</td></tr>`;
+  h += `<tr><td>η at this cut (ΔE/W)</td><td colspan="3">${ok ? fmt(L.eta_at_cut, 4) + " — cut-dependent, see the curve" : "—"}</td></tr>`;
+  $("ledgerTable").innerHTML = h;
+}
+function renderEta(res, ok){
+  const e = res.eta_cut;
+  if (!ok){ clearCanvas($("cvEta")); $("etaNote").textContent = "not converged"; return; }
+  lines($("cvEta"), e.th, [e.eta], "cut (deg)", "η(cut)", null);
+  $("etaNote").textContent = `η(cut) band over the sector: min ${e.min.toFixed(4)} · max ${e.max.toFixed(4)}. ` +
+    `η of an unloaded, growing pump with sequential events is cut-dependent [OC]: no single headline η until D-CUT.`;
+}
+function renderWaves(res){
+  const w = res.wave;
+  const nn = ["1","2","3","4","7","8"].filter(n => w.V[n]);
+  lines($("cvV"), w.th, nn.map(n => w.V[n]), "θ (deg)", "V / max", null, nn.map(n => "V" + n));
+  const gn = Object.keys(w.gapV);
+  lines($("cvG"), w.th, gn.map(g => w.gapV[g]), "θ (deg)", "V_gap / max", null, gn);
+  // conduction timeline over the arming windows (Block S adapted)
+  const cv = $("cvT"); const {ctx, w: W, h: H} = clearCanvas(cv);
+  const padL = 58, padR = 8, padT = 6, padB = 18, pw = W - padL - padR, ph = H - padT - padB;
+  const X = th => padL + th / 60 * pw;
+  const rh = ph / gn.length;
+  gn.forEach((g, i) => {
+    const y = padT + i * rh, col = css(COLS[i % COLS.length]);
+    const [a, b] = res.windows[g];
+    ctx.fillStyle = col; ctx.globalAlpha = 0.14;
+    if (b - a >= 60) ctx.fillRect(X(0), y + 2, pw, rh - 4); else if (a < b) ctx.fillRect(X(a), y + 2, X(Math.min(b, 60)) - X(a), rh - 4);
+    else { ctx.fillRect(X(a), y + 2, X(60) - X(a), rh - 4); ctx.fillRect(X(0), y + 2, X(b) - X(0), rh - 4); }
+    ctx.globalAlpha = 1; ctx.fillStyle = col;
+    const c = w.cond[g];
+    for (let k = 0; k < c.length - 1; k++) if (c[k]) ctx.fillRect(X(w.th[k]), y + rh * 0.25, Math.max(1, X(w.th[k+1]) - X(w.th[k])), rh * 0.5);
+    for (const e of (res.events || [])) if (e.gap === g){         // every gap event (strike / re-closure)
+      const big = Math.abs(e.Vf) >= 0.5 * Math.max(...res.episodes.filter(x => x.gap === g).map(x => Math.abs(x.Vf)));
+      ctx.fillRect(X(e.th) - (big ? 1 : 0.5), y + (big ? 1 : rh * 0.3), big ? 2.5 : 1, big ? rh - 2 : rh * 0.4);
+    }
+    ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(g, padL - 4, y + rh / 2);
+  });
+  ctx.fillStyle = css("--axis"); ctx.textAlign = "center"; ctx.textBaseline = "top";
+  for (let d = 0; d <= 60; d += 10) ctx.fillText(d + "°", X(d), padT + ph + 3);
+}
+/* Station clock — ADAPTED from index.html drawSeqClock / drawCommutatorAxial (@ 8cd181e): the
+   two-set station model is replaced by the DXF 8-gap station table (spice/timing.sub). */
+function drawClock(res){
+  const cv = $("cvC"); const {ctx, w, h} = clearCanvas(cv);
+  const cx = w * 0.42, cy = h * 0.5, R = Math.min(w * 0.8, h) / 2 - 10;
+  const A = deg => (deg / 60 * 360 - 90) * Math.PI / 180;
+  const gn = Object.keys(res.windows);
+  const ringT = R * 0.085, gap = R * 0.02;
+  gn.forEach((g, i) => {
+    const r1 = R - i * (ringT + gap), r0 = r1 - ringT, col = css(COLS[i % COLS.length]);
+    ctx.strokeStyle = css("--line"); ctx.lineWidth = 0.6; ctx.beginPath(); ctx.arc(cx, cy, (r0 + r1) / 2, 0, 2 * Math.PI); ctx.stroke();
+    let [a, b] = res.windows[g]; if (b - a >= 60){ a = 0; b = 60; }
+    const seg = (x, y) => { ctx.beginPath(); ctx.arc(cx, cy, r1, A(x), A(y)); ctx.arc(cx, cy, r0, A(y), A(x), true); ctx.closePath(); ctx.fillStyle = col; ctx.globalAlpha = 0.55; ctx.fill(); ctx.globalAlpha = 1; };
+    if (a < b) seg(a, Math.min(b, 60)); else { seg(a, 60); seg(0, b); }
+    ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(A(a)) * (r0 - 1), cy + Math.sin(A(a)) * (r0 - 1)); ctx.lineTo(cx + Math.cos(A(a)) * (r1 + 1), cy + Math.sin(A(a)) * (r1 + 1)); ctx.stroke();
+  });
+  ctx.fillStyle = css("--mut"); ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  for (let d = 0; d < 60; d += 10){ ctx.fillText(d + "°", cx + Math.cos(A(d)) * (R + 8), cy + Math.sin(A(d)) * (R + 8)); }
+  ctx.textAlign = "left";
+  gn.forEach((g, i) => { ctx.fillStyle = css(COLS[i % COLS.length]); ctx.fillText(`${g} ${res.windows[g][0].toFixed(2)}→${res.windows[g][1].toFixed(2)} (${res.models[g]})`, w * 0.74, 12 + i * 13); });
+  ctx.fillStyle = css("--mut"); ctx.fillText("one 60° sector = one pump cycle", w * 0.74, 12 + gn.length * 13 + 6);
+}
+function renderEvents(res, ok){
+  const sc = res.scaled; const byGap = {}; if (sc) for (const r of sc.rows) byGap[r.gap] = r;
+  let h = "<tr><th>gap</th><th>class · model</th><th>station θ</th><th>strike θ</th><th>V_f (scaled kV)</th><th>charge (µC)</th><th>E gap (mJ)</th><th>E ESR (mJ)</th><th>E motor (mJ)</th><th>t½ (µs)</th><th>i_pk (A)</th><th>TRV ÷ V_f</th><th>TRV (kV)</th><th>re-closures</th><th>flag</th></tr>";
+  for (const e of res.episodes){
+    const s = byGap[e.gap] || {};
+    const flag = e.needs_rect ? (e.model === "valve" ? "rectifier assumed (valve)" : "NEEDS A RECTIFIER") : "";
+    h += `<tr><td>${e.gap}</td><td>${e.cls} · ${e.model}</td><td>${fmt(e.th, 2)}</td><td>${fmt(e.th_strike, 2)}</td><td>${fmt(s.V_kV, 2)}</td><td>${fmt(s.q_uC, 3)}</td><td>${fmt(s.E_gap_mJ, 3)}</td><td>${fmt(s.E_esr_mJ, 3)}</td><td>${fmt(s.E_motor_mJ, 3)}</td>` +
+         `<td>${fmt(e.t_half_us, 3)}</td><td>${fmt(s.i_pk_A, 3)}</td><td>${e.trv != null ? e.trv.toFixed(3) : "—"}</td><td>${fmt(s.trv_kV, 2)}</td><td>${e.n_events - 1}${e.n_reign ? " · re-ign " + e.n_reign : ""}</td><td class="${e.needs_rect && e.model !== "valve" ? "fail" : "flag"}">${flag}</td></tr>`;
+  }
+  $("evTable").innerHTML = h;
+  $("scaleNote").textContent = sc ? `Operating-point scaling (the engine is linear and scale-free) [OC]: ${sc.anchor} (D-SCALE, [IR]) → W_mech ${fmt(sc.W_mech_mJ, 2)} mJ, E_diss ${fmt(sc.E_diss_mJ, 2)} mJ per cycle. TRV ratio = reverse peak ÷ V_f from an open-circuit probe after the gap's current zero [ME]; "needs a rectifier" when > 1 for a gap modelled as symmetric.` : "no load-gap strike in this machine — no operating-point scaling";
+}
+function renderLamps(res){
+  const L = res.lamps || {}; let h = "";
+  if (L.error){ $("lamps").innerHTML = `<div class="note">${L.error}</div>`; return; }
+  for (const k in L){ const v = L[k]; h += `<div class="lamp"><span class="dot ${v.pass_ ? "ok" : "no"}"></span><span class="nm">${k}</span><span class="sl">${v.detail}</span></div>`; }
+  $("lamps").innerHTML = h + '<div class="note">I3/I6/I11/I12: sim/design_synth.py rules and closed forms (imported); I12 uses this engine\'s ring t½.</div>';
+}
+
+/* ---- sweep (the findCriticalCa pattern of index.html: z against one input, z = 1 crossing) ---- */
+function buildSweepKeys(){
+  $("swKey").innerHTML = FIELDS.map(f => `<option value="${f.id}">${f.id}</option>`).join("");
+  $("swKey").value = "Ca";
+  const upd = () => { const k = $("swKey").value; const v = state[k]; $("swFrom").value = +(v * 0.5).toPrecision(4); $("swTo").value = +(v * 1.5 || 1).toPrecision(4); };
+  $("swKey").addEventListener("change", upd); upd();
+}
+async function sweep(){
+  if (!canaryOK || busy) return;
+  const key = $("swKey").value, a = +$("swFrom").value, b = +$("swTo").value, n = Math.max(2, Math.min(41, +$("swN").value || 7));
+  const values = Array.from({length: n}, (_, i) => +(a + (b - a) * i / (n - 1)).toPrecision(10));
+  busy = true; $("btnSweep").disabled = true; $("busy").innerHTML = '<span class="spin"></span>';
+  const m = await request("sweep", {config: config(), key, values});
+  busy = false; $("btnSweep").disabled = false; $("busy").innerHTML = "";
+  if (m.type === "error"){ $("swNote").textContent = "engine error: " + m.error; return; }
+  const r = m.result, pts = r.points.filter(p => p.converged);
+  const A = lines($("cvSweep"), pts.map(p => p.v), [pts.map(p => p.z)], key, "z", null);
+  const ctx = $("cvSweep").getContext("2d");
+  ctx.strokeStyle = css("--axis"); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(A.padL, A.Y(1)); ctx.lineTo(A.padL + A.px, A.Y(1)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = css("--amber");
+  for (const c of r.crossings){ ctx.beginPath(); ctx.arc(A.X(c), A.Y(1), 4, 0, 2 * Math.PI); ctx.fill(); }
+  $("swNote").textContent = `z = 1 crossing(s): ${r.crossings.length ? r.crossings.map(c => c.toPrecision(5)).join(", ") : "none in range"}` +
+    (pts.length < r.points.length ? ` · ${r.points.length - pts.length} point(s) not converged (not drawn)` : "") + ` · ${r.wall_s.toFixed(1)} s`;
+}
+
+/* ---- presets with expect blocks (REUSED pattern: applyParamPresetTo / evalExpect of index.html) ---- */
+const PRESET_FILES = ["canary-core-simultaneous", "canary-core-station", "canary-shuttle-parity", "default-drawn-G1",
+                      "default-drawn-R1-valve", "default-drawn-R1-ringdown", "pass-A-ngspice-config"];
+let activePreset = null;
+function buildPresets(){ $("presetSel").innerHTML = PRESET_FILES.map(p => `<option value="${p}">${p}</option>`).join(""); }
+async function loadPreset(){
+  const name = $("presetSel").value;
+  const r = await fetch(`../presets/pump/${name}.json`);
+  if (!r.ok){ $("presetNote").textContent = `presets/pump/${name}.json not reachable (${r.status})`; return; }
+  const p = await r.json();
+  for (const k in DEFAULTS) state[k] = DEFAULTS[k];
+  const warn = [];
+  for (const k in (p.config || {})){ if (!(k in DEFAULTS)){ warn.push(k + ": unknown input — skipped"); continue; } state[k] = p.config[k]; }
+  if (p.twins != null) $("twins").checked = !!p.twins;
+  syncFieldInputs(); writeHash(); jsPreview();
+  activePreset = p;
+  $("presetNote").innerHTML = `<b>${p.title || name}</b> — ${p.description || ""}` + (warn.length ? `<br><span style="color:var(--warn)">${warn.join("; ")}</span>` : "");
+  if (p.canary){ // canary presets are checked against the worker's K rows (not an evaluate config)
+    const row = (lastCanaries || []).find(x => x.id === p.canary);
+    checkPreset(p, {z: row ? (Array.isArray(row.got) ? row.got[0] : row.got) : NaN, converged: true});
+    return;
+  }
+  compute();
+}
+let lastCanaries = null;
+function checkPreset(p, res){
+  const out = [];
+  for (const k in (p.expect || {})){
+    const e = p.expect[k]; const got = k === "z" ? res.z : k === "eta_at_cut" ? (res.ledger || {}).eta_at_cut : (res.twins && res.twins[k] ? res.twins[k].z : NaN);
+    const tol = e.tol ?? 1e-9;
+    const ok = numOK(res) && Math.abs(got - e.value) <= tol * Math.max(1, Math.abs(e.value));
+    out.push(`${k}: expected ${e.value} ± ${tol} (rel), got ${fmt(got, 10)} ${ok ? "✓" : "✗"}`);
+  }
+  if (out.length) $("presetNote").innerHTML += `<br><span style="color:${out.every(s => s.endsWith("✓")) ? "var(--good)" : "var(--bad)"}">expect: ${out.join(" · ")}</span>`;
+}
+
+/* ===================================================================================== */
+/* REF_MAP + schematic + consistency stamp — REUSED/ADAPTED from tools/charge-pump-synth-live.html
+   @ 8cd181e: the same sv_<REF> slots of tools/schematic.svg, bound to THIS engine's outputs; tank
+   parts greyed "collapsed"; motor parts greyed when the motor is off; stamp DRAWN = MAPPED = NETLIST. */
+const _pf = x => (x == null || isNaN(x)) ? "—" : `${(+x).toFixed(x < 10 ? 1 : 0)} pF`;
+const REF_MAP = (() => {
+  const M = {};
+  const add = (refs, fam, role, val, flag) => refs.forEach(r => M[r] = {fam, role, val, flag});
+  add(["C1","C2"], "C1 / C2", "doubler input varicaps", s => `${_pf(s.C1min)}–${_pf(s.C1max)}`);
+  add(["Ca1","Cb1"], "Ca1 / Cb1", "transfer caps", s => `${_pf(s.Ca)} / ${_pf(s.Cb)}`);
+  add(["Cx3","Cx4"], "Cx3 / Cx4", "island varicaps (plateau → collapse)", s => `${_pf(s.cx_max)}→${_pf(s.cx_min)}`);
+  add(["Lx3","Lx4"], "Lx3 / Lx4", "series island inductors", s => `${(+s.Lx_mH).toFixed(3)} mH, ${s.R_lx} Ω`);
+  add(["C_R1","L_R1","L_R2"], "tank", "resonator tank", () => "collapsed — core effects out of scope", "collapsed");
+  add(["L_A1","L_A2","L_A3","L_A4","L_A5","L_A6","L_B1","L_B2","L_B3","L_B4","L_B5","L_B6"], "L_A/L_B", "motor coils", s => s.motor ? `${s.L_motor} H, ${s.R_motor} Ω` : "motor off", "motor");
+  add(["C_AR1","C_AR2","C_AR3","C__AR4","C_AR5","C_AR6","C_BR1","C_BR2","C_BR3","C_BR4","C_BR5","C_BR6"], "C_AR/C_BR", "motor DC-block caps", s => s.motor ? `${s.C_motor_nF} nF${s.motor_topology === "per_branch" ? " (per-branch [IR])" : ""}` : "motor off", "motor");
+  add(["SG1","SG2"], "SG1 / SG2", "rail return gaps", s => s.gm_rail, "gap");
+  add(["SG3a1","SG4a1"], "SG3a1 / SG4a1", "load gaps", s => s.gm_load, "gap");
+  add(["SG3b1","SG4b1"], "SG3b1 / SG4b1", "fire gaps", s => s.gm_fire, "gap");
+  add(["BS3","BS4"], "BS3 / BS4", "backstops", s => s.gm_backstop, "gap");
+  return M;
+})();
+const _REFDES = /^(C\d|C_AR\d|C__AR\d|C_BR\d|C_R\d|Ca\d|Cb\d|Cx\d|Lx\d|L_A\d|L_B\d|L_R\d|SG\d[a-z]?\d?|BS\d)$/;
+async function openSchematic(){
+  $("schemOverlay").style.display = "block";
+  let svg = null;
+  try { const r = await fetch("./schematic.svg"); if (r.ok) svg = await r.text(); } catch {}
+  if (!svg){ $("schemSlot").textContent = "tools/schematic.svg not reachable (serve from the repo root)"; return; }
+  $("schemSlot").innerHTML = svg;
+  const sc = lastRes && lastRes.scaled ? Object.fromEntries(lastRes.scaled.rows.map(r => [r.gap, r])) : {};
+  for (const ref in REF_MAP){
+    const e = document.getElementById("sv_" + ref); if (!e) continue;
+    const m = REF_MAP[ref];
+    let v = m.val(state);
+    if (m.flag === "gap" && sc[ref]) v += ` ${sc[ref].V_kV.toFixed(1)} kV`;
+    e.textContent = v;
+    if (m.flag === "collapsed" || (m.flag === "motor" && !state.motor)) e.classList.add("greyed"); else e.classList.remove("greyed");
+  }
+  // consistency stamp: DRAWN (svg refdes) = MAPPED (REF_MAP) = NETLIST (topology_edge_list.csv)
+  let topo = null; try { const r = await fetch("../topology_edge_list.csv"); if (r.ok) topo = await r.text(); } catch {}
+  const netlist = new Set(); (topo || "").split("\n").forEach(l => { const c = l.split(","); if (!c[0] || c[0][0] === "#" || c[0] === "component") return; netlist.add(c[0].trim()); });
+  const drawn = new Set(); const re = /<text[^>]*>([^<]*)<\/text>/g; let mm;
+  while ((mm = re.exec(svg))){ const t = mm[1].trim(); if (_REFDES.test(t)) drawn.add(t); }
+  const mapped = new Set(Object.keys(REF_MAP));
+  const diff = (a, b) => [...a].filter(x => !b.has(x));
+  const issues = [];
+  if (diff(drawn, mapped).length) issues.push("drawn but unmapped: " + diff(drawn, mapped).join(", "));
+  if (diff(mapped, drawn).length) issues.push("mapped but not drawn: " + diff(mapped, drawn).join(", "));
+  if (diff(netlist, drawn).length) issues.push("in netlist, not drawn: " + diff(netlist, drawn).join(", "));
+  $("schemStamp").innerHTML = issues.length ? `<span style="color:var(--bad)">⚠ MISMATCH</span> — ${drawn.size} drawn / ${mapped.size} mapped / ${netlist.size} netlist · ${issues.join(" · ")}`
+    : `<span style="color:var(--good)">schematic ↔ values ↔ netlist: MATCH</span> (${drawn.size} drawn = ${mapped.size} mapped = ${netlist.size} netlist)`;
+  const seen = new Set(); let lt = "<tr><th>family</th><th>role</th><th>live value</th></tr>";
+  for (const ref in REF_MAP){ const m = REF_MAP[ref]; if (seen.has(m.fam)) continue; seen.add(m.fam);
+    lt += `<tr><td>${m.fam}</td><td style="text-align:left">${m.role}</td><td class="${m.flag === "collapsed" || (m.flag === "motor" && !state.motor) ? "flag" : ""}">${m.val(state)}</td></tr>`; }
+  $("legendTable").innerHTML = lt;
+}
+
+$("btnCompute").addEventListener("click", compute);
+$("btnSweep").addEventListener("click", sweep);
+$("btnPreset").addEventListener("click", loadPreset);
+$("btnSchem").addEventListener("click", openSchematic);
+$("schemClose").addEventListener("click", () => $("schemOverlay").style.display = "none");
+$("twins").addEventListener("change", onInput);
+window.addEventListener("resize", () => { if (lastRes) render(lastRes); });
+const _origRender = renderCanaries;
+renderCanaries = function(r){ lastCanaries = r.canaries.rows; _origRender(r); };
+boot();
+</script>
+</body>
+</html>

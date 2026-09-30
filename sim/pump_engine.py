@@ -722,6 +722,22 @@ class Ring:
             i2 += 0.5 * h * w * I * I; i1 += 0.5 * h * w * I
         return i2, i1
 
+    def exact_integrals(self, z0, h):
+        """int_0^h I_k^2 and int_0^h I_k EXACTLY (Van Loan block exponentials): the Gram matrix
+        X = int e^{As} z0 z0^T e^{A^T s} ds = F22^T F12 of expm([[-A, z0 z0^T], [0, A^T]] h), and
+        int e^{As} ds from expm([[A, I], [0, 0]] h). Used where a step spans a large part of a live
+        oscillation (continuous-mode motor steps). [OC/ME]"""
+        n = self.A.shape[0]
+        Mx = np.zeros((2 * n, 2 * n))
+        Mx[:n, :n] = -self.A; Mx[:n, n:] = np.outer(z0, z0); Mx[n:, n:] = self.A.T
+        F = expm(Mx * h)
+        X = F[n:, n:].T @ F[:n, n:]
+        My = np.zeros((2 * n, 2 * n)); My[:n, :n] = self.A; My[:n, n:] = np.eye(n)
+        S = expm(My * h)[:n, n:]
+        i2 = np.array([X[self.nc + k, self.nc + k] for k in range(self.m)])
+        i1 = (S @ z0)[self.nc:]
+        return i2, i1
+
     def h_max(self, z):
         """r0.2 step rule: 1/48 of the fastest oscillatory mode still carrying amplitude, else a
         quarter of the slowest decay. Returns (h_max, h_first, osc)."""
@@ -916,7 +932,12 @@ class Sim:
                                     prev=list(range(len(hc))))
         self.cond = self._keep_lit() | set(held[k] for k in S)
         self._tq(Mq)
-        self.ledger["W"] += 0.5 * V1 @ K1 @ V1 - U0
+        if len(S) == len(hc):
+            # same closures: dU at constant cluster charge, cancellation-free [OC]:
+            # U1 - U0 = -1/2 V1^T (K1 - K0) V0
+            self.ledger["W"] += -0.5 * V1 @ (K1 - K0) @ V0
+        else:
+            self.ledger["W"] += 0.5 * V1 @ K1 @ V1 - U0
         self.th = th1
 
     # ---- continuous mode: motor branch dynamics over dt at frozen caps ----
@@ -929,7 +950,7 @@ class Sim:
             held = self.held_rects()
             R = Ring(self.net, self.alg, K, edges, self.motor)
             z0 = R.z_of(self.q, self.I[self.motor])
-            i2, i1 = R.integrals(z0, dt)
+            i2, i1 = R.exact_integrals(z0, dt)
             E = R.E(dt)
             z1 = E @ z0
             qn = R.KPKci @ z1[:R.nc] if R.nc else np.zeros(self.N)
@@ -987,8 +1008,13 @@ class Sim:
         Snames = [cands[k][0] for k in S]
         new_closed = [n for n in Snames if n not in self.cond] + new_arcs
         if not new_closed:
-            self.cond = self._keep_lit() | set(Snames)
-            self._tq(Mq)
+            newcond = self._keep_lit() | set(Snames)
+            # nothing switched: the re-projection is the identity up to rounding; in robust mode it
+            # is skipped (with 440 nF motor caps beside pF strays each no-op projection costs
+            # ~1e-12 of the stored energy) [ME]
+            if self.compat or newcond != self.cond:
+                self.cond = newcond
+                self._tq(Mq)
             return None
         return self.fire(th, K, new_closed, Snames, held, base_fixed, new_arcs, Mq, vf, lam, S)
 

@@ -1,0 +1,24 @@
+{
+ "preset": "pass-A-ngspice-config",
+ "version": "1.0",
+ "date": "2026-09-30",
+ "engine": "sim/pump_engine.py (pump-calc r0.1)",
+ "title": "Pass A ngspice configuration (the E5 reconciliation config)",
+ "description": "tanh C1/C2 schedule (k 12), cx_min 60 pF, pCboss2 6 pF, R_LX 20 ohm, windows to 27 deg; bracket b (fire/backstop valve latched), load valve. ngspice (Pass A R1b) gave z 2.1598 / eta 0.7007 with gap RON 2 ohm and 0.5 us arming edges; see sim/pump-calc-findings.md E5.",
+ "config": {
+  "profile": "tanh",
+  "tanh_k": 12.0,
+  "cx_min": 60.0,
+  "pCboss2": 6.0,
+  "R_lx": 20.0,
+  "win_end": 27.0
+ },
+ "twins": true,
+ "expect": {
+  "z": {
+   "value": 2.2257558765451084,
+   "tol": 1e-09,
+   "why": "this engine (exact algebra); ngspice R1b = 2.1598"
+  }
+ }
+}

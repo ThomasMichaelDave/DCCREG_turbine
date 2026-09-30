@@ -1,0 +1,27 @@
+{
+ "preset": "default-drawn-R1-valve",
+ "version": "1.0",
+ "date": "2026-09-30",
+ "engine": "sim/pump_engine.py (pump-calc r0.1)",
+ "title": "Drawn pump, Lx 1 mH, one-way valves (R1, M-OW)",
+ "description": "As G1 with Lx3/Lx4 = 1 mH, 2 ohm. Load gaps valve (re-closing), fire/backstop valve latched after the first quench (r0.2 bracket b). The valve's reverse TRV is ~1.54 V_f: it needs a rectifier.",
+ "config": {},
+ "twins": true,
+ "expect": {
+  "z": {
+   "value": 1.6251534218485557,
+   "tol": 1e-09,
+   "why": "this engine (gate P0)"
+  },
+  "G": {
+   "value": 1.3451489341291132,
+   "tol": 1e-09,
+   "why": "its G twin"
+  },
+  "G0": {
+   "value": 1.439602457726648,
+   "tol": 1e-09,
+   "why": "its G0 twin"
+  }
+ }
+}

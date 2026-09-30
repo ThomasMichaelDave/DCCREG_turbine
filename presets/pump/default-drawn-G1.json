@@ -1,0 +1,19 @@
+{
+ "preset": "default-drawn-G1",
+ "version": "1.0",
+ "date": "2026-09-30",
+ "engine": "sim/pump_engine.py (pump-calc r0.1)",
+ "title": "Drawn pump, Lx shorted (G1), all gaps valve",
+ "description": "The drawn 43-part sheet with the tank collapsed, motor out, canary caps, Cx 471->8 pF, strays 5 pF; Lx3/Lx4 shorted. Robust (phase-exact) arming; the r0.2 float-mod arming gives 1.3451286534 (the 0.05-deg late-arming artifact).",
+ "config": {
+  "Lx_mH": 0.0
+ },
+ "twins": true,
+ "expect": {
+  "z": {
+   "value": 1.3451489341291132,
+   "tol": 1e-09,
+   "why": "this engine, robust arming (gate P0: monodromy = iteration)"
+  }
+ }
+}

@@ -1,0 +1,21 @@
+{
+ "preset": "canary-core-simultaneous",
+ "version": "1.0",
+ "date": "2026-09-30",
+ "engine": "sim/pump_engine.py (pump-calc r0.1)",
+ "title": "K1 canary \u2014 bare core, always armed (the solve_doubler4 machine)",
+ "description": "The 4-node doubler with ideal rectifiers D1-D4 always armed, two-phase canary caps (C1/C2 16-280 pF, Ca=Cb 309 pF, Cpar 20 pF). z must equal solve_doubler4 = 1.3340016.",
+ "config": {
+  "topology": "core",
+  "simultaneous": true,
+  "dth": 1.0
+ },
+ "twins": false,
+ "expect": {
+  "z": {
+   "value": 1.3340016,
+   "tol": 1e-06,
+   "why": "K1: doubler_core.solve_doubler4 at the canary caps"
+  }
+ }
+}
