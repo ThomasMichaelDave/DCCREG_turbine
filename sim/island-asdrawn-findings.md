@@ -1,3 +1,5 @@
+> re-graded by Pass A′ — see `sim/island-gapbracket-findings.md`
+
 # Findings — ISLAND-ASDRAWN Pass A (brief r0.2): event-driven KCL solver on the drawn sheet
 
 **Branch** `claude/new-session-0az7f9`. It is based on `kicad-overlay` f9c9efa, and this session may

@@ -5,6 +5,14 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **ISLAND-ASDRAWN Pass A′ → `CONDITIONAL-ON-RECOVERY (t_rec ≤ 0.1 µs)` · `MOTOR-NOT-ASSESSED` · not `STRAY-DEPENDENT`** (`sim/island_gapbracket.py`, `sim/island-gapbracket-findings.md`). This re-grades Pass A's `SINK-PARTIAL` (302f9f2) under physical commutation of the load gaps. It imports the r0.1 ngspice harness read-only and rewrites only the gap elements (new decks `spice/ia2_*`).
+  - **Gates H0–H5, H7 and H8 pass; H6 (motor convergence) fails on G1m → `MOTOR-NOT-ASSESSED`.** H0 reproduces Pass A and D1 to ≤ 1e-4. H1 limits: M-SR → M-OW, M-RD(→0) → D1. H5: an independent event engine agrees within 0.5 %. H3 ledger residual ≤ 0.66 % of E_diss.
+  - **P1 ✓:** the one-way load gap blocks a reverse TRV of 1.41 × V_f within 0.35–0.38 µs, i.e. it is a rectifier.
+  - **P2 ✓:** full ring-down (M-RD, I_hold → 0) gives Δη −0.002 (`SINK-IS-PUMP`).
+  - **Surviving gain:** only for I_hold ≥ 0.3 i_pk1 and t_rec ≤ 0.1 µs (Δη +0.012 to +0.038 across the parity band, η ≤ 0.44). t_rec ≥ 1 µs re-strikes → `PUMP-BREAKS` (z 1.385).
+  - **P3 ✗, P4 ✗:** motor G1m is not converged across reltol → `MOTOR-NOT-ASSESSED`. The Δη sign is stable across strays of 0, 5 and 20 pF.
+  - **Q6 gap spec:** 35 kV reverse withstand within 0.35 µs, 24 A peak, 0.66 µC per event.
+  - The Pass A record is frozen; `sim/island-asdrawn-findings.md` gains only a pointer line. Not merged.
 - **ISLAND-ASDRAWN Pass A, brief r0.2 → `HARNESS-FAIL` at H3 (no verdict)** (`sim/island_asdrawn.py`, `sim/island-asdrawn-findings.md`). This adds a new event-driven KCL solver (constant-charge strokes, exact complementarity events, Schur-complement losses, exact matrix-exponential rings with quench and relaxation, continuous motor mode).
   - **Gates that pass:**
     - H1: S2 ring, t½ within 0.005 %, V_bank within 5e-5 %.
