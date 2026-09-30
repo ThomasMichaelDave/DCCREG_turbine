@@ -10,3 +10,5 @@ spice/ia_raw/
 spice/ia_*.dat
 sim/.ia_campaign.json
 spice/asd_*.dat
+sim/.ia2_*.json
+spice/ia2_*.dat
