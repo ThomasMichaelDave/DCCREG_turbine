@@ -5,6 +5,19 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **ISLAND-ASDRAWN Pass A, brief r0.2 → `HARNESS-FAIL` at H3 (no verdict)** (`sim/island_asdrawn.py`, `sim/island-asdrawn-findings.md`). This adds a new event-driven KCL solver (constant-charge strokes, exact complementarity events, Schur-complement losses, exact matrix-exponential rings with quench and relaxation, continuous motor mode).
+  - **Gates that pass:**
+    - H1: S2 ring, t½ within 0.005 %, V_bank within 5e-5 %.
+    - H2: seq-stat, z 1.3907 / 1.3905.
+    - H3 always-armed: matches `solve_doubler4` to 4e-12, with η 0.385956 equal to the frozen ledger.
+    - H4: matches `shuttle_core` to 3e-16.
+    - H4b: exact in the overdamped limit.
+  - **H3 station-armed fails.** DXF-phased arming (return 3.0°, then cross-couple 7.2°) gives z 1.5225 against 1.3340 (+14 %; +18 % at Cpar 10 pF). This is confirmed by an independent node-level KKT solve. Station phasing binds, and `solve_doubler4` is not the DXF machine.
+  - **Second finding:** per-cycle η of a growing, unloaded pump depends on the cut once events are sequential (0.559 vs 0.329 at the same z).
+  - R0 is again not observable. R1–R4 were not run, per the §5 stop rule. Both findings are routed to TMD.
+  - The r0.1 ngspice harness and its `SINK-PARTIAL` result are withdrawn (renamed `*_r01_*`; its runner is disabled because its decks are now frozen). New `spice/` names use the `asd_` prefix. Frozen empty-diff asserted. Not merged.
+
+### Simulation
 - **ISLAND-ASDRAWN Pass A — circuit-level run of the 43-part sheet → `SINK-PARTIAL` · `MOTOR-DEPENDENT` · `PREMISE-FAILS` · `LOOP-BYPASSED`** (`sim/island_asdrawn.py`, `sim/island-asdrawn-findings.md`). The drawn deck (edge list node-exact, rail collapsed, DXF-armed gaps, both island-gap brackets) passes all harness gates H1–H7. Series Lx 1 mH raises the pump well above its own Lx→0 twin: z 1.95/2.16 vs 1.41 and η 0.57/0.70 vs 0.40 (bracket a/b). f_rec,meas is 0.34/0.60, below 0.86, so the class is `SINK-PARTIAL`; the measured η band 0.57–0.70 replaces 0.50. The pre-committed `SINK-IS-PUMP` prediction is **falsified**. The bank premise fails (0.6 % of load-stroke charge reaches C_BR; t½ 0.69 µs vs 2.16 µs), and the fire only rings Cx3 locally. The gain comes from the resonant **load stroke** (soft charging of the pump's own D3/D4 slot), which the continuous-diode arbiter cannot step-excite. R0 (frozen arbiter at 1 mH) and R4 (frozen `sparkgap.sub`) are not observable numerically; this is recorded. New: `spice/timing_asdrawn.sub`, `spice/sparkgap_bidir.sub`, `spice/ia_*.cir`, `island_asdrawn_{runs,t1,ledger,peaks}.csv`, `island_asdrawn_traces.png`. Frozen empty-diff vs f9c9efa asserted. Not merged.
 
 ### Documentation

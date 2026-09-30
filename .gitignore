@@ -9,3 +9,4 @@ __pycache__/
 spice/ia_raw/
 spice/ia_*.dat
 sim/.ia_campaign.json
+spice/asd_*.dat
