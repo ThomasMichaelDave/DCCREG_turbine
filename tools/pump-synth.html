@@ -101,6 +101,7 @@
   code{color:var(--acc)}
   .scroll{overflow-x:auto}
   .greyed{opacity:.35}
+  #app.locked #platesHost,#app.locked #firingHost,#app.locked #driveHost,#app.locked #choiceHost,#app.locked .pin{opacity:.45;pointer-events:none}
   .stale{opacity:.55}
   #refBody h1{font-size:15px;color:#dfe8f1;margin:14px 0 4px}
   #refBody h2{font-size:13px;color:var(--brass);margin:16px 0 4px;border-top:1px solid var(--line);padding-top:8px}
@@ -177,6 +178,7 @@
         <div class="row" style="margin-top:12px">
           <button id="reset">↺ reset to anchor</button>
           <button id="btnCompute" class="primary">▶ compute</button>
+          <button id="btnLock" title="lock stage 1 (plates, ladder, engine verdict) and open the plate-geometry stage">🔒 lock → geometry</button>
           <span id="busy"></span>
         </div>
         <div id="progress" class="note"></div>
@@ -270,6 +272,56 @@
     </div>
   </div>
 
+  <!-- ================= STAGE 2 — plate geometry (after the stage-1 lock) ================= -->
+  <div class="panel" id="stage2" style="display:none">
+    <div class="row" style="justify-content:space-between">
+      <div class="brass">Stage 2 — capacitor plate geometry · Ca / Cb geometrized · everything else locked context from the r0.15 DXF</div>
+      <div class="row"><span id="lockBadge" class="badge"></span><button id="btnUnlock" class="mini">unlock stage 1</button></div>
+    </div>
+    <div id="lockNote" class="note"></div>
+    <div class="grid2" style="display:grid;grid-template-columns:300px minmax(0,1fr);gap:14px;margin-top:8px">
+      <div>
+        <div class="panel sub">
+          <div class="brass">Ca / Cb electrodes</div>
+          <div id="geomHost"></div>
+          <details><summary>stack placeholders [IR]</summary><div id="stackHost"></div></details>
+        </div>
+        <div class="panel sub" style="margin-top:8px">
+          <div class="brass">result · round trip</div>
+          <div id="geomOut"></div>
+          <div id="rtOut" class="note" style="margin-top:4px"></div>
+        </div>
+        <div class="panel sub" style="margin-top:8px">
+          <div class="brass">export</div>
+          <div class="row"><button id="btnJson" class="primary">⤓ pump-geometry.json</button>
+            <a id="lnkMacro" href="./pump-geometry.FCMacro" download="pump-geometry.FCMacro"><button>⤓ FreeCAD macro</button></a></div>
+          <div class="note">FreeCAD: Macro ▸ Macros… ▸ Execute <code>pump-geometry.FCMacro</code>, pick the JSON. It builds every
+            carrier, foil sector and dielectric slab (grouped, coloured by node) and saves <code>.FCStd</code> + <code>.step</code>
+            next to the JSON. Reference build: <code>docs/geometry/freeze-v010-CaCb.step</code>.</div>
+        </div>
+      </div>
+      <div>
+        <div class="panel sub">
+          <div class="row" style="justify-content:space-between"><div class="brass">plate distribution — plan (angles counter-clockwise from electrical 0° = +x)</div>
+            <div id="discBtns" class="row" style="margin:0"></div></div>
+          <div class="cols2">
+            <svg id="planSvg" viewBox="0 0 420 420" width="100%" style="display:block;max-height:440px"></svg>
+            <div><div id="planLegend" class="note"></div><table class="t" id="faceTable" style="margin-top:6px"></table></div>
+          </div>
+        </div>
+        <div class="panel sub" style="margin-top:8px">
+          <div class="brass">axial stack — half section (r → right, z = shaft axis ↓; z exaggerated ×<span id="zx"></span>) · septum mid-plane z = 0</div>
+          <svg id="stackSvg" viewBox="0 0 900 420" width="100%" style="display:block"></svg>
+          <div class="note" id="stackNote"></div>
+        </div>
+        <div class="panel sub" style="margin-top:8px">
+          <div class="brass">geometric checks (stage 2)</div>
+          <div id="geomChecks"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ================= DETAILS (collapsed) ================= -->
   <details class="panel" id="detailsPanel" style="display:none">
     <summary>Details — waveforms, gap events (TRV), η(cut) band, sweeps, scaling</summary>
@@ -308,6 +360,7 @@
 </div>
 
 <script src="./pump-sizing.js"></script>
+<script src="./pump-geometry.js"></script>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
@@ -651,6 +704,7 @@ function writeHash(){
     else if (state[id] !== DEFAULTS[id]) p.set(id, state[id]);
   }
   for (const k in pins) p.set("pin_" + k, pins[k]);
+  if (typeof stage2Hash === "function") stage2Hash(p);          // stage 2 (geometry) keeps its own keys
   history.replaceState(null, "", "#" + p.toString());
 }
 /** the engine input: only what differs from the defaults (plus pins) */
@@ -760,6 +814,7 @@ function onWorker(w, m){
       return;
     }
     setSolver("ok", "SOLVER: live · K1–K4 + H-GEOM pass");
+    if (typeof stage2Init === "function") stage2Init();
     compute();
     return;
   }
@@ -838,6 +893,7 @@ async function compute(){
     $("progress").textContent = `headline + strip ${lastP1.toFixed(1)} s · with twins ${((performance.now() - t0) / 1000).toFixed(1)} s`;
   }
   unstale();
+  if (typeof stage2OnResult === "function") stage2OnResult(res);
   finish();
 }
 function finish(){
@@ -1254,6 +1310,241 @@ $("reset").addEventListener("click", () => {
 window.addEventListener("resize", () => { if (lastRes) renderDetails(lastRes.engine, lastRes.converged); });
 window.addEventListener("error", e => { if (!canaryOK && main) bootFail("page script error: " + e.message); });
 boot();
+</script>
+<script>
+"use strict";
+/* =====================================================================================
+   STAGE 2 — capacitor plate geometry (TMD 2026-10-01). Stage 1 (plates → ladder → exact engine) is LOCKED
+   first: its inputs, ladder and z are frozen into a hashed record kept in the URL (lock=, lockz=) and
+   re-verified against the engine on reload (fail-closed: a mismatch shows LOCK DRIFT). Stage 2 turns the locked
+   Ca/Cb into electrode footprints (tools/pump-geometry.js = sim/pump_geometry.py, gate G-JS), shows the full
+   plate distribution seeded from the r0.15 DXF, checks the axial stack, round-trips any deviation of the
+   realized C through the exact engine, and exports pump-geometry.json for tools/pump-geometry.FCMacro.
+   ===================================================================================== */
+const PG = window.PumpGeometry;
+const GFIELDS = [
+  ["geom", "ca_diel", "dielectric", [["mica", "mica ε_r 5.4 (freeze)"], ["mylar", "Mylar 3.2"], ["kapton", "Kapton 3.4"], ["pp_film", "PP film 2.2"], ["air", "air"]]],
+  ["geom", "ca_t", "dielectric thickness", 0.1, 20, 0.05, "mm"],
+  ["geom", "ca_mode", "solve for", [["r_out", "r_out (r_in pinned)"], ["r_in", "r_in (r_out pinned)"], ["width", "sector width (radii pinned)"], ["forward", "nothing (forward: all given)"]]],
+  ["geom", "ca_rin", "r_in", 0, 450, 0.5, "mm"],
+  ["geom", "ca_rout", "r_out", 1, 500, 0.5, "mm"],
+  ["geom", "ca_w", "sector width", 1, 60, 0.1, "°"],
+  ["geom", "ca_round", "manufacturing step (0 = exact)", 0, 10, 0.1, "mm / °"],
+  ["geom", "ca_margin", "dielectric margin around the foil", 0, 30, 0.5, "mm"],
+  ["stack", "t_foil", "foil electrode", 0.05, 5, 0.05, "mm"],
+  ["stack", "t_carrier", "stator carrier", 0.5, 20, 0.1, "mm"],
+  ["stack", "t_rotor", "rotor disc", 1, 40, 0.5, "mm"],
+  ["stack", "t_flange", "rotor flange", 1, 40, 0.5, "mm"],
+  ["stack", "t_septum", "septum (C_R)", 1, 40, 0.5, "mm"],
+  ["stack", "r_bore", "stator carrier bore", 0, 200, 1, "mm"],
+  ["stack", "cx_air", "Cx gap air", 0.1, 20, 0.1, "mm"],
+  ["stack", "cx_mica", "Cx mica per face", 0, 3, 0.05, "mm"],
+  ["stack", "rotor_in_off", "rotor face r_in offset", 0, 100, 1, "mm"],
+];
+const gstate = Object.assign({}, PG.GEOM_DEFAULTS);
+let LOCK = null, lockFromHash = null, design = null, disc = "assembly", rt = null, rtKey = "", rtTimer = null;
+const NODE_COL = {"1": "--c1", "2": "--c2", "3": "--c3", "4": "--c4", "5": "--c5", "6": "--c6", "7": "--c7", "8": "--c8"};
+const nodeCol = n => css(NODE_COL[String(n)[0]] || "--mut");
+
+function stage2Hash(p){
+  if (!LOCK) return;
+  p.set("lock", LOCK.hash); p.set("lockz", String(LOCK.z));
+  for (const k in gstate) if (gstate[k] !== PG.GEOM_DEFAULTS[k]) p.set("g." + k, gstate[k]);
+}
+function stage2Init(){
+  const p = new URLSearchParams(location.hash.replace(/^#/, ""));
+  for (const f of GFIELDS){ const v = p.get("g." + f[1]); if (v == null) continue;
+    gstate[f[1]] = Array.isArray(f[3]) ? (f[3].some(o => o[0] === v) ? v : gstate[f[1]]) : Math.max(f[3], Math.min(f[4], +v)); }
+  if (p.get("lock")) lockFromHash = {hash: p.get("lock"), z: +p.get("lockz")};
+  buildGeomInputs();
+  $("btnLock").addEventListener("click", doLock);
+  $("btnUnlock").addEventListener("click", () => { if (confirm("Unlock stage 1? The plate geometry is re-derived from whatever stage 1 becomes.")) applyLock(null); });
+  $("btnJson").addEventListener("click", exportJson);
+}
+function buildGeomInputs(){
+  for (const [host, el] of [["geom", "geomHost"], ["stack", "stackHost"]]){
+    $(el).innerHTML = GFIELDS.filter(f => f[0] === host).map(f => {
+      const ctl = Array.isArray(f[3]) ? `<select id="g_${f[1]}">${f[3].map(([v, l]) => `<option value="${v}">${l}</option>`).join("")}</select>`
+        : `<input type="number" id="g_${f[1]}" min="${f[3]}" max="${f[4]}" step="${f[5]}">`;
+      return `<div class="f"><label for="g_${f[1]}">${f[2]}${f[6] ? " (" + f[6] + ")" : ""}</label>${ctl}</div>`; }).join("");
+  }
+  for (const f of GFIELDS){
+    const n = $("g_" + f[1]); n.value = gstate[f[1]];
+    n.addEventListener(Array.isArray(f[3]) ? "change" : "input", e => {
+      if (Array.isArray(f[3])) gstate[f[1]] = e.target.value;
+      else { const v = +e.target.value; if (!isFinite(v)) return; gstate[f[1]] = Math.max(f[3], Math.min(f[4], v)); }
+      writeHash(); stage2Render();
+    });
+  }
+}
+async function doLock(){
+  if (!canaryOK) return;
+  if (!lastRes || stale || busy){ $("progress").textContent = "lock: wait until the exact engine has evaluated the current inputs"; return; }
+  if (!lastRes.converged){ $("progress").textContent = "lock refused: the engine did not converge on these inputs"; return; }
+  const rec = PG.lock_record(lastSizing, inputs(), lastRes.z, lastRes.converged, bootInfo.engine_version);
+  rec.hash = await PG.lock_hash(rec);
+  applyLock({rec, hash: rec.hash, z: lastRes.z, verified: true, pumps: lastRes.pumps});
+}
+function applyLock(L){
+  LOCK = L;
+  const on = !!L;
+  $("app").classList.toggle("locked", on);
+  for (const host of ["platesHost", "firingHost", "driveHost", "choiceHost"])
+    $(host).querySelectorAll("input,select").forEach(n => n.disabled = on);
+  for (const id of ["reset", "solve", "btnPreset", "btnLock", "btnMinPlate"]) $(id).disabled = on;
+  $("stage2").style.display = on ? "" : "none";
+  writeHash();
+  if (on){ stage2Render(); $("stage2").scrollIntoView({behavior: "smooth", block: "start"}); }
+}
+async function stage2OnResult(res){
+  if (!lockFromHash) return;
+  const want = lockFromHash; lockFromHash = null;
+  const rec = PG.lock_record(lastSizing, inputs(), res.z, res.converged, bootInfo.engine_version);
+  rec.hash = await PG.lock_hash(rec);
+  const ok = rec.hash === want.hash && res.converged && Math.abs(res.z - want.z) <= 1e-9;
+  applyLock({rec, hash: rec.hash, z: res.z, verified: ok, pumps: res.pumps, drift: ok ? null : want});
+}
+
+function stage2Render(){
+  if (!LOCK) return;
+  try { design = PG.build(LOCK.rec, gstate); } catch (e){ $("geomOut").textContent = "geometry: " + e.message; return; }
+  design.lock.verified = LOCK.verified;
+  const b = $("lockBadge");
+  b.innerHTML = `<span class="dot ${LOCK.verified ? "ok" : "no"}"></span>${LOCK.verified ? "stage 1 LOCKED" : "LOCK DRIFT"} · ${LOCK.hash} · z ${LOCK.z.toFixed(6)}`;
+  $("lockNote").innerHTML = LOCK.verified
+    ? `Locked: rotor R${LOCK.rec.plates.r_inMm}–R${LOCK.rec.plates.r_outMm}, g_v ${LOCK.rec.plates.g_vMm} mm, ${LOCK.rec.plates.n_kept}/${LOCK.rec.plates.N_sec} · Ca = Cb = ${LOCK.rec.ladder.Ca.toFixed(2)} pF · ` +
+      `z ${LOCK.z.toFixed(6)} (${LOCK.pumps ? "PUMPS: YES" : "PUMPS: NO"}). Stage-1 controls are frozen; the hash re-verifies against the engine on every reload.`
+    : `<span style="color:var(--bad)">LOCK DRIFT</span> — the URL's lock ${LOCK.drift ? LOCK.drift.hash + " / z " + LOCK.drift.z : ""} does not reproduce on this engine (now ${LOCK.hash} / z ${LOCK.z.toFixed(10)}). Unlock and re-lock deliberately.`;
+  const kv = (k, v) => `<div class="kv"><span>${k}</span><b>${v}</b></div>`;
+  const ca = design.Ca;
+  $("geomOut").innerHTML = kv("electrode", `${ca.n} × ${ca.w_deg.toFixed(2)}° · r${ca.r_in.toFixed(2)}–${ca.r_out.toFixed(2)} mm`) +
+    kv("area needed / realized", `${(ca.area_needed_mm2 / 1e6).toFixed(5)} / ${(ca.area_mm2 / 1e6).toFixed(5)} m²`) +
+    kv("dielectric", `${ca.diel} ε_r ${ca.eps_r} · ${ca.t} mm`) +
+    kv("C realized vs locked", `${ca.C_pF.toFixed(3)} / ${ca.C_target_pF.toFixed(3)} pF (${(Math.abs(ca.dC_rel) < 5e-7 ? 0 : ca.dC_rel * 100).toFixed(4)} %)`) +
+    kv("Cb", `same spec, even sectors: ${design.Cb.C_pF.toFixed(3)} pF`) +
+    kv("stack height", `${design.z_total.toFixed(1)} mm · carrier edge R${design.r_edge.toFixed(0)}`) +
+    (ca.note ? `<div class="note" style="color:var(--warn)">${ca.note}</div>` : "");
+  // checks
+  const ch = design.checks;
+  $("geomChecks").innerHTML = Object.entries(ch).map(([k, v]) => `<div class="lamp"><span class="dot ${v.pass_ ? "ok" : "no"}"></span><span class="nm" style="min-width:300px">${k}</span><span class="det">${v.detail}</span></div>`).join("") +
+    `<div class="note">${Object.values(ch).filter(v => v.pass_).length} / ${Object.keys(ch).length} pass. Stack order and carrier/foil thicknesses are [IR] placeholders (the DXF has no axial section): confirm in CAD.</div>`;
+  drawDiscButtons(); drawPlan(); drawStack();
+  scheduleRoundTrip();
+}
+function scheduleRoundTrip(){
+  if (rtTimer) clearTimeout(rtTimer);
+  const ca = design.Ca, cb = design.Cb;
+  if (Math.abs(ca.dC_rel) <= 1e-12 && Math.abs(cb.dC_rel) <= 1e-12){
+    $("rtOut").innerHTML = "realized Ca/Cb = locked values (to 1e-12): the locked z holds — no engine run needed."; rt = null; return; }
+  const key = ca.C_pF.toPrecision(15) + "/" + cb.C_pF.toPrecision(15);
+  if (key === rtKey && rt){ showRT(); return; }
+  $("rtOut").innerHTML = '<span class="spin"></span> realized C differs from the lock — exact engine round trip…';
+  rtTimer = setTimeout(async () => {
+    const inp = Object.assign({}, LOCK.rec.inputs);
+    inp.pins = Object.assign({}, inp.pins || {}, {Ca: ca.C_pF, Cb: cb.C_pF});
+    const w = helpersReady.length ? helpersReady[0] : main;
+    const m = await request(w, "z", {inp, over: {}, model: "geometry round trip"});
+    if (m.type !== "result"){ $("rtOut").textContent = "round trip failed: " + m.error; return; }
+    rt = m.result; rtKey = key; showRT();
+  }, 500);
+}
+function showRT(){
+  if (!rt) return;
+  const dz = rt.z - LOCK.z;
+  $("rtOut").innerHTML = rt.converged
+    ? `exact engine with Ca/Cb pinned at the realized values: z <b>${rt.z.toFixed(6)}</b> (Δz ${dz >= 0 ? "+" : ""}${dz.toExponential(2)} vs the lock) — ` +
+      `<b style="color:${rt.z > 1 ? "var(--good)" : "var(--bad)"}">${rt.z > 1 ? "still pumps" : "DOES NOT PUMP"}</b> · ${rt.time_s.toFixed(1)} s`
+    : "exact engine: not converged at the realized values — no number is shown";
+}
+
+/* ---- plan view: one carrier (both faces) or the assembly overlay ---- */
+function carriers(){ return design.stack.filter(s => s.kind === "rotor" || s.kind === "stator" || s.kind === "rotor-flange"); }
+function facesOf(id){
+  const st = design.stack, i = st.findIndex(s => s.id === id), out = [];
+  for (const j of [i - 1, i + 1]) if (st[j] && st[j].kind === "foil") out.push(Object.assign({}, st[j], {face: (Math.abs(st[j].z0) < Math.abs(st[i].z0)) ? "septum side" : "outer side"}));
+  return out;
+}
+function drawDiscButtons(){
+  const ids = ["assembly"].concat(carriers().map(c => c.id));
+  $("discBtns").innerHTML = ids.map(id => `<button class="mini" data-disc="${id}" style="${id === disc ? "border-color:var(--acc);color:#cfe9ff" : ""}">${id}</button>`).join("");
+  document.querySelectorAll("[data-disc]").forEach(n => n.addEventListener("click", () => { disc = n.dataset.disc; drawDiscButtons(); drawPlan(); }));
+}
+function sectorPath(cx, cy, ri, ro, a0, w){
+  const P = (r, a) => `${(cx + r * Math.cos(a * Math.PI / 180)).toFixed(2)},${(cy - r * Math.sin(a * Math.PI / 180)).toFixed(2)}`;
+  if (w >= 359.999) return `M ${cx + ro} ${cy} A ${ro} ${ro} 0 1 0 ${cx - ro} ${cy} A ${ro} ${ro} 0 1 0 ${cx + ro} ${cy} Z` +
+    (ri > 0 ? ` M ${cx + ri} ${cy} A ${ri} ${ri} 0 1 1 ${cx - ri} ${cy} A ${ri} ${ri} 0 1 1 ${cx + ri} ${cy} Z` : "");
+  const large = w > 180 ? 1 : 0, a1 = a0 + w;
+  return `M ${P(ri, a0)} L ${P(ro, a0)} A ${ro} ${ro} 0 ${large} 0 ${P(ro, a1)} L ${P(ri, a1)} ` + (ri > 0 ? `A ${ri} ${ri} 0 ${large} 1 ${P(ri, a0)} Z` : "Z");
+}
+function drawPlan(){
+  const svg = $("planSvg"), cx = 210, cy = 210, R = 195, sc = R / design.r_edge;
+  let h = `<circle cx="${cx}" cy="${cy}" r="${R}" fill="${css("--panel2")}" stroke="${css("--line")}"/>`;
+  let foils = [], car = null;
+  if (disc === "assembly") foils = design.stack.filter(s => s.kind === "foil");
+  else { car = design.stack.find(s => s.id === disc); foils = facesOf(disc); h += `<circle cx="${cx}" cy="${cy}" r="${(car.r_in * sc).toFixed(1)}" fill="${css("--bg")}" stroke="${css("--line")}"/>`; }
+  for (let a = 0; a < 360; a += 30) h += `<line x1="${cx}" y1="${cy}" x2="${(cx + R * Math.cos(a * Math.PI / 180)).toFixed(1)}" y2="${(cy - R * Math.sin(a * Math.PI / 180)).toFixed(1)}" stroke="${css("--grid")}" stroke-width="0.6"/>`;
+  foils.forEach((f, idx) => {
+    const isCa = f.cap === "Ca" || f.cap === "Cb";
+    const col = nodeCol(f.node);
+    const outer = car && f.face === "outer side";
+    const fillOp = disc === "assembly" ? 0.10 : (outer ? 0.0 : 0.42);
+    for (const s0 of f.starts)
+      h += `<path d="${sectorPath(cx, cy, f.r_in * sc, f.r_out * sc, s0, f.w_deg)}" fill="${col}" fill-opacity="${fillOp}" stroke="${col}" stroke-width="${isCa ? 1.8 : 0.9}" ${outer ? 'stroke-dasharray="4 2"' : ""}/>`;
+  });
+  h += `<line x1="${cx}" y1="${cy}" x2="${cx + R + 4}" y2="${cy}" stroke="${css("--amber")}" stroke-width="1"/><text x="${cx + R - 30}" y="${cy - 4}" fill="${css("--amber")}" font-size="9">0° el.</text>`;
+  if (disc !== "assembly"){
+    const caf = foils.find(f => f.cap === "Ca" || f.cap === "Cb");
+    if (caf){ const a = (caf.starts[0] + caf.w_deg / 2) * Math.PI / 180, rm = (caf.r_in + caf.r_out) / 2 * sc;
+      h += `<text x="${(cx + rm * Math.cos(a)).toFixed(1)}" y="${(cy - rm * Math.sin(a)).toFixed(1)}" fill="#fff" font-size="9" text-anchor="middle">${caf.cap}</text>`; }
+  }
+  h += `<text x="${cx}" y="${cy + 3}" fill="${css("--mut")}" font-size="9" text-anchor="middle">${disc}</text>`;
+  svg.innerHTML = h;
+  const nodes = [...new Set(foils.map(f => String(f.node)[0]))].sort();
+  $("planLegend").innerHTML = (disc === "assembly" ? "All electrodes overlaid (as the DXF \"stack section (assembly)\" frame). " :
+    `Carrier <b>${disc}</b> (${car.kind}, node ${car.node}, t ${car.t} mm, R${car.r_in.toFixed(0)}–R${car.r_out.toFixed(0)}): filled = face toward the septum, dashed = outer face. `) +
+    nodes.map(n => `<span style="color:${nodeCol(n)}">■ node ${n}</span>`).join(" · ") + ". Ca/Cb drawn heavier.";
+  let t = "<tr><th>foil</th><th>face</th><th>node</th><th>cap</th><th>r_in–r_out</th><th>sectors</th><th>area (m²)</th></tr>";
+  for (const f of foils) t += `<tr><td>${f.key}</td><td>${f.face || ""}</td><td>${f.node}</td><td>${f.cap}</td><td>${f.r_in.toFixed(1)}–${f.r_out.toFixed(1)}</td><td>${f.starts.length} × ${f.w_deg.toFixed(1)}°</td>` +
+    `<td>${(0.5 * f.w_deg * Math.PI / 180 * (f.r_out ** 2 - f.r_in ** 2) * f.starts.length / 1e6).toFixed(4)}</td></tr>`;
+  $("faceTable").innerHTML = disc === "assembly" ? "" : t;
+}
+/* ---- axial half-section ---- */
+function drawStack(){
+  const svg = $("stackSvg"), W = 900, H = 420, x0 = 60, x1 = 640, y0 = 14, y1 = H - 14;
+  const zmin = design.stack[0].z0, zmax = design.stack[design.stack.length - 1].z1;
+  const sx = (x1 - x0) / design.r_edge, sy = (y1 - y0) / (zmax - zmin);
+  $("zx").textContent = (sy / sx).toFixed(1);
+  const X = r => x0 + r * sx, Y = z => y0 + (z - zmin) * sy;
+  let h = `<line x1="${x0}" y1="${y0 - 6}" x2="${x0}" y2="${y1 + 6}" stroke="${css("--axis")}" stroke-dasharray="6 3"/><text x="${x0 - 6}" y="${y0 + 4}" fill="${css("--mut")}" font-size="9" text-anchor="end">axis</text>`;
+  for (const s of design.stack){
+    const ya = Y(s.z0), hh = Math.max(0.8, (s.z1 - s.z0) * sy);
+    if (s.kind === "gap"){
+      if (s.medium === "garolite" || s.medium === "mica"){
+        const fp = s.footprint ? design.footprints[s.footprint] : null;
+        const ri = fp ? Math.max(0, fp.r_in - s.margin) : (s.r_in || 0), ro = fp ? fp.r_out + s.margin : (s.r_out || design.r_edge);
+        h += `<rect x="${X(ri)}" y="${ya}" width="${(ro - ri) * sx}" height="${hh}" fill="${s.medium === "mica" ? "#8f8466" : "#6b6038"}" fill-opacity="0.55"/>`;
+      }
+      h += `<text x="${x1 + 10}" y="${(ya + hh / 2 + 3).toFixed(1)}" fill="${css("--mut")}" font-size="9">${s.id}: ${s.t.toFixed(2)} mm ${s.medium}${s.cap ? " — " + s.cap : ""}</text>`;
+    } else if (s.kind === "foil"){
+      h += `<rect x="${X(s.r_in)}" y="${ya}" width="${(s.r_out - s.r_in) * sx}" height="${hh}" fill="${nodeCol(s.node)}" stroke="${s.cap === "Ca" || s.cap === "Cb" ? "#fff" : "none"}" stroke-width="0.6"/>`;
+    } else {
+      h += `<rect x="${X(s.r_in)}" y="${ya}" width="${(s.r_out - s.r_in) * sx}" height="${hh}" fill="#2a3644" stroke="${css("--line")}"/>` +
+           `<text x="${X(s.r_out) - 4}" y="${(ya + hh / 2 + 3).toFixed(1)}" fill="#cfd8e2" font-size="9" text-anchor="end">${s.id} · node ${s.node}</text>`;
+    }
+  }
+  h += `<line x1="${x0}" y1="${Y(0)}" x2="${x1}" y2="${Y(0)}" stroke="${css("--amber")}" stroke-dasharray="2 3" stroke-width="0.8"/>`;
+  for (const r of [100, 200, 300, 400, 500]) if (r < design.r_edge) h += `<text x="${X(r)}" y="${H - 2}" fill="${css("--mut")}" font-size="8" text-anchor="middle">R${r}</text>`;
+  svg.innerHTML = h;
+  $("stackNote").innerHTML = "Order [IR]: each rotor half is a clamshell around its stator pair — flange (island bars) · Cx gap · ND2/ND3 · mica (Ca/Cb) · ND1/ND4 · 7 mm air (C1/C2) · rotor disc · septum (C_R). " +
+    "Foils are drawn over their radial band (their sectors are in the plan view). Mica and garolite slabs shaded; air gaps empty.";
+}
+function exportJson(){
+  if (!design) return;
+  const d = Object.assign({}, design, {exported: new Date().toISOString(), tool: "tools/pump-synth.html stage 2"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(d, null, 1)], {type: "application/json"}));
+  a.download = `pump-geometry-${LOCK.hash}.json`; a.click();
+}
 </script>
 </body>
 </html>

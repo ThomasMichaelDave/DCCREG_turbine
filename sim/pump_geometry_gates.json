@@ -1,0 +1,377 @@
+{
+ "G-SEED": {
+  "pass_": true,
+  "rows": [
+   {
+    "layer": "ND2-Ca-ELECTRODE",
+    "dxf": [
+     110.0,
+     175.0,
+     [
+      30.0,
+      90.0,
+      150.0,
+      210.0,
+      270.0,
+      330.0
+     ]
+    ],
+    "model": [
+     110.0,
+     175.0,
+     [
+      30.0,
+      90.0,
+      150.0,
+      210.0,
+      270.0,
+      330.0
+     ]
+    ],
+    "pass_": true
+   },
+   {
+    "layer": "ND3-Cb-ELECTRODE",
+    "dxf": [
+     110.0,
+     175.0,
+     [
+      0.0,
+      60.0,
+      120.0,
+      180.0,
+      240.0,
+      300.0
+     ]
+    ],
+    "model": [
+     110.0,
+     175.0,
+     [
+      0.0,
+      60.0,
+      120.0,
+      180.0,
+      240.0,
+      300.0
+     ]
+    ],
+    "pass_": true
+   },
+   {
+    "layer": "ND1-C1-STATOR-PLATE",
+    "dxf": [
+     95.0,
+     387.0,
+     [
+      30.0,
+      90.0,
+      150.0,
+      210.0,
+      270.0,
+      330.0
+     ]
+    ],
+    "model": [
+     95.0,
+     387.0,
+     [
+      30.0,
+      90.0,
+      150.0,
+      210.0,
+      270.0,
+      330.0
+     ]
+    ],
+    "pass_": true
+   },
+   {
+    "layer": "ND4-C2-STATOR-PLATE",
+    "dxf": [
+     95.0,
+     387.0,
+     [
+      0.0,
+      60.0,
+      120.0,
+      180.0,
+      240.0,
+      300.0
+     ]
+    ],
+    "model": [
+     95.0,
+     387.0,
+     [
+      0.0,
+      60.0,
+      120.0,
+      180.0,
+      240.0,
+      300.0
+     ]
+    ],
+    "pass_": true
+   },
+   {
+    "layer": "ND2-Cx4-PICKUP-STATOR",
+    "dxf": [
+     58.0,
+     350.0,
+     [
+      0.0,
+      60.0,
+      120.0,
+      180.0,
+      240.0,
+      300.0
+     ]
+    ],
+    "model": [
+     58.0,
+     350.0,
+     [
+      0.0,
+      60.0,
+      120.0,
+      180.0,
+      240.0,
+      300.0
+     ]
+    ],
+    "pass_": true
+   },
+   {
+    "layer": "ND3-Cx3-PICKUP-STATOR",
+    "dxf": [
+     58.0,
+     350.0,
+     [
+      30.0,
+      90.0,
+      150.0,
+      210.0,
+      270.0,
+      330.0
+     ]
+    ],
+    "model": [
+     58.0,
+     350.0,
+     [
+      30.0,
+      90.0,
+      150.0,
+      210.0,
+      270.0,
+      330.0
+     ]
+    ],
+    "pass_": true
+   },
+   {
+    "layer": "ND7-ISLAND-BARS-onB",
+    "dxf": [
+     75.0,
+     350.0,
+     [
+      30.0,
+      90.0,
+      150.0,
+      210.0,
+      270.0,
+      330.0
+     ]
+    ],
+    "model": [
+     75.0,
+     350.0,
+     [
+      30.0,
+      90.0,
+      150.0,
+      210.0,
+      270.0,
+      330.0
+     ]
+    ],
+    "pass_": true
+   },
+   {
+    "layer": "ND8-ISLAND-BARS-onA",
+    "dxf": [
+     75.0,
+     350.0,
+     [
+      0.0,
+      60.0,
+      120.0,
+      180.0,
+      240.0,
+      300.0
+     ]
+    ],
+    "model": [
+     75.0,
+     350.0,
+     [
+      0.0,
+      60.0,
+      120.0,
+      180.0,
+      240.0,
+      300.0
+     ]
+    ],
+    "pass_": true
+   }
+  ],
+  "seed_C_pF": 309.17763415757696,
+  "seed_area_mm2": 29099.001953875457
+ },
+ "G-ADJ": {
+  "pass_": true,
+  "rows": {
+   "C1": "C1_stator <-> C1_rotor across ['C1-gap'], plan overlap 221080 at 0 deg / 221080 aligned mm^2",
+   "C2": "C2_stator <-> C2_rotor across ['C2-gap'], plan overlap 0 at 0 deg / 221080 aligned mm^2",
+   "Ca": "Ca_el <-> Ca_counter across ['Ca-diel'], plan overlap 28969 mm^2 (fixed)",
+   "Cb": "Cb_el <-> Cb_counter across ['Cb-diel'], plan overlap 28969 mm^2 (fixed)",
+   "Cx4": "Cx4_pickup <-> Cx4_bars across ['Cx4-gap'], plan overlap 183587 at 0 deg / 183587 aligned mm^2",
+   "Cx3": "Cx3_pickup <-> Cx3_bars across ['Cx3-gap'], plan overlap 183587 at 0 deg / 183587 aligned mm^2",
+   "C_R": "CR_A <-> CR_B across ['septum'], plan overlap 452842 mm^2 (fixed)"
+  },
+  "checks": {
+   "Ca: electrode inside its counter-electrode": {
+    "pass_": true,
+    "detail": "r110.0-174.8 x 30.00 deg within r95-387 x 30 deg"
+   },
+   "Ca: overlap area = electrode area": {
+    "pass_": true,
+    "detail": "28969.4 vs 28969.4 mm^2"
+   },
+   "Ca: clears the carrier bore": {
+    "pass_": true,
+    "detail": "r_in 110.0 - margin 5 >= bore 50"
+   },
+   "Ca: dielectric margin fits the sector pitch": {
+    "pass_": true,
+    "detail": "foil 30.0 deg + 2 x 5 mm margin at r_in"
+   },
+   "Ca: realized C = locked C": {
+    "pass_": true,
+    "detail": "307.801 vs 307.801 pF (+0.0000 %)"
+   },
+   "Cb: electrode inside its counter-electrode": {
+    "pass_": true,
+    "detail": "r110.0-174.8 x 30.00 deg within r95-387 x 30 deg"
+   },
+   "Cb: overlap area = electrode area": {
+    "pass_": true,
+    "detail": "28969.4 vs 28969.4 mm^2"
+   },
+   "Cb: clears the carrier bore": {
+    "pass_": true,
+    "detail": "r_in 110.0 - margin 5 >= bore 50"
+   },
+   "Cb: dielectric margin fits the sector pitch": {
+    "pass_": true,
+    "detail": "foil 30.0 deg + 2 x 5 mm margin at r_in"
+   },
+   "Cb: realized C = locked C": {
+    "pass_": true,
+    "detail": "307.801 vs 307.801 pF (+0.0000 %)"
+   },
+   "layout: alternating sectors (n_kept = N_sec / 2, as drawn)": {
+    "pass_": true,
+    "detail": "n_kept 6 of N_sec 12"
+   },
+   "stack: C1 electrodes face each other": {
+    "pass_": true,
+    "detail": "C1_stator <-> C1_rotor across ['C1-gap'], plan overlap 221080 at 0 deg / 221080 aligned mm^2"
+   },
+   "stack: C2 electrodes face each other": {
+    "pass_": true,
+    "detail": "C2_stator <-> C2_rotor across ['C2-gap'], plan overlap 0 at 0 deg / 221080 aligned mm^2"
+   },
+   "stack: Ca electrodes face each other": {
+    "pass_": true,
+    "detail": "Ca_el <-> Ca_counter across ['Ca-diel'], plan overlap 28969 mm^2 (fixed)"
+   },
+   "stack: Cb electrodes face each other": {
+    "pass_": true,
+    "detail": "Cb_el <-> Cb_counter across ['Cb-diel'], plan overlap 28969 mm^2 (fixed)"
+   },
+   "stack: Cx4 electrodes face each other": {
+    "pass_": true,
+    "detail": "Cx4_pickup <-> Cx4_bars across ['Cx4-gap'], plan overlap 183587 at 0 deg / 183587 aligned mm^2"
+   },
+   "stack: Cx3 electrodes face each other": {
+    "pass_": true,
+    "detail": "Cx3_pickup <-> Cx3_bars across ['Cx3-gap'], plan overlap 183587 at 0 deg / 183587 aligned mm^2"
+   },
+   "stack: C_R electrodes face each other": {
+    "pass_": true,
+    "detail": "CR_A <-> CR_B across ['septum'], plan overlap 452842 mm^2 (fixed)"
+   }
+  }
+ },
+ "G-CAD": {
+  "pass_": true,
+  "solids": 95,
+  "roles": {
+   "carrier": 8,
+   "foil": 74,
+   "dielectric": 13
+  },
+  "worst_volume_rel": 4.943463039059275e-16,
+  "invalid": [],
+  "clashes": [],
+  "json": "docs/geometry/freeze-v010-CaCb.json",
+  "step": "docs/geometry/freeze-v010-CaCb.step",
+  "step_bytes": 1520770,
+  "lock": "aa4bfa18e7dd",
+  "z_total_mm": 100.2
+ },
+ "verdict": "GEOMETRY-STAGE2-PASS",
+ "G-JS": {
+  "pass_": true,
+  "n": 60,
+  "worst_rel": 7.309358266968341e-16,
+  "mismatches": []
+ },
+ "G-RT": {
+  "pass_": true,
+  "modes": [
+   {
+    "mode": "r_out",
+    "dC_rel": -5.540275995287738e-16,
+    "r_in": 110.0,
+    "r_out": 174.7641753826459,
+    "w": 30.0
+   },
+   {
+    "mode": "r_in",
+    "dC_rel": -5.540275995287738e-16,
+    "r_in": 110.37428596744707,
+    "r_out": 175.0,
+    "w": 30.0
+   },
+   {
+    "mode": "width",
+    "dC_rel": 0.0,
+    "r_in": 110.0,
+    "r_out": 175.0,
+    "w": 29.866424286925053
+   }
+  ],
+  "rounded": {
+   "r_out": 175.0,
+   "C_pF": 309.17763415757696,
+   "dC_rel": 0.0044724374030078624,
+   "z": 1.3251751917121721,
+   "z_locked": 1.3254745316585308,
+   "dz": -0.0002993399463586677
+  }
+ }
+}

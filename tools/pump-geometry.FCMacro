@@ -1,0 +1,146 @@
+# -*- coding: utf-8 -*-
+"""pump-geometry.FCMacro -- build the PUMP-SYNTH stage-2 plate geometry in FreeCAD from pump-geometry.json.
+
+Usage (FreeCAD >= 0.19, GUI): Macro > Macros... > Execute this file, then pick the pump-geometry.json exported
+by tools/pump-synth.html (stage 2). Headless: set PUMP_GEOMETRY_JSON=/path/to/pump-geometry.json and run
+`freecadcmd pump-geometry.FCMacro`. The document (and a STEP) is saved next to the JSON.
+
+What it builds (units mm, z = shaft axis, z = 0 = the septum mid-plane, electrical 0 deg = +x):
+  * carriers (rotor discs, rotor flanges, stator carriers): annular discs r_in..r_out over z0..z1
+  * foil electrodes: annular-sector sets (one solid per sector) on the carrier faces
+  * dielectric slabs: the septum (garolite, full disc) and the Ca/Cb mica (the electrode footprint grown by
+    the stated margin); air gaps are left empty
+Grouped by carrier; coloured by electrical node. Geometry only -- no physics is evaluated here.
+The same file is executed by sim/pump_geometry_gates.py through an OpenCascade stand-in for Part (gate G-CAD),
+which checks every solid's volume against the analytic value and writes the reference STEP.
+"""
+import json
+import math
+import os
+
+import FreeCAD
+import Part
+
+NODE_COLOURS = {"1": (0.49, 0.82, 1.0), "2": (1.0, 0.71, 0.33), "3": (0.27, 0.77, 0.42), "4": (0.90, 0.28, 0.30),
+                "5": (0.78, 0.57, 0.92), "6": (0.97, 0.46, 0.56), "7": (0.62, 0.81, 0.42), "8": (0.88, 0.69, 0.41)}
+MEDIUM_COLOURS = {"garolite": (0.55, 0.50, 0.30), "mica": (0.75, 0.70, 0.55)}
+
+
+def _json_path():
+    p = os.environ.get("PUMP_GEOMETRY_JSON")
+    if p:
+        return p
+    if FreeCAD.GuiUp:
+        from PySide import QtGui
+        p, _ = QtGui.QFileDialog.getOpenFileName(None, "pump-geometry.json", "", "JSON (*.json)")
+        return p
+    raise RuntimeError("set PUMP_GEOMETRY_JSON to the exported pump-geometry.json")
+
+
+def annulus(r_in, r_out, z0, z1, start_deg=0.0, w_deg=360.0):
+    """An annular sector solid: radius r_in..r_out, angle start..start+w, height z0..z1."""
+    h = z1 - z0
+    base = FreeCAD.Vector(0, 0, z0)
+    axis = FreeCAD.Vector(0, 0, 1)
+    full = w_deg >= 360.0 - 1e-9
+    outer = Part.makeCylinder(r_out, h, base, axis) if full else Part.makeCylinder(r_out, h, base, axis, w_deg)
+    if r_in > 1e-9:
+        inner = Part.makeCylinder(r_in, h, base, axis) if full else Part.makeCylinder(r_in, h, base, axis, w_deg)
+        outer = outer.cut(inner)
+    if not full and abs(start_deg) > 1e-12:
+        outer.rotate(FreeCAD.Vector(0, 0, 0), axis, start_deg)
+    return outer
+
+
+def _colour(obj, rgb):
+    if FreeCAD.GuiUp and rgb:
+        obj.ViewObject.ShapeColor = rgb
+
+
+def build(design, doc):
+    made = []
+    groups = {}
+
+    def group(name):
+        if name not in groups:
+            groups[name] = doc.addObject("App::DocumentObjectGroup", name.replace("-", "_"))
+        return groups[name]
+    fp = design["footprints"]
+    carrier_of = {}
+    # map each foil to the carrier it sits on (its stack neighbour of carrier kind)
+    st = design["stack"]
+    for i, it in enumerate(st):
+        if it["kind"] != "foil":
+            continue
+        nb = [st[j] for j in (i - 1, i + 1) if 0 <= j < len(st) and st[j]["kind"] in ("rotor", "stator", "rotor-flange")]
+        carrier_of[it["id"]] = nb[0]["id"] if nb else "foils"
+    for it in st:
+        kind = it["kind"]
+        if kind in ("rotor", "stator", "rotor-flange"):
+            shp = annulus(it["r_in"], it["r_out"], it["z0"], it["z1"])
+            o = doc.addObject("Part::Feature", it["id"].replace("-", "_") + "_carrier")
+            o.Shape = shp
+            group(it["id"]).addObject(o)
+            made.append(dict(name=o.Name, role="carrier", id=it["id"], volume=shp.Volume,
+                             expect=math.pi * (it["r_out"] ** 2 - it["r_in"] ** 2) * (it["z1"] - it["z0"])))
+        elif kind == "foil":
+            f = it
+            for k, s0 in enumerate(f["starts"]):
+                shp = annulus(f["r_in"], f["r_out"], f["z0"], f["z1"], s0, f["w_deg"])
+                o = doc.addObject("Part::Feature", "%s_%d" % (f["key"], k + 1))
+                o.Shape = shp
+                _colour(o, NODE_COLOURS.get(str(f["node"])[:1]))
+                group(carrier_of[f["id"]]).addObject(o)
+                made.append(dict(name=o.Name, role="foil", id=f["key"], volume=shp.Volume,
+                                 expect=0.5 * math.radians(min(f["w_deg"], 360.0)) * (f["r_out"] ** 2 - f["r_in"] ** 2) * (f["z1"] - f["z0"])))
+        elif kind == "gap" and it.get("medium") in MEDIUM_COLOURS:
+            if it.get("footprint"):
+                e = fp[it["footprint"]]
+                m = it.get("margin", 0.0)
+                rin, rout = max(0.0, e["r_in"] - m), e["r_out"] + m
+                dw = math.degrees(m / max(e["r_in"], 1e-9))
+                for k, s0 in enumerate(e["starts"]):
+                    w = min(e["w_deg"] + 2 * dw, 360.0)
+                    shp = annulus(rin, rout, it["z0"], it["z1"], s0 - dw, w)
+                    o = doc.addObject("Part::Feature", "%s_%d" % (it["id"].replace("-", "_"), k + 1))
+                    o.Shape = shp
+                    _colour(o, MEDIUM_COLOURS[it["medium"]])
+                    group("dielectrics").addObject(o)
+                    made.append(dict(name=o.Name, role="dielectric", id=it["id"], volume=shp.Volume,
+                                     expect=0.5 * math.radians(w) * (rout ** 2 - rin ** 2) * (it["z1"] - it["z0"])))
+            else:
+                shp = annulus(it.get("r_in", 0.0), it.get("r_out", design["r_edge"]), it["z0"], it["z1"])
+                o = doc.addObject("Part::Feature", it["id"].replace("-", "_"))
+                o.Shape = shp
+                _colour(o, MEDIUM_COLOURS[it["medium"]])
+                group("dielectrics").addObject(o)
+                made.append(dict(name=o.Name, role="dielectric", id=it["id"], volume=shp.Volume,
+                                 expect=math.pi * (it.get("r_out", design["r_edge"]) ** 2 - it.get("r_in", 0.0) ** 2) * (it["z1"] - it["z0"])))
+    doc.recompute()
+    return made
+
+
+def main():
+    path = _json_path()
+    if not path:
+        return None
+    design = json.load(open(path))
+    if design.get("schema") != "pump-geometry/1":
+        raise RuntimeError("not a pump-geometry/1 file: %r" % design.get("schema"))
+    name = "PumpGeometry_" + design["lock"]["hash"]
+    doc = FreeCAD.newDocument(name)
+    made = build(design, doc)
+    base = os.path.splitext(path)[0]
+    doc.saveAs(base + ".FCStd")
+    objs = [o for o in doc.Objects if hasattr(o, "Shape") and o.TypeId == "Part::Feature"]
+    Part.export(objs, base + ".step")
+    if FreeCAD.GuiUp:
+        import FreeCADGui
+        FreeCADGui.SendMsgToActiveView("ViewFit")
+        FreeCADGui.activeDocument().activeView().viewIsometric()
+    FreeCAD.Console.PrintMessage("pump-geometry: %d solids, lock %s, saved %s.FCStd / .step\n"
+                                 % (len(made), design["lock"]["hash"], base))
+    return made
+
+
+RESULT = main()

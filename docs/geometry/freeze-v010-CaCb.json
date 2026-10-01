@@ -1,0 +1,1178 @@
+{
+ "schema": "pump-geometry/1",
+ "units": "mm",
+ "lock": {
+  "inputs": {},
+  "plates": {
+   "r_inMm": 95.0,
+   "r_outMm": 387.0,
+   "g_vMm": 7.0,
+   "N_sec": 12,
+   "n_kept": 6
+  },
+  "ladder": {
+   "C_max": 279.8191030841783,
+   "C_min": 16.0,
+   "Ca": 307.8010133925962,
+   "Cb": 307.8010133925962,
+   "cx_max": 470.0960931814196,
+   "cx_min": 8.0,
+   "Cpar": 20.0,
+   "gap_stray": 2.0,
+   "pCboss": 6.0,
+   "island_stray": 5.0,
+   "Lx_mH": 1.0,
+   "R_lx": 2.0,
+   "C_blk_nF": 439.76208178097994
+  },
+  "z": 1.3254745316585308,
+  "converged": true,
+  "engine": "pump_engine r0.1",
+  "hash": "aa4bfa18e7dd"
+ },
+ "geom": {
+  "ca_diel": "mica",
+  "ca_t": 4.5,
+  "ca_w": 30.0,
+  "ca_mode": "r_out",
+  "ca_rin": 110.0,
+  "ca_rout": 175.0,
+  "ca_round": 0.0,
+  "ca_margin": 5.0,
+  "t_foil": 1.0,
+  "t_carrier": 3.0,
+  "t_rotor": 10.0,
+  "t_flange": 6.0,
+  "t_septum": 12.0,
+  "cx_air": 3.0,
+  "cx_mica": 0.3,
+  "r_bore": 50.0,
+  "rotor_in_off": 20.0
+ },
+ "Ca": {
+  "C_target_pF": 307.8010133925962,
+  "C_pF": 307.801013392596,
+  "dC_rel": -5.540275995287738e-16,
+  "area_mm2": 28969.437956016838,
+  "area_needed_mm2": 28969.437956016853,
+  "r_in": 110.0,
+  "r_out": 174.7641753826459,
+  "w_deg": 30.0,
+  "n": 6,
+  "t": 4.5,
+  "diel": "mica",
+  "eps_r": 5.4,
+  "mode": "r_out",
+  "note": ""
+ },
+ "Cb": {
+  "C_target_pF": 307.8010133925962,
+  "C_pF": 307.801013392596,
+  "dC_rel": -5.540275995287738e-16,
+  "area_mm2": 28969.437956016838,
+  "area_needed_mm2": 28969.437956016853,
+  "r_in": 110.0,
+  "r_out": 174.7641753826459,
+  "w_deg": 30.0,
+  "n": 6,
+  "t": 4.5,
+  "diel": "mica",
+  "eps_r": 5.4,
+  "mode": "r_out",
+  "note": ""
+ },
+ "footprints": {
+  "C1_stator": {
+   "name": "C1 stator plate",
+   "node": "1",
+   "cap": "C1",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  "C1_rotor": {
+   "name": "C1 rotor face",
+   "node": "5",
+   "cap": "C1",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  "C2_stator": {
+   "name": "C2 stator plate",
+   "node": "4",
+   "cap": "C2",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  "C2_rotor": {
+   "name": "C2 rotor face",
+   "node": "6",
+   "cap": "C2",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  "Ca_el": {
+   "name": "Ca electrode",
+   "node": "2",
+   "cap": "Ca",
+   "r_in": 110.0,
+   "r_out": 174.7641753826459,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  "Ca_counter": {
+   "name": "Ca counter (ND1 back face)",
+   "node": "1",
+   "cap": "Ca",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  "Cb_el": {
+   "name": "Cb electrode",
+   "node": "3",
+   "cap": "Cb",
+   "r_in": 110.0,
+   "r_out": 174.7641753826459,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  "Cb_counter": {
+   "name": "Cb counter (ND4 back face)",
+   "node": "4",
+   "cap": "Cb",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  "Cx4_pickup": {
+   "name": "Cx4 pickup",
+   "node": "2",
+   "cap": "Cx4",
+   "r_in": 58.0,
+   "r_out": 350.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  "Cx4_bars": {
+   "name": "island bars on A",
+   "node": "8",
+   "cap": "Cx4",
+   "r_in": 75.0,
+   "r_out": 350.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  "Cx3_pickup": {
+   "name": "Cx3 pickup",
+   "node": "3",
+   "cap": "Cx3",
+   "r_in": 58.0,
+   "r_out": 350.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  "Cx3_bars": {
+   "name": "island bars on B",
+   "node": "7",
+   "cap": "Cx3",
+   "r_in": 75.0,
+   "r_out": 350.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  "CR_A": {
+   "name": "C_R face (rotor A)",
+   "node": "5",
+   "cap": "C_R",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0
+   ],
+   "w_deg": 360.0
+  },
+  "CR_B": {
+   "name": "C_R face (rotor B)",
+   "node": "6",
+   "cap": "C_R",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0
+   ],
+   "w_deg": 360.0
+  }
+ },
+ "stack": [
+  {
+   "id": "A-flange",
+   "kind": "rotor-flange",
+   "node": "8 (floating on A)",
+   "t": 6.0,
+   "r_in": 0.0,
+   "r_out": 500.0,
+   "z0": -50.1,
+   "z1": -44.1,
+   "side": "A"
+  },
+  {
+   "id": "Cx4_bars",
+   "kind": "foil",
+   "key": "Cx4_bars",
+   "t": 1.0,
+   "z0": -44.1,
+   "z1": -43.1,
+   "side": "A",
+   "name": "island bars on A",
+   "node": "8",
+   "cap": "Cx4",
+   "r_in": 75.0,
+   "r_out": 350.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Cx4-gap",
+   "kind": "gap",
+   "cap": "Cx4",
+   "t": 3.6,
+   "medium": "air 3 + mica 0.3/face",
+   "footprint": null,
+   "margin": 0.0,
+   "z0": -43.1,
+   "z1": -39.5,
+   "side": "A"
+  },
+  {
+   "id": "Cx4_pickup",
+   "kind": "foil",
+   "key": "Cx4_pickup",
+   "t": 1.0,
+   "z0": -39.5,
+   "z1": -38.5,
+   "side": "A",
+   "name": "Cx4 pickup",
+   "node": "2",
+   "cap": "Cx4",
+   "r_in": 58.0,
+   "r_out": 350.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "ND2",
+   "kind": "stator",
+   "node": "2",
+   "t": 3.0,
+   "r_in": 50.0,
+   "r_out": 500.0,
+   "z0": -38.5,
+   "z1": -35.5,
+   "side": "A"
+  },
+  {
+   "id": "Ca_el",
+   "kind": "foil",
+   "key": "Ca_el",
+   "t": 1.0,
+   "z0": -35.5,
+   "z1": -34.5,
+   "side": "A",
+   "name": "Ca electrode",
+   "node": "2",
+   "cap": "Ca",
+   "r_in": 110.0,
+   "r_out": 174.7641753826459,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Ca-diel",
+   "kind": "gap",
+   "cap": "Ca",
+   "t": 4.5,
+   "medium": "mica",
+   "footprint": "Ca_el",
+   "margin": 5.0,
+   "z0": -34.5,
+   "z1": -30.0,
+   "side": "A"
+  },
+  {
+   "id": "Ca_counter",
+   "kind": "foil",
+   "key": "Ca_counter",
+   "t": 1.0,
+   "z0": -30.0,
+   "z1": -29.0,
+   "side": "A",
+   "name": "Ca counter (ND1 back face)",
+   "node": "1",
+   "cap": "Ca",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "ND1",
+   "kind": "stator",
+   "node": "1",
+   "t": 3.0,
+   "r_in": 50.0,
+   "r_out": 500.0,
+   "z0": -29.0,
+   "z1": -26.0,
+   "side": "A"
+  },
+  {
+   "id": "C1_stator",
+   "kind": "foil",
+   "key": "C1_stator",
+   "t": 1.0,
+   "z0": -26.0,
+   "z1": -25.0,
+   "side": "A",
+   "name": "C1 stator plate",
+   "node": "1",
+   "cap": "C1",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "C1-gap",
+   "kind": "gap",
+   "cap": "C1",
+   "t": 7.0,
+   "medium": "air",
+   "footprint": null,
+   "margin": 0.0,
+   "z0": -25.0,
+   "z1": -18.0,
+   "side": "A"
+  },
+  {
+   "id": "C1_rotor",
+   "kind": "foil",
+   "key": "C1_rotor",
+   "t": 1.0,
+   "z0": -18.0,
+   "z1": -17.0,
+   "side": "A",
+   "name": "C1 rotor face",
+   "node": "5",
+   "cap": "C1",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "A-disc",
+   "kind": "rotor",
+   "node": "5",
+   "t": 10.0,
+   "r_in": 0.0,
+   "r_out": 500.0,
+   "z0": -17.0,
+   "z1": -7.0,
+   "side": "A"
+  },
+  {
+   "id": "CR_A",
+   "kind": "foil",
+   "key": "CR_A",
+   "t": 1.0,
+   "z0": -7.0,
+   "z1": -6.0,
+   "side": "A",
+   "name": "C_R face (rotor A)",
+   "node": "5",
+   "cap": "C_R",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0
+   ],
+   "w_deg": 360.0
+  },
+  {
+   "id": "septum",
+   "kind": "gap",
+   "cap": "C_R",
+   "t": 12.0,
+   "medium": "garolite",
+   "footprint": null,
+   "margin": 0.0,
+   "z0": -6.0,
+   "z1": 6.0,
+   "side": "mid",
+   "r_in": 0.0,
+   "r_out": 500.0
+  },
+  {
+   "id": "CR_B",
+   "kind": "foil",
+   "key": "CR_B",
+   "t": 1.0,
+   "z0": 6.0,
+   "z1": 7.0,
+   "side": "B",
+   "name": "C_R face (rotor B)",
+   "node": "6",
+   "cap": "C_R",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0
+   ],
+   "w_deg": 360.0
+  },
+  {
+   "id": "B-disc",
+   "kind": "rotor",
+   "node": "6",
+   "t": 10.0,
+   "r_in": 0.0,
+   "r_out": 500.0,
+   "z0": 7.0,
+   "z1": 17.0,
+   "side": "B"
+  },
+  {
+   "id": "C2_rotor",
+   "kind": "foil",
+   "key": "C2_rotor",
+   "t": 1.0,
+   "z0": 17.0,
+   "z1": 18.0,
+   "side": "B",
+   "name": "C2 rotor face",
+   "node": "6",
+   "cap": "C2",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "C2-gap",
+   "kind": "gap",
+   "cap": "C2",
+   "t": 7.0,
+   "medium": "air",
+   "footprint": null,
+   "margin": 0.0,
+   "z0": 18.0,
+   "z1": 25.0,
+   "side": "B"
+  },
+  {
+   "id": "C2_stator",
+   "kind": "foil",
+   "key": "C2_stator",
+   "t": 1.0,
+   "z0": 25.0,
+   "z1": 26.0,
+   "side": "B",
+   "name": "C2 stator plate",
+   "node": "4",
+   "cap": "C2",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "ND4",
+   "kind": "stator",
+   "node": "4",
+   "t": 3.0,
+   "r_in": 50.0,
+   "r_out": 500.0,
+   "z0": 26.0,
+   "z1": 29.0,
+   "side": "B"
+  },
+  {
+   "id": "Cb_counter",
+   "kind": "foil",
+   "key": "Cb_counter",
+   "t": 1.0,
+   "z0": 29.0,
+   "z1": 30.0,
+   "side": "B",
+   "name": "Cb counter (ND4 back face)",
+   "node": "4",
+   "cap": "Cb",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Cb-diel",
+   "kind": "gap",
+   "cap": "Cb",
+   "t": 4.5,
+   "medium": "mica",
+   "footprint": "Cb_el",
+   "margin": 5.0,
+   "z0": 30.0,
+   "z1": 34.5,
+   "side": "B"
+  },
+  {
+   "id": "Cb_el",
+   "kind": "foil",
+   "key": "Cb_el",
+   "t": 1.0,
+   "z0": 34.5,
+   "z1": 35.5,
+   "side": "B",
+   "name": "Cb electrode",
+   "node": "3",
+   "cap": "Cb",
+   "r_in": 110.0,
+   "r_out": 174.7641753826459,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "ND3",
+   "kind": "stator",
+   "node": "3",
+   "t": 3.0,
+   "r_in": 50.0,
+   "r_out": 500.0,
+   "z0": 35.5,
+   "z1": 38.5,
+   "side": "B"
+  },
+  {
+   "id": "Cx3_pickup",
+   "kind": "foil",
+   "key": "Cx3_pickup",
+   "t": 1.0,
+   "z0": 38.5,
+   "z1": 39.5,
+   "side": "B",
+   "name": "Cx3 pickup",
+   "node": "3",
+   "cap": "Cx3",
+   "r_in": 58.0,
+   "r_out": 350.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Cx3-gap",
+   "kind": "gap",
+   "cap": "Cx3",
+   "t": 3.6,
+   "medium": "air 3 + mica 0.3/face",
+   "footprint": null,
+   "margin": 0.0,
+   "z0": 39.5,
+   "z1": 43.1,
+   "side": "B"
+  },
+  {
+   "id": "Cx3_bars",
+   "kind": "foil",
+   "key": "Cx3_bars",
+   "t": 1.0,
+   "z0": 43.1,
+   "z1": 44.1,
+   "side": "B",
+   "name": "island bars on B",
+   "node": "7",
+   "cap": "Cx3",
+   "r_in": 75.0,
+   "r_out": 350.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "B-flange",
+   "kind": "rotor-flange",
+   "node": "7 (floating on B)",
+   "t": 6.0,
+   "r_in": 0.0,
+   "r_out": 500.0,
+   "z0": 44.1,
+   "z1": 50.1,
+   "side": "B"
+  }
+ ],
+ "foils": [
+  {
+   "id": "Cx4_bars",
+   "kind": "foil",
+   "key": "Cx4_bars",
+   "t": 1.0,
+   "z0": -44.1,
+   "z1": -43.1,
+   "side": "A",
+   "name": "island bars on A",
+   "node": "8",
+   "cap": "Cx4",
+   "r_in": 75.0,
+   "r_out": 350.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Cx4_pickup",
+   "kind": "foil",
+   "key": "Cx4_pickup",
+   "t": 1.0,
+   "z0": -39.5,
+   "z1": -38.5,
+   "side": "A",
+   "name": "Cx4 pickup",
+   "node": "2",
+   "cap": "Cx4",
+   "r_in": 58.0,
+   "r_out": 350.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Ca_el",
+   "kind": "foil",
+   "key": "Ca_el",
+   "t": 1.0,
+   "z0": -35.5,
+   "z1": -34.5,
+   "side": "A",
+   "name": "Ca electrode",
+   "node": "2",
+   "cap": "Ca",
+   "r_in": 110.0,
+   "r_out": 174.7641753826459,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Ca_counter",
+   "kind": "foil",
+   "key": "Ca_counter",
+   "t": 1.0,
+   "z0": -30.0,
+   "z1": -29.0,
+   "side": "A",
+   "name": "Ca counter (ND1 back face)",
+   "node": "1",
+   "cap": "Ca",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "C1_stator",
+   "kind": "foil",
+   "key": "C1_stator",
+   "t": 1.0,
+   "z0": -26.0,
+   "z1": -25.0,
+   "side": "A",
+   "name": "C1 stator plate",
+   "node": "1",
+   "cap": "C1",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "C1_rotor",
+   "kind": "foil",
+   "key": "C1_rotor",
+   "t": 1.0,
+   "z0": -18.0,
+   "z1": -17.0,
+   "side": "A",
+   "name": "C1 rotor face",
+   "node": "5",
+   "cap": "C1",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "CR_A",
+   "kind": "foil",
+   "key": "CR_A",
+   "t": 1.0,
+   "z0": -7.0,
+   "z1": -6.0,
+   "side": "A",
+   "name": "C_R face (rotor A)",
+   "node": "5",
+   "cap": "C_R",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0
+   ],
+   "w_deg": 360.0
+  },
+  {
+   "id": "CR_B",
+   "kind": "foil",
+   "key": "CR_B",
+   "t": 1.0,
+   "z0": 6.0,
+   "z1": 7.0,
+   "side": "B",
+   "name": "C_R face (rotor B)",
+   "node": "6",
+   "cap": "C_R",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0
+   ],
+   "w_deg": 360.0
+  },
+  {
+   "id": "C2_rotor",
+   "kind": "foil",
+   "key": "C2_rotor",
+   "t": 1.0,
+   "z0": 17.0,
+   "z1": 18.0,
+   "side": "B",
+   "name": "C2 rotor face",
+   "node": "6",
+   "cap": "C2",
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "C2_stator",
+   "kind": "foil",
+   "key": "C2_stator",
+   "t": 1.0,
+   "z0": 25.0,
+   "z1": 26.0,
+   "side": "B",
+   "name": "C2 stator plate",
+   "node": "4",
+   "cap": "C2",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Cb_counter",
+   "kind": "foil",
+   "key": "Cb_counter",
+   "t": 1.0,
+   "z0": 29.0,
+   "z1": 30.0,
+   "side": "B",
+   "name": "Cb counter (ND4 back face)",
+   "node": "4",
+   "cap": "Cb",
+   "r_in": 95.0,
+   "r_out": 387.0,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Cb_el",
+   "kind": "foil",
+   "key": "Cb_el",
+   "t": 1.0,
+   "z0": 34.5,
+   "z1": 35.5,
+   "side": "B",
+   "name": "Cb electrode",
+   "node": "3",
+   "cap": "Cb",
+   "r_in": 110.0,
+   "r_out": 174.7641753826459,
+   "starts": [
+    0.0,
+    60.0,
+    120.0,
+    180.0,
+    240.0,
+    300.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Cx3_pickup",
+   "kind": "foil",
+   "key": "Cx3_pickup",
+   "t": 1.0,
+   "z0": 38.5,
+   "z1": 39.5,
+   "side": "B",
+   "name": "Cx3 pickup",
+   "node": "3",
+   "cap": "Cx3",
+   "r_in": 58.0,
+   "r_out": 350.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  },
+  {
+   "id": "Cx3_bars",
+   "kind": "foil",
+   "key": "Cx3_bars",
+   "t": 1.0,
+   "z0": 43.1,
+   "z1": 44.1,
+   "side": "B",
+   "name": "island bars on B",
+   "node": "7",
+   "cap": "Cx3",
+   "r_in": 75.0,
+   "r_out": 350.0,
+   "starts": [
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
+   ],
+   "w_deg": 30.0
+  }
+ ],
+ "z_total": 100.2,
+ "r_edge": 500.0,
+ "checks": {
+  "Ca: electrode inside its counter-electrode": {
+   "pass_": true,
+   "detail": "r110.0-174.8 x 30.00 deg within r95-387 x 30 deg"
+  },
+  "Ca: overlap area = electrode area": {
+   "pass_": true,
+   "detail": "28969.4 vs 28969.4 mm^2"
+  },
+  "Ca: clears the carrier bore": {
+   "pass_": true,
+   "detail": "r_in 110.0 - margin 5 >= bore 50"
+  },
+  "Ca: dielectric margin fits the sector pitch": {
+   "pass_": true,
+   "detail": "foil 30.0 deg + 2 x 5 mm margin at r_in"
+  },
+  "Ca: realized C = locked C": {
+   "pass_": true,
+   "detail": "307.801 vs 307.801 pF (+0.0000 %)"
+  },
+  "Cb: electrode inside its counter-electrode": {
+   "pass_": true,
+   "detail": "r110.0-174.8 x 30.00 deg within r95-387 x 30 deg"
+  },
+  "Cb: overlap area = electrode area": {
+   "pass_": true,
+   "detail": "28969.4 vs 28969.4 mm^2"
+  },
+  "Cb: clears the carrier bore": {
+   "pass_": true,
+   "detail": "r_in 110.0 - margin 5 >= bore 50"
+  },
+  "Cb: dielectric margin fits the sector pitch": {
+   "pass_": true,
+   "detail": "foil 30.0 deg + 2 x 5 mm margin at r_in"
+  },
+  "Cb: realized C = locked C": {
+   "pass_": true,
+   "detail": "307.801 vs 307.801 pF (+0.0000 %)"
+  },
+  "layout: alternating sectors (n_kept = N_sec / 2, as drawn)": {
+   "pass_": true,
+   "detail": "n_kept 6 of N_sec 12"
+  },
+  "stack: C1 electrodes face each other": {
+   "pass_": true,
+   "detail": "C1_stator <-> C1_rotor across ['C1-gap'], plan overlap 221080 at 0 deg / 221080 aligned mm^2"
+  },
+  "stack: C2 electrodes face each other": {
+   "pass_": true,
+   "detail": "C2_stator <-> C2_rotor across ['C2-gap'], plan overlap 0 at 0 deg / 221080 aligned mm^2"
+  },
+  "stack: Ca electrodes face each other": {
+   "pass_": true,
+   "detail": "Ca_el <-> Ca_counter across ['Ca-diel'], plan overlap 28969 mm^2 (fixed)"
+  },
+  "stack: Cb electrodes face each other": {
+   "pass_": true,
+   "detail": "Cb_el <-> Cb_counter across ['Cb-diel'], plan overlap 28969 mm^2 (fixed)"
+  },
+  "stack: Cx4 electrodes face each other": {
+   "pass_": true,
+   "detail": "Cx4_pickup <-> Cx4_bars across ['Cx4-gap'], plan overlap 183587 at 0 deg / 183587 aligned mm^2"
+  },
+  "stack: Cx3 electrodes face each other": {
+   "pass_": true,
+   "detail": "Cx3_pickup <-> Cx3_bars across ['Cx3-gap'], plan overlap 183587 at 0 deg / 183587 aligned mm^2"
+  },
+  "stack: C_R electrodes face each other": {
+   "pass_": true,
+   "detail": "CR_A <-> CR_B across ['septum'], plan overlap 452842 mm^2 (fixed)"
+  }
+ }
+}
