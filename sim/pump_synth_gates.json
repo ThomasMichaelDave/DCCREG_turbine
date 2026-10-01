@@ -1,0 +1,683 @@
+{
+ "K": {
+  "pass_": true,
+  "rows": [
+   {
+    "id": "K1",
+    "check": "always-armed galvanic z (engine; solve_doubler4 = 1.3340016)",
+    "expected": 1.3340016,
+    "got": 1.3340016136695678,
+    "tol": 1e-06,
+    "rel": 1.0247040125016839e-08,
+    "extra": {
+     "solve_doubler4": 1.3340016136695727
+    },
+    "pass": true
+   },
+   {
+    "id": "K2",
+    "check": "station-armed galvanic z (DXF stations)",
+    "expected": 1.5225272,
+    "got": 1.5225272175520532,
+    "tol": 1e-06,
+    "rel": 1.1528236174856527e-08,
+    "pass": true
+   },
+   {
+    "id": "K3",
+    "check": "direct island on the shuttle schedule = shuttle_core steady z",
+    "expected": 1.2983502589,
+    "got": 1.2983502589215568,
+    "tol": 1e-09,
+    "rel": 1.660319026562241e-11,
+    "pass": true
+   },
+   {
+    "id": "K4",
+    "check": "S2 ring t1/2 (us) and V_bank (V) at R 2 ohm",
+    "expected": [
+     2.22155,
+     998.891
+    ],
+    "got": [
+     2.2214425798001933,
+     998.8900131638376
+    ],
+    "tol": 0.0001,
+    "rel": 4.835371691242914e-05,
+    "pass": true
+   }
+  ],
+  "engine_selftest": true,
+  "sizing_selftest": true,
+  "synth_selftest": true,
+  "gate_time_s": 0.8605406284332275
+ },
+ "ENG": {
+  "pass_": true,
+  "base": "a5420b7",
+  "diff": "",
+  "note": "engine unchanged since pump-calc: E0-E6 / M1-M3 / P0 / N / F carry over (sim/pump-calc-findings.md)",
+  "gate_time_s": 0.003206968307495117
+ },
+ "S1": {
+  "pass_": true,
+  "active_only_pF": 279.6407489356341,
+  "design_synth_pF": 279.64074893563406,
+  "ring_pF": 295.64002093294283,
+  "ring_Cmin_pF": 15.9992719973087,
+  "A_ring_m2": 0.012648806005589375,
+  "air_default_pF": 279.8191030841783,
+  "eps_air": 1.000637797421238,
+  "gate_time_s": 9.036064147949219e-05
+ },
+ "S1b": {
+  "pass_": true,
+  "n": 200,
+  "worst_rel": 0.0,
+  "mismatches": [],
+  "js_selftest": true,
+  "gate_time_s": 0.08841443061828613
+ },
+ "S2": {
+  "pass_": true,
+  "values": {
+   "Ca": 307.6048238291976,
+   "cx_max": 469.7964582118653,
+   "C_blk_nF": 439.76208178097994
+  },
+  "rel_dev": {
+   "Ca": -0.004515133238842767,
+   "cx_max": -0.0025552904206681834,
+   "C_blk_nF": -0.0005407232250455898
+  },
+  "note": "vacuum, active-only C_max 279.64 pF (the guide \u00a76.1 basis)",
+  "gate_time_s": 6.580352783203125e-05
+ },
+ "S3": {
+  "pass_": true,
+  "C_blk_nF": 439.76208178097994,
+  "PRF": 300.0,
+  "gate_time_s": 2.2172927856445312e-05
+ },
+ "HGEOM": {
+  "pass_": true,
+  "C_max_pF": 279.6407489356341,
+  "design_synth": 279.64074893563406,
+  "rotor_dia_mm": 982.98,
+  "design_synth_dia": 982.98,
+  "gate_time_s": 6.389617919921875e-05
+ },
+ "HUI": {
+  "pass_": true,
+  "banned": [
+   "\u03b7_op",
+   "eta_op",
+   "0.50",
+   "0.70",
+   "validated machine",
+   "island sink"
+  ],
+  "hits": {},
+  "gate_time_s": 0.0008130073547363281
+ },
+ "HSTAMP": {
+  "pass_": true,
+  "drawn": 43,
+  "mapped": 43,
+  "netlist": 43,
+  "diff": {
+   "drawn_not_mapped": [],
+   "mapped_not_drawn": [],
+   "net_not_drawn": []
+  },
+  "gate_time_s": 0.0008141994476318359
+ },
+ "Z": {
+  "pass_": true,
+  "base": "8cd181e",
+  "diff": "",
+  "gate_time_s": 0.003170013427734375
+ },
+ "verdict": "PUMP-SYNTH-LIVE",
+ "S4": {
+  "pass_": true,
+  "z0": 1.3254745316585308,
+  "rows": [
+   {
+    "k": 0.37,
+    "dz_coscaled": 8.43769498715119e-15,
+    "dz_C_only": 1.836664154097889e-09,
+    "converged": true
+   },
+   {
+    "k": 3.7,
+    "dz_coscaled": -1.580957587066223e-13,
+    "dz_C_only": -4.3284362760687145e-09,
+    "converged": true
+   }
+  ],
+  "note": "C x k with Lx / k and R_lx / k (impedance-consistent) is exact; C-only leaves the island ring time as the one non-capacitive scale",
+  "gate_time_s": 15.089344263076782
+ },
+ "HSYN0": {
+  "pass_": true,
+  "rows": [
+   {
+    "r_outMm": 387.0,
+    "g_vMm": 7.0,
+    "C_max_pF": 279.8191030841783,
+    "kappa": 17.488693942761145,
+    "z": 1.3254745316585308,
+    "dz": 0.0,
+    "converged": true
+   },
+   {
+    "r_outMm": 330.0,
+    "g_vMm": 4.967352071846757,
+    "C_max_pF": 279.81910308417827,
+    "kappa": 17.48869394276114,
+    "z": 1.3254745316586398,
+    "dz": 1.0902390101819037e-13,
+    "converged": true
+   },
+   {
+    "r_outMm": 450.0,
+    "g_vMm": 9.622612686864093,
+    "C_max_pF": 279.8191030841783,
+    "kappa": 17.488693942761145,
+    "z": 1.3254745316585308,
+    "dz": 0.0,
+    "converged": true
+   }
+  ],
+  "note": "g_v != 7 mm changes eps_r? no -- eps_r(air) does not depend on g; C_max and kappa held",
+  "gate_time_s": 9.29001259803772
+ },
+ "W0": {
+  "pass_": true,
+  "rows": [
+   {
+    "inp": {},
+    "z_cold": 1.3254745316585308,
+    "z_warm": 1.325474531658525,
+    "dz": -5.773159728050814e-15,
+    "converged": true
+   },
+   {
+    "inp": {
+     "r_outMm": 360.0
+    },
+    "z_cold": 1.2680668361380616,
+    "z_warm": 1.2680668361380572,
+    "dz": -4.440892098500626e-15,
+    "converged": true
+   },
+   {
+    "inp": {
+     "r_outMm": 420.0,
+     "gm_load": "valve",
+     "gm_fire": "valve"
+    },
+    "z_cold": 1.7892539829792402,
+    "z_warm": 1.789253982979231,
+    "dz": -9.103828801926284e-15,
+    "converged": true
+   }
+  ],
+  "stats": {
+   "runs": 6,
+   "cycles": 19,
+   "cold": 3,
+   "warm": 3,
+   "warm_redo": 0
+  },
+  "gate_time_s": 13.876914501190186
+ },
+ "M0": {
+  "pass_": true,
+  "rows": [
+   {
+    "r_outMm": 245.0,
+    "z": 1.0,
+    "converged": true,
+    "kind": "neutral",
+    "rate": 0.9655206638556137,
+    "bound": 9.537775236267976e-08,
+    "plain_growth_160": 1.000014628822683,
+    "tail_ratio": 0.9655660220518916,
+    "excess_160": 1.4628822682993814e-05
+   },
+   {
+    "r_outMm": 250.0,
+    "z": 1.010417279380123,
+    "converged": true,
+    "kind": null,
+    "rate": null,
+    "bound": null,
+    "plain_growth_160": 1.0104172793801502,
+    "tail_ratio": 1.0000000000011724
+   }
+  ],
+  "note": "245 mm: the growth excess decays geometrically onto the neutral mode (z = 1); 250 mm: a slow transient, the retried monodromy equals the plain iteration's long-run growth",
+  "gate_time_s": 197.0828835964203
+ },
+ "S5": {
+  "pass_": true,
+  "r_outMm": 118.11023622047244,
+  "C_max_pF": 9.791656409212248,
+  "core_z": 1.0,
+  "core_kind": "silent",
+  "drawn_z": 1.0,
+  "drawn_kind": "neutral",
+  "min_plate": {
+   "found": true,
+   "r_outMm": 245.3984375,
+   "bracket": [
+    244.83203125,
+    245.3984375
+   ],
+   "dia_mm": 623.31203125,
+   "C_max_pF": 101.783727810511,
+   "monotone": true,
+   "points": [
+    {
+     "r_outMm": 387.0,
+     "C_max_pF": 279.8191030841783,
+     "z": 1.3254745316585297,
+     "converged": true,
+     "dia_mm": 982.98
+    },
+    {
+     "r_outMm": 97.0,
+     "C_max_pF": 0.7634466519661559,
+     "z": 1.0,
+     "converged": true,
+     "dia_mm": 246.38
+    },
+    {
+     "r_outMm": 242.0,
+     "C_max_pF": 98.49058253060241,
+     "z": 1.0,
+     "converged": true,
+     "dia_mm": 614.6800000000001
+    },
+    {
+     "r_outMm": 314.5,
+     "C_max_pF": 178.7046697230229,
+     "z": 1.1596566782967528,
+     "converged": true,
+     "dia_mm": 798.83
+    },
+    {
+     "r_outMm": 278.25,
+     "C_max_pF": 135.98508285572078,
+     "z": 1.070400709388556,
+     "converged": true,
+     "dia_mm": 706.755
+    },
+    {
+     "r_outMm": 260.125,
+     "C_max_pF": 116.58469687538863,
+     "z": 1.032593648400045,
+     "converged": true,
+     "dia_mm": 660.7175
+    },
+    {
+     "r_outMm": 251.0625,
+     "C_max_pF": 107.3743557485523,
+     "z": 1.0127835074215212,
+     "converged": true,
+     "dia_mm": 637.69875
+    },
+    {
+     "r_outMm": 246.53125,
+     "C_max_pF": 102.89164815096656,
+     "z": 1.0026256107080387,
+     "converged": true,
+     "dia_mm": 626.189375
+    },
+    {
+     "r_outMm": 244.265625,
+     "C_max_pF": 100.6809100936318,
+     "z": 1.0,
+     "converged": true,
+     "dia_mm": 620.4346875
+    },
+    {
+     "r_outMm": 245.3984375,
+     "C_max_pF": 101.783727810511,
+     "z": 1.000136830193104,
+     "converged": true,
+     "dia_mm": 623.31203125
+    },
+    {
+     "r_outMm": 244.83203125,
+     "C_max_pF": 101.23168112412434,
+     "z": 1.0,
+     "converged": true,
+     "dia_mm": 621.8733593750001
+    }
+   ],
+   "runs": 11,
+   "time_s": 251.57524251937866
+  },
+  "gate_time_s": 277.66998267173767
+ },
+ "HSYN": {
+  "H_SYN1": {
+   "pass_": true,
+   "r_found": 331.1022150961379,
+   "r_scan_linear": 330.98086226734347,
+   "bracket": [
+    325.3714285714286,
+    362.1
+   ],
+   "tol_mm": 1.0,
+   "interp_err_mm": 0.50786601406525,
+   "scan": [
+    {
+     "r_outMm": 105.0,
+     "C_max_pF": 3.976284645657051,
+     "z": 1.0,
+     "converged": true
+    },
+    {
+     "r_outMm": 141.72857142857143,
+     "C_max_pF": 21.99280643627263,
+     "z": 1.0,
+     "converged": true
+    },
+    {
+     "r_outMm": 178.45714285714286,
+     "C_max_pF": 45.37328833616651,
+     "z": 1.0,
+     "converged": true
+    },
+    {
+     "r_outMm": 215.1857142857143,
+     "C_max_pF": 74.11773034533867,
+     "z": 1.0,
+     "converged": true
+    },
+    {
+     "r_outMm": 251.91428571428574,
+     "C_max_pF": 108.2261324637891,
+     "z": 1.0146782384361304,
+     "converged": true
+    },
+    {
+     "r_outMm": 288.64285714285717,
+     "C_max_pF": 147.69849469151785,
+     "z": 1.0916485940715956,
+     "converged": true
+    },
+    {
+     "r_outMm": 325.3714285714286,
+     "C_max_pF": 192.5348170285249,
+     "z": 1.1868926043214425,
+     "converged": true
+    },
+    {
+     "r_outMm": 362.1,
+     "C_max_pF": 242.7350994748101,
+     "z": 1.2727151569211896,
+     "converged": true
+    },
+    {
+     "r_outMm": 398.8285714285715,
+     "C_max_pF": 298.29934203037374,
+     "z": 1.3490439871112854,
+     "converged": true
+    },
+    {
+     "r_outMm": 435.55714285714294,
+     "C_max_pF": 359.2275446952156,
+     "z": 1.4164014044077935,
+     "converged": true
+    },
+    {
+     "r_outMm": 472.28571428571433,
+     "C_max_pF": 425.51970746933586,
+     "z": 1.4755923525067374,
+     "converged": true
+    },
+    {
+     "r_outMm": 509.0142857142858,
+     "C_max_pF": 497.1758303527342,
+     "z": 1.5275170798581905,
+     "converged": true
+    },
+    {
+     "r_outMm": 545.7428571428572,
+     "C_max_pF": 574.1959133454112,
+     "z": 1.573066323836514,
+     "converged": true
+    },
+    {
+     "r_outMm": 582.4714285714286,
+     "C_max_pF": 656.579956447366,
+     "z": 1.6130681321079274,
+     "converged": true
+    },
+    {
+     "r_outMm": 619.2,
+     "C_max_pF": 744.3279596585994,
+     "z": 1.6482653018037086,
+     "converged": true
+    }
+   ]
+  },
+  "H_SYN2": {
+   "pass_": true,
+   "points": [
+    {
+     "r_outMm": 105.0,
+     "C_max_pF": 3.976284645657051,
+     "z": 1.0,
+     "converged": true,
+     "dia_mm": 266.7
+    },
+    {
+     "r_outMm": 619.2,
+     "C_max_pF": 744.3279596585994,
+     "z": 1.648265301803717,
+     "converged": true,
+     "dia_mm": 1572.768
+    },
+    {
+     "r_outMm": 263.63875440172495,
+     "C_max_pF": 120.24362867169316,
+     "z": 1.0401587884161914,
+     "converged": true,
+     "dia_mm": 669.6424361803814
+    },
+    {
+     "r_outMm": 357.09827018964165,
+     "C_max_pF": 235.5832834760886,
+     "z": 1.2615924664962999,
+     "converged": true,
+     "dia_mm": 907.0296062816898
+    },
+    {
+     "r_outMm": 331.1022150961379,
+     "C_max_pF": 200.01442776088786,
+     "z": 1.2009154381141647,
+     "converged": true,
+     "dia_mm": 840.9996263441903
+    }
+   ]
+  },
+  "H_SYN3_min_diameter": {
+   "pass_": true,
+   "z": 1.200915438114167,
+   "target": 1.2,
+   "feasible": true
+  },
+  "result": {
+   "found": true,
+   "r_outMm": 331.1022150961379,
+   "dia_mm": 840.9996263441903,
+   "z": 1.200915438114167,
+   "g_vMm": 7.0,
+   "binding": "z >= 1 + m (I3 margin)",
+   "runs": 21,
+   "time_s": 199.7937970161438,
+   "note": "",
+   "geom": {
+    "I4_insulate_first": {
+     "status": "pass",
+     "slack": 0.0,
+     "detail": "PROVISIONAL (D-MEDIUM: air, uniform field 3 kV/mm [RH]). rotor g_v 7.00 >= 7.00 mm for V_ceil 21 kV; spark gap V_bd 39.6 kV; septum 60 kV; coil split True",
+     "tag": "[IR] provisional"
+    },
+    "I9_mechanical": {
+     "status": "pass",
+     "slack": 0.33948043805133254,
+     "detail": "rim 132 m/s < 200 at the rotor body R420; vacuum_Pa and supercritical NOT-EVALUATED",
+     "tag": "[OC]"
+    },
+    "I11_crossfire": {
+     "status": "pass",
+     "slack": 0.17876667215458195,
+     "detail": "overlap 2.42 deg < SG3b-BS3 2.95 deg (margin +0.53)",
+     "tag": "[IR]"
+    }
+   }
+  },
+  "time_s": 199.80136919021606,
+  "H_SYN3_max_margin": {
+   "pass_": true,
+   "z": 1.3254905366877425,
+   "r_outMm": 387.00787401574803,
+   "ca": {
+    "ratio_Ca_opt": 0.6298007307530914,
+    "z_opt": 1.3449908999632858,
+    "bracket": [
+     0.6184178644949948,
+     0.6482185952480862
+    ],
+    "points": [
+     {
+      "ratio_Ca": 1.1347524157501472,
+      "z": 1.3233637083948158,
+      "converged": true
+     },
+     {
+      "ratio_Ca": 1.4652475842498527,
+      "z": 1.3026817803000619,
+      "converged": true
+     },
+     {
+      "ratio_Ca": 0.9304951684997055,
+      "z": 1.3352307490371436,
+      "converged": true
+     },
+     {
+      "ratio_Ca": 0.8042572472504416,
+      "z": 1.3411398417483795,
+      "converged": true
+     },
+     {
+      "ratio_Ca": 0.7262379212492639,
+      "z": 1.3437083643827021,
+      "converged": true
+     },
+     {
+      "ratio_Ca": 0.6780193260011776,
+      "z": 1.3446696910238773,
+      "converged": true
+     },
+     {
+      "ratio_Ca": 0.6482185952480862,
+      "z": 1.3449541697931446,
+      "converged": true
+     },
+     {
+      "ratio_Ca": 0.6298007307530914,
+      "z": 1.3449908999632858,
+      "converged": true
+     },
+     {
+      "ratio_Ca": 0.6184178644949948,
+      "z": 1.344954802395506,
+      "converged": true
+     },
+     {
+      "ratio_Ca": 0.6368357289899895,
+      "z": 1.3449903133105199,
+      "converged": true
+     }
+    ],
+    "ladder_ratio": 1.1,
+    "note": "golden-section on z(Ca ratio), exact runs; unimodality assumed [ME]"
+   },
+   "time_s": 24.30986475944519
+  },
+  "H_SYN3_max_rpm": {
+   "pass_": true,
+   "rpm": 3885,
+   "binding": "I9_mechanical",
+   "z": 1.3254745316585268,
+   "time_s": 4.0009682178497314
+  },
+  "pass_": true,
+  "gate_time_s": 228.12816214561462
+ },
+ "P1": {
+  "cores": 4,
+  "workers": 4,
+  "rows": [
+   {
+    "role": "main",
+    "model": "-",
+    "boot_s": 5.114,
+    "cold_start": 1790857364664,
+    "cold_z": 1.325474531658744,
+    "cold_end": 1790857372462,
+    "warm_start": 1790857424709,
+    "warm_z": 1.3110778717718599,
+    "warm_end": 1790857428425
+   },
+   {
+    "role": "helper",
+    "model": "M-OW",
+    "boot_s": 5.765,
+    "cold_start": 1790857364676,
+    "cold_z": 1.6235056843587825,
+    "cold_end": 1790857372850,
+    "warm_start": 1790857424706,
+    "warm_z": 1.5847827796043878,
+    "warm_end": 1790857428198
+   },
+   {
+    "role": "helper",
+    "model": "M-SR(0.1 us)",
+    "boot_s": 5.408,
+    "cold_start": 1790857364680,
+    "cold_z": 1.325474531658744,
+    "cold_end": 1790857371850,
+    "warm_start": 1790857424709,
+    "warm_z": 1.3110778717718599,
+    "warm_end": 1790857428323
+   },
+   {
+    "role": "helper",
+    "model": "M-SR(1 us)",
+    "boot_s": 5.555,
+    "cold_start": 1790857364664,
+    "cold_z": 1.325474531658744,
+    "cold_end": 1790857372824,
+    "warm_start": 1790857424708,
+    "warm_z": 1.3110778717718599,
+    "warm_end": 1790857428900
+   }
+  ],
+  "cold_wall_s": 8.186,
+  "cold_serial_s": 31.302,
+  "warm_wall_s": 4.194,
+  "warm_serial_s": 15.014,
+  "pass_": true,
+  "gate_time_s": 104.26321125030518
+ }
+}

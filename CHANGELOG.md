@@ -5,7 +5,19 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
-- **PUMP-SYNTH (brief r0.1), in progress.** `sim/pump_sizing.py` adds the rotor-plate forward law (moist-air ε_r, sector + ring areas, D-CMIN conventions) and the ladder (Ca 1.10, Cx 1.68, C_blk from PRF_branch), as the producer of the engine's capacitances. On-load self-test: S1 279.6 / 295.6 pF, dry-air ε_r 1.000576, S3 C_blk 439.8 nF, rotor ⌀ 983 mm.
+- **PUMP-SYNTH (brief r0.1) → `PUMP-SYNTH-LIVE`.** One browser tool, `tools/pump-synth.html`: rotor plates → forward law → ladder → the exact engine → **PUMPS: YES / NO**. It uses the shell of `charge-pump-synth-live.html` on the physics of pump-calc; neither parent is edited.
+  - **New:** `sim/pump_sizing.py` (and its 1:1 JS mirror `tools/pump-sizing.js`), `sim/pump_synth.py` (objective searches, robustness strip, NOT-EVALUATED-aware invariant battery), `tools/pump-synth.worker.js` (one main worker plus up to three helpers running the strip in parallel), `tools/pump-synth-reference.md`, `tools/pump-synth-README.md`, the presets `freeze-v010-plates` and `small-plate-probe`, `sim/pump_synth_gates.py` and `sim/pump-synth-findings.md`. The engine is unchanged since pump-calc (gate ENG).
+  - **Checks:** all pass — K, S1, S1b (JS = Python exactly), S2, S3, S4, S5, H-GEOM, H-SYN0–3, W0, M0, H-UI, H-STAMP 43=43=43, Z.
+  - **P1:** headline + strip takes 8.2 s cold and 4.2 s warm in Pyodide with 4 parallel workers (23.6 s serial).
+  - **Results at the freeze settings:** z 1.32547, PUMPS: YES. min_diameter (m 0.20) is ⌀ 841 mm (r_out 331.1). The smallest pumping rotor is ⌀ 623 mm (r_out 245.4). max_rpm is 3885 (I9).
+  - **Findings for TMD:**
+    - Below threshold the drawn pump has no z < 1, only a neutral mode (z = 1), where pump-calc's monodromy reported "not converged". It is resolved by exact plain cycles.
+    - Switching is multistable near threshold, so warm starts are limited to pumping orbits.
+    - S4 is exact only with Lx and R_lx co-scaled; with the C's alone it is off by 4e-9.
+    - The z-optimal Ca is 0.63 × C_max (D-CA). The critical Cpar is about 99 pF (×5 headroom over the 20 pF floor).
+    - I4 binds the freeze point by least slack, but only under the provisional air law (D-MEDIUM).
+    - The S1 ring needs R68.2, not R68.
+  - The hybrid brief says pump-calc was unbuilt; on this branch it is built, and PUMP-SYNTH builds on it. Frozen files show an empty diff vs 8cd181e. Not merged.
 - **pump-calc boot fix:** the page no longer hangs on "booting…". It names a `file://` open, loads the worker from a Blob (so a `.js` served as `text/plain` on Windows no longer matters), catches worker errors, and explains a stalled CDN. README troubleshooting added.
 - **PUMP-CALC (brief r0.1) → `PUMP-CALC-PARTIAL`.** Added the in-browser pump-action calculator for the drawn pump (`sim/pump_engine.py`, `tools/pump-calc.html` + `.worker.js`, `presets/pump/`, `sim/pump-calc-findings.md`).
   - **Engine:** one exact engine, derived from the r0.2 solver under gate E0 (max rel 9.5e-14; the §1 anchors G1 1.255991 and R1b 1.354261 are reproduced).
