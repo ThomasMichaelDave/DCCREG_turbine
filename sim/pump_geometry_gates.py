@@ -113,9 +113,9 @@ def _rand_geom(rng):
                 ca_rout=rng.uniform(160, 300), ca_round=rng.choice([0, 0, 0.5, 1.0]), ca_margin=rng.uniform(0, 10),
                 t_foil=rng.uniform(0.2, 2), t_carrier=rng.uniform(1, 6), t_rotor=rng.uniform(5, 20),
                 t_flange=rng.uniform(3, 10), t_septum=rng.uniform(6, 20), r_bore=rng.uniform(30, 55),
-                sg_rg=rng.uniform(250, 360), sg_rret=rng.uniform(150, 240), sg_d=rng.uniform(6, 20), sg_dbs=rng.uniform(15, 35),
+                sg_rbar=rng.uniform(300, 420), sg_rrail=rng.uniform(395, 460), sg_d=rng.uniform(6, 20), sg_dbs=rng.uniform(15, 35),
                 sg_s_ret=rng.uniform(3, 8), sg_s_load=rng.uniform(3, 8), sg_s_fire=rng.uniform(3, 8), sg_s_bs=rng.uniform(3, 8),
-                sg_clear=rng.uniform(2, 10), sg_rod=rng.uniform(3, 10), sg_rhub=rng.uniform(15, 40),
+                sg_prot=rng.uniform(0.2, 1.5), sg_pmin=rng.uniform(0.2, 1.0), sg_tab=rng.uniform(3, 10), sg_rod=rng.uniform(2, 6),
                 sg_frame=rng.uniform(20, 120), sg_khv=rng.uniform(1, 3))
 
 

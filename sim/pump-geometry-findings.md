@@ -51,46 +51,49 @@ G-CAD now also requires 105 named STEP products (95 solids + 10 assemblies), no 
 - `tools/pump-geometry.FCMacro` (FreeCAD) and `tools/fusion360/PumpGeometry/PumpGeometry.py` (Fusion 360) only build that list, so both packages show the same names.
 - New gate **G-F360** runs the Fusion script against an OpenCascade stand-in for `adsk.core` / `adsk.fusion`: 95 bodies in 10 components, volumes exact to 5e-15, every name equal to the part list. It does not exercise Fusion's own UI or appearance library; that needs a run in Fusion.
 
-## Spark gaps in 3-D (rev, 2026-10-01)
+## Spark gaps in the stack (rev 2, 2026-10-01; supersedes the outboard gap decks)
 
-TMD's rule: each load gap sits on one side and fires there, and its stator node reaches it by a lead over the stator.
+**Why the layout changed.** TMD pointed out that the rotor and the stator (the leg frame carrying the C-magnet assembly) **counter-rotate**. Relative to each other, every rotor part sweeps a full circle past every stator part.
 
-**Placement (all [IR] and editable; stations [OC]).**
-- **Decks.** Each side gets a gap deck outboard of its rotor flange, with two planes.
-  - The **bar plane** is for the island-bar tips. On side A it holds SG4a, SG4b and BS4; on side B, SG3a, SG3b and BS3.
-  - The **rail plane** is for the rotor-rail tips: SG1 on A and SG2 on B.
-  - The two tracks need separate planes. If they shared one, every stationary post reaching inward would cross the other track's rotating tips.
-- **Electrodes.** Stator electrodes are 12 mm W-Cu spheres (25 mm smooth for BS3/BS4). They sit radially outboard of the rotor tip, in-plane, at gap = the freeze spacing: 5.5 / 4.75 / 5.5 / 5.5 mm for return / load / fire / backstop. The backstop spacing is a TODO in the freeze.
-- **Angles.** They sit at the DXF station markers (= the engine's `st_*`), six times every 60°. The rotor tips are at 0 mod 60°, so the fire angle equals the station angle.
-- **Leads.** Each stator electrode has a post out to a stationary lead frame at R560 (60 mm beyond the rotor rims), a run along the frame, and a stub into its node's carrier rim.
-  - **SG3a**, node 1 from ND1, runs to deck B.
-  - **SG4a**, node 4 from ND4, runs to deck A.
-  - These are the **crossovers over the stator**, about 353 mm each.
-- **Rotor arms.** Bar tips sit on arms through the flange. Rail tips are reached by arms that run axially through the stator bores at r35, then radially in the rail plane.
-- **Effect on the stack.** It grows from 100 mm to **194 mm**, with the gap planes at z ±67.6 (bar) and ±91.1 mm (rail).
+The first layout put the gaps on decks outboard of the flanges. A revolved-envelope test shows it was in fact collision-free (0 overlaps), but only by:
+- pushing the gaps out of the stack (+94 mm of height);
+- running rail arms through the stator bores with 12 mm against the required 11;
+- using long posts and leads.
 
-**Checks (12, all pass).**
-- Nodes equal the netlist of record for all 8 gaps.
-- The spacing at alignment equals the freeze table.
-- Stations equal both the DXF markers and the engine.
-- No cross-firing: the tightest case is SG4b's tip against the SG4a electrode, with a 39.5 mm margin.
-- I11 at the placed radius r345: 2.33° < 2.95°.
-- The bar tip lies on the island bar.
-- HV clearances, at 2 × the largest gap (11 mm):
-  - rail arms to the stator bores: **12 mm, the binding one**;
-  - rail arms to the bars: 37 mm;
-  - rail track to bar track: 42.5 mm;
-  - lead frame to the rotor rims: 57 mm;
-  - different-node stator electrodes: 43.9 mm.
-- The gap planes are 5 mm clear of the flanges.
+**The reorganization.** Every rotary gap joins one rotor face and one stator face, and the stack already has exactly those facing pairs. Each gap now lives in that axial gap, in a **radial band reserved beyond the capacitor electrodes**:
 
-**CAD:** 347 solids, of which 252 are new (48 stator spheres, 144 lead rods, 60 rotor tips and arms), all named. G-CAD finds no interpenetration other than the deliberate joins (lead into post, arm through its own rotor).
+| band | axial gap | rotor face | stator face | gaps |
+|---|---|---|---|---|
+| bar band r375 | Cx4 / Cx3 gap | A- / B-flange (island-bar tips on 6 mm tabs from the bar ends at r350) | ND2 / ND3 | SG4a, SG4b, BS4 / SG3a, SG3b, BS3 |
+| rail band r410 | C1 / C2 gap | A- / B-disc (node 5 / 6 rail tips) | ND1 / ND4 | SG1 / SG2 |
+
+- **Spacing and recess.** The bare faces in a band are the gap plus both 1 mm foils apart: 5.6 mm in the Cx gap and 9 mm in the C1 gap. Short buttons therefore set each spark spacing exactly. The rotor tip stands 0.5 mm proud, and each stator button stands proud by whatever is left: 0.5–3.0 mm. The Cx band needs only a **0.45 mm recess per face** (ND2/ND3 keep a 2.55 mm wall); the C1/C2 band needs none.
+- **Stack height** stays at **100.2 mm**. There are no decks, no arms through the bores and no posts.
+- **Foreign-node buttons** are fed by a lead embedded in the host carrier, then run out over the rotor rims to the stator frame (R560, 58.5 mm clear) and back into the source carrier:
+  - **SG4a**: node 4, ND4 → ND2;
+  - **SG3a**: node 1, ND1 → ND3. These two are the **crossovers over the stator**, about 310 mm each.
+  - **SG1**: node 2, ND2 → ND1, and **SG2**: node 3, ND3 → ND4. These are neighbour hops.
+
+**Checks (17 gap checks, all pass).**
+- Nodes equal the netlist for all 8 gaps; stations equal the DXF and the engine.
+- The spacing at alignment equals the freeze table; every button stands proud.
+- Each recess leaves a wall.
+- HV clearances:
+  - bar band beyond the bars and pickups: **12.5 mm ≥ 11**, the binding one;
+  - rail band beyond the C1/C2 plates: 17 mm;
+  - the bands sit inside the carriers.
+- No cross-firing: the tightest case has a 40.6 mm margin.
+- I11 at r375: 2.14°.
+- The lead frame clears the rims.
+- **Counter-rotation:** 51 rotor against 162 stator revolved envelopes, none overlapping. This test is now a standing check.
+
+**CAD:** 283 solids, all named: 16 carrier rings, 74 foils, 13 dielectric slabs, 48 stator buttons, 36 rotor tips and tabs, and 96 lead rods. The Fusion stand-in builds the same 283 bodies.
 
 **For TMD:**
-1. **The netlist puts each Cx pickup on its own node.** Cx3 is 7 ↔ **n17**, with Lx3 running n17 → 3; Cx4 is **n23** ↔ 8, with Lx4 running 2 → n23. So the two faces of ND2 and ND3 are **not** equipotential: the series island inductor sits between them. Corrected in the model.
-2. **The deck pairing is the opposite of `docs/commutator-design.md` §5.** That doc groups SG1 with SG3 on the C1/Ca side ("top set serves SG3"). The drawn netlist puts SG3's island (bar 7) on side B with node 3, so SG3a/SG3b fire on deck B with SG2, and SG4 fires on deck A with SG1. The doc predates the island topology.
-3. **Leads are one rod per electrode** (6 per gap). A bus ring per node and plane would build cleaner, but rings of different nodes on one plane would cross each other's posts, so that needs a routing decision.
-4. **The C-EM motor ring the crossovers pass over is not modelled.** The 60 mm frame offset is a placeholder for it.
+1. **Cx pickups are nodes n17 / n23** (via Lx3 / Lx4), not 3 / 2, as in rev 1.
+2. **The deck pairing is the opposite of commutator-design §5,** as in rev 1. SG3 fires on side B with SG2, and SG4 on side A with SG1.
+3. **Buttons are modelled flat-faced.** Real W-Cu buttons would be domed; that changes only the protrusion figures.
+4. **The bar band binds.** The 25 mm backstop sets r375. A smaller backstop, or a pickup trimmed to r340, frees the band.
 
 ## 3. Findings for TMD
 

@@ -1343,18 +1343,20 @@ const GFIELDS = [
   ["stack", "cx_air", "Cx gap air", 0.1, 20, 0.1, "mm"],
   ["stack", "cx_mica", "Cx mica per face", 0, 3, 0.05, "mm"],
   ["stack", "rotor_in_off", "rotor face r_in offset", 0, 100, 1, "mm"],
-  ["gaps", "sg_rg", "bar track radius (load/fire/backstop)", 150, 450, 1, "mm"],
-  ["gaps", "sg_rret", "rail track radius (returns)", 80, 400, 1, "mm"],
-  ["gaps", "sg_d", "switching sphere", 4, 30, 0.5, "mm"],
-  ["gaps", "sg_dbs", "backstop electrode", 6, 50, 0.5, "mm"],
+  ["gaps", "sg_rbar", "bar band radius (Cx gap: load/fire/backstop)", 150, 495, 0.5, "mm"],
+  ["gaps", "sg_rrail", "rail band radius (C1/C2 gap: returns)", 150, 495, 0.5, "mm"],
+  ["gaps", "sg_d", "switching button", 4, 30, 0.5, "mm"],
+  ["gaps", "sg_dbs", "backstop button", 6, 50, 0.5, "mm"],
   ["gaps", "sg_s_ret", "return gap SG1/SG2", 1, 20, 0.05, "mm"],
   ["gaps", "sg_s_load", "load gap SG3a/SG4a", 1, 20, 0.05, "mm"],
   ["gaps", "sg_s_fire", "fire gap SG3b/SG4b", 1, 20, 0.05, "mm"],
   ["gaps", "sg_s_bs", "backstop gap BS3/BS4", 1, 20, 0.05, "mm"],
-  ["gaps", "sg_clear", "plane clearance", 0, 30, 0.5, "mm"],
-  ["gaps", "sg_rod", "post / arm / lead rod", 1, 20, 0.5, "mm"],
-  ["gaps", "sg_rhub", "rail-arm radius (through the bores)", 5, 100, 1, "mm"],
-  ["gaps", "sg_frame", "lead frame beyond the carrier edge", 10, 300, 1, "mm"],
+  ["gaps", "sg_prot", "rotor tip protrusion", 0, 5, 0.05, "mm"],
+  ["gaps", "sg_pmin", "min stator button protrusion", 0, 5, 0.05, "mm"],
+  ["gaps", "sg_wall", "min carrier wall under a recess", 0.2, 10, 0.1, "mm"],
+  ["gaps", "sg_tab", "bar tab width", 1, 30, 0.5, "mm"],
+  ["gaps", "sg_rod", "lead diameter", 1, 10, 0.5, "mm"],
+  ["gaps", "sg_frame", "stator lead frame beyond the carrier edge", 10, 300, 1, "mm"],
   ["gaps", "sg_khv", "HV clearance factor (× largest gap)", 1, 5, 0.1, ""],
 ];
 const gstate = Object.assign({}, PG.GEOM_DEFAULTS);
@@ -1440,9 +1442,8 @@ function stage2Render(){
     kv("Cb", `same spec, even sectors: ${design.Cb.C_pF.toFixed(3)} pF`) +
     kv("stack height", `${design.z_total.toFixed(1)} mm · carrier edge R${design.r_edge.toFixed(0)}`) +
     (ca.note ? `<div class="note" style="color:var(--warn)">${ca.note}</div>` : "") +
-    kv("spark gaps", `8 × 6 on 2 decks · planes A z ${design.sparkgaps.planes.A.bar.toFixed(1)} / ${design.sparkgaps.planes.A.rail.toFixed(1)}, ` +
-       `B z ${design.sparkgaps.planes.B.bar.toFixed(1)} / ${design.sparkgaps.planes.B.rail.toFixed(1)} mm`) +
-    kv("crossover leads", design.sparkgaps.gaps.filter(x => x.crossover).map(x => `${x.name}: node ${x.stator_node} → deck ${x.side}`).join(" · "));
+    kv("spark gaps (in the stack)", Object.values(design.sparkgaps.bands).map(b => `${b.side} ${b.band} r${b.r} (gap ${b.G.toFixed(2)} mm${b.recess > 0 ? ", recess " + b.recess.toFixed(2) + "/face" : ""})`).join(" · ")) +
+    kv("crossover leads", design.sparkgaps.gaps.filter(x => x.crossover).map(x => `${x.name}: node ${x.stator_node} ${x.carrier} → ${x.host}`).join(" · "));
   // checks
   const ch = design.checks;
   $("geomChecks").innerHTML = Object.entries(ch).map(([k, v]) => `<div class="lamp"><span class="dot ${v.pass_ ? "ok" : "no"}"></span><span class="nm" style="min-width:300px">${k}</span><span class="det">${v.detail}</span></div>`).join("") +
@@ -1484,7 +1485,7 @@ function facesOf(id){
   return out;
 }
 function drawDiscButtons(){
-  const ids = ["assembly"].concat(carriers().map(c => c.id), ["deck A", "deck B"]);
+  const ids = ["assembly"].concat(carriers().map(c => c.id), ["gaps A", "gaps B"]);
   $("discBtns").innerHTML = ids.map(id => `<button class="mini" data-disc="${id}" style="${id === disc ? "border-color:var(--acc);color:#cfe9ff" : ""}">${id}</button>`).join("");
   document.querySelectorAll("[data-disc]").forEach(n => n.addEventListener("click", () => { disc = n.dataset.disc; drawDiscButtons(); drawPlan(); }));
 }
@@ -1496,42 +1497,48 @@ function sectorPath(cx, cy, ri, ro, a0, w){
   return `M ${P(ri, a0)} L ${P(ro, a0)} A ${ro} ${ro} 0 ${large} 0 ${P(ro, a1)} L ${P(ri, a1)} ` + (ri > 0 ? `A ${ri} ${ri} 0 ${large} 1 ${P(ri, a0)} Z` : "Z");
 }
 function drawDeck(side){
-  const sg = design.sparkgaps, svg = $("planSvg"), cx = 210, cy = 210, R = 195, sc = R / (sg.R_frame + 10);
+  const sg = design.sparkgaps, svg = $("planSvg"), cx = 210, cy = 210, R = 195, sc = R / (sg.R_frame + 10), g = design.geom;
   const P = (r, a) => [cx + r * sc * Math.cos(a * Math.PI / 180), cy - r * sc * Math.sin(a * Math.PI / 180)];
-  let h = `<circle cx="${cx}" cy="${cy}" r="${(design.r_edge * sc).toFixed(1)}" fill="${css("--panel2")}" stroke="${css("--line")}" stroke-dasharray="4 3"/>` +
+  const xy = p => { const r = Math.hypot(p[0], p[1]), a = Math.atan2(p[1], p[0]) * 180 / Math.PI; return P(r, a); };
+  let h = `<circle cx="${cx}" cy="${cy}" r="${(design.r_edge * sc).toFixed(1)}" fill="${css("--panel2")}" stroke="${css("--line")}"/>` +
           `<circle cx="${cx}" cy="${cy}" r="${(sg.R_frame * sc).toFixed(1)}" fill="none" stroke="#5d6b7a" stroke-width="2"/>`;
-  const g = design.geom;
-  for (const [r, lab] of [[g.sg_rg, "bar track"], [g.sg_rret, "rail track"]])
-    h += `<circle cx="${cx}" cy="${cy}" r="${(r * sc).toFixed(1)}" fill="none" stroke="${css("--grid")}" stroke-dasharray="2 3"/>`;
+  // the capacitor electrodes of the two faces of each band, faint, so the reserved rings read
+  for (const key of ["Cx4_bars", "Cx4_pickup", "C1_stator", "C1_rotor"].map(k => side === "A" ? k : k.replace("Cx4", "Cx3").replace("C1", "C2"))){
+    const f = design.footprints[key];
+    for (const s0 of f.starts) h += `<path d="${sectorPath(cx, cy, f.r_in * sc, f.r_out * sc, s0, f.w_deg)}" fill="${nodeCol(f.node)}" fill-opacity="0.07" stroke="none"/>`;
+  }
+  for (const b of Object.values(sg.bands).filter(q => q.side === side))
+    h += `<path d="${sectorPath(cx, cy, b.r0 * sc, b.r1 * sc, 0, 360)}" fill="#3a4a5a" fill-opacity="0.35" stroke="none" fill-rule="evenodd"/>`;
   for (const it of sg.items){
     if (it.side !== side) continue;
     const col = nodeCol(it.node);
-    if (it.kind === "sphere"){
-      const r = Math.hypot(it.c[0], it.c[1]), a = Math.atan2(it.c[1], it.c[0]) * 180 / Math.PI, [x, y] = P(r, a);
-      const rot = it.role === "gap-rotor";
+    if (it.kind === "sector"){
+      h += `<path d="${sectorPath(cx, cy, it.r_in * sc, it.r_out * sc, it.start_deg, it.w_deg)}" fill="${col}" fill-opacity="0.8"/>`;
+    } else if (it.kind === "button"){
+      const [x, y] = xy(it.p0), rot = it.role === "gap-rotor";
       h += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${Math.max(1.5, it.r * sc).toFixed(1)}" fill="${rot ? "none" : col}" stroke="${col}" stroke-width="${rot ? 1.4 : 0.6}"/>`;
-    } else if (it.name.includes("_post_")){
-      const r0 = Math.hypot(it.p0[0], it.p0[1]), r1 = Math.hypot(it.p1[0], it.p1[1]), a = Math.atan2(it.p0[1], it.p0[0]) * 180 / Math.PI;
-      const [x0, y0] = P(r0, a), [x1, y1] = P(r1, a);
-      h += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="${col}" stroke-width="0.9"/>`;
+    } else if (/_lead_\d+[ab]$/.test(it.name)){
+      const [x0, y0] = xy(it.p0), [x1, y1] = xy(it.p1), cr = sg.gaps.find(q => q.name === it.gap).crossover;
+      h += `<line x1="${x0.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x1.toFixed(1)}" y2="${y1.toFixed(1)}" stroke="${cr ? css("--amber") : col}" stroke-width="${cr ? 1.4 : 0.8}"/>`;
     }
   }
   for (const x of sg.gaps.filter(q => q.side === side)){
     const [lx, ly] = P(sg.R_frame + 4, x.station);
     h += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="${nodeCol(x.stator_node)}" font-size="7.5" text-anchor="${Math.cos(x.station * Math.PI / 180) >= 0 ? "start" : "end"}">${x.name}${x.crossover ? "*" : ""}</text>`;
   }
-  h += `<text x="${cx}" y="${cy + 3}" fill="${css("--mut")}" font-size="9" text-anchor="middle">deck ${side}</text>`;
+  h += `<text x="${cx}" y="${cy + 3}" fill="${css("--mut")}" font-size="9" text-anchor="middle">gaps ${side}</text>`;
   svg.innerHTML = h;
-  $("planLegend").innerHTML = `Deck ${side} (outboard of the ${side}-flange): filled = stator electrodes on posts from the lead frame R${sg.R_frame.toFixed(0)} (thick ring), ` +
-    `hollow = rotor tips at θ = 0 (bar track r${g.sg_rg}, rail track r${g.sg_rret}; each on its own plane). * = load gap fed by a crossover lead over the stator.`;
-  let t = "<tr><th>gap</th><th>class</th><th>stator node</th><th>rotor</th><th>station</th><th>plane z</th><th>r stator</th><th>gap</th><th>lead</th></tr>";
+  $("planLegend").innerHTML = `Side ${side}, gaps in the stack: grey rings = the reserved bands (bar band r${g.sg_rbar} in the Cx gap, rail band r${g.sg_rrail} in the ${side === "A" ? "C1" : "C2"} gap), ` +
+    `faint sectors = the capacitor electrodes the bands stay clear of. Filled = stator buttons, hollow = rotor tips at θ = 0, bars = island-bar tabs; ` +
+    `lines = leads to the stator frame R${sg.R_frame.toFixed(0)} (thick ring), <span style="color:var(--amber)">amber</span> = crossover over the stator (*).`;
+  let t = "<tr><th>gap</th><th>class</th><th>stator node</th><th>on</th><th>rotor</th><th>station</th><th>band</th><th>button proud</th><th>gap</th><th>lead</th></tr>";
   for (const x of sg.gaps.filter(q => q.side === side))
-    t += `<tr><td>${x.name}</td><td>${x.cls}</td><td>${x.stator_node} (${x.carrier})</td><td>${x.rotor}</td><td>${x.station.toFixed(2)}°</td><td>${x.z.toFixed(1)} (${x.track})</td>` +
-         `<td>${x.r_stator.toFixed(1)}</td><td>${x.spacing.toFixed(2)} mm</td><td>${x.lead_len.toFixed(0)} mm${x.crossover ? " · crossover" : ""}</td></tr>`;
+    t += `<tr><td>${x.name}</td><td>${x.cls}</td><td>${x.stator_node}</td><td>${x.host}</td><td>${x.rotor}</td><td>${x.station.toFixed(2)}°</td><td>${x.band} r${x.r}</td>` +
+         `<td>${x.p_stator.toFixed(2)} mm</td><td>${x.spacing.toFixed(2)} mm</td><td>${x.foreign ? x.lead_len.toFixed(0) + " mm from " + x.carrier + (x.crossover ? " · crossover" : "") : "own node"}</td></tr>`;
   $("faceTable").innerHTML = t;
 }
 function drawPlan(){
-  if (disc.startsWith("deck")){ drawDeck(disc.slice(-1)); return; }
+  if (disc.startsWith("gaps")){ drawDeck(disc.slice(-1)); return; }
   const svg = $("planSvg"), cx = 210, cy = 210, R = 195, sc = R / design.r_edge;
   let h = `<circle cx="${cx}" cy="${cy}" r="${R}" fill="${css("--panel2")}" stroke="${css("--line")}"/>`;
   let foils = [], car = null;
@@ -1567,7 +1574,7 @@ function drawPlan(){
 function drawStack(){
   const svg = $("stackSvg"), W = 900, H = 420, x0 = 60, x1 = 640, y0 = 14, y1 = H - 14;
   const SG = design.sparkgaps;
-  const zmin = SG.z_min - 4, zmax = SG.z_max + 4;
+  const zmin = design.stack[0].z0 - 4, zmax = design.stack[design.stack.length - 1].z1 + 4;
   const sx = (x1 - x0) / (SG.R_frame + 10), sy = (y1 - y0) / (zmax - zmin);
   $("zx").textContent = (sy / sx).toFixed(1);
   const X = r => x0 + r * sx, Y = z => y0 + (z - zmin) * sy;
@@ -1589,28 +1596,34 @@ function drawStack(){
     }
   }
   h += `<line x1="${x0}" y1="${Y(0)}" x2="${x1}" y2="${Y(0)}" stroke="${css("--amber")}" stroke-dasharray="2 3" stroke-width="0.8"/>`;
-  // spark-gap planes, electrodes (projected to their radius) and the lead risers at the frame radius
-  for (const side of ["A", "B"]) for (const tr of ["bar", "rail"]){
-    const z = SG.planes[side][tr];
-    h += `<line x1="${x0}" y1="${Y(z)}" x2="${X(SG.R_frame)}" y2="${Y(z)}" stroke="#5d6b7a" stroke-dasharray="1 3" stroke-width="0.7"/>` +
-         `<text x="${x1 + 10}" y="${(Y(z) + 3).toFixed(1)}" fill="${css("--mut")}" font-size="9">deck ${side} ${tr} plane z ${z.toFixed(1)}</text>`;
+  // spark gaps in the stack: recessed band pockets, buttons / tips (projected to their radius), bar tabs, leads
+  for (const rc of SG.recesses){
+    const c = design.stack.find(q => q.id === rc.carrier);
+    const za = rc.face === "z1" ? c.z1 - rc.depth : c.z0, zb = rc.face === "z1" ? c.z1 : c.z0 + rc.depth;
+    h += `<rect x="${X(rc.r0)}" y="${Y(za)}" width="${(rc.r1 - rc.r0) * sx}" height="${Math.max(0.8, (zb - za) * sy)}" fill="${css("--bg")}"/>`;
   }
-  const seenR = new Set();
+  const seen = new Set();
   for (const it of SG.items){
-    if (it.kind === "sphere"){
-      const r = Math.hypot(it.c[0], it.c[1]), key = `${r.toFixed(1)}|${it.c[2].toFixed(1)}`;
-      if (seenR.has(key)) continue; seenR.add(key);
-      h += `<ellipse cx="${X(r).toFixed(1)}" cy="${Y(it.c[2]).toFixed(1)}" rx="${Math.max(1.5, it.r * sx).toFixed(1)}" ry="${Math.max(1.5, it.r * sy).toFixed(1)}" fill="${it.role === "gap-rotor" ? "none" : nodeCol(it.node)}" stroke="${nodeCol(it.node)}"/>`;
-    } else if (it.name.includes("_riser_1")){
-      const cross = SG.gaps.find(x => x.name === it.gap).crossover;
-      h += `<line x1="${X(SG.R_frame).toFixed(1)}" y1="${Y(it.p0[2]).toFixed(1)}" x2="${X(SG.R_frame).toFixed(1)}" y2="${Y(it.p1[2]).toFixed(1)}" stroke="${cross ? css("--amber") : nodeCol(it.node)}" stroke-width="${cross ? 2 : 1}" opacity="0.8"/>`;
+    if (it.kind === "button"){
+      const r = Math.hypot(it.p0[0], it.p0[1]), key = `${r.toFixed(1)}|${it.p0[2].toFixed(2)}|${it.r}`;
+      if (seen.has(key)) continue; seen.add(key);
+      const za = Math.min(it.p0[2], it.p1[2]), zb = Math.max(it.p0[2], it.p1[2]);
+      h += `<rect x="${X(r - it.r)}" y="${Y(za)}" width="${2 * it.r * sx}" height="${Math.max(1.2, (zb - za) * sy)}" fill="${it.role === "gap-rotor" ? "none" : nodeCol(it.node)}" stroke="${nodeCol(it.node)}" stroke-width="0.8"/>`;
+    } else if (it.kind === "sector" && it.name.endsWith("_1")){
+      h += `<rect x="${X(it.r_in)}" y="${Y(it.z0)}" width="${(it.r_out - it.r_in) * sx}" height="${Math.max(0.8, (it.z1 - it.z0) * sy)}" fill="${nodeCol(it.node)}"/>`;
+    } else if (it.kind === "rod" && /_lead_1[a-d]$/.test(it.name)){
+      const cr = SG.gaps.find(q => q.name === it.gap).crossover;
+      const r0 = Math.hypot(it.p0[0], it.p0[1]), r1 = Math.hypot(it.p1[0], it.p1[1]);
+      h += `<line x1="${X(r0).toFixed(1)}" y1="${Y(it.p0[2]).toFixed(1)}" x2="${X(r1).toFixed(1)}" y2="${Y(it.p1[2]).toFixed(1)}" stroke="${cr ? css("--amber") : nodeCol(it.node)}" stroke-width="${cr ? 1.8 : 1}" opacity="0.85"/>`;
     }
   }
+  for (const b of Object.values(SG.bands))
+    h += `<text x="${X(b.r1) + 3}" y="${(Y((b.Fr + b.Fs) / 2) + 3).toFixed(1)}" fill="${css("--mut")}" font-size="8">${b.side} ${b.band} band</text>`;
   for (const r of [100, 200, 300, 400, 500, 600]) if (r < SG.R_frame + 10) h += `<text x="${X(r)}" y="${H - 2}" fill="${css("--mut")}" font-size="8" text-anchor="middle">R${r}</text>`;
   svg.innerHTML = h;
   $("stackNote").innerHTML = "Order [IR]: each rotor half is a clamshell around its stator pair — flange (island bars) · Cx gap · ND2/ND3 · mica (Ca/Cb) · ND1/ND4 · 7 mm air (C1/C2) · rotor disc · septum (C_R). " +
     "Foils are drawn over their radial band (their sectors are in the plan view). Mica and garolite slabs shaded; air gaps empty. " +
-    "Spark gaps: two planes per side outboard of the flanges (bar tips / rail tips); filled dots = stator electrodes, hollow = rotor tips; the vertical lines at the lead-frame radius are the leads to each node's carrier — <b style='color:var(--amber)'>amber = the load-gap crossovers over the stator</b>.";
+    "Spark gaps IN the stack: each sits in the axial gap between the rotor face and the stator face it joins — the bar band in the Cx gap, the rail band in the C1/C2 gap — in a ring beyond the capacitor electrodes (pockets show a recess). Filled = stator buttons, hollow = rotor tips; lines = leads to the stator frame, <b style='color:var(--amber)'>amber = the load-gap crossovers over the stator</b>. Counter-rotation is checked as revolved (r, z) envelopes: no rotor part may share (r, z) with a stator part.";
 }
 function exportJson(){
   if (!design) return;

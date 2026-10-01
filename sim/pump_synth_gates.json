@@ -119,7 +119,7 @@
    "island sink"
   ],
   "hits": {},
-  "gate_time_s": 0.0010273456573486328
+  "gate_time_s": 0.001260995864868164
  },
  "HSTAMP": {
   "pass_": true,
@@ -131,13 +131,13 @@
    "mapped_not_drawn": [],
    "net_not_drawn": []
   },
-  "gate_time_s": 0.0010445117950439453
+  "gate_time_s": 0.001338958740234375
  },
  "Z": {
   "pass_": true,
   "base": "8cd181e",
   "diff": "",
-  "gate_time_s": 0.007485389709472656
+  "gate_time_s": 0.006921529769897461
  },
  "verdict": "PUMP-SYNTH-LIVE",
  "S4": {

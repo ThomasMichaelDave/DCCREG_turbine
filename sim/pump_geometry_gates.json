@@ -394,52 +394,72 @@
     "pass_": true,
     "detail": "SG1 5.5; SG4a1 4.75; SG4b1 5.5; BS4 5.5; SG2 5.5; SG3a1 4.75; SG3b1 5.5; BS3 5.5 mm"
    },
+   "gaps: every stator button stands proud of its face": {
+    "pass_": true,
+    "detail": "smallest protrusion 0.5 mm"
+   },
+   "gaps: recessed bands leave a carrier wall": {
+    "pass_": true,
+    "detail": "ND2 keeps 2.55 mm under a 0.45 mm recess"
+   },
+   "gaps: A bar band clears the bars / pickups (HV)": {
+    "pass_": true,
+    "detail": "r375 band: 12.5 mm beyond r350 (>= 11)"
+   },
+   "gaps: A bar band inside the carriers": {
+    "pass_": true,
+    "detail": "band r360.5-389.5 within R500"
+   },
+   "gaps: A rail band clears the C1 / C2 plates (HV)": {
+    "pass_": true,
+    "detail": "r410 band: 17 mm beyond r387 (>= 11)"
+   },
+   "gaps: A rail band inside the carriers": {
+    "pass_": true,
+    "detail": "band r402-418 within R500"
+   },
+   "gaps: B bar band clears the bars / pickups (HV)": {
+    "pass_": true,
+    "detail": "r375 band: 12.5 mm beyond r350 (>= 11)"
+   },
+   "gaps: B bar band inside the carriers": {
+    "pass_": true,
+    "detail": "band r360.5-389.5 within R500"
+   },
+   "gaps: B rail band clears the C1 / C2 plates (HV)": {
+    "pass_": true,
+    "detail": "r410 band: 17 mm beyond r387 (>= 11)"
+   },
+   "gaps: B rail band inside the carriers": {
+    "pass_": true,
+    "detail": "band r402-418 within R500"
+   },
    "gaps: no cross-firing to a different-node station": {
     "pass_": true,
-    "detail": "tightest SG4b1 tip vs SG4a1 electrode: 45.03 mm (margin 39.53 mm over its spacing)"
+    "detail": "tightest SG4b1 tip vs SG4a1 button: 46.11 mm (margin 40.61 mm over its spacing)"
    },
    "gaps: I11 cross-fire at the placed bar radius": {
     "pass_": true,
-    "detail": "overlap 2.33 deg < SG3b-BS3 2.95 deg at r345"
+    "detail": "overlap 2.14 deg < SG3b-BS3 2.95 deg at r375"
    },
-   "gaps: bar tip radius on the island bar": {
+   "gaps: lead frame clears the rotor rims (HV)": {
     "pass_": true,
-    "detail": "r345 within the bar r75-350"
+    "detail": "R560: 58.5 mm over the R500 rims"
    },
-   "gaps: rail arms clear the stator bores (HV)": {
+   "gaps: counter-rotation: no rotor/stator collision": {
     "pass_": true,
-    "detail": "12 mm >= 11 mm (2 x 5.5)"
-   },
-   "gaps: rail arms clear the island bars in the flange (HV)": {
-    "pass_": true,
-    "detail": "37 mm >= 11 mm"
-   },
-   "gaps: rail track well inboard of the bar track": {
-    "pass_": true,
-    "detail": "42.5 mm radial between the tracks"
-   },
-   "gaps: lead frame clears the rotor rim (HV)": {
-    "pass_": true,
-    "detail": "R560: 57 mm over the R500 rims"
-   },
-   "gaps: gap planes clear the flanges": {
-    "pass_": true,
-    "detail": "5 mm"
-   },
-   "gaps: different-node stator electrodes keep the HV clearance": {
-    "pass_": true,
-    "detail": "tightest SG4a1 / SG4b1: 43.88 mm >= 11 mm"
+    "detail": "51 rotor x 162 stator revolved envelopes, none overlap"
    },
    "gaps: load-gap crossovers over the stator (info)": {
     "pass_": true,
-    "detail": "SG4a1: node 4 from ND4 to deck A, lead 353.35 mm, SG3a1: node 1 from ND1 to deck B, lead 353.35 mm"
+    "detail": "SG4a1: node 4 from ND4 to ND2 (A), lead 309.5 mm, SG3a1: node 1 from ND1 to ND3 (B), lead 309.5 mm"
    }
   }
  },
  "G-CAD": {
   "pass_": true,
   "names": {
-   "products": 361,
+   "products": 293,
    "anonymous": 0,
    "labels_missing": [],
    "assemblies": [
@@ -452,43 +472,39 @@
     "ND4 - stator carrier ND4 (node 4): C2 stator plate + Cb counter-electrode",
     "ND3 - stator carrier ND3 (node 3): Cb electrode + Cx3 pickup (node n17, via Lx3)",
     "B-flange - rotor B outer flange, carries the island bars (node 7, floating)",
-    "Spark gaps deck A - rotor tips and arms (rotate with rotor A)",
-    "Spark gaps deck A - stator electrodes, posts and leads",
-    "Spark gaps deck B - rotor tips and arms (rotate with rotor B)",
-    "Spark gaps deck B - stator electrodes, posts and leads",
     "PumpGeometry 1bdb33d89a45 - DCCREG drawn pump, stage 2 plate geometry (Ca/Cb geometrized)"
    ],
    "parts_csv": "docs/geometry/freeze-v010-CaCb-parts.csv",
-   "csv_rows": 347,
+   "csv_rows": 283,
    "sample": [
     "A-disc / C1_rotor_1 - C1 rotor face, node 5, C1, sector 1 of 6 (30-60 deg), r75-387 mm, Al foil 1 mm, outer side, z -18..-17",
     "A-disc / C1_rotor_2 - C1 rotor face, node 5, C1, sector 2 of 6 (90-120 deg), r75-387 mm, Al foil 1 mm, outer side, z -18..-17",
     "A-disc / C1_rotor_3 - C1 rotor face, node 5, C1, sector 3 of 6 (150-180 deg), r75-387 mm, Al foil 1 mm, outer side, z -18..-17"
    ]
   },
-  "solids": 347,
+  "solids": 283,
   "roles": {
-   "carrier": 8,
+   "carrier": 16,
    "foil": 74,
    "dielectric": 13,
-   "gap-rotor": 60,
    "gap-stator": 48,
-   "gap-lead": 144
+   "gap-lead": 96,
+   "gap-rotor": 36
   },
-  "worst_volume_rel": 3.2132970820866504e-15,
+  "worst_volume_rel": 3.597602072444243e-15,
   "invalid": [],
   "clashes": [],
   "json": "docs/geometry/freeze-v010-CaCb.json",
   "step": "docs/geometry/freeze-v010-CaCb.step",
-  "step_bytes": 3174610,
+  "step_bytes": 3195497,
   "lock": "1bdb33d89a45",
-  "z_total_mm": 194.2
+  "z_total_mm": 100.2
  },
  "verdict": "GEOMETRY-STAGE2-PASS",
  "G-JS": {
   "pass_": true,
   "n": 60,
-  "worst_rel": 5.282967094847113e-15,
+  "worst_rel": 9.223096323253737e-14,
   "mismatches": []
  },
  "G-RT": {
@@ -527,13 +543,13 @@
  },
  "G-F360": {
   "pass_": true,
-  "bodies": 347,
-  "components": 14,
-  "worst_volume_rel": 5.231456165757316e-15,
+  "bodies": 283,
+  "components": 10,
+  "worst_volume_rel": 3.8946812523093446e-14,
   "invalid": [],
   "names_ok": true,
   "top": "PumpGeometry 1bdb33d89a45 - DCCREG drawn pump, stage 2 plate geometry (Ca-Cb geometrized)",
-  "sample": "A-flange - Cx4_bars_3 - island bars on A, node 8, Cx4, sector 3 of 6 (120-150 deg), r75-350 mm, Al foil 1 mm, septum side, z -44.1..-43.1",
-  "message": "PumpGeometry 1bdb33d89a45: 347 bodies in 13 components built (worst volume error 5.2e-15).\n\nNames follow the parts table (pump-geometry ...-parts.csv / FreeCAD STEP)."
+  "sample": "A-flange - Cx4_bars_1 - island bars on A, node 8, Cx4, sector 1 of 6 (0-30 deg), r75-350 mm, Al foil 1 mm, septum side, z -44.1..-43.1",
+  "message": "PumpGeometry 1bdb33d89a45: 283 bodies in 9 components built (worst volume error 3.9e-14).\n\nNames follow the parts table (pump-geometry ...-parts.csv / FreeCAD STEP)."
  }
 }

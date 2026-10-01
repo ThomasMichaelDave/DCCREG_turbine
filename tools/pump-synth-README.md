@@ -96,9 +96,10 @@ The names are the same as in the STEP and the parts CSV; Fusion forbids `/`, so 
 
 **Fusion 360, via STEP.** Open or upload the `.step`. The products become named components and the carrier assemblies become a component tree, with colours as appearances. The reference file `docs/geometry/freeze-v010-CaCb.step` needs no FreeCAD at all. For other designs, the FreeCAD macro writes the STEP, and that STEP then opens in Fusion.
 
-**Spark gaps.** Stage 2 also places the commutator: two gap planes per side outboard of the rotor flanges. See them in the "deck A" and "deck B" plan views, in the axial section, and in the "spark gaps" parameter group.
-- Stator electrodes sit at the DXF station angles, with the freeze spacings, and are fed by leads from their node's carrier.
-- The load gaps fire on their island bar's side. Their stator node arrives by a crossover lead over the stator: node 1 to deck B, node 4 to deck A.
-- Twelve gap checks cover the netlist nodes, spacing, stations, cross-firing and HV clearances.
+**Spark gaps, in the stack.** Rotor and stator counter-rotate, so each rotary gap sits in the axial gap between the rotor face and the stator face it joins, in a ring reserved beyond the capacitor electrodes:
+- the **bar band** (r375) in the Cx gap holds the load, fire and backstop gaps, with the island-bar tips on tabs;
+- the **rail band** (r410) in the C1/C2 gap holds the returns.
+
+The page shows them in the "gaps A" and "gaps B" plan views and in the axial section, and their parameters are in the "spark gaps" group. Buttons of a foreign node are fed by leads over the rotor rims along the stator frame; SG4a and SG3a are the crossovers. A standing check verifies that no rotor part shares (r, z) with any stator part once both are revolved.
 
 The stack order and the carrier/foil thicknesses are [IR] placeholders (the DXF has no axial section). See `sim/pump-geometry-findings.md`.
