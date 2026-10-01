@@ -75,4 +75,14 @@ In the geometry stage:
 - **The plate distribution** shows a plan per carrier (both faces) and an assembly overlay, plus an axial half-section of the stack. Every other electrode is locked context from the r0.15 DXF.
 - **Export.** `pump-geometry-<hash>.json` + `pump-geometry.FCMacro`: in FreeCAD, Macro ▸ Macros… ▸ Execute, then pick the JSON. The macro builds every carrier, foil sector and dielectric slab, and saves `.FCStd` and `.step` next to the JSON. The reference build is `docs/geometry/freeze-v010-CaCb.step`.
 
+**Names in the 3-D model.** Every solid carries a descriptive label, which is also its STEP product name. For example:
+
+`ND2 / Ca_el_1 - Ca electrode, node 2, Ca, sector 1 of 6 (30-60 deg), r110-174.76 mm, Al foil 1 mm, septum side, z -35.5..-34.5`
+
+- The solids are grouped into one named sub-assembly per carrier, plus a "Dielectrics" assembly.
+- `<json>-parts.csv`, written next to the STEP, is the translation table: one row per solid with its name, label, assembly, role, node, capacitor, material, radii, angles, z range and volume.
+- Labels are ASCII-only, so they survive STEP in any package.
+
+**Fusion 360.** Open or upload the `.step`. The products become named components and the carrier assemblies become a component tree, with colours as appearances. The reference file `docs/geometry/freeze-v010-CaCb.step` needs no FreeCAD at all. For other designs, the FreeCAD macro writes the STEP, and that STEP then opens in Fusion.
+
 The stack order and the carrier/foil thicknesses are [IR] placeholders (the DXF has no axial section). See `sim/pump-geometry-findings.md`.

@@ -18,7 +18,7 @@
 | plate distribution | page: plan per carrier and assembly overlay; axial half-section; face table | Shows every electrode on every carrier face, coloured by node. |
 | checks | `checks()` / `adjacency()` | Ca/Cb inside their counter-electrodes; overlap = electrode area; bore clearance; dielectric margin fits the sector pitch; realized = locked C; alternating layout; **every capacitor's two foils face each other across exactly its own gap**. |
 | export | `pump-geometry-<hash>.json` + `tools/pump-geometry.FCMacro` | The macro builds every carrier, foil sector and dielectric slab as solids, grouped and coloured by node, and saves `.FCStd` + `.step` next to the JSON. |
-| reference build | `docs/geometry/freeze-v010-CaCb.json` / `.step` | The freeze design point: 95 solids, 1.5 MB STEP, importable into any CAD package. |
+| reference build | `docs/geometry/freeze-v010-CaCb.json` / `.step` / `-parts.csv` | The freeze design point: 95 solids, 1.5 MB STEP, importable into any CAD package. |
 
 ## 2. Checks
 
@@ -37,6 +37,14 @@
 - the JSON exports;
 - reloading from the URL re-verifies the lock;
 - no console errors.
+
+**Readable STEP (rev, 2026-10-01).** Plain `Part.export` wrote every solid as an anonymous "Open CASCADE STEP translator 8.0 N" product. The macro now:
+- gives every solid a descriptive ASCII label (what it is, its node, capacitor, sector and angles, radii, material and thickness, face, z range);
+- groups the solids into one named sub-assembly per carrier, plus Dielectrics;
+- exports through FreeCAD's `Import` (OCAF) writer, which keeps names, hierarchy and colours;
+- writes `<json>-parts.csv` as the translation table.
+
+G-CAD now also requires 105 named STEP products (95 solids + 10 assemblies), no anonymous product, and one CSV row per solid. Lock hashes are now identical in Python and JS (a shared canonical JSON), so the STEP's top assembly carries the same hash as the page badge (freeze: `1bdb33d89a45`). The STEP is meant to be opened in Fusion 360 as well as FreeCAD.
 
 ## 3. Findings for TMD
 

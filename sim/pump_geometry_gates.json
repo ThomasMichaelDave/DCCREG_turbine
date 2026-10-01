@@ -318,6 +318,30 @@
  },
  "G-CAD": {
   "pass_": true,
+  "names": {
+   "products": 105,
+   "anonymous": 0,
+   "labels_missing": [],
+   "assemblies": [
+    "A-flange - rotor A outer flange, carries the island bars (node 8, floating)",
+    "ND2 - stator carrier ND2 (node 2): Ca electrode + Cx4 pickup",
+    "Dielectrics - septum (C_R, garolite) and the Ca/Cb mica slabs",
+    "ND1 - stator carrier ND1 (node 1): C1 stator plate + Ca counter-electrode",
+    "A-disc - rotor A main disc (node 5): C1 rotor face + C_R face",
+    "B-disc - rotor B main disc (node 6): C2 rotor face + C_R face",
+    "ND4 - stator carrier ND4 (node 4): C2 stator plate + Cb counter-electrode",
+    "ND3 - stator carrier ND3 (node 3): Cb electrode + Cx3 pickup",
+    "B-flange - rotor B outer flange, carries the island bars (node 7, floating)",
+    "PumpGeometry 1bdb33d89a45 - DCCREG drawn pump, stage 2 plate geometry (Ca/Cb geometrized)"
+   ],
+   "parts_csv": "docs/geometry/freeze-v010-CaCb-parts.csv",
+   "csv_rows": 95,
+   "sample": [
+    "A-disc / C1_rotor_1 - C1 rotor face, node 5, C1, sector 1 of 6 (30-60 deg), r75-387 mm, Al foil 1 mm, outer side, z -18..-17",
+    "A-disc / C1_rotor_2 - C1 rotor face, node 5, C1, sector 2 of 6 (90-120 deg), r75-387 mm, Al foil 1 mm, outer side, z -18..-17",
+    "A-disc / C1_rotor_3 - C1 rotor face, node 5, C1, sector 3 of 6 (150-180 deg), r75-387 mm, Al foil 1 mm, outer side, z -18..-17"
+   ]
+  },
   "solids": 95,
   "roles": {
    "carrier": 8,
@@ -329,8 +353,8 @@
   "clashes": [],
   "json": "docs/geometry/freeze-v010-CaCb.json",
   "step": "docs/geometry/freeze-v010-CaCb.step",
-  "step_bytes": 1520770,
-  "lock": "aa4bfa18e7dd",
+  "step_bytes": 1665007,
+  "lock": "1bdb33d89a45",
   "z_total_mm": 100.2
  },
  "verdict": "GEOMETRY-STAGE2-PASS",

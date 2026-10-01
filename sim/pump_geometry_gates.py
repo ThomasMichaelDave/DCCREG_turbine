@@ -194,16 +194,54 @@ def _install_occ_freecad():
             w.Transfer(o.Shape.s, STEPControl_AsIs)
         w.Write(path)
 
+    def import_export(objs, path):
+        """FreeCAD's Import.export (OCAF): App::Part -> named assembly, Part::Feature -> named, coloured part."""
+        from OCP.TDocStd import TDocStd_Document
+        from OCP.TCollection import TCollection_ExtendedString
+        from OCP.XCAFDoc import XCAFDoc_DocumentTool, XCAFDoc_ColorType
+        from OCP.TDataStd import TDataStd_Name
+        from OCP.STEPCAFControl import STEPCAFControl_Writer
+        from OCP.Quantity import Quantity_Color, Quantity_TypeOfColor
+        from OCP.TopLoc import TopLoc_Location
+        from OCP.Interface import Interface_Static
+        doc = TDocStd_Document(TCollection_ExtendedString("XmlOcaf"))
+        stl = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
+        col = XCAFDoc_DocumentTool.ColorTool_s(doc.Main())
+        name = lambda lab, t: TDataStd_Name.Set_s(lab, TCollection_ExtendedString(t))
+
+        def add(o, parent):
+            if o.TypeId == "App::Part":
+                lab = stl.NewShape(); name(lab, o.Label)
+                for ch in o.Group:
+                    add(ch, lab)
+            else:
+                lab = stl.AddShape(o.Shape.s, False); name(lab, o.Label)
+                if getattr(o, "Colour", None):
+                    r, g, b = o.Colour
+                    col.SetColor(lab, Quantity_Color(r, g, b, Quantity_TypeOfColor.Quantity_TOC_RGB), XCAFDoc_ColorType.XCAFDoc_ColorSurf)
+            if parent is not None:
+                comp = stl.AddComponent(parent, lab, TopLoc_Location()); name(comp, o.Label)
+            return lab
+        for o in objs:
+            add(o, None)
+        stl.UpdateAssemblies()
+        Interface_Static.SetCVal_s("write.step.product.name", "PumpGeometry")
+        w = STEPCAFControl_Writer(); w.SetNameMode(True); w.SetColorMode(True)
+        w.Transfer(doc, STEPControl_AsIs); w.Write(path)
+
     class Obj:
         def __init__(self, type_id, name):
-            self.TypeId, self.Name, self.Shape, self.Group = type_id, name, None, []
+            self.TypeId, self.Name, self.Label, self.Shape, self.Group, self.Colour = type_id, name, name, None, [], None
 
         def addObject(self, o):
+            for other in getattr(o, "_parents", []):        # an object lives in one container (FreeCAD rule)
+                other.Group.remove(o)
+            o._parents = [self]
             self.Group.append(o)
 
     class Doc:
         def __init__(self, name):
-            self.Name, self.Objects, self.saved = name, [], None
+            self.Name, self.Label, self.Objects, self.saved = name, name, [], None
 
         def addObject(self, type_id, name):
             base, k = name, 1
@@ -224,7 +262,9 @@ def _install_occ_freecad():
     fc.Console = types.SimpleNamespace(PrintMessage=lambda m: None)
     part = types.ModuleType("Part")
     part.makeCylinder, part.export = makeCylinder, export
-    sys.modules["FreeCAD"], sys.modules["Part"] = fc, part
+    imp = types.ModuleType("Import")
+    imp.export = import_export
+    sys.modules["FreeCAD"], sys.modules["Part"], sys.modules["Import"] = fc, part, imp
     return fc
 
 
@@ -255,10 +295,22 @@ def gate_cad():
             if v > 1e-6 * min(a.Shape.Volume, b.Shape.Volume):
                 clash.append((a.Name, b.Name, v))
     step = os.path.splitext(jpath)[0] + ".step"
+    import re
+    txt = open(step, encoding="latin-1").read().replace("\r", "").replace("\n", "")   # line breaks are not significant in STEP
+    products = re.findall(r"=\s*PRODUCT\(\s*'((?:[^']|'')*)'", txt)
+    anon = [p for p in products if "Open CASCADE" in p]
+    labels = {o.Label for o in objs}
+    missing = sorted(labels - set(products))
+    asm = [g.Label for g in doc.Objects if g.TypeId == "App::Part"]
+    csvp = os.path.splitext(jpath)[0] + "-parts.csv"
+    rows = sum(1 for _ in open(csvp)) - 1
+    names_ok = not anon and not missing and rows == len(objs) and all(a in products for a in asm)
     roles = {}
     for m in made:
         roles[m["role"]] = roles.get(m["role"], 0) + 1
-    return dict(pass_=bool(vol_err <= 1e-6 and not invalid and not clash and os.path.getsize(step) > 0),
+    return dict(pass_=bool(vol_err <= 1e-6 and not invalid and not clash and os.path.getsize(step) > 0 and names_ok),
+                names=dict(products=len(products), anonymous=len(anon), labels_missing=missing[:5], assemblies=asm,
+                           parts_csv=os.path.relpath(csvp, ROOT), csv_rows=rows, sample=sorted(labels)[:3]),
                 solids=len(objs), roles=roles, worst_volume_rel=vol_err, invalid=invalid, clashes=clash[:10],
                 json=os.path.relpath(jpath, ROOT), step=os.path.relpath(step, ROOT), step_bytes=os.path.getsize(step),
                 lock=d["lock"]["hash"], z_total_mm=d["z_total"])
@@ -284,7 +336,7 @@ def main():
             r = dict(pass_=False, error=f"{type(e).__name__}: {e}", tb=traceback.format_exc()[-1200:])
         OUT[name] = r
         print(f"[{name}] {'PASS' if r.get('pass_') else 'FAIL'}", {k: v for k, v in r.items() if k in
-              ("error", "worst_rel", "worst_volume_rel", "solids", "roles", "clashes", "rounded", "seed_C_pF", "mismatches")})
+              ("error", "worst_rel", "worst_volume_rel", "solids", "roles", "clashes", "rounded", "seed_C_pF", "mismatches", "names")})
         open(path, "w").write(json.dumps(OUT, indent=1, default=str) + "\n")
     OUT["verdict"] = "GEOMETRY-STAGE2-PASS" if all((OUT.get(n) or {}).get("pass_") for n, _ in GATES) else "GEOMETRY-STAGE2-PARTIAL"
     open(path, "w").write(json.dumps(OUT, indent=1, default=str) + "\n")

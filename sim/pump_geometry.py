@@ -266,9 +266,34 @@ def lock_record(lad, inputs, z, converged, engine_version="", strip=None):
     rec = dict(inputs=inputs, plates={k: lad["plates"][k] for k in ("r_inMm", "r_outMm", "g_vMm", "N_sec", "n_kept")},
                ladder={k: v["value"] for k, v in lad["ladder"].items()}, z=z, converged=converged,
                engine=engine_version)
-    blob = json.dumps(dict(inputs=rec["inputs"], ladder=rec["ladder"]), sort_keys=True, separators=(",", ":"))
-    rec["hash"] = hashlib.sha256(blob.encode()).hexdigest()[:12]
+    rec["hash"] = hashlib.sha256(canonical(dict(inputs=rec["inputs"], ladder=rec["ladder"])).encode()).hexdigest()[:12]
     return rec
+
+
+def _js_num(x):
+    """A number exactly as JavaScript's JSON.stringify writes it (so the page and Python agree on lock hashes)."""
+    if isinstance(x, bool):
+        return "true" if x else "false"
+    if isinstance(x, int):
+        return str(x)
+    if x == int(x) and abs(x) < 1e21:
+        return str(int(x))
+    r = repr(x)
+    if "e" in r:
+        m, e = r.split("e")
+        r = m + "e" + ("-" if e.startswith("-") else "+") + e.lstrip("+-").lstrip("0")
+    return r
+
+
+def canonical(o):
+    """Sorted-key compact JSON, identical to tools/pump-geometry.js canonical()."""
+    if isinstance(o, dict):
+        return "{" + ",".join(json.dumps(k) + ":" + canonical(o[k]) for k in sorted(o)) + "}"
+    if isinstance(o, (list, tuple)):
+        return "[" + ",".join(canonical(v) for v in o) + "]"
+    if isinstance(o, (int, float)) and not isinstance(o, bool) or isinstance(o, bool):
+        return _js_num(o)
+    return json.dumps(o, ensure_ascii=False)
 
 
 def _selftest():
