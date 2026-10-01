@@ -62,3 +62,17 @@ The causes and fixes are the same as for pump-calc (see `tools/pump-calc-README.
 - **The battery.** Each row is pass, fail, NOT-EVALUATED (dashed dot), n/a or info. Only evaluated rows decide feasibility and the named blocker.
 - **The URL hash** holds every input that differs from the defaults, plus the pins (`pin_<key>`). Nothing is stored in `localStorage`.
 - **Presets** (`presets/pump/`): `freeze-v010-plates` and `small-plate-probe`, each with an `expect` block.
+
+## Stage 2 — capacitor plate geometry
+
+Once stage 1 gives a workable design, press **🔒 lock → geometry**. This does the following:
+- **Freezes stage 1.** The inputs, ladder and exact-engine z are stored as a hashed record in the URL (`lock=`, `lockz=`).
+- **Re-verifies on reload.** The engine re-evaluates the locked inputs, and the badge shows LOCK DRIFT if they no longer reproduce.
+- **Opens the geometry stage** (`tools/pump-geometry.js` ↔ `sim/pump_geometry.py`).
+
+In the geometry stage:
+- **Ca / Cb are geometrized.** You set the dielectric and its thickness, the sector width, which dimension to solve (r_out, r_in or the width), an optional manufacturing step, and the dielectric margin. If the realized C differs from the lock, the exact engine re-runs with Ca/Cb pinned at the realized values and reports Δz.
+- **The plate distribution** shows a plan per carrier (both faces) and an assembly overlay, plus an axial half-section of the stack. Every other electrode is locked context from the r0.15 DXF.
+- **Export.** `pump-geometry-<hash>.json` + `pump-geometry.FCMacro`: in FreeCAD, Macro ▸ Macros… ▸ Execute, then pick the JSON. The macro builds every carrier, foil sector and dielectric slab, and saves `.FCStd` and `.step` next to the JSON. The reference build is `docs/geometry/freeze-v010-CaCb.step`.
+
+The stack order and the carrier/foil thicknesses are [IR] placeholders (the DXF has no axial section). See `sim/pump-geometry-findings.md`.

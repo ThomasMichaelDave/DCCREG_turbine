@@ -5,6 +5,11 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **PUMP-SYNTH stage 2 — capacitor plate geometry (Ca / Cb first) → `GEOMETRY-STAGE2-PASS`.** A stage-1 lock (inputs + ladder + exact z, SHA-256 hashed in the URL, re-verified on reload) opens a geometry stage.
+  - **Geometrizer:** `sim/pump_geometry.py` ↔ `tools/pump-geometry.js` (G-JS, 7e-16). It turns the locked Ca/Cb into electrode footprints, seeded from the r0.15 DXF (6 × 30°, r110–175, 4.5 mm mica → 309.18 pF; G-SEED). Any realized-C deviation is round-tripped through the exact engine (rounding r_out to 1 mm gives Δz −3.0e-4, still pumps; G-RT).
+  - **Plate distribution:** a plan per carrier and an axial half-section, with an adjacency-checked clamshell stack [IR] (G-ADJ).
+  - **FreeCAD export:** `tools/pump-geometry.FCMacro` builds 95 solids from the exported JSON. It was validated through OpenCascade (exact volumes, no interpenetration; G-CAD). Reference build: `docs/geometry/freeze-v010-CaCb.{json,step}`.
+  - **Findings:** the DXF *does* carry the Ca/Cb areas (on the ND2/ND3 layers, not the ND1 glyph that GEOM-EXTRACT read). The stator plates must be insulating carriers with foils, because Ca and the Cx pickups share ND2/ND3 in complementary sectors. The axial order is not in the DXF. See `sim/pump-geometry-findings.md`. Not merged.
 - **PUMP-SYNTH (brief r0.1) → `PUMP-SYNTH-LIVE`.** One browser tool, `tools/pump-synth.html`: rotor plates → forward law → ladder → the exact engine → **PUMPS: YES / NO**. It uses the shell of `charge-pump-synth-live.html` on the physics of pump-calc; neither parent is edited.
   - **New:** `sim/pump_sizing.py` (and its 1:1 JS mirror `tools/pump-sizing.js`), `sim/pump_synth.py` (objective searches, robustness strip, NOT-EVALUATED-aware invariant battery), `tools/pump-synth.worker.js` (one main worker plus up to three helpers running the strip in parallel), `tools/pump-synth-reference.md`, `tools/pump-synth-README.md`, the presets `freeze-v010-plates` and `small-plate-probe`, `sim/pump_synth_gates.py` and `sim/pump-synth-findings.md`. The engine is unchanged since pump-calc (gate ENG).
   - **Checks:** all pass — K, S1, S1b (JS = Python exactly), S2, S3, S4, S5, H-GEOM, H-SYN0–3, W0, M0, H-UI, H-STAMP 43=43=43, Z.

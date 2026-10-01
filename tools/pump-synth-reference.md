@@ -135,6 +135,16 @@ Each ships with its flagged default; the alternative is selectable.
 | D-GOVERNOR | not modelled | — |
 | D-MEDIUM | I4 provisional: air 3 kV/mm | hard vacuum, the K_VAC·g^0.6 law; ≤ 10 Pa is not evaluated |
 
+## Stage 2 — plate geometry (after the lock)
+
+- **The lock** freezes stage 1 (inputs, ladder, z) under a SHA-256 hash in the URL, and is re-verified against the engine on every reload.
+- **Ca/Cb** become electrode footprints by the area law A = C·t/(ε0·εr). The seed is the DXF: 6 × 30° annular sectors, r110–175, 4.5 mm mica, which gives 309.18 pF.
+- **Round trip.** Any realized-C deviation (for example from manufacturing rounding) goes back through the exact engine.
+- **Context.** The other electrodes are placed from the DXF as locked context: C1/C2 stators r95–387, rotor faces r75–387, Cx pickups r58–350, island bars r75–350, in alternating 30° sector sets.
+- **Axial stack** [IR], the one order where every pair faces across its own dielectric:
+  `flange · Cx gap · ND2 · Ca mica · ND1 · C1 air · rotor A · septum · rotor B · C2 air · ND4 · Cb mica · ND3 · Cx gap · flange`.
+- **Export** is JSON plus `tools/pump-geometry.FCMacro` (FreeCAD), with gates G-SEED, G-ADJ, G-JS, G-CAD and G-RT (`sim/pump_geometry_gates.py`).
+
 ## Out of scope
 
 - tank and core dynamics;
