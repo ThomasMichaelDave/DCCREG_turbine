@@ -5,6 +5,7 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **PUMP-SYNTH (brief r0.1), in progress.** `sim/pump_sizing.py` adds the rotor-plate forward law (moist-air ε_r, sector + ring areas, D-CMIN conventions) and the ladder (Ca 1.10, Cx 1.68, C_blk from PRF_branch), as the producer of the engine's capacitances. On-load self-test: S1 279.6 / 295.6 pF, dry-air ε_r 1.000576, S3 C_blk 439.8 nF, rotor ⌀ 983 mm.
 - **pump-calc boot fix:** the page no longer hangs on "booting…". It names a `file://` open, loads the worker from a Blob (so a `.js` served as `text/plain` on Windows no longer matters), catches worker errors, and explains a stalled CDN. README troubleshooting added.
 - **PUMP-CALC (brief r0.1) → `PUMP-CALC-PARTIAL`.** Added the in-browser pump-action calculator for the drawn pump (`sim/pump_engine.py`, `tools/pump-calc.html` + `.worker.js`, `presets/pump/`, `sim/pump-calc-findings.md`).
   - **Engine:** one exact engine, derived from the r0.2 solver under gate E0 (max rel 9.5e-14; the §1 anchors G1 1.255991 and R1b 1.354261 are reproduced).
