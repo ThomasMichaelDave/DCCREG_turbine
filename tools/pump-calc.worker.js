@@ -30,7 +30,7 @@ const REPO_FILES = {
   "/repo/reference/doubler_resonant_core.py": "../reference/doubler_resonant_core.py",
   "/repo/presets/G3-geometry-v010.json":      "../presets/G3-geometry-v010.json",
 };
-let py = null, ready = false, canaryOK = false;
+let py = null, ready = false, canaryOK = false, BASE = self.location.href;
 
 function post(o){ self.postMessage(o); }
 
@@ -45,7 +45,7 @@ async function init(cdn){
     post({type:"boot", msg:"fetching the repo files…"});
     for (const d of ["/repo/sim", "/repo/reference", "/repo/spice", "/repo/presets"]) py.FS.mkdirTree(d);
     for (const [dst, src] of Object.entries(REPO_FILES)){
-      const r = await fetch(new URL(src, self.location.href));
+      const r = await fetch(new URL(src, BASE));
       if (!r.ok) throw new Error("fetch " + src + " → " + r.status + " (serve from the repo root over http)");
       py.FS.writeFile(dst, await r.text());
     }
@@ -108,7 +108,7 @@ async function call(msg, fn){
 let queue = Promise.resolve();
 self.onmessage = (ev) => {
   const m = ev.data || {};
-  if (m.type === "init") { queue = queue.then(() => init(m.pyodide)); return; }
+  if (m.type === "init") { if (m.base) BASE = m.base; queue = queue.then(() => init(m.pyodide)); return; }
   if (m.type === "evaluate") { queue = queue.then(() => call(m, "evaluate")); return; }
   if (m.type === "sweep") { queue = queue.then(() => call(m, "sweep")); return; }
 };

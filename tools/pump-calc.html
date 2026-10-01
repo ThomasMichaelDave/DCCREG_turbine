@@ -548,12 +548,42 @@ function lines(cv, xs, series, xLabel, yLabel, yr, legend){
    ===================================================================================== */
 let worker = null, canaryOK = false, lastRes = null, reqId = 0, pending = {};
 function setBadge(cls, txt){ $("engineBadge").querySelector(".dot").className = "dot " + cls; $("engineTxt").textContent = txt; }
-function boot(){
-  worker = new Worker("./pump-calc.worker.js");
-  worker.onmessage = ev => onWorker(ev.data);
-  worker.onerror = e => { setBadge("no", "ENGINE: down"); $("boot").innerHTML = '<span style="color:var(--bad)">worker error:</span> ' + (e.message || e); };
+let bootWatch = null, lastBootMsg = "", lastBootAt = 0;
+function bootFail(html){ setBadge("no", "ENGINE: down"); $("boot").innerHTML = '<span style="color:var(--bad)">The engine did not start:</span> ' + html; }
+async function boot(){
+  // file:// cannot run a Web Worker (Chrome/Edge refuse it) nor fetch the repo files: say so.
+  if (location.protocol === "file:"){
+    bootFail("this page was opened as a <b>file</b>. Serve the <b>repo root</b> over http and open it from there:" +
+      "<br><code>cd &lt;repo-root&gt;</code> &nbsp; <code>python -m http.server 8000</code> &nbsp; then " +
+      "<code>http://localhost:8000/tools/pump-calc.html</code>");
+    return;
+  }
+  // The worker is loaded from a Blob: immune to a server that labels .js as text/plain (Windows
+  // registry MIME maps make python -m http.server do that). Its base URL is passed in `init`.
+  try {
+    const r = await fetch("./pump-calc.worker.js", {cache: "no-store"});
+    if (!r.ok) throw new Error("tools/pump-calc.worker.js → HTTP " + r.status);
+    const src = await r.text();
+    worker = new Worker(URL.createObjectURL(new Blob([src], {type: "text/javascript"})));
+  } catch (e){
+    bootFail(String(e && e.message || e) + "<br>Serve the repo root over http (python -m http.server) and reload.");
+    return;
+  }
+  worker.onmessage = ev => { lastBootAt = Date.now(); onWorker(ev.data); };
+  worker.onerror = e => { e.preventDefault && e.preventDefault(); bootFail("worker error: " + (e.message || "see the browser console (F12)")); };
   const q = new URLSearchParams(location.search);
-  worker.postMessage({type: "init", pyodide: q.get("pyodide") || undefined});
+  lastBootAt = Date.now();
+  worker.postMessage({type: "init", pyodide: q.get("pyodide") || undefined, base: new URL("./", location.href).href});
+  // watchdog: a silent stall gets an explanation instead of an eternal "booting…"
+  bootWatch = setInterval(() => {
+    if (canaryOK || $("engineTxt").textContent.indexOf("booting") < 0){ clearInterval(bootWatch); return; }
+    const idle = (Date.now() - lastBootAt) / 1000, msg = $("boot").textContent;
+    if (idle > 60 && !/still waiting/.test(msg))
+      $("boot").innerHTML = msg + '<br><span style="color:var(--warn)">still waiting (' + idle.toFixed(0) +
+        ' s with no progress)</span> — if this sits at "booting Pyodide" or "loading numpy", the browser cannot reach ' +
+        '<code>cdn.jsdelivr.net</code> (offline / proxy / firewall). Pyodide can also be served locally: ' +
+        '<code>?pyodide=&lt;url-of-a-pyodide-0.26.2-folder&gt;/</code>. Details: browser console (F12).';
+  }, 5000);
 }
 function onWorker(m){
   if (m.type === "boot"){ $("boot").textContent = m.msg; return; }
@@ -889,6 +919,7 @@ window.addEventListener("resize", () => { if (lastRes) render(lastRes); });
 const _origRender = renderCanaries;
 renderCanaries = function(r){ lastCanaries = r.canaries.rows; _origRender(r); };
 boot();
+window.addEventListener("error", e => { if (!canaryOK) bootFail("page script error: " + e.message); });
 </script>
 </body>
 </html>

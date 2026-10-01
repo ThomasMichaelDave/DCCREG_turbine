@@ -24,6 +24,17 @@ python3 -m http.server 8000
   evaluation (motor out, with both twins) takes about 5–8 s. Motor-in evaluations take longer. See
   `sim/pump-calc-findings.md` (P1/P2).
 
+## If it stays on "booting…"
+
+| what you see | cause | fix |
+|---|---|---|
+| "this page was opened as a **file**" | double-clicked the HTML (`file:///…`); browsers refuse Web Workers and repo fetches from `file://` | `cd <repo-root>` → `python -m http.server 8000` → open `http://localhost:8000/tools/pump-calc.html` |
+| sits at "booting Pyodide…" / "loading numpy…", then "still waiting" | the browser cannot reach `cdn.jsdelivr.net` (offline, proxy, firewall) | allow the CDN, or serve a Pyodide 0.26.2 release folder yourself and add `?pyodide=<its-url>/` |
+| "fetch ../sim/… → 404" | the server was started inside `tools/` | start it from the repo root |
+
+(Windows `python -m http.server` may label `.js` as `text/plain`; the page loads its worker from a
+Blob, so that no longer matters.)
+
 ## The badge is the acceptance test (fail-closed)
 
 | badge | meaning |
