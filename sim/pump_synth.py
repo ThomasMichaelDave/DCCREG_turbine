@@ -14,8 +14,9 @@ and kappa_C, so `min_diameter` is a 1-D bisection in C_max via r_out.
 Warm start [ME]: a run may start from the previous run's eigen-state (settle 0) instead of the cold seed
 (settle 2). The engine's own stopping rule is unchanged -- converged only when the cycle taped from the
 eigen-state repeats the switching pattern with |dz| <= 1e-12 -- so a warm run is the same exact run, only
-fewer cycles. Gate W0 (sim/pump_synth_gates.py) checks warm = cold to 1e-9. A warm run that does not
-converge is redone cold.
+fewer cycles. Gate W0 (sim/pump_synth_gates.py) checks warm = cold to 1e-9. The switching is multistable
+below and near threshold, so only pumping eigen-states are cached, and a warm run is accepted only when it
+converges with z > 1; anything else is redone cold from the standard seed, which defines z.
 """
 import math
 import time
@@ -126,7 +127,9 @@ def run(cfg, lx=None, galvanic=None, record=False, events=False, log=None, warm=
             PE._setstate(sim, v / np.linalg.norm(v))
             mono = PE.monodromy(net, cfg, settle=0, sim=sim, log=log, record=record, events=events)
             STATS["warm"] += 1
-            if not mono["converged"]:
+            if not (mono["converged"] and mono["z"] > 1.0):
+                # a warm start may only confirm a pumping orbit: the switching is multistable, and the
+                # standard seed (V1 = V4 = -1) defines z -- anything else is redone cold [ME]
                 STATS["warm_redo"] += 1
                 mono = None
     if mono is None:
@@ -136,8 +139,8 @@ def run(cfg, lx=None, galvanic=None, record=False, events=False, log=None, warm=
     if not mono["converged"] and not (cfg["motor"] and net.meta.get("motor")):
         mono = _settle_more(net, cfg, mono, record=record, events=events, log=log)
     STATS["runs"] += 1; STATS["cycles"] += mono["k"]
-    if mono["converged"]:
-        _WARM[key] = np.real(mono["v"]).astype(float)
+    if mono["converged"] and not mono.get("silent") and mono["z"] > 1.0:
+        _WARM[key] = np.real(mono["v"]).astype(float)       # only pumping eigen-states seed later runs
     return mono, net
 
 

@@ -1,0 +1,26 @@
+{
+ "preset": "freeze-v010-plates",
+ "version": "1.0",
+ "date": "2026-10-01",
+ "engine": "sim/pump_engine.py via sim/pump_synth.py (pump-synth r0.1)",
+ "title": "Freeze v0.1.0 plates (guide §13): R95–R387, 7 mm air, 12/6, ring R25–R68.2",
+ "description": "The worked design point at the shipped defaults: active-area + 16 pF fringe (D-CMIN), Ca 1.10 / Cx 1.68 (D-CA, D-CX), fixed floors (D-CPAR), load + fire M-RD(->0) (D-GAPDEFAULT), motor off (D-MOTORDEFAULT).",
+ "inputs": {},
+ "expect": {
+  "C_max_pF": {
+   "value": 279.8191030841783,
+   "tol": 1e-09,
+   "why": "forward law, 7 mm moist air (20 C, 1013 hPa, 50 % RH)"
+  },
+  "rotor_dia_mm": {
+   "value": 982.98,
+   "tol": 1e-09,
+   "why": "r_out x 2 x 1.27 (H-GEOM)"
+  },
+  "z": {
+   "value": 1.3254745316585308,
+   "tol": 1e-09,
+   "why": "this engine, ladder-sized, M-RD(->0) load + fire"
+  }
+ }
+}

@@ -1,0 +1,23 @@
+{
+ "preset": "small-plate-probe",
+ "version": "1.0",
+ "date": "2026-10-01",
+ "engine": "sim/pump_engine.py via sim/pump_synth.py (pump-synth r0.1)",
+ "title": "Small-plate probe: rotor ⌀ 300 mm (r_out 118.1 mm)",
+ "description": "DESIGN-SYNTH's named-blocker case (S5): at ⌀ 300 mm C_max ~ 9.8 pF sits below the 16 pF fringe floor, the swing collapses and no gap can dump the trapped charge -- z = 1, does not pump (the bare core is silent too).",
+ "inputs": {
+  "r_outMm": 118.1
+ },
+ "expect": {
+  "z": {
+   "value": 1.0,
+   "tol": 1e-09,
+   "why": "no growing mode (the neutral / silent case)"
+  },
+  "rotor_dia_mm": {
+   "value": 299.974,
+   "tol": 1e-09,
+   "why": "118.1 x 2 x 1.27"
+  }
+ }
+}

@@ -29,9 +29,10 @@
   h1{font-size:16px;letter-spacing:.04em;margin:0 0 2px;color:#dfe8f1}
   .sub{color:var(--mut);font-size:11.5px;margin-bottom:12px}
   .brass{color:var(--brass);text-transform:uppercase;letter-spacing:.08em;font-size:10.5px}
-  .grid{display:grid;grid-template-columns:310px 1fr 400px;gap:14px}
-  @media(max-width:1180px){.grid{grid-template-columns:1fr 1fr}}
-  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .grid{display:grid;grid-template-columns:290px minmax(0,1fr);gap:14px}
+  .lower{grid-column:2;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px}
+  @media(max-width:1180px){.lower{grid-template-columns:1fr}}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}.lower{grid-column:1}}
   .panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin-bottom:12px}
   .panel.sub{background:var(--panel2);margin-bottom:0}
   details summary{cursor:pointer;color:var(--brass);text-transform:uppercase;letter-spacing:.08em;font-size:10.5px;margin:6px 0}
@@ -68,7 +69,7 @@
   .lamp .dot{margin-top:3px}
   .lamp .nm{min-width:152px;color:var(--ink)}
   .lamp .st{min-width:92px;font-size:10px;color:var(--mut)}
-  .lamp .det{color:var(--mut);font-size:10px;line-height:1.35}
+  .lamp .det{color:var(--mut);font-size:10px;line-height:1.35;flex:1}
   .lamp.ne .nm{color:var(--ne)}
   .verdict{font-size:15px;padding:8px;border-radius:5px;text-align:center;letter-spacing:.05em;margin-top:6px}
   .verdict.ok{background:#10241a;color:#8be0a0;border:1px solid #1f4a2c}
@@ -81,7 +82,7 @@
   table.t th,table.t td{border:1px solid var(--line);padding:3px 5px;text-align:right;white-space:nowrap}
   table.t th{color:var(--brass);background:var(--panel2);font-weight:400}
   table.t td:first-child,table.t th:first-child{text-align:left}
-  table.t td.l{text-align:left;white-space:normal}
+  table.t td.l{text-align:left;white-space:normal;font-size:10px;min-width:110px}
   td.pass{color:var(--good)} td.fail{color:var(--bad)} td.flag{color:var(--warn)} td.mut{color:var(--mut)}
   .meter{display:inline-block;width:54px;height:6px;background:#1d2733;border-radius:3px;vertical-align:middle;position:relative;overflow:hidden}
   .meter i{position:absolute;left:0;top:0;bottom:0;background:var(--good)}
@@ -247,25 +248,25 @@
     </div>
 
     <!-- ================= LADDER + BATTERY ================= -->
-    <div>
-      <div class="panel">
+    <div class="lower">
+      <div style="grid-column:1/-1"><div class="panel">
         <div class="brass">Ladder — every capacitor sized from C_max (pin to override)</div>
         <div class="scroll"><table class="t" id="ladderTable"></table></div>
         <div class="note" id="ladderNote">critical = the value where z = 1 with everything else as sized (exact
           engine, bracket-and-bisect; the <code>findCriticalCa</code> pattern of index.html, generalised). Press
           "z=1?" to find it.</div>
-      </div>
-      <div class="panel">
+      </div></div>
+      <div><div class="panel">
         <div class="brass">Invariant battery — evaluated rows decide; NOT-EVALUATED is excluded</div>
         <div class="banner">I4 is PROVISIONAL (D-MEDIUM): three documents give three gap media
           (air / ≤ 10 Pa / the hard-vacuum law). Shown under the selected medium.</div>
         <div id="lamps"></div>
-      </div>
-      <div class="panel">
+      </div></div>
+      <div><div class="panel">
         <div class="brass">Canaries + H-GEOM (fail-closed, before any number)</div>
         <table class="t" id="selfTest"></table>
         <div class="note" id="engineVer"></div>
-      </div>
+      </div></div>
     </div>
   </div>
 
