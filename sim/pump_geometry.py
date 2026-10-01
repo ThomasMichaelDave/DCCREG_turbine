@@ -36,6 +36,7 @@ Model of each capacitor: ideal parallel plate over the overlap of its two footpr
 import hashlib
 import json
 import math
+from decimal import Decimal, ROUND_HALF_UP
 
 EPS0 = 8.8541878128e-12
 SCHEMA = "pump-geometry/1"
@@ -179,7 +180,114 @@ def build(locked, geom=None):
     design = dict(schema=SCHEMA, units="mm", lock=dict(locked), geom=g, Ca=ca, Cb=cb, footprints=fp,
                   stack=stack, foils=foils, z_total=stack[-1]["z1"] - stack[0]["z0"], r_edge=r_edge)
     design["checks"] = checks(design)
+    design["assemblies"], design["parts"] = parts(design)
+    design["top_label"] = (f"PumpGeometry {locked.get('hash', '')} - DCCREG drawn pump, stage 2 plate geometry "
+                           f"(Ca/Cb geometrized)")
     return design
+
+
+# ---- the bill of solids: one entry per CAD solid, with its name and readable label. The CAD builders
+#      (tools/pump-geometry.FCMacro, tools/fusion360/PumpGeometry) only build what this list says, so FreeCAD and
+#      Fusion 360 name everything identically. Labels are ASCII (STEP names are ASCII). ----
+NODE_RGB = {"1": (0.49, 0.82, 1.0), "2": (1.0, 0.71, 0.33), "3": (0.27, 0.77, 0.42), "4": (0.90, 0.28, 0.30),
+            "5": (0.78, 0.57, 0.92), "6": (0.97, 0.46, 0.56), "7": (0.62, 0.81, 0.42), "8": (0.88, 0.69, 0.41)}
+MEDIUM_RGB = {"garolite": (0.55, 0.50, 0.30), "mica": (0.75, 0.70, 0.55)}
+CARRIER_RGB = (0.35, 0.40, 0.47)
+MATERIAL = {"stator": "G10 carrier", "rotor": "rotor disc", "rotor-flange": "rotor flange (insulating)"}
+CARRIER_ROLE = {"A-flange": "rotor A outer flange, carries the island bars (node 8, floating)",
+                "B-flange": "rotor B outer flange, carries the island bars (node 7, floating)",
+                "A-disc": "rotor A main disc (node 5): C1 rotor face + C_R face",
+                "B-disc": "rotor B main disc (node 6): C2 rotor face + C_R face",
+                "ND1": "stator carrier ND1 (node 1): C1 stator plate + Ca counter-electrode",
+                "ND2": "stator carrier ND2 (node 2): Ca electrode + Cx4 pickup",
+                "ND3": "stator carrier ND3 (node 3): Cb electrode + Cx3 pickup",
+                "ND4": "stator carrier ND4 (node 4): C2 stator plate + Cb counter-electrode"}
+CARRIER_KINDS = ("rotor", "stator", "rotor-flange")
+
+
+def _mm(x):
+    """2 decimals, half away from zero (= JS toFixed), trailing zeros dropped."""
+    s = str(Decimal(x).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+    s = s.rstrip("0").rstrip(".") if "." in s else s
+    return "0" if s in ("-0", "") else s
+
+
+def _m360(x):
+    return x % 360.0
+
+
+def _zr(it):
+    return f"z {_mm(it['z0'])}..{_mm(it['z1'])}"
+
+
+def parts(design):
+    st = design["stack"]; fp = design["footprints"]
+    asm, out = [], []
+
+    def assembly(key, label):
+        if not any(a["key"] == key for a in asm):
+            asm.append(dict(key=key, label=label))
+        return key
+    carrier_of, face_of = {}, {}
+    for i, it in enumerate(st):
+        if it["kind"] != "foil":
+            continue
+        nb = [st[j] for j in (i - 1, i + 1) if 0 <= j < len(st) and st[j]["kind"] in CARRIER_KINDS]
+        carrier_of[it["id"]] = nb[0]["id"] if nb else "foils"
+        face_of[it["id"]] = "septum side" if nb and abs(it["z0"]) < abs(nb[0]["z0"]) else "outer side"
+
+    def P(name, label, akey, role, carrier, node, cap, material, rin, rout, a0, w, z0, z1, rgb):
+        out.append(dict(name=name, label=label, assembly=akey, role=role, carrier=carrier, node=node, cap=cap,
+                        material=material, r_in=rin, r_out=rout, start_deg=a0, w_deg=w, z0=z0, z1=z1, rgb=list(rgb),
+                        volume=0.5 * math.radians(min(w, 360.0)) * (rout * rout - rin * rin) * (z1 - z0)))
+    for it in st:
+        kind = it["kind"]
+        if kind in CARRIER_KINDS:
+            a = assembly(it["id"], f"{it['id']} - {CARRIER_ROLE.get(it['id'], kind)}")
+            P(it["id"].replace("-", "_") + "_carrier",
+              f"{it['id']} carrier - {MATERIAL[kind]}, node {it['node']}, r{_mm(it['r_in'])}-{_mm(it['r_out'])} mm, "
+              f"{_mm(it['t'])} mm thick, {_zr(it)}",
+              a, "carrier", it["id"], it["node"], "", MATERIAL[kind], it["r_in"], it["r_out"], 0.0, 360.0,
+              it["z0"], it["z1"], CARRIER_RGB)
+        elif kind == "foil":
+            car = carrier_of[it["id"]]
+            a = assembly(car, f"{car} - {CARRIER_ROLE.get(car, '')}")
+            n = len(it["starts"])
+            for k, s0 in enumerate(it["starts"]):
+                if it["w_deg"] >= 360.0 - 1e-9:
+                    ang = "full ring"
+                else:
+                    e = _m360(s0 + it["w_deg"])
+                    ang = f"sector {k + 1} of {n} ({_mm(_m360(s0))}-{_mm(e if e != 0 else 360.0)} deg)"
+                P(f"{it['key']}_{k + 1}",
+                  f"{car} / {it['key']}_{k + 1} - {it['name']}, node {it['node']}, {it['cap']}, {ang}, "
+                  f"r{_mm(it['r_in'])}-{_mm(it['r_out'])} mm, Al foil {_mm(it['z1'] - it['z0'])} mm, "
+                  f"{face_of[it['id']]}, {_zr(it)}",
+                  a, "foil", car, it["node"], it["cap"], "Al foil", it["r_in"], it["r_out"], s0, it["w_deg"],
+                  it["z0"], it["z1"], NODE_RGB.get(str(it["node"])[:1], CARRIER_RGB))
+        elif kind == "gap" and it.get("medium") in MEDIUM_RGB:
+            a = assembly("dielectrics", "Dielectrics - septum (C_R, garolite) and the Ca/Cb mica slabs")
+            if it.get("footprint"):
+                e = fp[it["footprint"]]; m = it.get("margin", 0.0)
+                rin, rout = max(0.0, e["r_in"] - m), e["r_out"] + m
+                dw = math.degrees(m / max(e["r_in"], 1e-9))
+                n = len(e["starts"])
+                for k, s0 in enumerate(e["starts"]):
+                    w = min(e["w_deg"] + 2 * dw, 360.0); a0 = s0 - dw
+                    P(f"{it['id'].replace('-', '_')}_{k + 1}",
+                      f"{it['id']}_{k + 1} - {it['medium']} dielectric for {it['cap']} (between the {it['cap']} electrode "
+                      f"and its counter), slab {k + 1} of {n} ({_mm(_m360(a0))}-{_mm(_m360(a0 + w))} deg), "
+                      f"r{_mm(rin)}-{_mm(rout)} mm, {_mm(it['t'])} mm thick (foil + {_mm(m)} mm margin), {_zr(it)}",
+                      a, "dielectric", "", "", it["cap"], it["medium"], rin, rout, a0, w, it["z0"], it["z1"],
+                      MEDIUM_RGB[it["medium"]])
+            else:
+                rin, rout = it.get("r_in", 0.0), it.get("r_out", design["r_edge"])
+                P(it["id"].replace("-", "_"),
+                  f"{it['id']} - {it['medium']}, {it['cap']} dielectric between rotor A and rotor B, "
+                  f"r{_mm(rin)}-{_mm(rout)} mm, {_mm(it['t'])} mm thick, {_zr(it)}",
+                  a, "dielectric", "", "", it["cap"], it["medium"], rin, rout, 0.0, 360.0, it["z0"], it["z1"],
+                  MEDIUM_RGB[it["medium"]])
+    return asm, out
 
 
 def _arc_overlap(a0, w0, a1, w1):

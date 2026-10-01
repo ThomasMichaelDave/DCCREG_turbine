@@ -353,7 +353,7 @@
   "clashes": [],
   "json": "docs/geometry/freeze-v010-CaCb.json",
   "step": "docs/geometry/freeze-v010-CaCb.step",
-  "step_bytes": 1665007,
+  "step_bytes": 1665043,
   "lock": "1bdb33d89a45",
   "z_total_mm": 100.2
  },
@@ -397,5 +397,16 @@
    "z_locked": 1.3254745316585308,
    "dz": -0.0002993399463586677
   }
+ },
+ "G-F360": {
+  "pass_": true,
+  "bodies": 95,
+  "components": 10,
+  "worst_volume_rel": 5.231456165757316e-15,
+  "invalid": [],
+  "names_ok": true,
+  "top": "PumpGeometry 1bdb33d89a45 - DCCREG drawn pump, stage 2 plate geometry (Ca-Cb geometrized)",
+  "sample": "A-flange - Cx4_bars_3 - island bars on A, node 8, Cx4, sector 3 of 6 (120-150 deg), r75-350 mm, Al foil 1 mm, septum side, z -44.1..-43.1",
+  "message": "PumpGeometry 1bdb33d89a45: 95 bodies in 9 components built (worst volume error 5.2e-15).\n\nNames follow the parts table (pump-geometry ...-parts.csv / FreeCAD STEP)."
  }
 }

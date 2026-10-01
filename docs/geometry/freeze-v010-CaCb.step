@@ -1,7 +1,7 @@
 ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION(('Open CASCADE Model'),'2;1');
-FILE_NAME('Open CASCADE Shape Model','2026-10-01T14:11:16',('Author'),(
+FILE_NAME('Open CASCADE Shape Model','2026-10-01T18:21:17',('Author'),(
     'Open CASCADE'),'Open CASCADE STEP processor 8.0','Open CASCADE 8.0'
   ,'Unknown');
 FILE_SCHEMA(('AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }'));
@@ -8163,11 +8163,11 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #6920 = PRODUCT_DEFINITION('design','',#6921,#6924);
 #6921 = PRODUCT_DEFINITION_FORMATION('','',#6922);
 #6922 = PRODUCT(
-'Ca-diel_1 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 1 of 6 (27.4-62.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_1 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 1 of 6 (27.4-62.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30',
-'Ca-diel_1 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 1 of 6 (27.4-62.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_1 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 1 of 6 (27.4-62.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',(#6923));
 #6923 = PRODUCT_CONTEXT('',#2,'mechanical');
 #6924 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -8571,8 +8571,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #7268 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #7269);
 #7269 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('23',
-'Ca-diel_1 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 1 of 6 (27.4-62.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_1 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 1 of 6 (27.4-62.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',#6849,#6920,$);
 #7270 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#6922));
 #7271 = SHAPE_DEFINITION_REPRESENTATION(#7272,#7278);
@@ -8580,11 +8580,11 @@ counter, slab 1 of 6 (27.4-62.6 deg), r105-179.76 mm, 4.5 mm thick
 #7273 = PRODUCT_DEFINITION('design','',#7274,#7277);
 #7274 = PRODUCT_DEFINITION_FORMATION('','',#7275);
 #7275 = PRODUCT(
-'Ca-diel_2 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 2 of 6 (87.4-122.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_2 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 2 of 6 (87.4-122.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30',
-'Ca-diel_2 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 2 of 6 (87.4-122.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_2 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 2 of 6 (87.4-122.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',(#7276));
 #7276 = PRODUCT_CONTEXT('',#2,'mechanical');
 #7277 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -8988,8 +8988,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #7621 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #7622);
 #7622 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('24',
-'Ca-diel_2 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 2 of 6 (87.4-122.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_2 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 2 of 6 (87.4-122.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',#6849,#7273,$);
 #7623 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#7275));
 #7624 = SHAPE_DEFINITION_REPRESENTATION(#7625,#7631);
@@ -8997,11 +8997,11 @@ counter, slab 2 of 6 (87.4-122.6 deg), r105-179.76 mm, 4.5 mm thick
 #7626 = PRODUCT_DEFINITION('design','',#7627,#7630);
 #7627 = PRODUCT_DEFINITION_FORMATION('','',#7628);
 #7628 = PRODUCT(
-'Ca-diel_3 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 3 of 6 (147.4-182.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_3 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 3 of 6 (147.4-182.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30',
-'Ca-diel_3 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 3 of 6 (147.4-182.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_3 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 3 of 6 (147.4-182.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',(#7629));
 #7629 = PRODUCT_CONTEXT('',#2,'mechanical');
 #7630 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -9405,8 +9405,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #7974 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #7975);
 #7975 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('25',
-'Ca-diel_3 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 3 of 6 (147.4-182.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_3 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 3 of 6 (147.4-182.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',#6849,#7626,$);
 #7976 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#7628));
 #7977 = SHAPE_DEFINITION_REPRESENTATION(#7978,#7984);
@@ -9414,11 +9414,11 @@ counter, slab 3 of 6 (147.4-182.6 deg), r105-179.76 mm, 4.5 mm thick
 #7979 = PRODUCT_DEFINITION('design','',#7980,#7983);
 #7980 = PRODUCT_DEFINITION_FORMATION('','',#7981);
 #7981 = PRODUCT(
-'Ca-diel_4 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 4 of 6 (207.4-242.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_4 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 4 of 6 (207.4-242.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30',
-'Ca-diel_4 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 4 of 6 (207.4-242.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_4 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 4 of 6 (207.4-242.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',(#7982));
 #7982 = PRODUCT_CONTEXT('',#2,'mechanical');
 #7983 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -9822,8 +9822,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #8327 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #8328);
 #8328 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('26',
-'Ca-diel_4 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 4 of 6 (207.4-242.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_4 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 4 of 6 (207.4-242.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',#6849,#7979,$);
 #8329 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#7981));
 #8330 = SHAPE_DEFINITION_REPRESENTATION(#8331,#8337);
@@ -9831,11 +9831,11 @@ counter, slab 4 of 6 (207.4-242.6 deg), r105-179.76 mm, 4.5 mm thick
 #8332 = PRODUCT_DEFINITION('design','',#8333,#8336);
 #8333 = PRODUCT_DEFINITION_FORMATION('','',#8334);
 #8334 = PRODUCT(
-'Ca-diel_5 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 5 of 6 (267.4-302.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_5 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 5 of 6 (267.4-302.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30',
-'Ca-diel_5 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 5 of 6 (267.4-302.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_5 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 5 of 6 (267.4-302.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',(#8335));
 #8335 = PRODUCT_CONTEXT('',#2,'mechanical');
 #8336 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -10239,8 +10239,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #8680 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #8681);
 #8681 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('27',
-'Ca-diel_5 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 5 of 6 (267.4-302.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_5 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 5 of 6 (267.4-302.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',#6849,#8332,$);
 #8682 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#8334));
 #8683 = SHAPE_DEFINITION_REPRESENTATION(#8684,#8690);
@@ -10248,11 +10248,11 @@ counter, slab 5 of 6 (267.4-302.6 deg), r105-179.76 mm, 4.5 mm thick
 #8685 = PRODUCT_DEFINITION('design','',#8686,#8689);
 #8686 = PRODUCT_DEFINITION_FORMATION('','',#8687);
 #8687 = PRODUCT(
-'Ca-diel_6 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 6 of 6 (327.4-2.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_6 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 6 of 6 (327.4-2.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30',
-'Ca-diel_6 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 6 of 6 (327.4-2.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_6 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 6 of 6 (327.4-2.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',(#8688));
 #8688 = PRODUCT_CONTEXT('',#2,'mechanical');
 #8689 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -10656,8 +10656,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #9033 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #9034);
 #9034 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('28',
-'Ca-diel_6 - mica dielectric for Ca, between the Ca electrode and its 
-counter, slab 6 of 6 (327.4-2.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Ca-diel_6 - mica dielectric for Ca (between the Ca electrode and its 
+counter), slab 6 of 6 (327.4-2.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z -34.5..-30','',#6849,#8685,$);
 #9035 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#8687));
 #9036 = SHAPE_DEFINITION_REPRESENTATION(#9037,#9043);
@@ -10807,11 +10807,11 @@ mm, 12 mm thick, z -6..6','',#6849,#9038,$);
 #9155 = PRODUCT_DEFINITION('design','',#9156,#9159);
 #9156 = PRODUCT_DEFINITION_FORMATION('','',#9157);
 #9157 = PRODUCT(
-'Cb-diel_1 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 1 of 6 (357.4-32.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_1 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 1 of 6 (357.4-32.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5',
-'Cb-diel_1 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 1 of 6 (357.4-32.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_1 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 1 of 6 (357.4-32.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',(#9158));
 #9158 = PRODUCT_CONTEXT('',#2,'mechanical');
 #9159 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -11215,8 +11215,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #9503 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #9504);
 #9504 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('30',
-'Cb-diel_1 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 1 of 6 (357.4-32.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_1 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 1 of 6 (357.4-32.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',#6849,#9155,$);
 #9505 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#9157));
 #9506 = SHAPE_DEFINITION_REPRESENTATION(#9507,#9513);
@@ -11224,11 +11224,11 @@ counter, slab 1 of 6 (357.4-32.6 deg), r105-179.76 mm, 4.5 mm thick
 #9508 = PRODUCT_DEFINITION('design','',#9509,#9512);
 #9509 = PRODUCT_DEFINITION_FORMATION('','',#9510);
 #9510 = PRODUCT(
-'Cb-diel_2 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 2 of 6 (57.4-92.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_2 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 2 of 6 (57.4-92.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5',
-'Cb-diel_2 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 2 of 6 (57.4-92.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_2 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 2 of 6 (57.4-92.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',(#9511));
 #9511 = PRODUCT_CONTEXT('',#2,'mechanical');
 #9512 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -11632,8 +11632,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #9856 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #9857);
 #9857 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('31',
-'Cb-diel_2 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 2 of 6 (57.4-92.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_2 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 2 of 6 (57.4-92.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',#6849,#9508,$);
 #9858 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#9510));
 #9859 = SHAPE_DEFINITION_REPRESENTATION(#9860,#9866);
@@ -11641,11 +11641,11 @@ counter, slab 2 of 6 (57.4-92.6 deg), r105-179.76 mm, 4.5 mm thick
 #9861 = PRODUCT_DEFINITION('design','',#9862,#9865);
 #9862 = PRODUCT_DEFINITION_FORMATION('','',#9863);
 #9863 = PRODUCT(
-'Cb-diel_3 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 3 of 6 (117.4-152.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_3 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 3 of 6 (117.4-152.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5',
-'Cb-diel_3 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 3 of 6 (117.4-152.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_3 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 3 of 6 (117.4-152.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',(#9864));
 #9864 = PRODUCT_CONTEXT('',#2,'mechanical');
 #9865 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -12050,8 +12050,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #10209 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #10210);
 #10210 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('32',
-'Cb-diel_3 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 3 of 6 (117.4-152.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_3 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 3 of 6 (117.4-152.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',#6849,#9861,$);
 #10211 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#9863));
 #10212 = SHAPE_DEFINITION_REPRESENTATION(#10213,#10219);
@@ -12059,11 +12059,11 @@ counter, slab 3 of 6 (117.4-152.6 deg), r105-179.76 mm, 4.5 mm thick
 #10214 = PRODUCT_DEFINITION('design','',#10215,#10218);
 #10215 = PRODUCT_DEFINITION_FORMATION('','',#10216);
 #10216 = PRODUCT(
-'Cb-diel_4 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 4 of 6 (177.4-212.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_4 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 4 of 6 (177.4-212.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5',
-'Cb-diel_4 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 4 of 6 (177.4-212.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_4 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 4 of 6 (177.4-212.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',(#10217));
 #10217 = PRODUCT_CONTEXT('',#2,'mechanical');
 #10218 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -12468,8 +12468,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #10562 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #10563);
 #10563 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('33',
-'Cb-diel_4 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 4 of 6 (177.4-212.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_4 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 4 of 6 (177.4-212.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',#6849,#10214,$);
 #10564 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#10216));
 #10565 = SHAPE_DEFINITION_REPRESENTATION(#10566,#10572);
@@ -12477,11 +12477,11 @@ counter, slab 4 of 6 (177.4-212.6 deg), r105-179.76 mm, 4.5 mm thick
 #10567 = PRODUCT_DEFINITION('design','',#10568,#10571);
 #10568 = PRODUCT_DEFINITION_FORMATION('','',#10569);
 #10569 = PRODUCT(
-'Cb-diel_5 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 5 of 6 (237.4-272.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_5 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 5 of 6 (237.4-272.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5',
-'Cb-diel_5 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 5 of 6 (237.4-272.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_5 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 5 of 6 (237.4-272.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',(#10570));
 #10570 = PRODUCT_CONTEXT('',#2,'mechanical');
 #10571 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -12886,8 +12886,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #10915 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #10916);
 #10916 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('34',
-'Cb-diel_5 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 5 of 6 (237.4-272.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_5 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 5 of 6 (237.4-272.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',#6849,#10567,$);
 #10917 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#10569));
 #10918 = SHAPE_DEFINITION_REPRESENTATION(#10919,#10925);
@@ -12895,11 +12895,11 @@ counter, slab 5 of 6 (237.4-272.6 deg), r105-179.76 mm, 4.5 mm thick
 #10920 = PRODUCT_DEFINITION('design','',#10921,#10924);
 #10921 = PRODUCT_DEFINITION_FORMATION('','',#10922);
 #10922 = PRODUCT(
-'Cb-diel_6 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 6 of 6 (297.4-332.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_6 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 6 of 6 (297.4-332.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5',
-'Cb-diel_6 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 6 of 6 (297.4-332.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_6 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 6 of 6 (297.4-332.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',(#10923));
 #10923 = PRODUCT_CONTEXT('',#2,'mechanical');
 #10924 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -13304,8 +13304,8 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #11268 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #11269);
 #11269 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('35',
-'Cb-diel_6 - mica dielectric for Cb, between the Cb electrode and its 
-counter, slab 6 of 6 (297.4-332.6 deg), r105-179.76 mm, 4.5 mm thick 
+'Cb-diel_6 - mica dielectric for Cb (between the Cb electrode and its 
+counter), slab 6 of 6 (297.4-332.6 deg), r105-179.76 mm, 4.5 mm thick 
 (foil + 5 mm margin), z 30..34.5','',#6849,#10920,$);
 #11270 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#10922));
 #11271 = SHAPE_DEFINITION_REPRESENTATION(#11272,#11278);
@@ -37878,48 +37878,48 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 r0-500 mm, 6 mm thick, z 44.1..50.1','',#29771,#31936,$);
 #32050 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#31938));
 #32051 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32052),#31217);
-#32052 = STYLED_ITEM('color',(#32053),#30883);
+    #32052),#9495);
+#32052 = STYLED_ITEM('color',(#32053),#9161);
 #32053 = PRESENTATION_STYLE_ASSIGNMENT((#32054));
 #32054 = SURFACE_STYLE_USAGE(.BOTH.,#32055);
 #32055 = SURFACE_SIDE_STYLE('',(#32056));
 #32056 = SURFACE_STYLE_FILL_AREA(#32057);
 #32057 = FILL_AREA_STYLE('',(#32058));
 #32058 = FILL_AREA_STYLE_COLOUR('',#32059);
-#32059 = COLOUR_RGB('',0.809468152636,0.911320555755,0.679975718802);
+#32059 = COLOUR_RGB('',0.88082502109,0.854305825093,0.767375665483);
 #32060 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32061),#7613);
-#32061 = STYLED_ITEM('color',(#32062),#7279);
+    #32061),#2752);
+#32061 = STYLED_ITEM('color',(#32062),#2418);
 #32062 = PRESENTATION_STYLE_ASSIGNMENT((#32063));
 #32063 = SURFACE_STYLE_USAGE(.BOTH.,#32064);
 #32064 = SURFACE_SIDE_STYLE('',(#32065));
 #32065 = SURFACE_STYLE_FILL_AREA(#32066);
 #32066 = FILL_AREA_STYLE('',(#32067));
 #32067 = FILL_AREA_STYLE_COLOUR('',#32068);
-#32068 = COLOUR_RGB('',0.88082502109,0.854305825093,0.767375665483);
+#32068 = COLOUR_RGB('',1.,0.859695970994,0.609711626504);
 #32069 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32070),#21519);
-#32070 = STYLED_ITEM('color',(#32071),#21185);
+    #32070),#17231);
+#32070 = STYLED_ITEM('color',(#32071),#16897);
 #32071 = PRESENTATION_STYLE_ASSIGNMENT((#32072));
 #32072 = SURFACE_STYLE_USAGE(.BOTH.,#32073);
 #32073 = SURFACE_SIDE_STYLE('',(#32074));
 #32074 = SURFACE_STYLE_FILL_AREA(#32075);
 #32075 = FILL_AREA_STYLE('',(#32076));
 #32076 = FILL_AREA_STYLE_COLOUR('',#32077);
-#32077 = COLOUR_RGB('',0.954687160741,0.56572843451,0.583831500637);
+#32077 = COLOUR_RGB('',0.896243869286,0.779706215139,0.963976240446);
 #32078 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32079),#14709);
-#32079 = STYLED_ITEM('color',(#32080),#14375);
+    #32079),#20036);
+#32079 = STYLED_ITEM('color',(#32080),#19702);
 #32080 = PRESENTATION_STYLE_ASSIGNMENT((#32081));
 #32081 = SURFACE_STYLE_USAGE(.BOTH.,#32082);
 #32082 = SURFACE_SIDE_STYLE('',(#32083));
 #32083 = SURFACE_STYLE_FILL_AREA(#32084);
 #32084 = FILL_AREA_STYLE('',(#32085));
 #32085 = FILL_AREA_STYLE_COLOUR('',#32086);
-#32086 = COLOUR_RGB('',0.728731850225,0.916273552573,1.);
+#32086 = COLOUR_RGB('',0.986695258981,0.708369656114,0.773573053001);
 #32087 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32088),#31923);
-#32088 = STYLED_ITEM('color',(#32089),#31589);
+    #32088),#10554);
+#32088 = STYLED_ITEM('color',(#32089),#10220);
 #32089 = PRESENTATION_STYLE_ASSIGNMENT((#32090));
 #32090 = SURFACE_STYLE_USAGE(.BOTH.,#32091);
 #32091 = SURFACE_SIDE_STYLE('',(#32092));
@@ -37927,212 +37927,212 @@ r0-500 mm, 6 mm thick, z 44.1..50.1','',#29771,#31936,$);
 #32093 = FILL_AREA_STYLE('',(#32094));
 #32094 = FILL_AREA_STYLE_COLOUR('',#32059);
 #32095 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32096),#15415);
-#32096 = STYLED_ITEM('color',(#32097),#15081);
+    #32096),#21519);
+#32096 = STYLED_ITEM('color',(#32097),#21185);
 #32097 = PRESENTATION_STYLE_ASSIGNMENT((#32098));
 #32098 = SURFACE_STYLE_USAGE(.BOTH.,#32099);
 #32099 = SURFACE_SIDE_STYLE('',(#32100));
 #32100 = SURFACE_STYLE_FILL_AREA(#32101);
 #32101 = FILL_AREA_STYLE('',(#32102));
-#32102 = FILL_AREA_STYLE_COLOUR('',#32086);
-#32103 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32104),#18507);
-#32104 = STYLED_ITEM('color',(#32105),#18325);
-#32105 = PRESENTATION_STYLE_ASSIGNMENT((#32106));
-#32106 = SURFACE_STYLE_USAGE(.BOTH.,#32107);
-#32107 = SURFACE_SIDE_STYLE('',(#32108));
-#32108 = SURFACE_STYLE_FILL_AREA(#32109);
-#32109 = FILL_AREA_STYLE('',(#32110));
-#32110 = FILL_AREA_STYLE_COLOUR('',#32111);
-#32111 = COLOUR_RGB('',0.986695258981,0.708369656114,0.773573053001);
+#32102 = FILL_AREA_STYLE_COLOUR('',#32103);
+#32103 = COLOUR_RGB('',0.954687160741,0.56572843451,0.583831500637);
+#32104 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32105),#7966);
+#32105 = STYLED_ITEM('color',(#32106),#7632);
+#32106 = PRESENTATION_STYLE_ASSIGNMENT((#32107));
+#32107 = SURFACE_STYLE_USAGE(.BOTH.,#32108);
+#32108 = SURFACE_SIDE_STYLE('',(#32109));
+#32109 = SURFACE_STYLE_FILL_AREA(#32110);
+#32110 = FILL_AREA_STYLE('',(#32111));
+#32111 = FILL_AREA_STYLE_COLOUR('',#32059);
 #32112 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32113),#17231);
-#32113 = STYLED_ITEM('color',(#32114),#16897);
+    #32113),#5777);
+#32113 = STYLED_ITEM('color',(#32114),#5443);
 #32114 = PRESENTATION_STYLE_ASSIGNMENT((#32115));
 #32115 = SURFACE_STYLE_USAGE(.BOTH.,#32116);
 #32116 = SURFACE_SIDE_STYLE('',(#32117));
 #32117 = SURFACE_STYLE_FILL_AREA(#32118);
 #32118 = FILL_AREA_STYLE('',(#32119));
-#32119 = FILL_AREA_STYLE_COLOUR('',#32120);
-#32120 = COLOUR_RGB('',0.896243869286,0.779706215139,0.963976240446);
-#32121 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32122),#28346);
-#32122 = STYLED_ITEM('color',(#32123),#28012);
-#32123 = PRESENTATION_STYLE_ASSIGNMENT((#32124));
-#32124 = SURFACE_STYLE_USAGE(.BOTH.,#32125);
-#32125 = SURFACE_SIDE_STYLE('',(#32126));
-#32126 = SURFACE_STYLE_FILL_AREA(#32127);
-#32127 = FILL_AREA_STYLE('',(#32128));
-#32128 = FILL_AREA_STYLE_COLOUR('',#32129);
-#32129 = COLOUR_RGB('',0.556393337621,0.891143312335,0.679975718802);
-#32130 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32131),#27086);
-#32131 = STYLED_ITEM('color',(#32132),#26752);
-#32132 = PRESENTATION_STYLE_ASSIGNMENT((#32133));
-#32133 = SURFACE_STYLE_USAGE(.BOTH.,#32134);
-#32134 = SURFACE_SIDE_STYLE('',(#32135));
-#32135 = SURFACE_STYLE_FILL_AREA(#32136);
-#32136 = FILL_AREA_STYLE('',(#32137));
-#32137 = FILL_AREA_STYLE_COLOUR('',#32129);
-#32138 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32139),#25250);
-#32139 = STYLED_ITEM('color',(#32140),#24916);
-#32140 = PRESENTATION_STYLE_ASSIGNMENT((#32141));
-#32141 = SURFACE_STYLE_USAGE(.BOTH.,#32142);
-#32142 = SURFACE_SIDE_STYLE('',(#32143));
-#32143 = SURFACE_STYLE_FILL_AREA(#32144);
-#32144 = FILL_AREA_STYLE('',(#32145));
-#32145 = FILL_AREA_STYLE_COLOUR('',#32077);
+#32119 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32120 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32121),#15768);
+#32121 = STYLED_ITEM('color',(#32122),#15434);
+#32122 = PRESENTATION_STYLE_ASSIGNMENT((#32123));
+#32123 = SURFACE_STYLE_USAGE(.BOTH.,#32124);
+#32124 = SURFACE_SIDE_STYLE('',(#32125));
+#32125 = SURFACE_STYLE_FILL_AREA(#32126);
+#32126 = FILL_AREA_STYLE('',(#32127));
+#32127 = FILL_AREA_STYLE_COLOUR('',#32128);
+#32128 = COLOUR_RGB('',0.728731850225,0.916273552573,1.);
+#32129 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32130),#6130);
+#32130 = STYLED_ITEM('color',(#32131),#5796);
+#32131 = PRESENTATION_STYLE_ASSIGNMENT((#32132));
+#32132 = SURFACE_STYLE_USAGE(.BOTH.,#32133);
+#32133 = SURFACE_SIDE_STYLE('',(#32134));
+#32134 = SURFACE_STYLE_FILL_AREA(#32135);
+#32135 = FILL_AREA_STYLE('',(#32136));
+#32136 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32137 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32138),#30511);
+#32138 = STYLED_ITEM('color',(#32139),#30177);
+#32139 = PRESENTATION_STYLE_ASSIGNMENT((#32140));
+#32140 = SURFACE_STYLE_USAGE(.BOTH.,#32141);
+#32141 = SURFACE_SIDE_STYLE('',(#32142));
+#32142 = SURFACE_STYLE_FILL_AREA(#32143);
+#32143 = FILL_AREA_STYLE('',(#32144));
+#32144 = FILL_AREA_STYLE_COLOUR('',#32145);
+#32145 = COLOUR_RGB('',0.809468152636,0.911320555755,0.679975718802);
 #32146 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32147),#22225);
-#32147 = STYLED_ITEM('color',(#32148),#21891);
+    #32147),#563);
+#32147 = STYLED_ITEM('color',(#32148),#229);
 #32148 = PRESENTATION_STYLE_ASSIGNMENT((#32149));
 #32149 = SURFACE_STYLE_USAGE(.BOTH.,#32150);
 #32150 = SURFACE_SIDE_STYLE('',(#32151));
 #32151 = SURFACE_STYLE_FILL_AREA(#32152);
 #32152 = FILL_AREA_STYLE('',(#32153));
-#32153 = FILL_AREA_STYLE_COLOUR('',#32077);
-#32154 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32155),#26733);
-#32155 = STYLED_ITEM('color',(#32156),#26399);
-#32156 = PRESENTATION_STYLE_ASSIGNMENT((#32157));
-#32157 = SURFACE_STYLE_USAGE(.BOTH.,#32158);
-#32158 = SURFACE_SIDE_STYLE('',(#32159));
-#32159 = SURFACE_STYLE_FILL_AREA(#32160);
-#32160 = FILL_AREA_STYLE('',(#32161));
-#32161 = FILL_AREA_STYLE_COLOUR('',#32129);
-#32162 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32163),#11684);
-#32163 = STYLED_ITEM('color',(#32164),#11350);
-#32164 = PRESENTATION_STYLE_ASSIGNMENT((#32165));
-#32165 = SURFACE_STYLE_USAGE(.BOTH.,#32166);
-#32166 = SURFACE_SIDE_STYLE('',(#32167));
-#32167 = SURFACE_STYLE_FILL_AREA(#32168);
-#32168 = FILL_AREA_STYLE('',(#32169));
-#32169 = FILL_AREA_STYLE_COLOUR('',#32086);
-#32170 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32171),#1975);
-#32171 = STYLED_ITEM('color',(#32172),#1641);
-#32172 = PRESENTATION_STYLE_ASSIGNMENT((#32173));
-#32173 = SURFACE_STYLE_USAGE(.BOTH.,#32174);
-#32174 = SURFACE_SIDE_STYLE('',(#32175));
-#32175 = SURFACE_STYLE_FILL_AREA(#32176);
-#32176 = FILL_AREA_STYLE('',(#32177));
-#32177 = FILL_AREA_STYLE_COLOUR('',#32178);
-#32178 = COLOUR_RGB('',0.945276898204,0.848870571682,0.672633018701);
+#32153 = FILL_AREA_STYLE_COLOUR('',#32154);
+#32154 = COLOUR_RGB('',0.945276898204,0.848870571682,0.672633018701);
+#32155 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32156),#15062);
+#32156 = STYLED_ITEM('color',(#32157),#14728);
+#32157 = PRESENTATION_STYLE_ASSIGNMENT((#32158));
+#32158 = SURFACE_STYLE_USAGE(.BOTH.,#32159);
+#32159 = SURFACE_SIDE_STYLE('',(#32160));
+#32160 = SURFACE_STYLE_FILL_AREA(#32161);
+#32161 = FILL_AREA_STYLE('',(#32162));
+#32162 = FILL_AREA_STYLE_COLOUR('',#32128);
+#32163 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32164),#14003);
+#32164 = STYLED_ITEM('color',(#32165),#13669);
+#32165 = PRESENTATION_STYLE_ASSIGNMENT((#32166));
+#32166 = SURFACE_STYLE_USAGE(.BOTH.,#32167);
+#32167 = SURFACE_SIDE_STYLE('',(#32168));
+#32168 = SURFACE_STYLE_FILL_AREA(#32169);
+#32169 = FILL_AREA_STYLE('',(#32170));
+#32170 = FILL_AREA_STYLE_COLOUR('',#32128);
+#32171 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32172),#5424);
+#32172 = STYLED_ITEM('color',(#32173),#5090);
+#32173 = PRESENTATION_STYLE_ASSIGNMENT((#32174));
+#32174 = SURFACE_STYLE_USAGE(.BOTH.,#32175);
+#32175 = SURFACE_SIDE_STYLE('',(#32176));
+#32176 = SURFACE_STYLE_FILL_AREA(#32177);
+#32177 = FILL_AREA_STYLE('',(#32178));
+#32178 = FILL_AREA_STYLE_COLOUR('',#32068);
 #32179 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32180),#29405);
-#32180 = STYLED_ITEM('color',(#32181),#29071);
+    #32180),#26733);
+#32180 = STYLED_ITEM('color',(#32181),#26399);
 #32181 = PRESENTATION_STYLE_ASSIGNMENT((#32182));
 #32182 = SURFACE_STYLE_USAGE(.BOTH.,#32183);
 #32183 = SURFACE_SIDE_STYLE('',(#32184));
 #32184 = SURFACE_STYLE_FILL_AREA(#32185);
 #32185 = FILL_AREA_STYLE('',(#32186));
-#32186 = FILL_AREA_STYLE_COLOUR('',#32129);
-#32187 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32188),#6483);
-#32188 = STYLED_ITEM('color',(#32189),#6149);
-#32189 = PRESENTATION_STYLE_ASSIGNMENT((#32190));
-#32190 = SURFACE_STYLE_USAGE(.BOTH.,#32191);
-#32191 = SURFACE_SIDE_STYLE('',(#32192));
-#32192 = SURFACE_STYLE_FILL_AREA(#32193);
-#32193 = FILL_AREA_STYLE('',(#32194));
-#32194 = FILL_AREA_STYLE_COLOUR('',#32195);
-#32195 = COLOUR_RGB('',1.,0.859695970994,0.609711626504);
+#32186 = FILL_AREA_STYLE_COLOUR('',#32187);
+#32187 = COLOUR_RGB('',0.556393337621,0.891143312335,0.679975718802);
+#32188 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32189),#19683);
+#32189 = STYLED_ITEM('color',(#32190),#19349);
+#32190 = PRESENTATION_STYLE_ASSIGNMENT((#32191));
+#32191 = SURFACE_STYLE_USAGE(.BOTH.,#32192);
+#32192 = SURFACE_SIDE_STYLE('',(#32193));
+#32193 = SURFACE_STYLE_FILL_AREA(#32194);
+#32194 = FILL_AREA_STYLE('',(#32195));
+#32195 = FILL_AREA_STYLE_COLOUR('',#32086);
 #32196 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32197),#16172);
-#32197 = STYLED_ITEM('color',(#32198),#15838);
+    #32197),#26380);
+#32197 = STYLED_ITEM('color',(#32198),#26046);
 #32198 = PRESENTATION_STYLE_ASSIGNMENT((#32199));
 #32199 = SURFACE_STYLE_USAGE(.BOTH.,#32200);
 #32200 = SURFACE_SIDE_STYLE('',(#32201));
 #32201 = SURFACE_STYLE_FILL_AREA(#32202);
 #32202 = FILL_AREA_STYLE('',(#32203));
-#32203 = FILL_AREA_STYLE_COLOUR('',#32120);
+#32203 = FILL_AREA_STYLE_COLOUR('',#32187);
 #32204 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32205),#1622);
-#32205 = STYLED_ITEM('color',(#32206),#1288);
+    #32205),#12037);
+#32205 = STYLED_ITEM('color',(#32206),#11703);
 #32206 = PRESENTATION_STYLE_ASSIGNMENT((#32207));
 #32207 = SURFACE_STYLE_USAGE(.BOTH.,#32208);
 #32208 = SURFACE_SIDE_STYLE('',(#32209));
 #32209 = SURFACE_STYLE_FILL_AREA(#32210);
 #32210 = FILL_AREA_STYLE('',(#32211));
-#32211 = FILL_AREA_STYLE_COLOUR('',#32178);
+#32211 = FILL_AREA_STYLE_COLOUR('',#32128);
 #32212 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32213),#210);
-#32213 = STYLED_ITEM('color',(#32214),#112);
+    #32213),#1622);
+#32213 = STYLED_ITEM('color',(#32214),#1288);
 #32214 = PRESENTATION_STYLE_ASSIGNMENT((#32215));
 #32215 = SURFACE_STYLE_USAGE(.BOTH.,#32216);
 #32216 = SURFACE_SIDE_STYLE('',(#32217));
 #32217 = SURFACE_STYLE_FILL_AREA(#32218);
 #32218 = FILL_AREA_STYLE('',(#32219));
-#32219 = FILL_AREA_STYLE_COLOUR('',#32220);
-#32220 = COLOUR_RGB('',0.626209676391,0.665185089102,0.715240883319);
-#32221 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32222),#10554);
-#32222 = STYLED_ITEM('color',(#32223),#10220);
-#32223 = PRESENTATION_STYLE_ASSIGNMENT((#32224));
-#32224 = SURFACE_STYLE_USAGE(.BOTH.,#32225);
-#32225 = SURFACE_SIDE_STYLE('',(#32226));
-#32226 = SURFACE_STYLE_FILL_AREA(#32227);
-#32227 = FILL_AREA_STYLE('',(#32228));
-#32228 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32219 = FILL_AREA_STYLE_COLOUR('',#32154);
+#32220 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32221),#13650);
+#32221 = STYLED_ITEM('color',(#32222),#13468);
+#32222 = PRESENTATION_STYLE_ASSIGNMENT((#32223));
+#32223 = SURFACE_STYLE_USAGE(.BOTH.,#32224);
+#32224 = SURFACE_SIDE_STYLE('',(#32225));
+#32225 = SURFACE_STYLE_FILL_AREA(#32226);
+#32226 = FILL_AREA_STYLE('',(#32227));
+#32227 = FILL_AREA_STYLE_COLOUR('',#32228);
+#32228 = COLOUR_RGB('',0.626209676391,0.665185089102,0.715240883319);
 #32229 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32230),#23132);
-#32230 = STYLED_ITEM('color',(#32231),#22950);
+    #32230),#11684);
+#32230 = STYLED_ITEM('color',(#32231),#11350);
 #32231 = PRESENTATION_STYLE_ASSIGNMENT((#32232));
 #32232 = SURFACE_STYLE_USAGE(.BOTH.,#32233);
 #32233 = SURFACE_SIDE_STYLE('',(#32234));
 #32234 = SURFACE_STYLE_FILL_AREA(#32235);
 #32235 = FILL_AREA_STYLE('',(#32236));
-#32236 = FILL_AREA_STYLE_COLOUR('',#32220);
+#32236 = FILL_AREA_STYLE_COLOUR('',#32128);
 #32237 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32238),#20389);
-#32238 = STYLED_ITEM('color',(#32239),#20055);
+    #32238),#6483);
+#32238 = STYLED_ITEM('color',(#32239),#6149);
 #32239 = PRESENTATION_STYLE_ASSIGNMENT((#32240));
 #32240 = SURFACE_STYLE_USAGE(.BOTH.,#32241);
 #32241 = SURFACE_SIDE_STYLE('',(#32242));
 #32242 = SURFACE_STYLE_FILL_AREA(#32243);
 #32243 = FILL_AREA_STYLE('',(#32244));
-#32244 = FILL_AREA_STYLE_COLOUR('',#32111);
+#32244 = FILL_AREA_STYLE_COLOUR('',#32068);
 #32245 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32246),#23485);
-#32246 = STYLED_ITEM('color',(#32247),#23151);
+    #32246),#5071);
+#32246 = STYLED_ITEM('color',(#32247),#4737);
 #32247 = PRESENTATION_STYLE_ASSIGNMENT((#32248));
 #32248 = SURFACE_STYLE_USAGE(.BOTH.,#32249);
 #32249 = SURFACE_SIDE_STYLE('',(#32250));
 #32250 = SURFACE_STYLE_FILL_AREA(#32251);
 #32251 = FILL_AREA_STYLE('',(#32252));
-#32252 = FILL_AREA_STYLE_COLOUR('',#32077);
+#32252 = FILL_AREA_STYLE_COLOUR('',#32068);
 #32253 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32254),#18977);
-#32254 = STYLED_ITEM('color',(#32255),#18643);
+    #32254),#7613);
+#32254 = STYLED_ITEM('color',(#32255),#7279);
 #32255 = PRESENTATION_STYLE_ASSIGNMENT((#32256));
 #32256 = SURFACE_STYLE_USAGE(.BOTH.,#32257);
 #32257 = SURFACE_SIDE_STYLE('',(#32258));
 #32258 = SURFACE_STYLE_FILL_AREA(#32259);
 #32259 = FILL_AREA_STYLE('',(#32260));
-#32260 = FILL_AREA_STYLE_COLOUR('',#32111);
+#32260 = FILL_AREA_STYLE_COLOUR('',#32059);
 #32261 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32262),#3458);
-#32262 = STYLED_ITEM('color',(#32263),#3124);
+    #32262),#3811);
+#32262 = STYLED_ITEM('color',(#32263),#3477);
 #32263 = PRESENTATION_STYLE_ASSIGNMENT((#32264));
 #32264 = SURFACE_STYLE_USAGE(.BOTH.,#32265);
 #32265 = SURFACE_SIDE_STYLE('',(#32266));
 #32266 = SURFACE_STYLE_FILL_AREA(#32267);
 #32267 = FILL_AREA_STYLE('',(#32268));
-#32268 = FILL_AREA_STYLE_COLOUR('',#32195);
+#32268 = FILL_AREA_STYLE_COLOUR('',#32068);
 #32269 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32270),#20036);
-#32270 = STYLED_ITEM('color',(#32271),#19702);
+    #32270),#29758);
+#32270 = STYLED_ITEM('color',(#32271),#29424);
 #32271 = PRESENTATION_STYLE_ASSIGNMENT((#32272));
 #32272 = SURFACE_STYLE_USAGE(.BOTH.,#32273);
 #32273 = SURFACE_SIDE_STYLE('',(#32274));
 #32274 = SURFACE_STYLE_FILL_AREA(#32275);
 #32275 = FILL_AREA_STYLE('',(#32276));
-#32276 = FILL_AREA_STYLE_COLOUR('',#32111);
+#32276 = FILL_AREA_STYLE_COLOUR('',#32187);
 #32277 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32278),#13096);
-#32278 = STYLED_ITEM('color',(#32279),#12762);
+    #32278),#20742);
+#32278 = STYLED_ITEM('color',(#32279),#20408);
 #32279 = PRESENTATION_STYLE_ASSIGNMENT((#32280));
 #32280 = SURFACE_STYLE_USAGE(.BOTH.,#32281);
 #32281 = SURFACE_SIDE_STYLE('',(#32282));
@@ -38140,531 +38140,531 @@ r0-500 mm, 6 mm thick, z 44.1..50.1','',#29771,#31936,$);
 #32283 = FILL_AREA_STYLE('',(#32284));
 #32284 = FILL_AREA_STYLE_COLOUR('',#32086);
 #32285 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32286),#3105);
-#32286 = STYLED_ITEM('color',(#32287),#2771);
+    #32286),#22225);
+#32286 = STYLED_ITEM('color',(#32287),#21891);
 #32287 = PRESENTATION_STYLE_ASSIGNMENT((#32288));
 #32288 = SURFACE_STYLE_USAGE(.BOTH.,#32289);
 #32289 = SURFACE_SIDE_STYLE('',(#32290));
 #32290 = SURFACE_STYLE_FILL_AREA(#32291);
 #32291 = FILL_AREA_STYLE('',(#32292));
-#32292 = FILL_AREA_STYLE_COLOUR('',#32195);
+#32292 = FILL_AREA_STYLE_COLOUR('',#32103);
 #32293 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32294),#22578);
-#32294 = STYLED_ITEM('color',(#32295),#22244);
+    #32294),#18507);
+#32294 = STYLED_ITEM('color',(#32295),#18325);
 #32295 = PRESENTATION_STYLE_ASSIGNMENT((#32296));
 #32296 = SURFACE_STYLE_USAGE(.BOTH.,#32297);
 #32297 = SURFACE_SIDE_STYLE('',(#32298));
 #32298 = SURFACE_STYLE_FILL_AREA(#32299);
 #32299 = FILL_AREA_STYLE('',(#32300));
-#32300 = FILL_AREA_STYLE_COLOUR('',#32077);
+#32300 = FILL_AREA_STYLE_COLOUR('',#32086);
 #32301 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32302),#13449);
-#32302 = STYLED_ITEM('color',(#32303),#13115);
+    #32302),#9848);
+#32302 = STYLED_ITEM('color',(#32303),#9514);
 #32303 = PRESENTATION_STYLE_ASSIGNMENT((#32304));
 #32304 = SURFACE_STYLE_USAGE(.BOTH.,#32305);
 #32305 = SURFACE_SIDE_STYLE('',(#32306));
 #32306 = SURFACE_STYLE_FILL_AREA(#32307);
 #32307 = FILL_AREA_STYLE('',(#32308));
-#32308 = FILL_AREA_STYLE_COLOUR('',#32086);
+#32308 = FILL_AREA_STYLE_COLOUR('',#32059);
 #32309 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32310),#4517);
-#32310 = STYLED_ITEM('color',(#32311),#4183);
+    #32310),#11260);
+#32310 = STYLED_ITEM('color',(#32311),#10926);
 #32311 = PRESENTATION_STYLE_ASSIGNMENT((#32312));
 #32312 = SURFACE_STYLE_USAGE(.BOTH.,#32313);
 #32313 = SURFACE_SIDE_STYLE('',(#32314));
 #32314 = SURFACE_STYLE_FILL_AREA(#32315);
 #32315 = FILL_AREA_STYLE('',(#32316));
-#32316 = FILL_AREA_STYLE_COLOUR('',#32195);
+#32316 = FILL_AREA_STYLE_COLOUR('',#32059);
 #32317 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32318),#10201);
-#32318 = STYLED_ITEM('color',(#32319),#9867);
+    #32318),#8672);
+#32318 = STYLED_ITEM('color',(#32319),#8338);
 #32319 = PRESENTATION_STYLE_ASSIGNMENT((#32320));
 #32320 = SURFACE_STYLE_USAGE(.BOTH.,#32321);
 #32321 = SURFACE_SIDE_STYLE('',(#32322));
 #32322 = SURFACE_STYLE_FILL_AREA(#32323);
 #32323 = FILL_AREA_STYLE('',(#32324));
-#32324 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32324 = FILL_AREA_STYLE_COLOUR('',#32059);
 #32325 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32326),#29052);
-#32326 = STYLED_ITEM('color',(#32327),#28718);
+    #32326),#6836);
+#32326 = STYLED_ITEM('color',(#32327),#6502);
 #32327 = PRESENTATION_STYLE_ASSIGNMENT((#32328));
 #32328 = SURFACE_STYLE_USAGE(.BOTH.,#32329);
 #32329 = SURFACE_SIDE_STYLE('',(#32330));
 #32330 = SURFACE_STYLE_FILL_AREA(#32331);
 #32331 = FILL_AREA_STYLE('',(#32332));
-#32332 = FILL_AREA_STYLE_COLOUR('',#32129);
+#32332 = FILL_AREA_STYLE_COLOUR('',#32068);
 #32333 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32334),#563);
-#32334 = STYLED_ITEM('color',(#32335),#229);
+    #32334),#13449);
+#32334 = STYLED_ITEM('color',(#32335),#13115);
 #32335 = PRESENTATION_STYLE_ASSIGNMENT((#32336));
 #32336 = SURFACE_STYLE_USAGE(.BOTH.,#32337);
 #32337 = SURFACE_SIDE_STYLE('',(#32338));
 #32338 = SURFACE_STYLE_FILL_AREA(#32339);
 #32339 = FILL_AREA_STYLE('',(#32340));
-#32340 = FILL_AREA_STYLE_COLOUR('',#32178);
+#32340 = FILL_AREA_STYLE_COLOUR('',#32128);
 #32341 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32342),#18255);
-#32342 = STYLED_ITEM('color',(#32343),#18073);
+    #32342),#30864);
+#32342 = STYLED_ITEM('color',(#32343),#30530);
 #32343 = PRESENTATION_STYLE_ASSIGNMENT((#32344));
 #32344 = SURFACE_STYLE_USAGE(.BOTH.,#32345);
 #32345 = SURFACE_SIDE_STYLE('',(#32346));
 #32346 = SURFACE_STYLE_FILL_AREA(#32347);
 #32347 = FILL_AREA_STYLE('',(#32348));
-#32348 = FILL_AREA_STYLE_COLOUR('',#32120);
+#32348 = FILL_AREA_STYLE_COLOUR('',#32145);
 #32349 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32350),#16525);
-#32350 = STYLED_ITEM('color',(#32351),#16191);
+    #32350),#27439);
+#32350 = STYLED_ITEM('color',(#32351),#27105);
 #32351 = PRESENTATION_STYLE_ASSIGNMENT((#32352));
 #32352 = SURFACE_STYLE_USAGE(.BOTH.,#32353);
 #32353 = SURFACE_SIDE_STYLE('',(#32354));
 #32354 = SURFACE_STYLE_FILL_AREA(#32355);
 #32355 = FILL_AREA_STYLE('',(#32356));
-#32356 = FILL_AREA_STYLE_COLOUR('',#32120);
+#32356 = FILL_AREA_STYLE_COLOUR('',#32187);
 #32357 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32358),#9495);
-#32358 = STYLED_ITEM('color',(#32359),#9161);
+    #32358),#12743);
+#32358 = STYLED_ITEM('color',(#32359),#12409);
 #32359 = PRESENTATION_STYLE_ASSIGNMENT((#32360));
 #32360 = SURFACE_STYLE_USAGE(.BOTH.,#32361);
 #32361 = SURFACE_SIDE_STYLE('',(#32362));
 #32362 = SURFACE_STYLE_FILL_AREA(#32363);
 #32363 = FILL_AREA_STYLE('',(#32364));
-#32364 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32364 = FILL_AREA_STYLE_COLOUR('',#32128);
 #32365 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32366),#18624);
-#32366 = STYLED_ITEM('color',(#32367),#18526);
+    #32366),#23485);
+#32366 = STYLED_ITEM('color',(#32367),#23151);
 #32367 = PRESENTATION_STYLE_ASSIGNMENT((#32368));
 #32368 = SURFACE_STYLE_USAGE(.BOTH.,#32369);
 #32369 = SURFACE_SIDE_STYLE('',(#32370));
 #32370 = SURFACE_STYLE_FILL_AREA(#32371);
 #32371 = FILL_AREA_STYLE('',(#32372));
-#32372 = FILL_AREA_STYLE_COLOUR('',#32220);
+#32372 = FILL_AREA_STYLE_COLOUR('',#32103);
 #32373 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32374),#3811);
-#32374 = STYLED_ITEM('color',(#32375),#3477);
+    #32374),#2328);
+#32374 = STYLED_ITEM('color',(#32375),#1994);
 #32375 = PRESENTATION_STYLE_ASSIGNMENT((#32376));
 #32376 = SURFACE_STYLE_USAGE(.BOTH.,#32377);
 #32377 = SURFACE_SIDE_STYLE('',(#32378));
 #32378 = SURFACE_STYLE_FILL_AREA(#32379);
 #32379 = FILL_AREA_STYLE('',(#32380));
-#32380 = FILL_AREA_STYLE_COLOUR('',#32195);
+#32380 = FILL_AREA_STYLE_COLOUR('',#32154);
 #32381 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32382),#16878);
-#32382 = STYLED_ITEM('color',(#32383),#16544);
+    #32382),#4718);
+#32382 = STYLED_ITEM('color',(#32383),#4536);
 #32383 = PRESENTATION_STYLE_ASSIGNMENT((#32384));
 #32384 = SURFACE_STYLE_USAGE(.BOTH.,#32385);
 #32385 = SURFACE_SIDE_STYLE('',(#32386));
 #32386 = SURFACE_STYLE_FILL_AREA(#32387);
 #32387 = FILL_AREA_STYLE('',(#32388));
-#32388 = FILL_AREA_STYLE_COLOUR('',#32120);
+#32388 = FILL_AREA_STYLE_COLOUR('',#32228);
 #32389 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32390),#1269);
-#32390 = STYLED_ITEM('color',(#32391),#935);
+    #32390),#916);
+#32390 = STYLED_ITEM('color',(#32391),#582);
 #32391 = PRESENTATION_STYLE_ASSIGNMENT((#32392));
 #32392 = SURFACE_STYLE_USAGE(.BOTH.,#32393);
 #32393 = SURFACE_SIDE_STYLE('',(#32394));
 #32394 = SURFACE_STYLE_FILL_AREA(#32395);
 #32395 = FILL_AREA_STYLE('',(#32396));
-#32396 = FILL_AREA_STYLE_COLOUR('',#32178);
+#32396 = FILL_AREA_STYLE_COLOUR('',#32154);
 #32397 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32398),#27439);
-#32398 = STYLED_ITEM('color',(#32399),#27105);
+    #32398),#20389);
+#32398 = STYLED_ITEM('color',(#32399),#20055);
 #32399 = PRESENTATION_STYLE_ASSIGNMENT((#32400));
 #32400 = SURFACE_STYLE_USAGE(.BOTH.,#32401);
 #32401 = SURFACE_SIDE_STYLE('',(#32402));
 #32402 = SURFACE_STYLE_FILL_AREA(#32403);
 #32403 = FILL_AREA_STYLE('',(#32404));
-#32404 = FILL_AREA_STYLE_COLOUR('',#32129);
+#32404 = FILL_AREA_STYLE_COLOUR('',#32086);
 #32405 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32406),#12037);
-#32406 = STYLED_ITEM('color',(#32407),#11703);
+    #32406),#14709);
+#32406 = STYLED_ITEM('color',(#32407),#14375);
 #32407 = PRESENTATION_STYLE_ASSIGNMENT((#32408));
 #32408 = SURFACE_STYLE_USAGE(.BOTH.,#32409);
 #32409 = SURFACE_SIDE_STYLE('',(#32410));
 #32410 = SURFACE_STYLE_FILL_AREA(#32411);
 #32411 = FILL_AREA_STYLE('',(#32412));
-#32412 = FILL_AREA_STYLE_COLOUR('',#32086);
+#32412 = FILL_AREA_STYLE_COLOUR('',#32128);
 #32413 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32414),#26380);
-#32414 = STYLED_ITEM('color',(#32415),#26046);
+    #32414),#23132);
+#32414 = STYLED_ITEM('color',(#32415),#22950);
 #32415 = PRESENTATION_STYLE_ASSIGNMENT((#32416));
 #32416 = SURFACE_STYLE_USAGE(.BOTH.,#32417);
 #32417 = SURFACE_SIDE_STYLE('',(#32418));
 #32418 = SURFACE_STYLE_FILL_AREA(#32419);
 #32419 = FILL_AREA_STYLE('',(#32420));
-#32420 = FILL_AREA_STYLE_COLOUR('',#32129);
+#32420 = FILL_AREA_STYLE_COLOUR('',#32228);
 #32421 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32422),#9848);
-#32422 = STYLED_ITEM('color',(#32423),#9514);
+    #32422),#9025);
+#32422 = STYLED_ITEM('color',(#32423),#8691);
 #32423 = PRESENTATION_STYLE_ASSIGNMENT((#32424));
 #32424 = SURFACE_STYLE_USAGE(.BOTH.,#32425);
 #32425 = SURFACE_SIDE_STYLE('',(#32426));
 #32426 = SURFACE_STYLE_FILL_AREA(#32427);
 #32427 = FILL_AREA_STYLE('',(#32428));
-#32428 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32428 = FILL_AREA_STYLE_COLOUR('',#32059);
 #32429 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32430),#4718);
-#32430 = STYLED_ITEM('color',(#32431),#4536);
+    #32430),#30158);
+#32430 = STYLED_ITEM('color',(#32431),#29824);
 #32431 = PRESENTATION_STYLE_ASSIGNMENT((#32432));
 #32432 = SURFACE_STYLE_USAGE(.BOTH.,#32433);
 #32433 = SURFACE_SIDE_STYLE('',(#32434));
 #32434 = SURFACE_STYLE_FILL_AREA(#32435);
 #32435 = FILL_AREA_STYLE('',(#32436));
-#32436 = FILL_AREA_STYLE_COLOUR('',#32220);
+#32436 = FILL_AREA_STYLE_COLOUR('',#32145);
 #32437 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32438),#13650);
-#32438 = STYLED_ITEM('color',(#32439),#13468);
+    #32438),#27640);
+#32438 = STYLED_ITEM('color',(#32439),#27458);
 #32439 = PRESENTATION_STYLE_ASSIGNMENT((#32440));
 #32440 = SURFACE_STYLE_USAGE(.BOTH.,#32441);
 #32441 = SURFACE_SIDE_STYLE('',(#32442));
 #32442 = SURFACE_STYLE_FILL_AREA(#32443);
 #32443 = FILL_AREA_STYLE('',(#32444));
-#32444 = FILL_AREA_STYLE_COLOUR('',#32220);
+#32444 = FILL_AREA_STYLE_COLOUR('',#32228);
 #32445 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32446),#2328);
-#32446 = STYLED_ITEM('color',(#32447),#1994);
+    #32446),#24544);
+#32446 = STYLED_ITEM('color',(#32447),#24210);
 #32447 = PRESENTATION_STYLE_ASSIGNMENT((#32448));
 #32448 = SURFACE_STYLE_USAGE(.BOTH.,#32449);
 #32449 = SURFACE_SIDE_STYLE('',(#32450));
 #32450 = SURFACE_STYLE_FILL_AREA(#32451);
 #32451 = FILL_AREA_STYLE('',(#32452));
-#32452 = FILL_AREA_STYLE_COLOUR('',#32178);
+#32452 = FILL_AREA_STYLE_COLOUR('',#32103);
 #32453 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32454),#14003);
-#32454 = STYLED_ITEM('color',(#32455),#13669);
+    #32454),#31570);
+#32454 = STYLED_ITEM('color',(#32455),#31236);
 #32455 = PRESENTATION_STYLE_ASSIGNMENT((#32456));
 #32456 = SURFACE_STYLE_USAGE(.BOTH.,#32457);
 #32457 = SURFACE_SIDE_STYLE('',(#32458));
 #32458 = SURFACE_STYLE_FILL_AREA(#32459);
 #32459 = FILL_AREA_STYLE('',(#32460));
-#32460 = FILL_AREA_STYLE_COLOUR('',#32086);
+#32460 = FILL_AREA_STYLE_COLOUR('',#32145);
 #32461 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32462),#9142);
-#32462 = STYLED_ITEM('color',(#32463),#9044);
+    #32462),#32040);
+#32462 = STYLED_ITEM('color',(#32463),#31942);
 #32463 = PRESENTATION_STYLE_ASSIGNMENT((#32464));
 #32464 = SURFACE_STYLE_USAGE(.BOTH.,#32465);
 #32465 = SURFACE_SIDE_STYLE('',(#32466));
 #32466 = SURFACE_STYLE_FILL_AREA(#32467);
 #32467 = FILL_AREA_STYLE('',(#32468));
-#32468 = FILL_AREA_STYLE_COLOUR('',#32469);
-#32469 = COLOUR_RGB('',0.767375665483,0.735356983052,0.583831500637);
-#32470 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32471),#15768);
-#32471 = STYLED_ITEM('color',(#32472),#15434);
-#32472 = PRESENTATION_STYLE_ASSIGNMENT((#32473));
-#32473 = SURFACE_STYLE_USAGE(.BOTH.,#32474);
-#32474 = SURFACE_SIDE_STYLE('',(#32475));
-#32475 = SURFACE_STYLE_FILL_AREA(#32476);
-#32476 = FILL_AREA_STYLE('',(#32477));
-#32477 = FILL_AREA_STYLE_COLOUR('',#32086);
-#32478 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32479),#11260);
-#32479 = STYLED_ITEM('color',(#32480),#10926);
-#32480 = PRESENTATION_STYLE_ASSIGNMENT((#32481));
-#32481 = SURFACE_STYLE_USAGE(.BOTH.,#32482);
-#32482 = SURFACE_SIDE_STYLE('',(#32483));
-#32483 = SURFACE_STYLE_FILL_AREA(#32484);
-#32484 = FILL_AREA_STYLE('',(#32485));
-#32485 = FILL_AREA_STYLE_COLOUR('',#32068);
-#32486 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32487),#19683);
-#32487 = STYLED_ITEM('color',(#32488),#19349);
-#32488 = PRESENTATION_STYLE_ASSIGNMENT((#32489));
-#32489 = SURFACE_STYLE_USAGE(.BOTH.,#32490);
-#32490 = SURFACE_SIDE_STYLE('',(#32491));
-#32491 = SURFACE_STYLE_FILL_AREA(#32492);
-#32492 = FILL_AREA_STYLE('',(#32493));
-#32493 = FILL_AREA_STYLE_COLOUR('',#32111);
-#32494 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32495),#28699);
-#32495 = STYLED_ITEM('color',(#32496),#28365);
-#32496 = PRESENTATION_STYLE_ASSIGNMENT((#32497));
-#32497 = SURFACE_STYLE_USAGE(.BOTH.,#32498);
-#32498 = SURFACE_SIDE_STYLE('',(#32499));
-#32499 = SURFACE_STYLE_FILL_AREA(#32500);
-#32500 = FILL_AREA_STYLE('',(#32501));
-#32501 = FILL_AREA_STYLE_COLOUR('',#32129);
-#32502 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32503),#24191);
-#32503 = STYLED_ITEM('color',(#32504),#23857);
-#32504 = PRESENTATION_STYLE_ASSIGNMENT((#32505));
-#32505 = SURFACE_STYLE_USAGE(.BOTH.,#32506);
-#32506 = SURFACE_SIDE_STYLE('',(#32507));
-#32507 = SURFACE_STYLE_FILL_AREA(#32508);
-#32508 = FILL_AREA_STYLE('',(#32509));
-#32509 = FILL_AREA_STYLE_COLOUR('',#32077);
-#32510 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32511),#19330);
-#32511 = STYLED_ITEM('color',(#32512),#18996);
-#32512 = PRESENTATION_STYLE_ASSIGNMENT((#32513));
-#32513 = SURFACE_STYLE_USAGE(.BOTH.,#32514);
-#32514 = SURFACE_SIDE_STYLE('',(#32515));
-#32515 = SURFACE_STYLE_FILL_AREA(#32516);
-#32516 = FILL_AREA_STYLE('',(#32517));
-#32517 = FILL_AREA_STYLE_COLOUR('',#32111);
-#32518 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32519),#18054);
-#32519 = STYLED_ITEM('color',(#32520),#17956);
-#32520 = PRESENTATION_STYLE_ASSIGNMENT((#32521));
-#32521 = SURFACE_STYLE_USAGE(.BOTH.,#32522);
-#32522 = SURFACE_SIDE_STYLE('',(#32523));
-#32523 = SURFACE_STYLE_FILL_AREA(#32524);
-#32524 = FILL_AREA_STYLE('',(#32525));
-#32525 = FILL_AREA_STYLE_COLOUR('',#32220);
-#32526 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32527),#9025);
-#32527 = STYLED_ITEM('color',(#32528),#8691);
-#32528 = PRESENTATION_STYLE_ASSIGNMENT((#32529));
-#32529 = SURFACE_STYLE_USAGE(.BOTH.,#32530);
-#32530 = SURFACE_SIDE_STYLE('',(#32531));
-#32531 = SURFACE_STYLE_FILL_AREA(#32532);
-#32532 = FILL_AREA_STYLE('',(#32533));
-#32533 = FILL_AREA_STYLE_COLOUR('',#32068);
-#32534 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32535),#15062);
-#32535 = STYLED_ITEM('color',(#32536),#14728);
-#32536 = PRESENTATION_STYLE_ASSIGNMENT((#32537));
-#32537 = SURFACE_STYLE_USAGE(.BOTH.,#32538);
-#32538 = SURFACE_SIDE_STYLE('',(#32539));
-#32539 = SURFACE_STYLE_FILL_AREA(#32540);
-#32540 = FILL_AREA_STYLE('',(#32541));
-#32541 = FILL_AREA_STYLE_COLOUR('',#32086);
-#32542 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32543),#6130);
-#32543 = STYLED_ITEM('color',(#32544),#5796);
-#32544 = PRESENTATION_STYLE_ASSIGNMENT((#32545));
-#32545 = SURFACE_STYLE_USAGE(.BOTH.,#32546);
-#32546 = SURFACE_SIDE_STYLE('',(#32547));
-#32547 = SURFACE_STYLE_FILL_AREA(#32548);
-#32548 = FILL_AREA_STYLE('',(#32549));
-#32549 = FILL_AREA_STYLE_COLOUR('',#32195);
-#32550 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32551),#24544);
-#32551 = STYLED_ITEM('color',(#32552),#24210);
-#32552 = PRESENTATION_STYLE_ASSIGNMENT((#32553));
-#32553 = SURFACE_STYLE_USAGE(.BOTH.,#32554);
-#32554 = SURFACE_SIDE_STYLE('',(#32555));
-#32555 = SURFACE_STYLE_FILL_AREA(#32556);
-#32556 = FILL_AREA_STYLE('',(#32557));
-#32557 = FILL_AREA_STYLE_COLOUR('',#32077);
-#32558 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32559),#12390);
-#32559 = STYLED_ITEM('color',(#32560),#12056);
-#32560 = PRESENTATION_STYLE_ASSIGNMENT((#32561));
-#32561 = SURFACE_STYLE_USAGE(.BOTH.,#32562);
-#32562 = SURFACE_SIDE_STYLE('',(#32563));
-#32563 = SURFACE_STYLE_FILL_AREA(#32564);
-#32564 = FILL_AREA_STYLE('',(#32565));
-#32565 = FILL_AREA_STYLE_COLOUR('',#32086);
-#32566 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32567),#20742);
-#32567 = STYLED_ITEM('color',(#32568),#20408);
-#32568 = PRESENTATION_STYLE_ASSIGNMENT((#32569));
-#32569 = SURFACE_STYLE_USAGE(.BOTH.,#32570);
-#32570 = SURFACE_SIDE_STYLE('',(#32571));
-#32571 = SURFACE_STYLE_FILL_AREA(#32572);
-#32572 = FILL_AREA_STYLE('',(#32573));
-#32573 = FILL_AREA_STYLE_COLOUR('',#32111);
-#32574 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32575),#8672);
-#32575 = STYLED_ITEM('color',(#32576),#8338);
-#32576 = PRESENTATION_STYLE_ASSIGNMENT((#32577));
-#32577 = SURFACE_STYLE_USAGE(.BOTH.,#32578);
-#32578 = SURFACE_SIDE_STYLE('',(#32579));
-#32579 = SURFACE_STYLE_FILL_AREA(#32580);
-#32580 = FILL_AREA_STYLE('',(#32581));
-#32581 = FILL_AREA_STYLE_COLOUR('',#32068);
-#32582 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32583),#26027);
-#32583 = STYLED_ITEM('color',(#32584),#25693);
-#32584 = PRESENTATION_STYLE_ASSIGNMENT((#32585));
-#32585 = SURFACE_STYLE_USAGE(.BOTH.,#32586);
-#32586 = SURFACE_SIDE_STYLE('',(#32587));
-#32587 = SURFACE_STYLE_FILL_AREA(#32588);
-#32588 = FILL_AREA_STYLE('',(#32589));
-#32589 = FILL_AREA_STYLE_COLOUR('',#32129);
-#32590 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32591),#25674);
-#32591 = STYLED_ITEM('color',(#32592),#25340);
-#32592 = PRESENTATION_STYLE_ASSIGNMENT((#32593));
-#32593 = SURFACE_STYLE_USAGE(.BOTH.,#32594);
-#32594 = SURFACE_SIDE_STYLE('',(#32595));
-#32595 = SURFACE_STYLE_FILL_AREA(#32596);
-#32596 = FILL_AREA_STYLE('',(#32597));
-#32597 = FILL_AREA_STYLE_COLOUR('',#32129);
-#32598 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32599),#32040);
-#32599 = STYLED_ITEM('color',(#32600),#31942);
-#32600 = PRESENTATION_STYLE_ASSIGNMENT((#32601));
-#32601 = SURFACE_STYLE_USAGE(.BOTH.,#32602);
-#32602 = SURFACE_SIDE_STYLE('',(#32603));
-#32603 = SURFACE_STYLE_FILL_AREA(#32604);
-#32604 = FILL_AREA_STYLE('',(#32605));
-#32605 = FILL_AREA_STYLE_COLOUR('',#32220);
-#32606 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32607),#17584);
-#32607 = STYLED_ITEM('color',(#32608),#17250);
-#32608 = PRESENTATION_STYLE_ASSIGNMENT((#32609));
-#32609 = SURFACE_STYLE_USAGE(.BOTH.,#32610);
-#32610 = SURFACE_SIDE_STYLE('',(#32611));
-#32611 = SURFACE_STYLE_FILL_AREA(#32612);
-#32612 = FILL_AREA_STYLE('',(#32613));
-#32613 = FILL_AREA_STYLE_COLOUR('',#32120);
-#32614 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32615),#6836);
-#32615 = STYLED_ITEM('color',(#32616),#6502);
-#32616 = PRESENTATION_STYLE_ASSIGNMENT((#32617));
-#32617 = SURFACE_STYLE_USAGE(.BOTH.,#32618);
-#32618 = SURFACE_SIDE_STYLE('',(#32619));
-#32619 = SURFACE_STYLE_FILL_AREA(#32620);
-#32620 = FILL_AREA_STYLE('',(#32621));
-#32621 = FILL_AREA_STYLE_COLOUR('',#32195);
-#32622 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32623),#27640);
-#32623 = STYLED_ITEM('color',(#32624),#27458);
-#32624 = PRESENTATION_STYLE_ASSIGNMENT((#32625));
-#32625 = SURFACE_STYLE_USAGE(.BOTH.,#32626);
-#32626 = SURFACE_SIDE_STYLE('',(#32627));
-#32627 = SURFACE_STYLE_FILL_AREA(#32628);
-#32628 = FILL_AREA_STYLE('',(#32629));
-#32629 = FILL_AREA_STYLE_COLOUR('',#32220);
-#32630 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32631),#23838);
-#32631 = STYLED_ITEM('color',(#32632),#23504);
-#32632 = PRESENTATION_STYLE_ASSIGNMENT((#32633));
-#32633 = SURFACE_STYLE_USAGE(.BOTH.,#32634);
-#32634 = SURFACE_SIDE_STYLE('',(#32635));
-#32635 = SURFACE_STYLE_FILL_AREA(#32636);
-#32636 = FILL_AREA_STYLE('',(#32637));
-#32637 = FILL_AREA_STYLE_COLOUR('',#32077);
-#32638 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32639),#5424);
-#32639 = STYLED_ITEM('color',(#32640),#5090);
-#32640 = PRESENTATION_STYLE_ASSIGNMENT((#32641));
-#32641 = SURFACE_STYLE_USAGE(.BOTH.,#32642);
-#32642 = SURFACE_SIDE_STYLE('',(#32643));
-#32643 = SURFACE_STYLE_FILL_AREA(#32644);
-#32644 = FILL_AREA_STYLE('',(#32645));
-#32645 = FILL_AREA_STYLE_COLOUR('',#32195);
-#32646 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32647),#24897);
-#32647 = STYLED_ITEM('color',(#32648),#24563);
-#32648 = PRESENTATION_STYLE_ASSIGNMENT((#32649));
-#32649 = SURFACE_STYLE_USAGE(.BOTH.,#32650);
-#32650 = SURFACE_SIDE_STYLE('',(#32651));
-#32651 = SURFACE_STYLE_FILL_AREA(#32652);
-#32652 = FILL_AREA_STYLE('',(#32653));
-#32653 = FILL_AREA_STYLE_COLOUR('',#32077);
-#32654 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32655),#21166);
-#32655 = STYLED_ITEM('color',(#32656),#20832);
-#32656 = PRESENTATION_STYLE_ASSIGNMENT((#32657));
-#32657 = SURFACE_STYLE_USAGE(.BOTH.,#32658);
-#32658 = SURFACE_SIDE_STYLE('',(#32659));
-#32659 = SURFACE_STYLE_FILL_AREA(#32660);
-#32660 = FILL_AREA_STYLE('',(#32661));
-#32661 = FILL_AREA_STYLE_COLOUR('',#32077);
-#32662 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32663),#916);
-#32663 = STYLED_ITEM('color',(#32664),#582);
-#32664 = PRESENTATION_STYLE_ASSIGNMENT((#32665));
-#32665 = SURFACE_STYLE_USAGE(.BOTH.,#32666);
-#32666 = SURFACE_SIDE_STYLE('',(#32667));
-#32667 = SURFACE_STYLE_FILL_AREA(#32668);
-#32668 = FILL_AREA_STYLE('',(#32669));
-#32669 = FILL_AREA_STYLE_COLOUR('',#32178);
-#32670 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32671),#29758);
-#32671 = STYLED_ITEM('color',(#32672),#29424);
-#32672 = PRESENTATION_STYLE_ASSIGNMENT((#32673));
-#32673 = SURFACE_STYLE_USAGE(.BOTH.,#32674);
-#32674 = SURFACE_SIDE_STYLE('',(#32675));
-#32675 = SURFACE_STYLE_FILL_AREA(#32676);
-#32676 = FILL_AREA_STYLE('',(#32677));
-#32677 = FILL_AREA_STYLE_COLOUR('',#32129);
-#32678 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32679),#27993);
-#32679 = STYLED_ITEM('color',(#32680),#27659);
-#32680 = PRESENTATION_STYLE_ASSIGNMENT((#32681));
-#32681 = SURFACE_STYLE_USAGE(.BOTH.,#32682);
-#32682 = SURFACE_SIDE_STYLE('',(#32683));
-#32683 = SURFACE_STYLE_FILL_AREA(#32684);
-#32684 = FILL_AREA_STYLE('',(#32685));
-#32685 = FILL_AREA_STYLE_COLOUR('',#32129);
-#32686 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32687),#30511);
-#32687 = STYLED_ITEM('color',(#32688),#30177);
-#32688 = PRESENTATION_STYLE_ASSIGNMENT((#32689));
-#32689 = SURFACE_STYLE_USAGE(.BOTH.,#32690);
-#32690 = SURFACE_SIDE_STYLE('',(#32691));
-#32691 = SURFACE_STYLE_FILL_AREA(#32692);
-#32692 = FILL_AREA_STYLE('',(#32693));
-#32693 = FILL_AREA_STYLE_COLOUR('',#32059);
-#32694 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32695),#14356);
-#32695 = STYLED_ITEM('color',(#32696),#14022);
-#32696 = PRESENTATION_STYLE_ASSIGNMENT((#32697));
-#32697 = SURFACE_STYLE_USAGE(.BOTH.,#32698);
-#32698 = SURFACE_SIDE_STYLE('',(#32699));
-#32699 = SURFACE_STYLE_FILL_AREA(#32700);
-#32700 = FILL_AREA_STYLE('',(#32701));
-#32701 = FILL_AREA_STYLE_COLOUR('',#32086);
+#32468 = FILL_AREA_STYLE_COLOUR('',#32228);
+#32469 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32470),#4517);
+#32470 = STYLED_ITEM('color',(#32471),#4183);
+#32471 = PRESENTATION_STYLE_ASSIGNMENT((#32472));
+#32472 = SURFACE_STYLE_USAGE(.BOTH.,#32473);
+#32473 = SURFACE_SIDE_STYLE('',(#32474));
+#32474 = SURFACE_STYLE_FILL_AREA(#32475);
+#32475 = FILL_AREA_STYLE('',(#32476));
+#32476 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32477 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32478),#25674);
+#32478 = STYLED_ITEM('color',(#32479),#25340);
+#32479 = PRESENTATION_STYLE_ASSIGNMENT((#32480));
+#32480 = SURFACE_STYLE_USAGE(.BOTH.,#32481);
+#32481 = SURFACE_SIDE_STYLE('',(#32482));
+#32482 = SURFACE_STYLE_FILL_AREA(#32483);
+#32483 = FILL_AREA_STYLE('',(#32484));
+#32484 = FILL_AREA_STYLE_COLOUR('',#32187);
+#32485 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32486),#19330);
+#32486 = STYLED_ITEM('color',(#32487),#18996);
+#32487 = PRESENTATION_STYLE_ASSIGNMENT((#32488));
+#32488 = SURFACE_STYLE_USAGE(.BOTH.,#32489);
+#32489 = SURFACE_SIDE_STYLE('',(#32490));
+#32490 = SURFACE_STYLE_FILL_AREA(#32491);
+#32491 = FILL_AREA_STYLE('',(#32492));
+#32492 = FILL_AREA_STYLE_COLOUR('',#32086);
+#32493 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32494),#21166);
+#32494 = STYLED_ITEM('color',(#32495),#20832);
+#32495 = PRESENTATION_STYLE_ASSIGNMENT((#32496));
+#32496 = SURFACE_STYLE_USAGE(.BOTH.,#32497);
+#32497 = SURFACE_SIDE_STYLE('',(#32498));
+#32498 = SURFACE_STYLE_FILL_AREA(#32499);
+#32499 = FILL_AREA_STYLE('',(#32500));
+#32500 = FILL_AREA_STYLE_COLOUR('',#32103);
+#32501 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32502),#29405);
+#32502 = STYLED_ITEM('color',(#32503),#29071);
+#32503 = PRESENTATION_STYLE_ASSIGNMENT((#32504));
+#32504 = SURFACE_STYLE_USAGE(.BOTH.,#32505);
+#32505 = SURFACE_SIDE_STYLE('',(#32506));
+#32506 = SURFACE_STYLE_FILL_AREA(#32507);
+#32507 = FILL_AREA_STYLE('',(#32508));
+#32508 = FILL_AREA_STYLE_COLOUR('',#32187);
+#32509 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32510),#3105);
+#32510 = STYLED_ITEM('color',(#32511),#2771);
+#32511 = PRESENTATION_STYLE_ASSIGNMENT((#32512));
+#32512 = SURFACE_STYLE_USAGE(.BOTH.,#32513);
+#32513 = SURFACE_SIDE_STYLE('',(#32514));
+#32514 = SURFACE_STYLE_FILL_AREA(#32515);
+#32515 = FILL_AREA_STYLE('',(#32516));
+#32516 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32517 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32518),#18977);
+#32518 = STYLED_ITEM('color',(#32519),#18643);
+#32519 = PRESENTATION_STYLE_ASSIGNMENT((#32520));
+#32520 = SURFACE_STYLE_USAGE(.BOTH.,#32521);
+#32521 = SURFACE_SIDE_STYLE('',(#32522));
+#32522 = SURFACE_STYLE_FILL_AREA(#32523);
+#32523 = FILL_AREA_STYLE('',(#32524));
+#32524 = FILL_AREA_STYLE_COLOUR('',#32086);
+#32525 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32526),#24191);
+#32526 = STYLED_ITEM('color',(#32527),#23857);
+#32527 = PRESENTATION_STYLE_ASSIGNMENT((#32528));
+#32528 = SURFACE_STYLE_USAGE(.BOTH.,#32529);
+#32529 = SURFACE_SIDE_STYLE('',(#32530));
+#32530 = SURFACE_STYLE_FILL_AREA(#32531);
+#32531 = FILL_AREA_STYLE('',(#32532));
+#32532 = FILL_AREA_STYLE_COLOUR('',#32103);
+#32533 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32534),#22578);
+#32534 = STYLED_ITEM('color',(#32535),#22244);
+#32535 = PRESENTATION_STYLE_ASSIGNMENT((#32536));
+#32536 = SURFACE_STYLE_USAGE(.BOTH.,#32537);
+#32537 = SURFACE_SIDE_STYLE('',(#32538));
+#32538 = SURFACE_STYLE_FILL_AREA(#32539);
+#32539 = FILL_AREA_STYLE('',(#32540));
+#32540 = FILL_AREA_STYLE_COLOUR('',#32103);
+#32541 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32542),#18255);
+#32542 = STYLED_ITEM('color',(#32543),#18073);
+#32543 = PRESENTATION_STYLE_ASSIGNMENT((#32544));
+#32544 = SURFACE_STYLE_USAGE(.BOTH.,#32545);
+#32545 = SURFACE_SIDE_STYLE('',(#32546));
+#32546 = SURFACE_STYLE_FILL_AREA(#32547);
+#32547 = FILL_AREA_STYLE('',(#32548));
+#32548 = FILL_AREA_STYLE_COLOUR('',#32077);
+#32549 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32550),#17584);
+#32550 = STYLED_ITEM('color',(#32551),#17250);
+#32551 = PRESENTATION_STYLE_ASSIGNMENT((#32552));
+#32552 = SURFACE_STYLE_USAGE(.BOTH.,#32553);
+#32553 = SURFACE_SIDE_STYLE('',(#32554));
+#32554 = SURFACE_STYLE_FILL_AREA(#32555);
+#32555 = FILL_AREA_STYLE('',(#32556));
+#32556 = FILL_AREA_STYLE_COLOUR('',#32077);
+#32557 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32558),#15415);
+#32558 = STYLED_ITEM('color',(#32559),#15081);
+#32559 = PRESENTATION_STYLE_ASSIGNMENT((#32560));
+#32560 = SURFACE_STYLE_USAGE(.BOTH.,#32561);
+#32561 = SURFACE_SIDE_STYLE('',(#32562));
+#32562 = SURFACE_STYLE_FILL_AREA(#32563);
+#32563 = FILL_AREA_STYLE('',(#32564));
+#32564 = FILL_AREA_STYLE_COLOUR('',#32128);
+#32565 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32566),#29052);
+#32566 = STYLED_ITEM('color',(#32567),#28718);
+#32567 = PRESENTATION_STYLE_ASSIGNMENT((#32568));
+#32568 = SURFACE_STYLE_USAGE(.BOTH.,#32569);
+#32569 = SURFACE_SIDE_STYLE('',(#32570));
+#32570 = SURFACE_STYLE_FILL_AREA(#32571);
+#32571 = FILL_AREA_STYLE('',(#32572));
+#32572 = FILL_AREA_STYLE_COLOUR('',#32187);
+#32573 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32574),#31217);
+#32574 = STYLED_ITEM('color',(#32575),#30883);
+#32575 = PRESENTATION_STYLE_ASSIGNMENT((#32576));
+#32576 = SURFACE_STYLE_USAGE(.BOTH.,#32577);
+#32577 = SURFACE_SIDE_STYLE('',(#32578));
+#32578 = SURFACE_STYLE_FILL_AREA(#32579);
+#32579 = FILL_AREA_STYLE('',(#32580));
+#32580 = FILL_AREA_STYLE_COLOUR('',#32145);
+#32581 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32582),#25250);
+#32582 = STYLED_ITEM('color',(#32583),#24916);
+#32583 = PRESENTATION_STYLE_ASSIGNMENT((#32584));
+#32584 = SURFACE_STYLE_USAGE(.BOTH.,#32585);
+#32585 = SURFACE_SIDE_STYLE('',(#32586));
+#32586 = SURFACE_STYLE_FILL_AREA(#32587);
+#32587 = FILL_AREA_STYLE('',(#32588));
+#32588 = FILL_AREA_STYLE_COLOUR('',#32103);
+#32589 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32590),#21872);
+#32590 = STYLED_ITEM('color',(#32591),#21538);
+#32591 = PRESENTATION_STYLE_ASSIGNMENT((#32592));
+#32592 = SURFACE_STYLE_USAGE(.BOTH.,#32593);
+#32593 = SURFACE_SIDE_STYLE('',(#32594));
+#32594 = SURFACE_STYLE_FILL_AREA(#32595);
+#32595 = FILL_AREA_STYLE('',(#32596));
+#32596 = FILL_AREA_STYLE_COLOUR('',#32103);
+#32597 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32598),#18624);
+#32598 = STYLED_ITEM('color',(#32599),#18526);
+#32599 = PRESENTATION_STYLE_ASSIGNMENT((#32600));
+#32600 = SURFACE_STYLE_USAGE(.BOTH.,#32601);
+#32601 = SURFACE_SIDE_STYLE('',(#32602));
+#32602 = SURFACE_STYLE_FILL_AREA(#32603);
+#32603 = FILL_AREA_STYLE('',(#32604));
+#32604 = FILL_AREA_STYLE_COLOUR('',#32228);
+#32605 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32606),#22931);
+#32606 = STYLED_ITEM('color',(#32607),#22597);
+#32607 = PRESENTATION_STYLE_ASSIGNMENT((#32608));
+#32608 = SURFACE_STYLE_USAGE(.BOTH.,#32609);
+#32609 = SURFACE_SIDE_STYLE('',(#32610));
+#32610 = SURFACE_STYLE_FILL_AREA(#32611);
+#32611 = FILL_AREA_STYLE('',(#32612));
+#32612 = FILL_AREA_STYLE_COLOUR('',#32103);
+#32613 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32614),#14356);
+#32614 = STYLED_ITEM('color',(#32615),#14022);
+#32615 = PRESENTATION_STYLE_ASSIGNMENT((#32616));
+#32616 = SURFACE_STYLE_USAGE(.BOTH.,#32617);
+#32617 = SURFACE_SIDE_STYLE('',(#32618));
+#32618 = SURFACE_STYLE_FILL_AREA(#32619);
+#32619 = FILL_AREA_STYLE('',(#32620));
+#32620 = FILL_AREA_STYLE_COLOUR('',#32128);
+#32621 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32622),#4164);
+#32622 = STYLED_ITEM('color',(#32623),#3830);
+#32623 = PRESENTATION_STYLE_ASSIGNMENT((#32624));
+#32624 = SURFACE_STYLE_USAGE(.BOTH.,#32625);
+#32625 = SURFACE_SIDE_STYLE('',(#32626));
+#32626 = SURFACE_STYLE_FILL_AREA(#32627);
+#32627 = FILL_AREA_STYLE('',(#32628));
+#32628 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32629 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32630),#8319);
+#32630 = STYLED_ITEM('color',(#32631),#7985);
+#32631 = PRESENTATION_STYLE_ASSIGNMENT((#32632));
+#32632 = SURFACE_STYLE_USAGE(.BOTH.,#32633);
+#32633 = SURFACE_SIDE_STYLE('',(#32634));
+#32634 = SURFACE_STYLE_FILL_AREA(#32635);
+#32635 = FILL_AREA_STYLE('',(#32636));
+#32636 = FILL_AREA_STYLE_COLOUR('',#32059);
+#32637 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32638),#1269);
+#32638 = STYLED_ITEM('color',(#32639),#935);
+#32639 = PRESENTATION_STYLE_ASSIGNMENT((#32640));
+#32640 = SURFACE_STYLE_USAGE(.BOTH.,#32641);
+#32641 = SURFACE_SIDE_STYLE('',(#32642));
+#32642 = SURFACE_STYLE_FILL_AREA(#32643);
+#32643 = FILL_AREA_STYLE('',(#32644));
+#32644 = FILL_AREA_STYLE_COLOUR('',#32154);
+#32645 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32646),#1975);
+#32646 = STYLED_ITEM('color',(#32647),#1641);
+#32647 = PRESENTATION_STYLE_ASSIGNMENT((#32648));
+#32648 = SURFACE_STYLE_USAGE(.BOTH.,#32649);
+#32649 = SURFACE_SIDE_STYLE('',(#32650));
+#32650 = SURFACE_STYLE_FILL_AREA(#32651);
+#32651 = FILL_AREA_STYLE('',(#32652));
+#32652 = FILL_AREA_STYLE_COLOUR('',#32154);
+#32653 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32654),#27993);
+#32654 = STYLED_ITEM('color',(#32655),#27659);
+#32655 = PRESENTATION_STYLE_ASSIGNMENT((#32656));
+#32656 = SURFACE_STYLE_USAGE(.BOTH.,#32657);
+#32657 = SURFACE_SIDE_STYLE('',(#32658));
+#32658 = SURFACE_STYLE_FILL_AREA(#32659);
+#32659 = FILL_AREA_STYLE('',(#32660));
+#32660 = FILL_AREA_STYLE_COLOUR('',#32187);
+#32661 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32662),#18054);
+#32662 = STYLED_ITEM('color',(#32663),#17956);
+#32663 = PRESENTATION_STYLE_ASSIGNMENT((#32664));
+#32664 = SURFACE_STYLE_USAGE(.BOTH.,#32665);
+#32665 = SURFACE_SIDE_STYLE('',(#32666));
+#32666 = SURFACE_STYLE_FILL_AREA(#32667);
+#32667 = FILL_AREA_STYLE('',(#32668));
+#32668 = FILL_AREA_STYLE_COLOUR('',#32228);
+#32669 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32670),#3458);
+#32670 = STYLED_ITEM('color',(#32671),#3124);
+#32671 = PRESENTATION_STYLE_ASSIGNMENT((#32672));
+#32672 = SURFACE_STYLE_USAGE(.BOTH.,#32673);
+#32673 = SURFACE_SIDE_STYLE('',(#32674));
+#32674 = SURFACE_STYLE_FILL_AREA(#32675);
+#32675 = FILL_AREA_STYLE('',(#32676));
+#32676 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32677 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32678),#28699);
+#32678 = STYLED_ITEM('color',(#32679),#28365);
+#32679 = PRESENTATION_STYLE_ASSIGNMENT((#32680));
+#32680 = SURFACE_STYLE_USAGE(.BOTH.,#32681);
+#32681 = SURFACE_SIDE_STYLE('',(#32682));
+#32682 = SURFACE_STYLE_FILL_AREA(#32683);
+#32683 = FILL_AREA_STYLE('',(#32684));
+#32684 = FILL_AREA_STYLE_COLOUR('',#32187);
+#32685 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32686),#16525);
+#32686 = STYLED_ITEM('color',(#32687),#16191);
+#32687 = PRESENTATION_STYLE_ASSIGNMENT((#32688));
+#32688 = SURFACE_STYLE_USAGE(.BOTH.,#32689);
+#32689 = SURFACE_SIDE_STYLE('',(#32690));
+#32690 = SURFACE_STYLE_FILL_AREA(#32691);
+#32691 = FILL_AREA_STYLE('',(#32692));
+#32692 = FILL_AREA_STYLE_COLOUR('',#32077);
+#32693 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
+    #32694),#9142);
+#32694 = STYLED_ITEM('color',(#32695),#9044);
+#32695 = PRESENTATION_STYLE_ASSIGNMENT((#32696));
+#32696 = SURFACE_STYLE_USAGE(.BOTH.,#32697);
+#32697 = SURFACE_SIDE_STYLE('',(#32698));
+#32698 = SURFACE_STYLE_FILL_AREA(#32699);
+#32699 = FILL_AREA_STYLE('',(#32700));
+#32700 = FILL_AREA_STYLE_COLOUR('',#32701);
+#32701 = COLOUR_RGB('',0.767375665483,0.735356983052,0.583831500637);
 #32702 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32703),#5071);
-#32703 = STYLED_ITEM('color',(#32704),#4737);
+    #32703),#23838);
+#32703 = STYLED_ITEM('color',(#32704),#23504);
 #32704 = PRESENTATION_STYLE_ASSIGNMENT((#32705));
 #32705 = SURFACE_STYLE_USAGE(.BOTH.,#32706);
 #32706 = SURFACE_SIDE_STYLE('',(#32707));
 #32707 = SURFACE_STYLE_FILL_AREA(#32708);
 #32708 = FILL_AREA_STYLE('',(#32709));
-#32709 = FILL_AREA_STYLE_COLOUR('',#32195);
+#32709 = FILL_AREA_STYLE_COLOUR('',#32103);
 #32710 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32711),#17937);
-#32711 = STYLED_ITEM('color',(#32712),#17603);
+    #32711),#210);
+#32711 = STYLED_ITEM('color',(#32712),#112);
 #32712 = PRESENTATION_STYLE_ASSIGNMENT((#32713));
 #32713 = SURFACE_STYLE_USAGE(.BOTH.,#32714);
 #32714 = SURFACE_SIDE_STYLE('',(#32715));
 #32715 = SURFACE_STYLE_FILL_AREA(#32716);
 #32716 = FILL_AREA_STYLE('',(#32717));
-#32717 = FILL_AREA_STYLE_COLOUR('',#32120);
+#32717 = FILL_AREA_STYLE_COLOUR('',#32228);
 #32718 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32719),#7260);
-#32719 = STYLED_ITEM('color',(#32720),#6926);
+    #32719),#16878);
+#32719 = STYLED_ITEM('color',(#32720),#16544);
 #32720 = PRESENTATION_STYLE_ASSIGNMENT((#32721));
 #32721 = SURFACE_STYLE_USAGE(.BOTH.,#32722);
 #32722 = SURFACE_SIDE_STYLE('',(#32723));
 #32723 = SURFACE_STYLE_FILL_AREA(#32724);
 #32724 = FILL_AREA_STYLE('',(#32725));
-#32725 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32725 = FILL_AREA_STYLE_COLOUR('',#32077);
 #32726 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32727),#2752);
-#32727 = STYLED_ITEM('color',(#32728),#2418);
+    #32727),#24897);
+#32727 = STYLED_ITEM('color',(#32728),#24563);
 #32728 = PRESENTATION_STYLE_ASSIGNMENT((#32729));
 #32729 = SURFACE_STYLE_USAGE(.BOTH.,#32730);
 #32730 = SURFACE_SIDE_STYLE('',(#32731));
 #32731 = SURFACE_STYLE_FILL_AREA(#32732);
 #32732 = FILL_AREA_STYLE('',(#32733));
-#32733 = FILL_AREA_STYLE_COLOUR('',#32195);
+#32733 = FILL_AREA_STYLE_COLOUR('',#32103);
 #32734 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32735),#5777);
-#32735 = STYLED_ITEM('color',(#32736),#5443);
+    #32735),#16172);
+#32735 = STYLED_ITEM('color',(#32736),#15838);
 #32736 = PRESENTATION_STYLE_ASSIGNMENT((#32737));
 #32737 = SURFACE_STYLE_USAGE(.BOTH.,#32738);
 #32738 = SURFACE_SIDE_STYLE('',(#32739));
 #32739 = SURFACE_STYLE_FILL_AREA(#32740);
 #32740 = FILL_AREA_STYLE('',(#32741));
-#32741 = FILL_AREA_STYLE_COLOUR('',#32195);
+#32741 = FILL_AREA_STYLE_COLOUR('',#32077);
 #32742 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32743),#12743);
-#32743 = STYLED_ITEM('color',(#32744),#12409);
+    #32743),#28346);
+#32743 = STYLED_ITEM('color',(#32744),#28012);
 #32744 = PRESENTATION_STYLE_ASSIGNMENT((#32745));
 #32745 = SURFACE_STYLE_USAGE(.BOTH.,#32746);
 #32746 = SURFACE_SIDE_STYLE('',(#32747));
 #32747 = SURFACE_STYLE_FILL_AREA(#32748);
 #32748 = FILL_AREA_STYLE('',(#32749));
-#32749 = FILL_AREA_STYLE_COLOUR('',#32086);
+#32749 = FILL_AREA_STYLE_COLOUR('',#32187);
 #32750 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32751),#30158);
-#32751 = STYLED_ITEM('color',(#32752),#29824);
+    #32751),#10201);
+#32751 = STYLED_ITEM('color',(#32752),#9867);
 #32752 = PRESENTATION_STYLE_ASSIGNMENT((#32753));
 #32753 = SURFACE_STYLE_USAGE(.BOTH.,#32754);
 #32754 = SURFACE_SIDE_STYLE('',(#32755));
@@ -38672,76 +38672,76 @@ r0-500 mm, 6 mm thick, z 44.1..50.1','',#29771,#31936,$);
 #32756 = FILL_AREA_STYLE('',(#32757));
 #32757 = FILL_AREA_STYLE_COLOUR('',#32059);
 #32758 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32759),#21872);
-#32759 = STYLED_ITEM('color',(#32760),#21538);
+    #32759),#10907);
+#32759 = STYLED_ITEM('color',(#32760),#10573);
 #32760 = PRESENTATION_STYLE_ASSIGNMENT((#32761));
 #32761 = SURFACE_STYLE_USAGE(.BOTH.,#32762);
 #32762 = SURFACE_SIDE_STYLE('',(#32763));
 #32763 = SURFACE_STYLE_FILL_AREA(#32764);
 #32764 = FILL_AREA_STYLE('',(#32765));
-#32765 = FILL_AREA_STYLE_COLOUR('',#32077);
+#32765 = FILL_AREA_STYLE_COLOUR('',#32059);
 #32766 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32767),#4164);
-#32767 = STYLED_ITEM('color',(#32768),#3830);
+    #32767),#26027);
+#32767 = STYLED_ITEM('color',(#32768),#25693);
 #32768 = PRESENTATION_STYLE_ASSIGNMENT((#32769));
 #32769 = SURFACE_STYLE_USAGE(.BOTH.,#32770);
 #32770 = SURFACE_SIDE_STYLE('',(#32771));
 #32771 = SURFACE_STYLE_FILL_AREA(#32772);
 #32772 = FILL_AREA_STYLE('',(#32773));
-#32773 = FILL_AREA_STYLE_COLOUR('',#32195);
+#32773 = FILL_AREA_STYLE_COLOUR('',#32187);
 #32774 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32775),#31570);
-#32775 = STYLED_ITEM('color',(#32776),#31236);
+    #32775),#27086);
+#32775 = STYLED_ITEM('color',(#32776),#26752);
 #32776 = PRESENTATION_STYLE_ASSIGNMENT((#32777));
 #32777 = SURFACE_STYLE_USAGE(.BOTH.,#32778);
 #32778 = SURFACE_SIDE_STYLE('',(#32779));
 #32779 = SURFACE_STYLE_FILL_AREA(#32780);
 #32780 = FILL_AREA_STYLE('',(#32781));
-#32781 = FILL_AREA_STYLE_COLOUR('',#32059);
+#32781 = FILL_AREA_STYLE_COLOUR('',#32187);
 #32782 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32783),#22931);
-#32783 = STYLED_ITEM('color',(#32784),#22597);
+    #32783),#31923);
+#32783 = STYLED_ITEM('color',(#32784),#31589);
 #32784 = PRESENTATION_STYLE_ASSIGNMENT((#32785));
 #32785 = SURFACE_STYLE_USAGE(.BOTH.,#32786);
 #32786 = SURFACE_SIDE_STYLE('',(#32787));
 #32787 = SURFACE_STYLE_FILL_AREA(#32788);
 #32788 = FILL_AREA_STYLE('',(#32789));
-#32789 = FILL_AREA_STYLE_COLOUR('',#32077);
+#32789 = FILL_AREA_STYLE_COLOUR('',#32145);
 #32790 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32791),#30864);
-#32791 = STYLED_ITEM('color',(#32792),#30530);
+    #32791),#13096);
+#32791 = STYLED_ITEM('color',(#32792),#12762);
 #32792 = PRESENTATION_STYLE_ASSIGNMENT((#32793));
 #32793 = SURFACE_STYLE_USAGE(.BOTH.,#32794);
 #32794 = SURFACE_SIDE_STYLE('',(#32795));
 #32795 = SURFACE_STYLE_FILL_AREA(#32796);
 #32796 = FILL_AREA_STYLE('',(#32797));
-#32797 = FILL_AREA_STYLE_COLOUR('',#32059);
+#32797 = FILL_AREA_STYLE_COLOUR('',#32128);
 #32798 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32799),#10907);
-#32799 = STYLED_ITEM('color',(#32800),#10573);
+    #32799),#17937);
+#32799 = STYLED_ITEM('color',(#32800),#17603);
 #32800 = PRESENTATION_STYLE_ASSIGNMENT((#32801));
 #32801 = SURFACE_STYLE_USAGE(.BOTH.,#32802);
 #32802 = SURFACE_SIDE_STYLE('',(#32803));
 #32803 = SURFACE_STYLE_FILL_AREA(#32804);
 #32804 = FILL_AREA_STYLE('',(#32805));
-#32805 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32805 = FILL_AREA_STYLE_COLOUR('',#32077);
 #32806 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32807),#8319);
-#32807 = STYLED_ITEM('color',(#32808),#7985);
+    #32807),#7260);
+#32807 = STYLED_ITEM('color',(#32808),#6926);
 #32808 = PRESENTATION_STYLE_ASSIGNMENT((#32809));
 #32809 = SURFACE_STYLE_USAGE(.BOTH.,#32810);
 #32810 = SURFACE_SIDE_STYLE('',(#32811));
 #32811 = SURFACE_STYLE_FILL_AREA(#32812);
 #32812 = FILL_AREA_STYLE('',(#32813));
-#32813 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32813 = FILL_AREA_STYLE_COLOUR('',#32059);
 #32814 = MECHANICAL_DESIGN_GEOMETRIC_PRESENTATION_REPRESENTATION('',(
-    #32815),#7966);
-#32815 = STYLED_ITEM('color',(#32816),#7632);
+    #32815),#12390);
+#32815 = STYLED_ITEM('color',(#32816),#12056);
 #32816 = PRESENTATION_STYLE_ASSIGNMENT((#32817));
 #32817 = SURFACE_STYLE_USAGE(.BOTH.,#32818);
 #32818 = SURFACE_SIDE_STYLE('',(#32819));
 #32819 = SURFACE_STYLE_FILL_AREA(#32820);
 #32820 = FILL_AREA_STYLE('',(#32821));
-#32821 = FILL_AREA_STYLE_COLOUR('',#32068);
+#32821 = FILL_AREA_STYLE_COLOUR('',#32128);
 ENDSEC;
 END-ISO-10303-21;

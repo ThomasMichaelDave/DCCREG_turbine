@@ -5,6 +5,7 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **Fusion 360 builder + one shared bill of solids.** The exported JSON now lists every solid (name, label, assembly, dimensions, colour). The FreeCAD macro and the new Fusion 360 script `tools/fusion360/PumpGeometry` both build exactly that list, so names match across packages. Gate G-F360 runs the Fusion script through an OpenCascade stand-in for `adsk`: 95 bodies, 10 components, exact volumes.
 - **Stage-2 STEP is readable.** Every solid now carries a descriptive label (its STEP product name), the solids are grouped into named carrier sub-assemblies with colours, and a `-parts.csv` translation table is written next to the STEP. Python and JS lock hashes now agree. G-CAD checks that there are no anonymous products. Works for FreeCAD and Fusion 360.
 - **PUMP-SYNTH stage 2 — capacitor plate geometry (Ca / Cb first) → `GEOMETRY-STAGE2-PASS`.** A stage-1 lock (inputs + ladder + exact z, SHA-256 hashed in the URL, re-verified on reload) opens a geometry stage.
   - **Geometrizer:** `sim/pump_geometry.py` ↔ `tools/pump-geometry.js` (G-JS, 7e-16). It turns the locked Ca/Cb into electrode footprints, seeded from the r0.15 DXF (6 × 30°, r110–175, 4.5 mm mica → 309.18 pF; G-SEED). Any realized-C deviation is round-tripped through the exact engine (rounding r_out to 1 mm gives Δz −3.0e-4, still pumps; G-RT).

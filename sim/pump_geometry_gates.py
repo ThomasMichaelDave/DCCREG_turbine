@@ -316,7 +316,129 @@ def gate_cad():
                 lock=d["lock"]["hash"], z_total_mm=d["z_total"])
 
 
-GATES = [("G-SEED", gate_seed), ("G-ADJ", gate_adj), ("G-JS", gate_js), ("G-CAD", gate_cad), ("G-RT", gate_rt)]
+# ---- an OpenCascade stand-in for Fusion 360's adsk.core / adsk.fusion (the calls PumpGeometry.py makes) ----
+def _install_occ_adsk(json_path):
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeCylinder, BRepPrimAPI_MakeBox
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut, BRepAlgoAPI_Common
+    from OCP.gp import gp_Ax2, gp_Pnt, gp_Dir
+    from OCP.GProp import GProp_GProps
+    from OCP.BRepGProp import BRepGProp
+    from OCP.BRepCheck import BRepCheck_Analyzer
+
+    class Point3D:
+        def __init__(self, x, y, z): self.x, self.y, self.z = x, y, z
+        create = staticmethod(lambda x=0, y=0, z=0: Point3D(x, y, z))
+
+    class Vector3D(Point3D):
+        create = staticmethod(lambda x=0, y=0, z=0: Vector3D(x, y, z))
+
+    class OBB:
+        def __init__(self, c, u, w, L, W, H): self.c, self.u, self.w, self.L, self.W, self.H = c, u, w, L, W, H
+
+    class Body:
+        def __init__(self, s): self.s, self.name = s, ""
+
+        @property
+        def volume(self):
+            p = GProp_GProps(); BRepGProp.VolumeProperties_s(self.s, p); return p.Mass()
+
+    class TBM:
+        def createCylinderOrCone(self, p0, r0, p1, r1):
+            assert abs(r0 - r1) < 1e-12 and p0.x == p1.x == 0 and p0.y == p1.y == 0
+            return Body(BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(0, 0, p0.z), gp_Dir(0, 0, 1)), r0, p1.z - p0.z).Shape())
+
+        def createBox(self, b):
+            # corner = centre - L/2 u - W/2 w - H/2 n, frame (u, w, n = u x w)
+            n = (b.u.y * b.w.z - b.u.z * b.w.y, b.u.z * b.w.x - b.u.x * b.w.z, b.u.x * b.w.y - b.u.y * b.w.x)
+            cx = b.c.x - b.L / 2 * b.u.x - b.W / 2 * b.w.x - b.H / 2 * n[0]
+            cy = b.c.y - b.L / 2 * b.u.y - b.W / 2 * b.w.y - b.H / 2 * n[1]
+            cz = b.c.z - b.L / 2 * b.u.z - b.W / 2 * b.w.z - b.H / 2 * n[2]
+            ax = gp_Ax2(gp_Pnt(cx, cy, cz), gp_Dir(*n), gp_Dir(b.u.x, b.u.y, b.u.z))
+            return Body(BRepPrimAPI_MakeBox(ax, b.L, b.W, b.H).Shape())
+
+        def booleanOperation(self, target, tool, kind):
+            op = BRepAlgoAPI_Cut if kind == "diff" else BRepAlgoAPI_Common
+            target.s = op(target.s, tool.s).Shape()
+            return True
+
+    class Bodies:
+        def __init__(self): self.items = []
+
+        def add(self, body, bf=None):
+            assert (bf is not None) == PARAMETRIC[0], "parametric designs need a base feature"
+            assert bf is None or bf.editing, "bodies are added inside startEdit/finishEdit"
+            b = Body(body.s); self.items.append(b); return b
+
+    class BaseFeature:
+        def __init__(self): self.editing = False
+        def startEdit(self): self.editing = True
+        def finishEdit(self): self.editing = False
+
+    class Component:
+        def __init__(self):
+            self.name, self.bRepBodies, self.occurrences = "", Bodies(), Occurrences()
+            self.features = types.SimpleNamespace(baseFeatures=types.SimpleNamespace(add=lambda: BaseFeature()))
+
+    class Occurrences:
+        def __init__(self): self.items = []
+        def addNewComponent(self, m):
+            o = types.SimpleNamespace(component=Component()); self.items.append(o); return o
+
+    PARAMETRIC = [True]
+    root = Component()
+    design = types.SimpleNamespace(rootComponent=root, designType="parametric", appearances=None)
+    msgs = []
+    ui = types.SimpleNamespace(messageBox=lambda m: msgs.append(m), createFileDialog=lambda: None)
+    app = types.SimpleNamespace(userInterface=ui, activeProduct=design,
+                                documents=types.SimpleNamespace(add=lambda t: None),
+                                materialLibraries=types.SimpleNamespace(itemByName=lambda n: None))
+    core = types.ModuleType("adsk.core")
+    core.Point3D, core.Vector3D, core.Matrix3D = Point3D, Vector3D, types.SimpleNamespace(create=lambda: None)
+    core.OrientedBoundingBox3D = types.SimpleNamespace(create=lambda c, u, w, L, W, H: OBB(c, u, w, L, W, H))
+    core.Application = types.SimpleNamespace(get=lambda: app)
+    core.DialogResults = types.SimpleNamespace(DialogOK=1)
+    core.DocumentTypes = types.SimpleNamespace(FusionDesignDocumentType=0)
+    core.ColorProperty = types.SimpleNamespace(cast=lambda x: None)
+    core.Color = types.SimpleNamespace(create=lambda *a: a)
+    fus = types.ModuleType("adsk.fusion")
+    fus.TemporaryBRepManager = types.SimpleNamespace(get=lambda: TBM())
+    fus.BooleanTypes = types.SimpleNamespace(DifferenceBooleanType="diff", IntersectionBooleanType="inter")
+    fus.DesignTypes = types.SimpleNamespace(ParametricDesignType="parametric")
+    fus.Design = types.SimpleNamespace(cast=lambda p: p)
+    adsk = types.ModuleType("adsk"); adsk.core, adsk.fusion = core, fus; adsk.doEvents = lambda: None
+    sys.modules.update({"adsk": adsk, "adsk.core": core, "adsk.fusion": fus})
+    os.environ["PUMP_GEOMETRY_JSON"] = json_path
+    return root, msgs, BRepCheck_Analyzer
+
+
+def gate_f360():
+    d = PG.build(freeze_lock())
+    jpath = os.path.join(OUTDIR, "freeze-v010-CaCb.json")
+    open(jpath, "w").write(json.dumps(d, indent=1) + "\n")
+    root, msgs, Analyzer = _install_occ_adsk(jpath)
+    src = open(os.path.join(ROOT, "tools", "fusion360", "PumpGeometry", "PumpGeometry.py"), encoding="utf8").read()
+    ns = {"__name__": "PumpGeometry"}
+    exec(compile(src, "PumpGeometry.py", "exec"), ns)
+    ns["run"]({})
+    made = ns.get("RESULT") or []
+    if not made:
+        return dict(pass_=False, error=" | ".join(msgs)[-800:])
+    top = root.occurrences.items[0].component
+    subs = [o.component for o in top.occurrences.items]
+    bodies = [b for c in subs for b in c.bRepBodies.items]
+    bad = '/\\:*?"<>|'
+    clean = lambda t: "".join("-" if ch in bad else ch for ch in t)
+    names_ok = (top.name == clean(d["top_label"]) and [c.name for c in subs] == [clean(a["label"]) for a in d["assemblies"]]
+                and sorted(b.name for b in bodies) == sorted(clean(p["label"]) for p in d["parts"]))
+    vol = max(abs(m["volume"] - m["expect"]) / m["expect"] for m in made)
+    invalid = [b.name for b in bodies if not Analyzer(b.s).IsValid()]
+    return dict(pass_=bool(len(bodies) == len(d["parts"]) and vol <= 1e-6 and not invalid and names_ok),
+                bodies=len(bodies), components=len(subs) + 1, worst_volume_rel=vol, invalid=invalid[:5],
+                names_ok=names_ok, top=top.name, sample=bodies[3].name if len(bodies) > 3 else None,
+                message=msgs[-1][:200] if msgs else "")
+
+
+GATES = [("G-SEED", gate_seed), ("G-ADJ", gate_adj), ("G-JS", gate_js), ("G-CAD", gate_cad), ("G-F360", gate_f360), ("G-RT", gate_rt)]
 
 
 def main():
@@ -336,7 +458,7 @@ def main():
             r = dict(pass_=False, error=f"{type(e).__name__}: {e}", tb=traceback.format_exc()[-1200:])
         OUT[name] = r
         print(f"[{name}] {'PASS' if r.get('pass_') else 'FAIL'}", {k: v for k, v in r.items() if k in
-              ("error", "worst_rel", "worst_volume_rel", "solids", "roles", "clashes", "rounded", "seed_C_pF", "mismatches", "names")})
+              ("error", "worst_rel", "worst_volume_rel", "solids", "roles", "clashes", "rounded", "seed_C_pF", "mismatches", "names", "names_ok", "bodies", "components", "sample")})
         open(path, "w").write(json.dumps(OUT, indent=1, default=str) + "\n")
     OUT["verdict"] = "GEOMETRY-STAGE2-PASS" if all((OUT.get(n) or {}).get("pass_") for n, _ in GATES) else "GEOMETRY-STAGE2-PARTIAL"
     open(path, "w").write(json.dumps(OUT, indent=1, default=str) + "\n")

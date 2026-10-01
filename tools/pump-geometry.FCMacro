@@ -22,9 +22,6 @@ import os
 import FreeCAD
 import Part
 
-NODE_COLOURS = {"1": (0.49, 0.82, 1.0), "2": (1.0, 0.71, 0.33), "3": (0.27, 0.77, 0.42), "4": (0.90, 0.28, 0.30),
-                "5": (0.78, 0.57, 0.92), "6": (0.97, 0.46, 0.56), "7": (0.62, 0.81, 0.42), "8": (0.88, 0.69, 0.41)}
-MEDIUM_COLOURS = {"garolite": (0.55, 0.50, 0.30), "mica": (0.75, 0.70, 0.55)}
 
 
 def _json_path():
@@ -54,118 +51,30 @@ def annulus(r_in, r_out, z0, z1, start_deg=0.0, w_deg=360.0):
 
 
 def _colour(obj, rgb):
-    obj.Colour = rgb                                   # kept for the STEP writer (and the OCC stand-in)
+    obj.Colour = tuple(rgb)                            # kept for the STEP writer (and the OCC stand-in)
     if FreeCAD.GuiUp and rgb:
-        obj.ViewObject.ShapeColor = rgb
-
-
-# ---- readable names: every solid gets a Label (FreeCAD tree, STEP product name) and a row in the parts table.
-#      ASCII only: STEP (ISO 10303-21) names are ASCII; other characters arrive escaped in most CAD packages.
-MATERIAL = {"stator": "G10 carrier", "rotor": "rotor disc", "rotor-flange": "rotor flange (insulating)"}
-CARRIER_ROLE = {"A-flange": "rotor A outer flange, carries the island bars (node 8, floating)",
-                "B-flange": "rotor B outer flange, carries the island bars (node 7, floating)",
-                "A-disc": "rotor A main disc (node 5): C1 rotor face + C_R face",
-                "B-disc": "rotor B main disc (node 6): C2 rotor face + C_R face",
-                "ND1": "stator carrier ND1 (node 1): C1 stator plate + Ca counter-electrode",
-                "ND2": "stator carrier ND2 (node 2): Ca electrode + Cx4 pickup",
-                "ND3": "stator carrier ND3 (node 3): Cb electrode + Cx3 pickup",
-                "ND4": "stator carrier ND4 (node 4): C2 stator plate + Cb counter-electrode"}
-
-
-def _mm(x):
-    return ("%.2f" % x).rstrip("0").rstrip(".")
-
-
-def _z(it):
-    return "z %s..%s" % (_mm(it["z0"]), _mm(it["z1"]))
+        obj.ViewObject.ShapeColor = tuple(rgb)
 
 
 def build(design, doc):
-    made = []
+    """Build exactly the bill of solids in design['parts'] (names, labels, assemblies and colours are decided
+    by sim/pump_geometry.py / tools/pump-geometry.js, so FreeCAD and Fusion 360 name everything identically)."""
     groups = {}
-
-    def group(key, label):
-        if key not in groups:
-            g = doc.addObject("App::Part", key.replace("-", "_"))
-            g.Label = label
-            groups[key] = g
-        return groups[key]
-    fp = design["footprints"]
-    st = design["stack"]
-    carrier_of, face_of = {}, {}
-    for i, it in enumerate(st):
-        if it["kind"] != "foil":
-            continue
-        nb = [st[j] for j in (i - 1, i + 1) if 0 <= j < len(st) and st[j]["kind"] in ("rotor", "stator", "rotor-flange")]
-        carrier_of[it["id"]] = nb[0]["id"] if nb else "foils"
-        face_of[it["id"]] = ("septum side" if nb and abs(it["z0"]) < abs(nb[0]["z0"]) else "outer side")
-
-    def add(shp, name, label, grp, row):
-        o = doc.addObject("Part::Feature", name)
+    for a in design["assemblies"]:
+        g = doc.addObject("App::Part", a["key"].replace("-", "_"))
+        g.Label = a["label"]
+        groups[a["key"]] = g
+    made = []
+    for p in design["parts"]:
+        shp = annulus(p["r_in"], p["r_out"], p["z0"], p["z1"], p["start_deg"], p["w_deg"])
+        o = doc.addObject("Part::Feature", p["name"])
         o.Shape = shp
-        o.Label = label
-        grp.addObject(o)
-        row.update(name=o.Name, label=label, assembly=grp.Label, volume=shp.Volume)
+        o.Label = p["label"]
+        _colour(o, p["rgb"])
+        groups[p["assembly"]].addObject(o)
+        row = dict(p)
+        row.update(name=o.Name, assembly=groups[p["assembly"]].Label, expect=p["volume"], volume=shp.Volume)
         made.append(row)
-        return o
-    for it in st:
-        kind = it["kind"]
-        if kind in ("rotor", "stator", "rotor-flange"):
-            g = group(it["id"], "%s - %s" % (it["id"], CARRIER_ROLE.get(it["id"], kind)))
-            label = "%s carrier - %s, node %s, r%s-%s mm, %s mm thick, %s" % (
-                it["id"], MATERIAL[kind], it["node"], _mm(it["r_in"]), _mm(it["r_out"]), _mm(it["t"]), _z(it))
-            o = add(annulus(it["r_in"], it["r_out"], it["z0"], it["z1"]), it["id"].replace("-", "_") + "_carrier",
-                    label, g, dict(role="carrier", id=it["id"], carrier=it["id"], node=it["node"], cap="",
-                                   material=MATERIAL[kind], r_in=it["r_in"], r_out=it["r_out"], start_deg=0.0,
-                                   w_deg=360.0, z0=it["z0"], z1=it["z1"],
-                                   expect=math.pi * (it["r_out"] ** 2 - it["r_in"] ** 2) * (it["z1"] - it["z0"])))
-            _colour(o, (0.35, 0.40, 0.47))
-        elif kind == "foil":
-            f = it
-            car = carrier_of[f["id"]]
-            g = group(car, "%s - %s" % (car, CARRIER_ROLE.get(car, "")))
-            n = len(f["starts"])
-            for k, s0 in enumerate(f["starts"]):
-                full = f["w_deg"] >= 360.0 - 1e-9
-                ang = "full ring" if full else "sector %d of %d (%s-%s deg)" % (k + 1, n, _mm(s0 % 360.0), _mm((s0 + f["w_deg"]) % 360.0 or 360.0))
-                label = "%s / %s_%d - %s, node %s, %s, %s, r%s-%s mm, Al foil %s mm, %s, %s" % (
-                    car, f["key"], k + 1, f["name"], f["node"], f["cap"], ang, _mm(f["r_in"]), _mm(f["r_out"]),
-                    _mm(f["z1"] - f["z0"]), face_of[f["id"]], _z(f))
-                o = add(annulus(f["r_in"], f["r_out"], f["z0"], f["z1"], s0, f["w_deg"]), "%s_%d" % (f["key"], k + 1),
-                        label, g, dict(role="foil", id=f["key"], carrier=car, node=f["node"], cap=f["cap"],
-                                       material="Al foil", r_in=f["r_in"], r_out=f["r_out"], start_deg=s0,
-                                       w_deg=f["w_deg"], z0=f["z0"], z1=f["z1"],
-                                       expect=0.5 * math.radians(min(f["w_deg"], 360.0)) * (f["r_out"] ** 2 - f["r_in"] ** 2) * (f["z1"] - f["z0"])))
-                _colour(o, NODE_COLOURS.get(str(f["node"])[:1]))
-        elif kind == "gap" and it.get("medium") in MEDIUM_COLOURS:
-            g = group("dielectrics", "Dielectrics - septum (C_R, garolite) and the Ca/Cb mica slabs")
-            if it.get("footprint"):
-                e = fp[it["footprint"]]
-                m = it.get("margin", 0.0)
-                rin, rout = max(0.0, e["r_in"] - m), e["r_out"] + m
-                dw = math.degrees(m / max(e["r_in"], 1e-9))
-                n = len(e["starts"])
-                for k, s0 in enumerate(e["starts"]):
-                    w = min(e["w_deg"] + 2 * dw, 360.0)
-                    a0 = s0 - dw
-                    label = "%s_%d - %s dielectric for %s, %s, slab %d of %d (%s-%s deg), r%s-%s mm, %s mm thick (foil + %s mm margin), %s" % (
-                        it["id"], k + 1, it["medium"], it["cap"], "between the %s electrode and its counter" % it["cap"],
-                        k + 1, n, _mm(a0 % 360.0), _mm((a0 + w) % 360.0), _mm(rin), _mm(rout), _mm(it["t"]), _mm(m), _z(it))
-                    o = add(annulus(rin, rout, it["z0"], it["z1"], a0, w), "%s_%d" % (it["id"].replace("-", "_"), k + 1),
-                            label, g, dict(role="dielectric", id=it["id"], carrier="", node="", cap=it["cap"],
-                                           material=it["medium"], r_in=rin, r_out=rout, start_deg=a0, w_deg=w,
-                                           z0=it["z0"], z1=it["z1"],
-                                           expect=0.5 * math.radians(w) * (rout ** 2 - rin ** 2) * (it["z1"] - it["z0"])))
-                    _colour(o, MEDIUM_COLOURS[it["medium"]])
-            else:
-                rin, rout = it.get("r_in", 0.0), it.get("r_out", design["r_edge"])
-                label = "%s - %s, %s dielectric between rotor A and rotor B, r%s-%s mm, %s mm thick, %s" % (
-                    it["id"], it["medium"], it["cap"], _mm(rin), _mm(rout), _mm(it["t"]), _z(it))
-                o = add(annulus(rin, rout, it["z0"], it["z1"]), it["id"].replace("-", "_"), label, g,
-                        dict(role="dielectric", id=it["id"], carrier="", node="", cap=it["cap"], material=it["medium"],
-                             r_in=rin, r_out=rout, start_deg=0.0, w_deg=360.0, z0=it["z0"], z1=it["z1"],
-                             expect=math.pi * (rout ** 2 - rin ** 2) * (it["z1"] - it["z0"])))
-                _colour(o, MEDIUM_COLOURS[it["medium"]])
     doc.recompute()
     return made, groups
 
@@ -184,11 +93,11 @@ def write_parts_table(made, path):
             w.writerow([("%.4f" % m[c]) if isinstance(m.get(c), float) else m.get(c, "") for c in PARTS_COLUMNS])
 
 
-def export_step(doc, groups, path):
+def export_step(doc, groups, path, top_label):
     """STEP with the labels as product names, the carrier groups as named sub-assemblies, and colours:
     FreeCAD's Import exporter (OCAF) keeps all three; Part.export would write anonymous solids."""
     top = doc.addObject("App::Part", "PumpGeometry")
-    top.Label = doc.Label if hasattr(doc, "Label") else doc.Name
+    top.Label = top_label
     for g in groups.values():
         top.addObject(g)
     try:
@@ -206,12 +115,13 @@ def main():
     design = json.load(open(path))
     if design.get("schema") != "pump-geometry/1":
         raise RuntimeError("not a pump-geometry/1 file: %r" % design.get("schema"))
-    name = "PumpGeometry_" + design["lock"]["hash"]
-    doc = FreeCAD.newDocument(name)
-    doc.Label = "PumpGeometry %s - DCCREG drawn pump, stage 2 plate geometry (Ca/Cb geometrized)" % design["lock"]["hash"]
+    if "parts" not in design:
+        raise RuntimeError("this JSON predates the bill of solids: re-export it from tools/pump-synth.html stage 2")
+    doc = FreeCAD.newDocument("PumpGeometry_" + design["lock"]["hash"])
+    doc.Label = design["top_label"]
     made, groups = build(design, doc)
     base = os.path.splitext(path)[0]
-    export_step(doc, groups, base + ".step")
+    export_step(doc, groups, base + ".step", design["top_label"])
     write_parts_table(made, base + "-parts.csv")
     doc.recompute()
     doc.saveAs(base + ".FCStd")

@@ -103,7 +103,84 @@
     const design = { schema: SCHEMA, units: "mm", lock: Object.assign({}, locked), geom: g, Ca: ca, Cb: cb, footprints: fp,
       stack, foils, z_total: stack[stack.length - 1].z1 - stack[0].z0, r_edge };
     design.checks = checks(design);
+    const [asm, prt] = parts(design);
+    design.assemblies = asm; design.parts = prt;
+    design.top_label = `PumpGeometry ${locked.hash != null ? locked.hash : ""} - DCCREG drawn pump, stage 2 plate geometry (Ca/Cb geometrized)`;
     return design;
+  }
+
+  /* ---- the bill of solids (1:1 with sim/pump_geometry.py parts()): the CAD builders only build this list ---- */
+  const NODE_RGB = {"1": [0.49, 0.82, 1.0], "2": [1.0, 0.71, 0.33], "3": [0.27, 0.77, 0.42], "4": [0.90, 0.28, 0.30],
+    "5": [0.78, 0.57, 0.92], "6": [0.97, 0.46, 0.56], "7": [0.62, 0.81, 0.42], "8": [0.88, 0.69, 0.41]};
+  const MEDIUM_RGB = {garolite: [0.55, 0.50, 0.30], mica: [0.75, 0.70, 0.55]};
+  const CARRIER_RGB = [0.35, 0.40, 0.47];
+  const MATERIAL = {"stator": "G10 carrier", "rotor": "rotor disc", "rotor-flange": "rotor flange (insulating)"};
+  const CARRIER_ROLE = {"A-flange": "rotor A outer flange, carries the island bars (node 8, floating)",
+    "B-flange": "rotor B outer flange, carries the island bars (node 7, floating)",
+    "A-disc": "rotor A main disc (node 5): C1 rotor face + C_R face",
+    "B-disc": "rotor B main disc (node 6): C2 rotor face + C_R face",
+    "ND1": "stator carrier ND1 (node 1): C1 stator plate + Ca counter-electrode",
+    "ND2": "stator carrier ND2 (node 2): Ca electrode + Cx4 pickup",
+    "ND3": "stator carrier ND3 (node 3): Cb electrode + Cx3 pickup",
+    "ND4": "stator carrier ND4 (node 4): C2 stator plate + Cb counter-electrode"};
+  const CARRIER_KINDS = ["rotor", "stator", "rotor-flange"];
+  const _mm = x => { let s = x.toFixed(2); if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, ""); return (s === "-0" || s === "") ? "0" : s; };
+  const _m360 = x => ((x % 360.0) + 360.0) % 360.0;
+  const _zr = it => `z ${_mm(it.z0)}..${_mm(it.z1)}`;
+  function parts(design){
+    const st = design.stack, fp = design.footprints, asm = [], out = [];
+    const assembly = (key, label) => { if (!asm.some(a => a.key === key)) asm.push({key, label}); return key; };
+    const carrier_of = {}, face_of = {};
+    st.forEach((it, i) => {
+      if (it.kind !== "foil") return;
+      const nb = [i - 1, i + 1].filter(j => j >= 0 && j < st.length && CARRIER_KINDS.includes(st[j].kind)).map(j => st[j]);
+      carrier_of[it.id] = nb.length ? nb[0].id : "foils";
+      face_of[it.id] = (nb.length && Math.abs(it.z0) < Math.abs(nb[0].z0)) ? "septum side" : "outer side";
+    });
+    const P = (name, label, assembly, role, carrier, node, cap, material, r_in, r_out, start_deg, w_deg, z0, z1, rgb) =>
+      out.push({name, label, assembly, role, carrier, node, cap, material, r_in, r_out, start_deg, w_deg, z0, z1, rgb: rgb.slice(),
+        volume: 0.5 * rad(Math.min(w_deg, 360.0)) * (r_out * r_out - r_in * r_in) * (z1 - z0)});
+    for (const it of st){
+      const kind = it.kind;
+      if (CARRIER_KINDS.includes(kind)){
+        const a = assembly(it.id, `${it.id} - ${CARRIER_ROLE[it.id] || kind}`);
+        P(it.id.replace(/-/g, "_") + "_carrier",
+          `${it.id} carrier - ${MATERIAL[kind]}, node ${it.node}, r${_mm(it.r_in)}-${_mm(it.r_out)} mm, ${_mm(it.t)} mm thick, ${_zr(it)}`,
+          a, "carrier", it.id, it.node, "", MATERIAL[kind], it.r_in, it.r_out, 0.0, 360.0, it.z0, it.z1, CARRIER_RGB);
+      } else if (kind === "foil"){
+        const car = carrier_of[it.id];
+        const a = assembly(car, `${car} - ${CARRIER_ROLE[car] || ""}`);
+        const n = it.starts.length;
+        it.starts.forEach((s0, k) => {
+          let ang;
+          if (it.w_deg >= 360.0 - 1e-9) ang = "full ring";
+          else { const e = _m360(s0 + it.w_deg); ang = `sector ${k + 1} of ${n} (${_mm(_m360(s0))}-${_mm(e !== 0 ? e : 360.0)} deg)`; }
+          P(`${it.key}_${k + 1}`,
+            `${car} / ${it.key}_${k + 1} - ${it.name}, node ${it.node}, ${it.cap}, ${ang}, r${_mm(it.r_in)}-${_mm(it.r_out)} mm, ` +
+            `Al foil ${_mm(it.z1 - it.z0)} mm, ${face_of[it.id]}, ${_zr(it)}`,
+            a, "foil", car, it.node, it.cap, "Al foil", it.r_in, it.r_out, s0, it.w_deg, it.z0, it.z1, NODE_RGB[String(it.node)[0]] || CARRIER_RGB);
+        });
+      } else if (kind === "gap" && MEDIUM_RGB[it.medium]){
+        const a = assembly("dielectrics", "Dielectrics - septum (C_R, garolite) and the Ca/Cb mica slabs");
+        if (it.footprint){
+          const e = fp[it.footprint], m = it.margin || 0.0;
+          const rin = Math.max(0.0, e.r_in - m), rout = e.r_out + m, dw = deg(m / Math.max(e.r_in, 1e-9)), n = e.starts.length;
+          e.starts.forEach((s0, k) => {
+            const w = Math.min(e.w_deg + 2 * dw, 360.0), a0 = s0 - dw;
+            P(`${it.id.replace(/-/g, "_")}_${k + 1}`,
+              `${it.id}_${k + 1} - ${it.medium} dielectric for ${it.cap} (between the ${it.cap} electrode and its counter), slab ${k + 1} of ${n} ` +
+              `(${_mm(_m360(a0))}-${_mm(_m360(a0 + w))} deg), r${_mm(rin)}-${_mm(rout)} mm, ${_mm(it.t)} mm thick (foil + ${_mm(m)} mm margin), ${_zr(it)}`,
+              a, "dielectric", "", "", it.cap, it.medium, rin, rout, a0, w, it.z0, it.z1, MEDIUM_RGB[it.medium]);
+          });
+        } else {
+          const rin = it.r_in != null ? it.r_in : 0.0, rout = it.r_out != null ? it.r_out : design.r_edge;
+          P(it.id.replace(/-/g, "_"),
+            `${it.id} - ${it.medium}, ${it.cap} dielectric between rotor A and rotor B, r${_mm(rin)}-${_mm(rout)} mm, ${_mm(it.t)} mm thick, ${_zr(it)}`,
+            a, "dielectric", "", "", it.cap, it.medium, rin, rout, 0.0, 360.0, it.z0, it.z1, MEDIUM_RGB[it.medium]);
+        }
+      }
+    }
+    return [asm, out];
   }
 
   function _arc_overlap(a0, w0, a1, w1){
@@ -190,7 +267,7 @@
     const ok = Math.abs(fwd.area_mm2 - 29099.002) < 0.01 && Math.abs(fwd.C_pF - 309.18) < 0.01;
     return { pass: ok, rows: [["G-SEED", "DXF seed 6 × 30° r110–175 on 4.5 mm mica → 309.18 pF", 309.18, fwd.C_pF, ok]] };
   }
-  const API = { EPS0, SCHEMA, DIELECTRICS, GEOM_DEFAULTS, PAIRS, solve_transfer, build, overlap_area, adjacency, checks,
+  const API = { EPS0, SCHEMA, DIELECTRICS, GEOM_DEFAULTS, PAIRS, solve_transfer, build, parts, overlap_area, adjacency, checks,
     lock_record, lock_hash, canonical, selftest };
   if (typeof module !== "undefined" && module.exports) module.exports = API; else root.PumpGeometry = API;
 })(typeof self !== "undefined" ? self : this);

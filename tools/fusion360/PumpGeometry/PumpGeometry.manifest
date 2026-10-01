@@ -1,0 +1,13 @@
+{
+  "autodeskProduct": "Fusion",
+  "type": "script",
+  "id": "5f6f2a8e-3b1c-4d7e-9a61-2c8d0f4b7e15",
+  "author": "DCCREG / PUMP-SYNTH",
+  "description": {
+    "": "Build the PUMP-SYNTH stage-2 capacitor plate geometry (carriers, foil electrodes, dielectric slabs) from pump-geometry.json"
+  },
+  "version": "1.0",
+  "runOnStartup": false,
+  "supportedOS": "windows|mac",
+  "editEnabled": true
+}

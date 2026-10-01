@@ -83,6 +83,17 @@ In the geometry stage:
 - `<json>-parts.csv`, written next to the STEP, is the translation table: one row per solid with its name, label, assembly, role, node, capacitor, material, radii, angles, z range and volume.
 - Labels are ASCII-only, so they survive STEP in any package.
 
-**Fusion 360.** Open or upload the `.step`. The products become named components and the carrier assemblies become a component tree, with colours as appearances. The reference file `docs/geometry/freeze-v010-CaCb.step` needs no FreeCAD at all. For other designs, the FreeCAD macro writes the STEP, and that STEP then opens in Fusion.
+**Fusion 360, native.** `tools/fusion360/PumpGeometry/` is a Fusion 360 script.
+1. Install it: Utilities ▸ ADD-INS ▸ Scripts and Add-Ins ▸ Scripts ▸ **+**, then pick the folder.
+2. Run it, and pick the exported JSON.
+
+It opens a new design containing:
+- a top component named with the lock hash;
+- one sub-component per carrier, plus Dielectrics;
+- one named body per solid.
+
+The names are the same as in the STEP and the parts CSV; Fusion forbids `/`, so it becomes `-`. Lengths are converted to Fusion's internal centimetres, and the design has parametric base features. Colours come from a copied library appearance; if that appearance isn't found, the bodies are left uncoloured.
+
+**Fusion 360, via STEP.** Open or upload the `.step`. The products become named components and the carrier assemblies become a component tree, with colours as appearances. The reference file `docs/geometry/freeze-v010-CaCb.step` needs no FreeCAD at all. For other designs, the FreeCAD macro writes the STEP, and that STEP then opens in Fusion.
 
 The stack order and the carrier/foil thicknesses are [IR] placeholders (the DXF has no axial section). See `sim/pump-geometry-findings.md`.
