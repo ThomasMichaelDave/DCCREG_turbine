@@ -51,6 +51,47 @@ G-CAD now also requires 105 named STEP products (95 solids + 10 assemblies), no 
 - `tools/pump-geometry.FCMacro` (FreeCAD) and `tools/fusion360/PumpGeometry/PumpGeometry.py` (Fusion 360) only build that list, so both packages show the same names.
 - New gate **G-F360** runs the Fusion script against an OpenCascade stand-in for `adsk.core` / `adsk.fusion`: 95 bodies in 10 components, volumes exact to 5e-15, every name equal to the part list. It does not exercise Fusion's own UI or appearance library; that needs a run in Fusion.
 
+## Spark gaps in 3-D (rev, 2026-10-01)
+
+TMD's rule: each load gap sits on one side and fires there, and its stator node reaches it by a lead over the stator.
+
+**Placement (all [IR] and editable; stations [OC]).**
+- **Decks.** Each side gets a gap deck outboard of its rotor flange, with two planes.
+  - The **bar plane** is for the island-bar tips. On side A it holds SG4a, SG4b and BS4; on side B, SG3a, SG3b and BS3.
+  - The **rail plane** is for the rotor-rail tips: SG1 on A and SG2 on B.
+  - The two tracks need separate planes. If they shared one, every stationary post reaching inward would cross the other track's rotating tips.
+- **Electrodes.** Stator electrodes are 12 mm W-Cu spheres (25 mm smooth for BS3/BS4). They sit radially outboard of the rotor tip, in-plane, at gap = the freeze spacing: 5.5 / 4.75 / 5.5 / 5.5 mm for return / load / fire / backstop. The backstop spacing is a TODO in the freeze.
+- **Angles.** They sit at the DXF station markers (= the engine's `st_*`), six times every 60°. The rotor tips are at 0 mod 60°, so the fire angle equals the station angle.
+- **Leads.** Each stator electrode has a post out to a stationary lead frame at R560 (60 mm beyond the rotor rims), a run along the frame, and a stub into its node's carrier rim.
+  - **SG3a**, node 1 from ND1, runs to deck B.
+  - **SG4a**, node 4 from ND4, runs to deck A.
+  - These are the **crossovers over the stator**, about 353 mm each.
+- **Rotor arms.** Bar tips sit on arms through the flange. Rail tips are reached by arms that run axially through the stator bores at r35, then radially in the rail plane.
+- **Effect on the stack.** It grows from 100 mm to **194 mm**, with the gap planes at z ±67.6 (bar) and ±91.1 mm (rail).
+
+**Checks (12, all pass).**
+- Nodes equal the netlist of record for all 8 gaps.
+- The spacing at alignment equals the freeze table.
+- Stations equal both the DXF markers and the engine.
+- No cross-firing: the tightest case is SG4b's tip against the SG4a electrode, with a 39.5 mm margin.
+- I11 at the placed radius r345: 2.33° < 2.95°.
+- The bar tip lies on the island bar.
+- HV clearances, at 2 × the largest gap (11 mm):
+  - rail arms to the stator bores: **12 mm, the binding one**;
+  - rail arms to the bars: 37 mm;
+  - rail track to bar track: 42.5 mm;
+  - lead frame to the rotor rims: 57 mm;
+  - different-node stator electrodes: 43.9 mm.
+- The gap planes are 5 mm clear of the flanges.
+
+**CAD:** 347 solids, of which 252 are new (48 stator spheres, 144 lead rods, 60 rotor tips and arms), all named. G-CAD finds no interpenetration other than the deliberate joins (lead into post, arm through its own rotor).
+
+**For TMD:**
+1. **The netlist puts each Cx pickup on its own node.** Cx3 is 7 ↔ **n17**, with Lx3 running n17 → 3; Cx4 is **n23** ↔ 8, with Lx4 running 2 → n23. So the two faces of ND2 and ND3 are **not** equipotential: the series island inductor sits between them. Corrected in the model.
+2. **The deck pairing is the opposite of `docs/commutator-design.md` §5.** That doc groups SG1 with SG3 on the C1/Ca side ("top set serves SG3"). The drawn netlist puts SG3's island (bar 7) on side B with node 3, so SG3a/SG3b fire on deck B with SG2, and SG4 fires on deck A with SG1. The doc predates the island topology.
+3. **Leads are one rod per electrode** (6 per gap). A bus ring per node and plane would build cleaner, but rings of different nodes on one plane would cross each other's posts, so that needs a routing decision.
+4. **The C-EM motor ring the crossovers pass over is not modelled.** The 60 mm frame offset is a placeholder for it.
+
 ## 3. Findings for TMD
 
 1. **The DXF does carry the Ca/Cb areas.**

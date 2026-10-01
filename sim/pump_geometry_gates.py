@@ -67,6 +67,18 @@ def gate_seed():
         ok = abs(rmin - f["r_in"]) < 0.05 and abs(rmax - f["r_out"]) < 0.05 and \
             sorted(round(s % 360.0, 2) for s in f["starts"]) == st
         rows.append(dict(layer=lay, dxf=[rmin, rmax, st], model=[f["r_in"], f["r_out"], sorted(f["starts"])], pass_=ok))
+    # spark-gap stations: the placed stator electrodes sit at the DXF SG markers (mod 60) = the engine stations
+    import pump_engine as PE
+    sg_rows = []
+    lay = {"SG1": "SG1-RETURN-GAP", "SG2": "SG2-RETURN-GAP", "SG3a1": "SG3a-LOAD-GAP", "SG3b1": "SG3b-FIRE-GAP",
+           "SG4a1": "SG4a-LOAD-GAP", "SG4b1": "SG4b-FIRE-GAP", "BS3": "SG-BS3-BACKSTOP", "BS4": "SG-BS4-BACKSTOP"}
+    for x in d["sparkgaps"]["gaps"]:
+        angs = sorted({round(math.degrees(math.atan2(e.dxf.start.y, e.dxf.start.x)) % 60.0, 2)
+                       for e in msp if e.dxf.layer == lay[x["name"]] and e.dxftype() == "LINE"})
+        eng = PE.DXF[x["name"].replace("a1", "a").replace("b1", "b")]
+        sg_rows.append(dict(gap=x["name"], placed=x["station"], dxf=angs, engine=eng,
+                            pass_=angs == [round(x["station"] % 60.0, 2)] and abs(eng - x["station"]) < 1e-9))
+    rows += sg_rows
     fwd = PG.solve_transfer(309.0, dict(PG.GEOM_DEFAULTS, ca_mode="forward"), 6)
     return dict(pass_=all(r["pass_"] for r in rows) and abs(fwd["C_pF"] - 309.0) < 0.5, rows=rows,
                 seed_C_pF=fwd["C_pF"], seed_area_mm2=fwd["area_mm2"])
@@ -100,7 +112,11 @@ def _rand_geom(rng):
                 ca_mode=rng.choice(["r_out", "r_in", "width", "forward"]), ca_rin=rng.uniform(60, 150),
                 ca_rout=rng.uniform(160, 300), ca_round=rng.choice([0, 0, 0.5, 1.0]), ca_margin=rng.uniform(0, 10),
                 t_foil=rng.uniform(0.2, 2), t_carrier=rng.uniform(1, 6), t_rotor=rng.uniform(5, 20),
-                t_flange=rng.uniform(3, 10), t_septum=rng.uniform(6, 20), r_bore=rng.uniform(30, 55))
+                t_flange=rng.uniform(3, 10), t_septum=rng.uniform(6, 20), r_bore=rng.uniform(30, 55),
+                sg_rg=rng.uniform(250, 360), sg_rret=rng.uniform(150, 240), sg_d=rng.uniform(6, 20), sg_dbs=rng.uniform(15, 35),
+                sg_s_ret=rng.uniform(3, 8), sg_s_load=rng.uniform(3, 8), sg_s_fire=rng.uniform(3, 8), sg_s_bs=rng.uniform(3, 8),
+                sg_clear=rng.uniform(2, 10), sg_rod=rng.uniform(3, 10), sg_rhub=rng.uniform(15, 40),
+                sg_frame=rng.uniform(20, 120), sg_khv=rng.uniform(1, 3))
 
 
 def gate_js(n=60):
@@ -157,6 +173,13 @@ def _install_occ_freecad():
         def __init__(self, x=0, y=0, z=0):
             self.x, self.y, self.z = float(x), float(y), float(z)
 
+        def __sub__(self, o):
+            return Vector(self.x - o.x, self.y - o.y, self.z - o.z)
+
+        @property
+        def Length(self):
+            return math.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2)
+
     class Shape:
         def __init__(self, s):
             self.s = s
@@ -187,6 +210,10 @@ def _install_occ_freecad():
         ax = gp_Ax2(gp_Pnt(pnt.x, pnt.y, pnt.z), gp_Dir(d.x, d.y, d.z))
         mk = BRepPrimAPI_MakeCylinder(ax, r, h) if angle >= 360.0 else BRepPrimAPI_MakeCylinder(ax, r, h, math.radians(angle))
         return Shape(mk.Shape())
+
+    def makeSphere(r, c):
+        from OCP.BRepPrimAPI import BRepPrimAPI_MakeSphere
+        return Shape(BRepPrimAPI_MakeSphere(gp_Pnt(c.x, c.y, c.z), r).Shape())
 
     def export(objs, path):
         w = STEPControl_Writer()
@@ -261,7 +288,7 @@ def _install_occ_freecad():
     fc.newDocument = lambda n: (fc.DOCS.append(Doc(n)) or fc.DOCS[-1])
     fc.Console = types.SimpleNamespace(PrintMessage=lambda m: None)
     part = types.ModuleType("Part")
-    part.makeCylinder, part.export = makeCylinder, export
+    part.makeCylinder, part.export, part.makeSphere = makeCylinder, export, makeSphere
     imp = types.ModuleType("Import")
     imp.export = import_export
     sys.modules["FreeCAD"], sys.modules["Part"], sys.modules["Import"] = fc, part, imp
@@ -285,12 +312,15 @@ def gate_cad():
     invalid = [o.Name for o in objs if not o.Shape.isValid()]
     # interference: no two solids share volume (foils touch their carriers, they must not cut into them)
     clash = []
+    CH = {m["name"]: m.get("chains", []) for m in made}
     boxes = [(o, o.Shape.bbox()) for o in objs]
     for i in range(len(boxes)):
         for j in range(i + 1, len(boxes)):
             (a, ba), (b, bb) = boxes[i], boxes[j]
             if ba.IsOut(bb):
                 continue
+            if set(CH.get(a.Name, ())) & set(CH.get(b.Name, ())):
+                continue                                  # joined on purpose (a lead into its post, an arm through its rotor)
             v = a.Shape.common(b.Shape).Volume
             if v > 1e-6 * min(a.Shape.Volume, b.Shape.Volume):
                 clash.append((a.Name, b.Name, v))
@@ -344,8 +374,13 @@ def _install_occ_adsk(json_path):
 
     class TBM:
         def createCylinderOrCone(self, p0, r0, p1, r1):
-            assert abs(r0 - r1) < 1e-12 and p0.x == p1.x == 0 and p0.y == p1.y == 0
-            return Body(BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(0, 0, p0.z), gp_Dir(0, 0, 1)), r0, p1.z - p0.z).Shape())
+            assert abs(r0 - r1) < 1e-12
+            d = (p1.x - p0.x, p1.y - p0.y, p1.z - p0.z); L = math.sqrt(sum(c * c for c in d))
+            return Body(BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(p0.x, p0.y, p0.z), gp_Dir(*d)), r0, L).Shape())
+
+        def createSphere(self, c, r):
+            from OCP.BRepPrimAPI import BRepPrimAPI_MakeSphere
+            return Body(BRepPrimAPI_MakeSphere(gp_Pnt(c.x, c.y, c.z), r).Shape())
 
         def createBox(self, b):
             # corner = centre - L/2 u - W/2 w - H/2 n, frame (u, w, n = u x w)

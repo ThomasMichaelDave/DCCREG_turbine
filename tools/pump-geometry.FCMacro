@@ -10,6 +10,8 @@ What it builds (units mm, z = shaft axis, z = 0 = the septum mid-plane, electric
   * foil electrodes: annular-sector sets (one solid per sector) on the carrier faces
   * dielectric slabs: the septum (garolite, full disc) and the Ca/Cb mica (the electrode footprint grown by
     the stated margin); air gaps are left empty
+  * spark gaps: stator spheres + posts + leads (to their node's carrier, crossovers over the stator) and the rotor
+    tips + arms, on two gap planes per side
 Grouped by carrier (App::Part -> named STEP sub-assemblies); coloured by electrical node; every solid carries a
 descriptive Label (its STEP product name) and a row in <json>-parts.csv. Geometry only -- no physics here.
 The same file is executed by sim/pump_geometry_gates.py through an OpenCascade stand-in for Part (gate G-CAD),
@@ -50,6 +52,18 @@ def annulus(r_in, r_out, z0, z1, start_deg=0.0, w_deg=360.0):
     return outer
 
 
+def solid(p):
+    """One part of the bill of solids: an annular sector, a sphere (gap electrode) or a rod (post / arm / lead)."""
+    shape = p.get("shape", "sector")
+    if shape == "sphere":
+        return Part.makeSphere(p["r"], FreeCAD.Vector(*p["c"]))
+    if shape == "rod":
+        a, b = FreeCAD.Vector(*p["p0"]), FreeCAD.Vector(*p["p1"])
+        d = b - a
+        return Part.makeCylinder(p["r"], d.Length, a, d)
+    return annulus(p["r_in"], p["r_out"], p["z0"], p["z1"], p["start_deg"], p["w_deg"])
+
+
 def _colour(obj, rgb):
     obj.Colour = tuple(rgb)                            # kept for the STEP writer (and the OCC stand-in)
     if FreeCAD.GuiUp and rgb:
@@ -66,7 +80,7 @@ def build(design, doc):
         groups[a["key"]] = g
     made = []
     for p in design["parts"]:
-        shp = annulus(p["r_in"], p["r_out"], p["z0"], p["z1"], p["start_deg"], p["w_deg"])
+        shp = solid(p)
         o = doc.addObject("Part::Feature", p["name"])
         o.Shape = shp
         o.Label = p["label"]
@@ -79,8 +93,8 @@ def build(design, doc):
     return made, groups
 
 
-PARTS_COLUMNS = ("name", "label", "assembly", "role", "carrier", "node", "cap", "material", "r_in", "r_out",
-                 "start_deg", "w_deg", "z0", "z1", "volume")
+PARTS_COLUMNS = ("name", "label", "assembly", "role", "shape", "carrier", "node", "cap", "material", "r_in", "r_out",
+                 "start_deg", "w_deg", "z0", "z1", "c", "r", "p0", "p1", "volume")
 
 
 def write_parts_table(made, path):
@@ -90,7 +104,8 @@ def write_parts_table(made, path):
         w = csv.writer(fh)
         w.writerow(PARTS_COLUMNS)
         for m in made:
-            w.writerow([("%.4f" % m[c]) if isinstance(m.get(c), float) else m.get(c, "") for c in PARTS_COLUMNS])
+            w.writerow([("%.4f" % m[c]) if isinstance(m.get(c), float) else
+                        (" ".join("%.3f" % v for v in m[c]) if isinstance(m.get(c), list) else m.get(c, "")) for c in PARTS_COLUMNS])
 
 
 def export_step(doc, groups, path, top_label):

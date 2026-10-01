@@ -96,4 +96,9 @@ The names are the same as in the STEP and the parts CSV; Fusion forbids `/`, so 
 
 **Fusion 360, via STEP.** Open or upload the `.step`. The products become named components and the carrier assemblies become a component tree, with colours as appearances. The reference file `docs/geometry/freeze-v010-CaCb.step` needs no FreeCAD at all. For other designs, the FreeCAD macro writes the STEP, and that STEP then opens in Fusion.
 
+**Spark gaps.** Stage 2 also places the commutator: two gap planes per side outboard of the rotor flanges. See them in the "deck A" and "deck B" plan views, in the axial section, and in the "spark gaps" parameter group.
+- Stator electrodes sit at the DXF station angles, with the freeze spacings, and are fed by leads from their node's carrier.
+- The load gaps fire on their island bar's side. Their stator node arrives by a crossover lead over the stator: node 1 to deck B, node 4 to deck A.
+- Twelve gap checks cover the netlist nodes, spacing, stations, cross-firing and HV clearances.
+
 The stack order and the carrier/foil thicknesses are [IR] placeholders (the DXF has no axial section). See `sim/pump-geometry-findings.md`.

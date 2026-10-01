@@ -65,6 +65,20 @@ def annulus(tbm, rin, rout, z0, z1, a0, w):
     return body
 
 
+def solid(tbm, p):
+    """One part of the bill of solids: an annular sector, a sphere (gap electrode) or a rod (post / arm / lead)."""
+    shape = p.get("shape", "sector")
+    P = adsk.core.Point3D.create
+    if shape == "sphere":
+        c = p["c"]
+        return tbm.createSphere(P(c[0] * MM, c[1] * MM, c[2] * MM), p["r"] * MM)
+    if shape == "rod":
+        a, b = p["p0"], p["p1"]
+        return tbm.createCylinderOrCone(P(a[0] * MM, a[1] * MM, a[2] * MM), p["r"] * MM,
+                                        P(b[0] * MM, b[1] * MM, b[2] * MM), p["r"] * MM)
+    return annulus(tbm, p["r_in"], p["r_out"], p["z0"], p["z1"], p["start_deg"], p["w_deg"])
+
+
 def _appearance(app, design, key, rgb, cache):
     """A per-colour appearance copied from the Fusion appearance library (skipped if unavailable)."""
     if key in cache:
@@ -112,7 +126,7 @@ def build(app, design, data):
             bf = comp.features.baseFeatures.add()
             bf.startEdit()
         for p in plist:
-            body = annulus(tbm, p["r_in"], p["r_out"], p["z0"], p["z1"], p["start_deg"], p["w_deg"])
+            body = solid(tbm, p)
             b = comp.bRepBodies.add(body, bf) if bf else comp.bRepBodies.add(body)
             b.name = _name(p["label"])
             ap = _appearance(app, design, "%.3f,%.3f,%.3f" % tuple(p["rgb"]), p["rgb"], cache)
