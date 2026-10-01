@@ -1,0 +1,1258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PUMP-SYNTH — rotor plates to a pumping verdict</title>
+<link rel="icon" href="data:,">
+<!--
+  tools/pump-synth.html — PUMP-SYNTH (brief r0.1): the shell of tools/charge-pump-synth-live.html @ 8cd181e
+  (plate sliders with an anchor reset, objective + Solve, result cards, the invariant battery with its named
+  blocker, the reference drawer with schematic + REF_MAP + stamp, legend, cross-section, the SOLVER badge) on
+  the physics of tools/pump-calc.html (this branch): rotor plates -> forward law -> ladder-sized pump -> the
+  exact engine (sim/pump_engine.py via sim/pump_synth.py, Pyodide in Web Workers) -> PUMPS: YES / NO.
+  Neither parent is edited; code is copied with attribution (reuse ledger: sim/pump-synth-findings.md).
+  Fail-closed: the SOLVER badge goes live only after K1–K4 and the H-GEOM rung pass; no hard-coded fallback.
+  State lives in the URL hash only. Serve from the repo root:
+    python3 -m http.server 8000  ->  http://localhost:8000/tools/pump-synth.html
+-->
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#121821; --panel2:#0e141c; --line:#1e2733; --ink:#c9d6e2;
+    --mut:#7e8b99; --mono:'DejaVu Sans Mono','SFMono-Regular',Menlo,Consolas,monospace;
+    --amber:#ffb454; --brass:#b8975a; --acc:#7cd0ff; --good:#46c46a; --bad:#e5484d; --warn:#e0a83a;
+    --ne:#5d6b7a; --grid:#16202a; --axis:#7c8ea0;
+    --c1:#7cd0ff; --c2:#ffb454; --c3:#46c46a; --c4:#e5484d; --c5:#c792ea; --c6:#f7768e; --c7:#9ece6a; --c8:#e0af68;
+  }
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:12.5px}
+  .wrap{max-width:1380px;margin:0 auto;padding:16px}
+  h1{font-size:16px;letter-spacing:.04em;margin:0 0 2px;color:#dfe8f1}
+  .sub{color:var(--mut);font-size:11.5px;margin-bottom:12px}
+  .brass{color:var(--brass);text-transform:uppercase;letter-spacing:.08em;font-size:10.5px}
+  .grid{display:grid;grid-template-columns:310px 1fr 400px;gap:14px}
+  @media(max-width:1180px){.grid{grid-template-columns:1fr 1fr}}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;margin-bottom:12px}
+  .panel.sub{background:var(--panel2);margin-bottom:0}
+  details summary{cursor:pointer;color:var(--brass);text-transform:uppercase;letter-spacing:.08em;font-size:10.5px;margin:6px 0}
+  label.ctl{display:block;margin:7px 0}
+  label.ctl .lab{display:flex;justify-content:space-between;font-size:11px;color:var(--mut)}
+  label.ctl .lab b{color:var(--amber);font-weight:400}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:#1d2733;border-radius:2px;outline:none;margin-top:5px}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--acc);cursor:pointer;border:2px solid #0b1620}
+  .f{display:grid;grid-template-columns:1fr 110px;align-items:center;gap:6px;margin:4px 0;font-size:11.5px}
+  .f label{color:var(--mut)}
+  .f input,.f select{width:100%;box-sizing:border-box}
+  input,select,button{background:#0b1118;border:1px solid var(--line);color:var(--ink);font-family:var(--mono);font-size:11.5px;padding:4px 6px;border-radius:3px}
+  button{cursor:pointer}button:hover{border-color:var(--acc)}
+  button.primary{background:#13202c;border-color:#2a4a5e;color:#cfe9ff;padding:6px 11px}
+  button.mini{font-size:10px;padding:2px 5px}
+  button:disabled{opacity:.5;cursor:default}
+  option:disabled{color:#55606b}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0}
+  .readout{font-size:24px;color:var(--amber);text-shadow:0 0 7px rgba(255,180,84,.25)}
+  .readout small{font-size:11px;color:var(--mut)}
+  .kv{display:flex;justify-content:space-between;font-size:11.5px;margin:3px 0;gap:10px}
+  .kv b{color:#dfe8f1;font-weight:400;text-align:right}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px}
+  @media(max-width:560px){.cards{grid-template-columns:1fr}}
+  .badge{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:12px;padding:3px 9px;font-size:10.5px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#333;flex:none;display:inline-block}
+  .dot.ok{background:var(--good);box-shadow:0 0 6px var(--good)}
+  .dot.no{background:var(--bad);box-shadow:0 0 6px var(--bad)}
+  .dot.bind{background:var(--warn);box-shadow:0 0 8px var(--warn)}
+  .dot.ne{background:transparent;border:1.5px dashed var(--ne)}
+  .dot.na{background:#22303c}
+  .dot.info{background:#2a4a5e}
+  .lamp{display:flex;align-items:flex-start;gap:7px;font-size:11px;margin:4px 0}
+  .lamp .dot{margin-top:3px}
+  .lamp .nm{min-width:152px;color:var(--ink)}
+  .lamp .st{min-width:92px;font-size:10px;color:var(--mut)}
+  .lamp .det{color:var(--mut);font-size:10px;line-height:1.35}
+  .lamp.ne .nm{color:var(--ne)}
+  .verdict{font-size:15px;padding:8px;border-radius:5px;text-align:center;letter-spacing:.05em;margin-top:6px}
+  .verdict.ok{background:#10241a;color:#8be0a0;border:1px solid #1f4a2c}
+  .verdict.no{background:#2a1416;color:#f0a0a3;border:1px solid #4a1f1f}
+  .verdict.warn{background:#241d10;color:#f0d090;border:1px solid #4a3a1f}
+  .bind{background:#241d10;border:1px solid #4a3a1f;border-radius:5px;padding:7px;margin-top:8px;font-size:11px}
+  .bind b{color:var(--warn)}
+  .banner{background:#1d1a10;border:1px dashed #6a5a2a;color:#e8d29a;border-radius:4px;padding:5px 7px;font-size:10.5px;margin:6px 0}
+  table.t{border-collapse:collapse;width:100%;font-size:10.8px}
+  table.t th,table.t td{border:1px solid var(--line);padding:3px 5px;text-align:right;white-space:nowrap}
+  table.t th{color:var(--brass);background:var(--panel2);font-weight:400}
+  table.t td:first-child,table.t th:first-child{text-align:left}
+  table.t td.l{text-align:left;white-space:normal}
+  td.pass{color:var(--good)} td.fail{color:var(--bad)} td.flag{color:var(--warn)} td.mut{color:var(--mut)}
+  .meter{display:inline-block;width:54px;height:6px;background:#1d2733;border-radius:3px;vertical-align:middle;position:relative;overflow:hidden}
+  .meter i{position:absolute;left:0;top:0;bottom:0;background:var(--good)}
+  .pin{width:62px!important;font-size:10.5px;padding:2px 3px}
+  .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+  .strip div{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:5px;text-align:center;font-size:10.5px}
+  .strip div b{display:block;font-size:14px;font-weight:400;margin-top:2px}
+  .strip div.ok b{color:var(--good)} .strip div.no b{color:var(--bad)} .strip div.pend b{color:var(--mut)}
+  canvas{width:100%;display:block;background:var(--panel2);border:1px solid var(--line);border-radius:4px}
+  .cols2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:800px){.cols2{grid-template-columns:1fr}}
+  .note{color:var(--mut);font-size:10.8px;line-height:1.5}
+  .spin{display:inline-block;width:11px;height:11px;border:2px solid #2a3a48;border-top-color:var(--acc);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-1px}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  #boot{font-size:12px;color:var(--mut)}
+  code{color:var(--acc)}
+  .scroll{overflow-x:auto}
+  .greyed{opacity:.35}
+  .stale{opacity:.55}
+  #refBody h1{font-size:15px;color:#dfe8f1;margin:14px 0 4px}
+  #refBody h2{font-size:13px;color:var(--brass);margin:16px 0 4px;border-top:1px solid var(--line);padding-top:8px}
+  #refBody table{border-collapse:collapse;width:100%;margin:6px 0;font-size:10.5px}
+  #refBody th,#refBody td{border:1px solid var(--line);padding:3px 5px;text-align:left;vertical-align:top}
+  #refBody th{color:var(--brass);background:#0e141c}
+  #refBody em{color:var(--mut);font-style:normal}
+  #refBody strong{color:#dfe8f1;font-weight:400}
+  #schemSlot svg,#art_xsec svg{width:100%;height:auto;display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="row" style="justify-content:space-between;align-items:flex-end">
+    <div>
+      <h1>PUMP-SYNTH — <span style="color:var(--amber)">rotor plates → does the drawn pump pump?</span></h1>
+      <div class="sub">The plates are yours; the ladder sizes the rest; one exact engine decides
+        (<code>sim/pump_engine.py</code> via <code>sim/pump_synth.py</code>, Pyodide). Doubler + islands + all
+        eight gaps + motor branches; tank collapsed (core effects out of scope).</div>
+    </div>
+    <div class="row">
+      <button id="refBtn" title="reference: schematic with live values, legend, cross-section, the reference doc">ⓘ reference</button>
+      <div id="solverBadge" class="badge"><span class="dot"></span><span id="solverTxt">SOLVER: booting…</span></div>
+    </div>
+  </div>
+
+  <!-- reference drawer (closed by default) — copied from charge-pump-synth-live.html @ 8cd181e -->
+  <div id="refOverlay" style="display:none;position:fixed;inset:0;background:rgba(4,8,12,.72);z-index:50">
+    <div id="refDrawer" style="position:absolute;top:0;right:0;bottom:0;width:min(820px,96vw);background:var(--panel);
+         border-left:1px solid var(--line);overflow:auto;padding:18px 22px;box-shadow:-8px 0 30px rgba(0,0,0,.5)">
+      <div class="row" style="justify-content:space-between;margin-bottom:6px">
+        <div class="brass">reference — schematic · legend + live values · cross-section</div>
+        <button id="refClose">✕ close</button>
+      </div>
+      <div class="panel sub" style="margin:6px 0 12px">
+        <div class="row" style="justify-content:space-between">
+          <div class="brass">schematic <span id="schemSrc" style="color:var(--mut)"></span></div>
+          <button id="schemZoom" class="mini">⤢ enlarge</button>
+        </div>
+        <div class="note">tank greyed "collapsed — core effects out of scope"; motor greyed when off.</div>
+        <div id="schemSlot" style="margin:6px 0;background:#0b0f14;border:1px solid var(--line);border-radius:4px;min-height:60px;cursor:zoom-in">loading…</div>
+        <div id="schemStamp" style="font-size:10.5px;margin:4px 0 8px">checking…</div>
+        <div class="brass" style="margin:8px 0 3px">legend + live values <span style="color:var(--mut)">(from the sized ladder)</span></div>
+        <table id="legendTable" class="t"></table>
+        <div id="labelMismatch" class="note" style="margin-top:6px"></div>
+      </div>
+      <div class="panel sub" style="margin-bottom:12px">
+        <div class="brass" style="margin-bottom:4px">cross-section (from the DXF)</div>
+        <div id="art_xsec">loading…</div>
+      </div>
+      <div id="refBody" style="font-size:12px;line-height:1.55">loading reference…</div>
+    </div>
+  </div>
+  <div id="lightbox" style="display:none;position:fixed;inset:0;background:rgba(2,5,8,.92);z-index:60;cursor:zoom-out">
+    <div id="lightboxBody" style="position:absolute;inset:24px;overflow:auto;display:flex;align-items:center;justify-content:center"></div>
+  </div>
+
+  <div id="boot" class="panel">booting…</div>
+
+  <div class="grid" id="app" style="display:none">
+    <!-- ================= DECISION SPACE ================= -->
+    <div>
+      <div class="panel">
+        <div class="brass">Rotor plates — your decision space</div>
+        <div id="platesHost"></div>
+        <div class="brass" style="margin-top:12px;border-top:1px solid var(--line);padding-top:9px">Commutation / firing</div>
+        <div id="firingHost"></div>
+        <div class="brass" style="margin-top:12px;border-top:1px solid var(--line);padding-top:9px">Drive</div>
+        <div id="driveHost"></div>
+        <details style="margin-top:10px;border-top:1px solid var(--line);padding-top:6px">
+          <summary>TMD-gated choices (flagged defaults)</summary>
+          <div id="choiceHost"></div>
+        </details>
+        <div class="row" style="margin-top:12px">
+          <button id="reset">↺ reset to anchor</button>
+          <button id="btnCompute" class="primary">▶ compute</button>
+          <span id="busy"></span>
+        </div>
+        <div id="progress" class="note"></div>
+        <div class="row" style="margin-top:8px;border-top:1px solid var(--line);padding-top:9px">
+          <select id="objective" style="flex:1">
+            <option value="min_diameter">objective: min diameter</option>
+            <option value="max_margin">objective: max margin at a max diameter</option>
+            <option value="max_rpm">objective: max rpm</option>
+            <option value="max_eta" disabled>objective: max η — disabled (D-CUT)</option>
+            <option value="min_belt_power" disabled>objective: min belt power — disabled (D-GOVERNOR)</option>
+          </select>
+          <button class="primary" id="solve">⤓ Solve</button>
+        </div>
+        <label class="note"><input type="checkbox" id="caSearch"> max margin: also golden-section on the Ca ratio (D-CA)</label>
+        <div id="objNote" class="note"></div>
+      </div>
+      <div class="panel">
+        <div class="brass">Presets</div>
+        <div class="row"><select id="presetSel" style="flex:1"></select><button id="btnPreset">load</button></div>
+        <div id="presetNote" class="note"></div>
+      </div>
+    </div>
+
+    <!-- ================= ROTOR + RESULT CARDS ================= -->
+    <div>
+      <div class="panel">
+        <div class="brass">Rotor — bus-corrected (body R = r_out × 1.27)</div>
+        <svg id="rotor" viewBox="0 0 320 300" width="100%" height="270" style="display:block;margin:4px auto"></svg>
+        <div id="verdict" class="verdict">—</div>
+        <div class="cards">
+          <div class="panel sub"><div class="brass">PUMPS? · exact engine</div>
+            <div class="readout"><span id="c_z">—</span><small> z</small></div>
+            <div class="kv"><span>margin z − 1</span><b id="c_margin">—</b></div>
+            <div class="kv"><span>gap models</span><b id="c_models">—</b></div>
+            <div class="kv"><span>binding item</span><b id="c_bind">—</b></div>
+            <div class="kv"><span>smallest rotor that pumps</span><b id="c_minplate">—</b></div>
+            <div class="row" style="margin:2px 0 0"><button id="btnMinPlate" class="mini">find (z = 1 vs r_out)</button><span id="minPlateNote" class="note"></span></div>
+          </div>
+          <div class="panel sub"><div class="brass">rotor diameter</div>
+            <div class="readout"><span id="c_dia">—</span><small> mm</small></div>
+            <div class="kv"><span>active band</span><b id="c_band">—</b></div>
+            <div class="kv"><span>+ bus 0.27 → body</span><b id="c_body">—</b></div>
+            <div class="kv"><span>rim speed @ body</span><b id="c_rim">—</b></div>
+          </div>
+          <div class="panel sub"><div class="brass">ladder · C_rot = C_max</div>
+            <div class="kv"><span>C_max / C_min</span><b id="c_cmax">—</b></div>
+            <div class="kv"><span>κ_C</span><b id="c_kappa">—</b></div>
+            <div class="kv"><span>ε_r (gap medium)</span><b id="c_eps">—</b></div>
+            <div class="kv"><span>D-CMIN other convention</span><b id="c_conv">—</b></div>
+            <div class="kv"><span>C_blk @ PRF_branch</span><b id="c_cblk">—</b></div>
+          </div>
+          <div class="panel sub"><div class="brass">twin · same gap models</div>
+            <table class="t" id="twinTable"></table>
+            <div class="note">G: Lx shorted. G0: islands → ideal station valves.</div>
+          </div>
+        </div>
+        <div class="panel sub" style="margin-top:8px">
+          <div class="brass">gap-model robustness strip · load + fire gaps · exact runs</div>
+          <div class="strip" id="strip"></div>
+          <div class="note" id="stripNote"></div>
+        </div>
+        <div id="bindLine" class="bind" style="display:none"></div>
+      </div>
+      <div class="panel" id="solvePanel" style="display:none">
+        <div class="brass">Solve result</div>
+        <div id="solveOut" class="note"></div>
+        <canvas id="cvSolve" height="200" style="margin-top:6px"></canvas>
+      </div>
+    </div>
+
+    <!-- ================= LADDER + BATTERY ================= -->
+    <div>
+      <div class="panel">
+        <div class="brass">Ladder — every capacitor sized from C_max (pin to override)</div>
+        <div class="scroll"><table class="t" id="ladderTable"></table></div>
+        <div class="note" id="ladderNote">critical = the value where z = 1 with everything else as sized (exact
+          engine, bracket-and-bisect; the <code>findCriticalCa</code> pattern of index.html, generalised). Press
+          "z=1?" to find it.</div>
+      </div>
+      <div class="panel">
+        <div class="brass">Invariant battery — evaluated rows decide; NOT-EVALUATED is excluded</div>
+        <div class="banner">I4 is PROVISIONAL (D-MEDIUM): three documents give three gap media
+          (air / ≤ 10 Pa / the hard-vacuum law). Shown under the selected medium.</div>
+        <div id="lamps"></div>
+      </div>
+      <div class="panel">
+        <div class="brass">Canaries + H-GEOM (fail-closed, before any number)</div>
+        <table class="t" id="selfTest"></table>
+        <div class="note" id="engineVer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= DETAILS (collapsed) ================= -->
+  <details class="panel" id="detailsPanel" style="display:none">
+    <summary>Details — waveforms, gap events (TRV), η(cut) band, sweeps, scaling</summary>
+    <div class="cols2">
+      <div><canvas id="cvV" height="200"></canvas><div class="note">eigen-mode node voltages 1, 2, 3, 4, 7, 8 (÷ max) over one sector</div></div>
+      <div><canvas id="cvG" height="200"></canvas><div class="note">gap voltages, all eight gaps (÷ max)</div></div>
+    </div>
+    <div class="cols2" style="margin-top:8px">
+      <div><canvas id="cvT" height="190"></canvas><div class="note">conduction (bars) and events (ticks) over the arming windows (faint)</div></div>
+      <div><canvas id="cvEta" height="190"></canvas><div class="note" id="etaNote">η(cut) over the sector — cut-dependent for an unloaded growing pump [OC]: no single η until D-CUT.</div></div>
+    </div>
+    <div class="brass" style="margin-top:10px">Gap events — one row per conduction episode</div>
+    <div class="scroll"><table class="t" id="evTable"></table></div>
+    <div class="note" id="scaleNote"></div>
+    <div class="brass" style="margin-top:10px">Sweep — z against one input (exact runs; z = 1 crossing marked)</div>
+    <div class="row">
+      <select id="swKey"></select>
+      <input id="swFrom" type="number" step="any" style="width:80px" placeholder="from">
+      <input id="swTo" type="number" step="any" style="width:80px" placeholder="to">
+      <input id="swN" type="number" value="7" min="2" max="41" style="width:55px">
+      <button id="btnSweep">sweep</button>
+    </div>
+    <canvas id="cvSweep" height="200"></canvas>
+    <div class="note" id="swNote"></div>
+  </details>
+
+  <div class="note" style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px">
+    <b>One engine.</b> sim/pump_engine.py (pump-calc, derived from the r0.2 exact event-driven KCL solver under
+    gate E0) evaluates every number on this page; sim/pump_synth.py only composes the sizing (sim/pump_sizing.py)
+    with it and searches. z is the spectral radius of the composed one-cycle map. <b>Dropped from the shell's
+    parent</b> (D-LEDGER): its operating-efficiency card and canary rung, its forbidden-path diagnostic, its
+    default-pass invariants and the max-energy-density objective — the exact engine never observed them.
+    <b>TMD-gated</b>, shipped at the flagged default: D-CMIN, D-CA, D-CX, D-CPAR, D-GAPDEFAULT (M-RD(→0) for load
+    and fire), D-MOTORDEFAULT (off, not assessed), D-CUT, D-SCALE, D-GOVERNOR, D-MEDIUM. URL hash = state.
+  </div>
+</div>
+
+<script src="./pump-sizing.js"></script>
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+
+/* =====================================================================================
+   REUSED FROM tools/pump-calc.html (this branch), itself from index.html @ 8cd181e:
+   solveDoubler4 — K1's JS side (two engines on one canary).
+   ===================================================================================== */
+// BEGIN solveDoubler4 (index.html @ 8cd181e, unmodified)
+function solveLinear(A, b){
+  const n = b.length;
+  if (n === 0) return [];
+  const m = A.map((row, i) => [...row, b[i]]);
+  for (let i = 0; i < n; i++){
+    let piv = i;
+    for (let k = i+1; k < n; k++) if (Math.abs(m[k][i]) > Math.abs(m[piv][i])) piv = k;
+    [m[i], m[piv]] = [m[piv], m[i]];
+    if (Math.abs(m[i][i]) < 1e-14) return null;
+    for (let k = i+1; k < n; k++){
+      const f = m[k][i] / m[i][i];
+      for (let j = i; j <= n; j++) m[k][j] -= f * m[i][j];
+    }
+  }
+  const x = new Array(n).fill(0);
+  for (let i = n-1; i >= 0; i--){
+    let s = m[i][n];
+    for (let j = i+1; j < n; j++) s -= m[i][j] * x[j];
+    x[i] = s / m[i][i];
+  }
+  return x;
+}
+function chargesFromVoltages(V, C1, C2, Ca, Cb, Cpar){
+  const [v1, v2, v3, v4] = V;
+  return [
+    (C1 + Cpar) * v1 + Ca * (v1 - v2),
+    Cpar * v2 + Ca * (v2 - v1),
+    Cpar * v3 + Cb * (v3 - v4),
+    (C2 + Cpar) * v4 + Cb * (v4 - v3),
+  ];
+}
+function solvePhase(Q, C1, C2, Ca, Cb, Cpar){
+  const kd1 = C1 + Cpar + Ca;
+  const kd2 = Cpar + Ca;
+  const kd3 = Cpar + Cb;
+  const kd4 = C2 + Cpar + Cb;
+  let bestV = null, bestMag = -Infinity;
+  const eps = 1e-9;
+  for (let s = 0; s < 16; s++){
+    const d1 = (s     ) & 1;
+    const d2 = (s >> 1) & 1;
+    const d3 = (s >> 2) & 1;
+    const d4 = (s >> 3) & 1;
+    const parent = [0,1,2,3,4];
+    const find = x => { while (parent[x] !== x){ parent[x] = parent[parent[x]]; x = parent[x]; } return x; };
+    const union = (a, b) => { const ra = find(a), rb = find(b); if (ra !== rb) parent[ra] = rb; };
+    if (d1) union(2, 0);
+    if (d2) union(3, 0);
+    if (d3) union(1, 3);
+    if (d4) union(4, 2);
+    const groundRoot = find(0);
+    const clusterId = {};
+    let nc = 0;
+    for (let i = 1; i <= 4; i++){
+      const r = find(i);
+      if (r === groundRoot) continue;
+      if (!(r in clusterId)) clusterId[r] = nc++;
+    }
+    const nodeCluster = [0, 0, 0, 0, 0];
+    for (let i = 1; i <= 4; i++){
+      const r = find(i);
+      nodeCluster[i] = (r === groundRoot) ? -1 : clusterId[r];
+    }
+    let V;
+    if (nc === 0){
+      V = [0, 0, 0, 0];
+    } else {
+      const A = Array.from({length: nc}, () => new Array(nc).fill(0));
+      const rhs = new Array(nc).fill(0);
+      for (let i = 1; i <= 4; i++){
+        const c = nodeCluster[i];
+        if (c >= 0) rhs[c] += Q[i-1];
+      }
+      const addK = (i, kdiag, neighbour, kOff) => {
+        const c = nodeCluster[i];
+        if (c < 0) return;
+        A[c][c] += kdiag;
+        const cj = nodeCluster[neighbour];
+        if (cj >= 0) A[c][cj] += kOff;
+      };
+      addK(1, kd1, 2, -Ca);
+      addK(2, kd2, 1, -Ca);
+      addK(3, kd3, 4, -Cb);
+      addK(4, kd4, 3, -Cb);
+      const x = solveLinear(A, rhs);
+      if (!x) continue;
+      V = [
+        nodeCluster[1] < 0 ? 0 : x[nodeCluster[1]],
+        nodeCluster[2] < 0 ? 0 : x[nodeCluster[2]],
+        nodeCluster[3] < 0 ? 0 : x[nodeCluster[3]],
+        nodeCluster[4] < 0 ? 0 : x[nodeCluster[4]],
+      ];
+    }
+    const [v1, v2, v3, v4] = V;
+    if (!d1 && v2 > eps) continue;
+    if (!d2 && v3 > eps) continue;
+    if (!d3 && v1 > v3 + eps) continue;
+    if (!d4 && v4 > v2 + eps) continue;
+    const mag = Math.abs(v1) + Math.abs(v4);
+    if (mag > bestMag){ bestMag = mag; bestV = V; }
+  }
+  return bestV || [0, 0, 0, 0];
+}
+function solveDoubler4(C1min, C1max, C2min, C2max, Ca, Cb, Cpar, opts){
+  const iterations = opts?.iterations ?? 120;
+  const burn       = opts?.burn       ?? 60;
+  let V = [-1, 0, 0, -1];
+  let C1cur = C1max, C2cur = C2min;
+  const ratios = [];
+  let prevMag = Math.abs(V[0]) + Math.abs(V[3]);
+  for (let cyc = 0; cyc < iterations; cyc++){
+    let Q = chargesFromVoltages(V, C1cur, C2cur, Ca, Cb, Cpar);
+    V = solvePhase(Q, C1min, C2max, Ca, Cb, Cpar);
+    C1cur = C1min; C2cur = C2max;
+    Q = chargesFromVoltages(V, C1cur, C2cur, Ca, Cb, Cpar);
+    V = solvePhase(Q, C1max, C2min, Ca, Cb, Cpar);
+    C1cur = C1max; C2cur = C2min;
+    const mag = Math.abs(V[0]) + Math.abs(V[3]);
+    if (cyc >= burn && prevMag > 1e-15 && mag > 1e-15){
+      ratios.push(mag / prevMag);
+    }
+    prevMag = mag;
+    const maxV = Math.max.apply(null, V.map(Math.abs));
+    if (maxV > 1e6){
+      const s = 1 / maxV;
+      V = V.map(v => v * s);
+      prevMag *= s;
+    } else if (maxV < 1e-6 && maxV > 0){
+      const s = 1 / maxV;
+      V = V.map(v => v * s);
+      prevMag *= s;
+    }
+  }
+  if (ratios.length === 0) return 1.0;
+  ratios.sort((a, b) => a - b);
+  return ratios[Math.floor(ratios.length / 2)];
+}
+// END solveDoubler4
+
+/* =====================================================================================
+   CHART HELPERS — REUSED from tools/pump-calc.html (index.html @ 8cd181e): clearCanvas, drawAxes,
+   niceBar, fmt, lines.
+   ===================================================================================== */
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+function clearCanvas(c){
+  const ctx = c.getContext("2d");
+  const dpr = window.devicePixelRatio || 1;
+  const w = c.clientWidth, h = c.clientHeight;
+  if (c.width !== Math.round(w*dpr) || c.height !== Math.round(h*dpr)){
+    c.width = Math.round(w*dpr); c.height = Math.round(h*dpr);
+  }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, w, h);
+  return {ctx, w, h};
+}
+function drawAxes(ctx, w, h, xLabel, yLabel, xs, ys){
+  const padL = 42, padR = 8, padT = 10, padB = 22;
+  const px = w - padL - padR, py = h - padT - padB;
+  const [xmin, xmax] = xs, [ymin, ymax] = ys;
+  const X = x => padL + (x - xmin)/(xmax - xmin) * px;
+  const Y = y => padT + (1 - (y - ymin)/(ymax - ymin)) * py;
+  ctx.strokeStyle = css("--line"); ctx.lineWidth = 1; ctx.strokeRect(padL, padT, px, py);
+  ctx.font = "10px ui-monospace,Menlo,monospace"; ctx.fillStyle = css("--axis");
+  ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (let i = 0; i <= 4; i++){
+    const y = ymin + (ymax-ymin)*i/4, py_ = Y(y);
+    ctx.strokeStyle = css("--grid"); ctx.beginPath(); ctx.moveTo(padL, py_); ctx.lineTo(padL+px, py_); ctx.stroke();
+    ctx.fillText(fmt(y, Math.abs(ymax-ymin) < 0.05 ? 4 : 2), padL-4, py_);
+  }
+  ctx.textAlign = "center"; ctx.textBaseline = "top";
+  for (let i = 0; i <= 4; i++){
+    const x = xmin + (xmax-xmin)*i/4, px_ = X(x);
+    ctx.strokeStyle = css("--grid"); ctx.beginPath(); ctx.moveTo(px_, padT); ctx.lineTo(px_, padT+py); ctx.stroke();
+    ctx.fillText(Math.abs(x) >= 1000 ? x.toFixed(0) : fmt(x, 2), px_, padT+py+4);
+  }
+  ctx.fillStyle = css("--axis"); ctx.textAlign = "left"; ctx.textBaseline = "top";
+  ctx.fillText(xLabel, padL+4, padT+py-12);
+  ctx.save(); ctx.translate(10, padT+py/2); ctx.rotate(-Math.PI/2); ctx.textAlign = "center"; ctx.fillText(yLabel, 0, 0); ctx.restore();
+  return {X, Y, padL, padT, px, py};
+}
+function niceBar(v){ const p = Math.pow(10, Math.floor(Math.log10(v))); const f = v/p; return (f<1.5?1:f<3.5?2:f<7.5?5:10)*p; }
+function fmt(v, dp){ if (v == null || !isFinite(v)) return "—"; if (Math.abs(v) >= 1e6 || (Math.abs(v) < 1e-3 && v !== 0)) return v.toExponential(2); return v.toFixed(dp ?? 3); }
+const COLS = ["--c1","--c2","--c3","--c4","--c5","--c6","--c7","--c8"];
+function lines(cv, xs, series, xLabel, yLabel, yr, legend){
+  const {ctx, w, h} = clearCanvas(cv);
+  let lo = Infinity, hi = -Infinity;
+  for (const s of series) for (const y of s) if (isFinite(y)){ lo = Math.min(lo, y); hi = Math.max(hi, y); }
+  if (yr){ lo = yr[0]; hi = yr[1]; }
+  if (!(hi > lo)){ hi = lo + 1; }
+  const pad = (hi - lo) * 0.06;
+  const A = drawAxes(ctx, w, h, xLabel, yLabel, [xs[0], xs[xs.length-1]], [lo - pad, hi + pad]);
+  series.forEach((s, k) => {
+    ctx.strokeStyle = css(COLS[k % COLS.length]); ctx.lineWidth = 1.3; ctx.beginPath();
+    s.forEach((y, i) => { const X = A.X(xs[i]), Y = A.Y(y); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); });
+    ctx.stroke();
+  });
+  if (legend){
+    ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "left"; ctx.textBaseline = "top";
+    legend.forEach((l, k) => { ctx.fillStyle = css(COLS[k % COLS.length]); ctx.fillText(l, A.padL + 6 + (k % 4) * 64, A.padT + 3 + Math.floor(k / 4) * 12); });
+  }
+  return A;
+}
+
+/* =====================================================================================
+   FIELDS / state / bindField / scheduleRecompute — the index.html idiom (via pump-calc).
+   Slider rows copied in shape from charge-pump-synth-live.html (label + live value + range).
+   ===================================================================================== */
+const PS = window.PumpSizing;
+const FIELDS = [
+  // host, id, label, min, max, step, unit, kind
+  ["plates", "r_inMm", "active band inner · r_in", 20, 300, 1, "mm"],
+  ["plates", "r_outMm", "active band outer · r_out", 60, 700, 1, "mm"],
+  ["plates", "g_vMm", "rotor gap · g_v", 1, 20, 0.1, "mm"],
+  ["plates", "dielectric", "gap dielectric", [["air","air (moist, A.10)"],["vacuum","vacuum"],["kapton","kapton 3.4"],["mica","mica 5.4"]]],
+  ["plates", "tempC", "air temperature", -20, 50, 0.5, "°C", "air"],
+  ["plates", "p_hPa", "air pressure", 600, 1100, 1, "hPa", "air"],
+  ["plates", "rh", "relative humidity", 0, 100, 1, "%", "air"],
+  ["plates", "N_sec", "sectors · N_sec", 4, 48, 2, ""],
+  ["plates", "n_kept", "kept · n_kept", 1, 24, 1, ""],
+  ["plates", "ring_on", "central ring on"],
+  ["plates", "r_ring_inMm", "ring inner radius", 0, 200, 0.5, "mm", "ring"],
+  ["plates", "r_ring_outMm", "ring outer radius", 1, 250, 0.1, "mm", "ring"],
+  ["firing", "Lx_mH", "resonant inductor · Lx", 0, 10, 0.01, "mH"],
+  ["firing", "R_lx", "Lx ESR", 0, 50, 0.1, "Ω"],
+  ["firing", "V_strike_kV", "spark-gap strike · V_strike", 2, 60, 0.5, "kV"],
+  ["firing", "V_ceil_kV", "strike ceiling · V_ceil", 2, 80, 0.5, "kV"],
+  ["firing", "r_gap_frac", "gap radius ÷ r_out", 0.5, 1.27, 0.01, ""],
+  ["firing", "d_ballMm", "sphere-gap ball · d_ball", 2, 30, 0.5, "mm"],
+  ["firing", "g_latMm", "lateral gap · g_lat", 0, 5, 0.1, "mm"],
+  ["firing", "gm_rail", "rail gaps (SG1/SG2)", "MODELS"],
+  ["firing", "gm_load", "load gaps (SG3a1/SG4a1)", "MODELS"],
+  ["firing", "gm_fire", "fire gaps (SG3b1/SG4b1)", "MODELS"],
+  ["firing", "gm_backstop", "backstops (BS3/BS4)", "MODELS"],
+  ["firing", "ih_load", "load I_hold ÷ i_pk1", 0, 5, 0.01, "", "srload"],
+  ["firing", "trec_load", "load t_rec", 0, 100, 0.01, "µs", "srload"],
+  ["firing", "ih_fire", "fire I_hold ÷ i_pk1", 0, 5, 0.01, "", "srfire"],
+  ["firing", "trec_fire", "fire t_rec", 0, 100, 0.01, "µs", "srfire"],
+  ["drive", "rpm", "drive · rpm", 300, 15000, 10, ""],
+  ["drive", "motor", "motor branches in (D-MOTORDEFAULT: off)"],
+  ["choice", "cmin_conv", "D-CMIN", [["active_fringe","active + 16 pF fringe (default)"],["ring","ring adds to C_max (Eqs. 5–7)"]]],
+  ["choice", "C_fringe_pF", "fringe floor (D-CMIN default)", 1, 100, 0.5, "pF"],
+  ["choice", "ratio_Ca", "D-CA · Ca ÷ C_max", 0.2, 4, 0.01, ""],
+  ["choice", "ratio_Cx", "D-CX · Cx,max ÷ C_max", 0.2, 4, 0.01, ""],
+  ["choice", "cpar_mode", "D-CPAR", [["fixed","fixed floors (default)"],["scaled","strays scale with C_max"]]],
+  ["choice", "Cpar_pF", "Cpar floor", 0, 200, 0.5, "pF"],
+  ["choice", "cx_min_pF", "Cx collapsed · Cx_min", 0, 100, 0.5, "pF"],
+  ["choice", "gap_stray_pF", "gap stray", 0, 50, 0.5, "pF"],
+  ["choice", "pCboss_pF", "boss stray", 0, 50, 0.5, "pF"],
+  ["choice", "island_stray_pF", "island stray", 0, 50, 0.5, "pF"],
+  ["choice", "L_coil_H", "motor coil L", 0.01, 5, 0.01, "H"],
+  ["choice", "R_coil", "motor coil R", 0, 500, 1, "Ω"],
+  ["choice", "medium", "D-MEDIUM (I4)", [["air","air, 3 kV/mm [RH]"],["hard_vacuum","hard vacuum, K_VAC·g^0.6"],["low_pressure","≤ 10 Pa (not evaluated)"]]],
+  ["choice", "E_bd_air_kV_mm", "air breakdown field", 0.5, 10, 0.1, "kV/mm"],
+  ["choice", "margin", "min-diameter margin m (z ≥ 1 + m)", 0, 1, 0.01, ""],
+  ["choice", "dia_max_mm", "max-margin: max rotor diameter", 200, 2000, 1, "mm"],
+];
+const MODELS = [["valve","valve (M-OW)"],["arc","sustained arc"],["ringdown","ring-down (M-RD)"],["recover","sym. recovering (M-SR)"]];
+const PLATE_KEYS = Object.keys(PS.PLATE_DEFAULTS), CHOICE_KEYS = Object.keys(PS.CHOICE_DEFAULTS).filter(k => k !== "pins");
+let DEFAULTS = null, STRIP = null, STRIP_OVER = null;
+const state = {};
+let pins = {};
+
+function fieldKind(f){ return Array.isArray(f[3]) || f[3] === "MODELS" ? "select" : (f.length === 3 ? "bool" : "num"); }
+function fmtVal(f, v){
+  if (fieldKind(f) !== "num") return "";
+  const st = f[5], dp = st >= 1 ? 0 : st >= 0.1 ? 1 : 2;
+  return (+v).toFixed(dp) + (f[6] ? " " + f[6] : "");
+}
+function buildInputs(){
+  for (const h of ["plates","firing","drive","choice"]) $(h + "Host").innerHTML = "";
+  for (const f of FIELDS){
+    const [host, id, lab] = f, k = fieldKind(f);
+    const el = document.createElement(k === "num" && host !== "choice" ? "label" : "div");
+    if (k === "num" && host !== "choice"){
+      el.className = "ctl";
+      el.innerHTML = `<span class="lab">${lab} <b id="v_${id}"></b></span><input type="range" id="in_${id}" min="${f[3]}" max="${f[4]}" step="${f[5]}">`;
+    } else if (k === "num"){
+      el.className = "f"; el.innerHTML = `<label for="in_${id}">${lab}${f[6] ? " (" + f[6] + ")" : ""}</label><input type="number" id="in_${id}" min="${f[3]}" max="${f[4]}" step="${f[5]}">`;
+    } else if (k === "select"){
+      const opts = f[3] === "MODELS" ? MODELS : f[3];
+      el.className = "f"; el.innerHTML = `<label for="in_${id}">${lab}</label><select id="in_${id}">${opts.map(([v, l]) => `<option value="${v}">${l}</option>`).join("")}</select>`;
+    } else {
+      el.className = "f"; el.innerHTML = `<label for="in_${id}">${lab}</label><input type="checkbox" id="in_${id}" style="width:auto;justify-self:end">`;
+    }
+    if (f[7]) el.dataset.when = f[7];
+    $(host === "choice" ? "choiceHost" : host + "Host").appendChild(el);
+    bindField(f);
+  }
+}
+function bindField(f){                          // index.html bindField pattern
+  const id = f[1], k = fieldKind(f), n = $("in_" + id);
+  const ev = k === "num" ? "input" : "change";
+  n.addEventListener(ev, e => {
+    if (k === "bool") state[id] = e.target.checked;
+    else if (k === "select") state[id] = e.target.value;
+    else { const v = Number(e.target.value); if (!isFinite(v)) return; state[id] = Math.max(f[3], Math.min(f[4], v)); }
+    onInput();
+  });
+}
+function syncFieldInputs(){
+  for (const f of FIELDS){
+    const id = f[1], k = fieldKind(f), n = $("in_" + id); if (!n) continue;
+    if (k === "bool") n.checked = !!state[id]; else n.value = state[id];
+    const vl = $("v_" + id); if (vl) vl.textContent = fmtVal(f, state[id]);
+  }
+  // conditional rows
+  document.querySelectorAll("[data-when]").forEach(el => {
+    const w = el.dataset.when;
+    const show = w === "air" ? state.dielectric === "air" : w === "ring" ? !!state.ring_on :
+      w === "srload" ? state.gm_load === "recover" || state.gm_load === "ringdown" :
+      w === "srfire" ? state.gm_fire === "recover" || state.gm_fire === "ringdown" : true;
+    el.style.display = show ? "" : "none";
+  });
+}
+function loadFromHash(){
+  const h = location.hash.replace(/^#/, ""); if (!h) return;
+  const p = new URLSearchParams(h);
+  for (const f of FIELDS){
+    const id = f[1], k = fieldKind(f), v = p.get(id); if (v == null) continue;
+    if (k === "bool") state[id] = v === "1";
+    else if (k === "select"){ const opts = f[3] === "MODELS" ? MODELS : f[3]; if (opts.some(o => o[0] === v)) state[id] = v; }
+    else if (isFinite(+v)) state[id] = Math.max(f[3], Math.min(f[4], +v));
+  }
+  pins = {};
+  for (const [k, v] of p.entries()) if (k.startsWith("pin_") && isFinite(+v)) pins[k.slice(4)] = +v;
+}
+function writeHash(){
+  const p = new URLSearchParams();
+  for (const f of FIELDS){
+    const id = f[1], k = fieldKind(f);
+    if (k === "bool"){ if (!!state[id] !== !!DEFAULTS[id]) p.set(id, state[id] ? 1 : 0); }
+    else if (state[id] !== DEFAULTS[id]) p.set(id, state[id]);
+  }
+  for (const k in pins) p.set("pin_" + k, pins[k]);
+  history.replaceState(null, "", "#" + p.toString());
+}
+/** the engine input: only what differs from the defaults (plus pins) */
+function inputs(){
+  const d = {};
+  for (const k in DEFAULTS) if (k !== "pins" && state[k] !== undefined && state[k] !== DEFAULTS[k]) d[k] = state[k];
+  if (Object.keys(pins).length) d.pins = Object.assign({}, pins);
+  return d;
+}
+function sizingNow(){
+  const pl = {}, ch = {};
+  for (const k of PLATE_KEYS) pl[k] = state[k];
+  for (const k of CHOICE_KEYS) ch[k] = state[k];
+  ch.pins = pins;
+  return PS.size(pl, ch);
+}
+let recomputeTimer = null, autoTimer = null;
+function scheduleRecompute(){ if (recomputeTimer) clearTimeout(recomputeTimer); recomputeTimer = setTimeout(recompute, 40); }
+function onInput(){
+  syncFieldInputs(); writeHash(); scheduleRecompute(); markStale();
+  if (autoTimer) clearTimeout(autoTimer);
+  autoTimer = setTimeout(() => compute(), 700);       // the exact engine follows the sliders (debounced)
+}
+let lastRes = null, lastSizing = null, stale = true;
+function markStale(){ stale = true; for (const id of ["c_z","c_margin","c_bind","strip","twinTable","lamps","verdict"]) $(id).classList.add("stale"); }
+function unstale(){ stale = false; for (const id of ["c_z","c_margin","c_bind","strip","twinTable","lamps","verdict"]) $(id).classList.remove("stale"); }
+
+/* the instant JS pre-step (sizing only; the engine is never imitated in JS) */
+function recompute(){
+  let s;
+  try { s = sizingNow(); } catch (e){ $("progress").textContent = "sizing: " + e.message; return; }
+  lastSizing = s;
+  renderGeometry(s); renderLadder(s); drawRotor(s);
+}
+
+/* =====================================================================================
+   ENGINE WORKERS — boot + fail-closed badge (states copied from charge-pump-synth-live.html:
+   booting / live / CANARY-FAIL / down); Blob-loaded worker + watchdog from pump-calc.html.
+   One main worker (canaries, headline, twins, Solve) + up to three helpers (the strip, in parallel).
+   ===================================================================================== */
+let main = null, helpers = [], helpersReady = [], canaryOK = false, reqId = 0, pending = {}, workerSrc = null;
+function setSolver(cls, txt){ $("solverBadge").querySelector(".dot").className = "dot " + cls; $("solverTxt").textContent = txt; }
+let lastBootAt = 0, bootWatch = null;
+function bootFail(html){ setSolver("no", "SOLVER: down"); $("boot").innerHTML = '<span style="color:var(--bad)">The engine did not start:</span> ' + html; }
+async function spawn(role){
+  const w = new Worker(URL.createObjectURL(new Blob([workerSrc], {type: "text/javascript"})));
+  w.onmessage = ev => { lastBootAt = Date.now(); onWorker(w, ev.data); };
+  w.onerror = e => { e.preventDefault && e.preventDefault(); if (role === "main") bootFail("worker error: " + (e.message || "see the browser console (F12)")); };
+  const q = new URLSearchParams(location.search);
+  w.postMessage({type: "init", role, pyodide: q.get("pyodide") || undefined, base: new URL("./", location.href).href});
+  return w;
+}
+async function boot(){
+  if (location.protocol === "file:"){
+    bootFail("this page was opened as a <b>file</b>. Serve the <b>repo root</b> over http and open it from there:" +
+      "<br><code>cd &lt;repo-root&gt;</code> &nbsp; <code>python -m http.server 8000</code> &nbsp; then " +
+      "<code>http://localhost:8000/tools/pump-synth.html</code>");
+    return;
+  }
+  if (!PS){ bootFail("tools/pump-sizing.js did not load (serve the repo root over http)."); return; }
+  const st = PS.selftest();
+  if (!st.pass){ bootFail("the JS sizing self-test failed: " + JSON.stringify(st.rows.filter(r => !r[4]))); return; }
+  try {
+    const r = await fetch("./pump-synth.worker.js", {cache: "no-store"});
+    if (!r.ok) throw new Error("tools/pump-synth.worker.js → HTTP " + r.status);
+    workerSrc = await r.text();
+  } catch (e){ bootFail(String(e && e.message || e) + "<br>Serve the repo root over http (python -m http.server) and reload."); return; }
+  lastBootAt = Date.now();
+  main = await spawn("main");
+  const q = new URLSearchParams(location.search);
+  const nh = q.has("helpers") ? Math.max(0, Math.min(3, +q.get("helpers") || 0)) : Math.max(0, Math.min(3, (navigator.hardwareConcurrency || 2) - 1));
+  for (let i = 0; i < nh; i++) helpers.push(await spawn("helper"));
+  bootWatch = setInterval(() => {
+    if (canaryOK || $("solverTxt").textContent.indexOf("booting") < 0){ clearInterval(bootWatch); return; }
+    const idle = (Date.now() - lastBootAt) / 1000, msg = $("boot").textContent;
+    if (idle > 60 && !/still waiting/.test(msg))
+      $("boot").innerHTML = msg + '<br><span style="color:var(--warn)">still waiting (' + idle.toFixed(0) +
+        ' s with no progress)</span> — the browser may not reach <code>cdn.jsdelivr.net</code> (offline / proxy / firewall). ' +
+        'Pyodide can be served locally: <code>?pyodide=&lt;url-of-a-pyodide-0.26.2-folder&gt;/</code>. Details: browser console (F12).';
+  }, 5000);
+}
+let bootInfo = null;
+function onWorker(w, m){
+  if (m.type === "boot"){ if (w === main) $("boot").textContent = m.msg; return; }
+  if (m.type === "down"){
+    if (w === main){
+      setSolver("no", "SOLVER: down");
+      $("boot").innerHTML = '<span style="color:var(--bad)">The engine did not load:</span> ' + m.error +
+        '<br>Honesty rule: the page does not fall back to any hard-coded number. Serve from the repo root (python3 -m http.server) with access to the Pyodide CDN, then reload.';
+    } else { helpers = helpers.filter(h => h !== w); }
+    return;
+  }
+  if (m.type === "ready"){
+    if (w !== main){ if (m.result.ok) helpersReady.push(w); updateHelperNote(); return; }
+    bootInfo = m.result;
+    DEFAULTS = m.result.defaults; STRIP = m.result.strip; STRIP_OVER = m.result.strip_over;
+    for (const k in DEFAULTS) if (k !== "pins") state[k] = DEFAULTS[k];
+    buildInputs(); loadFromHash(); syncFieldInputs(); buildPresets(); buildSweepKeys();
+    renderCanaries(m.result);
+    canaryOK = m.result.ok && jsK1ok;
+    $("boot").style.display = "none"; $("app").style.display = ""; $("detailsPanel").style.display = "";
+    recompute();
+    if (!canaryOK){
+      setSolver("no", "SOLVER: CANARY-FAIL");
+      $("boot").style.display = ""; $("boot").innerHTML = '<span style="color:var(--bad)">CANARY-FAIL</span> — the in-browser engine disagrees with K1–K4 / H-GEOM. No engine numbers are shown.';
+      for (const id of ["btnCompute","solve","btnSweep","btnMinPlate"]) $(id).disabled = true;
+      return;
+    }
+    setSolver("ok", "SOLVER: live · K1–K4 + H-GEOM pass");
+    compute();
+    return;
+  }
+  if (m.type === "progress"){ $("progress").textContent = m.msg; return; }
+  if (m.type === "result" || m.type === "error"){ const cb = pending[m.id]; delete pending[m.id]; if (cb) cb(m); }
+}
+function request(w, fn, args){
+  return new Promise(res => { const id = ++reqId; pending[id] = res; w.postMessage({type: "call", id, fn, args}); });
+}
+function updateHelperNote(){
+  $("stripNote").textContent = helpersReady.length ? `strip runs in ${helpersReady.length} parallel helper worker(s)` :
+    (helpers.length ? "helper workers booting — the strip runs on the main worker meanwhile" : "no helper workers (single core): the strip runs serially on the main worker");
+}
+
+/* =====================================================================================
+   CANARY TABLE — the runSelfTest/renderSelfTest pattern (index.html via pump-calc): K1–K4 + K1 on JS
+   solveDoubler4 + H-GEOM + the module self-tests.
+   ===================================================================================== */
+let jsK1ok = false;
+function renderCanaries(r){
+  const rows = r.canaries.rows;
+  const k1js = solveDoubler4(16, 280, 16, 280, 309, 309, 20);
+  jsK1ok = Math.abs(k1js - 1.3340016) / 1.3340016 <= 1e-6;
+  const f = v => Array.isArray(v) ? v.map(x => x.toPrecision(9)).join(" / ") : (typeof v === "number" ? v.toPrecision(10) : v);
+  let h = "<tr><th>id</th><th>check</th><th>expected</th><th>got</th><th></th></tr>";
+  const row = (id, chk, e, g, ok) => `<tr><td>${id}</td><td class="l">${chk}</td><td>${f(e)}</td><td>${f(g)}</td><td class="${ok ? "pass" : "fail"}">${ok ? "PASS" : "FAIL"}</td></tr>`;
+  for (const x of rows) h += row(x.id, x.check, x.expected, x.got, x.pass);
+  h += row("K1-JS", "always-armed galvanic z, JS solveDoubler4 (index.html)", 1.3340016, k1js, jsK1ok);
+  for (const x of r.hgeom) h += row(x.id, x.check, x.expected, x.got, x.pass_);
+  const js = PS.selftest();
+  h += row("ST", `engine + sizing + synth on-load self-tests; JS sizing self-test (${js.rows.length})`, "—", "—",
+           r.selftest.pass_ && r.sizing_selftest && r.synth_selftest && js.pass);
+  $("selfTest").innerHTML = h;
+  $("engineVer").textContent = `${r.engine_version} · ${r.synth_version}. Build-time gates: sim/pump-calc-findings.md, sim/pump-synth-findings.md.`;
+}
+
+/* =====================================================================================
+   COMPUTE — headline (main) ‖ robustness strip (helpers) → twins (main). Every number is an
+   exact-engine run; a stale request is superseded by the newest inputs.
+   ===================================================================================== */
+let busy = false, again = false, lastStrip = null, lastTwins = null, lastP1 = null;
+function sameModels(over){ return Object.keys(over).every(k => state[k] === over[k]); }
+async function compute(){
+  if (!canaryOK) return;
+  if (busy){ again = true; return; }
+  busy = true; again = false; $("btnCompute").disabled = true; $("busy").innerHTML = '<span class="spin"></span>';
+  const inp = inputs(); const t0 = performance.now();
+  const useHelpers = helpersReady.length > 0;
+  const stripRows = STRIP.map(n => ({model: n, pending: true}));
+  renderStrip(stripRows);
+  let stripP = Promise.resolve();
+  if (useHelpers){
+    let k = 0;
+    stripP = Promise.all(STRIP.map((name, i) => {
+      if (sameModels(STRIP_OVER[name])) return Promise.resolve();      // shared with the headline
+      const w = helpersReady[k++ % helpersReady.length];
+      return request(w, "z", {inp, over: STRIP_OVER[name], model: name}).then(m => {
+        stripRows[i] = m.type === "result" ? Object.assign({model: name}, m.result) : {model: name, error: m.error};
+        renderStrip(stripRows);
+      });
+    }));
+  }
+  const m = await request(main, "evaluate", {inp, strip: !useHelpers, twins: false});
+  if (m.type === "error"){ $("progress").innerHTML = '<span style="color:var(--bad)">engine error:</span> ' + m.error; finish(); return; }
+  const res = m.result; lastRes = res; lastTwins = null;
+  if (!useHelpers && res.strip) res.strip.forEach((s, i) => stripRows[i] = s);
+  STRIP.forEach((name, i) => { if (sameModels(STRIP_OVER[name])) stripRows[i] = {model: name, z: res.z, converged: res.converged, shared: true}; });
+  renderResult(res); renderStrip(stripRows);
+  await stripP;
+  lastStrip = stripRows; renderStrip(stripRows);
+  lastP1 = (performance.now() - t0) / 1000;
+  $("progress").textContent = `headline + strip: ${lastP1.toFixed(1)} s (P1 budget 10 s) · twins next…`;
+  if (!again){
+    const t = await request(main, "twins", {});
+    if (t.type === "result"){ lastTwins = t.result; Object.assign(res, {invariants: t.result.invariants, feasible: t.result.feasible, blocker: t.result.blocker, twins: t.result.twins}); renderResult(res); }
+    $("progress").textContent = `headline + strip ${lastP1.toFixed(1)} s · with twins ${((performance.now() - t0) / 1000).toFixed(1)} s`;
+  }
+  unstale();
+  finish();
+}
+function finish(){
+  busy = false; $("btnCompute").disabled = false; $("busy").innerHTML = "";
+  if (again){ again = false; compute(); }
+}
+
+/* =====================================================================================
+   RENDER
+   ===================================================================================== */
+const NAMES = {I1_conservation:"I1 conservation", I2_solver_authority:"I2 solver authority", I3_z_band:"I3 z band (robust margin)",
+  I4_insulate_first:"I4 insulate-first", I5_tax:"I5 tax", I6_parasitic_floor:"I6 parasitic floor", I7_motor_matched:"I7 motor matched",
+  I8_dc_tank:"I8 DC tank", I9_mechanical:"I9 mechanical", I10_shuttle_integrity:"I10 shuttle integrity", I11_crossfire:"I11 cross-fire",
+  I12_resonant_timing:"I12 resonant timing", I13_island_recovery:"I13 island recovery"};
+function renderGeometry(s){
+  const L = s.ladder;
+  $("c_dia").textContent = s.rotor_dia_mm.toFixed(0);
+  $("c_band").textContent = `R${s.plates.r_inMm.toFixed(0)}–R${s.plates.r_outMm.toFixed(0)} (⌀ ${(2 * s.plates.r_outMm).toFixed(0)} mm)`;
+  $("c_body").textContent = `R${s.rotor_outMm.toFixed(0)}`;
+  const rimBad = s.rim_mps >= 200;
+  $("c_rim").innerHTML = `<span style="color:${rimBad ? "var(--bad)" : "inherit"}">${s.rim_mps.toFixed(0)} m/s</span> (< 200)`;
+  $("c_cmax").textContent = `${L.C_max.value.toFixed(1)} / ${L.C_min.value.toFixed(1)} pF`;
+  $("c_kappa").textContent = s.kappa_C ? s.kappa_C.toFixed(2) : "—";
+  $("c_eps").textContent = s.eps_r.toFixed(6);
+  const other = s.choices.cmin_conv === "ring" ? s.conventions.active_fringe : s.conventions.ring;
+  $("c_conv").textContent = `${s.choices.cmin_conv === "ring" ? "active+fringe" : "ring"}: ${other.C_max.toFixed(1)} / ${other.C_min.toFixed(1)} pF`;
+  $("c_cblk").textContent = `${L.C_blk_nF.value.toFixed(1)} nF @ ${s.PRF_branch.toFixed(0)} Hz${state.motor ? "" : " (motor off)"}`;
+}
+let crit = {};          // key -> critical() result for the current inputs
+let critKey = "";
+function renderLadder(s){
+  const key = JSON.stringify(Object.assign({}, inputs(), {pins: undefined}));
+  if (key !== critKey){ crit = {}; critKey = key; }
+  const L = s.ladder;
+  const KNOBS = ["Ca","cx_max","Cpar","C_min","cx_min","gap_stray","island_stray","pCboss"];
+  let h = "<tr><th>item</th><th>value</th><th>÷ C_max</th><th>rule · tag</th><th>pin</th><th>critical (z = 1)</th><th>headroom</th></tr>";
+  for (const k of PS.LADDER_KEYS){
+    const e = L[k]; const u = e.unit === "ohm" ? "Ω" : e.unit;
+    const v = e.value < 10 ? e.value.toFixed(2) : e.value.toFixed(1);
+    const pinv = pins[k] != null ? pins[k] : "";
+    const canPin = k !== "C_max";
+    let cr = "", hr = "";
+    if (KNOBS.includes(k)){
+      const c = crit[k];
+      if (!c) cr = `<button class="mini" data-crit="${k}">z=1?</button>`;
+      else if (c.pending) cr = '<span class="spin"></span>';
+      else if (c.critical == null) { cr = `<span class="note">${c.note && c.note.startsWith("no z") ? "none ×1/32…×32" : c.note || "—"}</span>`; hr = '<span class="meter"><i style="width:100%"></i></span>'; }
+      else {
+        const ratio = c.critical / e.value;
+        cr = `${c.critical < 10 ? c.critical.toFixed(2) : c.critical.toFixed(1)} ${u} (×${ratio.toPrecision(3)})`;
+        const span = Math.min(1, Math.abs(Math.log(ratio)) / Math.log(32));
+        const col = span < 0.1 ? "var(--bad)" : span < 0.25 ? "var(--warn)" : "var(--good)";
+        hr = `<span class="meter" title="|ln(critical/value)| on a ×32 scale"><i style="width:${(span * 100).toFixed(0)}%;background:${col}"></i></span>`;
+      }
+    }
+    const tagCls = e.pinned ? "flag" : "";
+    h += `<tr><td>${k}${e.pinned ? " 📌" : ""}</td><td class="${tagCls}">${v} ${u}</td><td>${e.ratio != null ? e.ratio.toFixed(3) : "—"}</td>` +
+         `<td class="l">${e.rule} <span style="color:var(--mut)">${e.tag}</span>${e.pinned ? ` <span class="flag">(ladder ${e.ladder_value.toPrecision(4)})</span>` : ""}</td>` +
+         `<td>${canPin ? `<input class="pin" data-pin="${k}" type="number" step="any" value="${pinv}" placeholder="—">` : ""}</td><td>${cr}</td><td>${hr}</td></tr>`;
+  }
+  h += `<tr class="greyed"><td>C_R</td><td>${s.C_R_pF.toFixed(0)} pF</td><td>${(s.C_R_pF / L.C_max.value).toFixed(2)}</td><td class="l">2.82 × C_max — tank collapsed (shown only)</td><td></td><td></td><td></td></tr>`;
+  $("ladderTable").innerHTML = h;
+  document.querySelectorAll("[data-pin]").forEach(n => n.addEventListener("change", e => {
+    const k = e.target.dataset.pin, v = e.target.value.trim();
+    if (v === "" || !isFinite(+v)) delete pins[k]; else pins[k] = +v;
+    onInput();
+  }));
+  document.querySelectorAll("[data-crit]").forEach(n => n.addEventListener("click", () => findCritical(n.dataset.crit)));
+}
+async function findCritical(k){
+  if (!canaryOK) return;
+  crit[k] = {pending: true}; renderLadder(lastSizing);
+  const keyAt = critKey;
+  const m = await request(main, "critical", {inp: inputs(), key: k});
+  if (keyAt !== critKey) return;
+  crit[k] = m.type === "result" ? m.result : {critical: null, note: m.error};
+  renderLadder(lastSizing);
+}
+function renderStrip(rows){
+  $("strip").innerHTML = rows.map(r => {
+    if (r.pending) return `<div class="pend">${r.model}<b><span class="spin"></span></b></div>`;
+    if (r.error) return `<div class="no">${r.model}<b>error</b></div>`;
+    if (!r.converged) return `<div class="no">${r.model}<b>not conv.</b></div>`;
+    return `<div class="${r.z > 1 ? "ok" : "no"}" title="${r.shared ? "the headline run" : (r.time_s ? r.time_s.toFixed(1) + " s" : "")}">${r.model}<b>${r.z.toFixed(4)}</b>${r.z > 1 ? "pumps" : "no"}${r.shared ? " · headline" : ""}</div>`;
+  }).join("");
+}
+function lampRow(k, v, isBlock){
+  const cls = v.status === "pass" ? (isBlock ? "bind" : "ok") : v.status === "fail" ? "no" : v.status === "not-evaluated" ? "ne" : v.status === "n/a" ? "na" : "info";
+  const st = v.status === "pass" ? (isBlock ? "BINDING" : "pass") : v.status.toUpperCase();
+  return `<div class="lamp ${v.status === "not-evaluated" ? "ne" : ""}"><span class="dot ${cls}"></span><span class="nm">${NAMES[k] || k}</span>` +
+         `<span class="st">${st}</span><span class="det">${v.detail} <span style="color:#4e5b68">${v.tag || ""}</span></span></div>`;
+}
+function renderResult(res){
+  const ok = res.converged;
+  $("c_z").textContent = ok ? res.z.toFixed(6) : "not converged";
+  $("c_margin").textContent = ok ? (res.margin >= 0 ? "+" : "") + res.margin.toFixed(6) : "—";
+  $("c_models").textContent = `load ${state.gm_load} · fire ${state.gm_fire}`;
+  const V = $("verdict");
+  if (!ok){ V.className = "verdict warn"; V.textContent = "NOT CONVERGED — the switching pattern did not repeat: no number is shown"; }
+  else if (res.pumps){ V.className = "verdict ok"; V.textContent = `PUMPS: YES — z ${res.z.toFixed(4)}${res.feasible ? " · every evaluated invariant holds" : " · but an evaluated invariant fails"}`; }
+  else { V.className = "verdict no"; V.textContent = `PUMPS: NO — z ${res.z.toFixed(4)} ≤ 1`; }
+  const b = res.blocker || {};
+  $("c_bind").textContent = b.item ? `${NAMES[b.item] || b.item} (${b.how})` : "—";
+  const inv = res.invariants || {};
+  const Inum = k => parseInt((k.match(/^I(\d+)/) || [0, 999])[1], 10);
+  $("lamps").innerHTML = Object.entries(inv).sort((a, c) => Inum(a[0]) - Inum(c[0])).map(([k, v]) => lampRow(k, v, k === b.item)).join("") +
+    `<div class="note" style="margin-top:6px">${Object.values(inv).filter(v => v.status === "pass").length} pass · ${Object.values(inv).filter(v => v.status === "fail").length} fail · ` +
+    `${Object.values(inv).filter(v => v.status === "not-evaluated").length} not evaluated · ${Object.values(inv).filter(v => v.status === "n/a" || v.status === "info").length} n/a / info${lastTwins ? "" : " · I13 re-derived when the twin lands"}</div>`;
+  if (b.item){ $("bindLine").style.display = ""; $("bindLine").innerHTML = `<b>Named blocker: ${NAMES[b.item] || b.item}</b> — ${b.how === "fails" ? "the first failing evaluated invariant" : "least slack among the evaluated invariants (nothing fails)"}<br><span style="color:var(--mut)">${(inv[b.item] || {}).detail || ""}</span>`; }
+  else $("bindLine").style.display = "none";
+  // twins
+  let tt = "<tr><th>machine</th><th>z</th><th>Δz (main − twin)</th></tr>";
+  tt += `<tr><td>main</td><td>${ok ? res.z.toFixed(6) : "—"}</td><td></td></tr>`;
+  for (const [k, lab] of [["G", "G (Lx shorted)"], ["G0", "G0 (station valves)"]]){
+    const t = res.twins && res.twins[k];
+    tt += t ? `<tr><td>${lab}</td><td>${t.converged ? t.z.toFixed(6) : "not conv."}</td><td>${ok && t.converged ? (t.dz >= 0 ? "+" : "") + t.dz.toFixed(5) : "—"}</td></tr>`
+            : `<tr><td>${lab}</td><td colspan="2" style="text-align:center;color:var(--mut)"><span class="spin"></span></td></tr>`;
+  }
+  $("twinTable").innerHTML = tt;
+  renderDetails(res.engine, ok);
+}
+
+/* ---- details: waveforms / timeline / η band / events (ADAPTED from pump-calc.html render*) ---- */
+function renderDetails(e, ok){
+  if (!e || !e.wave) return;
+  const w = e.wave;
+  const nn = ["1","2","3","4","7","8"].filter(n => w.V[n]);
+  lines($("cvV"), w.th, nn.map(n => w.V[n]), "θ (deg)", "V / max", null, nn.map(n => "V" + n));
+  const gn = Object.keys(w.gapV);
+  lines($("cvG"), w.th, gn.map(g => w.gapV[g]), "θ (deg)", "V_gap / max", null, gn);
+  const cv = $("cvT"); const {ctx, w: W, h: H} = clearCanvas(cv);
+  const padL = 58, padR = 8, padT = 6, padB = 18, pw = W - padL - padR, ph = H - padT - padB;
+  const X = th => padL + th / 60 * pw, rh = ph / gn.length;
+  gn.forEach((g, i) => {
+    const y = padT + i * rh, col = css(COLS[i % COLS.length]); const [a, b] = e.windows[g];
+    ctx.fillStyle = col; ctx.globalAlpha = 0.14;
+    if (b - a >= 60) ctx.fillRect(X(0), y + 2, pw, rh - 4); else if (a < b) ctx.fillRect(X(a), y + 2, X(Math.min(b, 60)) - X(a), rh - 4);
+    else { ctx.fillRect(X(a), y + 2, X(60) - X(a), rh - 4); ctx.fillRect(X(0), y + 2, X(b) - X(0), rh - 4); }
+    ctx.globalAlpha = 1; const c = w.cond[g];
+    for (let k = 0; k < c.length - 1; k++) if (c[k]) ctx.fillRect(X(w.th[k]), y + rh * 0.25, Math.max(1, X(w.th[k + 1]) - X(w.th[k])), rh * 0.5);
+    for (const ev of (e.events || [])) if (ev.gap === g) ctx.fillRect(X(ev.th) - 0.5, y + rh * 0.2, 1.5, rh * 0.6);
+    ctx.font = "10px ui-monospace,monospace"; ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(g, padL - 4, y + rh / 2);
+  });
+  ctx.fillStyle = css("--axis"); ctx.textAlign = "center"; ctx.textBaseline = "top";
+  for (let d = 0; d <= 60; d += 10) ctx.fillText(d + "°", X(d), padT + ph + 3);
+  if (ok){ lines($("cvEta"), e.eta_cut.th, [e.eta_cut.eta], "cut (deg)", "η(cut)", null);
+    $("etaNote").textContent = `η(cut) band over the sector: ${e.eta_cut.min.toFixed(4)} … ${e.eta_cut.max.toFixed(4)} — cut-dependent for an unloaded growing pump [OC]; no single η until D-CUT (I5 informational).`; }
+  const sc = e.scaled; const byGap = {}; if (sc) for (const r of sc.rows) byGap[r.gap] = r;
+  let h = "<tr><th>gap</th><th>class · model</th><th>strike θ</th><th>V_f (kV)</th><th>q (µC)</th><th>E gap (mJ)</th><th>E ESR (mJ)</th><th>t½ (µs)</th><th>i_pk (A)</th><th>TRV ÷ V_f</th><th>TRV (kV)</th><th>flag</th></tr>";
+  for (const p of e.episodes){
+    const s = byGap[p.gap] || {};
+    const flag = p.needs_rect ? (p.model === "valve" ? "rectifier assumed (valve)" : "NEEDS A RECTIFIER") : "";
+    h += `<tr><td>${p.gap}</td><td>${p.cls} · ${p.model}</td><td>${fmt(p.th_strike, 2)}</td><td>${fmt(s.V_kV, 2)}</td><td>${fmt(s.q_uC, 3)}</td><td>${fmt(s.E_gap_mJ, 3)}</td><td>${fmt(s.E_esr_mJ, 3)}</td>` +
+         `<td>${fmt(p.t_half_us, 3)}</td><td>${fmt(s.i_pk_A, 2)}</td><td>${p.trv != null ? p.trv.toFixed(3) : "—"}</td><td>${fmt(s.trv_kV, 2)}</td><td class="${p.needs_rect && p.model !== "valve" ? "fail" : "flag"}">${flag}</td></tr>`;
+  }
+  $("evTable").innerHTML = h;
+  $("scaleNote").textContent = sc ? `Scaling [OC] (linear, scale-free engine): ${sc.anchor} (D-SCALE [IR]) → W_mech ${fmt(sc.W_mech_mJ, 2)} mJ, E_diss ${fmt(sc.E_diss_mJ, 2)} mJ per cycle. Ledger residual ${e.ledger.resid.toExponential(1)} (I1).` : "no load-gap strike — no operating-point scaling";
+}
+
+/* ---- the rotor: drawRotor ADAPTED from charge-pump-synth-live.html (wedges from N_sec/n_kept, the ring) ---- */
+function drawRotor(s){
+  const svg = $("rotor"), CX = 160, CY = 150, R_MAX = 118;
+  const p = s.plates, rOut = p.r_outMm, rotorOut = s.rotor_outMm, rIn = p.r_inMm;
+  const sc = R_MAX / (rotorOut * 1.02);
+  const circ = (r, col, w, dash, fill) => `<circle cx="${CX}" cy="${CY}" r="${(r * sc).toFixed(1)}" fill="${fill || "none"}" stroke="${col}" stroke-width="${w}" ${dash ? `stroke-dasharray="${dash}"` : ""}/>`;
+  let wedges = "";
+  const N = Math.max(2, p.N_sec | 0), K = Math.max(1, Math.min(N, p.n_kept | 0)), step = 360 / N;
+  const pt = (r, a) => `${(CX + r * Math.cos(a)).toFixed(1)},${(CY + r * Math.sin(a)).toFixed(1)}`;
+  for (let i = 0; i < N; i++){
+    if (Math.floor(i * K / N) === Math.floor((i + 1) * K / N)) continue;      // kept sectors, spread evenly
+    const a0 = (i * step - 90) * Math.PI / 180, a1 = ((i + 1) * step - 90) * Math.PI / 180, ri = rIn * sc, ro = rOut * sc;
+    wedges += `<path d="M ${pt(ri, a0)} L ${pt(ro, a0)} A ${ro} ${ro} 0 0 1 ${pt(ro, a1)} L ${pt(ri, a1)} A ${ri} ${ri} 0 0 0 ${pt(ri, a0)} Z" fill="#13202c" stroke="#2a4a5e" stroke-width="0.7"/>`;
+  }
+  const rimBad = s.rim_mps >= 200;
+  const ring = p.ring_on && p.r_ring_outMm > p.r_ring_inMm ? circ((p.r_ring_inMm + p.r_ring_outMm) / 2, "#3a5a48", Math.max(1, (p.r_ring_outMm - p.r_ring_inMm) * sc)) : "";
+  svg.innerHTML = circ(rotorOut, rimBad ? "var(--bad)" : "var(--brass)", 2, null, "#0e141c") + wedges + ring +
+    circ(rIn, "#3a4a5a", 0.8, "3 3") + circ(state.r_gap_frac * rOut, "#7a5a26", 0.8, "1 3") +
+    `<circle cx="${CX}" cy="${CY}" r="2" fill="var(--amber)"/>` +
+    `<text x="${CX}" y="16" fill="var(--brass)" font-size="10" text-anchor="middle">ROTOR BODY R${rotorOut.toFixed(0)} · ⌀ ${s.rotor_dia_mm.toFixed(0)} mm</text>` +
+    `<text x="${CX}" y="292" fill="var(--mut)" font-size="9" text-anchor="middle">active R${rIn.toFixed(0)}–R${rOut.toFixed(0)} · ${K}/${N} kept · gap radius dotted</text>`;
+}
+
+/* =====================================================================================
+   SOLVE — objectives on the exact engine (§3). The verdict is always an exact run (H-SYN3).
+   ===================================================================================== */
+let solving = false;
+async function doSolve(){
+  if (!canaryOK || solving) return;
+  const obj = $("objective").value;
+  if (bootInfo.disabled[obj]){ $("objNote").textContent = bootInfo.disabled[obj]; return; }
+  solving = true; const btn = $("solve"), old = btn.textContent; btn.innerHTML = '<span class="spin"></span> solving…';
+  const t0 = performance.now();
+  const kw = obj === "max_margin" ? {ca_search: $("caSearch").checked} : {};
+  const m = await request(main, "solve", {objective: obj, inp: inputs(), kw});
+  btn.textContent = old; solving = false;
+  $("solvePanel").style.display = "";
+  if (m.type === "error"){ $("solveOut").innerHTML = '<span style="color:var(--bad)">engine error:</span> ' + m.error; return; }
+  const r = m.result, wall = ((performance.now() - t0) / 1000).toFixed(1);
+  if (obj === "min_diameter"){
+    if (!r.r_outMm){ $("solveOut").innerHTML = `<span style="color:var(--bad)">SYNTH-INFEASIBLE</span> — ${r.note} (${wall} s)`; return; }
+    const okc = r.found ? "var(--good)" : "var(--bad)";
+    $("solveOut").innerHTML = `<b style="color:${okc}">min diameter ${r.dia_mm.toFixed(0)} mm</b> (r_out ${r.r_outMm.toFixed(1)} mm at g_v ${r.g_vMm.toFixed(2)} mm, the insulation law) · ` +
+      `exact re-run z ${r.z.toFixed(5)} ≥ ${r.target.toFixed(2)} ${r.z >= r.target ? "✓" : "✗"} (H-SYN3) · binding: <b>${r.binding}</b> · ` +
+      `${r.monotone ? "z monotone in C_max on the search points (H-SYN2 ✓)" : "<span style='color:var(--warn)'>SYNTH-SCAN-ONLY: not monotone — scan answer</span>"} · ${r.runs} exact runs, ${wall} s` +
+      (r.note ? ` · ${r.note}` : "");
+    const pts = (r.scan || r.points).filter(p => p.converged).sort((a, b) => a.C_max_pF - b.C_max_pF);
+    const A = lines($("cvSolve"), pts.map(p => p.C_max_pF), [pts.map(p => p.z)], "C_max (pF)", "z", null);
+    const ctx = $("cvSolve").getContext("2d");
+    ctx.strokeStyle = css("--axis"); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(A.padL, A.Y(r.target)); ctx.lineTo(A.padL + A.px, A.Y(r.target)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = css("--amber"); for (const p of r.points) if (p.converged){ ctx.beginPath(); ctx.arc(A.X(p.C_max_pF), A.Y(p.z), 2.5, 0, 2 * Math.PI); ctx.fill(); }
+    state.r_outMm = Math.round(r.r_outMm * 10) / 10; if (r.g_vMm) state.g_vMm = Math.round(r.g_vMm * 100) / 100;
+  } else if (obj === "max_margin"){
+    $("solveOut").innerHTML = `<b>max margin at ⌀ ≤ ${state.dia_max_mm} mm</b>: r_out ${r.r_outMm.toFixed(1)} mm → z ${r.z.toFixed(5)} (margin ${r.margin.toFixed(4)}), ${r.feasible ? "feasible" : "blocked by " + r.blocker.item}` +
+      (r.ca ? ` · Ca search: z-optimal Ca ratio ${r.ca.ratio_Ca_opt.toFixed(3)} (z ${r.ca.z_opt.toFixed(5)}) vs the ladder's ${state.ratio_Ca} (D-CA) [ME]` : "") + ` · ${wall} s`;
+    if (r.ca){ const pts = r.ca.points.filter(p => p.converged).sort((a, b) => a.ratio_Ca - b.ratio_Ca); lines($("cvSolve"), pts.map(p => p.ratio_Ca), [pts.map(p => p.z)], "Ca ÷ C_max", "z", null); }
+    else clearCanvas($("cvSolve"));
+    state.r_outMm = Math.round(r.r_outMm * 10) / 10;
+  } else if (obj === "max_rpm"){
+    $("solveOut").innerHTML = `<b>max rpm ${r.rpm}</b> — binding ${r.binding} (I9 rim limit ${r.rpm_I9.toFixed(0)} rpm; I12 timing ${r.rpm_I12.toFixed(0)} rpm with t½ ${r.t_half_us.toFixed(2)} µs) · confirming exact run z ${r.z.toFixed(5)}, ${r.feasible ? "feasible" : "an evaluated invariant fails"} · ${wall} s`;
+    clearCanvas($("cvSolve"));
+    state.rpm = r.rpm;
+  }
+  syncFieldInputs(); writeHash(); recompute(); compute();
+}
+
+async function findMinPlate(){
+  if (!canaryOK) return;
+  $("btnMinPlate").disabled = true; $("minPlateNote").innerHTML = '<span class="spin"></span>';
+  const t0 = performance.now();
+  const m = await request(main, "min_plate", {inp: inputs()});
+  $("btnMinPlate").disabled = false;
+  if (m.type === "error"){ $("minPlateNote").textContent = m.error; return; }
+  const r = m.result;
+  $("c_minplate").textContent = r.found ? `⌀ ${r.dia_mm.toFixed(0)} mm (r_out ${r.r_outMm.toFixed(1)}, C_max ${r.C_max_pF ? r.C_max_pF.toFixed(0) : "—"} pF)` : "none ≤ 4 m";
+  $("minPlateNote").textContent = `${r.runs || r.points.length} exact runs, ${((performance.now() - t0) / 1000).toFixed(0)} s`;
+}
+
+/* ---- sweep (pump-calc pattern) ---- */
+function buildSweepKeys(){
+  const keys = FIELDS.filter(f => fieldKind(f) === "num" && (f[0] === "plates" || f[0] === "choice" || f[0] === "drive" || ["Lx_mH","R_lx"].includes(f[1])) && !["margin","dia_max_mm","E_bd_air_kV_mm"].includes(f[1])).map(f => f[1]);
+  $("swKey").innerHTML = keys.map(k => `<option value="${k}">${k}</option>`).join("");
+  $("swKey").value = "r_outMm";
+  const upd = () => { const k = $("swKey").value, v = state[k]; $("swFrom").value = +(v * 0.6).toPrecision(4); $("swTo").value = +(v * 1.4 || 1).toPrecision(4); };
+  $("swKey").addEventListener("change", upd); upd();
+}
+async function sweep(){
+  if (!canaryOK) return;
+  const key = $("swKey").value, a = +$("swFrom").value, b = +$("swTo").value, n = Math.max(2, Math.min(41, +$("swN").value || 7));
+  const values = Array.from({length: n}, (_, i) => +(a + (b - a) * i / (n - 1)).toPrecision(10));
+  $("btnSweep").disabled = true;
+  const m = await request(main, "sweep", {inp: inputs(), key, values});
+  $("btnSweep").disabled = false;
+  if (m.type === "error"){ $("swNote").textContent = "engine error: " + m.error; return; }
+  const r = m.result, pts = r.points.filter(p => p.converged);
+  const A = lines($("cvSweep"), pts.map(p => p.v), [pts.map(p => p.z)], key, "z", null);
+  const ctx = $("cvSweep").getContext("2d");
+  ctx.strokeStyle = css("--axis"); ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(A.padL, A.Y(1)); ctx.lineTo(A.padL + A.px, A.Y(1)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = css("--amber"); for (const c of r.crossings){ ctx.beginPath(); ctx.arc(A.X(c), A.Y(1), 4, 0, 2 * Math.PI); ctx.fill(); }
+  $("swNote").textContent = `z = 1 crossing(s): ${r.crossings.length ? r.crossings.map(c => c.toPrecision(5)).join(", ") : "none in range"} · ${r.wall_s.toFixed(1)} s`;
+}
+
+/* ---- presets with expect blocks (pump-calc pattern) ---- */
+const PRESET_FILES = ["freeze-v010-plates", "small-plate-probe"];
+let activePreset = null;
+function buildPresets(){ $("presetSel").innerHTML = PRESET_FILES.map(p => `<option value="${p}">${p}</option>`).join(""); }
+async function loadPreset(){
+  const name = $("presetSel").value;
+  const r = await fetch(`../presets/pump/${name}.json`);
+  if (!r.ok){ $("presetNote").textContent = `presets/pump/${name}.json not reachable (${r.status})`; return; }
+  const p = await r.json();
+  for (const k in DEFAULTS) if (k !== "pins") state[k] = DEFAULTS[k];
+  pins = {};
+  const warn = [];
+  for (const k in (p.inputs || {})){ if (k === "pins"){ pins = Object.assign({}, p.inputs.pins); continue; } if (!(k in DEFAULTS)){ warn.push(k + ": unknown — skipped"); continue; } state[k] = p.inputs[k]; }
+  syncFieldInputs(); writeHash(); recompute();
+  activePreset = p;
+  $("presetNote").innerHTML = `<b>${p.title || name}</b> — ${p.description || ""}` + (warn.length ? `<br><span style="color:var(--warn)">${warn.join("; ")}</span>` : "");
+  await compute();
+  checkPreset(p);
+}
+function checkPreset(p){
+  const out = [];
+  for (const k in (p.expect || {})){
+    const e = p.expect[k];
+    const got = k === "z" ? (lastRes || {}).z : k === "C_max_pF" ? lastSizing.ladder.C_max.value : k === "rotor_dia_mm" ? lastSizing.rotor_dia_mm : NaN;
+    const ok = Math.abs(got - e.value) <= (e.tol ?? 1e-9) * Math.max(1, Math.abs(e.value));
+    out.push(`${k}: ${e.value} ± ${e.tol} → ${fmt(got, 8)} ${ok ? "✓" : "✗"}`);
+  }
+  if (out.length) $("presetNote").innerHTML += `<br><span style="color:${out.every(s => s.endsWith("✓")) ? "var(--good)" : "var(--bad)"}">expect: ${out.join(" · ")}</span>`;
+}
+
+/* =====================================================================================
+   REF_MAP + reference drawer — COPIED/ADAPTED from charge-pump-synth-live.html @ 8cd181e: the same
+   sv_<REF> slots of tools/schematic.svg, re-bound to the sized ladder; the tank greyed "collapsed";
+   the motor greyed when off; the stamp DRAWN = MAPPED = NETLIST (43 = 43 = 43, gate H-STAMP).
+   ===================================================================================== */
+const _pf = x => (x == null || isNaN(x)) ? "—" : `${(+x).toFixed(x < 10 ? 1 : 0)} pF`;
+const REF_MAP = (() => {
+  const M = {};
+  const add = (refs, fam, role, val, flag) => refs.forEach(r => M[r] = {fam, role, val, flag});
+  const L = s => s.ladder;
+  add(["C1","C2"], "C1 / C2", "rotor varicaps (the plates)", s => `${_pf(L(s).C_min.value)}–${_pf(L(s).C_max.value)}`);
+  add(["Ca1","Cb1"], "Ca1 / Cb1", "transfer caps (ladder)", s => `${_pf(L(s).Ca.value)} / ${_pf(L(s).Cb.value)}`);
+  add(["Cx3","Cx4"], "Cx3 / Cx4", "island varicaps (plateau → collapse)", s => `${_pf(L(s).cx_max.value)}→${_pf(L(s).cx_min.value)}`);
+  add(["Lx3","Lx4"], "Lx3 / Lx4", "series island inductors", s => `${(+L(s).Lx_mH.value).toFixed(2)} mH, ${L(s).R_lx.value} Ω`);
+  add(["C_R1","L_R1","L_R2"], "tank", "resonator tank", () => "collapsed — core effects out of scope", "collapsed");
+  add(["L_A1","L_A2","L_A3","L_A4","L_A5","L_A6","L_B1","L_B2","L_B3","L_B4","L_B5","L_B6"], "L_A/L_B", "motor coils", s => state.motor ? `${s.choices.L_coil_H} H, ${s.choices.R_coil} Ω` : "motor off", "motor");
+  add(["C_AR1","C_AR2","C_AR3","C__AR4","C_AR5","C_AR6","C_BR1","C_BR2","C_BR3","C_BR4","C_BR5","C_BR6"], "C_AR/C_BR", "motor DC-block caps (C_blk)", s => state.motor ? `${L(s).C_blk_nF.value.toFixed(0)} nF` : "motor off", "motor");
+  add(["SG1","SG2"], "SG1 / SG2", "rail gaps", () => state.gm_rail, "gap");
+  add(["SG3a1","SG4a1"], "SG3a1 / SG4a1", "load gaps", () => state.gm_load, "gap");
+  add(["SG3b1","SG4b1"], "SG3b1 / SG4b1", "fire gaps", () => state.gm_fire, "gap");
+  add(["BS3","BS4"], "BS3 / BS4", "backstops", () => state.gm_backstop, "gap");
+  return M;
+})();
+const _REFDES = /^(C\d|C_AR\d|C__AR\d|C_BR\d|C_R\d|Ca\d|Cb\d|Cx\d|Lx\d|L_A\d|L_B\d|L_R\d|SG\d[a-z]?\d?|BS\d)$/;
+function mdToHtml(md){                                  // copied from charge-pump-synth-live.html
+  const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  const inline = s => esc(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>")
+    .replace(/`(.+?)`/g,"<code>$1</code>").replace(/(?<!\*)\*(?!\*)(.+?)\*(?!\*)/g,"<em>$1</em>");
+  const lines_ = md.split("\n"); let html = "", i = 0;
+  while (i < lines_.length){
+    const l = lines_[i];
+    if (/^\|/.test(l)){
+      const rows = []; while (i < lines_.length && /^\|/.test(lines_[i])){ rows.push(lines_[i]); i++; }
+      const cells = r => r.split(/(?<!\\)\|/).slice(1, -1).map(c => c.trim().replace(/\\\|/g, "|"));
+      html += "<table>"; rows.forEach((r, ri) => {
+        if (/^\|[\s:|-]+\|$/.test(r)) return;
+        const tag = ri === 0 ? "th" : "td";
+        html += "<tr>" + cells(r).map(c => `<${tag}>${inline(c)}</${tag}>`).join("") + "</tr>";
+      }); html += "</table>"; continue;
+    }
+    if (/^# /.test(l)) html += `<h1>${inline(l.slice(2))}</h1>`;
+    else if (/^## /.test(l)) html += `<h2>${inline(l.slice(3))}</h2>`;
+    else if (/^\s*[-\d]+[.)]?\s/.test(l) && /^\s*(-|\d+\.)\s/.test(l)) html += `<p style="margin:3px 0 3px 12px">${inline(l.replace(/^\s*-\s/, "• "))}</p>`;
+    else if (l.trim() === "") html += "";
+    else html += `<p style="margin:5px 0">${inline(l)}</p>`;
+    i++;
+  }
+  return html;
+}
+async function stampCheck(svg){
+  let topo = null; try { const r = await fetch("../topology_edge_list.csv"); if (r.ok) topo = await r.text(); } catch {}
+  if (!topo) return {state: "err", msg: "topology_edge_list.csv not reachable (serve from repo root)"};
+  const netlist = new Set(); topo.split("\n").forEach(l => { const c = l.split(","); if (!c[0] || c[0][0] === "#" || c[0] === "component") return; netlist.add(c[0].trim()); });
+  const drawn = new Set(); const re = /<text[^>]*>([^<]*)<\/text>/g; let mm;
+  while ((mm = re.exec(svg || ""))){ const t = mm[1].trim(); if (_REFDES.test(t)) drawn.add(t); }
+  if (!drawn.size) return {state: "err", msg: "no refdes parsed from schematic.svg"};
+  const mapped = new Set(Object.keys(REF_MAP));
+  const diff = (a, b) => [...a].filter(x => !b.has(x)).sort();
+  const issues = [];
+  if (diff(drawn, mapped).length) issues.push("drawn but unmapped: " + diff(drawn, mapped).join(", "));
+  if (diff(mapped, drawn).length) issues.push("mapped but not drawn: " + diff(mapped, drawn).join(", "));
+  if (diff(netlist, drawn).length) issues.push("in netlist, not drawn: " + diff(netlist, drawn).join(", "));
+  if (diff(drawn, netlist).length) issues.push("drawn, not in netlist: " + diff(drawn, netlist).join(", "));
+  return {state: issues.length ? "mismatch" : "match", ndrawn: drawn.size, nmap: mapped.size, nnet: netlist.size, issues};
+}
+async function openRef(){
+  $("refOverlay").style.display = "block";
+  const s = lastSizing;
+  let svg = null;
+  try { const r = await fetch("./schematic.svg"); if (r.ok) svg = await r.text(); } catch {}
+  if (!svg){ $("schemSlot").innerHTML = '<div class="note" style="padding:14px;color:var(--warn)">tools/schematic.svg not reachable (serve from the repo root)</div>'; $("schemSrc").textContent = "(no SVG)"; }
+  else {
+    $("schemSlot").innerHTML = svg; $("schemSrc").textContent = "· real KiCad layout (DCCREG_Turbine_circuit)";
+    const sc = lastRes && lastRes.engine && lastRes.engine.scaled ? Object.fromEntries(lastRes.engine.scaled.rows.map(r => [r.gap, r])) : {};
+    for (const ref in REF_MAP){
+      const e = document.getElementById("sv_" + ref); if (!e) continue;
+      const m = REF_MAP[ref]; let v = s ? m.val(s) : "—";
+      if (m.flag === "gap" && sc[ref]) v += ` ${sc[ref].V_kV.toFixed(1)} kV`;
+      e.textContent = v;
+      if (m.flag === "collapsed" || (m.flag === "motor" && !state.motor)) e.classList.add("greyed"); else e.classList.remove("greyed");
+    }
+  }
+  const c = await stampCheck(svg); const S = $("schemStamp");
+  if (c.state === "match") S.innerHTML = `<span style="color:var(--good)">schematic ↔ values ↔ netlist: MATCH</span> (${c.ndrawn} drawn = ${c.nmap} mapped = ${c.nnet} netlist)`;
+  else if (c.state === "mismatch") S.innerHTML = `<span style="color:var(--bad)">⚠ MISMATCH</span> — ${c.ndrawn} drawn / ${c.nmap} mapped / ${c.nnet} netlist · <span style="color:var(--warn)">${c.issues.join(" · ")}</span>`;
+  else S.innerHTML = `<span style="color:var(--warn)">${c.msg}</span>`;
+  const seen = new Set(); let lt = "<tr><th>family</th><th>role</th><th>live value</th></tr>";
+  for (const ref in REF_MAP){ const m = REF_MAP[ref]; if (seen.has(m.fam)) continue; seen.add(m.fam);
+    lt += `<tr><td>${m.fam}</td><td class="l">${m.role}</td><td class="${m.flag === "collapsed" || (m.flag === "motor" && !state.motor) ? "flag" : ""}">${s ? m.val(s) : "—"}</td></tr>`; }
+  $("legendTable").innerHTML = lt;
+  const txt = (svg || "").replace(/<[^>]+>/g, " ");
+  const esc = x => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const missing = Object.keys(REF_MAP).filter(ref => !new RegExp(`(^|[\\s>(])${esc(ref)}([\\s<).,]|$)`).test(txt));
+  $("labelMismatch").innerHTML = missing.length ? `⚠ REF_MAP refs not drawn: <span style="color:var(--warn)">${missing.join(", ")}</span>` : `label match: every REF_MAP ref (${Object.keys(REF_MAP).length}) is drawn ✓`;
+  try { const r = await fetch("./cross-section.svg"); $("art_xsec").innerHTML = r.ok ? await r.text() : '<span class="note">cross-section.svg absent</span>'; } catch { $("art_xsec").textContent = "cross-section unavailable"; }
+  try { const r = await fetch("./pump-synth-reference.md"); $("refBody").innerHTML = r.ok ? mdToHtml(await r.text()) : '<span class="note">pump-synth-reference.md not reachable</span>'; } catch (e){ $("refBody").textContent = "reference unavailable: " + e.message; }
+}
+function openLightbox(){
+  const svg = $("schemSlot").querySelector("svg"); if (!svg) return;
+  const clone = svg.cloneNode(true); clone.removeAttribute("width"); clone.removeAttribute("height");
+  clone.style.width = "auto"; clone.style.height = "92vh"; clone.style.maxWidth = "96vw";
+  $("lightboxBody").innerHTML = ""; $("lightboxBody").appendChild(clone); $("lightbox").style.display = "block";
+}
+
+/* ---- wiring ---- */
+$("refBtn").addEventListener("click", openRef);
+$("refClose").addEventListener("click", () => $("refOverlay").style.display = "none");
+$("refOverlay").addEventListener("click", e => { if (e.target.id === "refOverlay") $("refOverlay").style.display = "none"; });
+$("schemSlot").addEventListener("click", openLightbox);
+$("schemZoom").addEventListener("click", e => { e.stopPropagation(); openLightbox(); });
+$("lightbox").addEventListener("click", () => $("lightbox").style.display = "none");
+$("btnCompute").addEventListener("click", () => compute());
+$("solve").addEventListener("click", doSolve);
+$("objective").addEventListener("change", () => { const o = $("objective").value; $("objNote").textContent = bootInfo && bootInfo.disabled[o] ? bootInfo.disabled[o] : ""; });
+$("btnMinPlate").addEventListener("click", findMinPlate);
+$("btnSweep").addEventListener("click", sweep);
+$("btnPreset").addEventListener("click", loadPreset);
+$("reset").addEventListener("click", () => {
+  for (const k in DEFAULTS) if (k !== "pins") state[k] = DEFAULTS[k];
+  pins = {}; $("objective").value = "min_diameter"; $("c_minplate").textContent = "—";
+  syncFieldInputs(); writeHash(); recompute(); compute();
+});
+window.addEventListener("resize", () => { if (lastRes) renderDetails(lastRes.engine, lastRes.converged); });
+window.addEventListener("error", e => { if (!canaryOK && main) bootFail("page script error: " + e.message); });
+boot();
+</script>
+</body>
+</html>

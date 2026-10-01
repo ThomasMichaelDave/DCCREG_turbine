@@ -132,10 +132,75 @@ def run(cfg, lx=None, galvanic=None, record=False, events=False, log=None, warm=
     if mono is None:
         mono = PE.monodromy(net, cfg, log=log, record=record, events=events)
         STATS["cold"] += 1
+    mono["silent"] = False
+    if not mono["converged"] and not (cfg["motor"] and net.meta.get("motor")):
+        mono = _settle_more(net, cfg, mono, record=record, events=events, log=log)
     STATS["runs"] += 1; STATS["cycles"] += mono["k"]
     if mono["converged"]:
         _WARM[key] = np.real(mono["v"]).astype(float)
     return mono, net
+
+
+SETTLE_MAX = 300          # cap on the extra plain cycles of the fallback [ME]
+MARGINAL_TOL = 1e-7       # |Aitken limit - 1| below this, with geometric decay of the excess: marginal [ME]
+
+
+def _silent(sim):
+    """True when no gap switched anywhere in the last cycle (every grid step's event set is empty)."""
+    return bool(sim.patterns) and all(not e[0] for e in sim.patterns[-1])
+
+
+def _settle_more(net, cfg, mono, record=False, events=False, log=None):
+    """The engine's one-cycle monodromy did not converge (motor out). Fallback [ME], exact cycles only:
+    plain iteration from the engine's standard seed (V1 = V4 = -1), the state renormalised every cycle,
+    watching the growth g_k = |x_k+1| / |x_k| (z is the long-run growth of the standard start-up).
+      * g_k settles above 1: the transient was longer than the engine's 2 settle cycles -- pump_engine.
+        monodromy again from the settled state (every 20 cycles), which then converges: an exact z > 1.
+      * the excess g_k - 1 decays geometrically to 0: the state converges onto the NEUTRAL mode of the
+        cycle map (lam = 1: charge trapped where no gap can dump it; pump_engine.dominant excludes neutral
+        modes by design, so its jump lands on a decaying mode and never converges here). No growing mode:
+        z = 1, does not pump [OC]. Reported with the measured decay rate and the Aitken-limit error bound.
+      * silent (no gap fires in a whole cycle): the same, the cycle map is the identity on the charges.
+    Anything else stays "not converged" (never a number)."""
+    sim = PE.make_sim(net, cfg)
+    PE.seed(sim)
+    k = 0; g = []
+    for _ in range(SETTLE_MAX):
+        m0 = sim.state_mag()
+        sim.cycle(k); k += 1
+        m1 = sim.state_mag()
+        if m1 > 0:
+            sim.rescale(1.0 / m1)
+        g.append(m1 / m0 if m0 > 0 else float("nan"))
+        if _silent(sim) and len(g) >= 2 and abs(g[-1] - 1.0) < 1e-12:
+            return dict(mono, z=1.0, converged=True, silent=True, kind="silent", rate=0.0, bound=0.0,
+                        k=mono["k"] + k, rec=None)
+        if len(g) >= 4 and all(abs(x - 1.0) < 1e-12 for x in g[-3:]) and sim.patterns[-1] == sim.patterns[-2]:
+            if log:
+                log("growth exactly 1 on a repeating pattern: the neutral mode, z = 1, does not pump")
+            return dict(mono, z=1.0, converged=True, silent=True, kind="neutral", rate=0.0,
+                        bound=max(abs(x - 1.0) for x in g[-3:]), k=mono["k"] + k, rec=None)
+        if len(g) >= 8:
+            e = [x - 1.0 for x in g[-6:]]
+            d1, d2 = g[-1] - g[-2], (g[-1] - g[-2]) - (g[-2] - g[-3])
+            L = g[-1] - d1 * d1 / d2 if d2 != 0 else g[-1]
+            ratios = [e[t + 1] / e[t] for t in range(5) if e[t] != 0]
+            geo = (len(ratios) == 5 and all(0 < r < 1 for r in ratios)
+                   and max(ratios) - min(ratios) < 2e-3 and all(x > 0 for x in e))
+            if geo and abs(L - 1.0) < MARGINAL_TOL:
+                r = sum(ratios) / len(ratios)
+                if log:
+                    log(f"growth excess decays at {r:.4f}/cycle to z = 1 (Aitken limit {L:.9f}): does not pump")
+                return dict(mono, z=1.0, converged=True, silent=True, kind="neutral", rate=r,
+                            bound=abs(L - 1.0), k=mono["k"] + k, rec=None)
+            if k % 20 == 0 and abs(g[-1] - g[-2]) < 1e-9 and g[-1] > 1.0 + 1e-6:
+                x_set = PE._statevec(sim).copy(); gs0 = (dict(sim.gs), set(sim.cond), set(sim.latched))
+                m2 = PE.monodromy(net, cfg, settle=0, sim=sim, log=log, record=record, events=events)
+                if m2["converged"]:
+                    m2["k"] = mono["k"] + k + m2["k"]; m2["silent"] = False
+                    return m2
+                PE._setstate(sim, x_set); sim.gs, sim.cond, sim.latched = gs0
+    return dict(mono, converged=False, silent=False, k=mono["k"] + k)
 
 
 def z_of(cfg, **kw):
@@ -147,7 +212,17 @@ def headline(cfg, log=None, warm=True):
     """The headline machine: full observables (as pump_engine.evaluate's main machine)."""
     t0 = time.time()
     mono, net = run(cfg, record=True, events=True, log=log, warm=warm)
-    res = dict(z=mono["z"], converged=mono["converged"], align=mono["align"])
+    res = dict(z=mono["z"], converged=mono["converged"], align=mono["align"], silent=mono.get("silent", False))
+    if mono.get("silent"):
+        res.update(margin=0.0, pumps=False, ledger=dict(resid=0.0), episodes=[], events=[], eta_cut={},
+                   wave=None, windows={}, models={}, scaled=None,
+                   kind=mono.get("kind"), rate=mono.get("rate"), bound=mono.get("bound"),
+                   note=("no gap fires in a whole cycle" if mono.get("kind") == "silent" else
+                         f"the growth excess decays geometrically ({mono.get('rate', 0):.4f}/cycle) onto the "
+                         f"neutral mode (lam = 1, trapped charge no gap can dump; Aitken bound "
+                         f"{mono.get('bound', 0):.1e})") + " -- no growing mode: z = 1, does not pump")
+        res["time_s"] = time.time() - t0
+        return res
     res.update(PE.summarize(net, cfg, mono, mono["rec"]))
     res["scaled"] = PE.scale_readouts(res, cfg)
     res["time_s"] = time.time() - t0
@@ -322,12 +397,59 @@ def evaluate(inp=None, with_strip=True, with_twins=True, canary_ok=True, log=Non
     t_strip = time.time() - t0
     tw = twins(cfg, head, log=log, warm=warm) if with_twins else None
     inv = battery(lad, firing, cfg, head, tw, canary_ok=canary_ok)
+    _LAST.clear(); _LAST.update(lad=lad, firing=firing, cfg=cfg, head=head, canary_ok=canary_ok)
     out = dict(sizing=lad, firing=firing, engine=head, strip=st, twins=tw, invariants=inv,
                feasible=feasible(inv), blocker=blocker(inv), pumps=bool(head["converged"] and head["z"] > 1.0),
                z=head["z"], margin=head["z"] - 1.0, converged=head["converged"],
                times=dict(headline_s=t_head, headline_strip_s=t_strip, total_s=time.time() - t0),
                version=SYNTH_VERSION)
     return PE._jsonable(out)
+
+
+_LAST = {}
+
+
+def add_twins(log=None, warm=True):
+    """The twins for the last evaluate() (the page runs them after the headline and the strip), with the
+    battery re-derived (I13 then carries the exact twin)."""
+    L = _LAST
+    if not L:
+        raise RuntimeError("add_twins before evaluate")
+    tw = twins(L["cfg"], L["head"], log=log, warm=warm)
+    inv = battery(L["lad"], L["firing"], L["cfg"], L["head"], tw, canary_ok=L["canary_ok"])
+    return PE._jsonable(dict(twins=tw, invariants=inv, feasible=feasible(inv), blocker=blocker(inv)))
+
+
+def min_plate(inp=None, tol_mm=1.0, log=None):
+    """The smallest r_out that still pumps (z = 1 crossing against r_out) at the CURRENT g_v and settings --
+    no margin, no other invariant (the headline card's "smallest rotor that pumps"). Bracketed root search [ME]."""
+    t0 = time.time()
+    lad0, _ = sized(inp)
+    lo, hi = lad0["plates"]["r_inMm"] + 2.0, lad0["plates"]["r_outMm"]
+    pts = []
+
+    def f(r):
+        z, c, lad = _z_at_rout(inp, r, log)
+        pts.append(dict(r_outMm=r, C_max_pF=lad["ladder"]["C_max"]["value"], z=z, converged=c,
+                        dia_mm=lad["rotor_dia_mm"]))
+        return z if c else float("nan")
+    zhi = f(hi)
+    while not (zhi > 1.0) and hi < 4000.0:
+        lo, hi = hi, hi * 2.0; zhi = f(hi)
+    if not (zhi > 1.0):
+        return PE._jsonable(dict(found=False, points=pts, note="does not pump up to r_out 4 m", time_s=time.time() - t0))
+    if f(lo) > 1.0:
+        return PE._jsonable(dict(found=True, r_outMm=lo, dia_mm=sized(_with(inp, r_outMm=lo))[0]["rotor_dia_mm"],
+                                 points=pts, note="pumps at the smallest band tried", time_s=time.time() - t0))
+    zlo = pts[-1]["z"]
+    b, _ = _root(f, lo, zlo, hi, zhi, 1.0 + 1e-12, tol_mm)
+    a = max([p["r_outMm"] for p in pts if p["converged"] and p["z"] <= 1.0] + [lo])
+    sp = sorted([p for p in pts if p["converged"]], key=lambda p: p["C_max_pF"])
+    mono = all(sp[i + 1]["z"] >= sp[i]["z"] - 1e-12 for i in range(len(sp) - 1))
+    lad_b = sized(_with(inp, r_outMm=b))[0]
+    return PE._jsonable(dict(found=True, r_outMm=b, bracket=[a, b], dia_mm=lad_b["rotor_dia_mm"],
+                             C_max_pF=lad_b["ladder"]["C_max"]["value"], monotone=mono, points=pts,
+                             runs=len(pts), time_s=time.time() - t0))
 
 
 # ---- critical values (the headroom meter) -------------------------------------------------------------
@@ -399,6 +521,39 @@ def _z_at_rout(inp, r_out, log=None):
     return z, c, lad
 
 
+def _root(f, a, fa, b, fb, target, tol, max_runs=14):
+    """Bracketed root of f(x) = target with f(a) < target <= f(b): the Illinois variant of regula falsi
+    [ME] (superlinear on smooth z(C_max), never leaves the bracket). Stops when the bracket is < tol, or
+    when the local secant puts b within tol/2 of the root. Returns (b, f(b)); f(b) >= target always."""
+    ga, gb = fa - target, fb - target              # ga < 0 <= gb; the Illinois weights act on these
+    side = 0; n = 0
+    while abs(b - a) > tol and n < max_runs:
+        x = (a * gb - b * ga) / (gb - ga) if gb != ga else 0.5 * (a + b)
+        lo_, hi_ = min(a, b), max(a, b)
+        if not (lo_ + 0.02 * (hi_ - lo_) < x < hi_ - 0.02 * (hi_ - lo_)):
+            x = 0.5 * (a + b)                      # a 2 % guard band: no stall at an end
+        fx = f(x); n += 1
+        if fx != fx:                               # not converged there: one midpoint retry, then stop
+            x = 0.5 * (a + b); fx = f(x); n += 1
+            if fx != fx:
+                break
+        gx = fx - target
+        if gx >= 0:
+            b, fb, gb = x, fx, gx
+            if side == 1:
+                ga *= 0.5
+            side = 1
+        else:
+            a, fa, ga = x, fx, gx
+            if side == -1:
+                gb *= 0.5
+            side = -1
+        slope = (fb - fa) / (b - a) if b != a else 0.0
+        if slope > 0 and (fb - target) / slope <= 0.5 * tol:
+            break
+    return b, fb
+
+
 def _geom_checks(inp, r_out):
     """The analytic part of the battery for a candidate r_out (I4 / I9 / I11) -- no engine run."""
     lad, firing = sized(_with(inp, r_outMm=r_out))
@@ -410,7 +565,7 @@ def _geom_checks(inp, r_out):
 
 def min_diameter(inp=None, n_scan=0, tol_mm=1.0, r_lo=None, r_hi=None, log=None):
     """The smallest rotor with z >= 1 + m that also passes I4 (at the insulation g_v for V_ceil), I9, I11
-    and I12. 1-D bisection in C_max via r_out at that g_v [ME]; H-SYN2 (monotone segment) is checked on
+    and I12. 1-D bracketed root search (Illinois regula falsi) in C_max via r_out at that g_v [ME]; H-SYN2 (monotone segment) is checked on
     the bisection's own points; on a violation the scan answer is returned (SYNTH-SCAN-ONLY)."""
     t0 = time.time()
     lad0, firing = sized(inp)
@@ -438,14 +593,7 @@ def min_diameter(inp=None, n_scan=0, tol_mm=1.0, r_lo=None, r_hi=None, log=None)
     if zlo >= target:
         r_star = lo; note = "already pumps at the lower search bound"
     else:
-        a, b = lo, hi
-        while b - a > tol_mm:
-            mid = 0.5 * (a + b)
-            if f(mid) >= target:
-                b = mid
-            else:
-                a = mid
-        r_star = b
+        r_star, _ = _root(f, lo, zlo, hi, zhi, target, tol_mm)
     # H-SYN2: z monotone (non-decreasing) in C_max over the bisection points
     sp = sorted([p for p in pts if p["converged"]], key=lambda p: p["C_max_pF"])
     mono = all(sp[i + 1]["z"] >= sp[i]["z"] - 1e-12 for i in range(len(sp) - 1))
