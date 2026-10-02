@@ -1,0 +1,236 @@
+CIRCUIT INTEGRITY (circuit-integrity/1) - before.step
+verdict FAIL: 155 FAIL, 32 WARN  (601 parts, 564 conductors, 60 nets)
+
+nets:
+       1    72 parts  stator ND1 - A-rail: C1 stator plate + Ca counter-electrode  (6 separate nets: OPEN)
+       2    96 parts  stator ND2 - AR bank: Ca electrode  (6 separate nets: OPEN)
+       3    96 parts  stator ND3 - BR bank: Cb electrode  (6 separate nets: OPEN)
+       4    72 parts  stator ND4 - B-rail: C2 stator plate + Cb counter-electrode  (6 separate nets: OPEN)
+       7    48 parts  rotor  ND7 - island on rotor B (Cx3 bars)  (6 separate nets: OPEN)
+       8    48 parts  rotor  ND8 - island on rotor A (Cx4 bars)  (6 separate nets: OPEN)
+     R-A    60 parts  rotor  ND5 - resonator end A: rotor A (C1 rotor face)  (6 separate nets: OPEN)
+     R-B    60 parts  rotor  ND6 - resonator end B: rotor B (C2 rotor face)  (6 separate nets: OPEN)
+     n17     6 parts  stator Cx3 pickup on ND3 (Lx3 to node 3)  (6 separate nets: OPEN)
+     n23     6 parts  stator Cx4 pickup on ND2 (Lx4 to node 2)  (6 separate nets: OPEN)
+
+capacitors of the netlist:
+  C1     R-A-1     rotating  0.00-279.81 pF
+  C2     R-B-4     rotating  0.00-279.81 pF
+  C_R1   n18-n00   NOT REALIZED
+  Ca1    1-2       fixed     307.80 pF
+  Cb1    3-4       fixed     307.80 pF
+  Cx3    7-n17     rotating  0.00-451.80 pF
+  Cx4    n23-8     rotating  0.00-451.80 pF
+
+stray capacitors (facing foils not in the netlist):
+  1-8       rotating  0.00-95.85 pF
+  4-7       rotating  0.00-95.85 pF
+  7-R-B     modulated 0.00-1.61 pF
+  R-A-R-B   fixed     785.20 pF
+  R-A-n23   rotating  0.00-1.91 pF
+  R-B-n17   rotating  0.00-1.91 pF
+
+spark gaps of the netlist:
+  BS3    7-3     6 stator spheres, gap 5.50 mm (spheres 25.0 / 12.0 mm)
+  BS4    8-2     6 stator spheres, gap 5.50 mm (spheres 25.0 / 12.0 mm)
+  SG1    2-R-A   6 stator spheres, gap 5.50 mm (spheres 12.0 / 12.0 mm)
+  SG2    3-R-B   6 stator spheres, gap 5.50 mm (spheres 12.0 / 12.0 mm)
+  SG3a1  1-7     6 stator spheres, gap 4.75 mm (spheres 12.0 / 12.0 mm)
+  SG3b1  7-3     6 stator spheres, gap 5.50 mm (spheres 12.0 / 12.0 mm)
+  SG4a1  4-8     6 stator spheres, gap 4.75 mm (spheres 12.0 / 12.0 mm)
+  SG4b1  8-2     6 stator spheres, gap 5.50 mm (spheres 12.0 / 12.0 mm)
+
+findings:
+  [PASS] I1 60 galvanic nets, each on one node
+  [FAIL] I2 OPEN: node 1 is split into 6 nets (12 parts from Ca_counter_1; 12 parts from Ca_counter_2; 12 parts from Ca_counter_3; 12 parts from Ca_counter_4)
+  [FAIL] I2 OPEN: node 2 is split into 6 nets (16 parts from Ca_el_1; 16 parts from Ca_el_2; 16 parts from Ca_el_3; 16 parts from Ca_el_4)
+  [FAIL] I2 OPEN: node 3 is split into 6 nets (16 parts from SG2_sph_1; 16 parts from SG2_sph_2; 16 parts from SG2_sph_3; 16 parts from SG2_sph_4)
+  [FAIL] I2 OPEN: node 4 is split into 6 nets (12 parts from SG4a1_sph_1; 12 parts from SG4a1_sph_2; 12 parts from SG4a1_sph_3; 12 parts from SG4a1_sph_4)
+  [FAIL] I2 OPEN: node 7 is split into 6 nets (8 parts from Cx3_bars_1; 8 parts from Cx3_bars_2; 8 parts from Cx3_bars_3; 8 parts from Cx3_bars_4)
+  [FAIL] I2 OPEN: node 8 is split into 6 nets (8 parts from Cx4_bars_1; 8 parts from Cx4_bars_2; 8 parts from Cx4_bars_3; 8 parts from Cx4_bars_4)
+  [FAIL] I2 OPEN: node R-A is split into 6 nets (10 parts from C1_rotor_1; 10 parts from C1_rotor_2; 10 parts from C1_rotor_3; 10 parts from C1_rotor_4)
+  [FAIL] I2 OPEN: node R-B is split into 6 nets (10 parts from CR_B_1; 10 parts from CR_B_2; 10 parts from CR_B_3; 10 parts from CR_B_4)
+  [FAIL] I2 OPEN: node n17 is split into 6 nets (1 parts from Cx3_pickup_1; 1 parts from Cx3_pickup_2; 1 parts from Cx3_pickup_3; 1 parts from Cx3_pickup_4)
+  [FAIL] I2 OPEN: node n23 is split into 6 nets (1 parts from Cx4_pickup_1; 1 parts from Cx4_pickup_2; 1 parts from Cx4_pickup_3; 1 parts from Cx4_pickup_4)
+  [WARN] I3 node id '5' is an old alias: the netlist of record calls it R-A
+  [WARN] I3 node id '6' is an old alias: the netlist of record calls it R-B
+  [PASS] I3 drawn nodes 1, 2, 3, 4, 7, 8, R-A, R-B, n17, n23; netlist nodes with nothing drawn (off-model): n00, n03, n09, n10, n11, n12, n13, n14, n15, n18, n19, n20, n21, n22
+  [PASS] I4 no net crosses the rotating joint
+  [PASS] I5 every net holds a foil electrode
+  [FAIL] I6 C_R1 (n18-n00) is not realized: no foils of these two nodes face each other
+  [WARN] I6 STRAY capacitor 1-8 (rotating): 0.0-95.8 pF over a turn
+  [WARN] I6 STRAY capacitor 4-7 (rotating): 0.0-95.8 pF over a turn
+  [WARN] I6 STRAY capacitor 7-R-B (modulated): 0.0-1.6 pF over a turn (fixed plates, rotating copper between)
+  [WARN] I6 STRAY capacitor R-A-R-B (fixed): 785.2 pF
+  [WARN] I6 STRAY capacitor R-A-n23 (rotating): 0.0-1.9 pF over a turn
+  [WARN] I6 STRAY capacitor R-B-n17 (rotating): 0.0-1.9 pF over a turn
+  [PASS] I7 all 8 netlist gaps realized on their nodes, no parasitic gap
+  [WARN] I8 insulator A-flange carrier ring 1 of 3 is labelled 'node 8' -- an insulator is on no node
+  [WARN] I8 insulator A-flange carrier ring 2 of 3 is labelled 'node 8' -- an insulator is on no node
+  [WARN] I8 insulator A-flange carrier ring 3 of 3 is labelled 'node 8' -- an insulator is on no node
+  [FAIL] I8 Cx4_pickup_1 (node n23) sits in group 'ND2', which declares node 2
+  [FAIL] I8 Cx4_pickup_2 (node n23) sits in group 'ND2', which declares node 2
+  [FAIL] I8 Cx4_pickup_3 (node n23) sits in group 'ND2', which declares node 2
+  [FAIL] I8 Cx4_pickup_4 (node n23) sits in group 'ND2', which declares node 2
+  [FAIL] I8 Cx4_pickup_5 (node n23) sits in group 'ND2', which declares node 2
+  [FAIL] I8 Cx4_pickup_6 (node n23) sits in group 'ND2', which declares node 2
+  [WARN] I8 insulator ND2 carrier ring 1 of 3 is labelled 'node 2' -- an insulator is on no node
+  [WARN] I8 insulator ND2 carrier ring 2 of 3 is labelled 'node 2' -- an insulator is on no node
+  [WARN] I8 insulator ND2 carrier ring 3 of 3 is labelled 'node 2' -- an insulator is on no node
+  [FAIL] I8 SG4a1_sph_1 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_stem_1 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_1a (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_1b (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_1c (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_sph_2 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_stem_2 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_2a (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_2b (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_2c (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_sph_3 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_stem_3 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_3a (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_3b (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_3c (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_sph_4 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_stem_4 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_4a (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_4b (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_4c (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_sph_5 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_stem_5 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_5a (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_5b (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_5c (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_sph_6 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_stem_6 (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_6a (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_6b (node 4) sits in group 'ND2', which declares node 2
+  [FAIL] I8 SG4a1_lead_6c (node 4) sits in group 'ND2', which declares node 2
+  [WARN] I8 insulator ND1 carrier ring 1 of 3 is labelled 'node 1' -- an insulator is on no node
+  [WARN] I8 insulator ND1 carrier ring 2 of 3 is labelled 'node 1' -- an insulator is on no node
+  [WARN] I8 insulator ND1 carrier ring 3 of 3 is labelled 'node 1' -- an insulator is on no node
+  [FAIL] I8 SG1_sph_1 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_stem_1 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_1a (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_1b (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_1c (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_sph_2 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_stem_2 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_2a (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_2b (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_2c (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_sph_3 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_stem_3 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_3a (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_3b (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_3c (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_sph_4 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_stem_4 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_4a (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_4b (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_4c (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_sph_5 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_stem_5 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_5a (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_5b (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_5c (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_sph_6 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_stem_6 (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_6a (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_6b (node 2) sits in group 'ND1', which declares node 1
+  [FAIL] I8 SG1_lead_6c (node 2) sits in group 'ND1', which declares node 1
+  [WARN] I8 insulator A-disc carrier ring 1 of 3 is labelled 'node 5' -- an insulator is on no node
+  [WARN] I8 insulator A-disc carrier ring 2 of 3 is labelled 'node 5' -- an insulator is on no node
+  [WARN] I8 insulator A-disc carrier ring 3 of 3 is labelled 'node 5' -- an insulator is on no node
+  [FAIL] I8 CR_A_1 belongs to C_R1 (n18-n00) by name, but its copper is on node R-A
+  [FAIL] I8 CR_A_2 belongs to C_R1 (n18-n00) by name, but its copper is on node R-A
+  [FAIL] I8 CR_A_3 belongs to C_R1 (n18-n00) by name, but its copper is on node R-A
+  [FAIL] I8 CR_A_4 belongs to C_R1 (n18-n00) by name, but its copper is on node R-A
+  [FAIL] I8 CR_A_5 belongs to C_R1 (n18-n00) by name, but its copper is on node R-A
+  [FAIL] I8 CR_A_6 belongs to C_R1 (n18-n00) by name, but its copper is on node R-A
+  [FAIL] I8 CR_B_1 belongs to C_R1 (n18-n00) by name, but its copper is on node R-B
+  [FAIL] I8 CR_B_2 belongs to C_R1 (n18-n00) by name, but its copper is on node R-B
+  [FAIL] I8 CR_B_3 belongs to C_R1 (n18-n00) by name, but its copper is on node R-B
+  [FAIL] I8 CR_B_4 belongs to C_R1 (n18-n00) by name, but its copper is on node R-B
+  [FAIL] I8 CR_B_5 belongs to C_R1 (n18-n00) by name, but its copper is on node R-B
+  [FAIL] I8 CR_B_6 belongs to C_R1 (n18-n00) by name, but its copper is on node R-B
+  [WARN] I8 insulator B-disc carrier ring 1 of 3 is labelled 'node 6' -- an insulator is on no node
+  [WARN] I8 insulator B-disc carrier ring 2 of 3 is labelled 'node 6' -- an insulator is on no node
+  [WARN] I8 insulator B-disc carrier ring 3 of 3 is labelled 'node 6' -- an insulator is on no node
+  [WARN] I8 insulator ND4 carrier ring 1 of 3 is labelled 'node 4' -- an insulator is on no node
+  [WARN] I8 insulator ND4 carrier ring 2 of 3 is labelled 'node 4' -- an insulator is on no node
+  [WARN] I8 insulator ND4 carrier ring 3 of 3 is labelled 'node 4' -- an insulator is on no node
+  [FAIL] I8 SG2_sph_1 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_stem_1 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_1a (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_1b (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_1c (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_sph_2 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_stem_2 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_2a (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_2b (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_2c (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_sph_3 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_stem_3 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_3a (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_3b (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_3c (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_sph_4 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_stem_4 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_4a (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_4b (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_4c (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_sph_5 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_stem_5 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_5a (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_5b (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_5c (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_sph_6 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_stem_6 (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_6a (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_6b (node 3) sits in group 'ND4', which declares node 4
+  [FAIL] I8 SG2_lead_6c (node 3) sits in group 'ND4', which declares node 4
+  [WARN] I8 insulator ND3 carrier ring 1 of 3 is labelled 'node 3' -- an insulator is on no node
+  [WARN] I8 insulator ND3 carrier ring 2 of 3 is labelled 'node 3' -- an insulator is on no node
+  [WARN] I8 insulator ND3 carrier ring 3 of 3 is labelled 'node 3' -- an insulator is on no node
+  [FAIL] I8 Cx3_pickup_1 (node n17) sits in group 'ND3', which declares node 3
+  [FAIL] I8 Cx3_pickup_2 (node n17) sits in group 'ND3', which declares node 3
+  [FAIL] I8 Cx3_pickup_3 (node n17) sits in group 'ND3', which declares node 3
+  [FAIL] I8 Cx3_pickup_4 (node n17) sits in group 'ND3', which declares node 3
+  [FAIL] I8 Cx3_pickup_5 (node n17) sits in group 'ND3', which declares node 3
+  [FAIL] I8 Cx3_pickup_6 (node n17) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_sph_1 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_stem_1 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_1a (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_1b (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_1c (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_sph_2 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_stem_2 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_2a (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_2b (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_2c (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_sph_3 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_stem_3 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_3a (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_3b (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_3c (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_sph_4 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_stem_4 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_4a (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_4b (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_4c (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_sph_5 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_stem_5 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_5a (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_5b (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_5c (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_sph_6 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_stem_6 (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_6a (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_6b (node 1) sits in group 'ND3', which declares node 3
+  [FAIL] I8 SG3a1_lead_6c (node 1) sits in group 'ND3', which declares node 3
+  [WARN] I8 insulator B-flange carrier ring 1 of 3 is labelled 'node 7' -- an insulator is on no node
+  [WARN] I8 insulator B-flange carrier ring 2 of 3 is labelled 'node 7' -- an insulator is on no node
+  [WARN] I8 insulator B-flange carrier ring 3 of 3 is labelled 'node 7' -- an insulator is on no node
+  [INFO] I9 28 netlist components are off-model; 2 join two drawn nets and need a connection there: Lx3, Lx4

@@ -137,6 +137,8 @@ The tool catches the reported case by name, from the STEP alone: *"SG1_sph_6 (no
    - Carriers carry no node.
    - The Cx mica facings (0.3 mm per face, freeze v0.10) are now solids. Cx from the solids is 522.8 pF, matching the model.
 
+**Reports:** `docs/geometry/integrity-before-rev6.txt` is the rev-6 STEP, as TMD opened it: FAIL, 155 FAIL, 60 nets. `docs/geometry/integrity-after-rev7.txt` is the rev-7 reference STEP.
+
 **The reference build now:** **PASS**, 0 FAIL, 12 nets (one per drawn netlist node), all 7 capacitors and 8 gaps on their nodes. All geometry checks pass (47), the solid count is 697, and G-CI passes.
 
 **Strays the tool reports (WARN), for TMD:**
