@@ -430,11 +430,11 @@
     "pass_": true,
     "detail": "band r360.5-389.5 within R500"
    },
-   "gaps: A rail band clears the C1 / C2 plates (HV)": {
+   "gaps: A return band clears the C1 / C2 plates (HV)": {
     "pass_": true,
     "detail": "r410 band: 17 mm beyond r387 (>= 11)"
    },
-   "gaps: A rail band inside the carriers": {
+   "gaps: A return band inside the carriers": {
     "pass_": true,
     "detail": "band r402-418 within R500"
    },
@@ -446,11 +446,11 @@
     "pass_": true,
     "detail": "band r360.5-389.5 within R500"
    },
-   "gaps: B rail band clears the C1 / C2 plates (HV)": {
+   "gaps: B return band clears the C1 / C2 plates (HV)": {
     "pass_": true,
     "detail": "r410 band: 17 mm beyond r387 (>= 11)"
    },
-   "gaps: B rail band inside the carriers": {
+   "gaps: B return band inside the carriers": {
     "pass_": true,
     "detail": "band r402-418 within R500"
    },
@@ -474,15 +474,15 @@
     "pass_": true,
     "detail": "72 electrodes, each lead ends on a foil of its own node"
    },
-   "gaps: embedded leads keep their cover inside the carrier": {
+   "gaps: embedded leads and bus rings keep their cover inside the carrier": {
     "pass_": true,
-    "detail": "tightest bartip_A_lead_1a in A-flange: 2 mm (>= 2)"
+    "detail": "tightest bus_A_disc_RA in A-disc: 2 mm (>= 2)"
    },
    "gaps: leads clear different-node foils on their carrier": {
     "pass_": true,
-    "detail": "tightest SG4a1_lead_1a (node 4) to Ca_el (node 2) on ND2: 2.25 mm (>= 2)"
+    "detail": "tightest rotortip_A_lead_1d (node R-A) to CR_A (node n18) on A-disc: 2 mm (>= 2)"
    },
-   "gaps: different-node leads and spheres on one body keep the HV clearance": {
+   "gaps: different-node leads, spheres and bus rings on one body keep the HV clearance": {
     "pass_": true,
     "detail": "tightest SG1_lead_1e (node 2) / SG3a1_lead_1f (node 1): 11 mm (>= 11)"
    },
@@ -490,13 +490,13 @@
     "pass_": true,
     "detail": "closest SG1_lead_1f (node 2) to Ca_counter (node 1) on ND1: 7.75 mm"
    },
-   "gaps: equipotential links (info)": {
+   "gaps: equipotential links and bus rings (info)": {
     "pass_": true,
-    "detail": "ND1 6 x (C1_stator <-> Ca_counter), ND4 6 x (C2_stator <-> Cb_counter), A-disc 6 x (C1_rotor <-> CR_A), B-disc 6 x (C2_rotor <-> CR_B); ND2 / ND3 carry node 2 / 3 and pickup n23 / n17, joined through Lx4 / Lx3 (off-model)"
+    "detail": "ND1 6 x (C1_stator <-> Ca_counter), ND4 6 x (C2_stator <-> Cb_counter); 12 bus rings, one per node per carrier; ND2 / ND3 hold node 2 / 3 and pickup n23 / n17 (Lx4 / Lx3), the rotor discs R-A / R-B and the C_R plate n18 / n00 (L_R1 / L_R2): off-model"
    },
    "gaps: counter-rotation: no rotor/stator collision": {
     "pass_": true,
-    "detail": "199 rotor x 322 stator revolved envelopes, none overlap"
+    "detail": "241 rotor x 376 stator revolved envelopes, none overlap"
    },
    "gaps: load-gap crossovers over the stator (info)": {
     "pass_": true,
@@ -507,46 +507,52 @@
  "G-CAD": {
   "pass_": true,
   "names": {
-   "products": 611,
+   "products": 712,
    "anonymous": 0,
    "labels_missing": [],
    "assemblies": [
-    "A-flange - rotor A outer flange, carries the island bars (node 8, floating)",
-    "ND2 - stator carrier ND2 (node 2): Ca electrode + Cx4 pickup (node n23, via Lx4)",
-    "Dielectrics - septum (C_R, garolite) and the Ca/Cb mica slabs",
-    "ND1 - stator carrier ND1 (node 1): C1 stator plate + Ca counter-electrode",
-    "A-disc - rotor A main disc (node 5): C1 rotor face + C_R face",
-    "B-disc - rotor B main disc (node 6): C2 rotor face + C_R face",
-    "ND4 - stator carrier ND4 (node 4): C2 stator plate + Cb counter-electrode",
-    "ND3 - stator carrier ND3 (node 3): Cb electrode + Cx3 pickup (node n17, via Lx3)",
-    "B-flange - rotor B outer flange, carries the island bars (node 7, floating)",
+    "carriers - the insulating carrier discs (G10); no node",
+    "node-8 - Node 8: ND8 - island on rotor A (Cx4 bars)",
+    "node-n23 - Node n23: Cx4 pickup on ND2 (Lx4 to node 2)",
+    "node-2 - Node 2: ND2 - AR bank: Ca electrode",
+    "dielectrics - septum (C_R, garolite), the Ca / Cb mica slabs and the Cx mica facings; no node",
+    "node-1 - Node 1: ND1 - A-rail: C1 stator plate + Ca counter-electrode",
+    "node-R-A - Node R-A: ND5 - resonator end A: rotor A (C1 rotor face)",
+    "node-n18 - Node n18: ND9 - C_R plate on rotor A (L_R1 to R-A)",
+    "node-n00 - Node n00: ND10 - C_R plate on rotor B (L_R2 to R-B)",
+    "node-R-B - Node R-B: ND6 - resonator end B: rotor B (C2 rotor face)",
+    "node-4 - Node 4: ND4 - B-rail: C2 stator plate + Cb counter-electrode",
+    "node-3 - Node 3: ND3 - BR bank: Cb electrode",
+    "node-n17 - Node n17: Cx3 pickup on ND3 (Lx3 to node 3)",
+    "node-7 - Node 7: ND7 - island on rotor B (Cx3 bars)",
     "PumpGeometry 1bdb33d89a45 - DCCREG drawn pump, stage 2 plate geometry (Ca/Cb geometrized)"
    ],
    "parts_csv": "docs/geometry/freeze-v010-CaCb-parts.csv",
-   "csv_rows": 601,
+   "csv_rows": 697,
    "sample": [
-    "A-disc / A_disc_link_1 - A-disc equipotential link 1 of 6 (node 5): C1_rotor <-> CR_A through A-disc at r231 45 deg, 18.25 mm",
-    "A-disc / A_disc_link_2 - A-disc equipotential link 2 of 6 (node 5): C1_rotor <-> CR_A through A-disc at r231 105 deg, 18.25 mm",
-    "A-disc / A_disc_link_3 - A-disc equipotential link 3 of 6 (node 5): C1_rotor <-> CR_A through A-disc at r231 165 deg, 18.25 mm"
+    "carriers / A_disc_carrier_1 - A-disc carrier ring 1 of 3, insulating: rotor A main disc; holds the C1 rotor face (R-A) and, septum side, the C_R plate (n18); r0-402 mm, 18.25 mm thick, z -25.25..-7 [G10 rotor disc, rotor A]",
+    "carriers / A_disc_carrier_2 - A-disc carrier ring 2 of 3, insulating: rotor A main disc; holds the C1 rotor face (R-A) and, septum side, the C_R plate (n18); r402-418 mm, 14 mm thick (recessed spark-gap band), z -21..-7 [G10 rotor disc, rotor A]",
+    "carriers / A_disc_carrier_3 - A-disc carrier ring 3 of 3, insulating: rotor A main disc; holds the C1 rotor face (R-A) and, septum side, the C_R plate (n18); r418-500 mm, 18.25 mm thick, z -25.25..-7 [G10 rotor disc, rotor A]"
    ]
   },
-  "solids": 601,
+  "solids": 697,
   "roles": {
    "carrier": 24,
    "foil": 84,
-   "dielectric": 13,
+   "dielectric": 37,
    "gap-stator": 48,
    "gap-stem": 72,
    "gap-lead": 312,
    "gap-rotor": 24,
-   "link": 24
+   "link": 12,
+   "bus": 84
   },
-  "worst_volume_rel": 3.666068547871382e-15,
+  "worst_volume_rel": 9.150897634530898e-15,
   "invalid": [],
   "clashes": [],
   "json": "docs/geometry/freeze-v010-CaCb.json",
   "step": "docs/geometry/freeze-v010-CaCb.step",
-  "step_bytes": 5202911,
+  "step_bytes": 6327105,
   "lock": "1bdb33d89a45",
   "z_total_mm": 236.0
  },
@@ -600,14 +606,14 @@
  },
  "G-F360": {
   "pass_": true,
-  "bodies": 601,
-  "components": 10,
-  "worst_volume_rel": 1.562979644271458e-14,
+  "bodies": 697,
+  "components": 15,
+  "worst_volume_rel": 4.7853562927430775e-14,
   "invalid": [],
   "names_ok": true,
   "top": "PumpGeometry 1bdb33d89a45 - DCCREG drawn pump, stage 2 plate geometry (Ca-Cb geometrized)",
-  "sample": "A-flange - Cx4_bars_1 - island bars on A, node 8, Cx4, sector 1 of 6 (0-30 deg), r75-350 mm, Al foil 1 mm, septum side, z -94.8..-93.8",
-  "message": "PumpGeometry 1bdb33d89a45: 601 bodies in 9 components built (worst volume error 1.6e-14).\n\nNames follow the parts table (pump-geometry ...-parts.csv / FreeCAD STEP)."
+  "sample": "carriers - ND2_carrier_1 - ND2 carrier ring 1 of 3, insulating- stator carrier ND2; holds the Ca electrode (AR bank, 2) and the Cx4 pickup (n23); r50-360.5 mm, 29.95 mm thick, z -89.2..-59.25 [G10 carrier, stator]",
+  "message": "PumpGeometry 1bdb33d89a45: 697 bodies in 14 components built (worst volume error 4.8e-14).\n\nNames follow the parts table (pump-geometry ...-parts.csv / FreeCAD STEP)."
  },
  "G-Z": {
   "pass_": true,
@@ -632,12 +638,12 @@
   "failing_at_base": [
    "gaps: recessed bands leave a carrier wall",
    "gaps: Z-stretch: every carrier holds its gap seats and leads",
-   "gaps: embedded leads keep their cover inside the carrier",
+   "gaps: embedded leads and bus rings keep their cover inside the carrier",
    "gaps: leads clear different-node foils on their carrier",
-   "gaps: different-node leads and spheres on one body keep the HV clearance",
+   "gaps: different-node leads, spheres and bus rings on one body keep the HV clearance",
    "gaps: counter-rotation: no rotor/stator collision"
   ],
-  "links": 24,
+  "links": 12,
   "thickness": {
    "ND1": 18.5,
    "ND2": 29.95,
@@ -647,6 +653,299 @@
    "B-disc": 18.25,
    "A-flange": 23.2,
    "B-flange": 23.2
+  }
+ },
+ "G-CI": {
+  "pass_": true,
+  "reference": {
+   "verdict": "PASS",
+   "nets": [
+    [
+     "1",
+     79
+    ],
+    [
+     "2",
+     103
+    ],
+    [
+     "3",
+     103
+    ],
+    [
+     "4",
+     79
+    ],
+    [
+     "7",
+     55
+    ],
+    [
+     "8",
+     55
+    ],
+    [
+     "R-A",
+     55
+    ],
+    [
+     "R-B",
+     55
+    ],
+    [
+     "n00",
+     13
+    ],
+    [
+     "n17",
+     13
+    ],
+    [
+     "n18",
+     13
+    ],
+    [
+     "n23",
+     13
+    ]
+   ],
+   "caps": [
+    [
+     "C1",
+     "rotating",
+     279.809,
+     0.745
+    ],
+    [
+     "C2",
+     "rotating",
+     279.809,
+     0.745
+    ],
+    [
+     "C_R1",
+     "fixed",
+     785.203,
+     785.203
+    ],
+    [
+     "Ca1",
+     "fixed",
+     307.801,
+     307.801
+    ],
+    [
+     "Cb1",
+     "fixed",
+     307.801,
+     307.801
+    ],
+    [
+     "Cx3",
+     "rotating",
+     522.788,
+     1.408
+    ],
+    [
+     "Cx4",
+     "rotating",
+     522.788,
+     1.408
+    ]
+   ],
+   "gaps": [
+    [
+     "BS3",
+     6,
+     5.5
+    ],
+    [
+     "BS4",
+     6,
+     5.5
+    ],
+    [
+     "SG1",
+     6,
+     5.5
+    ],
+    [
+     "SG2",
+     6,
+     5.5
+    ],
+    [
+     "SG3a1",
+     6,
+     4.75
+    ],
+    [
+     "SG3b1",
+     6,
+     5.5
+    ],
+    [
+     "SG4a1",
+     6,
+     4.75
+    ],
+    [
+     "SG4b1",
+     6,
+     5.5
+    ]
+   ],
+   "strays": [
+    [
+     [
+      "1",
+      "8"
+     ],
+     "rotating",
+     98.78,
+     0.0
+    ],
+    [
+     [
+      "4",
+      "7"
+     ],
+     "rotating",
+     98.78,
+     0.0
+    ],
+    [
+     [
+      "7",
+      "R-B"
+     ],
+     "modulated",
+     1.64,
+     0.0
+    ],
+    [
+     [
+      "R-A",
+      "n18"
+     ],
+     "fixed",
+     517.62,
+     517.62
+    ],
+    [
+     [
+      "R-A",
+      "n23"
+     ],
+     "rotating",
+     1.91,
+     0.24
+    ],
+    [
+     [
+      "R-B",
+      "n00"
+     ],
+     "fixed",
+     517.62,
+     517.62
+    ],
+    [
+     [
+      "R-B",
+      "n17"
+     ],
+     "rotating",
+     1.91,
+     0.24
+    ]
+   ]
+  },
+  "counts": {
+   "FAIL": 0,
+   "WARN": 7,
+   "PASS": 8,
+   "INFO": 1
+  },
+  "warnings": [
+   "STRAY capacitor 1-8 (rotating): 0.0-98.8 pF over a turn",
+   "STRAY capacitor 4-7 (rotating): 0.0-98.8 pF over a turn",
+   "STRAY capacitor 7-R-B (modulated): 0.0-1.6 pF over a turn (fixed plates, rotating copper between)",
+   "STRAY capacitor R-A-n18 (fixed): 517.6 pF, across L_R1",
+   "STRAY capacitor R-A-n23 (rotating): 0.2-1.9 pF over a turn",
+   "STRAY capacitor R-B-n00 (fixed): 517.6 pF, across L_R2",
+   "STRAY capacitor R-B-n17 (rotating): 0.2-1.9 pF over a turn"
+  ],
+  "step": true,
+  "step_note": "697 solids re-read",
+  "js": {
+   "ok": true,
+   "designs": 9,
+   "worst_rel": 0.0,
+   "mismatches": [],
+   "selftest": {
+    "pass": true
+   }
+  },
+  "faults": {
+   "group": {
+    "want": [
+     "I8"
+    ],
+    "caught": [
+     "I8"
+    ]
+   },
+   "short": {
+    "want": [
+     "I1"
+    ],
+    "caught": [
+     "I1",
+     "I6"
+    ]
+   },
+   "open": {
+    "want": [
+     "I2"
+    ],
+    "caught": [
+     "I2"
+    ]
+   },
+   "gap": {
+    "want": [
+     "I1",
+     "I7"
+    ],
+    "caught": [
+     "I1",
+     "I2",
+     "I6",
+     "I7",
+     "I8"
+    ]
+   },
+   "tie": {
+    "want": [
+     "I2",
+     "I6",
+     "I8"
+    ],
+    "caught": [
+     "I2",
+     "I6",
+     "I8"
+    ]
+   },
+   "joint": {
+    "want": [
+     "I4"
+    ],
+    "caught": [
+     "I4"
+    ]
+   }
   }
  }
 }

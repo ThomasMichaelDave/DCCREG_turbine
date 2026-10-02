@@ -79,7 +79,7 @@ In the geometry stage:
 
 `ND2 / Ca_el_1 - Ca electrode, node 2, Ca, sector 1 of 6 (30-60 deg), r110-174.76 mm, Al foil 1 mm, septum side, z -35.5..-34.5`
 
-- The solids are grouped into one named sub-assembly per carrier, plus a "Dielectrics" assembly.
+- The solids are grouped by **node**: one group per node of the netlist (`node-2 - Node 2: ND2 - AR bank …`), plus `carriers` and `dielectrics`. Where a part is mounted is in its label, and every label ends in `[material, body]`.
 - `<json>-parts.csv`, written next to the STEP, is the translation table: one row per solid with its name, label, assembly, role, node, capacitor, material, radii, angles, z range and volume.
 - Labels are ASCII-only, so they survive STEP in any package.
 
@@ -89,7 +89,7 @@ In the geometry stage:
 
 It opens a new design containing:
 - a top component named with the lock hash;
-- one sub-component per carrier, plus Dielectrics;
+- one sub-component per node, plus carriers and dielectrics;
 - one named body per solid.
 
 The names are the same as in the STEP and the parts CSV; Fusion forbids `/`, so it becomes `-`. Lengths are converted to Fusion's internal centimetres, and the design has parametric base features. Colours come from a copied library appearance; if that appearance isn't found, the bodies are left uncoloured.
@@ -101,6 +101,8 @@ The names are the same as in the STEP and the parts CSV; Fusion forbids `/`, so 
 - the **rail band** (r410) in the C1/C2 gap holds the returns.
 
 The page shows them in the "gaps A" and "gaps B" plan views and in the axial section, and their parameters are in the "spark gaps" group. Buttons of a foreign node are fed by leads over the rotor rims along the stator frame; SG4a and SG3a are the crossovers. A standing check verifies that no rotor part shares (r, z) with any stator part once both are revolved.
+
+**Circuit integrity.** The "circuit integrity" panel rebuilds nets, capacitors and spark gaps from the solids and checks them against the netlist of record on every change. It reports shorts, opens, wrong names or groups, missing capacitors or gaps, and stray capacitors with their values. The same tool runs on any exported JSON or STEP; see `tools/circuit-integrity-README.md`.
 
 **Spherical electrodes.** Every gap electrode is a sphere: 12 mm switching spheres (= the stage-1 d_ball) and 25 mm backstop spheres. Each sphere shows at least the set exposure above its band face, with the rest in a socket (or it stands on a stem). A stem connects it to its embedded lead.
 

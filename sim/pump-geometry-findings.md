@@ -40,7 +40,7 @@
 
 **Readable STEP (rev, 2026-10-01).** Plain `Part.export` wrote every solid as an anonymous "Open CASCADE STEP translator 8.0 N" product. The macro now:
 - gives every solid a descriptive ASCII label (what it is, its node, capacitor, sector and angles, radii, material and thickness, face, z range);
-- groups the solids into one named sub-assembly per carrier, plus Dielectrics;
+- groups the solids into one named sub-assembly per carrier, plus Dielectrics (since rev 7: one group per NODE, plus carriers and dielectrics);
 - exports through FreeCAD's `Import` (OCAF) writer, which keeps names, hierarchy and colours;
 - writes `<json>-parts.csv` as the translation table.
 
@@ -112,6 +112,46 @@ The build now has 293 solids, up from 283, because the C_R faces are 2 × 6 foil
 - Each rotor disc carries two separate foils of the same node, one per face (C1 or C2 rotor face outside, C_R face on the septum side). The C_R face can therefore be shaped independently of the C1/C2 rotor face: sector count, width and radii.
 - That makes C_R adjustable by sectoring the septum face as well as by the septum thickness. The C1/C2 pump capacitance is untouched either way.
 - Keeping the C_R face's sectors on the C1/C2 rotor face's sectors (as now) puts the two node-5 foils back to back. A short through-connection per sector then joins them.
+
+## Node consistency against the netlist of record, and a circuit integrity tool (rev 7, 2026-10-02)
+
+**The report (TMD).** Tracing node 5 → SG1 → node 2 → Ca, the SG1 stator sphere showed up as "node 1" in CAD (`ND1 / SG1_sph_6 …`).
+
+**The new tool.** **`sim/circuit_integrity.py`** (and its JS mirror; see `tools/circuit-integrity-README.md`) rebuilds the circuit from the solids alone and holds it against `topology_edge_list.csv`. Run on the rev-6 build, it found four things:
+
+| # | finding (rev 6) | rule | cause |
+|---|---|---|---|
+| 1 | **Every node was split into 6 nets** | I2 OPEN | Nothing joined an electrode's 30° sectors: each sector, with its own spoke's spark-gap wiring, was an island. |
+| 2 | 144 parts sat in a CAD group that declared another node (SG1 / SG2 / SG3a / SG4a spheres, stems and leads; the Cx pickups) | I8 | CAD groups were per CARRIER and named after its node ("ND1 … (node 1)"), so a node-2 sphere mounted on ND1 read as node 1 — the reported case. 24 insulators were also labelled with a node. |
+| 3 | The C_R plates were drawn on R-A / R-B (the old "5 / 6"); C_R1 was not realized | I6, I8 | The netlist puts **C_R1 between n18 and n00** (DXF ND9 / ND10), in series with L_R1 / L_R2: R-A –L_R1– n18 –C_R1– n00 –L_R2– R-B, the series resonator. The rev-3 links from the C1 rotor face to the C_R plate (TMD's "happy coincidence") **shorted both resonator coils**. |
+| 4 | Node ids '5' / '6' (DXF-era) | I3 | The netlist of record calls them R-A / R-B. The geometry also called the SG1 / SG2 rotor electrodes "rail", which clashes with the netlist's A-rail / B-rail (nodes 1 / 4). |
+
+The tool catches the reported case by name, from the STEP alone: *"SG1_sph_6 (node 2) sits in group 'ND1', which declares node 1"*.
+
+**Corrected (rev 7):**
+1. **Node ids are the netlist's:** 1 2 3 4, R-A R-B, 7 8, n18 n00, n17 n23. The C_R plates are n18 / n00, and the rotor-disc links are gone. The disc now holds two nodes, like ND2 / ND3; the coils L_R1 / L_R2 join them off-model.
+2. **Bus rings.** One per node per carrier, a 3 × 3 mm ring embedded under the electrode's inner edge with a riser into each sector: 12 rings. A ring of a second node on the same carrier moves outward to keep 11 mm HV. Each lands on the foil with a fixed partner where there is one, so it barely faces rotating copper. The cost is C_min 0.74 pF on C1 / C2 and 1.41 pF on Cx.
+3. **CAD groups are electrical.** One group per node (`node-2 - Node 2: ND2 - AR bank …`); insulators sit in `carriers` and `dielectrics`, and every label says where a part is mounted. Every label is `<group> / <name> - <description> [<material>, <body>]`, so a STEP re-read recovers node, material and body from the name.
+4. **Renames and missing solids.**
+   - The return band and its rotor tips are no longer "rail": `rotortip_A_k`, node R-A.
+   - Carriers carry no node.
+   - The Cx mica facings (0.3 mm per face, freeze v0.10) are now solids. Cx from the solids is 522.8 pF, matching the model.
+
+**The reference build now:** **PASS**, 0 FAIL, 12 nets (one per drawn netlist node), all 7 capacitors and 8 gaps on their nodes. All geometry checks pass (47), the solid count is 697, and G-CI passes.
+
+**Strays the tool reports (WARN), for TMD:**
+
+| coupling | value | what it is |
+|---|---|---|
+| **R-A – n18** (and R-B – n00) | **518 pF, fixed** | The C1 rotor face and the C_R plate sit back to back on the same 18 mm disc. That puts ~0.5 nF **across L_R1 / L_R2**: with L_R ≈ 79 µH the coil self-resonates near 0.78 MHz, close to f₀ ≈ 0.64 MHz. |
+| **1 – 8** (and 4 – 7) | **0–99 pF, rotating** | The island bars see ND1's node-1 foils through ND2 wherever the n23 pickups leave ND2's Cx face bare (odd sectors). A parasitic varicap from the A-rail onto the island, peaking where Cx4 is at its minimum. The r110–175 Ca placement gives 84 pF plus 25 pF (2 – 8): about the same total. |
+| 7 – R-B, R-A – n23, R-B – n17 | ≤ 2 pF | small |
+
+**Two layouts were tried for the C_R plate.**
+- **On the other sector parity:** R-A – n18 drops to 5 pF, but **n18 – 1 becomes 0–165 pF rotating**, because the plate then sees ND1's C1 stator plate through the disc and the C1 gap.
+- **Aligned (as built):** 518 pF fixed.
+
+Either way the C_R plate sits right behind the rotor face. Thicker discs, a shield, or moving the C_R plates are TMD's call. Not changed here.
 
 ## Node-2 / node-3 sectors moved outward (rev 6, 2026-10-02)
 

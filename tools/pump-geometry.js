@@ -13,13 +13,14 @@
     ca_round: 0.0, ca_margin: 5.0, t_foil: 1.0, t_carrier: 3.0, t_rotor: 10.0, t_flange: 6.0, t_septum: 12.0,
     cx_air: 3.0, cx_mica: 0.3, r_bore: 50.0, rotor_in_off: 20.0,
     sg_rbar: 375.0, sg_rrail: 410.0, sg_d: 12.0, sg_dbs: 25.0, sg_s_ret: 5.5, sg_s_load: 4.75, sg_s_fire: 5.5, sg_s_bs: 5.5,
-    sg_glat: 1.0, sg_expose: 0.5, sg_stem: 4.0, sg_wall: 1.0, sg_seat: 3.0, sg_rod: 3.0, sg_cover: 2.0, sg_chord: 15.0,
+    sg_glat: 1.0, sg_expose: 0.5, sg_stem: 4.0, sg_wall: 1.0, sg_seat: 3.0, sg_rod: 3.0, sg_cover: 2.0, sg_chord: 15.0, sg_bus: 3.0,
     sg_frame: 60.0, sg_khv: 2.0, zs_mode: "auto" };
   // Z-stretch (TMD 2026-10-02): carrier base thicknesses, same-node links, the fixed gap each carrier faces [IR]
   const CARRIER_BASE = {ND1: "t_carrier", ND2: "t_carrier", ND3: "t_carrier", ND4: "t_carrier", "A-disc": "t_rotor",
     "B-disc": "t_rotor", "A-flange": "t_flange", "B-flange": "t_flange"};
   const FAR_GAP = {ND1: "ca_t", ND2: "ca_t", ND3: "ca_t", ND4: "ca_t", "A-disc": "t_septum", "B-disc": "t_septum"};
-  const LINKS = {ND1: ["C1_stator", "Ca_counter"], ND4: ["C2_stator", "Cb_counter"], "A-disc": ["C1_rotor", "CR_A"], "B-disc": ["C2_rotor", "CR_B"]};
+  // (the rotor discs hold two DIFFERENT nodes -- R-A / R-B and the C_R plate n18 / n00, joined only through L_R1 / L_R2)
+  const LINKS = {ND1: ["C1_stator", "Ca_counter"], ND4: ["C2_stator", "Cb_counter"]};
   const rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
   const g6 = x => String(+(+x).toPrecision(6));                       // Python :g
   const f = (x, n) => x.toFixed(n);
@@ -54,7 +55,7 @@
 
   /* the axial room each band needs (independent of the carriers) and the Z-stretch (1:1 with the Python) */
   function band_needs(g, P){
-    const D = {bar: g.cx_air + 2 * g.cx_mica + 2 * g.t_foil, rail: P.g_vMm + 2 * g.t_foil}, out = {};
+    const D = {bar: g.cx_air + 2 * g.cx_mica + 2 * g.t_foil, return: P.g_vMm + 2 * g.t_foil}, out = {};
     for (const [[side, band]] of BANDS){
       const mine = GAPS.filter(x => x[4] === side && x[5] === band), p_rot = g.sg_expose * g.sg_d;
       const need = Math.max(...mine.map(x => g[SPACING_KEY[x[1]]] + p_rot + g.sg_expose * sphere_d(g, x[1])));
@@ -110,9 +111,9 @@
     const ca_starts = odd.map(s => s + (w_sec - ca.w_deg) / 2), cb_starts = even.map(s => s + (w_sec - cb.w_deg) / 2);
     const fp = {
       C1_stator: _fp("C1 stator plate", "1", "C1", ri, ro, odd, w_sec),
-      C1_rotor: _fp("C1 rotor face", "5", "C1", rr_in, ro, odd, w_sec),
+      C1_rotor: _fp("C1 rotor face", "R-A", "C1", rr_in, ro, odd, w_sec),
       C2_stator: _fp("C2 stator plate", "4", "C2", ri, ro, even, w_sec),
-      C2_rotor: _fp("C2 rotor face", "6", "C2", rr_in, ro, odd, w_sec),
+      C2_rotor: _fp("C2 rotor face", "R-B", "C2", rr_in, ro, odd, w_sec),
       Ca_el: _fp("Ca electrode", "2", "Ca", ca.r_in, ca.r_out, ca_starts, ca.w_deg),
       Ca_counter: _fp("Ca counter (ND1 back face)", "1", "Ca", ri, ro, odd, w_sec),
       Cb_el: _fp("Cb electrode", "3", "Cb", cb.r_in, cb.r_out, cb_starts, cb.w_deg),
@@ -122,8 +123,8 @@
       Cx3_pickup: _fp("Cx3 pickup", "n17", "Cx3", cx_rin, cx_rout, odd, w_sec),
       Cx3_bars: _fp("island bars on B", "7", "Cx3", bar_rin, cx_rout, odd, w_sec),
       // C_R faces: the rotor-face sectors, aligned on A and B (co-rotating discs: C_R fixed) [OC host]
-      CR_A: _fp("C_R face (rotor A)", "5", "C_R", rr_in, ro, odd, w_sec),
-      CR_B: _fp("C_R face (rotor B)", "6", "C_R", rr_in, ro, odd, w_sec),
+      CR_A: _fp("C_R plate (rotor A)", "n18", "C_R", rr_in, ro, odd, w_sec),
+      CR_B: _fp("C_R plate (rotor B)", "n00", "C_R", rr_in, ro, odd, w_sec),
     };
     const tf = g.t_foil, gv = P.g_vMm, tcx = g.cx_air + 2 * g.cx_mica;
     const zs = zstretch(g, P), tc = {};
@@ -132,16 +133,16 @@
     const C = (id, kind, node, t, r_in) => ({ id, kind, node, t, r_in, r_out: r_edge });
     const F = key => ({ id: key, kind: "foil", key, t: tf });
     const G = (id, cap, t, medium, footprint = null, margin = 0.0) => ({ id, kind: "gap", cap, t, medium, footprint, margin });
-    const seqA = [F("CR_A"), C("A-disc", "rotor", "5", tc["A-disc"], 0.0), F("C1_rotor"), G("C1-gap", "C1", gv, "air"),
-      F("C1_stator"), C("ND1", "stator", "1", tc.ND1, g.r_bore), F("Ca_counter"),
+    const seqA = [F("CR_A"), C("A-disc", "rotor", "", tc["A-disc"], 0.0), F("C1_rotor"), G("C1-gap", "C1", gv, "air"),
+      F("C1_stator"), C("ND1", "stator", "", tc.ND1, g.r_bore), F("Ca_counter"),
       G("Ca-diel", "Ca", ca.t, ca.diel, "Ca_el", g.ca_margin), F("Ca_el"),
-      C("ND2", "stator", "2", tc.ND2, g.r_bore), F("Cx4_pickup"), G("Cx4-gap", "Cx4", tcx, cxm),
-      F("Cx4_bars"), C("A-flange", "rotor-flange", "8 (floating on A)", tc["A-flange"], 0.0)];
-    const seqB = [F("CR_B"), C("B-disc", "rotor", "6", tc["B-disc"], 0.0), F("C2_rotor"), G("C2-gap", "C2", gv, "air"),
-      F("C2_stator"), C("ND4", "stator", "4", tc.ND4, g.r_bore), F("Cb_counter"),
+      C("ND2", "stator", "", tc.ND2, g.r_bore), F("Cx4_pickup"), G("Cx4-gap", "Cx4", tcx, cxm),
+      F("Cx4_bars"), C("A-flange", "rotor-flange", "", tc["A-flange"], 0.0)];
+    const seqB = [F("CR_B"), C("B-disc", "rotor", "", tc["B-disc"], 0.0), F("C2_rotor"), G("C2-gap", "C2", gv, "air"),
+      F("C2_stator"), C("ND4", "stator", "", tc.ND4, g.r_bore), F("Cb_counter"),
       G("Cb-diel", "Cb", cb.t, cb.diel, "Cb_el", g.ca_margin), F("Cb_el"),
-      C("ND3", "stator", "3", tc.ND3, g.r_bore), F("Cx3_pickup"), G("Cx3-gap", "Cx3", tcx, cxm),
-      F("Cx3_bars"), C("B-flange", "rotor-flange", "7 (floating on B)", tc["B-flange"], 0.0)];
+      C("ND3", "stator", "", tc.ND3, g.r_bore), F("Cx3_pickup"), G("Cx3-gap", "Cx3", tcx, cxm),
+      F("Cx3_bars"), C("B-flange", "rotor-flange", "", tc["B-flange"], 0.0)];
     const h = g.t_septum / 2;
     const stack = [Object.assign(G("septum", "C_R", g.t_septum, "garolite"), { z0: -h, z1: h, side: "mid", r_in: 0.0, r_out: r_edge })];
     for (const [side, seq, sgn] of [["A", seqA, -1], ["B", seqB, +1]]){
@@ -170,27 +171,37 @@
 
   /* ---- the bill of solids (1:1 with sim/pump_geometry.py parts()): the CAD builders only build this list ---- */
   const NODE_RGB = {"1": [0.49, 0.82, 1.0], "2": [1.0, 0.71, 0.33], "3": [0.27, 0.77, 0.42], "4": [0.90, 0.28, 0.30],
-    "5": [0.78, 0.57, 0.92], "6": [0.97, 0.46, 0.56], "7": [0.62, 0.81, 0.42], "8": [0.88, 0.69, 0.41],
-    "n17": [0.55, 0.90, 0.80], "n23": [1.0, 0.88, 0.55]};
+    "R-A": [0.78, 0.57, 0.92], "R-B": [0.97, 0.46, 0.56], "7": [0.62, 0.81, 0.42], "8": [0.88, 0.69, 0.41],
+    "n17": [0.55, 0.90, 0.80], "n23": [1.0, 0.88, 0.55], "n18": [0.55, 0.45, 0.95], "n00": [0.95, 0.55, 0.80]};
+  const NODE_DESC = {   // the netlist of record's nodes (= sim/circuit_integrity.py NODE_INFO)
+    "1": "ND1 - A-rail: C1 stator plate + Ca counter-electrode", "2": "ND2 - AR bank: Ca electrode",
+    "3": "ND3 - BR bank: Cb electrode", "4": "ND4 - B-rail: C2 stator plate + Cb counter-electrode",
+    "R-A": "ND5 - resonator end A: rotor A (C1 rotor face)", "R-B": "ND6 - resonator end B: rotor B (C2 rotor face)",
+    "7": "ND7 - island on rotor B (Cx3 bars)", "8": "ND8 - island on rotor A (Cx4 bars)",
+    "n18": "ND9 - C_R plate on rotor A (L_R1 to R-A)", "n00": "ND10 - C_R plate on rotor B (L_R2 to R-B)",
+    "n17": "Cx3 pickup on ND3 (Lx3 to node 3)", "n23": "Cx4 pickup on ND2 (Lx4 to node 2)"};
   const MEDIUM_RGB = {garolite: [0.55, 0.50, 0.30], mica: [0.75, 0.70, 0.55]};
   const CARRIER_RGB = [0.35, 0.40, 0.47];
-  const MATERIAL = {"stator": "G10 carrier", "rotor": "rotor disc", "rotor-flange": "rotor flange (insulating)"};
-  const CARRIER_ROLE = {"A-flange": "rotor A outer flange, carries the island bars (node 8, floating)",
-    "B-flange": "rotor B outer flange, carries the island bars (node 7, floating)",
-    "A-disc": "rotor A main disc (node 5): C1 rotor face + C_R face",
-    "B-disc": "rotor B main disc (node 6): C2 rotor face + C_R face",
-    "ND1": "stator carrier ND1 (node 1): C1 stator plate + Ca counter-electrode",
-    "ND2": "stator carrier ND2 (node 2): Ca electrode + Cx4 pickup (node n23, via Lx4)",
-    "ND3": "stator carrier ND3 (node 3): Cb electrode + Cx3 pickup (node n17, via Lx3)",
-    "ND4": "stator carrier ND4 (node 4): C2 stator plate + Cb counter-electrode"};
+  const MATERIAL = {"stator": "G10 carrier", "rotor": "G10 rotor disc", "rotor-flange": "G10 rotor flange"};
+  const CARRIER_ROLE = {"A-flange": "rotor A outer flange; holds the ND8 island bars",
+    "B-flange": "rotor B outer flange; holds the ND7 island bars",
+    "A-disc": "rotor A main disc; holds the C1 rotor face (R-A) and, septum side, the C_R plate (n18)",
+    "B-disc": "rotor B main disc; holds the C2 rotor face (R-B) and, septum side, the C_R plate (n00)",
+    "ND1": "stator carrier ND1; holds the C1 stator plate and the Ca counter-electrode (A-rail, 1)",
+    "ND2": "stator carrier ND2; holds the Ca electrode (AR bank, 2) and the Cx4 pickup (n23)",
+    "ND3": "stator carrier ND3; holds the Cb electrode (BR bank, 3) and the Cx3 pickup (n17)",
+    "ND4": "stator carrier ND4; holds the C2 stator plate and the Cb counter-electrode (B-rail, 4)"};
   const CARRIER_KINDS = ["rotor", "stator", "rotor-flange"];
-  const node_rgb = node => { const n = String(node).split(" ")[0]; return NODE_RGB[n] || NODE_RGB[n[0]] || CARRIER_RGB; };
+  const node_rgb = node => NODE_RGB[String(node)] || CARRIER_RGB;
   const _mm = x => { let s = x.toFixed(2); if (s.includes(".")) s = s.replace(/0+$/, "").replace(/\.$/, ""); return (s === "-0" || s === "") ? "0" : s; };
   const _m360 = x => ((x % 360.0) + 360.0) % 360.0;
   const _zr = it => `z ${_mm(it.z0)}..${_mm(it.z1)}`;
   function parts(design){
+    // CAD groups are ELECTRICAL (1:1 with the Python): conductors in the group of their node, insulators in
+    // "carriers" / "dielectrics"; every label is "<group> / <name> - <description> [<material>, <body>]"
     const st = design.stack, fp = design.footprints, asm = [], out = [];
     const assembly = (key, label) => { if (!asm.some(a => a.key === key)) asm.push({key, label}); return key; };
+    const node_group = node => assembly(`node-${node}`, `node-${node} - Node ${node}: ${NODE_DESC[node] || ""}`);
     const carrier_of = {}, face_of = {};
     st.forEach((it, i) => {
       if (it.kind !== "foil") return;
@@ -198,71 +209,75 @@
       carrier_of[it.id] = nb.length ? nb[0].id : "foils";
       face_of[it.id] = (nb.length && Math.abs(it.z0) < Math.abs(nb[0].z0)) ? "septum side" : "outer side";
     });
-    const P = (name, label, assembly, role, carrier, node, cap, material, r_in, r_out, start_deg, w_deg, z0, z1, rgb) =>
-      out.push({name, label, assembly, role, carrier, node, cap, material, shape: "sector", chains: [carrier || assembly],
-        r_in, r_out, start_deg, w_deg, z0, z1, rgb: rgb.slice(),
+    const P = (name, desc, assembly, role, carrier, node, cap, material, body, r_in, r_out, start_deg, w_deg, z0, z1, rgb) =>
+      out.push({name, label: `${assembly} / ${name} - ${desc} [${material}, ${body}]`, assembly, role, carrier, node, cap, material, body,
+        shape: "sector", chains: [carrier || assembly], r_in, r_out, start_deg, w_deg, z0, z1, rgb: rgb.slice(),
         volume: 0.5 * rad(Math.min(w_deg, 360.0)) * (r_out * r_out - r_in * r_in) * (z1 - z0)});
+    const DIEL = "dielectrics - septum (C_R, garolite), the Ca / Cb mica slabs and the Cx mica facings; no node";
     for (const it of st){
       const kind = it.kind;
       if (CARRIER_KINDS.includes(kind)){
-        const a = assembly(it.id, `${it.id} - ${CARRIER_ROLE[it.id] || kind}`);
+        const a = assembly("carriers", "carriers - the insulating carrier discs (G10); no node"), body = ROTOR_BODY[it.id] || "stator";
         const rings = _carrier_rings(it, (design.sparkgaps || {}).recesses || []);
         rings.forEach(([r0, r1, z0, z1], ri) => {
           const thin = Math.abs((z1 - z0) - it.t) > 1e-9;
           P(it.id.replace(/-/g, "_") + "_carrier" + (rings.length > 1 ? `_${ri + 1}` : ""),
-            `${it.id} carrier${rings.length > 1 ? " ring " + (ri + 1) + " of " + rings.length : ""} - ${MATERIAL[kind]}, node ${it.node}, ` +
+            `${it.id} carrier${rings.length > 1 ? " ring " + (ri + 1) + " of " + rings.length : ""}, insulating: ${CARRIER_ROLE[it.id] || kind}; ` +
             `r${_mm(r0)}-${_mm(r1)} mm, ${_mm(z1 - z0)} mm thick${thin ? " (recessed spark-gap band)" : ""}, z ${_mm(z0)}..${_mm(z1)}`,
-            a, "carrier", it.id, it.node, "", MATERIAL[kind], r0, r1, 0.0, 360.0, z0, z1, CARRIER_RGB);
+            a, "carrier", it.id, "", "", MATERIAL[kind], body, r0, r1, 0.0, 360.0, z0, z1, CARRIER_RGB);
         });
       } else if (kind === "foil"){
-        const car = carrier_of[it.id];
-        const a = assembly(car, `${car} - ${CARRIER_ROLE[car] || ""}`);
-        const n = it.starts.length;
+        const car = carrier_of[it.id], a = node_group(it.node), body = ROTOR_BODY[car] || "stator", n = it.starts.length;
         it.starts.forEach((s0, k) => {
           let ang;
           if (it.w_deg >= 360.0 - 1e-9) ang = "full ring";
           else { const e = _m360(s0 + it.w_deg); ang = `sector ${k + 1} of ${n} (${_mm(_m360(s0))}-${_mm(e !== 0 ? e : 360.0)} deg)`; }
           P(`${it.key}_${k + 1}`,
-            `${car} / ${it.key}_${k + 1} - ${it.name}, node ${it.node}, ${it.cap}, ${ang}, r${_mm(it.r_in)}-${_mm(it.r_out)} mm, ` +
-            `Al foil ${_mm(it.z1 - it.z0)} mm, ${face_of[it.id]}, ${_zr(it)}`,
-            a, "foil", car, it.node, it.cap, "Al foil", it.r_in, it.r_out, s0, it.w_deg, it.z0, it.z1, node_rgb(it.node));
+            `${it.name}, node ${it.node}, ${it.cap}, ${ang}, r${_mm(it.r_in)}-${_mm(it.r_out)} mm, Al foil ${_mm(it.z1 - it.z0)} mm, ` +
+            `${face_of[it.id]} of ${car}, ${_zr(it)}`,
+            a, "foil", car, it.node, it.cap, "Al foil", body, it.r_in, it.r_out, s0, it.w_deg, it.z0, it.z1, node_rgb(it.node));
         });
       } else if (kind === "gap" && MEDIUM_RGB[it.medium]){
-        const a = assembly("dielectrics", "Dielectrics - septum (C_R, garolite) and the Ca/Cb mica slabs");
+        const a = assembly("dielectrics", DIEL);
         if (it.footprint){
           const e = fp[it.footprint], m = it.margin || 0.0;
           const rin = Math.max(0.0, e.r_in - m), rout = e.r_out + m, dw = deg(m / Math.max(e.r_in, 1e-9)), n = e.starts.length;
           e.starts.forEach((s0, k) => {
             const w = Math.min(e.w_deg + 2 * dw, 360.0), a0 = s0 - dw;
             P(`${it.id.replace(/-/g, "_")}_${k + 1}`,
-              `${it.id}_${k + 1} - ${it.medium} dielectric for ${it.cap} (between the ${it.cap} electrode and its counter), slab ${k + 1} of ${n} ` +
+              `${it.id}_${k + 1}, ${it.medium} dielectric for ${it.cap} (between the ${it.cap} electrode and its counter), slab ${k + 1} of ${n} ` +
               `(${_mm(_m360(a0))}-${_mm(_m360(a0 + w))} deg), r${_mm(rin)}-${_mm(rout)} mm, ${_mm(it.t)} mm thick (foil + ${_mm(m)} mm margin), ${_zr(it)}`,
-              a, "dielectric", "", "", it.cap, it.medium, rin, rout, a0, w, it.z0, it.z1, MEDIUM_RGB[it.medium]);
+              a, "dielectric", "", "", it.cap, it.medium, "stator", rin, rout, a0, w, it.z0, it.z1, MEDIUM_RGB[it.medium]);
           });
         } else {
           const rin = it.r_in != null ? it.r_in : 0.0, rout = it.r_out != null ? it.r_out : design.r_edge;
           P(it.id.replace(/-/g, "_"),
-            `${it.id} - ${it.medium}, ${it.cap} dielectric between rotor A and rotor B, r${_mm(rin)}-${_mm(rout)} mm, ${_mm(it.t)} mm thick, ${_zr(it)}`,
-            a, "dielectric", "", "", it.cap, it.medium, rin, rout, 0.0, 360.0, it.z0, it.z1, MEDIUM_RGB[it.medium]);
+            `${it.id}, ${it.medium}, ${it.cap} dielectric between rotor A and rotor B, r${_mm(rin)}-${_mm(rout)} mm, ${_mm(it.t)} mm thick, ${_zr(it)}`,
+            a, "dielectric", "", "", it.cap, it.medium, "rotor AB", rin, rout, 0.0, 360.0, it.z0, it.z1, MEDIUM_RGB[it.medium]);
         }
       }
+    }
+    for (const x of cx_facings(design)){
+      const a = assembly("dielectrics", DIEL);
+      P(x.name, `${x.cap} mica facing on ${x.foil} (${x.carrier}), r${_mm(x.r_in)}-${_mm(x.r_out)} mm, ${_mm(x.z1 - x.z0)} mm, z ${_mm(x.z0)}..${_mm(x.z1)}`,
+        a, "dielectric", x.carrier, "", x.cap, "mica", x.body, x.r_in, x.r_out, x.start_deg, x.w_deg, x.z0, x.z1, MEDIUM_RGB.mica);
     }
     const sgp = design.sparkgaps;
     if (sgp){
       for (const it of sgp.items){
-        const akey = it.carrier;
-        const base = {name: it.name, label: `${akey} / ${it.name} - ${it.desc}`, assembly: akey, role: it.role, carrier: akey, node: it.node,
-          cap: it.gap, rgb: node_rgb(it.node).slice(), chains: it.chains.slice()};
+        const akey = node_group(it.node);
+        const mat = it.kind === "sector" ? "Cu bus" : it.kind === "sphere" ? (it.r <= 6.0 + 1e-9 ? "W-Cu sphere" : "polished sphere")
+          : ({link: "Cu link", "gap-stem": "Cu stem", bus: "Cu bus"}[it.role] || "Cu lead");
+        const base = {name: it.name, label: `${akey} / ${it.name} - ${it.desc}, in ${it.carrier} [${mat}, ${it.body}]`, assembly: akey, role: it.role,
+          carrier: it.carrier, node: it.node, cap: it.gap, material: mat, body: it.body, rgb: node_rgb(it.node).slice(), chains: it.chains.slice()};
         if (it.kind === "sector")
-          Object.assign(base, {shape: "sector", material: "Al foil", r_in: it.r_in, r_out: it.r_out, start_deg: it.start_deg, w_deg: it.w_deg,
+          Object.assign(base, {shape: "sector", r_in: it.r_in, r_out: it.r_out, start_deg: it.start_deg, w_deg: it.w_deg,
             z0: it.z0, z1: it.z1, volume: 0.5 * rad(it.w_deg) * (it.r_out ** 2 - it.r_in ** 2) * (it.z1 - it.z0)});
         else if (it.kind === "sphere")
-          Object.assign(base, {shape: "sphere", material: it.r <= 6.0 + 1e-9 ? "W-Cu sphere" : "polished sphere", c: it.c.slice(), r: it.r,
-            volume: 4.0 / 3.0 * Math.PI * it.r ** 3});
+          Object.assign(base, {shape: "sphere", c: it.c.slice(), r: it.r, volume: 4.0 / 3.0 * Math.PI * it.r ** 3});
         else {
           const L = dist(it.p0, it.p1);
-          const mat = {link: "Cu link", "gap-stem": "Cu stem"}[it.role] || "Cu lead";
-          Object.assign(base, {shape: "rod", material: mat, p0: it.p0.slice(), p1: it.p1.slice(), r: it.r, volume: Math.PI * it.r ** 2 * L});
+          Object.assign(base, {shape: "rod", p0: it.p0.slice(), p1: it.p1.slice(), r: it.r, volume: Math.PI * it.r ** 2 * L});
         }
         out.push(base);
       }
@@ -271,18 +286,18 @@
   }
 
   /* ---- spark gaps IN the stack (1:1 with sim/pump_geometry.py sparkgaps / sweep_check / gap_checks) ---- */
-  const GAPS = [["SG1", "return", "2", "rail A (node 5)", "A", "rail", 3.00], ["SG4a1", "load", "4", "bar 8", "A", "bar", 37.20],
-    ["SG4b1", "fire", "2", "bar 8", "A", "bar", 46.05], ["BS4", "backstop", "2", "bar 8", "A", "bar", 49.00],
-    ["SG2", "return", "3", "rail B (node 6)", "B", "rail", 33.00], ["SG3a1", "load", "1", "bar 7", "B", "bar", 7.20],
-    ["SG3b1", "fire", "3", "bar 7", "B", "bar", 16.05], ["BS3", "backstop", "3", "bar 7", "B", "bar", 19.00]];
+  const GAPS = [["SG1", "return", "2", "rotor A (R-A)", "A", "return", 3.00], ["SG4a1", "load", "4", "island bar 8", "A", "bar", 37.20],
+    ["SG4b1", "fire", "2", "island bar 8", "A", "bar", 46.05], ["BS4", "backstop", "2", "island bar 8", "A", "bar", 49.00],
+    ["SG2", "return", "3", "rotor B (R-B)", "B", "return", 33.00], ["SG3a1", "load", "1", "island bar 7", "B", "bar", 7.20],
+    ["SG3b1", "fire", "3", "island bar 7", "B", "bar", 16.05], ["BS3", "backstop", "3", "island bar 7", "B", "bar", 19.00]];
   const NETLIST_GAPS = {SG1: ["2", "R-A"], SG2: ["3", "R-B"], SG3a1: ["1", "7"], SG3b1: ["7", "3"], BS3: ["7", "3"],
     SG4a1: ["4", "8"], SG4b1: ["8", "2"], BS4: ["8", "2"]};
-  const ROTOR_NODE = {"rail A (node 5)": "R-A", "rail B (node 6)": "R-B", "bar 7": "7", "bar 8": "8"};
+  const ROTOR_NODE = {"rotor A (R-A)": "R-A", "rotor B (R-B)": "R-B", "island bar 7": "7", "island bar 8": "8"};
   const NODE_CARRIER = {"1": "ND1", "2": "ND2", "3": "ND3", "4": "ND4"};
   const SIDE_OF_CARRIER = {ND1: "A", ND2: "A", ND3: "B", ND4: "B"};
   const SPACING_KEY = {return: "sg_s_ret", load: "sg_s_load", fire: "sg_s_fire", backstop: "sg_s_bs"};
-  const BANDS = [[["A", "bar"], ["A-flange", "Cx4_bars", "ND2"]], [["A", "rail"], ["A-disc", "C1_rotor", "ND1"]],
-    [["B", "bar"], ["B-flange", "Cx3_bars", "ND3"]], [["B", "rail"], ["B-disc", "C2_rotor", "ND4"]]];
+  const BANDS = [[["A", "bar"], ["A-flange", "Cx4_bars", "ND2"]], [["A", "return"], ["A-disc", "C1_rotor", "ND1"]],
+    [["B", "bar"], ["B-flange", "Cx3_bars", "ND3"]], [["B", "return"], ["B-disc", "C2_rotor", "ND4"]]];
   const BAND = {}; for (const [[sd, bd], v] of BANDS) BAND[sd + "|" + bd] = v;
   const BODY_OF = {stator: "stator", "rotor A": "rotor", "rotor B": "rotor"};
   const ROTOR_BODY = {"A-disc": "rotor A", "A-flange": "rotor A", "B-disc": "rotor B", "B-flange": "rotor B"};
@@ -422,21 +437,21 @@
     }
     for (const key of Object.keys(bands)){
       const b = bands[key], side = b.side, band = b.band, rc = b.rotor_carrier, bar = band === "bar", rfoil = BAND[side + "|" + band][1];
-      const tipn = bar ? "bartip" : "railtip", f = target(rc, b.rotor_node, lead_z[rc]), zf = 0.5 * (f.z0 + f.z1);
+      const tipn = bar ? "bartip" : "rotortip", f = target(rc, b.rotor_node, lead_z[rc]), zf = 0.5 * (f.z0 + f.z1);
       for (let k = 0; k < SPOKES; k++){
         const a = 60.0 * k, ch = [`tip-${side}-${band}`, rc, rfoil];
         const cen = _pol(b.r, a, b.Fr + b.sgn * (b.p_rot - g.sg_d / 2));
         items.push({kind: "sphere", name: `${tipn}_${side}_${k + 1}`, gap: "", node: b.rotor_node, role: "gap-rotor",
           c: cen, r: g.sg_d / 2, chains: ch, side, body: ROTOR_BODY[rc], carrier: rc,
-          desc: `${bar ? "island bar" : "rail"} tip ${k + 1} of ${SPOKES} (node ${b.rotor_node}, ${ROTOR_BODY[rc]}), ${_mm(g.sg_d)} mm W-Cu sphere on ${rc} ` +
+          desc: `${bar ? "island bar" : "rotor face"} tip ${k + 1} of ${SPOKES} (node ${b.rotor_node}, ${ROTOR_BODY[rc]}), ${_mm(g.sg_d)} mm W-Cu sphere on ${rc} ` +
             `at r${_mm(b.r)} ${_mm(a)} deg, apex ${_mm(b.p_rot)} mm proud, ${_mm(g.sg_d - b.p_rot)} mm in its socket`});
         items.push({kind: "rod", name: `${tipn}_${side}_stem_${k + 1}`, gap: "", node: b.rotor_node, role: "gap-stem", p0: cen.slice(), p1: _pol(b.r, a, lead_z[rc]),
           r: g.sg_stem / 2, chains: ch, side, body: ROTOR_BODY[rc], carrier: rc, embedded: false,
-          desc: `${bar ? "island bar" : "rail"} tip ${k + 1} stem (node ${b.rotor_node}): sphere centre to the lead plane in ${rc}`});
+          desc: `${bar ? "island bar" : "rotor face"} tip ${k + 1} stem (node ${b.rotor_node}): sphere centre to the lead plane in ${rc}`});
         const [pts, w_in] = _route(b.r, a, lead_z[rc], f, zf, R_ch, run_of(f), w_sec, ins_mm);
         const segs = polyline(pts, `${tipn}_${side}_lead_${k + 1}`, "", b.rotor_node, ch, side, ROTOR_BODY[rc], rc, w_in.map(x => `in ${rc}: ${x}`),
           Array(pts.length - 2).fill(true).concat([false]));
-        for (const sg_ of segs) sg_.desc = `${bar ? "island bar" : "rail"} tip ${k + 1} lead (node ${b.rotor_node}): ` + sg_.desc;
+        for (const sg_ of segs) sg_.desc = `${bar ? "island bar" : "rotor face"} tip ${k + 1} lead (node ${b.rotor_node}): ` + sg_.desc;
         items.push(...segs);
         routes.push({electrode: `${tipn}_${side}_${k + 1}`, node: b.rotor_node, foil: f.id, carrier: rc, end: pts[pts.length - 1].slice()});
       }
@@ -451,6 +466,37 @@
           body: ROTOR_BODY[c] || "stator", carrier: c, embedded: false,
           desc: `${c} equipotential link ${k + 1} of ${f1.starts.length} (node ${f1.node}): ${k1} <-> ${k2} through ${c} at r${_mm(rr)} ${_mm(_m360(a))} deg, ${_mm(Math.abs(cc.z1 - cc.z0))} mm`});
       });
+    }
+    // bus rings (1:1 with the Python): one per node per carrier, joining that electrode's sectors [IR]
+    const hv = g.sg_khv * Math.max(g.sg_s_ret, g.sg_s_load, g.sg_s_fire, g.sg_s_bs), bw = g.sg_bus;
+    for (const c of Object.keys(CARRIER_BASE)){
+      const cc = byid[c];
+      let mine = st.filter(it => it.kind === "foil" && on[it.id] === c);
+      mine = mine.filter(it => ROTATING.includes(it.cap)).concat(mine.filter(it => !ROTATING.includes(it.cap)));
+      const nodes = [];
+      for (const it of mine) if (!nodes.includes(it.node)) nodes.push(it.node);
+      const placed = [];
+      for (const nd of nodes){
+        const fs = mine.filter(it => it.node === nd), f = fs.find(it => !ROTATING.includes(it.cap)) || fs[0];
+        const up = f.z0 >= cc.z1 - 1e-9, fc = far_cover(g, c);
+        const zc = up ? (cc.z1 - fc - bw / 2) : (cc.z0 + fc + bw / 2);
+        let r = f.r_in + bw / 2;
+        for (const [rp, zp] of placed){
+          const dzs = Math.max(0.0, Math.abs(zc - zp) - bw);
+          if (dzs < hv) r = Math.max(r, rp + bw + Math.sqrt(hv * hv - dzs * dzs));
+        }
+        placed.push([r, zc]);
+        const nk = nd.replace("-", ""), ch = [`bus-${c}-${nd}`, c], body = ROTOR_BODY[c] || "stator", cn = c.replace("-", "_");
+        items.push({kind: "sector", name: `bus_${cn}_${nk}`, gap: "", node: nd, role: "bus", r_in: r - bw / 2, r_out: r + bw / 2,
+          start_deg: 0.0, w_deg: 360.0, z0: zc - bw / 2, z1: zc + bw / 2, chains: ch, side: cc.side, body, carrier: c, embedded: true,
+          desc: `${c} bus ring (node ${nd}): joins the ${f.starts.length} sectors of ${f.id}, r${_mm(r)}, ${_mm(bw)} x ${_mm(bw)} mm, embedded ${_mm(fc)} mm under its face`});
+        f.starts.forEach((s0, k) => {
+          const a = s0 + f.w_deg / 2;
+          items.push({kind: "rod", name: `bus_${cn}_${nk}_riser_${k + 1}`, gap: "", node: nd, role: "bus",
+            p0: _pol(r, a, zc), p1: _pol(r, a, 0.5 * (f.z0 + f.z1)), r: rod, chains: ch, side: cc.side, body, carrier: c, embedded: false, riser: true,
+            desc: `${c} bus riser ${k + 1} of ${f.starts.length} (node ${nd}): bus ring to ${f.id} at ${_mm(_m360(a))} deg`});
+        });
+      }
     }
     const bandsOut = {}; for (const key of Object.keys(bands)) bandsOut[key.replace("|", "-")] = bands[key];
     const out = {R_frame, R_chord: R_ch, bands: bandsOut, recesses, lead_z, gaps, routes, items};
@@ -518,6 +564,23 @@
     return rings;
   }
 
+  function cx_facings(design){
+    const g = design.geom, st = design.stack, fp = design.footprints, on = _foil_carriers(st), m = g.ca_margin, t = g.cx_mica, out = [];
+    if (t <= 0) return out;
+    st.forEach((it, i) => {
+      if (it.kind !== "gap" || !["Cx3", "Cx4"].includes(it.cap)) return;
+      for (const [j, low] of [[i - 1, true], [i + 1, false]]){
+        const f = st[j], e = fp[f.key];
+        const z0 = low ? it.z0 : it.z1 - t, z1 = low ? it.z0 + t : it.z1;
+        const rin = Math.max(0.0, e.r_in - m), rout = e.r_out + m, dw = deg(m / Math.max(e.r_in, 1e-9));
+        const body = ROTOR_BODY[on[f.id]] || "stator";
+        e.starts.forEach((s0, k) => out.push({name: `${it.cap}_mica_${body !== "stator" ? "bars" : "pickup"}_${k + 1}`, cap: it.cap, foil: f.id,
+          r_in: rin, r_out: rout, start_deg: s0 - dw, w_deg: Math.min(e.w_deg + 2 * dw, 360.0), z0, z1, body, carrier: on[f.id]}));
+      }
+    });
+    return out;
+  }
+
   function sweep_check(design, sg){
     const st = design.stack, carrier_of = {}, env = [];
     st.forEach((it, i) => {
@@ -534,6 +597,7 @@
       } else if (it.kind === "gap" && MEDIUM_RGB[it.medium])
         env.push(["rotor AB", it.id, [it.r_in != null ? it.r_in : 0.0, it.r_out != null ? it.r_out : design.r_edge, it.z0, it.z1]]);
     }
+    for (const x of cx_facings(design)) env.push([x.body, x.name, [x.r_in, x.r_out, x.z0, x.z1]]);
     for (const it of sg.items){
       let e;
       if (it.kind === "sector") e = [it.r_in, it.r_out, it.z0, it.z1];
@@ -621,17 +685,30 @@
       ? `${sg.routes.length} electrodes, each lead ends on a foil of its own node` : "unwired: " + unw.slice(0, 4).join(", ")];
     const rec_by = {};
     for (const rc of sg.recesses) (rec_by[rc.carrier] = rec_by[rc.carrier] || []).push(rc);
-    const on = _foil_carriers(design.stack), foils = design.stack.filter(it => it.kind === "foil");
+    const on = _foil_carriers(design.stack), rings = sg.items.filter(it => it.role === "bus" && it.kind === "sector");
+    const foils = design.stack.filter(it => it.kind === "foil").concat(rings.map(x => ({id: x.name, node: x.node, r_in: x.r_in, r_out: x.r_out,
+      z0: x.z0, z1: x.z1, starts: [0.0], w_deg: 360.0})));
+    for (const x of rings) on[x.name] = x.carrier;
     let w_cov = Infinity, d_cov = "none", w_own = Infinity, d_own = "none", w_oth = Infinity, d_oth = "none";
+    const faces = (cid, ra, rb) => {
+      const c = byid[cid];
+      let lo = c.z0, hi = c.z1;
+      for (const rc of (rec_by[cid] || [])){
+        if (ra != null && (rb <= rc.r0 || ra >= rc.r1)) continue;
+        if (rc.face === "z1") hi = Math.min(hi, c.z1 - rc.depth); else lo = Math.max(lo, c.z0 + rc.depth);
+      }
+      return [lo, hi];
+    };
+    for (const x of rings){
+      const [lo, hi] = faces(x.carrier, x.r_in, x.r_out), cov = Math.min(x.z0 - lo, hi - x.z1);
+      if (cov < w_cov - 1e-9){ w_cov = cov; d_cov = `${x.name} in ${x.carrier}: ${_mm(cov)} mm`; }
+    }
     for (const it of sg.items){
       if (it.kind !== "rod" || (it.role !== "gap-lead" && it.role !== "gap-stem")) continue;
       const stem = it.role === "gap-stem", p0 = it.p0, p1 = it.p1, rr = it.r, zlo = Math.min(p0[2], p1[2]) - rr, zhi = Math.max(p0[2], p1[2]) + rr;
       if (it.embedded){
-        const c = byid[it.carrier];
-        let lo = c.z0, hi = c.z1;
-        for (const rc of (rec_by[c.id] || [])){ if (rc.face === "z1") hi = Math.min(hi, c.z1 - rc.depth); else lo = Math.max(lo, c.z0 + rc.depth); }
-        const cov = Math.min(zlo - lo, hi - zhi);
-        if (cov < w_cov - 1e-9){ w_cov = cov; d_cov = `${it.name} in ${c.id}: ${_mm(cov)} mm`; }
+        const [lo, hi] = faces(it.carrier), cov = Math.min(zlo - lo, hi - zhi);
+        if (cov < w_cov - 1e-9){ w_cov = cov; d_cov = `${it.name} in ${it.carrier}: ${_mm(cov)} mm`; }
       }
       const n = Math.max(1, Math.ceil(dist(p0, p1) / 2.0 - 1e-9)), pts = [];
       for (let j = 0; j <= n; j++) pts.push([0, 1, 2].map(i => p0[i] + (p1[i] - p0[i]) * j / n));
@@ -643,7 +720,7 @@
         } else if (it.embedded && dd < w_oth - 1e-9){ w_oth = dd; d_oth = `${it.name} (node ${it.node}) to ${f.id} (node ${f.node}) on ${on[f.id]}: ${_mm(dd)} mm`; }
       }
     }
-    res["embedded leads keep their cover inside the carrier"] = [w_cov >= g.sg_cover - 1e-9, `tightest ${d_cov} (>= ${_mm(g.sg_cover)})`];
+    res["embedded leads and bus rings keep their cover inside the carrier"] = [w_cov >= g.sg_cover - 1e-9, `tightest ${d_cov} (>= ${_mm(g.sg_cover)})`];
     res["leads clear different-node foils on their carrier"] = [w_own >= g.sg_cover - 1e-9, `tightest ${d_own} (>= ${_mm(g.sg_cover)})`];
     const cond = sg.items.filter(it => (it.kind === "rod" || it.kind === "sphere") && it.role !== "link" && !it.riser)
       .map(it => it.kind === "sphere" ? Object.assign({}, it, {p0: it.c, p1: it.c}) : it);
@@ -660,10 +737,29 @@
         if (dd < w_hv - 1e-9){ w_hv = dd; d_hv = `${x.name} (node ${x.node}) / ${y.name} (node ${y.node}): ${_mm(dd)} mm`; }
       }
     }
-    res["different-node leads and spheres on one body keep the HV clearance"] = [w_hv >= need - 1e-9, `tightest ${d_hv} (>= ${_mm(need)})`];
+    rings.forEach((R, ri) => {
+      const Rf = Object.assign({}, R, {starts: [0.0], w_deg: 360.0});
+      for (const y of cond){
+        if (BODY_OF[y.body] !== BODY_OF[R.body] || y.node === R.node) continue;
+        const zl = Math.min(y.p0[2], y.p1[2]) - y.r, zh = Math.max(y.p0[2], y.p1[2]) + y.r;
+        const rmin = _seg_rmin(y.p0, y.p1), rmax = Math.max(Math.hypot(y.p0[0], y.p0[1]), Math.hypot(y.p1[0], y.p1[1]));
+        if (Math.max(R.z0 - zh, zl - R.z1, R.r_in - rmax - y.r, rmin - y.r - R.r_out) > need) continue;
+        const n = Math.max(1, Math.ceil(dist(y.p0, y.p1) / 2.0 - 1e-9));
+        let dd = Infinity;
+        for (let j = 0; j <= n; j++) dd = Math.min(dd, _foil_dist([0, 1, 2].map(i => y.p0[i] + (y.p1[i] - y.p0[i]) * j / n), Rf));
+        dd -= y.r;
+        if (dd < w_hv - 1e-9){ w_hv = dd; d_hv = `${R.name} (node ${R.node}) / ${y.name} (node ${y.node}): ${_mm(dd)} mm`; }
+      }
+      for (const Q of rings.slice(ri + 1)){
+        if (BODY_OF[Q.body] !== BODY_OF[R.body] || Q.node === R.node) continue;
+        const dd = Math.hypot(Math.max(0.0, R.r_in - Q.r_out, Q.r_in - R.r_out), Math.max(0.0, R.z0 - Q.z1, Q.z0 - R.z1));
+        if (dd < w_hv - 1e-9){ w_hv = dd; d_hv = `${R.name} (node ${R.node}) / ${Q.name} (node ${Q.node}): ${_mm(dd)} mm`; }
+      }
+    });
+    res["different-node leads, spheres and bus rings on one body keep the HV clearance"] = [w_hv >= need - 1e-9, `tightest ${d_hv} (>= ${_mm(need)})`];
     res["leads near foils of other carriers (info: breakdown model out of scope)"] = [true, `closest ${d_oth}`];
-    res["equipotential links (info)"] = [true, Object.keys(LINKS).map(c => `${c} ${sg.items.filter(it => it.role === "link" && it.carrier === c).length} x (${LINKS[c][0]} <-> ${LINKS[c][1]})`).join(", ")
-      + "; ND2 / ND3 carry node 2 / 3 and pickup n23 / n17, joined through Lx4 / Lx3 (off-model)"];
+    res["equipotential links and bus rings (info)"] = [true, Object.keys(LINKS).map(c => `${c} ${sg.items.filter(it => it.role === "link" && it.carrier === c).length} x (${LINKS[c][0]} <-> ${LINKS[c][1]})`).join(", ")
+      + `; ${rings.length} bus rings, one per node per carrier; ND2 / ND3 hold node 2 / 3 and pickup n23 / n17 (Lx4 / Lx3), the rotor discs R-A / R-B and the C_R plate n18 / n00 (L_R1 / L_R2): off-model`];
     const [nr, ns, hits] = sweep_check(design, sg);
     res["counter-rotation: no rotor/stator collision"] = [!hits.length, `${nr} rotor x ${ns} stator revolved envelopes, ` +
       (hits.length ? `${hits.length} overlap(s): ${hits[0][0]} / ${hits[0][1]}` : "none overlap")];

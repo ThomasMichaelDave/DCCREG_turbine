@@ -4,7 +4,7 @@
 Install: Utilities > ADD-INS > Scripts and Add-Ins > Scripts tab > "+" (or the green plus) > pick this folder
 (tools/fusion360/PumpGeometry). Run it, pick the pump-geometry-<hash>.json exported by tools/pump-synth.html stage 2.
 
-It creates a NEW design: one top component (the lock hash + description), one sub-component per carrier
+It creates a NEW design: one top component (the lock hash + description), one sub-component per assembly of the bill of solids (since rev 7: one per node, plus carriers and dielectrics)
 (rotor discs, flanges, stator carriers) plus "Dielectrics", and one named body per solid -- exactly the bill of
 solids in the JSON ("parts"), the same names the FreeCAD macro writes into STEP. Units: the JSON is in mm; the
 Fusion API works in cm (converted here). Geometry only -- no physics is evaluated.

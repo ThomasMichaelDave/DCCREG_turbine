@@ -23,6 +23,7 @@
     --amber:#ffb454; --brass:#b8975a; --acc:#7cd0ff; --good:#46c46a; --bad:#e5484d; --warn:#e0a83a;
     --ne:#5d6b7a; --grid:#16202a; --axis:#7c8ea0;
     --c1:#7cd0ff; --c2:#ffb454; --c3:#46c46a; --c4:#e5484d; --c5:#c792ea; --c6:#f7768e; --c7:#9ece6a; --c8:#e0af68;
+    --c9:#8c73f2; --c10:#f28cc8; --c11:#8ce6cc; --c12:#ffe08c;
   }
   html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono);font-size:12.5px}
   .wrap{max-width:1380px;margin:0 auto;padding:16px}
@@ -65,6 +66,7 @@
   .dot.ne{background:transparent;border:1.5px dashed var(--ne)}
   .dot.na{background:#22303c}
   .dot.info{background:#2a4a5e}
+  .dot.warnd{background:var(--warn);box-shadow:0 0 5px var(--warn)}
   .lamp{display:flex;align-items:flex-start;gap:7px;font-size:11px;margin:4px 0}
   .lamp .dot{margin-top:3px}
   .lamp .nm{min-width:152px;color:var(--ink)}
@@ -321,6 +323,15 @@
           <div class="brass">geometric checks (stage 2)</div>
           <div id="geomChecks"></div>
         </div>
+        <div class="panel sub" style="margin-top:8px">
+          <div class="row" style="justify-content:space-between;margin:0"><div class="brass">circuit integrity — the solids against the netlist of record (topology_edge_list.csv)</div>
+            <span id="ciBadge" class="badge"></span></div>
+          <div class="note">Rebuilt from the bill of solids alone (tools/circuit-integrity.js = sim/circuit_integrity.py, gate G-CI): copper that touches is one net,
+            facing foils are a capacitor (parallel plate, rotor/stator pairs over a full turn), spheres across a band are a spark gap; then every
+            name and CAD group must state the node its copper is on. Run it on any exported JSON or STEP:
+            <code>python3 sim/circuit_integrity.py model.step</code>.</div>
+          <div id="ciOut"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -364,6 +375,7 @@
 
 <script src="./pump-sizing.js"></script>
 <script src="./pump-geometry.js"></script>
+<script src="./circuit-integrity.js"></script>
 <script>
 "use strict";
 const $ = id => document.getElementById(id);
@@ -1345,7 +1357,7 @@ const GFIELDS = [
   ["stack", "cx_mica", "Cx mica per face", 0, 3, 0.05, "mm"],
   ["stack", "rotor_in_off", "rotor face r_in offset", 0, 100, 1, "mm"],
   ["gaps", "sg_rbar", "bar band radius (Cx gap: load/fire/backstop)", 150, 495, 0.5, "mm"],
-  ["gaps", "sg_rrail", "rail band radius (C1/C2 gap: returns)", 150, 495, 0.5, "mm"],
+  ["gaps", "sg_rrail", "return band radius (C1/C2 gap: SG1 / SG2)", 150, 495, 0.5, "mm"],
   ["gaps", "sg_d", "switching sphere ⌀ (= stage-1 d_ball)", 4, 30, 0.5, "mm"],
   ["gaps", "sg_dbs", "backstop sphere ⌀", 6, 50, 0.5, "mm"],
   ["gaps", "sg_s_ret", "return gap SG1/SG2", 1, 20, 0.05, "mm"],
@@ -1359,13 +1371,40 @@ const GFIELDS = [
   ["gaps", "sg_rod", "lead diameter", 1, 10, 0.5, "mm"],
   ["gaps", "sg_cover", "insulation cover around embedded leads", 0.2, 10, 0.1, "mm"],
   ["gaps", "sg_chord", "lead chord ring inside the carrier edge", 2, 100, 1, "mm"],
+  ["gaps", "sg_bus", "bus ring section (joins each electrode's sectors)", 1, 10, 0.5, "mm"],
   ["gaps", "sg_frame", "stator lead frame beyond the carrier edge", 10, 300, 1, "mm"],
   ["gaps", "sg_khv", "HV clearance factor (× largest gap)", 1, 5, 0.1, ""],
 ];
 const gstate = Object.assign({}, PG.GEOM_DEFAULTS);
 let LOCK = null, lockFromHash = null, design = null, disc = "assembly", rt = null, rtKey = "", rtTimer = null;
-const NODE_COL = {"1": "--c1", "2": "--c2", "3": "--c3", "4": "--c4", "5": "--c5", "6": "--c6", "7": "--c7", "8": "--c8"};
-const nodeCol = n => css(NODE_COL[String(n)[0]] || "--mut");
+const NODE_COL = {"1": "--c1", "2": "--c2", "3": "--c3", "4": "--c4", "R-A": "--c5", "R-B": "--c6", "7": "--c7", "8": "--c8",
+  "n18": "--c9", "n00": "--c10", "n17": "--c11", "n23": "--c12"};
+const nodeCol = n => css(NODE_COL[String(n)] || "--mut");
+/* circuit integrity: the netlist of record, then the report on every geometry render */
+const CI = window.CircuitIntegrity;
+let CI_NETLIST = null, ciTimer = null;
+fetch("../topology_edge_list.csv").then(r => r.ok ? r.text() : null).then(t => { if (t){ CI_NETLIST = CI.parse_netlist(t); if (design) renderIntegrity(); } }).catch(() => {});
+function renderIntegrity(){
+  if (!design) return;
+  if (!CI_NETLIST){ $("ciBadge").innerHTML = `<span class="dot ne"></span>INTEGRITY: netlist not loaded`; $("ciOut").innerHTML = ""; return; }
+  const rep = CI.analyze(CI.parts_from_design(design), CI_NETLIST, "page");
+  const lvl = {FAIL: "no", WARN: "warnd", PASS: "ok", INFO: "info"};
+  $("ciBadge").innerHTML = `<span class="dot ${rep.verdict === "PASS" ? (rep.counts.WARN ? "warnd" : "ok") : "no"}"></span>INTEGRITY: ${rep.verdict} · ${rep.counts.FAIL} FAIL · ${rep.counts.WARN} WARN · ${rep.nets.length} nets`;
+  const sw = n => `<span style="color:${nodeCol(n)}">■</span> ${n}`;
+  const byNode = {};
+  for (const n of rep.nets) (byNode[n.node] = byNode[n.node] || []).push(n);
+  let h = `<table class="t" style="margin-top:6px"><tr><th>node</th><th>parts</th><th>body</th><th style="text-align:left">netlist role</th></tr>` +
+    Object.keys(byNode).sort().map(k => { const v = byNode[k]; return `<tr><td style="text-align:left">${sw(k)}</td><td>${v.reduce((t, x) => t + x.parts, 0)}${v.length > 1 ? ` <b style="color:var(--bad)">· ${v.length} nets: OPEN</b>` : ""}</td><td>${v[0].frame}</td><td style="text-align:left">${v[0].info}</td></tr>`; }).join("") + `</table>`;
+  const cv = c => !c.realized ? `<b style="color:var(--bad)">not realized</b>` : (c.relation === "fixed" ? `${c.C_max_pF.toFixed(2)} pF` : `${c.C_min_pF.toFixed(2)}–${c.C_max_pF.toFixed(2)} pF`);
+  h += `<table class="t" style="margin-top:6px"><tr><th>netlist capacitor</th><th>nodes</th><th>drawn</th><th>C (parallel plate)</th></tr>` +
+    rep.capacitors.map(c => `<tr><td style="text-align:left">${c.name}</td><td>${c.nodes.join(" – ")}</td><td>${c.relation || ""}</td><td>${cv(c)}</td></tr>`).join("") + `</table>`;
+  if (rep.strays.length) h += `<table class="t" style="margin-top:6px"><tr><th>stray (facing foils not in the netlist)</th><th>drawn</th><th>C</th><th>across</th></tr>` +
+    rep.strays.map(s => `<tr><td style="text-align:left">${s.nodes.join(" – ")}</td><td>${s.relation}</td><td>${s.relation === "fixed" ? s.C_max_pF.toFixed(1) : s.C_min_pF.toFixed(1) + "–" + s.C_max_pF.toFixed(1)} pF</td><td>${s.across.join(", ")}</td></tr>`).join("") + `</table>`;
+  h += `<table class="t" style="margin-top:6px"><tr><th>netlist gap</th><th>nodes</th><th>stator spheres</th><th>gap</th><th>spheres ⌀</th></tr>` +
+    rep.gaps.map(g => `<tr><td style="text-align:left">${g.name}</td><td>${g.nodes.join(" – ")}</td><td>${g.spheres}</td><td>${g.s_min.toFixed(2)} mm</td><td>${g.d_stator} / ${g.d_rotor}</td></tr>`).join("") + `</table>`;
+  h += rep.findings.map(f => `<div class="lamp"><span class="dot ${lvl[f.level]}"></span><span class="nm" style="min-width:52px">${f.rule} ${f.level}</span><span class="det">${f.text}</span></div>`).join("");
+  $("ciOut").innerHTML = h;
+}
 
 function stage2Hash(p){
   if (!LOCK) return;
@@ -1453,6 +1492,8 @@ function stage2Render(){
   $("geomChecks").innerHTML = Object.entries(ch).map(([k, v]) => `<div class="lamp"><span class="dot ${v.pass_ ? "ok" : "no"}"></span><span class="nm" style="min-width:300px">${k}</span><span class="det">${v.detail}</span></div>`).join("") +
     `<div class="note">${Object.values(ch).filter(v => v.pass_).length} / ${Object.keys(ch).length} pass. Stack order and carrier/foil thicknesses are [IR] placeholders (the DXF has no axial section): confirm in CAD.</div>`;
   drawDiscButtons(); drawPlan(); drawStack();
+  if (ciTimer) clearTimeout(ciTimer);
+  ciTimer = setTimeout(renderIntegrity, 0);
   scheduleRoundTrip();
 }
 function scheduleRoundTrip(){
@@ -1535,7 +1576,7 @@ function drawDeck(side){
   }
   h += `<text x="${cx}" y="${cy + 3}" fill="${css("--mut")}" font-size="9" text-anchor="middle">gaps ${side}</text>`;
   svg.innerHTML = h;
-  $("planLegend").innerHTML = `Side ${side}, gaps in the stack: grey rings = the reserved bands (bar band r${g.sg_rbar} in the Cx gap, rail band r${g.sg_rrail} in the ${side === "A" ? "C1" : "C2"} gap), ` +
+  $("planLegend").innerHTML = `Side ${side}, gaps in the stack: grey rings = the reserved bands (bar band r${g.sg_rbar} in the Cx gap, return band r${g.sg_rrail} in the ${side === "A" ? "C1" : "C2"} gap), ` +
     `faint sectors = the capacitor electrodes the bands stay clear of. Filled = stator spheres, hollow = rotor tip spheres at θ = 0; ` +
     `lines = every electrode's lead, embedded in its carrier to a foil of its own node (radial runs between the counter-electrodes, sector changes on the chord ring R${sg.R_chord.toFixed(0)} or under the target foil), ` +
     `out over the stator frame R${sg.R_frame.toFixed(0)} (thick ring) where it must change carrier; small squares = the equipotential links through a carrier; <span style="color:var(--amber)">amber</span> = crossover over the stator (*).`;
@@ -1571,7 +1612,7 @@ function drawPlan(){
   svg.innerHTML = h;
   const nodes = [...new Set(foils.map(f => String(f.node)[0]))].sort();
   $("planLegend").innerHTML = (disc === "assembly" ? "All electrodes overlaid (as the DXF \"stack section (assembly)\" frame). " :
-    `Carrier <b>${disc}</b> (${car.kind}, node ${car.node}, t ${car.t} mm, R${car.r_in.toFixed(0)}–R${car.r_out.toFixed(0)}): filled = face toward the septum, dashed = outer face. `) +
+    `Carrier <b>${disc}</b> (${car.kind}, insulating, t ${car.t} mm, R${car.r_in.toFixed(0)}–R${car.r_out.toFixed(0)}): filled = face toward the septum, dashed = outer face. `) +
     nodes.map(n => `<span style="color:${nodeCol(n)}">■ node ${n}</span>`).join(" · ") + ". Ca/Cb drawn heavier.";
   let t = "<tr><th>foil</th><th>face</th><th>node</th><th>cap</th><th>r_in–r_out</th><th>sectors</th><th>area (m²)</th></tr>";
   for (const f of foils) t += `<tr><td>${f.key}</td><td>${f.face || ""}</td><td>${f.node}</td><td>${f.cap}</td><td>${f.r_in.toFixed(1)}–${f.r_out.toFixed(1)}</td><td>${f.starts.length} × ${f.w_deg.toFixed(1)}°</td>` +
@@ -1616,7 +1657,7 @@ function drawStack(){
       const r = Math.hypot(it.c[0], it.c[1]), key = `${r.toFixed(1)}|${it.c[2].toFixed(2)}|${it.r}`;
       if (seen.has(key)) continue; seen.add(key);
       h += `<ellipse cx="${X(r).toFixed(1)}" cy="${Y(it.c[2]).toFixed(1)}" rx="${(it.r * sx).toFixed(1)}" ry="${(it.r * sy).toFixed(1)}" fill="${it.role === "gap-rotor" ? "none" : nodeCol(it.node)}" fill-opacity="0.8" stroke="${nodeCol(it.node)}" stroke-width="0.8"/>`;
-    } else if (it.kind === "sector" && it.name.endsWith("_1")){
+    } else if (it.kind === "sector"){
       h += `<rect x="${X(it.r_in)}" y="${Y(it.z0)}" width="${(it.r_out - it.r_in) * sx}" height="${Math.max(0.8, (it.z1 - it.z0) * sy)}" fill="${nodeCol(it.node)}"/>`;
     } else if (it.kind === "rod" && (/_lead_1[a-z]$/.test(it.name) || /_(link|stem)_1$/.test(it.name))){
       const cr = (SG.gaps.find(q => q.name === it.gap) || {}).crossover;
@@ -1630,7 +1671,8 @@ function drawStack(){
   svg.innerHTML = h;
   $("stackNote").innerHTML = "Order [IR]: each rotor half is a clamshell around its stator pair — flange (island bars) · Cx gap · ND2/ND3 · mica (Ca/Cb) · ND1/ND4 · 7 mm air (C1/C2) · rotor disc · septum (C_R). " +
     "Foils are drawn over their radial band (their sectors are in the plan view). Mica and garolite slabs shaded; air gaps empty. " +
-    "Spark gaps IN the stack: each sits in the axial gap between the rotor face and the stator face it joins — the bar band in the Cx gap, the rail band in the C1/C2 gap — in a ring beyond the capacitor electrodes (pockets show a recess). " +
+    "Spark gaps IN the stack: each sits in the axial gap between the rotor face and the stator face it joins — the bar band in the Cx gap, the return band in the C1/C2 gap — in a ring beyond the capacitor electrodes (pockets show a recess). " +
+    "Bus rings (embedded under each electrode's inner edge) join its sectors into one net. " +
     "<b>Spherical electrodes + Z-stretch</b>: every sphere shows at least its exposure above its band face (the rest in a socket, or it stands on its stem); each carrier is as thick as its sockets, stems and embedded leads need (recess + socket + seat + lead + cover); the two foils of a node are joined through it by explicit links, so no capacitance changes. " +
     "Filled = stator spheres, hollow = rotor tip spheres; lines = leads (first spoke), <b style='color:var(--amber)'>amber = the load-gap crossovers over the stator</b>. Counter-rotation is checked as revolved (r, z) envelopes: no rotor part may share (r, z) with a stator part.";
 }

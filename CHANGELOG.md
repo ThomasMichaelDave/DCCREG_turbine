@@ -5,6 +5,11 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **Circuit integrity tool + node consistency (TMD).** New `sim/circuit_integrity.py`, with its JS mirror `tools/circuit-integrity.js`, a live panel in stage 2 and gate G-CI. It rebuilds nets, capacitors (fixed or rotating, plus strays) and spark gaps from the solids alone (JSON or STEP) and holds them to `topology_edge_list.csv`.
+  - **Findings on the rev-6 build:** every node was split into 6 nets (no bus between the sectors); 144 parts sat in CAD groups of another node (the reported SG1 sphere under "ND1 (node 1)"); the C_R plates were on R-A/R-B, where the netlist has n18/n00 behind L_R1/L_R2, so the rotor-disc links shorted the resonator coils; '5'/'6' were old aliases.
+  - **Fixed:** netlist node ids; C_R plates n18/n00 and no rotor links; 12 embedded bus rings with risers; CAD groups per node with `[material, body]` label tails; carriers with no node; "rail" renamed to "return"; the Cx mica facings drawn.
+  - **Result:** PASS with 12 nets.
+  - **Strays flagged for TMD:** R-A–n18 518 pF across L_R1 (R-B–n00 likewise) and 1–8 0–99 pF rotating.
 - **Node-2 / node-3 sectors moved outward (TMD).** A new Ca/Cb solve mode `outer` (now the default) pins r_out at the counter edge less the margin (382) and solves r_in. Ca and Cb become r357–382, still exactly 307.801 pF.
   - **Leads:** the node-2/3 bar spheres now sit right over their own sector, so their leads become straight 4.2 mm risers (they were 545–570 mm). SG1/SG2 go from 576 to 379 mm.
   - **Checks:** the electrode stays inset from its counter by the margin (new check), and stems are now included in the foil-clearance check.

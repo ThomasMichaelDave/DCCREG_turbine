@@ -137,7 +137,7 @@ def gate_z():
     allpass = all(v["pass_"] for v in dz["checks"].values())
     k = "gaps: Z-stretch: every carrier holds its gap seats and leads"
     links = sum(1 for p in dz["parts"] if p["role"] == "link")
-    return dict(pass_=bool(same_C and same_fp and allpass and not d0["checks"][k]["pass_"] and links == 24),
+    return dict(pass_=bool(same_C and same_fp and allpass and not d0["checks"][k]["pass_"] and links == 12),
                 caps_pF={c: round(v, 4) for c, v in cz.items()}, same_C=same_C, same_footprints=same_fp,
                 stretched=dz["checks"][k]["detail"], base=d0["checks"][k]["detail"],
                 z_total=dict(stretched=dz["z_total"], base=d0["z_total"]), checks_pass=allpass,
@@ -512,8 +512,116 @@ def gate_f360():
                 message=msgs[-1][:200] if msgs else "")
 
 
+def _ci_cmp(a, b, path, out, worst):
+    if isinstance(a, dict):
+        if set(a) != set(b):
+            out.append(f"{path} keys {sorted(set(a) ^ set(b))}"); return
+        for k in a:
+            _ci_cmp(a[k], b[k], path + "." + k, out, worst)
+    elif isinstance(a, list):
+        if len(a) != len(b):
+            out.append(f"{path} len {len(a)} != {len(b)}"); return
+        for i, (x, y) in enumerate(zip(a, b)):
+            _ci_cmp(x, y, f"{path}[{i}]", out, worst)
+    elif isinstance(a, bool) or a is None or isinstance(a, str):
+        if a != b:
+            out.append(f"{path}: {a!r} != {b!r}")
+    else:
+        worst[0] = max(worst[0], abs(a - b) / max(1.0, abs(a)))
+
+
+def _ci_summary(r):
+    return dict(verdict=r["verdict"], nets=sorted((n["node"], n["parts"]) for n in r["nets"]),
+                caps=[(c["name"], c.get("relation"), round(c.get("C_max_pF", 0.0), 3), round(c.get("C_min_pF", 0.0), 3)) for c in r["capacitors"]],
+                gaps=[(g["name"], g["spheres"], round(g["s_min"], 4)) for g in r["gaps"]],
+                strays=sorted((tuple(x["nodes"]), x["relation"], round(x["C_max_pF"], 2), round(x["C_min_pF"], 2)) for x in r["strays"]))
+
+
+def gate_ci():
+    """CIRCUIT INTEGRITY (sim/circuit_integrity.py): the reference build IS the netlist of record -- one net per node,
+    every netlist capacitor and gap realized on its nodes, every name and CAD group on the node of its copper -- read
+    from its JSON and again from its STEP (B-rep recognition, independent of the generator); the JS tool reports
+    exactly what the Python does; and every seeded fault is caught by the rule meant for it."""
+    import copy
+    import circuit_integrity as CI
+    nl = CI.load_netlist()
+    d = PG.build(freeze_lock())
+    rep = CI.analyze(CI.parts_from_design(d), nl, "reference JSON")
+    ref_ok = (rep["verdict"] == "PASS" and len(rep["nets"]) == 12 and all(c["realized"] for c in rep["capacitors"])
+              and len(rep["gaps"]) == 8 and rep["counts"]["FAIL"] == 0)
+    step = os.path.join(OUTDIR, "freeze-v010-CaCb.step")
+    try:
+        srep = CI.analyze(CI.parts_from_step(step), nl, "reference STEP")
+        step_ok, step_note = _ci_summary(srep) == _ci_summary(rep), f"{srep['parts']} solids re-read"
+    except Exception as e:                                       # pragma: no cover
+        step_ok, step_note = False, repr(e)[:300]
+    # the JS mirror: the reference and randomized designs
+    rng = random.Random(20261002)
+    designs = [d] + [PG.build(PG.lock_record(PS.size(dict(r_outMm=rng.uniform(250, 500), g_vMm=rng.uniform(3, 12))), {}, 1.3, True),
+                              _rand_geom(rng)) for _ in range(8)]
+    js = subprocess.run(["node", "-e", "const CI=require('./tools/circuit-integrity.js');const fs=require('fs');"
+                         "const nl=CI.parse_netlist(fs.readFileSync('topology_edge_list.csv','utf8'));"
+                         "const ds=JSON.parse(fs.readFileSync(0,'utf8'));"
+                         "console.log(JSON.stringify({r: ds.map(x=>CI.analyze(CI.parts_from_design(x),nl,'x')), st: CI.selftest()}))"],
+                        cwd=ROOT, input=json.dumps(designs), capture_output=True, text=True)
+    if js.returncode:
+        return dict(pass_=False, error=js.stderr[-800:])
+    J = json.loads(js.stdout)
+    mism, worst = [], [0.0]
+    for x, y in zip([CI.analyze(CI.parts_from_design(z), nl, "x") for z in designs], J["r"]):
+        _ci_cmp(x, y, "", mism, worst)
+    js_ok = not mism and worst[0] <= 1e-9 and J["st"]["pass"]
+
+    # seeded faults, each must be caught by its rule
+    def fault(fn):
+        dd = copy.deepcopy(d)
+        fn(dd)
+        r = CI.analyze(CI.parts_from_design(dd), nl, "fault")
+        return {f["rule"] for f in r["findings"] if f["level"] == "FAIL"}
+
+    def by(dd, name):
+        return next(p for p in dd["parts"] if p["name"] == name)
+
+    def rod(name, node, body, p0, p1, carrier="ND2"):
+        return dict(name=name, label=f"node-{node} / {name} - injected lead, node {node} [Cu lead, {body}]", assembly=f"node-{node}",
+                    role="gap-lead", carrier=carrier, node=node, cap="", material="Cu lead", body=body, shape="rod",
+                    p0=p0, p1=p1, r=1.5, chains=[name], rgb=[1, 1, 1], volume=1.0)
+
+    def f_group(dd):        # the reported case: a node-2 sphere grouped under the node-1 carrier
+        by(dd, "SG1_sph_6")["assembly"] = "ND1"
+        dd["assemblies"].append(dict(key="ND1", label="ND1 - stator carrier ND1 (node 1): C1 stator plate + Ca counter-electrode"))
+
+    def f_short(dd):        # a lead from a node-2 sphere to a node-4 sphere
+        dd["parts"].append(rod("bad_lead", "2", "stator", by(dd, "SG4b1_sph_1")["c"], by(dd, "SG4a1_sph_1")["c"]))
+
+    def f_open(dd):         # a C_R plate sector loses its bus riser
+        dd["parts"] = [p for p in dd["parts"] if p["name"] != "bus_A_disc_n18_riser_1"]
+
+    def f_gap(dd):          # a rotor tip drawn on node 1
+        by(dd, "rotortip_A_1")["node"] = "1"
+
+    def f_tie(dd):          # the rev-3 assumption: the C_R plate on R-A
+        for p in dd["parts"]:
+            if p["name"].startswith("CR_A_") or p["name"].startswith("bus_A_disc_n18"):
+                p["node"] = "R-A"
+
+    def f_joint(dd):        # stator copper touching a rotor foil
+        c = by(dd, "C1_rotor_1")
+        a = 0.5 * (c["start_deg"] * 2 + c["w_deg"]) * math.pi / 180
+        r = 0.5 * (c["r_in"] + c["r_out"])
+        dd["parts"].append(rod("bad_joint", "R-A", "stator", [r * math.cos(a), r * math.sin(a), 0.5 * (c["z0"] + c["z1"])],
+                               [r * math.cos(a), r * math.sin(a), c["z0"] - 5.0], "ND1"))
+    want = dict(group={"I8"}, short={"I1"}, open={"I2"}, gap={"I1", "I7"}, tie={"I2", "I6", "I8"}, joint={"I4"})
+    got = {k: fault(fn) for k, fn in (("group", f_group), ("short", f_short), ("open", f_open), ("gap", f_gap), ("tie", f_tie), ("joint", f_joint))}
+    faults_ok = all(want[k] <= got[k] for k in want)
+    return dict(pass_=bool(ref_ok and step_ok and js_ok and faults_ok), reference=_ci_summary(rep), counts=rep["counts"],
+                warnings=[f["text"] for f in rep["findings"] if f["level"] == "WARN"], step=step_ok, step_note=step_note,
+                js=dict(ok=js_ok, designs=len(designs), worst_rel=worst[0], mismatches=mism[:6], selftest=J["st"]),
+                faults={k: dict(want=sorted(want[k]), caught=sorted(got[k])) for k in want})
+
+
 GATES = [("G-SEED", gate_seed), ("G-ADJ", gate_adj), ("G-Z", gate_z), ("G-JS", gate_js), ("G-CAD", gate_cad), ("G-F360", gate_f360),
-         ("G-RT", gate_rt)]
+         ("G-CI", gate_ci), ("G-RT", gate_rt)]
 
 
 def main():
