@@ -1328,7 +1328,7 @@ const PG = window.PumpGeometry;
 const GFIELDS = [
   ["geom", "ca_diel", "dielectric", [["mica", "mica ε_r 5.4 (freeze)"], ["mylar", "Mylar 3.2"], ["kapton", "Kapton 3.4"], ["pp_film", "PP film 2.2"], ["air", "air"]]],
   ["geom", "ca_t", "dielectric thickness", 0.1, 20, 0.05, "mm"],
-  ["geom", "ca_mode", "solve for", [["r_out", "r_out (r_in pinned)"], ["r_in", "r_in (r_out pinned)"], ["width", "sector width (radii pinned)"], ["forward", "nothing (forward: all given)"]]],
+  ["geom", "ca_mode", "solve for", [["outer", "outer: r_out at the counter edge − margin, r_in solved"], ["r_out", "r_out (r_in pinned)"], ["r_in", "r_in (r_out pinned)"], ["width", "sector width (radii pinned)"], ["forward", "nothing (forward: all given)"]]],
   ["geom", "ca_rin", "r_in", 0, 450, 0.5, "mm"],
   ["geom", "ca_rout", "r_out", 1, 500, 0.5, "mm"],
   ["geom", "ca_w", "sector width", 1, 60, 0.1, "°"],

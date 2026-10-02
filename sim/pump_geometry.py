@@ -49,7 +49,9 @@ GEOM_DEFAULTS = dict(
     ca_diel="mica", ca_t=4.5,                 # dielectric and its thickness (mm)            [OC freeze]
     ca_w=30.0,                                # sector width (deg); the sector COUNT is the locked n_kept
                                               # (Ca/Cb sit in their counter-plate's kept sectors) [OC DXF]
-    ca_mode="r_out",                          # solve: 'r_out' (r_in pinned) | 'r_in' (r_out pinned) | 'width' | 'forward'
+    ca_mode="outer",                          # solve: 'outer' (r_out at the counter edge - margin, r_in solved: the node-2 /
+                                              # 3 sectors as far out as they go, next to the bar band -- TMD 2026-10-02)
+                                              # | 'r_out' (r_in pinned) | 'r_in' (r_out pinned) | 'width' | 'forward'
     ca_rin=110.0, ca_rout=175.0,              # mm (the pinned one is used; the other is solved) [OC DXF]
     ca_round=0.0,                             # manufacturing step on the solved dimension (mm or deg; 0 = exact)
     ca_margin=5.0,                            # dielectric overlap margin around the foil (mm, radial and arc) [IR]
@@ -105,18 +107,21 @@ def cap_pF(area_mm2, t_mm, eps_r):
     return EPS0 * eps_r * area_mm2 * 1e-6 / (t_mm * 1e-3) * 1e12
 
 
-def solve_transfer(C_pF, g, n):
+def solve_transfer(C_pF, g, n, r_max=None):
     """Ca/Cb inverse: the electrode footprint for a target capacitance. Returns the geometry, the realized C
-    (after the manufacturing rounding) and the deviation."""
+    (after the manufacturing rounding) and the deviation. r_max: the outermost r_out ('outer' mode) -- the
+    counter-electrode's edge less the dielectric margin."""
     er = DIELECTRICS[g["ca_diel"]]
     A = C_pF * 1e-12 * g["ca_t"] * 1e-3 / (EPS0 * er) * 1e6          # mm^2 needed [OC] Eq. (20)
     w, rin, rout = g["ca_w"], g["ca_rin"], g["ca_rout"]
     k = 0.5 * math.radians(w) * n                                    # A = k (rout^2 - rin^2)
     mode = g["ca_mode"]
     note = ""
+    if mode == "outer":
+        rout = r_max if r_max is not None else rout
     if mode == "r_out":
         rout = _round(math.sqrt(rin * rin + A / k), g["ca_round"])
-    elif mode == "r_in":
+    elif mode in ("r_in", "outer"):
         d = rout * rout - A / k
         if d < 0:
             rin, note = 0.0, "target area exceeds the full disc inside r_out: r_in clamped to 0"
@@ -205,9 +210,9 @@ def build(locked, geom=None):
     g = dict(GEOM_DEFAULTS); g.update(geom or {})
     L = locked["ladder"]; P = locked["plates"]
     nk = int(P["n_kept"])
-    ca = solve_transfer(L["Ca"], g, nk)                              # Cb uses the same geometry spec
-    cb = solve_transfer(L["Cb"], g, nk)
     ri, ro = P["r_inMm"], P["r_outMm"]
+    ca = solve_transfer(L["Ca"], g, nk, ro - g["ca_margin"])        # Cb uses the same geometry spec; the
+    cb = solve_transfer(L["Cb"], g, nk, ro - g["ca_margin"])        # counters span the stator plate r_in-r_out
     rr_in = max(0.0, ri - g["rotor_in_off"])
     # plate-carrier outer radius: the DXF R500 plate edge, scaled with the active band [IR]
     r_edge = ro * 500.0 / 387.0
@@ -400,6 +405,10 @@ def _route(r0, a0, z, foil, zf, R_ch, run_starts, w_run, ins_mm):
     r_t = foil["r_out"] - min(10.0, (foil["r_out"] - foil["r_in"]) / 2)
     ins = math.degrees(ins_mm / r_t)
     pts, what = [(r0, a0, z)], []
+    # the electrode stands right over its own foil: straight down to it
+    if foil["r_in"] + ins_mm <= r0 <= foil["r_out"] - ins_mm and abs(_nearest_inside(a0, foil["starts"], foil["w_deg"], math.degrees(ins_mm / r0)) - a0) < 1e-9:
+        pts.append((r0, a0, zf)); what.append(f"riser straight to {foil['id']} (node {foil['node']})")
+        return pts, what
 
     def arc(r, a_from, a_to, txt):
         n = max(1, math.ceil(abs(a_to - a_from) / 10.0 - 1e-9))
@@ -672,8 +681,9 @@ def _seg_dist(p, q, r, s):
     return math.dist([p[i] + d1[i] * t for i in range(3)], [r[i] + d2[i] * u for i in range(3)])
 
 
-def _foil_dist(pt, f):
-    """distance from a point to a foil (its sectors as annular slabs)."""
+def _foil_dist(pt, f, lat=0.0):
+    """distance from a point to a foil (its sectors as annular slabs); lat: the lateral radius of a vertical rod
+    through the point (its flat end then faces the foil)."""
     r = math.hypot(pt[0], pt[1]); a = math.degrees(math.atan2(pt[1], pt[0]))
     dz = max(0.0, f["z0"] - pt[2], pt[2] - f["z1"])
     best = float("inf")
@@ -687,7 +697,7 @@ def _foil_dist(pt, f):
                 ex, ey = math.cos(math.radians(e_)), math.sin(math.radians(e_))
                 t = min(f["r_out"], max(f["r_in"], pt[0] * ex + pt[1] * ey))
                 dp = min(dp, math.hypot(pt[0] - t * ex, pt[1] - t * ey))
-        best = min(best, math.hypot(dp, dz))
+        best = min(best, math.hypot(max(0.0, dp - lat), dz))
     return best
 
 
@@ -802,9 +812,10 @@ def gap_checks(design, sg):
     foils = [it for it in design["stack"] if it["kind"] == "foil"]
     w_cov, d_cov, w_own, d_own, w_oth, d_oth = (float("inf"), "none") * 3
     for it in sg["items"]:
-        if it["kind"] != "rod" or it["role"] != "gap-lead":
+        if it["kind"] != "rod" or it["role"] not in ("gap-lead", "gap-stem"):
             continue
         p0, p1, rr = it["p0"], it["p1"], it["r"]
+        stem = it["role"] == "gap-stem"
         zlo, zhi = min(p0[2], p1[2]) - rr, max(p0[2], p1[2]) + rr
         if it["embedded"]:                              # a run inside its carrier keeps its cover to both faces
             c = byid[it["carrier"]]
@@ -822,7 +833,7 @@ def gap_checks(design, sg):
         for f in foils:
             if f["node"] == it["node"] or f["z0"] > zhi + 20.0 or f["z1"] < zlo - 20.0:
                 continue
-            dd = min(_foil_dist(q, f) for q in pts) - rr
+            dd = min(_foil_dist(q, f, rr) for q in pts) if stem else min(_foil_dist(q, f) for q in pts) - rr
             if on[f["id"]] == it["carrier"]:
                 if dd < w_own - 1e-9:
                     w_own, d_own = dd, f"{it['name']} (node {it['node']}) to {f['id']} (node {f['node']}) on {it['carrier']}: {_mm(dd)} mm"
@@ -1022,6 +1033,9 @@ def checks(design):
         ov = overlap_area(e, c)
         res[f"{cap}: overlap area = electrode area"] = (abs(ov - geo["area_mm2"]) <= 1e-6 * geo["area_mm2"],
                                                          f"{ov:.1f} vs {geo['area_mm2']:.1f} mm^2")
+        res[f"{cap}: inset from its counter-electrode edge by the margin"] = (
+            e["r_out"] <= c["r_out"] - g["ca_margin"] + 1e-9 and e["r_in"] >= c["r_in"] + g["ca_margin"] - 1e-9,
+            f"r{e['r_in']:.1f}-{e['r_out']:.1f} within r{c['r_in']:.0f}-{c['r_out']:.0f} less {g['ca_margin']:.0f} mm")
         res[f"{cap}: clears the carrier bore"] = (e["r_in"] - g["ca_margin"] >= g["r_bore"],
                                                   f"r_in {e['r_in']:.1f} - margin {g['ca_margin']:.0f} >= bore {g['r_bore']:.0f}")
         res[f"{cap}: dielectric margin fits the sector pitch"] = (

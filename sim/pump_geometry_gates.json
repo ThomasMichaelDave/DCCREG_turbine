@@ -316,15 +316,19 @@
   "checks": {
    "Ca: electrode inside its counter-electrode": {
     "pass_": true,
-    "detail": "r110.0-174.8 x 30.00 deg within r95-387 x 30 deg"
+    "detail": "r357.0-382.0 x 30.00 deg within r95-387 x 30 deg"
    },
    "Ca: overlap area = electrode area": {
     "pass_": true,
     "detail": "28969.4 vs 28969.4 mm^2"
    },
+   "Ca: inset from its counter-electrode edge by the margin": {
+    "pass_": true,
+    "detail": "r357.0-382.0 within r95-387 less 5 mm"
+   },
    "Ca: clears the carrier bore": {
     "pass_": true,
-    "detail": "r_in 110.0 - margin 5 >= bore 50"
+    "detail": "r_in 357.0 - margin 5 >= bore 50"
    },
    "Ca: dielectric margin fits the sector pitch": {
     "pass_": true,
@@ -336,15 +340,19 @@
    },
    "Cb: electrode inside its counter-electrode": {
     "pass_": true,
-    "detail": "r110.0-174.8 x 30.00 deg within r95-387 x 30 deg"
+    "detail": "r357.0-382.0 x 30.00 deg within r95-387 x 30 deg"
    },
    "Cb: overlap area = electrode area": {
     "pass_": true,
     "detail": "28969.4 vs 28969.4 mm^2"
    },
+   "Cb: inset from its counter-electrode edge by the margin": {
+    "pass_": true,
+    "detail": "r357.0-382.0 within r95-387 less 5 mm"
+   },
    "Cb: clears the carrier bore": {
     "pass_": true,
-    "detail": "r_in 110.0 - margin 5 >= bore 50"
+    "detail": "r_in 357.0 - margin 5 >= bore 50"
    },
    "Cb: dielectric margin fits the sector pitch": {
     "pass_": true,
@@ -472,7 +480,7 @@
    },
    "gaps: leads clear different-node foils on their carrier": {
     "pass_": true,
-    "detail": "tightest SG1_lead_1a (node 2) to Ca_counter (node 1) on ND1: 29.77 mm (>= 2)"
+    "detail": "tightest SG4a1_lead_1a (node 4) to Ca_el (node 2) on ND2: 2.25 mm (>= 2)"
    },
    "gaps: different-node leads and spheres on one body keep the HV clearance": {
     "pass_": true,
@@ -488,7 +496,7 @@
    },
    "gaps: counter-rotation: no rotor/stator collision": {
     "pass_": true,
-    "detail": "199 rotor x 442 stator revolved envelopes, none overlap"
+    "detail": "199 rotor x 322 stator revolved envelopes, none overlap"
    },
    "gaps: load-gap crossovers over the stator (info)": {
     "pass_": true,
@@ -499,7 +507,7 @@
  "G-CAD": {
   "pass_": true,
   "names": {
-   "products": 731,
+   "products": 611,
    "anonymous": 0,
    "labels_missing": [],
    "assemblies": [
@@ -515,21 +523,21 @@
     "PumpGeometry 1bdb33d89a45 - DCCREG drawn pump, stage 2 plate geometry (Ca/Cb geometrized)"
    ],
    "parts_csv": "docs/geometry/freeze-v010-CaCb-parts.csv",
-   "csv_rows": 721,
+   "csv_rows": 601,
    "sample": [
     "A-disc / A_disc_link_1 - A-disc equipotential link 1 of 6 (node 5): C1_rotor <-> CR_A through A-disc at r231 45 deg, 18.25 mm",
     "A-disc / A_disc_link_2 - A-disc equipotential link 2 of 6 (node 5): C1_rotor <-> CR_A through A-disc at r231 105 deg, 18.25 mm",
     "A-disc / A_disc_link_3 - A-disc equipotential link 3 of 6 (node 5): C1_rotor <-> CR_A through A-disc at r231 165 deg, 18.25 mm"
    ]
   },
-  "solids": 721,
+  "solids": 601,
   "roles": {
    "carrier": 24,
    "foil": 84,
    "dielectric": 13,
    "gap-stator": 48,
    "gap-stem": 72,
-   "gap-lead": 432,
+   "gap-lead": 312,
    "gap-rotor": 24,
    "link": 24
   },
@@ -538,7 +546,7 @@
   "clashes": [],
   "json": "docs/geometry/freeze-v010-CaCb.json",
   "step": "docs/geometry/freeze-v010-CaCb.step",
-  "step_bytes": 6101285,
+  "step_bytes": 5202911,
   "lock": "1bdb33d89a45",
   "z_total_mm": 236.0
  },
@@ -546,12 +554,19 @@
  "G-JS": {
   "pass_": true,
   "n": 60,
-  "worst_rel": 1.9562887579407155e-13,
+  "worst_rel": 2.183424085358006e-13,
   "mismatches": []
  },
  "G-RT": {
   "pass_": true,
   "modes": [
+   {
+    "mode": "outer",
+    "dC_rel": -5.540275995287738e-16,
+    "r_in": 357.045491503287,
+    "r_out": 382.0,
+    "w": 30.0
+   },
    {
     "mode": "r_out",
     "dC_rel": -5.540275995287738e-16,
@@ -585,14 +600,14 @@
  },
  "G-F360": {
   "pass_": true,
-  "bodies": 721,
+  "bodies": 601,
   "components": 10,
   "worst_volume_rel": 1.562979644271458e-14,
   "invalid": [],
   "names_ok": true,
   "top": "PumpGeometry 1bdb33d89a45 - DCCREG drawn pump, stage 2 plate geometry (Ca-Cb geometrized)",
   "sample": "A-flange - Cx4_bars_1 - island bars on A, node 8, Cx4, sector 1 of 6 (0-30 deg), r75-350 mm, Al foil 1 mm, septum side, z -94.8..-93.8",
-  "message": "PumpGeometry 1bdb33d89a45: 721 bodies in 9 components built (worst volume error 1.6e-14).\n\nNames follow the parts table (pump-geometry ...-parts.csv / FreeCAD STEP)."
+  "message": "PumpGeometry 1bdb33d89a45: 601 bodies in 9 components built (worst volume error 1.6e-14).\n\nNames follow the parts table (pump-geometry ...-parts.csv / FreeCAD STEP)."
  },
  "G-Z": {
   "pass_": true,
@@ -618,6 +633,7 @@
    "gaps: recessed bands leave a carrier wall",
    "gaps: Z-stretch: every carrier holds its gap seats and leads",
    "gaps: embedded leads keep their cover inside the carrier",
+   "gaps: leads clear different-node foils on their carrier",
    "gaps: different-node leads and spheres on one body keep the HV clearance",
    "gaps: counter-rotation: no rotor/stator collision"
   ],

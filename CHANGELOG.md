@@ -5,6 +5,11 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **Node-2 / node-3 sectors moved outward (TMD).** A new Ca/Cb solve mode `outer` (now the default) pins r_out at the counter edge less the margin (382) and solves r_in. Ca and Cb become r357–382, still exactly 307.801 pF.
+  - **Leads:** the node-2/3 bar spheres now sit right over their own sector, so their leads become straight 4.2 mm risers (they were 545–570 mm). SG1/SG2 go from 576 to 379 mm.
+  - **Checks:** the electrode stays inset from its counter by the margin (new check), and stems are now included in the foil-clearance check.
+  - **Build:** 601 solids.
+  - **Flag:** the node-4 SG4a sphere's lead runs 2.25 mm above the node-2 Ca ring for ~7 mm.
 - **Spherical spark-gap electrodes (TMD).** Every gap electrode is a sphere: 12 mm W-Cu (= the stage-1 d_ball), and 25 mm polished for the backstops. Each sphere shows ≥ 0.5 × its diameter above its band face; the rest sits in a socket, or it stands on its stem. A ⌀4 mm stem runs from each sphere to its embedded lead. The Z-stretch conforms:
   - band gaps are 24 mm (bar) and 17.5 mm (rail); the stack is 236 mm (210 mm with a 12 mm backstop); no capacitance changes;
   - new checks: exposure, s ≤ 0.5 D (IEC 60052), sphere = d_ball; cross-fire is now judged sphere to sphere;

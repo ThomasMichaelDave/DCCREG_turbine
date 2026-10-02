@@ -87,7 +87,7 @@ def gate_seed():
 def gate_rt():
     lock = freeze_lock()
     rows = []
-    for mode in ("r_out", "r_in", "width"):
+    for mode in ("outer", "r_out", "r_in", "width"):
         d = PG.build(lock, dict(ca_mode=mode))
         rows.append(dict(mode=mode, dC_rel=d["Ca"]["dC_rel"], r_in=d["Ca"]["r_in"], r_out=d["Ca"]["r_out"], w=d["Ca"]["w_deg"]))
     ok = all(abs(r["dC_rel"]) <= 1e-12 for r in rows)
@@ -147,7 +147,7 @@ def gate_z():
 
 def _rand_geom(rng):
     return dict(ca_diel=rng.choice(list(PG.DIELECTRICS)), ca_t=rng.uniform(0.5, 8), ca_w=rng.uniform(10, 30),
-                ca_mode=rng.choice(["r_out", "r_in", "width", "forward"]), ca_rin=rng.uniform(60, 150),
+                ca_mode=rng.choice(["outer", "r_out", "r_in", "width", "forward"]), ca_rin=rng.uniform(60, 150),
                 ca_rout=rng.uniform(160, 300), ca_round=rng.choice([0, 0, 0.5, 1.0]), ca_margin=rng.uniform(0, 10),
                 t_foil=rng.uniform(0.2, 2), t_carrier=rng.uniform(1, 6), t_rotor=rng.uniform(5, 20),
                 t_flange=rng.uniform(3, 10), t_septum=rng.uniform(6, 20), r_bore=rng.uniform(30, 55),

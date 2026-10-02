@@ -113,6 +113,31 @@ The build now has 293 solids, up from 283, because the C_R faces are 2 × 6 foil
 - That makes C_R adjustable by sectoring the septum face as well as by the septum thickness. The C1/C2 pump capacitance is untouched either way.
 - Keeping the C_R face's sectors on the C1/C2 rotor face's sectors (as now) puts the two node-5 foils back to back. A short through-connection per sector then joins them.
 
+## Node-2 / node-3 sectors moved outward (rev 6, 2026-10-02)
+
+**The change (TMD).** The Ca / Cb electrodes (node 2 on ND2, node 3 on ND3) are pushed **as far out as they go**, next to the bar band, so the spark-gap leads to them become short.
+
+**How it works.** A new solve mode `outer` is now the default; the others stay selectable:
+- it pins r_out at the counter-electrode's edge less the dielectric margin (387 − 5 = **382 mm**);
+- it solves r_in for the locked C: **r357.0**.
+
+Ca and Cb are now six 30° sectors **r357.0–382.0**, a 25 mm ring. They still realize **307.801 pF exactly**, so z is unchanged and no round trip is needed. A new check keeps each electrode inset from its counter's edges by the margin. The DXF seed (r110–175) is still reproduced in forward mode (G-SEED).
+
+**The result: lead lengths for the node-2 / node-3 electrodes** (one spoke each):
+
+| gap | node | before (r110–175) | now (r357–382) | how |
+|---|---|---|---|---|
+| SG4b1 / SG3b1 (fire) | 2 / 3 | 569.8 mm | **4.2 mm** | the sphere stands right over its own Ca/Cb sector: a straight riser through the carrier |
+| BS4 / BS3 (backstop) | 2 / 3 | 544.9 mm | **4.2 mm** | the same |
+| SG1 / SG2 (return) | 2 / 3 | 575.6 mm | **379.2 mm** | still over the frame from ND1 / ND4, but the run inside ND2 / ND3 is now short |
+| SG4a1 / SG3a1 (load) | 4 / 1 | 535.1 mm | 535.1 mm | unchanged (crossovers) |
+
+The router now takes the straight riser whenever an electrode stands over a sector of its own node's foil. The build drops from 721 to 601 solids. The stack height (236 mm) is unchanged: the Ca/Cb gap is the same, only its radius moved.
+
+**For TMD:**
+1. **The node-4 load sphere SG4a stands over the node-2 Ca ring.** SG4a is at 37.2°, and Ca's sectors cover 30–60°. Its embedded lead runs 2.25 mm (carrier cover) above the Ca foil for the ~7 mm from r375 to the ring's edge at r382. Its stem ends 3.75 mm above it. SG3a over Cb is the mirror case. The checks pass on the solid-insulation cover rule (≥ 2 mm), but node 4 to node 2 is a full transfer voltage across 2.25 mm of G10, so it is worth a look. The fix, if needed, is to stop the Ca ring short of r375 − 6 − cover at SG4a's angle. A narrower outer ring, or a larger cover, does that.
+2. **Fringing at a 25 mm wide ring is no longer negligible** against the parallel-plate law. Fringing is out of scope, but the realized C will run a little high.
+
 ## Spherical spark-gap electrodes (rev 5, 2026-10-02)
 
 **The change (TMD).** Every spark-gap electrode is now a **sphere**, as in the stage-1 engine's sphere-gap model (d_ball 12 mm, the I11 overlap law). The Z-stretch conforms to the spheres. Sizes:

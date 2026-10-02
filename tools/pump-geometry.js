@@ -9,7 +9,7 @@
   const EPS0 = 8.8541878128e-12;
   const SCHEMA = "pump-geometry/1";
   const DIELECTRICS = { mica: 5.4, mylar: 3.2, kapton: 3.4, pp_film: 2.2, garolite: 4.7, air: 1.0006 };
-  const GEOM_DEFAULTS = { ca_diel: "mica", ca_t: 4.5, ca_w: 30.0, ca_mode: "r_out", ca_rin: 110.0, ca_rout: 175.0,
+  const GEOM_DEFAULTS = { ca_diel: "mica", ca_t: 4.5, ca_w: 30.0, ca_mode: "outer", ca_rin: 110.0, ca_rout: 175.0,
     ca_round: 0.0, ca_margin: 5.0, t_foil: 1.0, t_carrier: 3.0, t_rotor: 10.0, t_flange: 6.0, t_septum: 12.0,
     cx_air: 3.0, cx_mica: 0.3, r_bore: 50.0, rotor_in_off: 20.0,
     sg_rbar: 375.0, sg_rrail: 410.0, sg_d: 12.0, sg_dbs: 25.0, sg_s_ret: 5.5, sg_s_load: 4.75, sg_s_fire: 5.5, sg_s_bs: 5.5,
@@ -31,14 +31,15 @@
   function sector_area(rin, rout, w, n){ return 0.5 * rad(w) * Math.max(0.0, rout * rout - rin * rin) * n; }
   function cap_pF(A, t, er){ return EPS0 * er * A * 1e-6 / (t * 1e-3) * 1e12; }
 
-  function solve_transfer(C_pF, g, n){
+  function solve_transfer(C_pF, g, n, r_max){
     const er = DIELECTRICS[g.ca_diel];
     const A = C_pF * 1e-12 * g.ca_t * 1e-3 / (EPS0 * er) * 1e6;
     let w = g.ca_w, rin = g.ca_rin, rout = g.ca_rout;
     const k = 0.5 * rad(w) * n;
     const mode = g.ca_mode; let note = "";
+    if (mode === "outer") rout = r_max != null ? r_max : rout;
     if (mode === "r_out") rout = _round(Math.sqrt(rin * rin + A / k), g.ca_round);
-    else if (mode === "r_in"){
+    else if (mode === "r_in" || mode === "outer"){
       const d = rout * rout - A / k;
       if (d < 0){ rin = 0.0; note = "target area exceeds the full disc inside r_out: r_in clamped to 0"; }
       else rin = _round(Math.sqrt(d), g.ca_round);
@@ -98,8 +99,8 @@
     const g = Object.assign({}, GEOM_DEFAULTS, geom || {});
     const L = locked.ladder, P = locked.plates;
     const nk = Math.trunc(P.n_kept);
-    const ca = solve_transfer(L.Ca, g, nk), cb = solve_transfer(L.Cb, g, nk);
     const ri = P.r_inMm, ro = P.r_outMm;
+    const ca = solve_transfer(L.Ca, g, nk, ro - g.ca_margin), cb = solve_transfer(L.Cb, g, nk, ro - g.ca_margin);
     const rr_in = Math.max(0.0, ri - g.rotor_in_off);
     const r_edge = ro * 500.0 / 387.0;
     const cx_rin = ro * 58.0 / 387.0, cx_rout = ro * 350.0 / 387.0, bar_rin = ro * 75.0 / 387.0;
@@ -303,6 +304,10 @@
   function _route(r0, a0, z, foil, zf, R_ch, run_starts, w_run, ins_mm){
     const r_t = foil.r_out - Math.min(10.0, (foil.r_out - foil.r_in) / 2), ins = deg(ins_mm / r_t);
     const pts = [[r0, a0, z]], what = [];
+    if (foil.r_in + ins_mm <= r0 && r0 <= foil.r_out - ins_mm && Math.abs(_nearest_inside(a0, foil.starts, foil.w_deg, deg(ins_mm / r0)) - a0) < 1e-9){
+      pts.push([r0, a0, zf]); what.push(`riser straight to ${foil.id} (node ${foil.node})`);
+      return [pts, what];
+    }
     const arc = (r, af, at, txt) => { const n = Math.max(1, Math.ceil(Math.abs(at - af) / 10.0 - 1e-9));
       for (let i = 1; i <= n; i++){ pts.push([r, af + (at - af) * i / n, z]); what.push(txt); } };
     const ar = _nearest_inside(a0, run_starts, w_run, ins);
@@ -479,7 +484,7 @@
     }
     return dist([0, 1, 2].map(i => p[i] + d1[i] * t), [0, 1, 2].map(i => r[i] + d2[i] * u));
   }
-  function _foil_dist(pt, f){
+  function _foil_dist(pt, f, lat = 0.0){
     const r = Math.hypot(pt[0], pt[1]), a = deg(Math.atan2(pt[1], pt[0]));
     const dz = Math.max(0.0, f.z0 - pt[2], pt[2] - f.z1);
     let best = Infinity;
@@ -495,7 +500,7 @@
           dp = Math.min(dp, Math.hypot(pt[0] - t * ex, pt[1] - t * ey));
         }
       }
-      best = Math.min(best, Math.hypot(dp, dz));
+      best = Math.min(best, Math.hypot(Math.max(0.0, dp - lat), dz));
     }
     return best;
   }
@@ -619,8 +624,8 @@
     const on = _foil_carriers(design.stack), foils = design.stack.filter(it => it.kind === "foil");
     let w_cov = Infinity, d_cov = "none", w_own = Infinity, d_own = "none", w_oth = Infinity, d_oth = "none";
     for (const it of sg.items){
-      if (it.kind !== "rod" || it.role !== "gap-lead") continue;
-      const p0 = it.p0, p1 = it.p1, rr = it.r, zlo = Math.min(p0[2], p1[2]) - rr, zhi = Math.max(p0[2], p1[2]) + rr;
+      if (it.kind !== "rod" || (it.role !== "gap-lead" && it.role !== "gap-stem")) continue;
+      const stem = it.role === "gap-stem", p0 = it.p0, p1 = it.p1, rr = it.r, zlo = Math.min(p0[2], p1[2]) - rr, zhi = Math.max(p0[2], p1[2]) + rr;
       if (it.embedded){
         const c = byid[it.carrier];
         let lo = c.z0, hi = c.z1;
@@ -632,7 +637,7 @@
       for (let j = 0; j <= n; j++) pts.push([0, 1, 2].map(i => p0[i] + (p1[i] - p0[i]) * j / n));
       for (const f of foils){
         if (f.node === it.node || f.z0 > zhi + 20.0 || f.z1 < zlo - 20.0) continue;
-        let dd = Infinity; for (const q of pts) dd = Math.min(dd, _foil_dist(q, f)); dd -= rr;
+        let dd = Infinity; for (const q of pts) dd = Math.min(dd, stem ? _foil_dist(q, f, rr) : _foil_dist(q, f)); if (!stem) dd -= rr;
         if (on[f.id] === it.carrier){
           if (dd < w_own - 1e-9){ w_own = dd; d_own = `${it.name} (node ${it.node}) to ${f.id} (node ${f.node}) on ${it.carrier}: ${_mm(dd)} mm`; }
         } else if (it.embedded && dd < w_oth - 1e-9){ w_oth = dd; d_oth = `${it.name} (node ${it.node}) to ${f.id} (node ${f.node}) on ${on[f.id]}: ${_mm(dd)} mm`; }
@@ -713,6 +718,8 @@
         `r${f(e.r_in, 1)}-${f(e.r_out, 1)} x ${f(e.w_deg, 2)} deg within r${f(c.r_in, 0)}-${f(c.r_out, 0)} x ${f(c.w_deg, 0)} deg`];
       const ov = overlap_area(e, c);
       res[`${cap}: overlap area = electrode area`] = [Math.abs(ov - geo.area_mm2) <= 1e-6 * geo.area_mm2, `${f(ov, 1)} vs ${f(geo.area_mm2, 1)} mm^2`];
+      res[`${cap}: inset from its counter-electrode edge by the margin`] = [e.r_out <= c.r_out - g.ca_margin + 1e-9 && e.r_in >= c.r_in + g.ca_margin - 1e-9,
+        `r${f(e.r_in, 1)}-${f(e.r_out, 1)} within r${f(c.r_in, 0)}-${f(c.r_out, 0)} less ${f(g.ca_margin, 0)} mm`];
       res[`${cap}: clears the carrier bore`] = [e.r_in - g.ca_margin >= g.r_bore,
         `r_in ${f(e.r_in, 1)} - margin ${f(g.ca_margin, 0)} >= bore ${f(g.r_bore, 0)}`];
       res[`${cap}: dielectric margin fits the sector pitch`] = [
