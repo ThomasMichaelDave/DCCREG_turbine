@@ -71,8 +71,9 @@
       Cx4_bars: _fp("island bars on A", "8", "Cx4", bar_rin, cx_rout, even, w_sec),
       Cx3_pickup: _fp("Cx3 pickup", "n17", "Cx3", cx_rin, cx_rout, odd, w_sec),
       Cx3_bars: _fp("island bars on B", "7", "Cx3", bar_rin, cx_rout, odd, w_sec),
-      CR_A: _fp("C_R face (rotor A)", "5", "C_R", rr_in, ro, [0.0], 360.0),
-      CR_B: _fp("C_R face (rotor B)", "6", "C_R", rr_in, ro, [0.0], 360.0),
+      // C_R faces: the rotor-face sectors, aligned on A and B (co-rotating discs: C_R fixed) [OC host]
+      CR_A: _fp("C_R face (rotor A)", "5", "C_R", rr_in, ro, odd, w_sec),
+      CR_B: _fp("C_R face (rotor B)", "6", "C_R", rr_in, ro, odd, w_sec),
     };
     const tf = g.t_foil, tc = g.t_carrier, gv = P.g_vMm, tcx = g.cx_air + 2 * g.cx_mica;
     const cxm = `air ${g6(g.cx_air)} + mica ${g6(g.cx_mica)}/face`;
@@ -416,6 +417,7 @@
   const PAIRS = { C1: ["C1_stator", "C1_rotor"], C2: ["C2_stator", "C2_rotor"], Ca: ["Ca_el", "Ca_counter"],
     Cb: ["Cb_el", "Cb_counter"], Cx4: ["Cx4_pickup", "Cx4_bars"], Cx3: ["Cx3_pickup", "Cx3_bars"], C_R: ["CR_A", "CR_B"] };
   const ROTATING = ["C1", "C2", "Cx3", "Cx4"];
+  const CR_RATIO = 2.82;   // C_R / C_max, = pump_sizing ratio_CR [IR]
 
   function adjacency(design){
     const st = design.stack, pos = {};
@@ -454,6 +456,11 @@
         `${f(geo.C_pF, 3)} vs ${f(geo.C_target_pF, 3)} pF (${fs(pct(geo.dC_rel), 4)} %)` +
         (g.ca_round > 0 ? " -- rounding: engine round-trip decides" : "")];
     }
+    // C_R (tank, collapsed in the engine) vs the ladder's 2.82 x C_max; 1 % tolerance [IR]
+    const cr_t = CR_RATIO * design.lock.ladder.C_max;
+    const cr = cap_pF(overlap_area(fp.CR_A, fp.CR_B), g.t_septum, DIELECTRICS.garolite);
+    res["C_R: septum C = 2.82 x C_max (tank, shown only)"] = [Math.abs(cr / cr_t - 1) <= 0.01,
+      `${f(cr, 1)} vs ${f(cr_t, 1)} pF (${fs(pct(cr / cr_t - 1), 2)} %), ${fp.CR_A.starts.length} x ${f(fp.CR_A.w_deg, 0)} deg on ${f(g.t_septum, 1)} mm garolite`];
     const P = design.lock.plates;
     res["layout: alternating sectors (n_kept = N_sec / 2, as drawn)"] = [Math.trunc(P.n_kept) * 2 === Math.trunc(P.N_sec),
       `n_kept ${P.n_kept} of N_sec ${P.N_sec}`];

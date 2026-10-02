@@ -87,13 +87,31 @@ The first layout put the gaps on decks outboard of the flanges. A revolved-envel
 - The lead frame clears the rims.
 - **Counter-rotation:** 51 rotor against 162 stator revolved envelopes, none overlapping. This test is now a standing check.
 
-**CAD:** 283 solids, all named: 16 carrier rings, 74 foils, 13 dielectric slabs, 48 stator buttons, 36 rotor tips and tabs, and 96 lead rods. The Fusion stand-in builds the same 283 bodies.
+**CAD:** 283 solids at rev 2 (293 since rev 3, when the C_R faces were sectored), all named: 16 carrier rings, 74 foils, 13 dielectric slabs, 48 stator buttons, 36 rotor tips and tabs, and 96 lead rods. The Fusion stand-in builds the same 283 bodies.
 
 **For TMD:**
 1. **Cx pickups are nodes n17 / n23** (via Lx3 / Lx4), not 3 / 2, as in rev 1.
 2. **The deck pairing is the opposite of commutator-design §5,** as in rev 1. SG3 fires on side B with SG2, and SG4 on side A with SG1.
 3. **Buttons are modelled flat-faced.** Real W-Cu buttons would be domed; that changes only the protrusion figures.
 4. **The bar band binds.** The 25 mm backstop sets r375. A smaller backstop, or a pickup trimmed to r340, frees the band.
+
+## C_R faces sectored (rev 3, 2026-10-02)
+
+**What was wrong.** Up to rev 2, the C_R faces `CR_A` / `CR_B` were full 360° rings (r75–387) on both sides of the septum. That was not intentional. It came from a misreading of `CONVENTIONS.md`: "Ametal_full = full rotor face → C_R". In the host (`index.html` `plateGeom`), that is `keptFrac × π(plateR² − ro²)`. In other words, it is the *sectored* rotor face over its full radial span, as opposed to the squeezed active band. It is not a full ring.
+
+- The full ring gave **1570 pF** on 12 mm garolite, twice the ladder's C_R (2.82 × C_max = **789.1 pF**).
+- No check caught it, because G-ADJ checked only that C_R's foils face each other, not their value.
+- The engine's tank is collapsed, so z and PUMPS are unaffected.
+
+**Now.** Both C_R faces carry the rotor-face sectors (6 × 30°, odd starts, r75–387), aligned on A and B. The result is **785.2 pF (−0.49 %)**; the host's hub-ring term is not drawn here. A new check, *C_R: septum C = 2.82 × C_max*, compares the value against the ladder with a 1 % tolerance [IR].
+
+The build now has 293 solids, up from 283, because the C_R faces are 2 × 6 foils instead of 2 rings. Each face is now named like the other sectors, for example `A-disc / CR_A_1 - C_R face (rotor A), node 5, C_R, sector 1 of 6 (30-60 deg), r75-387 mm, Al foil 1 mm, septum side, z -7..-6`.
+
+**Why the C_R sectoring is a free choice (TMD's "happy coincidence").**
+- The A- and B-discs **co-rotate**, so C_R is a fixed capacitor, independent of rotor angle. Its two faces only need to be sectored identically and aligned.
+- Each rotor disc carries two separate foils of the same node, one per face (C1 or C2 rotor face outside, C_R face on the septum side). The C_R face can therefore be shaped independently of the C1/C2 rotor face: sector count, width and radii.
+- That makes C_R adjustable by sectoring the septum face as well as by the septum thickness. The C1/C2 pump capacitance is untouched either way.
+- Keeping the C_R face's sectors on the C1/C2 rotor face's sectors (as now) puts the two node-5 foils back to back. A short through-connection per sector then joins them.
 
 ## 3. Findings for TMD
 

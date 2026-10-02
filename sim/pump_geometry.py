@@ -151,8 +151,10 @@ def build(locked, geom=None):
         Cx4_bars=_fp("island bars on A", "8", "Cx4", bar_rin, cx_rout, even, w_sec),
         Cx3_pickup=_fp("Cx3 pickup", "n17", "Cx3", cx_rin, cx_rout, odd, w_sec),   # n17 -Lx3- node 3 (netlist)
         Cx3_bars=_fp("island bars on B", "7", "Cx3", bar_rin, cx_rout, odd, w_sec),
-        CR_A=_fp("C_R face (rotor A)", "5", "C_R", rr_in, ro, [0.0], 360.0),
-        CR_B=_fp("C_R face (rotor B)", "6", "C_R", rr_in, ro, [0.0], 360.0),
+        # C_R faces: the rotor-face sectors (host Ametal_full = keptFrac x full radial span, index.html plateGeom),
+        # aligned on A and B -- both discs co-rotate, so C_R is fixed and its sectoring is a free choice [OC host]
+        CR_A=_fp("C_R face (rotor A)", "5", "C_R", rr_in, ro, odd, w_sec),
+        CR_B=_fp("C_R face (rotor B)", "6", "C_R", rr_in, ro, odd, w_sec),
     )
     # ---- axial stack (z up, mm): a strict layer sequence from the septum outward, foils as their own layers
     #      (every gap value is foil-to-foil) [IR]; side A at z < 0, side B mirrored at z > 0 ----
@@ -620,7 +622,8 @@ def overlap_area(f1, f2):
 PAIRS = dict(C1=("C1_stator", "C1_rotor"), C2=("C2_stator", "C2_rotor"), Ca=("Ca_el", "Ca_counter"),
              Cb=("Cb_el", "Cb_counter"), Cx4=("Cx4_pickup", "Cx4_bars"), Cx3=("Cx3_pickup", "Cx3_bars"),
              C_R=("CR_A", "CR_B"))
-ROTATING = ("C1", "C2", "Cx3", "Cx4")       # one electrode on a rotor (or its island bars)
+ROTATING = ("C1", "C2", "Cx3", "Cx4")
+CR_RATIO = 2.82                             # C_R / C_max, = pump_sizing ratio_CR (tank collapsed) [IR]       # one electrode on a rotor (or its island bars)
 
 
 def adjacency(design):
@@ -670,6 +673,12 @@ def checks(design):
         res[f"{cap}: realized C = locked C"] = (abs(geo["dC_rel"]) <= 1e-9 or g["ca_round"] > 0,
                                                 f"{geo['C_pF']:.3f} vs {geo['C_target_pF']:.3f} pF ({_pct(geo['dC_rel']):+.4f} %)"
                                                 + (" -- rounding: engine round-trip decides" if g["ca_round"] > 0 else ""))
+    # C_R (tank, collapsed in the engine): through the septum vs the ladder's 2.82 x C_max (pump_sizing D default);
+    # 1 % tolerance, the host's hub-ring term is not drawn here [IR]
+    cr_t = CR_RATIO * design["lock"]["ladder"]["C_max"]
+    cr = cap_pF(overlap_area(fp["CR_A"], fp["CR_B"]), g["t_septum"], DIELECTRICS["garolite"])
+    res["C_R: septum C = 2.82 x C_max (tank, shown only)"] = (abs(cr / cr_t - 1) <= 0.01,
+        f"{cr:.1f} vs {cr_t:.1f} pF ({_pct(cr / cr_t - 1):+.2f} %), {len(fp['CR_A']['starts'])} x {fp['CR_A']['w_deg']:.0f} deg on {g['t_septum']:.1f} mm garolite")
     P = design["lock"]["plates"]
     res["layout: alternating sectors (n_kept = N_sec / 2, as drawn)"] = (
         int(P["n_kept"]) * 2 == int(P["N_sec"]), f"n_kept {P['n_kept']} of N_sec {P['N_sec']}")

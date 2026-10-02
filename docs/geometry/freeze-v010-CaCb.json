@@ -297,9 +297,14 @@
    "r_in": 75.0,
    "r_out": 387.0,
    "starts": [
-    0.0
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
    ],
-   "w_deg": 360.0
+   "w_deg": 30.0
   },
   "CR_B": {
    "name": "C_R face (rotor B)",
@@ -308,9 +313,14 @@
    "r_in": 75.0,
    "r_out": 387.0,
    "starts": [
-    0.0
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
    ],
-   "w_deg": 360.0
+   "w_deg": 30.0
   }
  },
  "stack": [
@@ -546,9 +556,14 @@
    "r_in": 75.0,
    "r_out": 387.0,
    "starts": [
-    0.0
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
    ],
-   "w_deg": 360.0
+   "w_deg": 30.0
   },
   {
    "id": "septum",
@@ -578,9 +593,14 @@
    "r_in": 75.0,
    "r_out": 387.0,
    "starts": [
-    0.0
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
    ],
-   "w_deg": 360.0
+   "w_deg": 30.0
   },
   {
    "id": "B-disc",
@@ -954,9 +974,14 @@
    "r_in": 75.0,
    "r_out": 387.0,
    "starts": [
-    0.0
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
    ],
-   "w_deg": 360.0
+   "w_deg": 30.0
   },
   {
    "id": "CR_B",
@@ -972,9 +997,14 @@
    "r_in": 75.0,
    "r_out": 387.0,
    "starts": [
-    0.0
+    30.0,
+    90.0,
+    150.0,
+    210.0,
+    270.0,
+    330.0
    ],
-   "w_deg": 360.0
+   "w_deg": 30.0
   },
   {
    "id": "C2_rotor",
@@ -6087,6 +6117,10 @@
    "pass_": true,
    "detail": "307.801 vs 307.801 pF (+0.0000 %)"
   },
+  "C_R: septum C = 2.82 x C_max (tank, shown only)": {
+   "pass_": true,
+   "detail": "785.2 vs 789.1 pF (-0.49 %), 6 x 30 deg on 12.0 mm garolite"
+  },
   "layout: alternating sectors (n_kept = N_sec / 2, as drawn)": {
    "pass_": true,
    "detail": "n_kept 6 of N_sec 12"
@@ -6117,7 +6151,7 @@
   },
   "stack: C_R electrodes face each other": {
    "pass_": true,
-   "detail": "CR_A <-> CR_B across ['septum'], plan overlap 452842 mm^2 (fixed)"
+   "detail": "CR_A <-> CR_B across ['septum'], plan overlap 226421 mm^2 (fixed)"
   },
   "gaps: nodes = netlist of record (topology_edge_list.csv)": {
    "pass_": true,
@@ -7529,7 +7563,7 @@
   },
   {
    "name": "CR_A_1",
-   "label": "A-disc / CR_A_1 - C_R face (rotor A), node 5, C_R, full ring, r75-387 mm, Al foil 1 mm, septum side, z -7..-6",
+   "label": "A-disc / CR_A_1 - C_R face (rotor A), node 5, C_R, sector 1 of 6 (30-60 deg), r75-387 mm, Al foil 1 mm, septum side, z -7..-6",
    "assembly": "A-disc",
    "role": "foil",
    "carrier": "A-disc",
@@ -7542,8 +7576,8 @@
    ],
    "r_in": 75.0,
    "r_out": 387.0,
-   "start_deg": 0.0,
-   "w_deg": 360.0,
+   "start_deg": 30.0,
+   "w_deg": 30.0,
    "z0": -7.0,
    "z1": -6.0,
    "rgb": [
@@ -7551,7 +7585,137 @@
     0.57,
     0.92
    ],
-   "volume": 452841.7314590471
+   "volume": 37736.81095492059
+  },
+  {
+   "name": "CR_A_2",
+   "label": "A-disc / CR_A_2 - C_R face (rotor A), node 5, C_R, sector 2 of 6 (90-120 deg), r75-387 mm, Al foil 1 mm, septum side, z -7..-6",
+   "assembly": "A-disc",
+   "role": "foil",
+   "carrier": "A-disc",
+   "node": "5",
+   "cap": "C_R",
+   "material": "Al foil",
+   "shape": "sector",
+   "chains": [
+    "A-disc"
+   ],
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "start_deg": 90.0,
+   "w_deg": 30.0,
+   "z0": -7.0,
+   "z1": -6.0,
+   "rgb": [
+    0.78,
+    0.57,
+    0.92
+   ],
+   "volume": 37736.81095492059
+  },
+  {
+   "name": "CR_A_3",
+   "label": "A-disc / CR_A_3 - C_R face (rotor A), node 5, C_R, sector 3 of 6 (150-180 deg), r75-387 mm, Al foil 1 mm, septum side, z -7..-6",
+   "assembly": "A-disc",
+   "role": "foil",
+   "carrier": "A-disc",
+   "node": "5",
+   "cap": "C_R",
+   "material": "Al foil",
+   "shape": "sector",
+   "chains": [
+    "A-disc"
+   ],
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "start_deg": 150.0,
+   "w_deg": 30.0,
+   "z0": -7.0,
+   "z1": -6.0,
+   "rgb": [
+    0.78,
+    0.57,
+    0.92
+   ],
+   "volume": 37736.81095492059
+  },
+  {
+   "name": "CR_A_4",
+   "label": "A-disc / CR_A_4 - C_R face (rotor A), node 5, C_R, sector 4 of 6 (210-240 deg), r75-387 mm, Al foil 1 mm, septum side, z -7..-6",
+   "assembly": "A-disc",
+   "role": "foil",
+   "carrier": "A-disc",
+   "node": "5",
+   "cap": "C_R",
+   "material": "Al foil",
+   "shape": "sector",
+   "chains": [
+    "A-disc"
+   ],
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "start_deg": 210.0,
+   "w_deg": 30.0,
+   "z0": -7.0,
+   "z1": -6.0,
+   "rgb": [
+    0.78,
+    0.57,
+    0.92
+   ],
+   "volume": 37736.81095492059
+  },
+  {
+   "name": "CR_A_5",
+   "label": "A-disc / CR_A_5 - C_R face (rotor A), node 5, C_R, sector 5 of 6 (270-300 deg), r75-387 mm, Al foil 1 mm, septum side, z -7..-6",
+   "assembly": "A-disc",
+   "role": "foil",
+   "carrier": "A-disc",
+   "node": "5",
+   "cap": "C_R",
+   "material": "Al foil",
+   "shape": "sector",
+   "chains": [
+    "A-disc"
+   ],
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "start_deg": 270.0,
+   "w_deg": 30.0,
+   "z0": -7.0,
+   "z1": -6.0,
+   "rgb": [
+    0.78,
+    0.57,
+    0.92
+   ],
+   "volume": 37736.81095492059
+  },
+  {
+   "name": "CR_A_6",
+   "label": "A-disc / CR_A_6 - C_R face (rotor A), node 5, C_R, sector 6 of 6 (330-360 deg), r75-387 mm, Al foil 1 mm, septum side, z -7..-6",
+   "assembly": "A-disc",
+   "role": "foil",
+   "carrier": "A-disc",
+   "node": "5",
+   "cap": "C_R",
+   "material": "Al foil",
+   "shape": "sector",
+   "chains": [
+    "A-disc"
+   ],
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "start_deg": 330.0,
+   "w_deg": 30.0,
+   "z0": -7.0,
+   "z1": -6.0,
+   "rgb": [
+    0.78,
+    0.57,
+    0.92
+   ],
+   "volume": 37736.81095492059
   },
   {
    "name": "septum",
@@ -7581,7 +7745,7 @@
   },
   {
    "name": "CR_B_1",
-   "label": "B-disc / CR_B_1 - C_R face (rotor B), node 6, C_R, full ring, r75-387 mm, Al foil 1 mm, septum side, z 6..7",
+   "label": "B-disc / CR_B_1 - C_R face (rotor B), node 6, C_R, sector 1 of 6 (30-60 deg), r75-387 mm, Al foil 1 mm, septum side, z 6..7",
    "assembly": "B-disc",
    "role": "foil",
    "carrier": "B-disc",
@@ -7594,8 +7758,8 @@
    ],
    "r_in": 75.0,
    "r_out": 387.0,
-   "start_deg": 0.0,
-   "w_deg": 360.0,
+   "start_deg": 30.0,
+   "w_deg": 30.0,
    "z0": 6.0,
    "z1": 7.0,
    "rgb": [
@@ -7603,7 +7767,137 @@
     0.46,
     0.56
    ],
-   "volume": 452841.7314590471
+   "volume": 37736.81095492059
+  },
+  {
+   "name": "CR_B_2",
+   "label": "B-disc / CR_B_2 - C_R face (rotor B), node 6, C_R, sector 2 of 6 (90-120 deg), r75-387 mm, Al foil 1 mm, septum side, z 6..7",
+   "assembly": "B-disc",
+   "role": "foil",
+   "carrier": "B-disc",
+   "node": "6",
+   "cap": "C_R",
+   "material": "Al foil",
+   "shape": "sector",
+   "chains": [
+    "B-disc"
+   ],
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "start_deg": 90.0,
+   "w_deg": 30.0,
+   "z0": 6.0,
+   "z1": 7.0,
+   "rgb": [
+    0.97,
+    0.46,
+    0.56
+   ],
+   "volume": 37736.81095492059
+  },
+  {
+   "name": "CR_B_3",
+   "label": "B-disc / CR_B_3 - C_R face (rotor B), node 6, C_R, sector 3 of 6 (150-180 deg), r75-387 mm, Al foil 1 mm, septum side, z 6..7",
+   "assembly": "B-disc",
+   "role": "foil",
+   "carrier": "B-disc",
+   "node": "6",
+   "cap": "C_R",
+   "material": "Al foil",
+   "shape": "sector",
+   "chains": [
+    "B-disc"
+   ],
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "start_deg": 150.0,
+   "w_deg": 30.0,
+   "z0": 6.0,
+   "z1": 7.0,
+   "rgb": [
+    0.97,
+    0.46,
+    0.56
+   ],
+   "volume": 37736.81095492059
+  },
+  {
+   "name": "CR_B_4",
+   "label": "B-disc / CR_B_4 - C_R face (rotor B), node 6, C_R, sector 4 of 6 (210-240 deg), r75-387 mm, Al foil 1 mm, septum side, z 6..7",
+   "assembly": "B-disc",
+   "role": "foil",
+   "carrier": "B-disc",
+   "node": "6",
+   "cap": "C_R",
+   "material": "Al foil",
+   "shape": "sector",
+   "chains": [
+    "B-disc"
+   ],
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "start_deg": 210.0,
+   "w_deg": 30.0,
+   "z0": 6.0,
+   "z1": 7.0,
+   "rgb": [
+    0.97,
+    0.46,
+    0.56
+   ],
+   "volume": 37736.81095492059
+  },
+  {
+   "name": "CR_B_5",
+   "label": "B-disc / CR_B_5 - C_R face (rotor B), node 6, C_R, sector 5 of 6 (270-300 deg), r75-387 mm, Al foil 1 mm, septum side, z 6..7",
+   "assembly": "B-disc",
+   "role": "foil",
+   "carrier": "B-disc",
+   "node": "6",
+   "cap": "C_R",
+   "material": "Al foil",
+   "shape": "sector",
+   "chains": [
+    "B-disc"
+   ],
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "start_deg": 270.0,
+   "w_deg": 30.0,
+   "z0": 6.0,
+   "z1": 7.0,
+   "rgb": [
+    0.97,
+    0.46,
+    0.56
+   ],
+   "volume": 37736.81095492059
+  },
+  {
+   "name": "CR_B_6",
+   "label": "B-disc / CR_B_6 - C_R face (rotor B), node 6, C_R, sector 6 of 6 (330-360 deg), r75-387 mm, Al foil 1 mm, septum side, z 6..7",
+   "assembly": "B-disc",
+   "role": "foil",
+   "carrier": "B-disc",
+   "node": "6",
+   "cap": "C_R",
+   "material": "Al foil",
+   "shape": "sector",
+   "chains": [
+    "B-disc"
+   ],
+   "r_in": 75.0,
+   "r_out": 387.0,
+   "start_deg": 330.0,
+   "w_deg": 30.0,
+   "z0": 6.0,
+   "z1": 7.0,
+   "rgb": [
+    0.97,
+    0.46,
+    0.56
+   ],
+   "volume": 37736.81095492059
   },
   {
    "name": "B_disc_carrier",
