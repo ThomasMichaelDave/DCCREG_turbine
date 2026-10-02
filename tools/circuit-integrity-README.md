@@ -6,7 +6,7 @@
 |---|---|---|
 | galvanic nets | copper solids that touch (≤ 0.01 mm) | one net per touching group |
 | capacitors | foils of two nets facing each other | parallel-plate C through the insulators between them; rotor/stator pairs swept over a full turn |
-| spark gaps | a stator sphere and a rotor sphere meeting across a band | the gap's node pair, spacing and sphere sizes |
+| spark gaps | a stator sphere and a rotor sphere meeting at their closest approach over the turn (in the (r, z) plane, so vertical and horizontal gaps alike) | the gap's node pair, spacing and sphere sizes |
 
 Then it requires every **name and CAD group** to state the node its copper is actually on.
 

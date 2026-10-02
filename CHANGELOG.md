@@ -5,6 +5,21 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **Radial bar band (TMD): three of the four bar-band spheres on horizontal stems.** A new field `sg_layout` chooses the layout: `radial` is the default; `axial` keeps rev 7 exactly. In the radial layout:
+  - **ND2 / ND3** end at a trimmed rim, r390: Ca/Cb + margin + 3 mm.
+  - **Island-bar tips** (nodes 8 / 7) hang from the flanges just outside the rim, at r404.5.
+  - **Fire and backstop spheres** (nodes 2 / 3) stand on radial stems out of the rim, straight under the tip path, so their gaps are **vertical**. Their leads run straight in to Ca/Cb (30–37 mm).
+  - **Load sphere** (node 4 / 1) sits beside the tip, at its height, at r421.25, on a 139 mm radial arm in from the stator frame, so its gap is **horizontal**. The arm carries the crossover: its lead is 385 mm, against 535 mm before.
+  - **Stack:** 228 mm (was 236). The flanges go from 23.2 to 8 mm, with no recess or sockets left; ND2/ND3 grow to 41.15 mm, because the 25 mm backstop hangs below the tip. With a 12 mm backstop the stack is 202 mm. No capacitance changes. 677 solids.
+  - **New checks:** the tips clear the trimmed rim; the rim stems keep a bare length; the load sphere clears the flange; spheres keep HV to different-node foils on their own body; counter-rotating copper keeps HV to the other body (revolved distance, gap pairs aside); a spin-load info line. The spacing, exposure, cross-fire and I11 checks now work from the sphere centres. 52 checks, all pass.
+  - **New gate G-SGR**, read from the solids: the orientations, three of four stems horizontal per side, and the spacings. G-CAD now reads a doubled quote in STEP names as one. All nine gates pass.
+  - **Integrity:** PASS, 12 nets, every stray lower (1–8 / 4–7: 86 pF, was 99).
+  - **Resolved:** the rev-6 flag. The node-4 / node-1 load sphere no longer stands over the node-2 / node-3 Ca/Cb ring.
+  - **Flagged for TMD (spin load, [IR] materials):**
+    - the rim stems are in tension, as intended;
+    - the frame arms are in compression and buckle in bare ⌀4 Cu;
+    - the hanging tips bend their ⌀4 stems past yield at 3000 rpm;
+    - the heavy 25 mm backstop needs a thicker stem.
 - **Circuit integrity tool + node consistency (TMD).** New `sim/circuit_integrity.py`, with its JS mirror `tools/circuit-integrity.js`, a live panel in stage 2 and gate G-CI. It rebuilds nets, capacitors (fixed or rotating, plus strays) and spark gaps from the solids alone (JSON or STEP) and holds them to `topology_edge_list.csv`.
   - **Findings on the rev-6 build:** every node was split into 6 nets (no bus between the sectors); 144 parts sat in CAD groups of another node (the reported SG1 sphere under "ND1 (node 1)"); the C_R plates were on R-A/R-B, where the netlist has n18/n00 behind L_R1/L_R2, so the rotor-disc links shorted the resonator coils; '5'/'6' were old aliases.
   - **Fixed:** netlist node ids; C_R plates n18/n00 and no rotor links; 12 embedded bus rings with risers; CAD groups per node with `[material, body]` label tails; carriers with no node; "rail" renamed to "return"; the Cx mica facings drawn.

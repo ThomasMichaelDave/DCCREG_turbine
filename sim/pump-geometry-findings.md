@@ -1,6 +1,6 @@
 # PUMP-SYNTH stage 2 — capacitor plate geometry (first cut: Ca / Cb)
 
-**Verdict: `GEOMETRY-STAGE2-PASS`.** All five checks pass (`python3 sim/pump_geometry_gates.py`, record `sim/pump_geometry_gates.json`). Not merged; TMD signs off.
+**Verdict: `GEOMETRY-STAGE2-PASS`.** All nine gates pass (`python3 sim/pump_geometry_gates.py`, record `sim/pump_geometry_gates.json`); the first cut had five. Not merged; TMD signs off.
 
 **Scope (TMD, 2026-10-01):**
 - The 3-D target is FreeCAD.
@@ -112,6 +112,89 @@ The build now has 293 solids, up from 283, because the C_R faces are 2 × 6 foil
 - Each rotor disc carries two separate foils of the same node, one per face (C1 or C2 rotor face outside, C_R face on the septum side). The C_R face can therefore be shaped independently of the C1/C2 rotor face: sector count, width and radii.
 - That makes C_R adjustable by sectoring the septum face as well as by the septum thickness. The C1/C2 pump capacitance is untouched either way.
 - Keeping the C_R face's sectors on the C1/C2 rotor face's sectors (as now) puts the two node-5 foils back to back. A short through-connection per sector then joins them.
+
+## Radial bar band: three of the four spheres on horizontal stems (rev 8, 2026-10-02)
+
+**The change (TMD).** In the bar band:
+- **Fire and backstop spheres** (SG3b1 / BS3 on node 3, SG4b1 / BS4 on node 2) now connect horizontally toward their capacitor electrode and point outward from the centre.
+- **The island-bar tip** (node 7 / node 8) moves outward. It meets those two spheres **vertically**, and the load sphere (SG3a1 on node 1 / SG4a1 on node 4) **horizontally**.
+
+A new field `sg_layout` picks the layout:
+- `radial` is the default;
+- `axial` keeps the rev 5–7 build exactly as it was (the same parts, labels and numbers).
+
+**How it is built** (side B; side A mirrors it). ND3 is trimmed to **r390**: the Cb outer edge 382 + the 5 mm dielectric margin + `sg_rimgap` 3 mm. The flange, ND1 and ND4 keep R500, so the space beside the trimmed rim opens up between the B-flange and ND4. Heights are measured from ND3's Cx face, positive toward the flange (the flange face is at +5.6):
+
+| part | radius | centre height | mount | gap to the tip |
+|---|---|---|---|---|
+| island-bar tip, node 7 | **r404.5** | −2.4 | hangs from the B-flange on a vertical ⌀4 stem (2 mm bare) | — |
+| SG3a1 load, node 1 | **r421.25** | −2.4 | radial arm, 139 mm, in from the stator frame R560; the arm carries its crossover | **4.75 mm horizontal** |
+| SG3b1 fire, node 3 | r404.5 | −19.9 | radial stem out of the ND3 rim, 8.5 mm bare | **5.5 mm vertical** |
+| BS3 backstop, node 3 | r404.5 | −26.4 | radial stem out of the ND3 rim, 2 mm bare | **5.5 mm vertical** |
+
+**Placement rules** [IR]:
+- **Tip radius.** The rim sets it: a bare rim stem (`sg_stem_air`, 2 mm) outside the 25 mm backstop, and `sg_clear` (2 mm) of running clearance to the rim. `sg_rbar` is now only the least tip radius.
+- **Tip height.** The tip centre sits as high as the load sphere beside it allows: the load sphere's top stays `sg_clear` under the flange face.
+- **Vertical gaps.** Each vertical-gap sphere hangs straight under the tip, centre to centre R_tip + s + R.
+- **Rim leads.** The rim stems' leads run straight in under Cb (r372) and rise to it: SG3b1 37 mm, BS3 30 mm (rev 6: 4 mm risers).
+- **Return hop.** The SG2 hop (node 3) now enters ND3 through the open space beside the rim. It uses the backstop stem's plane, and never comes closer than the HV clearance below the tip path. (A 12 mm backstop raises that plane; the rule keeps it 11 mm clear.)
+- **Flange leads.** In the flange, the tip leads change sector at the tip radius, which keeps them clear of the load arms passing underneath.
+
+**The stack: 228 mm** (rev 7: 236).
+- **Flanges** go from 23.2 to **8 mm**: no recess and no socket are left, only the tip stems' seats and leads.
+- **ND2 / ND3** grow from 29.95 to **41.15 mm**: the 25 mm backstop hangs 38.9 mm below the Cx face.
+- **With a 12 mm backstop** the stack is 202 mm. In the axial layout it is 210 mm, and the axial layout then fails the new sphere-to-foil check: the node-4 load sphere comes within 9 mm of the node-2 Ca ring.
+- **No capacitance changes** (G-Z).
+- **Solids:** 677 (axial 697).
+
+**Lead lengths, one spoke:**
+
+| gap | rev 7 (axial) | rev 8 (radial) |
+|---|---|---|
+| SG4a1 / SG3a1 (load, crossover) | 535 mm | **385 mm + the 139 mm arm** |
+| SG4b1 / SG3b1 (fire) | 4.2 mm | 37 mm |
+| BS4 / BS3 (backstop) | 4.2 mm | 30 mm |
+| SG1 / SG2 (return hop) | 379 mm | 401 mm |
+
+**Checks: 52, all pass.** The new ones:
+- **The radial band itself:** the tips clear the trimmed rim by 8.5 mm, the rim stems are 2 mm bare, and the load sphere runs 2 mm under the flange face.
+- **Spheres keep the HV clearance to different-node foils of their own body.** Tightest: BS4 to Ca_counter (node 1), 14.26 mm ≥ 11.
+- **Counter-rotating copper keeps the HV clearance (revolved).** Every exposed conductor of one body (spheres, stems, leads in air) is checked against the other body's copper and foils, at the closest approach any relative angle brings. The gap pairs themselves are excluded. Tightest: the SG4a1 sphere (node 4) to the A-flange's node-8 tip lead, 13.4 mm ≥ 11.
+- **Spin-load info:** up to 4240 g at r421.25 and 3000 rpm.
+
+The spacing, exposure, cross-fire and I11 checks now work from the sphere centres, so they cover horizontal and vertical gaps alike. I11 is judged at the tip radius r404.5: overlap 1.98° < 2.95°.
+
+**Gate G-SGR (new).** It reads the bill of solids, not the generator's gap records. Per side, it requires:
+- the fire and backstop spheres on radial stems, meeting the tip vertically;
+- the load sphere on a radial arm, meeting it horizontally;
+- three of the four spheres on horizontal stems;
+- the tip on a vertical stem;
+- every spacing equal to the freeze table;
+- ND2 / ND3 ending inside the tip path.
+
+It also requires the axial layout to pass all its checks. All nine gates pass. G-CAD now reads a doubled quote in STEP names as one.
+
+**Circuit integrity** of the reference STEP (`docs/geometry/integrity-rev8-radial.txt`): PASS, 12 nets, all 7 capacitors and 8 gaps, read from the B-rep, the horizontal SG3a1 / SG4a1 included. All strays are lower:
+- 1–8 / 4–7: 86 pF (rev 7: 99);
+- R-A–n23 / R-B–n17: 1.7 pF;
+- R-A–n18 / R-B–n00: 518 pF, unchanged.
+
+**Resolved from rev 6.** The node-4 SG4a sphere (and the node-1 SG3a sphere) no longer stands over the node-2 Ca (node-3 Cb) ring. Its surface now sits 33 mm outside the ring.
+
+**For TMD: the spin load, mount by mount.** [IR] assumptions:
+- 3000 rpm relative, with the split between the two bodies unknown. The figures are the upper bound; at an even split they are a quarter.
+- W-Cu at 14.9 g/cm³ (a 12 mm sphere is 13.5 g).
+- Copper stems ⌀4 mm, E = 117 GPa.
+
+1. **Rim stems are in tension.** The sphere sits at the stem's outer end, so the spin pulls the stem straight. There is no bending, and radial creep leaves the vertical gaps' spacing alone; this is the relief TMD expected.
+   - SG3b1: 539 N, 43 MPa in its ⌀4 stem at 3000 rpm.
+   - **The 25 mm backstop is the heavy one:** about 70 g in brass gives 2.8 kN and 220 MPa (122 g and 390 MPa in W-Cu). It needs a thicker stem or a lighter, hollow backstop.
+2. **Frame arms are in compression.** The load sphere sits at the arm's **inner** end, so the spin pushes the arm toward the frame.
+   - A 139 mm ⌀4 Cu arm fixed at the frame buckles at about 190 N (Euler).
+   - The arm's own mass plus the sphere load its root to about 1.3 kN at 3000 rpm, or 330 N at 1500 rpm.
+   - It needs a stiff insulating arm (a G10 tube carrying the lead), or the frame much closer (`sg_frame`).
+3. **The tip is in bending.** It hangs 8 mm below the flange face on its stem: 539 N, about 4.3 N·m, so about 690 MPa in the ⌀4 stem at 3000 rpm (170 MPa at 1500 rpm). That is beyond copper's yield. It needs a seat (a boss or socket on the flange face) or a much thicker stem.
+4. **The horizontal gap is the one that radial deflection touches.** The tip bending outward closes SG3a1 / SG4a1, and the arm shortening under compression opens it. The vertical gaps do not see radial deflection. Trim the horizontal gap at speed.
 
 ## Node consistency against the netlist of record, and a circuit integrity tool (rev 7, 2026-10-02)
 

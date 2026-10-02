@@ -96,11 +96,19 @@ The names are the same as in the STEP and the parts CSV; Fusion forbids `/`, so 
 
 **Fusion 360, via STEP.** Open or upload the `.step`. The products become named components and the carrier assemblies become a component tree, with colours as appearances. The reference file `docs/geometry/freeze-v010-CaCb.step` needs no FreeCAD at all. For other designs, the FreeCAD macro writes the STEP, and that STEP then opens in Fusion.
 
-**Spark gaps, in the stack.** Rotor and stator counter-rotate, so each rotary gap sits in the axial gap between the rotor face and the stator face it joins, in a ring reserved beyond the capacitor electrodes:
-- the **bar band** (r375) in the Cx gap holds the load, fire and backstop gaps, with the island-bar tips on tabs;
-- the **rail band** (r410) in the C1/C2 gap holds the returns.
+**Spark gaps, in the stack.** Rotor and stator counter-rotate, so each rotary gap sits between the rotor face and the stator face it joins, in a ring reserved beyond the capacitor electrodes:
+- the **bar band** holds the load, fire and backstop gaps. The "bar band layout" field chooses between two layouts:
+  - **radial** (the default). ND2/ND3 end at a trimmed rim just beyond Ca/Cb (r390), and the island-bar tips hang from the flanges just outside it (r404.5). The fire and backstop spheres stand on radial stems out of the rim, straight under the tip path, so those gaps are **vertical**. The load sphere sits beside the tip at its height (r421.25), on a radial arm from the stator frame, so that gap is **horizontal**. Three of the four spheres are on horizontal stems.
+  - **axial**: every sphere is on a vertical stem in a recessed band of the Cx gap (r375).
+- the **return band** (r410) in the C1/C2 gap holds the returns.
 
-The page shows them in the "gaps A" and "gaps B" plan views and in the axial section, and their parameters are in the "spark gaps" group. Buttons of a foreign node are fed by leads over the rotor rims along the stator frame; SG4a and SG3a are the crossovers. A standing check verifies that no rotor part shares (r, z) with any stator part once both are revolved.
+The page shows them in the "gaps A" and "gaps B" plan views and in the axial section. The gap table gives each gap's mount and whether it is vertical or horizontal. Their parameters are in the "spark gaps" group, the radial ones marked "radial:".
+
+Buttons of a foreign node are fed by leads along the stator frame beyond the rotor rims. SG4a and SG3a are the crossovers; in the radial layout their arms carry them.
+
+Standing checks verify two things:
+- no rotor part shares (r, z) with any stator part once both are revolved;
+- each body's exposed copper keeps the HV clearance from the other body's copper, at the closest approach any relative angle brings.
 
 **Circuit integrity.** The "circuit integrity" panel rebuilds nets, capacitors and spark gaps from the solids and checks them against the netlist of record on every change. It reports shorts, opens, wrong names or groups, missing capacitors or gaps, and stray capacitors with their values. The same tool runs on any exported JSON or STEP; see `tools/circuit-integrity-README.md`.
 
