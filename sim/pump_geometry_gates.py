@@ -153,7 +153,7 @@ def _rand_geom(rng):
                 t_flange=rng.uniform(3, 10), t_septum=rng.uniform(6, 20), r_bore=rng.uniform(30, 55),
                 sg_rbar=rng.uniform(300, 420), sg_rrail=rng.uniform(395, 460), sg_d=rng.uniform(6, 20), sg_dbs=rng.uniform(15, 35),
                 sg_s_ret=rng.uniform(3, 8), sg_s_load=rng.uniform(3, 8), sg_s_fire=rng.uniform(3, 8), sg_s_bs=rng.uniform(3, 8),
-                sg_prot=rng.uniform(0.2, 3.0), sg_pmin=rng.uniform(0.2, 3.0), sg_rod=rng.uniform(2, 6),
+                sg_expose=rng.uniform(0.2, 1.2), sg_stem=rng.uniform(2, 6), sg_rod=rng.uniform(2, 6),
                 sg_seat=rng.uniform(1, 6), sg_cover=rng.uniform(0.5, 4), sg_chord=rng.uniform(5, 40),
                 zs_mode=rng.choice(["auto", "auto", "fixed"]), sg_frame=rng.uniform(20, 120), sg_khv=rng.uniform(1, 3))
 

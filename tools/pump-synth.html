@@ -1346,16 +1346,16 @@ const GFIELDS = [
   ["stack", "rotor_in_off", "rotor face r_in offset", 0, 100, 1, "mm"],
   ["gaps", "sg_rbar", "bar band radius (Cx gap: load/fire/backstop)", 150, 495, 0.5, "mm"],
   ["gaps", "sg_rrail", "rail band radius (C1/C2 gap: returns)", 150, 495, 0.5, "mm"],
-  ["gaps", "sg_d", "switching button", 4, 30, 0.5, "mm"],
-  ["gaps", "sg_dbs", "backstop button", 6, 50, 0.5, "mm"],
+  ["gaps", "sg_d", "switching sphere ⌀ (= stage-1 d_ball)", 4, 30, 0.5, "mm"],
+  ["gaps", "sg_dbs", "backstop sphere ⌀", 6, 50, 0.5, "mm"],
   ["gaps", "sg_s_ret", "return gap SG1/SG2", 1, 20, 0.05, "mm"],
   ["gaps", "sg_s_load", "load gap SG3a/SG4a", 1, 20, 0.05, "mm"],
   ["gaps", "sg_s_fire", "fire gap SG3b/SG4b", 1, 20, 0.05, "mm"],
   ["gaps", "sg_s_bs", "backstop gap BS3/BS4", 1, 20, 0.05, "mm"],
-  ["gaps", "sg_prot", "rotor tip protrusion", 0, 5, 0.05, "mm"],
-  ["gaps", "sg_pmin", "min stator button protrusion", 0, 5, 0.05, "mm"],
+  ["gaps", "sg_expose", "sphere exposure above its face (× ⌀; 0.5 = hemisphere)", 0.1, 1.5, 0.05, ""],
+  ["gaps", "sg_stem", "sphere stem ⌀", 1, 10, 0.5, "mm"],
   ["gaps", "sg_wall", "min carrier wall under a recess", 0.2, 10, 0.1, "mm"],
-  ["gaps", "sg_seat", "button / tip seat depth", 0.5, 15, 0.5, "mm"],
+  ["gaps", "sg_seat", "stem seat below the socket", 0.5, 15, 0.5, "mm"],
   ["gaps", "sg_rod", "lead diameter", 1, 10, 0.5, "mm"],
   ["gaps", "sg_cover", "insulation cover around embedded leads", 0.2, 10, 0.1, "mm"],
   ["gaps", "sg_chord", "lead chord ring inside the carrier edge", 2, 100, 1, "mm"],
@@ -1518,8 +1518,8 @@ function drawDeck(side){
     const col = nodeCol(it.node);
     if (it.kind === "sector"){
       h += `<path d="${sectorPath(cx, cy, it.r_in * sc, it.r_out * sc, it.start_deg, it.w_deg)}" fill="${col}" fill-opacity="0.8"/>`;
-    } else if (it.kind === "button"){
-      const [x, y] = xy(it.p0), rot = it.role === "gap-rotor";
+    } else if (it.kind === "sphere"){
+      const [x, y] = xy(it.c), rot = it.role === "gap-rotor";
       h += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${Math.max(1.5, it.r * sc).toFixed(1)}" fill="${rot ? "none" : col}" stroke="${col}" stroke-width="${rot ? 1.4 : 0.6}"/>`;
     } else if (it.kind === "rod" && it.role === "link"){
       const [x, y] = xy(it.p0);
@@ -1536,13 +1536,13 @@ function drawDeck(side){
   h += `<text x="${cx}" y="${cy + 3}" fill="${css("--mut")}" font-size="9" text-anchor="middle">gaps ${side}</text>`;
   svg.innerHTML = h;
   $("planLegend").innerHTML = `Side ${side}, gaps in the stack: grey rings = the reserved bands (bar band r${g.sg_rbar} in the Cx gap, rail band r${g.sg_rrail} in the ${side === "A" ? "C1" : "C2"} gap), ` +
-    `faint sectors = the capacitor electrodes the bands stay clear of. Filled = stator buttons, hollow = rotor tips at θ = 0; ` +
+    `faint sectors = the capacitor electrodes the bands stay clear of. Filled = stator spheres, hollow = rotor tip spheres at θ = 0; ` +
     `lines = every electrode's lead, embedded in its carrier to a foil of its own node (radial runs between the counter-electrodes, sector changes on the chord ring R${sg.R_chord.toFixed(0)} or under the target foil), ` +
     `out over the stator frame R${sg.R_frame.toFixed(0)} (thick ring) where it must change carrier; small squares = the equipotential links through a carrier; <span style="color:var(--amber)">amber</span> = crossover over the stator (*).`;
-  let t = "<tr><th>gap</th><th>class</th><th>stator node</th><th>on</th><th>rotor</th><th>station</th><th>band</th><th>button proud</th><th>gap</th><th>lead (to its node's foil)</th></tr>";
+  let t = "<tr><th>gap</th><th>class</th><th>stator node</th><th>on</th><th>rotor</th><th>station</th><th>band</th><th>sphere ⌀ · apex proud · socket</th><th>gap</th><th>lead (to its node's foil)</th></tr>";
   for (const x of sg.gaps.filter(q => q.side === side))
     t += `<tr><td>${x.name}</td><td>${x.cls}</td><td>${x.stator_node}</td><td>${x.host}</td><td>${x.rotor}</td><td>${x.station.toFixed(2)}°</td><td>${x.band} r${x.r}</td>` +
-         `<td>${x.p_stator.toFixed(2)} mm</td><td>${x.spacing.toFixed(2)} mm</td><td>${x.lead_len.toFixed(0)} mm${x.foreign ? " from " + x.carrier + (x.crossover ? " · crossover" : "") : " in " + x.host}</td></tr>`;
+         `<td>${x.d_stator} · ${x.p_stator.toFixed(2)} · ${x.socket >= 0 ? x.socket.toFixed(2) + " mm" : "stem +" + (-x.socket).toFixed(2) + " mm"}</td><td>${x.spacing.toFixed(2)} mm</td><td>${x.lead_len.toFixed(0)} mm${x.foreign ? " from " + x.carrier + (x.crossover ? " · crossover" : "") : " in " + x.host}</td></tr>`;
   $("faceTable").innerHTML = t;
 }
 function drawPlan(){
@@ -1604,7 +1604,7 @@ function drawStack(){
     }
   }
   h += `<line x1="${x0}" y1="${Y(0)}" x2="${x1}" y2="${Y(0)}" stroke="${css("--amber")}" stroke-dasharray="2 3" stroke-width="0.8"/>`;
-  // spark gaps in the stack: recessed band pockets, seated buttons / tips (projected to their radius), leads, links
+  // spark gaps in the stack: recessed band pockets, spheres (projected to their radius) on their stems, leads, links
   for (const rc of SG.recesses){
     const c = design.stack.find(q => q.id === rc.carrier);
     const za = rc.face === "z1" ? c.z1 - rc.depth : c.z0, zb = rc.face === "z1" ? c.z1 : c.z0 + rc.depth;
@@ -1612,14 +1612,13 @@ function drawStack(){
   }
   const seen = new Set();
   for (const it of SG.items){
-    if (it.kind === "button"){
-      const r = Math.hypot(it.p0[0], it.p0[1]), key = `${r.toFixed(1)}|${it.p0[2].toFixed(2)}|${it.r}`;
+    if (it.kind === "sphere"){
+      const r = Math.hypot(it.c[0], it.c[1]), key = `${r.toFixed(1)}|${it.c[2].toFixed(2)}|${it.r}`;
       if (seen.has(key)) continue; seen.add(key);
-      const za = Math.min(it.p0[2], it.p1[2]), zb = Math.max(it.p0[2], it.p1[2]);
-      h += `<rect x="${X(r - it.r)}" y="${Y(za)}" width="${2 * it.r * sx}" height="${Math.max(1.2, (zb - za) * sy)}" fill="${it.role === "gap-rotor" ? "none" : nodeCol(it.node)}" stroke="${nodeCol(it.node)}" stroke-width="0.8"/>`;
+      h += `<ellipse cx="${X(r).toFixed(1)}" cy="${Y(it.c[2]).toFixed(1)}" rx="${(it.r * sx).toFixed(1)}" ry="${(it.r * sy).toFixed(1)}" fill="${it.role === "gap-rotor" ? "none" : nodeCol(it.node)}" fill-opacity="0.8" stroke="${nodeCol(it.node)}" stroke-width="0.8"/>`;
     } else if (it.kind === "sector" && it.name.endsWith("_1")){
       h += `<rect x="${X(it.r_in)}" y="${Y(it.z0)}" width="${(it.r_out - it.r_in) * sx}" height="${Math.max(0.8, (it.z1 - it.z0) * sy)}" fill="${nodeCol(it.node)}"/>`;
-    } else if (it.kind === "rod" && (/_lead_1[a-z]$/.test(it.name) || /_link_1$/.test(it.name))){
+    } else if (it.kind === "rod" && (/_lead_1[a-z]$/.test(it.name) || /_(link|stem)_1$/.test(it.name))){
       const cr = (SG.gaps.find(q => q.name === it.gap) || {}).crossover;
       const r0 = Math.hypot(it.p0[0], it.p0[1]), r1 = Math.hypot(it.p1[0], it.p1[1]);
       h += `<line x1="${X(r0).toFixed(1)}" y1="${Y(it.p0[2]).toFixed(1)}" x2="${X(r1).toFixed(1)}" y2="${Y(it.p1[2]).toFixed(1)}" stroke="${cr ? css("--amber") : nodeCol(it.node)}" stroke-width="${cr ? 1.8 : 1}" opacity="0.85"/>`;
@@ -1632,8 +1631,8 @@ function drawStack(){
   $("stackNote").innerHTML = "Order [IR]: each rotor half is a clamshell around its stator pair — flange (island bars) · Cx gap · ND2/ND3 · mica (Ca/Cb) · ND1/ND4 · 7 mm air (C1/C2) · rotor disc · septum (C_R). " +
     "Foils are drawn over their radial band (their sectors are in the plan view). Mica and garolite slabs shaded; air gaps empty. " +
     "Spark gaps IN the stack: each sits in the axial gap between the rotor face and the stator face it joins — the bar band in the Cx gap, the rail band in the C1/C2 gap — in a ring beyond the capacitor electrodes (pockets show a recess). " +
-    "<b>Z-stretch</b>: each carrier is as thick as its seated buttons and embedded leads need (recess + seat + lead + cover); the two foils of a node are joined through it by explicit links, so no capacitance changes. " +
-    "Filled = stator buttons, hollow = rotor tips; lines = leads (first spoke), <b style='color:var(--amber)'>amber = the load-gap crossovers over the stator</b>. Counter-rotation is checked as revolved (r, z) envelopes: no rotor part may share (r, z) with a stator part.";
+    "<b>Spherical electrodes + Z-stretch</b>: every sphere shows at least its exposure above its band face (the rest in a socket, or it stands on its stem); each carrier is as thick as its sockets, stems and embedded leads need (recess + socket + seat + lead + cover); the two foils of a node are joined through it by explicit links, so no capacitance changes. " +
+    "Filled = stator spheres, hollow = rotor tip spheres; lines = leads (first spoke), <b style='color:var(--amber)'>amber = the load-gap crossovers over the stator</b>. Counter-rotation is checked as revolved (r, z) envelopes: no rotor part may share (r, z) with a stator part.";
 }
 function exportJson(){
   if (!design) return;

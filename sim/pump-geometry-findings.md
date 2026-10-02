@@ -113,6 +113,45 @@ The build now has 293 solids, up from 283, because the C_R faces are 2 × 6 foil
 - That makes C_R adjustable by sectoring the septum face as well as by the septum thickness. The C1/C2 pump capacitance is untouched either way.
 - Keeping the C_R face's sectors on the C1/C2 rotor face's sectors (as now) puts the two node-5 foils back to back. A short through-connection per sector then joins them.
 
+## Spherical spark-gap electrodes (rev 5, 2026-10-02)
+
+**The change (TMD).** Every spark-gap electrode is now a **sphere**, as in the stage-1 engine's sphere-gap model (d_ball 12 mm, the I11 overlap law). The Z-stretch conforms to the spheres. Sizes:
+- switching spheres (rotor tips and the load / fire / return gaps): **12 mm W-Cu**;
+- backstop spheres: **25 mm, polished**.
+
+**Placement** (margins [IR], page fields in "spark gaps"):
+- **Exposure.** Every sphere stands at least `sg_expose` × its diameter proud of its band face (default **0.5, a hemisphere**). The rotor tip shows exactly that.
+- **Stator spheres.** Each gap's stator sphere stands as proud as its spacing leaves: G − s − p_rot. The rest of the sphere sits in a **socket**. A sphere that must show more than its diameter stands on its **stem** above the face.
+- **Stem.** Each sphere has a ⌀4 mm stem from its centre down to the lead plane, seated 3 mm below the deepest socket. From there the embedded lead runs to the node's foil, as in rev 4.
+- **Band gap.** The face-to-face gap of a band is the largest spacing + p_rot + the exposed part of that gap's stator sphere:
+
+| band | G (face to face) | recess / face | stator spheres |
+|---|---|---|---|
+| bar band r375 (Cx gap, 5.6 mm bare) | **24.0 mm** | 9.2 | BS 25 mm: 12.5 proud, 12.5 in its socket · SG4a/SG3a: 13.25 proud (on a stem, 1.25 above the face) · SG4b/SG3b: 12.5 proud (on a stem, 0.5 above) |
+| rail band r410 (C1 / C2 gap, 9 mm bare) | **17.5 mm** | 4.25 | SG1 / SG2: hemispheres, 6 proud / 6 in the socket |
+
+**The stretched stack:**
+- **Height:** **236 mm** (it was 133.5 with flat buttons; 100.2 unstretched).
+- **Carriers:** ND1/ND4 18.5, ND2/ND3 29.95, the rotor discs 18.25 and the flanges 23.2 mm.
+- **Unchanged:** all seven capacitances (gate G-Z).
+
+**The trade-off is independent of exposure.** Per band, the stretch costs about **the spacing + both sphere diameters − the bare face gap**, however that is split between socket and protrusion. Lowering `sg_expose` to 0.4 gives the same 236 mm. Only the sphere sizes and the spacings move it:
+- the 25 mm backstop sphere drives the bar band;
+- with a 12 mm backstop the stack is **210 mm**.
+
+**New checks (45, all pass):**
+- every sphere shows at least its exposure;
+- **every sphere gap is in the uniform-field range s ≤ 0.5 D** [OC, IEC 60052; the largest is s/D 0.46, the 5.5 mm gaps on 12 mm spheres];
+- the switching sphere equals the stage-1 d_ball.
+
+Cross-firing is now judged sphere to sphere. The tightest is SG4b's tip against the SG4a sphere: 48.2 mm, a margin of 42.7 mm over its spacing. The HV check leaves out risers and links: each ends in its own foil and sees its counter-electrode across that capacitor's own dielectric.
+
+**CAD:** 721 named solids, now including 72 spheres and 72 stems. Both builders already supported spheres; the geometry gates pass.
+
+**For TMD:**
+1. **Backstop sphere size.** The 25 mm backstop sphere costs 26 mm of stack against a 12 mm one. A backstop in its own band, or a smaller sphere, is the lever.
+2. **The spheres stand in deep annular grooves** (9.2 mm per face in the Cx band). The groove walls are 2 mm clear of the largest sphere in plan. Sphere-gap practice (IEC 60052) also wants clearance to nearby surfaces. That is not modelled beyond the groove margin and the cross-fire check.
+
 ## Z-stretch: room along z for the gap electrodes (rev 4, 2026-10-02)
 
 **The idea (TMD).** A node's two foils sit on the two faces of one carrier, and they are joined by an explicit link. The carrier's thickness is therefore free along z: stretching it costs no capacitance, because every capacitor gap stays as it was. The stack is stretched until each spark-gap electrode sits at its designated place (the r375 / r410 bands, the DXF stations) with real margins, instead of the 0.45 mm recess and 0.5 mm protrusions of rev 2.

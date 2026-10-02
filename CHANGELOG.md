@@ -5,6 +5,10 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **Spherical spark-gap electrodes (TMD).** Every gap electrode is a sphere: 12 mm W-Cu (= the stage-1 d_ball), and 25 mm polished for the backstops. Each sphere shows ≥ 0.5 × its diameter above its band face; the rest sits in a socket, or it stands on its stem. A ⌀4 mm stem runs from each sphere to its embedded lead. The Z-stretch conforms:
+  - band gaps are 24 mm (bar) and 17.5 mm (rail); the stack is 236 mm (210 mm with a 12 mm backstop); no capacitance changes;
+  - new checks: exposure, s ≤ 0.5 D (IEC 60052), sphere = d_ball; cross-fire is now judged sphere to sphere;
+  - the build is 721 named solids.
 - **Z-stretch (TMD): the stack grows along z to give the spark-gap electrodes real margins.** A node's two foils are joined by explicit links (24 in all), so carrier thickness is free; `zs_mode=auto` sizes each carrier to recess + 3 mm seat + 3 mm lead + 2 mm cover (2.25 mm toward a fixed gap, for 11 mm HV). The carriers become ND1/ND4 8.5, ND2/ND3 10.2 and the flanges 9.95 mm, and the stack goes from 100.2 to 133.5 mm. Buttons now stand 2–2.75 mm proud (0.5 before), in 9.5 mm band gaps.
   - **Wiring:** every gap electrode now has an embedded lead to its own node's foil (72 electrodes, 432 segments; the bar tabs are gone).
   - **New checks:** stretch, wiring, lead cover, foil clearance, HV between leads.

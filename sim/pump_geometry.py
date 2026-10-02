@@ -62,13 +62,15 @@ GEOM_DEFAULTS = dict(
     #      and the stator face it joins, in a radial band reserved beyond the capacitor electrodes [IR placement] ----
     sg_rbar=375.0,                            # bar band (load / fire / backstop) in the Cx gap: bars r350 + 11 mm HV + the 25 mm backstop [IR]
     sg_rrail=410.0,                           # rail band (SG1 / SG2 returns) in the C1 / C2 gap, beyond the plates r387 [IR]
-    sg_d=12.0, sg_dbs=25.0,                   # button face diameter: W-Cu switching / smooth backstop (mm) [OC freeze]
+    sg_d=12.0, sg_dbs=25.0,                   # SPHERE diameter: W-Cu switching (= stage-1 d_ball) / polished backstop (mm) [OC freeze]
     sg_s_ret=5.5, sg_s_load=4.75, sg_s_fire=5.5, sg_s_bs=5.5,   # spacings at alignment (mm); BS: [IR] (freeze TODO)
     sg_glat=1.0,                              # lateral gap for the I11 overlap law (design_synth) [IR]
-    sg_prot=2.0, sg_pmin=2.0,                 # rotor-tip protrusion / minimum stator-button protrusion (mm): the
-                                              # head of a domed W-Cu button stands this proud of its face [IR]
+    sg_expose=0.5,                            # spherical electrodes (TMD 2026-10-02): every sphere stands at least this
+                                              # fraction of its diameter proud of its band face (0.5 = a hemisphere; the
+                                              # rest sits in a socket) [IR]
+    sg_stem=4.0,                              # stem diameter, sphere centre -> the lead plane (mm) [IR]
     sg_wall=1.0,                              # minimum carrier wall left under a recessed band (mm) [IR]
-    sg_seat=3.0,                              # button / tip shank seated into its carrier below the band face (mm) [IR]
+    sg_seat=3.0,                              # stem seated below the deeper of the face / the socket bottom (mm) [IR]
     sg_rod=3.0,                               # lead diameter (embedded in the carrier, then along the frame) (mm) [IR]
     sg_cover=2.0,                             # insulation (carrier) kept around every embedded lead (mm) [IR]
     sg_chord=15.0,                            # embedded leads change sector on a ring this far inside the carrier edge (mm) [IR]
@@ -135,16 +137,28 @@ def _fp(name, node, cap, rin, rout, starts, w):
 
 
 def band_needs(g, P):
-    """(side, band) -> the bare face gap D (its capacitor gap + both foils), the axial room the band needs (largest
-    spacing + both protrusions) and the recess per face. It depends only on the gaps, not on the carriers, so the
-    Z-stretch can be solved before the stack is laid out [OC geometry]."""
+    """(side, band) -> the bare face gap D (its capacitor gap + both foils), the face-to-face gap G its SPHERES need,
+    the recess per face, each sphere's protrusion p (apex above its face) and the socket depth e = d - p of the
+    deepest sphere on each side. Every sphere shows at least sg_expose of its diameter: the rotor tip exactly that, and
+    each gap's stator sphere as much as its spacing leaves (G - s - p_rot; a sphere showing more than its diameter
+    stands on its stem above the face). It depends only on the gaps, so the Z-stretch is solved before the stack
+    is laid out [OC geometry]."""
     D = dict(bar=g["cx_air"] + 2 * g["cx_mica"] + 2 * g["t_foil"], rail=P["g_vMm"] + 2 * g["t_foil"])
     out = {}
     for (side, band) in BANDS:
-        s_max = max(g[SPACING_KEY[x[1]]] for x in GAPS if x[4] == side and x[5] == band)
-        need = s_max + g["sg_prot"] + g["sg_pmin"]
-        out[(side, band)] = dict(D=D[band], s_max=s_max, need=need, rec=max(0.0, need - D[band]) / 2)
+        mine = [x for x in GAPS if x[4] == side and x[5] == band]
+        p_rot = g["sg_expose"] * g["sg_d"]
+        need = max(g[SPACING_KEY[x[1]]] + p_rot + g["sg_expose"] * sphere_d(g, x[1]) for x in mine)
+        G = max(D[band], need)
+        p = {x[0]: G - g[SPACING_KEY[x[1]]] - p_rot for x in mine}
+        out[(side, band)] = dict(D=D[band], need=need, G=G, rec=max(0.0, need - D[band]) / 2, p_rot=p_rot, p=p,
+                                 e_st=max(max(0.0, sphere_d(g, x[1]) - p[x[0]]) for x in mine),
+                                 e_rot=max(0.0, g["sg_d"] - p_rot))
     return out
+
+
+def sphere_d(g, cls):
+    return g["sg_dbs"] if cls == "backstop" else g["sg_d"]
 
 
 def far_cover(g, c):
@@ -160,17 +174,17 @@ def far_cover(g, c):
 
 def zstretch(g, P):
     """Every carrier's thickness along z: its base value, or -- zs_mode 'auto' -- stretched to what it must hold
-    [IR margins]: a band host keeps recess + button seat + lead + its far cover; a carrier that only receives leads
+    [IR margins]: a band host keeps recess + sphere socket + stem seat + lead + its far cover; a carrier that only receives leads
     keeps lead + 2 x cover. The two foils of a node are joined by explicit links, so this costs no capacitance."""
     need = band_needs(g, P)
     req = {k: (0.0, "") for k in CARRIER_BASE}
     for (side, band), (rc, rfoil, sc) in BANDS.items():
         n = need[(side, band)]
-        for c in (rc, sc):
+        for c, e in ((rc, n["e_rot"]), (sc, n["e_st"])):
             fc = far_cover(g, c)
-            r = n["rec"] + g["sg_seat"] + g["sg_rod"] + fc
-            why = (f"{side} {band} band: recess {_mm(n['rec'])} + seat {_mm(g['sg_seat'])} + lead {_mm(g['sg_rod'])} "
-                   f"+ cover {_mm(fc)}")
+            r = n["rec"] + e + g["sg_seat"] + g["sg_rod"] + fc
+            why = (f"{side} {band} band: recess {_mm(n['rec'])} + socket {_mm(e)} + seat {_mm(g['sg_seat'])} "
+                   f"+ lead {_mm(g['sg_rod'])} + cover {_mm(fc)}")
             if r > req[c][0] + 1e-9:
                 req[c] = (r, why)
     mid = g["sg_rod"] + 2 * g["sg_cover"]
@@ -319,9 +333,9 @@ def _zr(it):
 # Rotor and stator COUNTER-rotate, so any rotor part and any stator part at overlapping radius must be separated
 # axially (their revolved (r, z) envelopes may not overlap: sweep_check). A rotary gap therefore lives in the axial
 # gap between the one rotor face and the one stator face it joins:
-#   bar gaps (load / fire / backstop): island-bar tip on the FLANGE <-> button on ND2 / ND3, in the Cx gap,
+#   bar gaps (load / fire / backstop): island-bar tip on the FLANGE <-> sphere on ND2 / ND3, in the Cx gap,
 #                                      in a band beyond the bars and pickups;
-#   rail gaps (SG1 / SG2):            rail tip on the rotor DISC (node 5 / 6) <-> button on ND1 / ND4, in the
+#   rail gaps (SG1 / SG2):            rail tip on the rotor DISC (node 5 / 6) <-> sphere on ND1 / ND4, in the
 #                                      C1 / C2 gap, in a band beyond the plates.
 # Buttons of a node foreign to their carrier (SG4a node 4 on ND2, SG3a node 1 on ND3: the CROSSOVERS over the
 # stator; SG1 node 2 on ND1, SG2 node 3 on ND4: neighbour hops) are fed by a lead embedded in the carrier to its
@@ -436,19 +450,21 @@ def sparkgaps(design):
         rcar, scar = byid[rc], byid[sc]
         zr, zs = _face_toward(rcar, scar), _face_toward(scar, rcar)
         D = abs(zs - zr)                                   # bare face to bare face (gap + both foils)
-        rec = max(0.0, needs[(side, band)]["need"] - D) / 2   # recess each face by half the shortfall
+        nb = needs[(side, band)]
+        rec = max(0.0, nb["need"] - D) / 2                 # recess each face by half the shortfall
         sgn = 1.0 if zs > zr else -1.0                     # direction rotor face -> stator face
         Fr, Fs = zr - sgn * rec, zs + sgn * rec            # recessed band faces
         G = abs(Fs - Fr)
         r_c = g["sg_rbar"] if band == "bar" else g["sg_rrail"]
         mine = [x for x in GAPS if x[4] == side and x[5] == band]
         dmax = max(g["sg_dbs"] if x[1] == "backstop" else g["sg_d"] for x in mine)
-        r0, r1 = r_c - dmax / 2 - 2.0, r_c + dmax / 2 + 2.0   # band ring (2 mm margin around the buttons)
+        r0, r1 = r_c - dmax / 2 - 2.0, r_c + dmax / 2 + 2.0   # band ring (2 mm margin around the spheres)
         bands[(side, band)] = dict(side=side, band=band, rotor_carrier=rc, stator_carrier=sc, r=r_c, r0=r0, r1=r1,
-                                   D=D, G=G, recess=rec, Fr=Fr, Fs=Fs, sgn=sgn, rotor_node=fp[rfoil]["node"])
-        # the lead plane of a band host: below the button seat (into the carrier, away from the gap)
-        lead_z[sc] = Fs + sgn * (g["sg_seat"] + rod)
-        lead_z[rc] = Fr - sgn * (g["sg_seat"] + rod)
+                                   D=D, G=G, recess=rec, Fr=Fr, Fs=Fs, sgn=sgn, rotor_node=fp[rfoil]["node"],
+                                   p_rot=nb["p_rot"], e_st=nb["e_st"], e_rot=nb["e_rot"])
+        # the lead plane of a band host: below the deepest socket + the stem seat (into the carrier, away from the gap)
+        lead_z[sc] = Fs + sgn * (nb["e_st"] + g["sg_seat"] + rod)
+        lead_z[rc] = Fr - sgn * (nb["e_rot"] + g["sg_seat"] + rod)
         if rec > 0:
             recesses.append(dict(carrier=rc, r0=r0, r1=r1, depth=rec, face=("z1" if sgn > 0 else "z0")))
             recesses.append(dict(carrier=sc, r0=r0, r1=r1, depth=rec, face=("z0" if sgn > 0 else "z1")))
@@ -475,14 +491,16 @@ def sparkgaps(design):
                 continue
             out.append(dict(kind="rod", name=f"{name}{chr(97 + len(out))}", gap=gap, node=node, role="gap-lead",
                             p0=p0, p1=p1, r=rod, chains=chains, side=side, body=body, carrier=carrier[i] if isinstance(carrier, list) else carrier,
-                            embedded=embedded[i] if isinstance(embedded, list) else embedded,
+                            embedded=embedded[i] if isinstance(embedded, list) else embedded, riser=i == len(pts) - 2,
                             desc=f"{what[i] if isinstance(what, list) else what}"))
         return out
     for name, cls, snode, rot, side, band, stn in GAPS:
         b = bands[(side, band)]
         s_ = smap[cls]
         d_st = g["sg_dbs"] if cls == "backstop" else g["sg_d"]
-        p_st = b["G"] - s_ - g["sg_prot"]
+        p_st = b["G"] - s_ - b["p_rot"]
+        R_ = d_st / 2
+        e_ = d_st - p_st                                   # socket depth (< 0: the sphere stands on its stem)
         car = NODE_CARRIER[snode]; host = b["stator_carrier"]
         foreign = car != host
         crossover = foreign and SIDE_OF_CARRIER[car] != side
@@ -491,13 +509,18 @@ def sparkgaps(design):
         for k in range(SPOKES):
             a = stn + 60.0 * k
             ch = [f"btn-{name}-{k + 1}", host] + ([car] if foreign else [])
-            items.append(dict(kind="button", name=f"{name}_btn_{k + 1}", gap=name, node=snode, role="gap-stator",
-                              p0=_pol(b["r"], a, b["Fs"] + b["sgn"] * g["sg_seat"]), p1=_pol(b["r"], a, b["Fs"] - b["sgn"] * p_st),
-                              r=d_st / 2, chains=ch, side=side, body="stator", carrier=host,
-                              desc=f"{name} stator button {k + 1} of {SPOKES} ({cls}), node {snode}, {_mm(d_st)} mm "
-                                   f"{'smooth' if cls == 'backstop' else 'W-Cu'} on {host} at r{_mm(b['r'])} {_mm(a % 360.0)} deg, "
-                                   f"seated {_mm(g['sg_seat'])} mm, protrudes {_mm(p_st)} mm, gap {_mm(s_)} mm to the {rot} tip"
+            cen = _pol(b["r"], a, b["Fs"] - b["sgn"] * (p_st - R_))
+            items.append(dict(kind="sphere", name=f"{name}_sph_{k + 1}", gap=name, node=snode, role="gap-stator",
+                              c=cen, r=R_, chains=ch, side=side, body="stator", carrier=host,
+                              desc=f"{name} stator sphere {k + 1} of {SPOKES} ({cls}), node {snode}, {_mm(d_st)} mm "
+                                   f"{'polished' if cls == 'backstop' else 'W-Cu'} on {host} at r{_mm(b['r'])} {_mm(a % 360.0)} deg, "
+                                   f"apex {_mm(p_st)} mm proud, " + (f"{_mm(e_)} mm in its socket" if e_ >= 0 else f"on its stem {_mm(-e_)} mm above the face")
+                                   + f", gap {_mm(s_)} mm to the {rot} tip"
                                    + (f" - fed from {car}" + (" by a CROSSOVER over the stator" if crossover else "") if foreign else "")))
+            items.append(dict(kind="rod", name=f"{name}_stem_{k + 1}", gap=name, node=snode, role="gap-stem",
+                              p0=list(cen), p1=_pol(b["r"], a, hz), r=g["sg_stem"] / 2, chains=ch, side=side, body="stator",
+                              carrier=host, embedded=False,
+                              desc=f"{name} stem {k + 1} (node {snode}): sphere centre to the lead plane in {host}"))
             f = target(car, snode, cz)
             zf = 0.5 * (f["z0"] + f["z1"])
             nm = f"{name}_lead_{k + 1}"
@@ -519,11 +542,11 @@ def sparkgaps(design):
             for sgm in segs:
                 sgm["desc"] = f"{name} lead {k + 1} (node {snode}): " + sgm["desc"]
             items += segs
-            routes.append(dict(electrode=f"{name}_btn_{k + 1}", node=snode, foil=f["id"], carrier=car, end=list(pts[-1])))
+            routes.append(dict(electrode=f"{name}_sph_{k + 1}", node=snode, foil=f["id"], carrier=car, end=list(pts[-1])))
             if k == 0:
                 lead_len = sum(math.dist(x["p0"], x["p1"]) for x in segs)
         gaps.append(dict(name=name, cls=cls, stator_node=snode, rotor=rot, side=side, band=band, station=stn,
-                         spacing=s_, d_stator=d_st, d_rotor=g["sg_d"], r=b["r"], p_stator=p_st, p_rotor=g["sg_prot"],
+                         spacing=s_, d_stator=d_st, d_rotor=g["sg_d"], r=b["r"], p_stator=p_st, p_rotor=b["p_rot"], socket=e_,
                          host=host, carrier=car, foreign=foreign, crossover=crossover, lead_len=lead_len))
     for (side, band), b in bands.items():
         rc = b["rotor_carrier"]
@@ -535,12 +558,16 @@ def sparkgaps(design):
         for k in range(SPOKES):
             a = 60.0 * k                                   # tips at 0 mod 60 deg: fire angle = station angle [IR]
             ch = [f"tip-{side}-{band}", rc, rfoil]
-            items.append(dict(kind="button", name=f"{tipn}_{side}_{k + 1}", gap="", node=b["rotor_node"],
-                              role="gap-rotor", p0=_pol(b["r"], a, b["Fr"] - b["sgn"] * g["sg_seat"]), p1=_pol(b["r"], a, b["Fr"] + b["sgn"] * g["sg_prot"]),
-                              r=g["sg_d"] / 2, chains=ch, side=side, body=ROTOR_BODY[rc], carrier=rc,
+            cen = _pol(b["r"], a, b["Fr"] + b["sgn"] * (b["p_rot"] - g["sg_d"] / 2))
+            items.append(dict(kind="sphere", name=f"{tipn}_{side}_{k + 1}", gap="", node=b["rotor_node"],
+                              role="gap-rotor", c=cen, r=g["sg_d"] / 2, chains=ch, side=side, body=ROTOR_BODY[rc], carrier=rc,
                               desc=f"{'island bar' if bar else 'rail'} tip {k + 1} of {SPOKES} (node {b['rotor_node']}, {ROTOR_BODY[rc]}), "
-                                   f"{_mm(g['sg_d'])} mm W-Cu button on {rc} at r{_mm(b['r'])} {_mm(a)} deg, seated {_mm(g['sg_seat'])} mm, "
-                                   f"protrudes {_mm(g['sg_prot'])} mm"))
+                                   f"{_mm(g['sg_d'])} mm W-Cu sphere on {rc} at r{_mm(b['r'])} {_mm(a)} deg, apex {_mm(b['p_rot'])} mm proud, "
+                                   f"{_mm(g['sg_d'] - b['p_rot'])} mm in its socket"))
+            items.append(dict(kind="rod", name=f"{tipn}_{side}_stem_{k + 1}", gap="", node=b["rotor_node"], role="gap-stem",
+                              p0=list(cen), p1=_pol(b["r"], a, lead_z[rc]), r=g["sg_stem"] / 2, chains=ch, side=side,
+                              body=ROTOR_BODY[rc], carrier=rc, embedded=False,
+                              desc=f"{'island bar' if bar else 'rail'} tip {k + 1} stem (node {b['rotor_node']}): sphere centre to the lead plane in {rc}"))
             pts, w_in = _route(b["r"], a, lead_z[rc], f, zf, R_ch, run_of(f), w_sec, ins_mm)
             n_in = len(pts) - 1
             what = [f"in {rc}: {x}" for x in w_in]
@@ -592,11 +619,14 @@ def sweep_check(design, sg):
     for it in sg["items"]:
         if it["kind"] == "sector":
             e = (it["r_in"], it["r_out"], it["z0"], it["z1"])
+        elif it["kind"] == "sphere":
+            rc_, R_ = math.hypot(it["c"][0], it["c"][1]), it["r"]
+            e = (rc_ - R_, rc_ + R_, it["c"][2] - R_, it["c"][2] + R_)
         else:
             a, b = it["p0"], it["p1"]
             ra, rb = math.hypot(a[0], a[1]), math.hypot(b[0], b[1])
             rr = it["r"]
-            if math.hypot(a[0] - b[0], a[1] - b[1]) < 1e-9:   # axial button / riser / link: a disc of radius r about its axis
+            if math.hypot(a[0] - b[0], a[1] - b[1]) < 1e-9:   # axial stem / riser / link: a disc of radius r about its axis
                 e = (ra - rr, ra + rr, min(a[2], b[2]), max(a[2], b[2]))
             else:                                           # any other lead: its radial span (chords dip inward) +- r
                 e = (_seg_rmin(a, b) - rr, max(ra, rb) + rr, min(a[2], b[2]) - rr, max(a[2], b[2]) + rr)
@@ -693,8 +723,20 @@ def gap_checks(design, sg):
         b = sg["bands"][f"{x['side']}-{x['band']}"]
         worst = max(worst, abs(b["G"] - x["p_stator"] - x["p_rotor"] - x["spacing"]))
     res["spacing at alignment = the freeze table"] = (worst < 1e-9, "; ".join(f"{x['name']} {_mm(x['spacing'])}" for x in sg["gaps"]) + " mm")
-    pmin = min(x["p_stator"] for x in sg["gaps"])
-    res["every stator button stands proud of its face"] = (pmin >= g["sg_pmin"] - 1e-9, f"smallest protrusion {_mm(pmin)} mm")
+    ex = sorted(((x["p_stator"] / x["d_stator"], f"{x['name']} {_mm(x['p_stator'])} of {_mm(x['d_stator'])} mm") for x in sg["gaps"]),
+                key=lambda t: t[0])[0]
+    exr = min(b["p_rot"] / g["sg_d"] for b in sg["bands"].values())
+    res["every sphere shows at least its exposure above the face"] = (
+        min(ex[0], exr) >= g["sg_expose"] - 1e-9,
+        f"stator: least {ex[1]} ({_mm(100 * ex[0])} %), rotor tips {_mm(100 * exr)} % (>= {_mm(100 * g['sg_expose'])} %)")
+    wr, wn = 0.0, ""
+    for x in sg["gaps"]:
+        q = x["spacing"] / min(x["d_stator"], x["d_rotor"])
+        if q > wr + 1e-9:
+            wr, wn = q, x["name"]
+    res["sphere gaps in the uniform-field range (s <= 0.5 D, IEC 60052)"] = (wr <= 0.5 + 1e-9, f"largest s/D {_mm(wr)} ({wn})")
+    db = float(design["lock"].get("inputs", {}).get("d_ballMm", 12.0))
+    res["switching sphere = the stage-1 sphere-gap ball d_ball"] = (abs(g["sg_d"] - db) < 1e-9, f"{_mm(g['sg_d'])} vs d_ball {_mm(db)} mm")
     # recess material
     worst, det = float("inf"), "no recess needed"
     for rc in sg["recesses"]:
@@ -715,23 +757,20 @@ def gap_checks(design, sg):
         cl = (b["r"] - max(g["sg_d"], g["sg_dbs"] if band == "bar" else g["sg_d"]) / 2) - outer
         res[f"{side} {band} band clears the {what} (HV)"] = (cl >= need, f"r{_mm(b['r'])} band: {_mm(cl)} mm beyond r{_mm(outer)} (>= {_mm(need)})")
         res[f"{side} {band} band inside the carriers"] = (b["r1"] <= design["r_edge"] - 1e-9, f"band r{_mm(b['r0'])}-{_mm(b['r1'])} within R{_mm(design['r_edge'])}")
-    # cross-fire between stations on one band (tip aligned with one, distance to every other different-node button)
+    # cross-fire between stations on one band (tip aligned with one, distance to every other different-node sphere)
     worst_xf, det = float("inf"), ""
     for x in sg["gaps"]:
         b = sg["bands"][f"{x['side']}-{x['band']}"]
-        tip = _pol(x["r"], x["station"], b["Fr"] + b["sgn"] * g["sg_prot"])
+        tip = _pol(x["r"], x["station"], b["Fr"] + b["sgn"] * (x["p_rotor"] - x["d_rotor"] / 2))      # tip sphere centre
         for y in sg["gaps"]:
             if y is x or y["side"] != x["side"] or y["band"] != x["band"] or y["stator_node"] == x["stator_node"]:
                 continue
             for k in range(SPOKES):
-                c = _pol(y["r"], y["station"] + 60.0 * k, b["Fs"] - b["sgn"] * y["p_stator"])
-                dd = math.dist(tip, c)
-                lat = math.hypot(tip[0] - c[0], tip[1] - c[1])
-                # nearest-surface distance of two coaxial face-discs (radii d/2): lateral gap beyond the discs, else axial
-                surf = max(math.hypot(max(0.0, lat - x["d_rotor"] / 2 - y["d_stator"] / 2), abs(tip[2] - c[2])), 0.0)
+                c = _pol(y["r"], y["station"] + 60.0 * k, b["Fs"] - b["sgn"] * (y["p_stator"] - y["d_stator"] / 2))
+                surf = math.dist(tip, c) - x["d_rotor"] / 2 - y["d_stator"] / 2       # sphere to sphere
                 margin = surf - max(x["spacing"], y["spacing"])
                 if margin < worst_xf - 1e-9:
-                    worst_xf, det = margin, f"{x['name']} tip vs {y['name']} button: {_mm(surf)} mm"
+                    worst_xf, det = margin, f"{x['name']} tip vs {y['name']} sphere: {_mm(surf)} mm"
     res["no cross-firing to a different-node station"] = (worst_xf >= 0.5 * max(g["sg_s_load"], g["sg_s_fire"]),
                                                           f"tightest {det} (margin {_mm(worst_xf)} mm over its spacing)")
     ov = math.degrees((g["sg_d"] + 2 * g["sg_glat"]) / g["sg_rbar"])
@@ -792,8 +831,10 @@ def gap_checks(design, sg):
     res["embedded leads keep their cover inside the carrier"] = (w_cov >= g["sg_cover"] - 1e-9, f"tightest {d_cov} (>= {_mm(g['sg_cover'])})")
     res["leads clear different-node foils on their carrier"] = (w_own >= g["sg_cover"] - 1e-9, f"tightest {d_own} (>= {_mm(g['sg_cover'])})")
     # different-node conductors on one body (stator, or one rotor half): HV clearance
-    # (links are left out: each runs between its own node's two foils, inside their sector, shielded by them)
-    cond = [it for it in sg["items"] if it["kind"] in ("rod", "button") and it["role"] != "link"]
+    # (links and risers are left out: each ends in its own node's foil, inside that foil's sector, so it sees the
+    #  counter-electrode across the capacitor's own dielectric -- that is the capacitor, not a clearance)
+    cond = [dict(it, p0=it["c"], p1=it["c"]) if it["kind"] == "sphere" else it
+            for it in sg["items"] if it["kind"] in ("rod", "sphere") and it["role"] != "link" and not it.get("riser")]
     box = [(min(it["p0"][i], it["p1"][i]) - it["r"], max(it["p0"][i], it["p1"][i]) + it["r"]) for it in cond for i in range(3)]
     w_hv, d_hv = float("inf"), "none"
     for i, x in enumerate(cond):
@@ -808,7 +849,7 @@ def gap_checks(design, sg):
             dd = _seg_dist(x["p0"], x["p1"], y["p0"], y["p1"]) - x["r"] - y["r"]
             if dd < w_hv - 1e-9:
                 w_hv, d_hv = dd, f"{x['name']} (node {x['node']}) / {y['name']} (node {y['node']}): {_mm(dd)} mm"
-    res["different-node leads and buttons on one body keep the HV clearance"] = (w_hv >= need - 1e-9, f"tightest {d_hv} (>= {_mm(need)})")
+    res["different-node leads and spheres on one body keep the HV clearance"] = (w_hv >= need - 1e-9, f"tightest {d_hv} (>= {_mm(need)})")
     res["leads near foils of other carriers (info: breakdown model out of scope)"] = (True, f"closest {d_oth}")
     nl = {c: sum(1 for it in sg["items"] if it["role"] == "link" and it["carrier"] == c) for c in LINKS}
     res["equipotential links (info)"] = (True, ", ".join(f"{c} {n} x ({LINKS[c][0]} <-> {LINKS[c][1]})" for c, n in nl.items())
@@ -905,10 +946,12 @@ def parts(design):
                 base.update(shape="sector", material="Al foil", r_in=it["r_in"], r_out=it["r_out"], start_deg=it["start_deg"],
                             w_deg=it["w_deg"], z0=it["z0"], z1=it["z1"],
                             volume=0.5 * math.radians(it["w_deg"]) * (it["r_out"] ** 2 - it["r_in"] ** 2) * (it["z1"] - it["z0"]))
+            elif it["kind"] == "sphere":
+                base.update(shape="sphere", material="W-Cu sphere" if it["r"] <= 6.0 + 1e-9 else "polished sphere",
+                            c=list(it["c"]), r=it["r"], volume=4.0 / 3.0 * math.pi * it["r"] ** 3)
             else:
                 L = math.dist(it["p0"], it["p1"])
-                mat = ("Cu link" if it["role"] == "link" else "Cu lead") if it["kind"] == "rod" else (
-                    "W-Cu button" if it["r"] <= 6.0 + 1e-9 else "smooth button")
+                mat = {"link": "Cu link", "gap-stem": "Cu stem"}.get(it["role"], "Cu lead")
                 base.update(shape="rod", material=mat, p0=list(it["p0"]), p1=list(it["p1"]), r=it["r"],
                             volume=math.pi * it["r"] ** 2 * L)
             out.append(base)
