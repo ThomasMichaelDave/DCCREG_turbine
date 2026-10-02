@@ -53,7 +53,7 @@ GEOM_DEFAULTS = dict(
     ca_rin=110.0, ca_rout=175.0,              # mm (the pinned one is used; the other is solved) [OC DXF]
     ca_round=0.0,                             # manufacturing step on the solved dimension (mm or deg; 0 = exact)
     ca_margin=5.0,                            # dielectric overlap margin around the foil (mm, radial and arc) [IR]
-    # stack placeholders [IR]
+    # stack placeholders [IR]; the carrier thicknesses are the BASE (minimum) values -- see zs_mode
     t_foil=1.0, t_carrier=3.0, t_rotor=10.0, t_flange=6.0, t_septum=12.0,
     cx_air=3.0, cx_mica=0.3,                  # Cx gap: air + mica per face (freeze v0.10) [OC]
     r_bore=50.0,                              # stator carrier bore (mm), clears the hub/coil r28-76 bicone [IR]
@@ -65,13 +65,28 @@ GEOM_DEFAULTS = dict(
     sg_d=12.0, sg_dbs=25.0,                   # button face diameter: W-Cu switching / smooth backstop (mm) [OC freeze]
     sg_s_ret=5.5, sg_s_load=4.75, sg_s_fire=5.5, sg_s_bs=5.5,   # spacings at alignment (mm); BS: [IR] (freeze TODO)
     sg_glat=1.0,                              # lateral gap for the I11 overlap law (design_synth) [IR]
-    sg_prot=0.5, sg_pmin=0.5,                 # rotor-tip protrusion / minimum stator-button protrusion (mm) [IR]
+    sg_prot=2.0, sg_pmin=2.0,                 # rotor-tip protrusion / minimum stator-button protrusion (mm): the
+                                              # head of a domed W-Cu button stands this proud of its face [IR]
     sg_wall=1.0,                              # minimum carrier wall left under a recessed band (mm) [IR]
-    sg_tab=6.0,                               # width of the bar tab that carries a bar tip out to its band (mm) [IR]
+    sg_seat=3.0,                              # button / tip shank seated into its carrier below the band face (mm) [IR]
     sg_rod=3.0,                               # lead diameter (embedded in the carrier, then along the frame) (mm) [IR]
+    sg_cover=2.0,                             # insulation (carrier) kept around every embedded lead (mm) [IR]
+    sg_chord=15.0,                            # embedded leads change sector on a ring this far inside the carrier edge (mm) [IR]
     sg_frame=60.0,                            # stator lead frame radius = carrier edge + this (over the stator) [IR]
     sg_khv=2.0,                               # HV clearance >= k x the largest spacing, different nodes [IR]
+    # ---- Z-stretch (TMD 2026-10-02): the two foils of a node sit on the two faces of one carrier and are joined by
+    #      explicit links, so a carrier's thickness is free along z. 'auto' stretches every carrier to hold its gap
+    #      seats and embedded leads with the margins above; 'fixed' keeps the base thicknesses (checks then show the
+    #      shortfall). The capacitor gaps -- and so every C -- are untouched by the stretch [OC geometry] ----
+    zs_mode="auto",
 )
+CARRIER_BASE = {"ND1": "t_carrier", "ND2": "t_carrier", "ND3": "t_carrier", "ND4": "t_carrier", "A-disc": "t_rotor",
+                "B-disc": "t_rotor", "A-flange": "t_flange", "B-flange": "t_flange"}
+# the two same-node foils of a carrier, joined through it by one link per sector [IR]; ND2 / ND3 carry node 2 / 3
+# and the pickup n23 / n17, joined only through Lx4 / Lx3 (off-model)
+FAR_GAP = {"ND1": "ca_t", "ND2": "ca_t", "ND3": "ca_t", "ND4": "ca_t", "A-disc": "t_septum", "B-disc": "t_septum"}
+LINKS = {"ND1": ("C1_stator", "Ca_counter"), "ND4": ("C2_stator", "Cb_counter"),
+         "A-disc": ("C1_rotor", "CR_A"), "B-disc": ("C2_rotor", "CR_B")}
 
 
 def _round(x, step):
@@ -119,6 +134,58 @@ def _fp(name, node, cap, rin, rout, starts, w):
     return dict(name=name, node=node, cap=cap, r_in=rin, r_out=rout, starts=list(starts), w_deg=w)
 
 
+def band_needs(g, P):
+    """(side, band) -> the bare face gap D (its capacitor gap + both foils), the axial room the band needs (largest
+    spacing + both protrusions) and the recess per face. It depends only on the gaps, not on the carriers, so the
+    Z-stretch can be solved before the stack is laid out [OC geometry]."""
+    D = dict(bar=g["cx_air"] + 2 * g["cx_mica"] + 2 * g["t_foil"], rail=P["g_vMm"] + 2 * g["t_foil"])
+    out = {}
+    for (side, band) in BANDS:
+        s_max = max(g[SPACING_KEY[x[1]]] for x in GAPS if x[4] == side and x[5] == band)
+        need = s_max + g["sg_prot"] + g["sg_pmin"]
+        out[(side, band)] = dict(D=D[band], s_max=s_max, need=need, rec=max(0.0, need - D[band]) / 2)
+    return out
+
+
+def far_cover(g, c):
+    """The cover a band host keeps between its lead plane and its far face. Leads of different nodes in the two
+    carriers facing each other across a fixed gap (ND1 | Ca | ND2, ND4 | Cb | ND3; A-disc | septum | B-disc, which
+    co-rotate) may cross in plan, so both covers plus that gap must make the HV clearance [IR]."""
+    hv = g["sg_khv"] * max(g["sg_s_ret"], g["sg_s_load"], g["sg_s_fire"], g["sg_s_bs"])
+    fixed = FAR_GAP.get(c)
+    if fixed is None:
+        return g["sg_cover"]
+    return max(g["sg_cover"], (hv - (g[fixed] + 2 * g["t_foil"])) / 2)
+
+
+def zstretch(g, P):
+    """Every carrier's thickness along z: its base value, or -- zs_mode 'auto' -- stretched to what it must hold
+    [IR margins]: a band host keeps recess + button seat + lead + its far cover; a carrier that only receives leads
+    keeps lead + 2 x cover. The two foils of a node are joined by explicit links, so this costs no capacitance."""
+    need = band_needs(g, P)
+    req = {k: (0.0, "") for k in CARRIER_BASE}
+    for (side, band), (rc, rfoil, sc) in BANDS.items():
+        n = need[(side, band)]
+        for c in (rc, sc):
+            fc = far_cover(g, c)
+            r = n["rec"] + g["sg_seat"] + g["sg_rod"] + fc
+            why = (f"{side} {band} band: recess {_mm(n['rec'])} + seat {_mm(g['sg_seat'])} + lead {_mm(g['sg_rod'])} "
+                   f"+ cover {_mm(fc)}")
+            if r > req[c][0] + 1e-9:
+                req[c] = (r, why)
+    mid = g["sg_rod"] + 2 * g["sg_cover"]
+    for x in GAPS:
+        c = NODE_CARRIER[x[2]]
+        if mid > req[c][0] + 1e-9:
+            req[c] = (mid, f"lead at mid-plane: {_mm(g['sg_rod'])} + 2 x cover {_mm(g['sg_cover'])}")
+    out = {}
+    for k, base_key in CARRIER_BASE.items():
+        base = g[base_key]; r, why = req[k]
+        t = max(base, r) if g["zs_mode"] == "auto" else base
+        out[k] = dict(base=base, req=r, t=t, why=why, stretched=t > base + 1e-9)
+    return out
+
+
 def build(locked, geom=None):
     """locked: the stage-1 lock record (inputs, ladder values, z). Returns the full geometry design (JSON-safe)."""
     g = dict(GEOM_DEFAULTS); g.update(geom or {})
@@ -158,8 +225,10 @@ def build(locked, geom=None):
     )
     # ---- axial stack (z up, mm): a strict layer sequence from the septum outward, foils as their own layers
     #      (every gap value is foil-to-foil) [IR]; side A at z < 0, side B mirrored at z > 0 ----
-    tf, tc = g["t_foil"], g["t_carrier"]
+    tf = g["t_foil"]
     gv, tcx = P["g_vMm"], g["cx_air"] + 2 * g["cx_mica"]
+    zs = zstretch(g, P)
+    tc = {k: v["t"] for k, v in zs.items()}
     cxm = f"air {g['cx_air']:g} + mica {g['cx_mica']:g}/face"
 
     def C(id_, kind, node, t, rin):
@@ -170,16 +239,16 @@ def build(locked, geom=None):
 
     def G(id_, cap, t, medium, footprint=None, margin=0.0):
         return dict(id=id_, kind="gap", cap=cap, t=t, medium=medium, footprint=footprint, margin=margin)
-    seqA = [F("CR_A"), C("A-disc", "rotor", "5", g["t_rotor"], 0.0), F("C1_rotor"), G("C1-gap", "C1", gv, "air"),
-            F("C1_stator"), C("ND1", "stator", "1", tc, g["r_bore"]), F("Ca_counter"),
+    seqA = [F("CR_A"), C("A-disc", "rotor", "5", tc["A-disc"], 0.0), F("C1_rotor"), G("C1-gap", "C1", gv, "air"),
+            F("C1_stator"), C("ND1", "stator", "1", tc["ND1"], g["r_bore"]), F("Ca_counter"),
             G("Ca-diel", "Ca", ca["t"], ca["diel"], "Ca_el", g["ca_margin"]), F("Ca_el"),
-            C("ND2", "stator", "2", tc, g["r_bore"]), F("Cx4_pickup"), G("Cx4-gap", "Cx4", tcx, cxm),
-            F("Cx4_bars"), C("A-flange", "rotor-flange", "8 (floating on A)", g["t_flange"], 0.0)]
-    seqB = [F("CR_B"), C("B-disc", "rotor", "6", g["t_rotor"], 0.0), F("C2_rotor"), G("C2-gap", "C2", gv, "air"),
-            F("C2_stator"), C("ND4", "stator", "4", tc, g["r_bore"]), F("Cb_counter"),
+            C("ND2", "stator", "2", tc["ND2"], g["r_bore"]), F("Cx4_pickup"), G("Cx4-gap", "Cx4", tcx, cxm),
+            F("Cx4_bars"), C("A-flange", "rotor-flange", "8 (floating on A)", tc["A-flange"], 0.0)]
+    seqB = [F("CR_B"), C("B-disc", "rotor", "6", tc["B-disc"], 0.0), F("C2_rotor"), G("C2-gap", "C2", gv, "air"),
+            F("C2_stator"), C("ND4", "stator", "4", tc["ND4"], g["r_bore"]), F("Cb_counter"),
             G("Cb-diel", "Cb", cb["t"], cb["diel"], "Cb_el", g["ca_margin"]), F("Cb_el"),
-            C("ND3", "stator", "3", tc, g["r_bore"]), F("Cx3_pickup"), G("Cx3-gap", "Cx3", tcx, cxm),
-            F("Cx3_bars"), C("B-flange", "rotor-flange", "7 (floating on B)", g["t_flange"], 0.0)]
+            C("ND3", "stator", "3", tc["ND3"], g["r_bore"]), F("Cx3_pickup"), G("Cx3-gap", "Cx3", tcx, cxm),
+            F("Cx3_bars"), C("B-flange", "rotor-flange", "7 (floating on B)", tc["B-flange"], 0.0)]
     h = g["t_septum"] / 2
     stack = [dict(G("septum", "C_R", g["t_septum"], "garolite"), z0=-h, z1=h, side="mid", r_in=0.0, r_out=r_edge)]
     for side, seq, sgn in (("A", seqA, -1), ("B", seqB, +1)):
@@ -192,8 +261,10 @@ def build(locked, geom=None):
             stack.append(it); zz += it["t"]
     stack.sort(key=lambda it: it["z0"])
     foils = [it for it in stack if it["kind"] == "foil"]
+    z_base = stack[-1]["z1"] - stack[0]["z0"] - sum(tc[k] - g[CARRIER_BASE[k]] for k in CARRIER_BASE)
     design = dict(schema=SCHEMA, units="mm", lock=dict(locked), geom=g, Ca=ca, Cb=cb, footprints=fp,
-                  stack=stack, foils=foils, z_total=stack[-1]["z1"] - stack[0]["z0"], r_edge=r_edge)
+                  stack=stack, foils=foils, z_total=stack[-1]["z1"] - stack[0]["z0"], r_edge=r_edge,
+                  zstretch=zs, z_base=z_base)
     design["sparkgaps"] = sparkgaps(design)
     design["checks"] = checks(design)
     for k, v in design["sparkgaps"]["checks"].items():
@@ -274,6 +345,7 @@ SPACING_KEY = {"return": "sg_s_ret", "load": "sg_s_load", "fire": "sg_s_fire", "
 # (side, band) -> (rotor carrier, rotor foil whose node the tip carries, stator carrier)
 BANDS = {("A", "bar"): ("A-flange", "Cx4_bars", "ND2"), ("A", "rail"): ("A-disc", "C1_rotor", "ND1"),
          ("B", "bar"): ("B-flange", "Cx3_bars", "ND3"), ("B", "rail"): ("B-disc", "C2_rotor", "ND4")}
+BODY_OF = {"stator": "stator", "rotor A": "rotor", "rotor B": "rotor"}      # A and B co-rotate: one body for HV
 ROTOR_BODY = {"A-disc": "rotor A", "A-flange": "rotor A", "B-disc": "rotor B", "B-flange": "rotor B"}
 SPOKES = 6                                       # each gap x 6, every 60 deg (freeze §5)
 
@@ -288,33 +360,124 @@ def _face_toward(c, other):
     return c["z1"] if other["z0"] >= c["z1"] - 1e-9 else c["z0"]
 
 
+def _sdeg(x):
+    """x wrapped to [-180, 180) degrees (same arithmetic as the JS mirror)."""
+    return x - 360.0 * math.floor((x + 180.0) / 360.0)
+
+
+def _nearest_inside(a, starts, w, ins):
+    """The angle nearest to a that lies inside one of the sectors (start, width w) by at least ins degrees
+    (a itself when it already does). Unwrapped about a; ties go to the first sector."""
+    half = max(0.0, w / 2 - ins)
+    best = None
+    for s0 in starts:
+        d = _sdeg(a - (s0 + w / 2))
+        cl = min(half, max(-half, d))
+        if best is None or abs(d - cl) < abs(best) - 1e-9:
+            best = d - cl
+    return a - best if best is not None else a
+
+
+def _route(r0, a0, z, foil, zf, R_ch, run_starts, w_run, ins_mm):
+    """An embedded lead from (r0, a0) at depth z to foil (riser to its mid-plane zf) [IR routing]: radial runs are
+    made in the sectors of the OTHER parity (run_starts), where the facing carriers hold no counter-electrode of
+    this one; sector changes happen on the chord ring R_ch (beyond every electrode) or under the target foil
+    itself. Returns the polyline as (r, a, z) points and one description per segment."""
+    r_t = foil["r_out"] - min(10.0, (foil["r_out"] - foil["r_in"]) / 2)
+    ins = math.degrees(ins_mm / r_t)
+    pts, what = [(r0, a0, z)], []
+
+    def arc(r, a_from, a_to, txt):
+        n = max(1, math.ceil(abs(a_to - a_from) / 10.0 - 1e-9))
+        for i in range(1, n + 1):
+            pts.append((r, a_from + (a_to - a_from) * i / n, z)); what.append(txt)
+    ar = _nearest_inside(a0, run_starts, w_run, ins)
+    if abs(ar - a0) > 1e-9:
+        pts.append((R_ch, a0, z)); what.append(f"radial to the chord ring R{_mm(R_ch)}")
+        arc(R_ch, a0, ar, f"round the chord ring to {_mm(_m360(ar))} deg")
+    at = _nearest_inside(ar, foil["starts"], foil["w_deg"], ins)
+    pts.append((r_t, ar, z)); what.append(f"radial to r{_mm(r_t)} at {_mm(_m360(ar))} deg")
+    if abs(at - ar) > 1e-9:
+        arc(r_t, ar, at, f"under {foil['id']} to {_mm(_m360(at))} deg")
+    pts.append((r_t, at, zf)); what.append(f"riser to {foil['id']} (node {foil['node']})")
+    return pts, what
+
+
+def _foil_carriers(st):
+    """foil id -> the carrier it lies on (its neighbour in the stack)."""
+    out = {}
+    for i, it in enumerate(st):
+        if it["kind"] == "foil":
+            nb = [st[j] for j in (i - 1, i + 1) if 0 <= j < len(st) and st[j]["kind"] in CARRIER_KINDS]
+            out[it["id"]] = nb[0]["id"] if nb else ""
+    return out
+
+
 def sparkgaps(design):
     g = design["geom"]; st = design["stack"]; fp = design["footprints"]
     byid = {it["id"]: it for it in st}
-    R_frame = design["r_edge"] + g["sg_frame"]
+    on = _foil_carriers(st)
+    R_e = design["r_edge"]
+    R_frame = R_e + g["sg_frame"]
+    R_ch = R_e - g["sg_chord"]
     rod = g["sg_rod"] / 2
+    ins_mm = rod + g["sg_cover"]
     smap = {cls: g[k] for cls, k in SPACING_KEY.items()}
-    bands, recesses = {}, []
+    w_sec = 360.0 / design["lock"]["plates"]["N_sec"]
+    grid = {"odd": [w_sec + 2 * w_sec * k for k in range(int(design["lock"]["plates"]["N_sec"]) // 2)],
+            "even": [2 * w_sec * k for k in range(int(design["lock"]["plates"]["N_sec"]) // 2)]}
+
+    def run_of(foil):                                  # the grid sectors of the other parity than this foil
+        c = foil["starts"][0] + foil["w_deg"] / 2
+        return grid["even"] if int(math.floor(_m360(c) / w_sec + 1e-9)) % 2 else grid["odd"]
+    needs = band_needs(g, design["lock"]["plates"])
+    bands, recesses, lead_z = {}, [], {}
     for (side, band), (rc, rfoil, sc) in BANDS.items():
         rcar, scar = byid[rc], byid[sc]
         zr, zs = _face_toward(rcar, scar), _face_toward(scar, rcar)
         D = abs(zs - zr)                                   # bare face to bare face (gap + both foils)
-        mine = [x for x in GAPS if x[4] == side and x[5] == band]
-        s_max = max(smap[x[1]] for x in mine)
-        need = s_max + g["sg_prot"] + g["sg_pmin"]
-        rec = max(0.0, need - D) / 2                       # recess each face by half the shortfall
+        rec = max(0.0, needs[(side, band)]["need"] - D) / 2   # recess each face by half the shortfall
         sgn = 1.0 if zs > zr else -1.0                     # direction rotor face -> stator face
         Fr, Fs = zr - sgn * rec, zs + sgn * rec            # recessed band faces
         G = abs(Fs - Fr)
         r_c = g["sg_rbar"] if band == "bar" else g["sg_rrail"]
+        mine = [x for x in GAPS if x[4] == side and x[5] == band]
         dmax = max(g["sg_dbs"] if x[1] == "backstop" else g["sg_d"] for x in mine)
         r0, r1 = r_c - dmax / 2 - 2.0, r_c + dmax / 2 + 2.0   # band ring (2 mm margin around the buttons)
         bands[(side, band)] = dict(side=side, band=band, rotor_carrier=rc, stator_carrier=sc, r=r_c, r0=r0, r1=r1,
                                    D=D, G=G, recess=rec, Fr=Fr, Fs=Fs, sgn=sgn, rotor_node=fp[rfoil]["node"])
+        # the lead plane of a band host: below the button seat (into the carrier, away from the gap)
+        lead_z[sc] = Fs + sgn * (g["sg_seat"] + rod)
+        lead_z[rc] = Fr - sgn * (g["sg_seat"] + rod)
         if rec > 0:
             recesses.append(dict(carrier=rc, r0=r0, r1=r1, depth=rec, face=("z1" if sgn > 0 else "z0")))
             recesses.append(dict(carrier=sc, r0=r0, r1=r1, depth=rec, face=("z0" if sgn > 0 else "z1")))
-    gaps, items = [], []
+    for c in CARRIER_BASE:
+        lead_z.setdefault(c, 0.5 * (byid[c]["z0"] + byid[c]["z1"]))
+
+    def target(carrier, node, z):
+        """the foil of this node on this carrier nearest the lead plane (ties: stack order)"""
+        best = None
+        for it in st:
+            if it["kind"] == "foil" and on[it["id"]] == carrier and it["node"] == node:
+                dz = abs(0.5 * (it["z0"] + it["z1"]) - z)
+                if best is None or dz < best[0] - 1e-9:
+                    best = (dz, it)
+        return best[1]
+    gaps, items, routes = [], [], []
+
+    def polyline(pts, name, gap, node, chains, side, body, carrier, what, embedded):
+        """rod items along a polyline of (r, a, z) points; letters a, b, ... in order"""
+        out = []
+        for i in range(len(pts) - 1):
+            p0, p1 = _pol(*pts[i]), _pol(*pts[i + 1])
+            if math.dist(p0, p1) < 1e-9:
+                continue
+            out.append(dict(kind="rod", name=f"{name}{chr(97 + len(out))}", gap=gap, node=node, role="gap-lead",
+                            p0=p0, p1=p1, r=rod, chains=chains, side=side, body=body, carrier=carrier[i] if isinstance(carrier, list) else carrier,
+                            embedded=embedded[i] if isinstance(embedded, list) else embedded,
+                            desc=f"{what[i] if isinstance(what, list) else what}"))
+        return out
     for name, cls, snode, rot, side, band, stn in GAPS:
         b = bands[(side, band)]
         s_ = smap[cls]
@@ -323,54 +486,83 @@ def sparkgaps(design):
         car = NODE_CARRIER[snode]; host = b["stator_carrier"]
         foreign = car != host
         crossover = foreign and SIDE_OF_CARRIER[car] != side
-        hz = 0.5 * (byid[host]["z0"] + byid[host]["z1"]); cz = 0.5 * (byid[car]["z0"] + byid[car]["z1"])
-        lead_len = ((design["r_edge"] - b["r"]) + 2 * g["sg_frame"] + abs(cz - hz)) if foreign else 0.0
-        gaps.append(dict(name=name, cls=cls, stator_node=snode, rotor=rot, side=side, band=band, station=stn,
-                         spacing=s_, d_stator=d_st, d_rotor=g["sg_d"], r=b["r"], p_stator=p_st, p_rotor=g["sg_prot"],
-                         host=host, carrier=car, foreign=foreign, crossover=crossover, lead_len=lead_len))
+        hz, cz = lead_z[host], lead_z[car]
+        lead_len = 0.0
         for k in range(SPOKES):
             a = stn + 60.0 * k
             ch = [f"btn-{name}-{k + 1}", host] + ([car] if foreign else [])
             items.append(dict(kind="button", name=f"{name}_btn_{k + 1}", gap=name, node=snode, role="gap-stator",
-                              p0=_pol(b["r"], a, b["Fs"]), p1=_pol(b["r"], a, b["Fs"] - b["sgn"] * p_st), r=d_st / 2,
-                              chains=ch, side=side, body="stator",
+                              p0=_pol(b["r"], a, b["Fs"] + b["sgn"] * g["sg_seat"]), p1=_pol(b["r"], a, b["Fs"] - b["sgn"] * p_st),
+                              r=d_st / 2, chains=ch, side=side, body="stator", carrier=host,
                               desc=f"{name} stator button {k + 1} of {SPOKES} ({cls}), node {snode}, {_mm(d_st)} mm "
                                    f"{'smooth' if cls == 'backstop' else 'W-Cu'} on {host} at r{_mm(b['r'])} {_mm(a % 360.0)} deg, "
-                                   f"protrudes {_mm(p_st)} mm, gap {_mm(s_)} mm to the {rot} tip"
+                                   f"seated {_mm(g['sg_seat'])} mm, protrudes {_mm(p_st)} mm, gap {_mm(s_)} mm to the {rot} tip"
                                    + (f" - fed from {car}" + (" by a CROSSOVER over the stator" if crossover else "") if foreign else "")))
+            f = target(car, snode, cz)
+            zf = 0.5 * (f["z0"] + f["z1"])
+            nm = f"{name}_lead_{k + 1}"
             if foreign:
-                R_e = design["r_edge"]
-                for nm, p0, p1, what in (
-                        (f"{name}_lead_{k + 1}a", _pol(b["r"], a, hz), _pol(R_e, a, hz), f"embedded in {host} to its rim"),
-                        (f"{name}_lead_{k + 1}b", _pol(R_e, a, hz), _pol(R_frame, a, hz), "out to the stator frame"),
-                        (f"{name}_lead_{k + 1}c", _pol(R_frame, a, hz), _pol(R_frame, a, cz),
-                         f"along the frame R{_mm(R_frame)} to {car}" + (" - CROSSOVER over the stator" if crossover else "")),
-                        (f"{name}_lead_{k + 1}d", _pol(R_frame, a, cz), _pol(R_e, a, cz), f"into the {car} rim (node {snode})")):
-                    items.append(dict(kind="rod", name=nm, gap=name, node=snode, role="gap-lead", p0=p0, p1=p1, r=rod,
-                                      chains=ch, side=side, body="stator",
-                                      desc=f"{name} lead {k + 1} (node {snode}): {what}"))
+                inner, w_in = _route(R_e, a, cz, f, zf, R_ch, run_of(f), w_sec, ins_mm)
+                pts = [(b["r"], a, hz), (R_e, a, hz), (R_frame, a, hz), (R_frame, a, cz)] + inner
+                n_in = len(inner) - 1
+                carriers = [host, host, host] + [car] * (n_in + 1)
+                emb = [True, False, False, False] + [True] * (n_in - 1) + [False]      # risers are not "embedded runs"
+                what = ([f"embedded in {host}, radial to its rim", "out to the stator frame",
+                         f"along the frame R{_mm(R_frame)} to {car}" + (" - CROSSOVER over the stator" if crossover else ""),
+                         f"into the {car} rim"] + [f"in {car}: {x}" for x in w_in])
+            else:
+                pts, w_in = _route(b["r"], a, hz, f, zf, R_ch, run_of(f), w_sec, ins_mm)
+                n_in = len(pts) - 1
+                carriers, emb = host, [True] * (n_in - 1) + [False]
+                what = [f"in {host}: {x}" for x in w_in]
+            segs = polyline(pts, nm, name, snode, ch, side, "stator", carriers, what, emb)
+            for sgm in segs:
+                sgm["desc"] = f"{name} lead {k + 1} (node {snode}): " + sgm["desc"]
+            items += segs
+            routes.append(dict(electrode=f"{name}_btn_{k + 1}", node=snode, foil=f["id"], carrier=car, end=list(pts[-1])))
+            if k == 0:
+                lead_len = sum(math.dist(x["p0"], x["p1"]) for x in segs)
+        gaps.append(dict(name=name, cls=cls, stator_node=snode, rotor=rot, side=side, band=band, station=stn,
+                         spacing=s_, d_stator=d_st, d_rotor=g["sg_d"], r=b["r"], p_stator=p_st, p_rotor=g["sg_prot"],
+                         host=host, carrier=car, foreign=foreign, crossover=crossover, lead_len=lead_len))
     for (side, band), b in bands.items():
         rc = b["rotor_carrier"]
         bar = band == "bar"
         rfoil = BANDS[(side, band)][1]
+        tipn = "bartip" if bar else "railtip"
+        f = target(rc, b["rotor_node"], lead_z[rc])
+        zf = 0.5 * (f["z0"] + f["z1"])
         for k in range(SPOKES):
             a = 60.0 * k                                   # tips at 0 mod 60 deg: fire angle = station angle [IR]
             ch = [f"tip-{side}-{band}", rc, rfoil]
-            items.append(dict(kind="button", name=f"{'bartip' if bar else 'railtip'}_{side}_{k + 1}", gap="", node=b["rotor_node"],
-                              role="gap-rotor", p0=_pol(b["r"], a, b["Fr"]), p1=_pol(b["r"], a, b["Fr"] + b["sgn"] * g["sg_prot"]),
-                              r=g["sg_d"] / 2, chains=ch, side=side, body=ROTOR_BODY[rc],
+            items.append(dict(kind="button", name=f"{tipn}_{side}_{k + 1}", gap="", node=b["rotor_node"],
+                              role="gap-rotor", p0=_pol(b["r"], a, b["Fr"] - b["sgn"] * g["sg_seat"]), p1=_pol(b["r"], a, b["Fr"] + b["sgn"] * g["sg_prot"]),
+                              r=g["sg_d"] / 2, chains=ch, side=side, body=ROTOR_BODY[rc], carrier=rc,
                               desc=f"{'island bar' if bar else 'rail'} tip {k + 1} of {SPOKES} (node {b['rotor_node']}, {ROTOR_BODY[rc]}), "
-                                   f"{_mm(g['sg_d'])} mm W-Cu button on {rc} at r{_mm(b['r'])} {_mm(a)} deg, protrudes {_mm(g['sg_prot'])} mm"))
-            if bar:
-                f0 = fp[rfoil]
-                w = math.degrees(g["sg_tab"] / b["r"])
-                foil = byid[rfoil]
-                items.append(dict(kind="sector", name=f"bartab_{side}_{k + 1}", gap="", node=b["rotor_node"], role="gap-rotor",
-                                  r_in=f0["r_out"] - 2.0, r_out=b["r"], start_deg=a - w / 2, w_deg=w,
-                                  z0=foil["z0"], z1=foil["z1"], chains=ch, side=side, body=ROTOR_BODY[rc],
-                                  desc=f"island bar {b['rotor_node']} tab {k + 1}: carries the bar out from r{_mm(f0['r_out'])} to its tip "
-                                       f"at r{_mm(b['r'])}, {_mm(g['sg_tab'])} mm wide, on {rc}"))
-    out = dict(R_frame=R_frame, bands={f"{k[0]}-{k[1]}": v for k, v in bands.items()}, recesses=recesses, gaps=gaps, items=items)
+                                   f"{_mm(g['sg_d'])} mm W-Cu button on {rc} at r{_mm(b['r'])} {_mm(a)} deg, seated {_mm(g['sg_seat'])} mm, "
+                                   f"protrudes {_mm(g['sg_prot'])} mm"))
+            pts, w_in = _route(b["r"], a, lead_z[rc], f, zf, R_ch, run_of(f), w_sec, ins_mm)
+            n_in = len(pts) - 1
+            what = [f"in {rc}: {x}" for x in w_in]
+            segs = polyline(pts, f"{tipn}_{side}_lead_{k + 1}", "", b["rotor_node"], ch, side, ROTOR_BODY[rc], rc, what,
+                            [True] * (n_in - 1) + [False])
+            for sgm in segs:
+                sgm["desc"] = f"{'island bar' if bar else 'rail'} tip {k + 1} lead (node {b['rotor_node']}): " + sgm["desc"]
+            items += segs
+            routes.append(dict(electrode=f"{tipn}_{side}_{k + 1}", node=b["rotor_node"], foil=f["id"], carrier=rc, end=list(pts[-1])))
+    # equipotential links: the two same-node foils of a carrier, one link per sector, through the carrier
+    for c, (k1, k2) in LINKS.items():
+        f1, f2, cc = byid[k1], byid[k2], byid[c]
+        rr = 0.5 * (max(f1["r_in"], f2["r_in"]) + min(f1["r_out"], f2["r_out"]))
+        for k, s0 in enumerate(f1["starts"]):
+            a = s0 + f1["w_deg"] / 2
+            items.append(dict(kind="rod", name=f"{c.replace('-', '_')}_link_{k + 1}", gap="", node=f1["node"], role="link",
+                              p0=_pol(rr, a, 0.5 * (f1["z0"] + f1["z1"])), p1=_pol(rr, a, 0.5 * (f2["z0"] + f2["z1"])), r=rod,
+                              chains=[f"link-{c}", c], side=cc["side"], body=ROTOR_BODY.get(c, "stator"), carrier=c, embedded=False,
+                              desc=f"{c} equipotential link {k + 1} of {len(f1['starts'])} (node {f1['node']}): {k1} <-> {k2} through "
+                                   f"{c} at r{_mm(rr)} {_mm(_m360(a))} deg, {_mm(abs(cc['z1'] - cc['z0']))} mm"))
+    out = dict(R_frame=R_frame, R_chord=R_ch, bands={f"{k[0]}-{k[1]}": v for k, v in bands.items()}, recesses=recesses,
+               lead_z=lead_z, gaps=gaps, routes=routes, items=items)
     out["checks"] = gap_checks(design, out)
     return out
 
@@ -404,10 +596,10 @@ def sweep_check(design, sg):
             a, b = it["p0"], it["p1"]
             ra, rb = math.hypot(a[0], a[1]), math.hypot(b[0], b[1])
             rr = it["r"]
-            if abs(ra - rb) < 1e-9:                         # axial button / riser: a disc of radius r about its axis
+            if math.hypot(a[0] - b[0], a[1] - b[1]) < 1e-9:   # axial button / riser / link: a disc of radius r about its axis
                 e = (ra - rr, ra + rr, min(a[2], b[2]), max(a[2], b[2]))
-            else:                                           # radial lead: thickness 2r in z
-                e = (min(ra, rb), max(ra, rb), a[2] - rr, a[2] + rr)
+            else:                                           # any other lead: its radial span (chords dip inward) +- r
+                e = (_seg_rmin(a, b) - rr, max(ra, rb) + rr, min(a[2], b[2]) - rr, max(a[2], b[2]) + rr)
         env.append((it["body"], it["name"], e))
     rot = [x for x in env if x[0] in ("rotor A", "rotor B", "rotor AB")]
     sta = [x for x in env if x[0] == "stator"]
@@ -417,6 +609,56 @@ def sweep_check(design, sg):
             if e[0] < f[1] - 1e-9 and f[0] < e[1] - 1e-9 and e[2] < f[3] - 1e-9 and f[2] < e[3] - 1e-9:
                 hits.append((n1, n2))
     return len(rot), len(sta), hits
+
+
+def _seg_rmin(a, b):
+    """the smallest distance from the z axis along the segment a-b (its plan projection)."""
+    dx, dy = b[0] - a[0], b[1] - a[1]
+    L2 = dx * dx + dy * dy
+    t = 0.0 if L2 < 1e-18 else min(1.0, max(0.0, -(a[0] * dx + a[1] * dy) / L2))
+    return math.hypot(a[0] + t * dx, a[1] + t * dy)
+
+
+def _seg_dist(p, q, r, s):
+    """the smallest distance between segments p-q and r-s (3-D)."""
+    d1 = [q[i] - p[i] for i in range(3)]; d2 = [s[i] - r[i] for i in range(3)]; w = [p[i] - r[i] for i in range(3)]
+    a = sum(x * x for x in d1); e = sum(x * x for x in d2); f_ = sum(d2[i] * w[i] for i in range(3))
+    if a < 1e-18 and e < 1e-18:
+        return math.dist(p, r)
+    if a < 1e-18:
+        t, u = 0.0, min(1.0, max(0.0, f_ / e))
+    else:
+        c = sum(d1[i] * w[i] for i in range(3))
+        if e < 1e-18:
+            t, u = min(1.0, max(0.0, -c / a)), 0.0
+        else:
+            bb = sum(d1[i] * d2[i] for i in range(3)); den = a * e - bb * bb
+            t = min(1.0, max(0.0, (bb * f_ - c * e) / den)) if den > 1e-12 else 0.0
+            u = (bb * t + f_) / e
+            if u < 0.0:
+                t, u = min(1.0, max(0.0, -c / a)), 0.0
+            elif u > 1.0:
+                t, u = min(1.0, max(0.0, (bb - c) / a)), 1.0
+    return math.dist([p[i] + d1[i] * t for i in range(3)], [r[i] + d2[i] * u for i in range(3)])
+
+
+def _foil_dist(pt, f):
+    """distance from a point to a foil (its sectors as annular slabs)."""
+    r = math.hypot(pt[0], pt[1]); a = math.degrees(math.atan2(pt[1], pt[0]))
+    dz = max(0.0, f["z0"] - pt[2], pt[2] - f["z1"])
+    best = float("inf")
+    for s0 in f["starts"]:
+        d = _sdeg(a - (s0 + f["w_deg"] / 2))
+        if abs(d) <= f["w_deg"] / 2 or f["w_deg"] >= 360.0 - 1e-9:
+            dp = max(0.0, f["r_in"] - r, r - f["r_out"])
+        else:
+            dp = float("inf")
+            for e_ in (s0, s0 + f["w_deg"]):
+                ex, ey = math.cos(math.radians(e_)), math.sin(math.radians(e_))
+                t = min(f["r_out"], max(f["r_in"], pt[0] * ex + pt[1] * ey))
+                dp = min(dp, math.hypot(pt[0] - t * ex, pt[1] - t * ey))
+        best = min(best, math.hypot(dp, dz))
+    return best
 
 
 def _carrier_rings(c, recesses):
@@ -496,6 +738,81 @@ def gap_checks(design, sg):
     res["I11 cross-fire at the placed bar radius"] = (ov < 2.95, f"overlap {_mm(ov)} deg < SG3b-BS3 2.95 deg at r{_mm(g['sg_rbar'])}")
     clf = sg["R_frame"] - g["sg_rod"] / 2 - design["r_edge"]
     res["lead frame clears the rotor rims (HV)"] = (clf >= need, f"R{_mm(sg['R_frame'])}: {_mm(clf)} mm over the R{_mm(design['r_edge'])} rims")
+    # ---- Z-stretch and wiring (TMD 2026-10-02) ----
+    zs = design["zstretch"]
+    short = [k for k, v in zs.items() if v["t"] < v["req"] - 1e-9]
+    grown = ", ".join(f"{k} {_mm(v['base'])}->{_mm(v['t'])}" for k, v in zs.items() if v["stretched"])
+    res["Z-stretch: every carrier holds its gap seats and leads"] = (not short, (
+        "short: " + ", ".join(f"{k} {_mm(zs[k]['t'])} < {_mm(zs[k]['req'])} mm" for k in short)) if short else (
+        f"stretched {grown}; stack {_mm(design['z_base'])} -> {_mm(design['z_total'])} mm" if grown
+        else f"no stretch needed; stack {_mm(design['z_total'])} mm"))
+    bad = []
+    for rt in sg["routes"]:
+        f = byid[rt["foil"]]
+        r, a, z = rt["end"]
+        ok = (f["node"] == rt["node"] and f["z0"] - 1e-9 <= z <= f["z1"] + 1e-9 and f["r_in"] - 1e-9 <= r <= f["r_out"] + 1e-9
+              and any(abs(_sdeg(a - (s0 + f["w_deg"] / 2))) <= f["w_deg"] / 2 + 1e-9 for s0 in f["starts"]))
+        if not ok:
+            bad.append(rt["electrode"])
+    res["every gap electrode is wired to its node's foil"] = (not bad, (
+        f"{len(sg['routes'])} electrodes, each lead ends on a foil of its own node") if not bad else "unwired: " + ", ".join(bad[:4]))
+    rec_by = {}
+    for rc in sg["recesses"]:
+        rec_by.setdefault(rc["carrier"], []).append(rc)
+    on = _foil_carriers(design["stack"])
+    foils = [it for it in design["stack"] if it["kind"] == "foil"]
+    w_cov, d_cov, w_own, d_own, w_oth, d_oth = (float("inf"), "none") * 3
+    for it in sg["items"]:
+        if it["kind"] != "rod" or it["role"] != "gap-lead":
+            continue
+        p0, p1, rr = it["p0"], it["p1"], it["r"]
+        zlo, zhi = min(p0[2], p1[2]) - rr, max(p0[2], p1[2]) + rr
+        if it["embedded"]:                              # a run inside its carrier keeps its cover to both faces
+            c = byid[it["carrier"]]
+            lo, hi = c["z0"], c["z1"]
+            for rc in rec_by.get(c["id"], []):          # a recessed face counts everywhere (conservative)
+                if rc["face"] == "z1":
+                    hi = min(hi, c["z1"] - rc["depth"])
+                else:
+                    lo = max(lo, c["z0"] + rc["depth"])
+            cov = min(zlo - lo, hi - zhi)
+            if cov < w_cov - 1e-9:
+                w_cov, d_cov = cov, f"{it['name']} in {c['id']}: {_mm(cov)} mm"
+        n = max(1, math.ceil(math.dist(p0, p1) / 2.0 - 1e-9))
+        pts = [[p0[i] + (p1[i] - p0[i]) * j / n for i in range(3)] for j in range(n + 1)]
+        for f in foils:
+            if f["node"] == it["node"] or f["z0"] > zhi + 20.0 or f["z1"] < zlo - 20.0:
+                continue
+            dd = min(_foil_dist(q, f) for q in pts) - rr
+            if on[f["id"]] == it["carrier"]:
+                if dd < w_own - 1e-9:
+                    w_own, d_own = dd, f"{it['name']} (node {it['node']}) to {f['id']} (node {f['node']}) on {it['carrier']}: {_mm(dd)} mm"
+            elif it["embedded"] and dd < w_oth - 1e-9:
+                w_oth, d_oth = dd, f"{it['name']} (node {it['node']}) to {f['id']} (node {f['node']}) on {on[f['id']]}: {_mm(dd)} mm"
+    res["embedded leads keep their cover inside the carrier"] = (w_cov >= g["sg_cover"] - 1e-9, f"tightest {d_cov} (>= {_mm(g['sg_cover'])})")
+    res["leads clear different-node foils on their carrier"] = (w_own >= g["sg_cover"] - 1e-9, f"tightest {d_own} (>= {_mm(g['sg_cover'])})")
+    # different-node conductors on one body (stator, or one rotor half): HV clearance
+    # (links are left out: each runs between its own node's two foils, inside their sector, shielded by them)
+    cond = [it for it in sg["items"] if it["kind"] in ("rod", "button") and it["role"] != "link"]
+    box = [(min(it["p0"][i], it["p1"][i]) - it["r"], max(it["p0"][i], it["p1"][i]) + it["r"]) for it in cond for i in range(3)]
+    w_hv, d_hv = float("inf"), "none"
+    for i, x in enumerate(cond):
+        bx = box[3 * i:3 * i + 3]
+        for j in range(i + 1, len(cond)):
+            y = cond[j]
+            if BODY_OF[y["body"]] != BODY_OF[x["body"]] or y["node"] == x["node"]:
+                continue
+            by_ = box[3 * j:3 * j + 3]
+            if any(bx[k][0] - by_[k][1] > need or by_[k][0] - bx[k][1] > need for k in range(3)):
+                continue
+            dd = _seg_dist(x["p0"], x["p1"], y["p0"], y["p1"]) - x["r"] - y["r"]
+            if dd < w_hv - 1e-9:
+                w_hv, d_hv = dd, f"{x['name']} (node {x['node']}) / {y['name']} (node {y['node']}): {_mm(dd)} mm"
+    res["different-node leads and buttons on one body keep the HV clearance"] = (w_hv >= need - 1e-9, f"tightest {d_hv} (>= {_mm(need)})")
+    res["leads near foils of other carriers (info: breakdown model out of scope)"] = (True, f"closest {d_oth}")
+    nl = {c: sum(1 for it in sg["items"] if it["role"] == "link" and it["carrier"] == c) for c in LINKS}
+    res["equipotential links (info)"] = (True, ", ".join(f"{c} {n} x ({LINKS[c][0]} <-> {LINKS[c][1]})" for c, n in nl.items())
+                                         + "; ND2 / ND3 carry node 2 / 3 and pickup n23 / n17, joined through Lx4 / Lx3 (off-model)")
     nr, ns, hits = sweep_check(design, sg)
     res["counter-rotation: no rotor/stator collision"] = (not hits, f"{nr} rotor x {ns} stator revolved envelopes, "
                                                           + (f"{len(hits)} overlap(s): {hits[0][0]} / {hits[0][1]}" if hits else "none overlap"))
@@ -580,12 +897,8 @@ def parts(design):
     if sgp:
         rotor_carrier = {("A", "bar"): "A-flange", ("A", "rail"): "A-disc", ("B", "bar"): "B-flange", ("B", "rail"): "B-disc"}
         for it in sgp["items"]:
-            # a gap part belongs to the body it is mounted on: rotor tips / tabs to their rotor carrier, stator
-            # buttons and leads to the carrier that hosts the button
-            if it["role"] == "gap-rotor":
-                akey = it["chains"][1]
-            else:
-                akey = it["chains"][1]
+            # a gap part belongs to the carrier it sits in (a lead's frame run: to the carrier it leaves)
+            akey = it["carrier"]
             base = dict(name=it["name"], label=f"{akey} / {it['name']} - {it['desc']}", assembly=akey, role=it["role"],
                         carrier=akey, node=it["node"], cap=it["gap"], rgb=list(node_rgb(it["node"])), chains=list(it["chains"]))
             if it["kind"] == "sector":
@@ -594,7 +907,8 @@ def parts(design):
                             volume=0.5 * math.radians(it["w_deg"]) * (it["r_out"] ** 2 - it["r_in"] ** 2) * (it["z1"] - it["z0"]))
             else:
                 L = math.dist(it["p0"], it["p1"])
-                mat = "Cu lead" if it["kind"] == "rod" else ("W-Cu button" if it["r"] <= 6.0 + 1e-9 else "smooth button")
+                mat = ("Cu link" if it["role"] == "link" else "Cu lead") if it["kind"] == "rod" else (
+                    "W-Cu button" if it["r"] <= 6.0 + 1e-9 else "smooth button")
                 base.update(shape="rod", material=mat, p0=list(it["p0"]), p1=list(it["p1"]), r=it["r"],
                             volume=math.pi * it["r"] ** 2 * L)
             out.append(base)
@@ -622,8 +936,8 @@ def overlap_area(f1, f2):
 PAIRS = dict(C1=("C1_stator", "C1_rotor"), C2=("C2_stator", "C2_rotor"), Ca=("Ca_el", "Ca_counter"),
              Cb=("Cb_el", "Cb_counter"), Cx4=("Cx4_pickup", "Cx4_bars"), Cx3=("Cx3_pickup", "Cx3_bars"),
              C_R=("CR_A", "CR_B"))
-ROTATING = ("C1", "C2", "Cx3", "Cx4")
-CR_RATIO = 2.82                             # C_R / C_max, = pump_sizing ratio_CR (tank collapsed) [IR]       # one electrode on a rotor (or its island bars)
+ROTATING = ("C1", "C2", "Cx3", "Cx4")       # one electrode on a rotor (or its island bars)
+CR_RATIO = 2.82                             # C_R / C_max, = pump_sizing ratio_CR (tank collapsed) [IR]
 
 
 def adjacency(design):

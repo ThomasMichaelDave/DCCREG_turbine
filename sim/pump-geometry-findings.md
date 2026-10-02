@@ -113,6 +113,62 @@ The build now has 293 solids, up from 283, because the C_R faces are 2 × 6 foil
 - That makes C_R adjustable by sectoring the septum face as well as by the septum thickness. The C1/C2 pump capacitance is untouched either way.
 - Keeping the C_R face's sectors on the C1/C2 rotor face's sectors (as now) puts the two node-5 foils back to back. A short through-connection per sector then joins them.
 
+## Z-stretch: room along z for the gap electrodes (rev 4, 2026-10-02)
+
+**The idea (TMD).** A node's two foils sit on the two faces of one carrier, and they are joined by an explicit link. The carrier's thickness is therefore free along z: stretching it costs no capacitance, because every capacitor gap stays as it was. The stack is stretched until each spark-gap electrode sits at its designated place (the r375 / r410 bands, the DXF stations) with real margins, instead of the 0.45 mm recess and 0.5 mm protrusions of rev 2.
+
+**What each carrier must now hold** (all margins [IR], page fields in "stack" and "spark gaps"):
+- a seated button: its head stands **2 mm** proud of the band face (rotor tips and the smallest stator protrusion; rev 2 had 0.5), and its shank is **3 mm** deep in the carrier;
+- a 3 mm lead under the seat, with **2 mm** of carrier cover;
+- where two carriers face each other across a fixed gap (ND1 | Ca | ND2, ND4 | Cb | ND3), covers of **2.25 mm** on each side. Two different-node leads crossing there then keep the 11 mm HV clearance: 2 × 2.25 + the 6.5 mm between the faces.
+
+`zs_mode = auto` (the default) grows each carrier to recess + seat + lead + cover. `fixed` keeps the base thicknesses, and the checks then show the shortfall (40 / 43 pass).
+
+| carrier | base | stretched | set by |
+|---|---|---|---|
+| ND1 / ND4 | 3 | **8.5** | rail band: recess 0.25 + seat 3 + lead 3 + cover 2.25 |
+| ND2 / ND3 | 3 | **10.2** | bar band: recess 1.95 + seat 3 + lead 3 + cover 2.25 |
+| A / B flange | 6 | **9.95** | bar band: recess 1.95 + seat 3 + lead 3 + cover 2 |
+| A / B disc | 10 | 10 | already thick enough (needs 8.25) |
+
+**Results:**
+- The stack is **100.2 → 133.5 mm**.
+- Both band gaps are now **9.5 mm** face to face. The recess is **1.95 mm per face** in the Cx band and 0.25 mm in the C1/C2 band, with every carrier's wall intact.
+- Stator buttons stand **2.0–2.75 mm** proud. The load gaps (4.75 mm) sit highest.
+
+**Every electrode is now wired to its own node's foil.** In rev 2 a lead ended in a carrier rim, and the island-bar tips sat on surface tabs. Now:
+- **Every button and tip** has a lead embedded in its carrier, about 6.4 mm below the band face, to a foil of its own node, ending in a riser onto that foil. That is 72 electrodes and 432 lead segments.
+- **Radial runs are made in the sectors of the other parity.** There, the facing carrier holds no counter-electrode of a different node.
+- **Sector changes happen in two places only:** on a chord ring 15 mm inside the carrier edge (beyond every electrode), or under the target foil itself.
+- **Foreign-node buttons** still leave over the stator frame (R560). SG4a and SG3a are the crossovers, about 500 mm each with the in-carrier runs.
+- **The same-node foil pairs are joined by explicit links,** one per sector, 24 in all:
+  - ND1: C1 stator ↔ Ca counter;
+  - ND4: C2 stator ↔ Cb counter;
+  - A-disc: C1 rotor ↔ C_R face;
+  - B-disc: C2 rotor ↔ C_R face.
+
+  ND2 / ND3 carry node 2 / 3 and the pickup n23 / n17, which are joined only through Lx4 / Lx3 (off-model).
+
+**New checks (all pass; 43 in total):**
+- the Z-stretch holds;
+- every electrode is wired to its node's foil;
+- every embedded lead keeps its 2 mm cover;
+- leads keep 2 mm from different-node foils on their own carrier (tightest: SG1's node-2 lead in ND2, 4.95 mm from the n23 pickup);
+- different-node leads and buttons on one body keep the 11 mm HV clearance (tightest: SG1 in ND2 against SG3a in ND1, **11.0 mm**, set by the 2.25 mm covers);
+- counter-rotation: 175 rotor against 394 stator envelopes, none overlapping.
+
+New gate **G-Z**:
+- the stretched freeze design passes every check;
+- the same design at the base thicknesses fails exactly the stretch, cover and HV checks;
+- **all seven capacitances are identical** in both (C1 = C2 279.81, Ca = Cb 307.80, Cx3 = Cx4 522.79, C_R 785.20 pF).
+
+**CAD:** 649 named solids (24 carrier rings, 84 foils, 13 dielectric slabs, 72 seated buttons and tips, 432 lead segments, 24 links). FreeCAD and the Fusion stand-in build them identically, with no clashes.
+
+**For TMD:**
+1. **The margins are mine** [IR]: 2 mm protrusion, 3 mm seat, 2 mm cover, and the 11 mm HV rule (2 × the largest gap). Raising any of them simply stretches the stack further; the page recomputes it live.
+2. **Embedded leads near other carriers' foils** are reported, not judged. The closest is a node-2 run in ND2, 7.75 mm (G10 + gap) from ND1's node-1 counter-electrode, under its own Ca foil. A breakdown model is out of scope.
+3. **The Cx caps realize 522.8 pF** with the DXF bars and pickups, against the ladder's 470.1. This is unchanged by the stretch; it is for the Cx geometrization stage.
+
 ## 3. Findings for TMD
 
 1. **The DXF does carry the Ca/Cb areas.**

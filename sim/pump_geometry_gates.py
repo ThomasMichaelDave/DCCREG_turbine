@@ -107,6 +107,44 @@ def gate_adj():
                 checks={k: v for k, v in d["checks"].items()})
 
 
+def _caps(d):
+    """every capacitor of the stack: its two footprints' (aligned) overlap across the one layer between them."""
+    st = d["stack"]; pos = {it["id"]: i for i, it in enumerate(st)}
+    out = {}
+    for cap, (k1, k2) in PG.PAIRS.items():
+        i1, i2 = sorted((pos[k1], pos[k2]))
+        gap = st[i1 + 1]
+        a, b = st[pos[k1]], st[pos[k2]]
+        ov = max(PG.overlap_area(a, dict(b, starts=[x + dd for x in b["starts"]])) for dd in range(0, 61))
+        if gap["medium"] in PG.DIELECTRICS:
+            C = PG.cap_pF(ov, gap["t"], PG.DIELECTRICS[gap["medium"]])
+        else:                                     # the Cx gap: air + mica per face in series
+            g = d["geom"]
+            t_eff = g["cx_air"] / PG.DIELECTRICS["air"] + 2 * g["cx_mica"] / PG.DIELECTRICS["mica"]
+            C = PG.cap_pF(ov, t_eff, 1.0)
+        out[cap] = C
+    return out
+
+
+def gate_z():
+    """Z-stretch: the stretched freeze build passes every check; the same design at the base thicknesses shows the
+    shortfall; the stretch changes no capacitance (it only thickens carriers between a node's own foils)."""
+    lock = freeze_lock()
+    dz, d0 = PG.build(lock), PG.build(lock, dict(zs_mode="fixed"))
+    cz, c0 = _caps(dz), _caps(d0)
+    same_C = all(abs(cz[k] - c0[k]) <= 1e-12 * c0[k] for k in cz)
+    same_fp = dz["footprints"] == d0["footprints"]
+    allpass = all(v["pass_"] for v in dz["checks"].values())
+    k = "gaps: Z-stretch: every carrier holds its gap seats and leads"
+    links = sum(1 for p in dz["parts"] if p["role"] == "link")
+    return dict(pass_=bool(same_C and same_fp and allpass and not d0["checks"][k]["pass_"] and links == 24),
+                caps_pF={c: round(v, 4) for c, v in cz.items()}, same_C=same_C, same_footprints=same_fp,
+                stretched=dz["checks"][k]["detail"], base=d0["checks"][k]["detail"],
+                z_total=dict(stretched=dz["z_total"], base=d0["z_total"]), checks_pass=allpass,
+                failing_at_base=[c for c, v in d0["checks"].items() if not v["pass_"]], links=links,
+                thickness={c: v["t"] for c, v in dz["zstretch"].items()})
+
+
 def _rand_geom(rng):
     return dict(ca_diel=rng.choice(list(PG.DIELECTRICS)), ca_t=rng.uniform(0.5, 8), ca_w=rng.uniform(10, 30),
                 ca_mode=rng.choice(["r_out", "r_in", "width", "forward"]), ca_rin=rng.uniform(60, 150),
@@ -115,8 +153,9 @@ def _rand_geom(rng):
                 t_flange=rng.uniform(3, 10), t_septum=rng.uniform(6, 20), r_bore=rng.uniform(30, 55),
                 sg_rbar=rng.uniform(300, 420), sg_rrail=rng.uniform(395, 460), sg_d=rng.uniform(6, 20), sg_dbs=rng.uniform(15, 35),
                 sg_s_ret=rng.uniform(3, 8), sg_s_load=rng.uniform(3, 8), sg_s_fire=rng.uniform(3, 8), sg_s_bs=rng.uniform(3, 8),
-                sg_prot=rng.uniform(0.2, 1.5), sg_pmin=rng.uniform(0.2, 1.0), sg_tab=rng.uniform(3, 10), sg_rod=rng.uniform(2, 6),
-                sg_frame=rng.uniform(20, 120), sg_khv=rng.uniform(1, 3))
+                sg_prot=rng.uniform(0.2, 3.0), sg_pmin=rng.uniform(0.2, 3.0), sg_rod=rng.uniform(2, 6),
+                sg_seat=rng.uniform(1, 6), sg_cover=rng.uniform(0.5, 4), sg_chord=rng.uniform(5, 40),
+                zs_mode=rng.choice(["auto", "auto", "fixed"]), sg_frame=rng.uniform(20, 120), sg_khv=rng.uniform(1, 3))
 
 
 def gate_js(n=60):
@@ -473,7 +512,8 @@ def gate_f360():
                 message=msgs[-1][:200] if msgs else "")
 
 
-GATES = [("G-SEED", gate_seed), ("G-ADJ", gate_adj), ("G-JS", gate_js), ("G-CAD", gate_cad), ("G-F360", gate_f360), ("G-RT", gate_rt)]
+GATES = [("G-SEED", gate_seed), ("G-ADJ", gate_adj), ("G-Z", gate_z), ("G-JS", gate_js), ("G-CAD", gate_cad), ("G-F360", gate_f360),
+         ("G-RT", gate_rt)]
 
 
 def main():

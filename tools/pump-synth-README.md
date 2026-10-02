@@ -102,4 +102,6 @@ The names are the same as in the STEP and the parts CSV; Fusion forbids `/`, so 
 
 The page shows them in the "gaps A" and "gaps B" plan views and in the axial section, and their parameters are in the "spark gaps" group. Buttons of a foreign node are fed by leads over the rotor rims along the stator frame; SG4a and SG3a are the crossovers. A standing check verifies that no rotor part shares (r, z) with any stator part once both are revolved.
 
-The stack order and the carrier/foil thicknesses are [IR] placeholders (the DXF has no axial section). See `sim/pump-geometry-findings.md`.
+**Z-stretch.** The two foils of a node are joined through their carrier by explicit links, so the carrier's thickness is free along z. With **Z-stretch = auto** (stack group), each carrier grows to hold its seated buttons and embedded leads (recess + seat + lead + cover), and the stack height shows the stretch. **Z-stretch = fixed** keeps the base thicknesses, and the checks show the shortfall. Every gap electrode has a lead embedded in its carrier to a foil of its own node. No capacitance changes.
+
+The stack order and the base carrier/foil thicknesses are [IR] placeholders (the DXF has no axial section). See `sim/pump-geometry-findings.md`.
