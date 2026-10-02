@@ -10,6 +10,12 @@
   G-CAD   tools/pump-geometry.FCMacro executed through an OpenCascade stand-in for FreeCAD/Part:
           every solid valid, its volume = the analytic value (1e-6), no two solids interpenetrate,
           STEP written (docs/geometry/freeze-v010-CaCb.step) from docs/geometry/freeze-v010-CaCb.json
+  G-Z     Z-stretch: the stretched build passes every check, the base thicknesses show the shortfall, no C changes
+  G-SGR   radial bar band (TMD 2026-10-02), from the solids: fire / backstop on radial rim stems meeting the tip
+          vertically, load on a radial frame arm meeting it horizontally (3 of 4 spheres on horizontal stems per
+          side), spacings = the freeze table, ND2 / ND3 trimmed inside the tip path; the axial layout still clean
+  G-F360  tools/fusion360/PumpGeometry built through an OpenCascade stand-in for adsk: the same solids and names
+  G-CI    sim/circuit_integrity.py: the reference build is the netlist of record (JSON and STEP), JS parity, faults
 Usage: python3 sim/pump_geometry_gates.py [--only G-SEED,...]
 """
 import json
@@ -145,6 +151,50 @@ def gate_z():
                 thickness={c: v["t"] for c, v in dz["zstretch"].items()})
 
 
+def gate_sgr():
+    """RADIAL BAR BAND (TMD 2026-10-02), read from the reference build's bill of solids, not its gap records: per side
+    the fire and backstop spheres sit on radial (horizontal) stems out of the trimmed ND2 / ND3 rim and meet the tip
+    VERTICALLY, the load sphere sits on a radial arm in from the stator frame and meets it HORIZONTALLY, the tip hangs
+    on a vertical stem -- three of the four spheres on horizontal stems; every spacing at alignment measured between
+    the solids is the freeze table's; ND2 / ND3 end inside the tip path; every check passes; the axial layout (rev 5-7)
+    still builds clean."""
+    lock = freeze_lock()
+    d, dax = PG.build(lock), PG.build(lock, dict(sg_layout="axial"))
+    P = {p["name"]: p for p in d["parts"]}
+
+    def ang(p):
+        return math.degrees(math.atan2(p[1], p[0]))
+    rows, per_side = [], {}
+    for x in d["sparkgaps"]["gaps"]:
+        if x["band"] != "bar":
+            continue
+        s, st = P[f"{x['name']}_sph_1"], P[f"{x['name']}_stem_1"]
+        tip, ts = P[f"bartip_{x['side']}_1"], P[f"bartip_{x['side']}_stem_1"]
+        # the tip turned to this station (rotate its centre by the station angle)
+        a = math.radians(x["station"])
+        tc = [tip["c"][0] * math.cos(a) - tip["c"][1] * math.sin(a), tip["c"][0] * math.sin(a) + tip["c"][1] * math.cos(a), tip["c"][2]]
+        dr, dz = math.hypot(s["c"][0], s["c"][1]) - math.hypot(tc[0], tc[1]), s["c"][2] - tc[2]
+        gap = math.dist(s["c"], tc) - s["r"] - tip["r"]
+        axis = "horizontal" if abs(dz) < 1e-9 else ("vertical" if abs(dr) < 1e-9 else "oblique")
+        stem_h = abs(st["p0"][2] - st["p1"][2]) < 1e-9 and abs(ang(st["p0"]) - ang(st["p1"])) < 1e-9
+        tip_v = math.hypot(ts["p0"][0] - ts["p1"][0], ts["p0"][1] - ts["p1"][1]) < 1e-9
+        want = "horizontal" if x["cls"] == "load" else "vertical"
+        ok = axis == want and stem_h and tip_v and abs(gap - x["spacing"]) < 1e-9
+        per_side[x["side"]] = per_side.get(x["side"], 0) + (1 if stem_h else 0)
+        rows.append(dict(gap=x["name"], cls=x["cls"], axis=axis, spacing_mm=gap, stem="radial" if stem_h else "other",
+                         sphere_r=math.hypot(s["c"][0], s["c"][1]), mount=x["mount"], pass_=ok))
+    bands = d["sparkgaps"]["bands"]
+    rims = {it["id"]: it["r_out"] for it in d["stack"] if it["id"] in ("ND2", "ND3")}
+    rim_ok = all(rims[b["stator_carrier"]] < d["r_edge"] - 1e-9 and rims[b["stator_carrier"]] <= b["r"] - d["geom"]["sg_d"] / 2
+                 - d["geom"]["sg_clear"] + 1e-9 for b in bands.values() if b["band"] == "bar")
+    allpass = all(v["pass_"] for v in d["checks"].values())
+    ax_ok = all(v["pass_"] for v in dax["checks"].values())
+    return dict(pass_=bool(all(r["pass_"] for r in rows) and per_side == {"A": 3, "B": 3} and rim_ok and allpass and ax_ok),
+                rows=rows, horizontal_stems_per_side=per_side, rims=rims, tip_r={k: v["r"] for k, v in bands.items() if v["band"] == "bar"},
+                checks_pass=allpass, axial_checks_pass=ax_ok, z_total=dict(radial=d["z_total"], axial=dax["z_total"]),
+                solids=dict(radial=len(d["parts"]), axial=len(dax["parts"])))
+
+
 def _rand_geom(rng):
     return dict(ca_diel=rng.choice(list(PG.DIELECTRICS)), ca_t=rng.uniform(0.5, 8), ca_w=rng.uniform(10, 30),
                 ca_mode=rng.choice(["outer", "r_out", "r_in", "width", "forward"]), ca_rin=rng.uniform(60, 150),
@@ -155,7 +205,9 @@ def _rand_geom(rng):
                 sg_s_ret=rng.uniform(3, 8), sg_s_load=rng.uniform(3, 8), sg_s_fire=rng.uniform(3, 8), sg_s_bs=rng.uniform(3, 8),
                 sg_expose=rng.uniform(0.2, 1.2), sg_stem=rng.uniform(2, 6), sg_rod=rng.uniform(2, 6),
                 sg_seat=rng.uniform(1, 6), sg_cover=rng.uniform(0.5, 4), sg_chord=rng.uniform(5, 40),
-                zs_mode=rng.choice(["auto", "auto", "fixed"]), sg_frame=rng.uniform(20, 120), sg_khv=rng.uniform(1, 3))
+                zs_mode=rng.choice(["auto", "auto", "fixed"]), sg_frame=rng.uniform(20, 120), sg_khv=rng.uniform(1, 3),
+                sg_layout=rng.choice(["radial", "radial", "axial"]), sg_rimgap=rng.uniform(0, 10), sg_clear=rng.uniform(0.5, 6),
+                sg_stem_air=rng.uniform(0, 8))
 
 
 def gate_js(n=60):
@@ -366,7 +418,7 @@ def gate_cad():
     step = os.path.splitext(jpath)[0] + ".step"
     import re
     txt = open(step, encoding="latin-1").read().replace("\r", "").replace("\n", "")   # line breaks are not significant in STEP
-    products = re.findall(r"=\s*PRODUCT\(\s*'((?:[^']|'')*)'", txt)
+    products = [m.replace("''", "'") for m in re.findall(r"=\s*PRODUCT\(\s*'((?:[^']|'')*)'", txt)]   # STEP doubles a quote
     anon = [p for p in products if "Open CASCADE" in p]
     labels = {o.Label for o in objs}
     missing = sorted(labels - set(products))
@@ -620,8 +672,8 @@ def gate_ci():
                 faults={k: dict(want=sorted(want[k]), caught=sorted(got[k])) for k in want})
 
 
-GATES = [("G-SEED", gate_seed), ("G-ADJ", gate_adj), ("G-Z", gate_z), ("G-JS", gate_js), ("G-CAD", gate_cad), ("G-F360", gate_f360),
-         ("G-CI", gate_ci), ("G-RT", gate_rt)]
+GATES = [("G-SEED", gate_seed), ("G-ADJ", gate_adj), ("G-Z", gate_z), ("G-SGR", gate_sgr), ("G-JS", gate_js), ("G-CAD", gate_cad),
+         ("G-F360", gate_f360), ("G-CI", gate_ci), ("G-RT", gate_rt)]
 
 
 def main():

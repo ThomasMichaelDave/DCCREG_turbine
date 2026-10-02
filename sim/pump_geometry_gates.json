@@ -404,11 +404,11 @@
    },
    "gaps: spacing at alignment = the freeze table": {
     "pass_": true,
-    "detail": "SG1 5.5; SG4a1 4.75; SG4b1 5.5; BS4 5.5; SG2 5.5; SG3a1 4.75; SG3b1 5.5; BS3 5.5 mm"
+    "detail": "SG1 5.5; SG4a1 4.75; SG4b1 5.5; BS4 5.5; SG2 5.5; SG3a1 4.75; SG3b1 5.5; BS3 5.5 mm (SG4a1, SG3a1 horizontal, the rest vertical)"
    },
    "gaps: every sphere shows at least its exposure above the face": {
     "pass_": true,
-    "detail": "stator: least SG1 6 of 12 mm (50 %), rotor tips 50 % (>= 50 %)"
+    "detail": "stator: least SG1 6 of 12 mm (50 %), rotor tips 50 % (>= 50 %); SG4a1, SG4b1, BS4, SG3a1, SG3b1, BS3 and the bar tips stand clear on their stems (radial bar band)"
    },
    "gaps: sphere gaps in the uniform-field range (s <= 0.5 D, IEC 60052)": {
     "pass_": true,
@@ -420,15 +420,15 @@
    },
    "gaps: recessed bands leave a carrier wall": {
     "pass_": true,
-    "detail": "A-flange keeps 14 mm under a 9.2 mm recess"
+    "detail": "A-disc keeps 14 mm under a 4.25 mm recess"
    },
    "gaps: A bar band clears the bars / pickups (HV)": {
     "pass_": true,
-    "detail": "r375 band: 12.5 mm beyond r350 (>= 11)"
+    "detail": "r404.5 band: 42 mm beyond r350 (>= 11)"
    },
    "gaps: A bar band inside the carriers": {
     "pass_": true,
-    "detail": "band r360.5-389.5 within R500"
+    "detail": "band r390-429.25 within R500, under the A-flange (the ND2 rim trimmed to r390)"
    },
    "gaps: A return band clears the C1 / C2 plates (HV)": {
     "pass_": true,
@@ -440,11 +440,11 @@
    },
    "gaps: B bar band clears the bars / pickups (HV)": {
     "pass_": true,
-    "detail": "r375 band: 12.5 mm beyond r350 (>= 11)"
+    "detail": "r404.5 band: 42 mm beyond r350 (>= 11)"
    },
    "gaps: B bar band inside the carriers": {
     "pass_": true,
-    "detail": "band r360.5-389.5 within R500"
+    "detail": "band r390-429.25 within R500, under the B-flange (the ND3 rim trimmed to r390)"
    },
    "gaps: B return band clears the C1 / C2 plates (HV)": {
     "pass_": true,
@@ -454,13 +454,21 @@
     "pass_": true,
     "detail": "band r402-418 within R500"
    },
+   "gaps: A bar band beside the trimmed ND2 rim (radial)": {
+    "pass_": true,
+    "detail": "ND2 trimmed to r390; tips at r404.5 clear it by 8.5 mm, rim stems 2 mm bare, the load sphere at r421.25 2 mm under the A-flange face (>= 2)"
+   },
+   "gaps: B bar band beside the trimmed ND3 rim (radial)": {
+    "pass_": true,
+    "detail": "ND3 trimmed to r390; tips at r404.5 clear it by 8.5 mm, rim stems 2 mm bare, the load sphere at r421.25 2 mm under the B-flange face (>= 2)"
+   },
    "gaps: no cross-firing to a different-node station": {
     "pass_": true,
-    "detail": "tightest SG4b1 tip vs SG4a1 sphere: 48.24 mm (margin 42.74 mm over its spacing)"
+    "detail": "tightest SG4a1 tip vs SG4b1 sphere: 52.82 mm (margin 47.32 mm over its spacing)"
    },
    "gaps: I11 cross-fire at the placed bar radius": {
     "pass_": true,
-    "detail": "overlap 2.14 deg < SG3b-BS3 2.95 deg at r375"
+    "detail": "overlap 1.98 deg < SG3b-BS3 2.95 deg at r404.5"
    },
    "gaps: lead frame clears the rotor rims (HV)": {
     "pass_": true,
@@ -468,7 +476,7 @@
    },
    "gaps: Z-stretch: every carrier holds its gap seats and leads": {
     "pass_": true,
-    "detail": "stretched ND1 3->18.5, ND2 3->29.95, ND3 3->29.95, ND4 3->18.5, A-disc 10->18.25, B-disc 10->18.25, A-flange 6->23.2, B-flange 6->23.2; stack 100.2 -> 236 mm"
+    "detail": "stretched ND1 3->18.5, ND2 3->41.15, ND3 3->41.15, ND4 3->18.5, A-disc 10->18.25, B-disc 10->18.25, A-flange 6->8, B-flange 6->8; stack 100.2 -> 228 mm"
    },
    "gaps: every gap electrode is wired to its node's foil": {
     "pass_": true,
@@ -484,11 +492,19 @@
    },
    "gaps: different-node leads, spheres and bus rings on one body keep the HV clearance": {
     "pass_": true,
-    "detail": "tightest SG1_lead_1e (node 2) / SG3a1_lead_1f (node 1): 11 mm (>= 11)"
+    "detail": "tightest bus_A_disc_RA (node R-A) / bus_A_disc_n18 (node n18): 11 mm (>= 11)"
+   },
+   "gaps: spheres keep the HV clearance to different-node foils of their own body": {
+    "pass_": true,
+    "detail": "tightest BS4_sph_1 (node 2) / Ca_counter (node 1): 14.26 mm (>= 11)"
+   },
+   "gaps: counter-rotating copper keeps the HV clearance (revolved, gap pairs aside)": {
+    "pass_": true,
+    "detail": "tightest SG4a1_sph_1 (node 4, stator) / bartip_A_lead_1a (node 8, rotor): 13.4 mm (>= 11)"
    },
    "gaps: leads near foils of other carriers (info: breakdown model out of scope)": {
     "pass_": true,
-    "detail": "closest SG1_lead_1f (node 2) to Ca_counter (node 1) on ND1: 7.75 mm"
+    "detail": "closest bartip_A_lead_1c (node 8) to Cx4_pickup (node n23) on ND2: 7.6 mm"
    },
    "gaps: equipotential links and bus rings (info)": {
     "pass_": true,
@@ -496,18 +512,22 @@
    },
    "gaps: counter-rotation: no rotor/stator collision": {
     "pass_": true,
-    "detail": "241 rotor x 376 stator revolved envelopes, none overlap"
+    "detail": "225 rotor x 372 stator revolved envelopes, none overlap"
    },
    "gaps: load-gap crossovers over the stator (info)": {
     "pass_": true,
-    "detail": "SG4a1: node 4 from ND4 to ND2 (A), lead 535.09 mm, SG3a1: node 1 from ND1 to ND3 (B), lead 535.09 mm"
+    "detail": "SG4a1: node 4 from ND4 to ND2 (A), lead 385.09 mm + arm 138.75 mm, SG3a1: node 1 from ND1 to ND3 (B), lead 385.09 mm + arm 138.75 mm"
+   },
+   "gaps: spin load on the bar-band electrodes (info)": {
+    "pass_": true,
+    "detail": "up to 4239.54 g at r421.25 (3000 rpm, the full relative speed: an upper bound for either body): along the stem for the fire / backstop spheres (rim stems in tension) and the load spheres (arms in compression: the sphere is at the inner end), in bending for the tips on their short vertical stems"
    }
   }
  },
  "G-CAD": {
   "pass_": true,
   "names": {
-   "products": 712,
+   "products": 692,
    "anonymous": 0,
    "labels_missing": [],
    "assemblies": [
@@ -528,21 +548,21 @@
     "PumpGeometry 1bdb33d89a45 - DCCREG drawn pump, stage 2 plate geometry (Ca/Cb geometrized)"
    ],
    "parts_csv": "docs/geometry/freeze-v010-CaCb-parts.csv",
-   "csv_rows": 697,
+   "csv_rows": 677,
    "sample": [
     "carriers / A_disc_carrier_1 - A-disc carrier ring 1 of 3, insulating: rotor A main disc; holds the C1 rotor face (R-A) and, septum side, the C_R plate (n18); r0-402 mm, 18.25 mm thick, z -25.25..-7 [G10 rotor disc, rotor A]",
     "carriers / A_disc_carrier_2 - A-disc carrier ring 2 of 3, insulating: rotor A main disc; holds the C1 rotor face (R-A) and, septum side, the C_R plate (n18); r402-418 mm, 14 mm thick (recessed spark-gap band), z -21..-7 [G10 rotor disc, rotor A]",
     "carriers / A_disc_carrier_3 - A-disc carrier ring 3 of 3, insulating: rotor A main disc; holds the C1 rotor face (R-A) and, septum side, the C_R plate (n18); r418-500 mm, 18.25 mm thick, z -25.25..-7 [G10 rotor disc, rotor A]"
    ]
   },
-  "solids": 697,
+  "solids": 677,
   "roles": {
-   "carrier": 24,
+   "carrier": 16,
    "foil": 84,
    "dielectric": 37,
    "gap-stator": 48,
    "gap-stem": 72,
-   "gap-lead": 312,
+   "gap-lead": 300,
    "gap-rotor": 24,
    "link": 12,
    "bus": 84
@@ -552,15 +572,15 @@
   "clashes": [],
   "json": "docs/geometry/freeze-v010-CaCb.json",
   "step": "docs/geometry/freeze-v010-CaCb.step",
-  "step_bytes": 6327105,
+  "step_bytes": 6161554,
   "lock": "1bdb33d89a45",
-  "z_total_mm": 236.0
+  "z_total_mm": 228.0
  },
  "verdict": "GEOMETRY-STAGE2-PASS",
  "G-JS": {
   "pass_": true,
   "n": 60,
-  "worst_rel": 2.183424085358006e-13,
+  "worst_rel": 2.4796052872191e-13,
   "mismatches": []
  },
  "G-RT": {
@@ -606,14 +626,14 @@
  },
  "G-F360": {
   "pass_": true,
-  "bodies": 697,
+  "bodies": 677,
   "components": 15,
-  "worst_volume_rel": 4.7853562927430775e-14,
+  "worst_volume_rel": 4.8217989800319e-14,
   "invalid": [],
   "names_ok": true,
   "top": "PumpGeometry 1bdb33d89a45 - DCCREG drawn pump, stage 2 plate geometry (Ca-Cb geometrized)",
-  "sample": "carriers - ND2_carrier_1 - ND2 carrier ring 1 of 3, insulating- stator carrier ND2; holds the Ca electrode (AR bank, 2) and the Cx4 pickup (n23); r50-360.5 mm, 29.95 mm thick, z -89.2..-59.25 [G10 carrier, stator]",
-  "message": "PumpGeometry 1bdb33d89a45: 697 bodies in 14 components built (worst volume error 4.8e-14).\n\nNames follow the parts table (pump-geometry ...-parts.csv / FreeCAD STEP)."
+  "sample": "carriers - ND1_carrier_2 - ND1 carrier ring 2 of 3, insulating- stator carrier ND1; holds the C1 stator plate and the Ca counter-electrode (A-rail, 1); r402-418 mm, 14.25 mm thick (recessed spark-gap band), z -52.75..-38.5 [G10 carrier, stator]",
+  "message": "PumpGeometry 1bdb33d89a45: 677 bodies in 14 components built (worst volume error 4.8e-14).\n\nNames follow the parts table (pump-geometry ...-parts.csv / FreeCAD STEP)."
  },
  "G-Z": {
   "pass_": true,
@@ -628,10 +648,10 @@
   },
   "same_C": true,
   "same_footprints": true,
-  "stretched": "stretched ND1 3->18.5, ND2 3->29.95, ND3 3->29.95, ND4 3->18.5, A-disc 10->18.25, B-disc 10->18.25, A-flange 6->23.2, B-flange 6->23.2; stack 100.2 -> 236 mm",
-  "base": "short: ND1 3 < 18.5 mm, ND2 3 < 29.95 mm, ND3 3 < 29.95 mm, ND4 3 < 18.5 mm, A-disc 10 < 18.25 mm, B-disc 10 < 18.25 mm, A-flange 6 < 23.2 mm, B-flange 6 < 23.2 mm",
+  "stretched": "stretched ND1 3->18.5, ND2 3->41.15, ND3 3->41.15, ND4 3->18.5, A-disc 10->18.25, B-disc 10->18.25, A-flange 6->8, B-flange 6->8; stack 100.2 -> 228 mm",
+  "base": "short: ND1 3 < 18.5 mm, ND2 3 < 41.15 mm, ND3 3 < 41.15 mm, ND4 3 < 18.5 mm, A-disc 10 < 18.25 mm, B-disc 10 < 18.25 mm, A-flange 6 < 8 mm, B-flange 6 < 8 mm",
   "z_total": {
-   "stretched": 236.0,
+   "stretched": 228.0,
    "base": 100.2
   },
   "checks_pass": true,
@@ -641,18 +661,20 @@
    "gaps: embedded leads and bus rings keep their cover inside the carrier",
    "gaps: leads clear different-node foils on their carrier",
    "gaps: different-node leads, spheres and bus rings on one body keep the HV clearance",
+   "gaps: spheres keep the HV clearance to different-node foils of their own body",
+   "gaps: counter-rotating copper keeps the HV clearance (revolved, gap pairs aside)",
    "gaps: counter-rotation: no rotor/stator collision"
   ],
   "links": 12,
   "thickness": {
    "ND1": 18.5,
-   "ND2": 29.95,
-   "ND3": 29.95,
+   "ND2": 41.15,
+   "ND3": 41.15,
    "ND4": 18.5,
    "A-disc": 18.25,
    "B-disc": 18.25,
-   "A-flange": 23.2,
-   "B-flange": 23.2
+   "A-flange": 8.0,
+   "B-flange": 8.0
   }
  },
  "G-CI": {
@@ -662,27 +684,27 @@
    "nets": [
     [
      "1",
-     79
+     67
     ],
     [
      "2",
-     103
+     115
     ],
     [
      "3",
-     103
+     115
     ],
     [
      "4",
-     79
+     67
     ],
     [
      "7",
-     55
+     49
     ],
     [
      "8",
-     55
+     49
     ],
     [
      "R-A",
@@ -802,7 +824,7 @@
       "8"
      ],
      "rotating",
-     98.78,
+     85.96,
      0.0
     ],
     [
@@ -811,7 +833,7 @@
       "7"
      ],
      "rotating",
-     98.78,
+     85.96,
      0.0
     ],
     [
@@ -820,7 +842,7 @@
       "R-B"
      ],
      "modulated",
-     1.64,
+     1.51,
      0.0
     ],
     [
@@ -838,8 +860,8 @@
       "n23"
      ],
      "rotating",
-     1.91,
-     0.24
+     1.74,
+     0.22
     ],
     [
      [
@@ -856,8 +878,8 @@
       "n17"
      ],
      "rotating",
-     1.91,
-     0.24
+     1.74,
+     0.22
     ]
    ]
   },
@@ -868,20 +890,20 @@
    "INFO": 1
   },
   "warnings": [
-   "STRAY capacitor 1-8 (rotating): 0.0-98.8 pF over a turn",
-   "STRAY capacitor 4-7 (rotating): 0.0-98.8 pF over a turn",
-   "STRAY capacitor 7-R-B (modulated): 0.0-1.6 pF over a turn (fixed plates, rotating copper between)",
+   "STRAY capacitor 1-8 (rotating): 0.0-86.0 pF over a turn",
+   "STRAY capacitor 4-7 (rotating): 0.0-86.0 pF over a turn",
+   "STRAY capacitor 7-R-B (modulated): 0.0-1.5 pF over a turn (fixed plates, rotating copper between)",
    "STRAY capacitor R-A-n18 (fixed): 517.6 pF, across L_R1",
-   "STRAY capacitor R-A-n23 (rotating): 0.2-1.9 pF over a turn",
+   "STRAY capacitor R-A-n23 (rotating): 0.2-1.7 pF over a turn",
    "STRAY capacitor R-B-n00 (fixed): 517.6 pF, across L_R2",
-   "STRAY capacitor R-B-n17 (rotating): 0.2-1.9 pF over a turn"
+   "STRAY capacitor R-B-n17 (rotating): 0.2-1.7 pF over a turn"
   ],
   "step": true,
-  "step_note": "697 solids re-read",
+  "step_note": "677 solids re-read",
   "js": {
    "ok": true,
    "designs": 9,
-   "worst_rel": 0.0,
+   "worst_rel": 1.5153534577229023e-14,
    "mismatches": [],
    "selftest": {
     "pass": true
@@ -946,6 +968,93 @@
      "I4"
     ]
    }
+  }
+ },
+ "G-SGR": {
+  "pass_": true,
+  "rows": [
+   {
+    "gap": "SG4a1",
+    "cls": "load",
+    "axis": "horizontal",
+    "spacing_mm": 4.749999999999982,
+    "stem": "radial",
+    "sphere_r": 421.24999999999994,
+    "mount": "arm",
+    "pass_": true
+   },
+   {
+    "gap": "SG4b1",
+    "cls": "fire",
+    "axis": "vertical",
+    "spacing_mm": 5.5,
+    "stem": "radial",
+    "sphere_r": 404.5,
+    "mount": "rim",
+    "pass_": true
+   },
+   {
+    "gap": "BS4",
+    "cls": "backstop",
+    "axis": "vertical",
+    "spacing_mm": 5.5,
+    "stem": "radial",
+    "sphere_r": 404.5,
+    "mount": "rim",
+    "pass_": true
+   },
+   {
+    "gap": "SG3a1",
+    "cls": "load",
+    "axis": "horizontal",
+    "spacing_mm": 4.749999999999975,
+    "stem": "radial",
+    "sphere_r": 421.25,
+    "mount": "arm",
+    "pass_": true
+   },
+   {
+    "gap": "SG3b1",
+    "cls": "fire",
+    "axis": "vertical",
+    "spacing_mm": 5.5,
+    "stem": "radial",
+    "sphere_r": 404.5,
+    "mount": "rim",
+    "pass_": true
+   },
+   {
+    "gap": "BS3",
+    "cls": "backstop",
+    "axis": "vertical",
+    "spacing_mm": 5.5,
+    "stem": "radial",
+    "sphere_r": 404.5,
+    "mount": "rim",
+    "pass_": true
+   }
+  ],
+  "horizontal_stems_per_side": {
+   "A": 3,
+   "B": 3
+  },
+  "rims": {
+   "ND2": 390.0,
+   "ND3": 390.0
+  },
+  "tip_r": {
+   "A-bar": 404.5,
+   "B-bar": 404.5
+  },
+  "checks_pass": true,
+  "axial_checks_pass": true,
+  "z_total": {
+   "radial": 228.0,
+   "axial": 236.0
+  },
+  "solids": {
+   "radial": 677,
+   "axial": 697
   }
  }
 }
