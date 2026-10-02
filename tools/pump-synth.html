@@ -309,9 +309,9 @@
         <div class="panel sub">
           <div class="row" style="justify-content:space-between"><div class="brass">plate distribution — plan (angles counter-clockwise from electrical 0° = +x)</div>
             <div id="discBtns" class="row" style="margin:0"></div></div>
-          <div class="cols2">
+          <div class="cols2" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
             <svg id="planSvg" viewBox="0 0 420 420" width="100%" style="display:block;max-height:440px"></svg>
-            <div><div id="planLegend" class="note"></div><table class="t" id="faceTable" style="margin-top:6px"></table></div>
+            <div style="min-width:0;overflow-x:auto"><div id="planLegend" class="note"></div><table class="t" id="faceTable" style="margin-top:6px"></table></div>
           </div>
         </div>
         <div class="panel sub" style="margin-top:8px">
@@ -1356,7 +1356,11 @@ const GFIELDS = [
   ["stack", "cx_air", "Cx gap air", 0.1, 20, 0.1, "mm"],
   ["stack", "cx_mica", "Cx mica per face", 0, 3, 0.05, "mm"],
   ["stack", "rotor_in_off", "rotor face r_in offset", 0, 100, 1, "mm"],
-  ["gaps", "sg_rbar", "bar band radius (Cx gap: load/fire/backstop)", 150, 495, 0.5, "mm"],
+  ["gaps", "sg_layout", "bar band layout", [["radial", "radial: fire / backstop on rim stems (vertical gaps), load on a frame arm (horizontal gap)"], ["axial", "axial: every sphere on a vertical stem in a recessed Cx band"]]],
+  ["gaps", "sg_rbar", "bar band radius (axial) / least tip radius (radial)", 150, 495, 0.5, "mm"],
+  ["gaps", "sg_rimgap", "radial: trimmed ND2 / ND3 rim beyond its foils + margin", 0, 30, 0.5, "mm"],
+  ["gaps", "sg_clear", "radial: running clearance (tip to rim, load sphere to flange)", 0.5, 20, 0.5, "mm"],
+  ["gaps", "sg_stem_air", "radial: bare rim stem between rim and sphere", 0, 30, 0.5, "mm"],
   ["gaps", "sg_rrail", "return band radius (C1/C2 gap: SG1 / SG2)", 150, 495, 0.5, "mm"],
   ["gaps", "sg_d", "switching sphere ⌀ (= stage-1 d_ball)", 4, 30, 0.5, "mm"],
   ["gaps", "sg_dbs", "backstop sphere ⌀", 6, 50, 0.5, "mm"],
@@ -1576,14 +1580,19 @@ function drawDeck(side){
   }
   h += `<text x="${cx}" y="${cy + 3}" fill="${css("--mut")}" font-size="9" text-anchor="middle">gaps ${side}</text>`;
   svg.innerHTML = h;
-  $("planLegend").innerHTML = `Side ${side}, gaps in the stack: grey rings = the reserved bands (bar band r${g.sg_rbar} in the Cx gap, return band r${g.sg_rrail} in the ${side === "A" ? "C1" : "C2"} gap), ` +
+  const bb = sg.bands[side + "-bar"], radial = bb.layout === "radial";
+  $("planLegend").innerHTML = `Side ${side}, gaps in the stack: grey rings = the reserved bands (` +
+    (radial ? `bar band beside the ${bb.stator_carrier} rim, trimmed to r${+bb.r_rim.toFixed(2)}: tips at r${+bb.r.toFixed(2)}, load sphere at r${+bb.r_load.toFixed(2)}`
+            : `bar band r${g.sg_rbar} in the Cx gap`) + `, return band r${g.sg_rrail} in the ${side === "A" ? "C1" : "C2"} gap), ` +
     `faint sectors = the capacitor electrodes the bands stay clear of. Filled = stator spheres, hollow = rotor tip spheres at θ = 0; ` +
     `lines = every electrode's lead, embedded in its carrier to a foil of its own node (radial runs between the counter-electrodes, sector changes on the chord ring R${sg.R_chord.toFixed(0)} or under the target foil), ` +
     `out over the stator frame R${sg.R_frame.toFixed(0)} (thick ring) where it must change carrier; small squares = the equipotential links through a carrier; <span style="color:var(--amber)">amber</span> = crossover over the stator (*).`;
-  let t = "<tr><th>gap</th><th>class</th><th>stator node</th><th>on</th><th>rotor</th><th>station</th><th>band</th><th>sphere ⌀ · apex proud · socket</th><th>gap</th><th>lead (to its node's foil)</th></tr>";
+  let t = "<tr><th>gap</th><th>class</th><th>stator node</th><th>on</th><th>rotor</th><th>station</th><th>band</th><th>sphere ⌀ · mount</th><th>gap</th><th>lead (to its node's foil)</th></tr>";
+  const mountTxt = x => x.mount === "rim" ? "radial stem out of the rim" : x.mount === "arm" ? `radial arm from the frame (${x.arm_len.toFixed(0)} mm)`
+    : `apex ${x.p_stator.toFixed(2)} proud · ` + (x.socket >= 0 ? x.socket.toFixed(2) + " mm socket" : "stem +" + (-x.socket).toFixed(2) + " mm");
   for (const x of sg.gaps.filter(q => q.side === side))
-    t += `<tr><td>${x.name}</td><td>${x.cls}</td><td>${x.stator_node}</td><td>${x.host}</td><td>${x.rotor}</td><td>${x.station.toFixed(2)}°</td><td>${x.band} r${x.r}</td>` +
-         `<td>${x.d_stator} · ${x.p_stator.toFixed(2)} · ${x.socket >= 0 ? x.socket.toFixed(2) + " mm" : "stem +" + (-x.socket).toFixed(2) + " mm"}</td><td>${x.spacing.toFixed(2)} mm</td><td>${x.lead_len.toFixed(0)} mm${x.foreign ? " from " + x.carrier + (x.crossover ? " · crossover" : "") : " in " + x.host}</td></tr>`;
+    t += `<tr><td>${x.name}</td><td>${x.cls}</td><td>${x.stator_node}</td><td>${x.mount === "arm" ? "frame" : x.host}</td><td>${x.rotor}</td><td>${x.station.toFixed(2)}°</td><td>${x.band} r${+x.r.toFixed(2)}</td>` +
+         `<td class="l">${x.d_stator} · ${mountTxt(x)}</td><td>${x.spacing.toFixed(2)} mm ${x.gap_axis}</td><td class="l">${x.lead_len.toFixed(0)} mm${x.foreign ? " from " + x.carrier + (x.crossover ? " · crossover" : "") : " in " + x.host}</td></tr>`;
   $("faceTable").innerHTML = t;
 }
 function drawPlan(){
@@ -1671,7 +1680,8 @@ function drawStack(){
   svg.innerHTML = h;
   $("stackNote").innerHTML = "Order [IR]: each rotor half is a clamshell around its stator pair — flange (island bars) · Cx gap · ND2/ND3 · mica (Ca/Cb) · ND1/ND4 · 7 mm air (C1/C2) · rotor disc · septum (C_R). " +
     "Foils are drawn over their radial band (their sectors are in the plan view). Mica and garolite slabs shaded; air gaps empty. " +
-    "Spark gaps IN the stack: each sits in the axial gap between the rotor face and the stator face it joins — the bar band in the Cx gap, the return band in the C1/C2 gap — in a ring beyond the capacitor electrodes (pockets show a recess). " +
+    "Spark gaps IN the stack: each sits between the rotor face and the stator face it joins, in a ring beyond the capacitor electrodes — the return band in the C1/C2 gap (pockets show a recess); " +
+    "the bar band, <b>radial layout</b>: ND2/ND3 end at a trimmed rim, the island-bar tips hang from the flange just outside it, the fire and backstop spheres stand on radial stems out of the rim straight under the tip path (vertical gaps), the load sphere sits beside the tip on a radial arm from the stator frame (horizontal gap) — three of the four spheres on horizontal stems, which the spin loads along their axis (axial layout: all in a recessed Cx band). " +
     "Bus rings (embedded under each electrode's inner edge) join its sectors into one net. " +
     "<b>Spherical electrodes + Z-stretch</b>: every sphere shows at least its exposure above its band face (the rest in a socket, or it stands on its stem); each carrier is as thick as its sockets, stems and embedded leads need (recess + socket + seat + lead + cover); the two foils of a node are joined through it by explicit links, so no capacitance changes. " +
     "Filled = stator spheres, hollow = rotor tip spheres; lines = leads (first spoke), <b style='color:var(--amber)'>amber = the load-gap crossovers over the stator</b>. Counter-rotation is checked as revolved (r, z) envelopes: no rotor part may share (r, z) with a stator part.";
