@@ -155,3 +155,34 @@ Predictions (free basis), recorded before the run:
 | M5-b | X falls from ~620 to 300–400 pF. The rail ↔ island path runs through the 41 mm ND2/ND3 carrier |
 | M5-c | C1 max falls by ≤ 5 %: the C1 gap is air |
 | M5-d | z rises to 0.90–0.95. Still no pump: κ ≈ 2.6, against the ≥ 7 that Step 0b requires |
+
+**M5 field results** (part-ownership solves at θ 0 and 30, free basis; `docs/geometry/rt/m5-ptfe-free.attrib.json`).
+
+| | prediction | outcome |
+|---|---|---|
+| M5-a | C1 floor 110–140 pF | **CONFIRMED.** 192.3 → 138.3 |
+| M5-b | X 300–400 pF | **CONFIRMED.** 585 → 357 (θ 0), 654 → 406 (θ 30). Rail ↔ island halved: 1–n23 73 → 36 |
+| M5-c | C1 max falls by ≤ 5 % | **REFUTED (narrowly).** 345.5 → 324.5, −6.1 % |
+| M5-d | z 0.90–0.95 | pending the 12-angle sweep |
+
+The Cx island floor also fell (225 → 161). The budget says that alone costs z.
+
+## Scouting (2-D, `sim/rt_xsec2d.py`): edge, gap and see-through variants at r 240
+
+| variant | aligned (fF/mm) | disaligned (fF/mm) | κ |
+|---|---|---|---|
+| base 30/30, G10 | 183.4 | 92.8 | 1.98 |
+| 30/30, PTFE | 174.2 | 63.3 | 2.75 |
+| PTFE, stator 22° / rotor 30° (offset edges) | 150.1 | 46.4 | 3.23 |
+| PTFE, 20/20 | 124.7 | 26.3 | 4.75 |
+| PTFE, gap 3.5 mm | 337.4 | 81.0 | 4.17 |
+| PTFE, 22/30, gap 3.5 | 278.4 | 52.9 | 5.26 |
+| PTFE, stator guard strips | 155.2 | 46.7 | 3.32, adding C(RA, G) 7 → 44 varying |
+| PTFE, no see-through (back plates hidden) | 170.6 | 53.3 | 3.20 |
+| PTFE, 22/30, no see-through | 138.5 | 28.7 | 4.82 |
+| **PTFE, 22/30, gap 3.5, no see-through** | 262.8 | 31.4 | **8.38** |
+
+**Reading.**
+- Guard strips trade the C1 floor for a strongly varying C(RA, guard). That is a new rotating stray, so they are rejected.
+- At the 7 mm gap the best combination found is κ ≈ 4.8. The **≥ 7 requirement needs the gap reduced to ~3.5 mm**, on top of PTFE, offset edges and hidden back plates.
+- 2-D at mid-radius over-estimates the 3-D κ: the 3-D base is 1.80 against 1.98 here, because the inner radii are worse and the hardware adds to the floor.
