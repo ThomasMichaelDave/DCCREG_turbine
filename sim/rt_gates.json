@@ -296,7 +296,7 @@
   "pass_": true,
   "base": "b33baa2",
   "diff": "",
-  "time_s": 0.00938105583190918
+  "time_s": 0.053450822830200195
  },
  "FIREWALL": {
   "pass_": true,
@@ -332,13 +332,16 @@
    "round_trip": {
     "imports": [
      "circuit_integrity",
+     "concurrent",
      "field_solve",
+     "hashlib",
      "json",
      "math",
      "multiprocessing",
      "numpy",
      "os",
      "pump_geometry",
+     "pump_geometry_gates",
      "pump_sizing",
      "pump_synth",
      "rt_engine",
@@ -346,12 +349,12 @@
      "time"
     ],
     "disallowed": [],
-    "file_writes": 6,
+    "file_writes": 9,
     "subprocess": false,
     "pass_": true
    }
   },
-  "time_s": 0.0025739669799804688
+  "time_s": 0.0016980171203613281
  },
  "MC3": {
   "pass_": true,
@@ -386,5 +389,215 @@
   "theta_geom": 7.5,
   "cells": 1906562,
   "time_s": 265.48975110054016
+ },
+ "RT4": {
+  "pass_": true,
+  "gates": {
+   "G-SEED": true,
+   "G-ADJ": true,
+   "G-Z": true,
+   "G-SGR": true,
+   "G-JS": true,
+   "G-CAD": true,
+   "G-F360": true,
+   "G-CI": true,
+   "G-RT": true
+  },
+  "freeze_parts_checks_identical": true,
+  "tail": "_1 - A-disc carrier ring 1 of 3, insulating: rotor A main disc; holds the C1 rotor face (R-A) and, septum side, the C_R plate (n18); r0-402 mm, 18.25 mm thick, z -25.25..-7 [G10 rotor disc, rotor A]', 'carriers / A_disc_carrier_2 - A-disc carrier ring 2 of 3, insulating: rotor A main disc; holds the C1 rotor face (R-A) and, septum side, the C_R plate (n18); r402-418 mm, 14 mm thick (recessed spark-gap band), z -21..-7 [G10 rotor disc, rotor A]', 'carriers / A_disc_carrier_3 - A-disc carrier ring 3 of 3, insulating: rotor A main disc; holds the C1 rotor face (R-A) and, septum side, the C_R plate (n18); r418-500 mm, 18.25 mm thick, z -25.25..-7 [G10 rotor disc, rotor A]']}, 'solids': 677, 'roles': {'carrier': 16, 'foil': 84, 'dielectric': 37, 'gap-stator': 48, 'gap-stem': 72, 'gap-lead': 300, 'gap-rotor': 24, 'link': 12, 'bus': 84}, 'worst_volume_rel': 9.150897634530898e-15, 'clashes': []}\n[G-F360] PASS {'bodies': 677, 'components': 15, 'worst_volume_rel': 4.8217989800319e-14, 'names_ok': True, 'sample': 'carriers - ND1_carrier_2 - ND1 carrier ring 2 of 3, insulating- stator carrier ND1; holds the C1 stator plate and the Ca counter-electrode (A-rail, 1); r402-418 mm, 14.25 mm thick (recessed spark-gap band), z -52.75..-38.5 [G10 carrier, stator]'}\n[G-CI] PASS {}\n[G-RT] PASS {'rounded': {'r_out': 175.0, 'C_pF': 309.17763415757696, 'dC_rel': 0.0044724374030078624, 'z': 1.3251751917121721, 'z_locked': 1.3254745316585308, 'dz': -0.0002993399463586677}}\nVERDICT GEOMETRY-STAGE2-PASS\n",
+  "restored": "docs/geometry/freeze-v010-CaCb.json |    4 +\n docs/geometry/freeze-v010-CaCb.step | 9322 +++++++++++++++++------------------\n 2 files changed, 4665 insertions(+), 4661 deletions(-)",
+  "time_s": 66.06999778747559
+ },
+ "FS5": {
+  "pass_": false,
+  "steps": [
+   {
+    "step": "c->m",
+    "worst_rel": 0.2060547851059218,
+    "worst_abs_small_pF": 0.0652046440178608,
+    "pass_": false
+   },
+   {
+    "step": "m->f",
+    "worst_rel": 0.24631278139406743,
+    "worst_abs_small_pF": 0.06337641812728778,
+    "pass_": false
+   }
+  ],
+  "certified_step": "m->f",
+  "levels": [
+   "c",
+   "m",
+   "f"
+  ],
+  "thetas": [
+   0.0,
+   30.0
+  ],
+  "sweep_level_offset": {
+   "C1@0": -0.004968234782486425,
+   "C2@0": -0.014236559941719684,
+   "Cx3@0": -0.004644556366895092,
+   "Cx4@0": -0.003994430125806359,
+   "Ca@0": 0.007410277260239129,
+   "Cb@0": 0.007473872956533789,
+   "C_R1@0": -0.0006373005207985782,
+   "C1@30": -0.013485450316234271,
+   "C2@30": -0.0060995328736582755,
+   "Cx3@30": -0.02871324852498469,
+   "Cx4@30": -0.020803100717328826,
+   "Ca@30": 0.007272158215750002,
+   "Cb@30": 0.007418067956020291,
+   "C_R1@30": -0.0013335577401210053
+  },
+  "time_s": 0.00013017654418945312
+ },
+ "FS8": {
+  "pass_": false,
+  "rows": [
+   {
+    "name": "base",
+    "verdict": "NO-FLOOR-IN-RANGE",
+    "scan_max_dz": 0.0013912500280531814,
+    "surrogate_resid": [
+     0.192246444838459,
+     [
+      "1",
+      "7"
+     ]
+    ]
+   }
+  ],
+  "time_s": 0.0001633167266845703
+ },
+ "RT2": {
+  "pass_": false,
+  "z": {
+   "12": 0.8304754524941863,
+   "24": 0.830241731876032,
+   "48": 0.830120688938698
+  },
+  "dz_24_48": 0.00012104293733405935,
+  "dz_12_48": 0.0003547635554883577,
+  "tag": "freeze-t15",
+  "time_s": 0.0001659393310546875
+ },
+ "RT3": {
+  "pass_": true,
+  "evaluated": 8,
+  "excluded": [],
+  "used_but_failing": [],
+  "rows": [
+   {
+    "tag": "base-r300",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 7,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   },
+   {
+    "tag": "base-r387",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 7,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   },
+   {
+    "tag": "base-r480",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 6,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   },
+   {
+    "tag": "base-r580",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 4,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   },
+   {
+    "tag": "cw15",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 6,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   },
+   {
+    "tag": "cw20-rin200",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 13,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   },
+   {
+    "tag": "cw20",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 9,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   },
+   {
+    "tag": "freeze-t15",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 7,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   }
+  ],
+  "time_s": 0.0005583763122558594
+ },
+ "D1-D2": {
+  "pass_": true,
+  "rows": [
+   {
+    "name": "base",
+    "D1": true,
+    "D2": null,
+    "D2_dz": null,
+    "verdict": "NO-FLOOR-IN-RANGE"
+   }
+  ],
+  "time_s": 0.00019669532775878906
  }
 }

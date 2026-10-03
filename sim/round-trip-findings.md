@@ -1,6 +1,6 @@
 # ROUND-TRIP — findings (brief round-trip-floor r0.1)
 
-**Run verdict: `FIELD-SOLVE-FAIL`.** FS8 (surrogate vs exact, 1.4e-3 against 1e-3) and FS5 (mesh convergence, @@FS5SHORT@@) miss their tolerances. RT2 misses by 2e-5 (|Δz| 1.21e-4 against 1e-4). Every other gate passes: FS1–FS4, FS6, FS7, RT0, RT1, RT3, RT4, CR1, MC1–MC3, FROZEN and FIREWALL. Under the pre-committed set, one FS gate failing decides the verdict.
+**Run verdict: `FIELD-SOLVE-FAIL`.** FS8 (surrogate vs exact, 1.4e-3 against 1e-3) and FS5 (mesh convergence, 25 % per refinement on 1–5 pF couplings, 6.5 % on ≥ 10 pF) miss their tolerances. RT2 misses by 2e-5 (|Δz| 1.21e-4 against 1e-4). Every other gate passes: FS1–FS4, FS6, FS7, RT0, RT1, RT3, RT4, CR1, MC1–MC3, FROZEN and FIREWALL. Under the pre-committed set, one FS gate failing decides the verdict.
 
 **Floor verdict: `NO-FLOOR-IN-RANGE`.** This holds at m = 0.20 and also at m = 0. The round-tripped pump (motor off, all gaps in symmetric ring-down) has **no growing mode** anywhere in r_out 300–580 mm (D 775–1499 mm). Its non-neutral eigenvalue rises from 0.811 to 0.854, against the 1.20 the floor needs. The points fit z ≈ 0.900 − 26.8 / r_out [mm] to ±0.002. So under D-SCALING, **no size** reaches z = 1 in the drawn topology. The failed gates are errors of order 1e-3 in z, and the shortfall is ≥ 0.35, so they cannot change this verdict (§2.3).
 
@@ -26,7 +26,7 @@ No lever tested in the build, alone or combined, restores z > 1 (§4).
 | FS2 thin disc vs 8ε0a | PASS | 0.22 % (free space, Robin boundary at 25× the size) |
 | FS3 two spheres vs image series | PASS | c11 −0.01 %, c12 −0.09 % |
 | FS4 dielectric slab + air gap | PASS | 0.02 % |
-| FS5 mesh convergence | **@@FS5RES@@** | @@FS5VAL@@ |
+| FS5 mesh convergence | **FAIL** | levels c → m → f (1.3 / 2.8 / 4.6 M cells), θ 0 and 30. Worst change per refinement: ≥ 1 pF 20.6 % / 24.6 % (1–5 pF sphere/rod couplings: 1–7, 4–8, 2–3); ≥ 10 pF 7.0 % / 6.5 % (rail/bank ↔ enclosure); ≥ 100 pF 2.0 % / 0.9 %; < 1 pF 0.07 pF (passes). Ladder couplings, coarse vs fine: ≤ 1.4 % (C1/C2), ≤ 2.9 % (Cx), 0.7 % (Ca), 0.1 % (C_R1) |
 | FS6 reciprocity + sign rules | PASS | \|C_ij − C_ji\|/max 3.8e-9 (reference build, θ 7.5°, tol 1e-9); diagonal > 0, off-diagonal ≤ 0, row sums ≥ 0 |
 | FS7 cross-tool (field vs overlap) | reported | C1 max +16 %, Cx max +12 %, Ca +45 %, C_R1 +5.5 % fringe (§2.1) |
 | FS8 surrogate vs exact | **FAIL** | worst \|Δz\| 1.39e-3 at r 387 (0.78e-3 at 300, 0.93e-3 at 480, 0.21e-3 at 580); worst coupling residual 2.2 % (couplings ≥ 20 pF). No floor exists, so no final design needs confirming |
@@ -34,7 +34,7 @@ No lever tested in the build, alone or combined, restores z > 1 (§4).
 | RT1 series tank | PASS | 785.203 pF → **1.3113581**; Δz·C_R1 ≈ −11.7 pF (1e6–1e8 pF) |
 | RT2 N_θ 24 vs 48 | **FAIL (by 2e-5)** | z₁₂ 0.8304755, z₂₄ 0.8302417, z₄₈ 0.8301207: \|Δ\| 1.21e-4. First-order rate (Δ halves per doubling), extrapolated z∞ 0.83000 |
 | RT3 integrity | PASS | every evaluated candidate: integrity PASS (0 FAIL) and all builder checks |
-| RT4 G-* on the freeze reference | @@RT4RES@@ | @@RT4VAL@@ |
+| RT4 G-* on the freeze reference | PASS | G-SEED, G-ADJ, G-Z, G-SGR, G-JS, G-CAD, G-F360, G-CI, G-RT all pass (GEOMETRY-STAGE2-PASS). The re-exported freeze build has identical parts and checks; G-CAD's re-export (STEP timestamp, new parameters at their defaults in the JSON) is reverted |
 | CR1 counter-rotation | PASS | split 0 → max_rpm 3885 (I9 rotor) |
 | MC1 single branch vs analytic | PASS | 7e-14 (V), 2e-13 (I) |
 | MC2 conservation | PASS | 6e-10 |
@@ -96,7 +96,7 @@ Only the first row responds to sector width, which is why the swing lever fails 
 
 ### 2.3 Accuracy against the verdict
 
-- **Mesh (FS5).** @@FS5PROSE@@
+- **Mesh (FS5).** FS5 fails. The non-converging couplings are the small ones set by the staircase rasterisation of spheres and rods (1–5 pF, 20–25 % per refinement) and the enclosure couplings of the banks (6–7 %). The couplings ≥ 100 pF converge to 0.9 % (m → f). The ladder couplings are within 2.9 % of the fine level at the coarse level used for the sweeps.
 - **Uniform C error.** A uniform relative error in every C changes z by nothing: z depends on ratios only (S4 homogeneity).
 - **Biggest single changes.** In the knock-out table (§3), removing an entire coupling class moves z by at most 0.53 (the C1 floor).
 

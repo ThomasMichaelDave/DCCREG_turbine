@@ -363,11 +363,17 @@ def gate_rt4():
                        text=True, timeout=7200)
     rec = json.load(open(rec_path))
     res = {n: bool((rec.get(n) or {}).get("pass_")) for n in names}
-    # the freeze build is frozen: G-CAD's re-export differs only in the STEP header timestamp; put it back
+    # the freeze build is frozen. G-CAD re-exports it: the STEP differs in its header timestamp, the JSON
+    # gains the new builder parameters at their defaults. Same parts and checks required, then put back.
+    fj = "docs/geometry/freeze-v010-CaCb.json"
+    old = json.loads(subprocess.run(["git", "show", f"HEAD:{fj}"], cwd=ROOT, capture_output=True, text=True).stdout)
+    new = json.load(open(os.path.join(ROOT, fj)))
+    same = old["parts"] == new["parts"] and old["checks"] == new["checks"]
     changed = subprocess.run(["git", "diff", "--stat", "--", "docs/geometry/"], cwd=ROOT, capture_output=True,
                              text=True).stdout.strip()
-    subprocess.run(["git", "checkout", "--", "docs/geometry/freeze-v010-CaCb.step"], cwd=ROOT, capture_output=True)
-    return dict(pass_=all(res.values()), gates=res, tail=p.stdout[-1500:], restored=changed)
+    subprocess.run(["git", "checkout", "--", fj, "docs/geometry/freeze-v010-CaCb.step"], cwd=ROOT, capture_output=True)
+    return dict(pass_=all(res.values()) and same, gates=res, freeze_parts_checks_identical=same,
+                tail=p.stdout[-1500:], restored=changed)
 
 
 def gate_d12():
