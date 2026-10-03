@@ -236,3 +236,25 @@ The ladder re-sizes with g_v (C_max 280 / 490 / 560 / 653 pF). All four build, p
 | C | κ_C 4–5, z 0.95–1.05 |
 | D | κ_C 6–8, the best z; **the first candidate expected to reach ≥ 1.1** |
 | R2-X | X falls relative to C_max by ≥ 2× against the reference (PTFE plus the larger C_max) |
+
+**Round-2 outcome, A** (g_v 7, sectored mica 2.5 / face, PTFE, 22/30, hidden counters and C_R plates; free basis; `docs/geometry/rt/r2A.eval.json`).
+
+| | prediction | outcome |
+|---|---|---|
+| A κ_C | 5–7 | **CONFIRMED: 5.40** (C1 581.6 / 107.8 pF) |
+| A z | 0.98–1.12 | **CONFIRMED: z 1.0195, converged.** **The first growing mode** of the round-tripped build |
+
+**Engine-only follow-ups on A's field model (free basis).**
+- **Re-sizing does not help.** Ca × 0.8 / 1.5 / 2 / 2.5 → 1.015 / 0.976 / 0.986 / 0.992. Ca × 0.6 → 0.924. Cx swing × 2 → 1.022. Ca is right where it is.
+- **The floors remain the levers.**
+
+| change | z | converged |
+|---|---|---|
+| C1 floor × 0.5 | 1.067 | yes |
+| X × 0.5 | 1.093 | yes |
+| **both × 0.5** | **1.180** | yes |
+| both × 0.7 | 1.094 | yes |
+| E × 0.5 | 1.026 | yes |
+| Cx floor × 0.5 | 0.958 | no — the island floor must stay |
+
+**Next:** ownership solves on A, to name the parts behind its 108 pF C1 floor and its X.
