@@ -129,3 +129,16 @@ Screening every non-face contribution would leave only the 79 pF face-edge fring
 | × 3 | X × 0.5 | 0.993 |
 
 Swing alone does not suffice: the strays must fall as well.
+
+**M1 outcome.** Part-ownership solves at θ 0 and 30, free basis, in `docs/geometry/rt/m1-free.attrib.json`.
+
+| | prediction | outcome |
+|---|---|---|
+| M1-a | X falls by ≥ 150 pF | **REFUTED.** X 585 → 538 (θ 0), 654 → 592 (θ 30): −47 / −62 pF. The rail ↔ island coupling moved from the Ca counter foil to the **C1 stator foil on the same carrier, the same node**. 1–n23 at θ 30: "Ca foil 54.0" became "C1 foil 44.5" |
+| M1-b | C1 floor falls by ~20 pF | **REFUTED.** 192.3 → 199.2. Ca counter → rotor face did fall (28.4 → 1.9), but the node-1 bus ring followed the counter's new inner edge outward to r354, so bus → rotor C1 face went from 6 to 26 pF, and the face–face fringe rose 79 → 95 |
+| M1-c | Ca within 10 % | CONFIRMED: 454 → 463 |
+| M1-d | z 0.88–0.90 | not run. The sweep was stopped, since a 60 pF X cut is worth ≲ +0.02 per the budget |
+
+**Verdict: DROPPED.**
+
+**Lesson for the following predictions.** Conductors of one node shield each other. A node's exposure to another is set by the geometry *between the nodes*, the carrier stack, not by which of its faces carries foil. A move must change the field path between two different nets: distance, an interposed conductor of a third potential, or less facing area of the *node as a whole*.
