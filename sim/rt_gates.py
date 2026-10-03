@@ -288,8 +288,145 @@ def gate_mc3():
                 "confirmed: no growing mode (z within 1e-5 of 1) -- with the motor branches the drawn pump does not pump"))
 
 
-GATES = [("FS1", gate_fs1), ("FS2", gate_fs2), ("FS3", gate_fs3), ("FS4", gate_fs4), ("FS6", gate_fs6), ("FS7", gate_fs7),
-         ("RT0", gate_rt0), ("RT1", gate_rt1), ("CR1", gate_cr1), ("MC1", gate_mc1), ("MC2", gate_mc2), ("MC3", gate_mc3)]
+# ---------------------------------------------------------------------------------------------------
+# records written by the round-trip runs (round_trip.py --fs5 / --rt2 / --floor); the gates read them
+# ---------------------------------------------------------------------------------------------------
+RTDIR = os.path.join(ROOT, "docs", "geometry", "rt")
+RUNS = os.path.join(HERE, "round_trip_runs.json")
+
+
+def _runs():
+    return json.load(open(RUNS)) if os.path.exists(RUNS) else {}
+
+
+def gate_fs5():
+    """mesh convergence on the reference build: the coupling change per refinement (c -> m -> f) at the
+    aligned and the disaligned angle; < 0.5 % for couplings >= 1 pF, < 0.1 pF below. The gate certifies
+    the finest refinement step that holds; the sweep level's offset from it is reported (FS5-offset)."""
+    rec = _runs().get("fs5")
+    if not rec:
+        return dict(pass_=False, error="no FS5 record (python3 sim/round_trip.py --fs5)")
+    steps = rec["steps"]
+    last = steps[-1]
+    return dict(pass_=bool(last["pass_"]), steps=[{k: v for k, v in s_.items() if k != "rows"} for s_ in steps],
+                certified_step=last["step"], levels=rec["levels"], thetas=rec["thetas"],
+                sweep_level_offset=rec.get("offset"))
+
+
+def gate_fs8():
+    """radius surrogate vs the exact solve at every final design (1e-3 in z): the floor searches' D2."""
+    fl = _runs().get("floor", {})
+    rows = []
+    for name, r in fl.items():
+        if "D2_dz" in r:
+            rows.append(dict(name=name, r_floor=r.get("r_floor"), dz=r["D2_dz"], surrogate_resid=r.get("surrogate_resid")))
+        elif r.get("verdict") == "NO-FLOOR-IN-RANGE":
+            rows.append(dict(name=name, verdict=r["verdict"], scan_max_dz=r.get("FS8_scan_dz"),
+                             surrogate_resid=r.get("surrogate_resid")))
+    ok = bool(rows) and all((x.get("dz") is not None and x["dz"] < 1e-3) or
+                            (x.get("scan_max_dz") is not None and x["scan_max_dz"] < 1e-3) for x in rows)
+    return dict(pass_=ok, rows=rows)
+
+
+def gate_rt2():
+    """N_theta convergence on the reference build: 24 vs 48 samples per 60 deg, |dz| < 1e-4 (12 reported)."""
+    rec = _runs().get("rt2")
+    if not rec:
+        return dict(pass_=False, error="no RT2 record (python3 sim/round_trip.py --rt2)")
+    z = {int(k): v for k, v in rec["z"].items()}
+    dz = abs(z[24] - z[48])
+    return dict(pass_=bool(dz < 1e-4), z=rec["z"], dz_24_48=dz, dz_12_48=abs(z[12] - z[48]), tag=rec["tag"])
+
+
+def gate_rt3():
+    """every evaluated geometry passes integrity (0 FAIL) and the builder's checks; a failing candidate is
+    excluded and listed, never repaired."""
+    rows, bad = [], []
+    for f in sorted(os.listdir(RTDIR)) if os.path.isdir(RTDIR) else []:
+        if f.endswith(".eval.json"):
+            r = json.load(open(os.path.join(RTDIR, f)))
+            ok = r["integrity"]["verdict"] == "PASS" and not r["geometry_fails"]
+            rows.append(dict(tag=r["tag"], integrity=r["integrity"]["verdict"], counts=r["integrity"]["counts"],
+                             geometry_fails=r["geometry_fails"], used=not r.get("excluded")))
+            if not ok and not r.get("excluded"):
+                bad.append(r["tag"])
+    return dict(pass_=bool(rows) and not bad, evaluated=len(rows), excluded=[x["tag"] for x in rows if not x["used"]],
+                used_but_failing=bad, rows=rows)
+
+
+def gate_rt4():
+    """every G-* geometry gate still passes on the freeze reference build after the builder edits (runs
+    pump_geometry_gates; G-CAD rewrites the freeze STEP's timestamp, restored after)."""
+    names = ["G-SEED", "G-ADJ", "G-Z", "G-SGR", "G-JS", "G-CAD", "G-F360", "G-CI", "G-RT"]
+    rec_path = os.path.join(HERE, "pump_geometry_gates.json")
+    p = subprocess.run([sys.executable, os.path.join(HERE, "pump_geometry_gates.py")], cwd=ROOT, capture_output=True,
+                       text=True, timeout=7200)
+    rec = json.load(open(rec_path))
+    res = {n: bool((rec.get(n) or {}).get("pass_")) for n in names}
+    # the freeze build is frozen: G-CAD's re-export differs only in the STEP header timestamp; put it back
+    changed = subprocess.run(["git", "diff", "--stat", "--", "docs/geometry/"], cwd=ROOT, capture_output=True,
+                             text=True).stdout.strip()
+    subprocess.run(["git", "checkout", "--", "docs/geometry/freeze-v010-CaCb.step"], cwd=ROOT, capture_output=True)
+    return dict(pass_=all(res.values()), gates=res, tail=p.stdout[-1500:], restored=changed)
+
+
+def gate_d12():
+    """D1: z monotone in r_out on every searched bracket; D2: the exact z at each floor within 1e-3 of the
+    surrogate-guided value."""
+    fl = _runs().get("floor", {})
+    rows = [dict(name=n, D1=r.get("D1_monotone"), D2=r.get("D2"), D2_dz=r.get("D2_dz"), verdict=r.get("verdict"))
+            for n, r in fl.items()]
+    ok = bool(rows) and all(x["D1"] for x in rows) and all(x["D2"] is not False for x in rows)
+    return dict(pass_=ok, rows=rows)
+
+
+FROZEN_BASE = "b33baa2"           # the head this brief started from
+FROZEN = ["shuttle_core.py", "reference", "sim/seq_stat_commutation.py", "sim/design_synth.py",
+          "sim/island_asdrawn.py", "sim/island_asdrawn_r01_spice.py", "sim/island_gapbracket.py",
+          "sim/pump_engine.py", "sim/pump_sizing.py", "sim/pump_synth.py", "sim/pump_engine_gates.json",
+          "sim/pump_synth_gates.json", "spice", "index.html",
+          "tools/pump-calc.html", "tools/pump-calc.worker.js", "tools/pump-calc-README.md",
+          "tools/pump-synth.html", "tools/pump-synth.worker.js", "tools/pump-synth-README.md",
+          "tools/pump-synth-reference.md", "tools/charge-pump-synth-live.html", "tools/schematic.svg",
+          "docs/geometry/freeze-v010-CaCb-parts.csv", "docs/geometry/freeze-v010-CaCb.json",
+          "docs/geometry/freeze-v010-CaCb.step", "docs/geometry/integrity-after-rev7.txt",
+          "docs/geometry/integrity-before-rev6.txt", "docs/geometry/integrity-rev8-radial.txt"]
+
+
+def gate_frozen():
+    """frozen empty-diff vs the brief's base, committed and working tree."""
+    r1 = subprocess.run(["git", "diff", "--stat", FROZEN_BASE, "--"] + FROZEN, cwd=ROOT, capture_output=True, text=True)
+    r2 = subprocess.run(["git", "status", "--porcelain", "--"] + FROZEN, cwd=ROOT, capture_output=True, text=True)
+    out = (r1.stdout + r2.stdout).strip()
+    return dict(pass_=out == "", base=FROZEN_BASE, diff=out)
+
+
+def gate_firewall():
+    """pure EE: the solver and the engine import only numerics and the EE cores; no subprocess / git / file
+    writes on their import path. The orchestrator (round_trip) writes its caches only under docs/geometry/rt."""
+    import re
+    out, ok = {}, True
+    allowed = {"field_solve": {"math", "time", "numpy", "scipy", "pyamg"},
+               "rt_engine": {"copy", "math", "os", "sys", "numpy", "pump_engine", "design_synth"},
+               "round_trip": {"json", "math", "os", "sys", "time", "numpy", "multiprocessing", "field_solve",
+                              "rt_engine", "pump_synth", "pump_sizing", "pump_geometry", "circuit_integrity"}}
+    for mod, allow in allowed.items():
+        src = open(os.path.join(HERE, mod + ".py")).read()
+        names = sorted({(a or b).split(".")[0] for a, b in re.findall(r"^\s*import ([\w.]+)|^\s*from ([\w.]+) import", src, re.M)})
+        bad = [n for n in names if n not in allow]
+        writes = len(re.findall(r"open\([^)]*['\"]w", src))
+        sub = bool(re.search(r"^\s*(import|from)\s+subprocess", src, re.M))
+        good = not bad and not sub and (writes == 0 or mod == "round_trip")
+        out[mod] = dict(imports=names, disallowed=bad, file_writes=writes, subprocess=sub, pass_=good)
+        ok &= good
+    return dict(pass_=bool(ok), modules=out)
+
+
+GATES = [("FS1", gate_fs1), ("FS2", gate_fs2), ("FS3", gate_fs3), ("FS4", gate_fs4), ("FS5", gate_fs5), ("FS6", gate_fs6),
+         ("FS7", gate_fs7), ("FS8", gate_fs8), ("RT0", gate_rt0), ("RT1", gate_rt1), ("RT2", gate_rt2), ("RT3", gate_rt3),
+         ("RT4", gate_rt4), ("CR1", gate_cr1), ("MC1", gate_mc1), ("MC2", gate_mc2), ("MC3", gate_mc3), ("D1-D2", gate_d12),
+         ("FROZEN", gate_frozen), ("FIREWALL", gate_firewall)]
+
 
 
 def main():

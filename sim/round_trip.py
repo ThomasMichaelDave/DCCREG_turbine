@@ -305,13 +305,17 @@ def evaluate_design(tag, plates=None, geom=None, level="c", n_theta=12, enclosur
     outdir = outdir or os.path.join(ROOT, "docs", "geometry", "rt")
     os.makedirs(outdir, exist_ok=True)
     design, lad = design_for(plates, geom)
-    geo_fail = [k for k, v in design["checks"].items() if not v["pass_"]]
+    # a "(tank, shown only)" check is information (brief §5: the tank's reach is a core matter) [IR]
+    geo_fail = [k for k, v in design["checks"].items() if not v["pass_"] and "shown only" not in k]
+    geo_info = [k for k, v in design["checks"].items() if not v["pass_"] and "shown only" in k]
     integ = integrity(design)
     res = dict(tag=tag, plates=dict(plates or {}), geom=dict(RT_GEOM, **(geom or {})), level=level, n_theta=n_theta,
-               enclosure=enclosure, geometry_fails=geo_fail, integrity=integ, r_edge=design["r_edge"],
+               enclosure=enclosure, geometry_fails=geo_fail, geometry_info=geo_info, integrity=integ, r_edge=design["r_edge"],
                D_mm=2.0 * design["r_edge"], z_total=design["z_total"], ladder_Ca=lad["ladder"]["Ca"]["value"])
+    epath = os.path.join(outdir, f"{tag}.eval.json")
     if geo_fail or integ["verdict"] != "PASS":
         res["excluded"] = "INTEGRITY-FAIL" if integ["verdict"] != "PASS" else "GEOMETRY-CHECK-FAIL"
+        json.dump(res, open(epath, "w"), indent=1)
         return res
     dpath = os.path.join(outdir, f"{tag}.design.json")
     json.dump(design, open(dpath, "w"))
@@ -329,6 +333,7 @@ def evaluate_design(tag, plates=None, geom=None, level="c", n_theta=12, enclosur
     t0 = time.time()
     m = RT.run(RT.build_net(cfg, cmodel=cm), cfg)
     res.update(z=m["z"], converged=m["converged"], t_engine=time.time() - t0)
+    json.dump(res, open(epath, "w"), indent=1)
     return res
 
 
@@ -444,3 +449,108 @@ def floor_search(name, radii, plates=None, geom=None, margin=0.20, level="c", n_
         out["D2"] = bool(out["D2_dz"] < 1e-3)
     out["verdict"] = "FLOOR-SET"
     return out
+
+
+# ---------------------------------------------------------------------------------------------------
+# certification runs (records in sim/round_trip_runs.json; rt_gates reads them)
+# ---------------------------------------------------------------------------------------------------
+RUNS = os.path.join(HERE, "round_trip_runs.json")
+
+
+def _record(key, val):
+    d = json.load(open(RUNS)) if os.path.exists(RUNS) else {}
+    if isinstance(val, dict) and isinstance(d.get(key), dict) and key == "floor":
+        d[key].update(val)
+    else:
+        d[key] = val
+    json.dump(d, open(RUNS, "w"), indent=1, default=float)
+
+
+def sweep_n(tag, n_theta, level="c", procs=4, log=None, outdir=None):
+    """the tag's sweep at n_theta angles, reusing every cached sweep whose angles are a subset."""
+    outdir = outdir or os.path.join(ROOT, "docs", "geometry", "rt")
+    spath = os.path.join(outdir, f"{tag}.{level}{n_theta}.sweep.json")
+    if os.path.exists(spath):
+        return load(spath)
+    thetas = [PERIOD * k / n_theta for k in range(n_theta)]
+    have = {}
+    for f in os.listdir(outdir):
+        if f.startswith(f"{tag}.{level}") and f.endswith(".sweep.json"):
+            th, so = load(os.path.join(outdir, f))
+            have.update({round(t, 9): s for t, s in zip(th, so)})
+    todo = [t for t in thetas if round(t, 9) not in have]
+    if todo:
+        new = sweep(os.path.join(outdir, f"{tag}.design.json"), todo, level=level, procs=procs, log=log)
+        have.update({round(t, 9): s for t, s in zip(todo, new)})
+    sols = [have[round(t, 9)] for t in thetas]
+    save(spath, thetas, sols)
+    return thetas, sols
+
+
+def run_rt2(tag="freeze-t15", log=print):
+    import pump_synth as SY
+    import rt_engine as RT
+    cfg = SY.engine_cfg(*SY.sized({}))
+    th48, s48 = sweep_n(tag, 48, log=log)
+    z = {}
+    for n in (12, 24, 48):
+        step = 48 // n
+        th, so = th48[::step], s48[::step]
+        prof, _ = reduce(so)
+        m = RT.run(RT.build_net(cfg, cmodel=CModel(th, prof, tip_deg=RT_GEOM["sg_tip_deg"])), cfg)
+        z[n] = m["z"]
+        log(f"RT2 N_theta {n}: z {m['z']:.7f} conv {m['converged']}")
+    _record("rt2", dict(tag=tag, z=z))
+    return z
+
+
+def run_fs5(tag="freeze-t15", levels=("c", "m", "f"), thetas=(0.0, 30.0), log=print):
+    """per-refinement change of every reduced coupling at the aligned (0) and disaligned (30) geometric
+    angle; the sweep level's offset from the finest level reported for the ladder couplings."""
+    design = json.load(open(os.path.join(ROOT, "docs", "geometry", "rt", f"{tag}.design.json")))
+    cache = os.path.join(ROOT, "docs", "geometry", "rt", f"{tag}.fs5.json")
+    sols = json.load(open(cache)) if os.path.exists(cache) else {}
+    for L in levels:
+        for t in thetas:
+            k = f"{L}@{t:g}"
+            if k not in sols:
+                t0 = time.time()
+                sols[k] = solve_theta(design, t, L)
+                log(f"FS5 {k}: {sols[k]['info']['cells']} cells, {time.time() - t0:.0f} s")
+                json.dump(sols, open(cache, "w"))
+    steps = []
+    for a, b in zip(levels[:-1], levels[1:]):
+        worst_rel, worst_abs, rows = 0.0, 0.0, []
+        for t in thetas:
+            pa, _ = reduce([sols[f"{a}@{t:g}"]])
+            pb, _ = reduce([sols[f"{b}@{t:g}"]])
+            for key in pb:
+                va, vb = float(pa[key][0]), float(pb[key][0])
+                if abs(vb) >= 1.0:
+                    rel = abs(va / vb - 1)
+                    worst_rel = max(worst_rel, rel)
+                    rows.append(dict(key="|".join(key), theta=t, coarse=va, fine=vb, rel=rel))
+                else:
+                    worst_abs = max(worst_abs, abs(va - vb))
+        rows.sort(key=lambda r: -r["rel"])
+        steps.append(dict(step=f"{a}->{b}", worst_rel=worst_rel, worst_abs_small_pF=worst_abs,
+                          pass_=bool(worst_rel < 5e-3 and worst_abs < 0.1), rows=rows[:12]))
+        log(f"FS5 {a}->{b}: worst rel {worst_rel:.4f}, small-coupling abs {worst_abs:.3f} pF")
+    off = {}
+    for t in thetas:
+        pc, _ = reduce([sols[f"{levels[0]}@{t:g}"]])
+        pf, _ = reduce([sols[f"{levels[-1]}@{t:g}"]])
+        for nm, ab in VARICAP_KEYS.items():
+            k = _key(*ab)
+            off[f"{nm}@{t:g}"] = float(pc[k][0] / pf[k][0] - 1)
+    rec = dict(tag=tag, levels=list(levels), thetas=list(thetas), steps=steps, offset=off)
+    _record("fs5", rec)
+    return rec
+
+
+if __name__ == "__main__":
+    if "--rt2" in sys.argv:
+        run_rt2()
+    if "--fs5" in sys.argv:
+        lv = sys.argv[sys.argv.index("--fs5") + 1].split(",") if len(sys.argv) > sys.argv.index("--fs5") + 1 else "cmf"
+        run_fs5(levels=tuple(lv))

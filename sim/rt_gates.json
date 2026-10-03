@@ -291,5 +291,66 @@
   "located": 61,
   "z_run": 1.0124403137022013,
   "time_s": 70.30754017829895
+ },
+ "FROZEN": {
+  "pass_": true,
+  "base": "b33baa2",
+  "diff": "",
+  "time_s": 0.00938105583190918
+ },
+ "FIREWALL": {
+  "pass_": true,
+  "modules": {
+   "field_solve": {
+    "imports": [
+     "math",
+     "numpy",
+     "pyamg",
+     "scipy",
+     "time"
+    ],
+    "disallowed": [],
+    "file_writes": 0,
+    "subprocess": false,
+    "pass_": true
+   },
+   "rt_engine": {
+    "imports": [
+     "copy",
+     "design_synth",
+     "math",
+     "numpy",
+     "os",
+     "pump_engine",
+     "sys"
+    ],
+    "disallowed": [],
+    "file_writes": 0,
+    "subprocess": false,
+    "pass_": true
+   },
+   "round_trip": {
+    "imports": [
+     "circuit_integrity",
+     "field_solve",
+     "json",
+     "math",
+     "multiprocessing",
+     "numpy",
+     "os",
+     "pump_geometry",
+     "pump_sizing",
+     "pump_synth",
+     "rt_engine",
+     "sys",
+     "time"
+    ],
+    "disallowed": [],
+    "file_writes": 6,
+    "subprocess": false,
+    "pass_": true
+   }
+  },
+  "time_s": 0.0025739669799804688
  }
 }
