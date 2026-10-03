@@ -577,6 +577,27 @@ def run_fs5(tag="freeze-t15", levels=("c", "m", "f"), thetas=(0.0, 30.0), log=pr
     return rec
 
 
+def export_cad(design, prefix, label, outdir=None):
+    """docs/geometry/<prefix>-<hash>.{json,step,-parts.csv} through the existing FreeCAD builder (the OCC
+    stand-in G-CAD uses), and <prefix>-<hash>-integrity.txt read back from the STEP. hash = the parts."""
+    import hashlib
+    import circuit_integrity as CI
+    import pump_geometry_gates as PGG
+    outdir = outdir or os.path.join(ROOT, "docs", "geometry")
+    h = hashlib.sha1(json.dumps(design["parts"], sort_keys=True).encode()).hexdigest()[:8]
+    base = os.path.join(outdir, f"{prefix}-{h}")
+    open(base + ".json", "w").write(json.dumps(design, indent=1) + "\n")
+    PGG._install_occ_freecad()
+    os.environ["PUMP_GEOMETRY_JSON"] = base + ".json"
+    src = open(os.path.join(ROOT, "tools", "pump-geometry.FCMacro"), encoding="utf8").read()
+    ns = {"__name__": "__macro__"}
+    exec(compile(src, "pump-geometry.FCMacro", "exec"), ns)
+    rep = CI.analyze(CI.parts_from_step(base + ".step"), CI.load_netlist(), os.path.basename(base) + ".step")
+    open(base + "-integrity.txt", "w").write(f"# {label}\n" + CI.render(rep) + "\n")
+    return dict(hash=h, base=os.path.relpath(base, ROOT), solids=len(ns["RESULT"]), integrity=rep["verdict"],
+                counts=rep["counts"])
+
+
 if __name__ == "__main__":
     if "--rt2" in sys.argv:
         run_rt2()

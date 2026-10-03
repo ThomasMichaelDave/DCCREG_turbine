@@ -409,7 +409,8 @@ def gate_firewall():
     allowed = {"field_solve": {"math", "time", "numpy", "scipy", "pyamg"},
                "rt_engine": {"copy", "math", "os", "sys", "numpy", "pump_engine", "design_synth"},
                "round_trip": {"json", "math", "os", "sys", "time", "numpy", "multiprocessing", "field_solve",
-                              "rt_engine", "pump_synth", "pump_sizing", "pump_geometry", "circuit_integrity"}}
+                              "rt_engine", "pump_synth", "pump_sizing", "pump_geometry", "circuit_integrity",
+                              "hashlib", "concurrent", "pump_geometry_gates"}}
     for mod, allow in allowed.items():
         src = open(os.path.join(HERE, mod + ".py")).read()
         names = sorted({(a or b).split(".")[0] for a, b in re.findall(r"^\s*import ([\w.]+)|^\s*from ([\w.]+) import", src, re.M)})

@@ -352,5 +352,31 @@
    }
   },
   "time_s": 0.0025739669799804688
+ },
+ "MC3": {
+  "pass_": true,
+  "dz": 1.0759690154404922e-06,
+  "runs": {
+   "dth0.05": {
+    "z": 0.9999965995922806,
+    "converged": false,
+    "sub": 0.9999839773335083,
+    "located": 101
+   },
+   "dth0.025": {
+    "z": 0.999997675561296,
+    "converged": false,
+    "sub": 0.9999818253314777,
+    "located": 118
+   },
+   "loc40": {
+    "z": 0.999996599603593,
+    "converged": false,
+    "sub": 0.9999839773109149,
+    "located": 101
+   }
+  },
+  "G1m": "confirmed: no growing mode (z within 1e-5 of 1) -- with the motor branches the drawn pump does not pump",
+  "time_s": 577.3807559013367
  }
 }
