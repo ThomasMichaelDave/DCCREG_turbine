@@ -1,0 +1,47 @@
+{
+ "tag": "base-r480",
+ "plates": {
+  "r_outMm": 480.0
+ },
+ "geom": {
+  "sg_tip_deg": 15.0
+ },
+ "level": "c",
+ "n_theta": 12,
+ "enclosure": 50.0,
+ "geometry_fails": [],
+ "geometry_info": [
+  "C_R: septum C = 2.82 x C_max (tank, shown only)"
+ ],
+ "integrity": {
+  "verdict": "PASS",
+  "counts": {
+   "FAIL": 0,
+   "WARN": 6,
+   "PASS": 8,
+   "INFO": 1
+  },
+  "nets": 12,
+  "fails": []
+ },
+ "r_edge": 620.1550387596899,
+ "D_mm": 1240.3100775193798,
+ "z_total": 228.0,
+ "ladder_Ca": 484.1375073877818,
+ "field": {
+  "C1max": 520.32349967053,
+  "C1min": 254.1473206912525,
+  "C2max": 519.431697534909,
+  "C2min": 254.9851052953636,
+  "cx3_max": 878.3618695997819,
+  "cx3_min": 269.23706599416573,
+  "cx4_max": 880.9267501278755,
+  "cx4_min": 223.47371941663854,
+  "Ca": 640.8732916226984,
+  "Cb": 640.4047006613627,
+  "C_R1": 1383.0371688812058
+ },
+ "z": 0.8419572560608687,
+ "converged": false,
+ "t_engine": 5.465134143829346
+}
