@@ -330,3 +330,117 @@ def evaluate_design(tag, plates=None, geom=None, level="c", n_theta=12, enclosur
     m = RT.run(RT.build_net(cfg, cmodel=cm), cfg)
     res.update(z=m["z"], converged=m["converged"], t_engine=time.time() - t0)
     return res
+
+
+# ---------------------------------------------------------------------------------------------------
+# the floor: the radius surrogate (FS8) and the search (D1, D2)
+# ---------------------------------------------------------------------------------------------------
+def profiles_of(tag, level="c", n_theta=12, outdir=None):
+    outdir = outdir or os.path.join(ROOT, "docs", "geometry", "rt")
+    thetas, sols = load(os.path.join(outdir, f"{tag}.{level}{n_theta}.sweep.json"))
+    prof, nets = reduce(sols)
+    return thetas, prof
+
+
+class Surrogate:
+    """every coupling at every sampled angle as a + b r + c r^2 in r_out, fitted to >= 4 solved radii
+    (area-type couplings ~ r^2, edge-type ~ r, fixed ones constant) [ME, brief §3]."""
+
+    def __init__(self, radii, profs, deg=2):
+        self.radii = np.asarray(radii, float)
+        keys = set(profs[0])
+        for p in profs[1:]:
+            keys &= set(p)
+        self.keys = sorted(keys)
+        X = np.vander(self.radii, deg + 1, increasing=True)
+        self.coef, self.resid = {}, {}
+        for k in self.keys:
+            Y = np.array([p[k] for p in profs])                      # (n_r, n_theta)
+            c, *_ = np.linalg.lstsq(X, Y, rcond=None)
+            self.coef[k] = c
+            fit = X @ c
+            scale = max(np.max(np.abs(Y)), 1e-9)
+            self.resid[k] = float(np.max(np.abs(fit - Y)) / scale)
+        self.deg = deg
+
+    def prof(self, r):
+        x = np.vander(np.array([float(r)]), self.deg + 1, increasing=True)[0]
+        return {k: x @ c for k, c in self.coef.items()}
+
+    def worst_resid(self, min_pF=1.0):
+        big = [(self.resid[k], k) for k in self.keys if np.max(np.abs(self.coef[k][0])) > 0 or True]
+        return max(big)
+
+
+def z_cmodel(thetas, prof, plates, tip_deg, firing=None, C_R1_pF=None):
+    import pump_synth as SY
+    import rt_engine as RT
+    cfg = SY.engine_cfg(*SY.sized(dict(plates or {}, **(firing or {}))))
+    p = dict(prof)
+    if C_R1_pF is not None:
+        p[("R-A", "R-B")] = np.full_like(np.asarray(p[("R-A", "R-B")], float), C_R1_pF)
+    cm = CModel(thetas, p, tip_deg=tip_deg)
+    m = RT.run(RT.build_net(cfg, cmodel=cm), cfg)
+    return m["z"], m["converged"]
+
+
+def floor_search(name, radii, plates=None, geom=None, margin=0.20, level="c", n_theta=12, log=None, confirm=True,
+                 r_scan=None, firing=None):
+    """D_floor for one lever setting: solve the round trip at `radii` (r_out, mm), fit the surrogate,
+    scan z(r_out), find z = 1 + m, confirm exactly there (D2), monotonicity on the bracket (D1)."""
+    plates = dict(plates or {})
+    tip = dict(RT_GEOM, **(geom or {}))["sg_tip_deg"]
+    runs, profs, thetas = [], [], None
+    for r in radii:
+        tag = f"{name}-r{r:g}"
+        res = evaluate_design(tag, dict(plates, r_outMm=r), geom, level=level, n_theta=n_theta, log=log, firing=firing)
+        runs.append(res)
+        if res.get("excluded"):
+            continue
+        th, pr = profiles_of(tag, level, n_theta)
+        thetas = th
+        profs.append((r, pr))
+    out = dict(name=name, radii=list(radii), runs=[{k: v for k, v in r.items() if k not in ("geom",)} for r in runs])
+    if len(profs) < 4:
+        out["verdict"] = "SURROGATE-NEEDS-4-RADII"
+        return out
+    sur = Surrogate([r for r, _ in profs], [p for _, p in profs])
+    out["surrogate_resid"] = sur.worst_resid()
+    lo_r, hi_r = min(r for r, _ in profs), max(r for r, _ in profs)
+    grid = list(r_scan or np.linspace(lo_r, hi_r, 9))
+    zs = []
+    for r in grid:
+        z, conv = z_cmodel(thetas, sur.prof(r), dict(plates, r_outMm=r), tip, firing)
+        zs.append((float(r), z, conv))
+    out["scan"] = zs
+    target = 1.0 + margin
+    mono = all(zs[i + 1][1] >= zs[i][1] - 1e-9 for i in range(len(zs) - 1)) or \
+        all(zs[i + 1][1] <= zs[i][1] + 1e-9 for i in range(len(zs) - 1))
+    out["D1_monotone"] = bool(mono)
+    above = [r for r, z, c in zs if z >= target]
+    if not above:
+        out["verdict"] = "NO-FLOOR-IN-RANGE"
+        out["z_max"] = max(z for r, z, c in zs)
+        return out
+    # the smallest r with z >= target: bisection on the surrogate between the last below and the first above
+    i = next(k for k, (r, z, c) in enumerate(zs) if z >= target)
+    if i == 0:
+        out["verdict"] = "FLOOR-BELOW-BRACKET"
+        out["r_floor"] = zs[0][0]
+        return out
+    a, b = zs[i - 1][0], zs[i][0]
+    for _ in range(12):
+        m_ = 0.5 * (a + b)
+        z, _c = z_cmodel(thetas, sur.prof(m_), dict(plates, r_outMm=m_), tip, firing)
+        a, b = (m_, b) if z < target else (a, m_)
+    r_star = b
+    z_sur, _ = z_cmodel(thetas, sur.prof(r_star), dict(plates, r_outMm=r_star), tip, firing)
+    out.update(r_floor=r_star, z_surrogate=z_sur)
+    if confirm:
+        tag = f"{name}-floor"
+        ex = evaluate_design(tag, dict(plates, r_outMm=round(r_star, 2)), geom, level=level, n_theta=n_theta, log=log, firing=firing)
+        out["exact"] = {k: v for k, v in ex.items() if k not in ("geom",)}
+        out["D2_dz"] = abs(ex.get("z", float("nan")) - z_sur)
+        out["D2"] = bool(out["D2_dz"] < 1e-3)
+    out["verdict"] = "FLOOR-SET"
+    return out
