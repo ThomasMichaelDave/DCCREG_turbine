@@ -142,3 +142,16 @@ Swing alone does not suffice: the strays must fall as well.
 **Verdict: DROPPED.**
 
 **Lesson for the following predictions.** Conductors of one node shield each other. A node's exposure to another is set by the geometry *between the nodes*, the carrier stack, not by which of its faces carries foil. A move must change the field path between two different nets: distance, an interposed conductor of a third potential, or less facing area of the *node as a whole*.
+
+## Step 2, move M5: low-εr carriers (G10 4.7 → PTFE 2.1), geometry unchanged
+
+Every "G10 …" carrier, stator and rotor, becomes PTFE (εr 2.1). The garolite septum and the mica facings are kept. This is a material move: **[IR] mechanical flag**, since PTFE rotor discs at speed need structural review, and is to be weighed by TMD.
+
+Predictions (free basis), recorded before the run:
+
+| | prediction |
+|---|---|
+| M5-a | the C1 floor falls from 192 to 110–140 pF. The 2-D check gave 120 → 65 pF with the dielectric removed, so PTFE should land about halfway |
+| M5-b | X falls from ~620 to 300–400 pF. The rail ↔ island path runs through the 41 mm ND2/ND3 carrier |
+| M5-c | C1 max falls by ≤ 5 %: the C1 gap is air |
+| M5-d | z rises to 0.90–0.95. Still no pump: κ ≈ 2.6, against the ≥ 7 that Step 0b requires |

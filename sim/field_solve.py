@@ -35,14 +35,14 @@ except Exception:                       # pragma: no cover
     pyamg = None
 
 EPS0 = 8.8541878128e-15                 # F/mm
-EPS_R = {"air": 1.0006, "mica": 5.4, "garolite": 4.7, "G10": 4.7}
+EPS_R = {"air": 1.0006, "mica": 5.4, "garolite": 4.7, "G10": 4.7, "PTFE": 2.1}
 PERIOD = 60.0
 
 
 def eps_of_material(mat):
     """relative permittivity of an insulator by its material name (as pump_geometry.DIELECTRICS)."""
     m = (mat or "").lower()
-    for k, v in (("mica", 5.4), ("garolite", 4.7), ("g10", 4.7)):
+    for k, v in (("mica", 5.4), ("garolite", 4.7), ("g10", 4.7), ("ptfe", 2.1)):
         if k in m:
             return v
     return EPS_R["air"]
