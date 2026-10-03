@@ -1,0 +1,65 @@
+# round-trip best lever combination: Ca x2 (ca_cal 2.0) at r_out 580 mm (D 1499 mm); z 0.889 field-solved, no growing mode (Lx kept: dropping it gives 0.888)
+CIRCUIT INTEGRITY (circuit-integrity/1) - opt-c9ac780b.step
+verdict PASS: 0 FAIL, 8 WARN  (671 parts, 618 conductors, 12 nets)
+
+nets:
+       1    67 parts  stator ND1 - A-rail: C1 stator plate + Ca counter-electrode
+       2   115 parts  stator ND2 - AR bank: Ca electrode
+       3   115 parts  stator ND3 - BR bank: Cb electrode
+       4    67 parts  stator ND4 - B-rail: C2 stator plate + Cb counter-electrode
+       7    49 parts  rotor  ND7 - island on rotor B (Cx3 bars)
+       8    55 parts  rotor  ND8 - island on rotor A (Cx4 bars)
+     R-A    49 parts  rotor  ND5 - resonator end A: rotor A (C1 rotor face)
+     R-B    49 parts  rotor  ND6 - resonator end B: rotor B (C2 rotor face)
+     n00    13 parts  rotor  ND10 - C_R plate on rotor B (L_R2 to R-B)
+     n17    13 parts  stator Cx3 pickup on ND3 (Lx3 to node 3)
+     n18    13 parts  rotor  ND9 - C_R plate on rotor A (L_R1 to R-A)
+     n23    13 parts  stator Cx4 pickup on ND2 (Lx4 to node 2)
+
+capacitors of the netlist:
+  C1     R-A-1     rotating  0.74-650.84 pF
+  C2     R-B-4     rotating  0.74-650.84 pF
+  C_R1   n18-n00   fixed     1801.85 pF
+  Ca1    1-2       fixed     1431.91 pF
+  Cb1    3-4       fixed     1431.91 pF
+  Cx3    7-n17     rotating  2.10-1174.25 pF
+  Cx4    n23-8     rotating  2.10-1174.25 pF
+
+stray capacitors (facing foils not in the netlist):
+  1-8       rotating  0.00-176.82 pF
+  2-8       rotating  0.00-33.09 pF  across BS4, SG4b1
+  2-n23     fixed     5.42 pF  across Lx4
+  3-7       rotating  0.00-33.09 pF  across BS3, SG3b1
+  3-n17     fixed     5.42 pF  across Lx3
+  4-7       rotating  0.00-176.82 pF
+  R-A-n18   fixed     1186.10 pF  across L_R1
+  R-B-n00   fixed     1186.10 pF  across L_R2
+
+spark gaps of the netlist:
+  BS3    7-3     6 stator spheres, gap 5.50 mm (spheres 25.0 / 12.0 mm)
+  BS4    8-2     6 stator spheres, gap 5.50 mm (spheres 25.0 / 12.0 mm)
+  SG1    2-R-A   6 stator spheres, gap 5.50 mm (spheres 12.0 / 12.0 mm)
+  SG2    3-R-B   6 stator spheres, gap 5.50 mm (spheres 12.0 / 12.0 mm)
+  SG3a1  1-7     6 stator spheres, gap 4.75 mm (spheres 12.0 / 12.0 mm)
+  SG3b1  7-3     6 stator spheres, gap 5.50 mm (spheres 12.0 / 12.0 mm)
+  SG4a1  4-8     6 stator spheres, gap 4.75 mm (spheres 12.0 / 12.0 mm)
+  SG4b1  8-2     6 stator spheres, gap 5.50 mm (spheres 12.0 / 12.0 mm)
+
+findings:
+  [PASS] I1 12 galvanic nets, each on one node
+  [PASS] I2 every node is one net (12 nodes)
+  [PASS] I3 drawn nodes 1, 2, 3, 4, 7, 8, R-A, R-B, n00, n17, n18, n23; netlist nodes with nothing drawn (off-model): n03, n09, n10, n11, n12, n13, n14, n15, n19, n20, n21, n22
+  [PASS] I4 no net crosses the rotating joint
+  [PASS] I5 every net holds a foil electrode
+  [WARN] I6 STRAY capacitor 1-8 (rotating): 0.0-176.8 pF over a turn
+  [WARN] I6 STRAY capacitor 2-8 (rotating): 0.0-33.1 pF over a turn, across BS4, SG4b1
+  [WARN] I6 STRAY capacitor 2-n23 (fixed): 5.4 pF, across Lx4
+  [WARN] I6 STRAY capacitor 3-7 (rotating): 0.0-33.1 pF over a turn, across BS3, SG3b1
+  [WARN] I6 STRAY capacitor 3-n17 (fixed): 5.4 pF, across Lx3
+  [WARN] I6 STRAY capacitor 4-7 (rotating): 0.0-176.8 pF over a turn
+  [WARN] I6 STRAY capacitor R-A-n18 (fixed): 1186.1 pF, across L_R1
+  [WARN] I6 STRAY capacitor R-B-n00 (fixed): 1186.1 pF, across L_R2
+  [PASS] I6 all 7 drawn netlist capacitors realized on their nodes
+  [PASS] I7 all 8 netlist gaps realized on their nodes, no parasitic gap
+  [PASS] I8 671 parts: every label, group and gap / capacitor name states the node its copper is on
+  [INFO] I9 28 netlist components are off-model; 4 join two drawn nets and need a connection there: L_R1, L_R2, Lx3, Lx4

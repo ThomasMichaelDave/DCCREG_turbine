@@ -1,0 +1,48 @@
+{
+ "tag": "opt-r580",
+ "plates": {
+  "r_outMm": 580.0
+ },
+ "geom": {
+  "sg_tip_deg": 15.0,
+  "ca_cal": 2.0
+ },
+ "level": "c",
+ "n_theta": 12,
+ "enclosure": 50.0,
+ "geometry_fails": [],
+ "geometry_info": [
+  "C_R: septum C = 2.82 x C_max (tank, shown only)"
+ ],
+ "integrity": {
+  "verdict": "PASS",
+  "counts": {
+   "FAIL": 0,
+   "WARN": 8,
+   "PASS": 8,
+   "INFO": 1
+  },
+  "nets": 12,
+  "fails": []
+ },
+ "r_edge": 749.3540051679587,
+ "D_mm": 1498.7080103359174,
+ "z_total": 228.0,
+ "ladder_Ca": 715.9549022295881,
+ "field": {
+  "C1max": 744.8144721461412,
+  "C1min": 317.0147117584333,
+  "C2max": 744.058745539545,
+  "C2min": 318.1756797974425,
+  "cx3_max": 1261.1893986680334,
+  "cx3_min": 327.4450789671294,
+  "cx4_max": 1266.484573167755,
+  "cx4_min": 268.3908394757885,
+  "Ca": 1613.2334945460327,
+  "Cb": 1612.7465515849456,
+  "C_R1": 1991.369259315462
+ },
+ "z": 0.8884731103327841,
+ "converged": false,
+ "t_engine": 5.189177751541138
+}

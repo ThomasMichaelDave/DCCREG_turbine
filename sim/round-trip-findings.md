@@ -2,7 +2,7 @@
 
 **Run verdict: `FIELD-SOLVE-FAIL`.** FS8 (surrogate vs exact, 1.4e-3 against 1e-3) and FS5 (mesh convergence, 25 % per refinement on 1–5 pF couplings, 6.5 % on ≥ 10 pF) miss their tolerances. RT2 misses by 2e-5 (|Δz| 1.21e-4 against 1e-4). Every other gate passes: FS1–FS4, FS6, FS7, RT0, RT1, RT3, RT4, CR1, MC1–MC3, FROZEN and FIREWALL. Under the pre-committed set, one FS gate failing decides the verdict.
 
-**Floor verdict: `NO-FLOOR-IN-RANGE`.** This holds at m = 0.20 and also at m = 0. The round-tripped pump (motor off, all gaps in symmetric ring-down) has **no growing mode** anywhere in r_out 300–580 mm (D 775–1499 mm). Its non-neutral eigenvalue rises from 0.811 to 0.854, against the 1.20 the floor needs. The points fit z ≈ 0.900 − 26.8 / r_out [mm] to ±0.002. So under D-SCALING, **no size** reaches z = 1 in the drawn topology. The failed gates are errors of order 1e-3 in z, and the shortfall is ≥ 0.35, so they cannot change this verdict (§2.3).
+**Floor verdict: `NO-FLOOR-IN-RANGE`.** This holds at m = 0.20 and also at m = 0. The round-tripped pump (motor off, all gaps in symmetric ring-down) has **no growing mode** anywhere in r_out 300–580 mm (D 775–1499 mm). Its non-neutral eigenvalue rises from 0.811 to 0.854, against the 1.20 the floor needs. The points fit z ≈ 0.900 − 26.8 / r_out [mm] to ±0.002. So under D-SCALING, **no size** reaches z = 1 in the drawn topology. The failed gates move z by ≤ 3e-3: the surrogate 1.4e-3, N_θ 1.2e-4, and a ±3 % scatter on every coupling 2.9e-3. The 1–5 pF couplings that fail FS5 are each worth less in z than a whole stray knocked out. Against a shortfall of ≥ 0.35, none of this can change the verdict (§2.3).
 
 **What kills the pump: two independent floors, each fatal on its own** (§3):
 1. **The disaligned C1/C2 floor.** It is 191 pF, against 16 pF assumed (P2 refuted, ×12). Alone it takes the realized-C ladder from z 1.438 to 0.897.
@@ -33,7 +33,7 @@ No lever tested in the build, alone or combined, restores z > 1 (§4).
 | RT0 headline | PASS | z 1.3254745317 (Δ −4e-11), K1–K4 pass |
 | RT1 series tank | PASS | 785.203 pF → **1.3113581**; Δz·C_R1 ≈ −11.7 pF (1e6–1e8 pF) |
 | RT2 N_θ 24 vs 48 | **FAIL (by 2e-5)** | z₁₂ 0.8304755, z₂₄ 0.8302417, z₄₈ 0.8301207: \|Δ\| 1.21e-4. First-order rate (Δ halves per doubling), extrapolated z∞ 0.83000 |
-| RT3 integrity | PASS | every evaluated candidate: integrity PASS (0 FAIL) and all builder checks |
+| RT3 integrity | PASS | all 12 evaluated candidates: integrity PASS (0 FAIL) and every builder check (none excluded) |
 | RT4 G-* on the freeze reference | PASS | G-SEED, G-ADJ, G-Z, G-SGR, G-JS, G-CAD, G-F360, G-CI, G-RT all pass (GEOMETRY-STAGE2-PASS). The re-exported freeze build has identical parts and checks; G-CAD's re-export (STEP timestamp, new parameters at their defaults in the JSON) is reverted |
 | CR1 counter-rotation | PASS | split 0 → max_rpm 3885 (I9 rotor) |
 | MC1 single branch vs analytic | PASS | 7e-14 (V), 2e-13 (I) |
@@ -104,7 +104,15 @@ Non-uniform errors are measured directly. Eight draws, each coupling scaled inde
 
 ### 2.4 Enclosure sensitivity (D-ENCLOSURE)
 
-@@ENCTABLE@@
+Reference build, rotor tips at 15°, coarse, 12 angles. The enclosure is the grounded can at the given distance beyond the outermost conductor; free space puts a Robin boundary at 25× the build size.
+
+| enclosure | C1 max / min (pF) | Cx3 min (pF) | Ca (pF) | z |
+|---|---|---|---|---|
+| **50 mm (default)** | 344.4 / 191.1 | 214.0 | 445.0 | **0.8305** |
+| 100 mm | 344.8 / 191.5 | 220.0 | 446.3 | 0.8468 |
+| free space | 345.5 / 192.3 | 225.3 | 448.2 | 0.8608 |
+
+A farther can removes island- and rail-to-enclosure capacitance, worth +0.030 in z, but no growing mode appears.
 
 ## 3. The round-trip ledger (reference build, rotor tips at 15° [IR])
 
@@ -181,24 +189,33 @@ The surrogate scan (9 points, 300–580) is monotone (D1): 0.811 → 0.854. z = 
 
 There is no floor anywhere, so ΔD_floor is undefined for every lever. Ranking is by Δz at fixed size, from field-solved candidates where marked (F), otherwise from the engine on the reference field model (E).
 
-| # | lever | setting | z | Δz | basis | constraints touched |
-|---|---|---|---|---|---|---|
-| 1 | Ca (D-CA) | ca_cal 2.0 | @@CA2Z@@ | @@CA2DZ@@ | F | Ca/Cb band (fits, integrity PASS) |
-| 1 | Ca (D-CA) | ×2.0 / ×1.6 / ×1.3 / ×0.7 / ×0.5 | 0.877 / 0.862 / 0.848 / 0.808 / 0.791 | +0.046 … −0.039 | E | — |
-| 4 | series C_R1 | ∞ / 3000 / 1500 pF | 0.840 / 0.834 / 0.832 | +0.009 … +0.002 | E | thinner septum: insulation / tank flags |
-| 7 | drop Lx | Lx shorted | 0.8309 | +0.0004 | E | removes 2 parts |
-| 3 | 1–8 / 4–7 parasitic | removed | +0.0023 (L5 basis) | +0.002 | E | guard / parity / spacing |
-| 6 | island Cx | Cx floor −170 pF (to ~30 pF) | 0.874 with C1 −150 (0.838 without) | +0.036 | E | — |
-| 5 | stray floors | every cross-stray ×0.05 | 0.896 | +0.066 | E | routing, enclosure |
-| 2 | swing: narrower sectors | c_w 20° | 0.8187 | −0.012 | F | κ 1.80 → 1.93 |
-| 2 | swing: narrower sectors | c_w 15° | 0.8129 | −0.018 | F | κ 1.85 |
-| 2 | swing: + larger r_in | c_w 20°, r_in 200 | 0.7870 | −0.044 | F | κ 1.85, C_max −33 % |
-| 8 | station angles | — | not evaluated | — | — | no pump to tune (§5) |
-| 9 | counter-rotation split | see §4.3 | — | 0 (motor off) | — | power lever only |
+Ranked by Δz. Every candidate keeps integrity PASS.
 
-The combination of the positive levers (Ca×2, Lx dropped, C_R1 up) and the largest size is the opt candidate:
+| rank | # | lever | setting | z | Δz | basis | constraints touched |
+|---|---|---|---|---|---|---|---|
+| 1 | 5 | stray floors | every cross-stray ×0.05 (what-if) | 0.896 | +0.066 | E | lead / stem routing, sphere sizes |
+| 2 | 1 | Ca (D-CA) | ca_cal 2.0 (Ca 445 → 752 pF) | **0.8641** | **+0.034** | F | Ca/Cb band (fits, integrity PASS) |
+| — | 1 | Ca (D-CA) | ×2.0 / ×1.6 / ×1.3 / ×0.7 / ×0.5 | 0.877 / 0.862 / 0.848 / 0.808 / 0.791 | +0.046 … −0.039 | E | — |
+| 3 | 5 | enclosure distance (D-ENCLOSURE) | 100 mm / free space | 0.8468 / 0.8608 | +0.016 / +0.030 | F | machine envelope |
+| 4 | 6 | island Cx | Cx floor −170 pF, to ~30 (with C1 −150) | 0.874 (0.838 without) | +0.036 over C1 alone | E | — |
+| 5 | 4 | series C_R1 | ∞ / 3000 / 1500 pF | 0.840 / 0.834 / 0.832 | +0.009 … +0.002 | E | thinner septum: insulation / tank flags |
+| 6 | 3 | 1–8 / 4–7 parasitic | removed (L5 basis) | 0.8208 vs 0.8185 | +0.002 | E | guard / parity / spacing |
+| 7 | 7 | drop Lx | Lx shorted | 0.8309 | +0.0004 | E | removes 2 parts |
+| 8 | 9 | counter-rotation split | §4.3 | — | 0 (motor off) | — | power lever only: max rpm 3885 → 6803 |
+| 9 | 2 | swing: narrower sectors | c_w 20° | 0.8187 | −0.012 | F | κ 1.80 → 1.93, C_max −19 % |
+| 10 | 2 | swing: narrower sectors | c_w 15° | 0.8129 | −0.018 | F | κ 1.85, C_max −28 % |
+| 11 | 2 | swing: + larger r_in | c_w 20°, r_in 200 | 0.7870 | −0.044 | F | κ 1.85, C_max −33 % |
+| — | 8 | station angles | — | not evaluated | — | — | nothing pumps, so there is no margin to optimise |
 
-@@OPTROW@@
+The guard, recessed-edge and island-parity variants of levers 2 and 3 need new builder geometry and were not built. §5 says what they would have to achieve.
+
+The opt candidate combines the best buildable lever (Ca × 2) with the largest searched size:
+
+| candidate | setting | D (mm) | z | integrity |
+|---|---|---|---|---|
+| **opt** | ca_cal 2.0 (Ca 1613 pF field), r_out 580 | 1499 | **0.8885** (Lx dropped: 0.8884) | PASS (0 FAIL) |
+
+Its gain over base-r580 (0.8538) is +0.035, about the same as at the reference size, so the levers add roughly linearly. **Even the best combination has no growing mode.** Lx is kept, since dropping it gains nothing here.
 
 ## 4.3 Counter-rotation (D-SPLIT, default 0.5 [IR])
 
@@ -251,7 +268,7 @@ The engine-side what-ifs show how much must be achieved together. Even with the 
 ## 6. Exports
 
 - **`docs/geometry/floor-56b6cb83.{json,step,csv}`** + `…-integrity.txt`. There is no floor, so this is the **top of the searched range** (r_out 580, D 1499 mm, z 0.854): the geometry TMD checks for overall size.
-- **`docs/geometry/opt-@@OPTHASH@@.*`.** The best lever combination (§4.2).
+- **`docs/geometry/opt-c9ac780b.{json,step,csv}`** + `…-integrity.txt`. The best lever combination: Ca × 2 at r_out 580 (§4.2), z 0.889, integrity PASS from the STEP.
 - **Peak fields** (optional): not produced.
 
 ## 7. TMD-gated decisions (defaults used; alternatives shown)
@@ -259,7 +276,7 @@ The engine-side what-ifs show how much must be achieved together. Even with the 
 | decision | default used | alternative shown |
 |---|---|---|
 | D-SCALING | outer class tracks r_out, voltage-set fixed | — |
-| D-ENCLOSURE | 50 mm | 100 mm and free space (§2.4) |
+| D-ENCLOSURE | 50 mm | 100 mm (z 0.847) and free space (0.861) (§2.4) |
 | D-SPLIT | 0.5 | split table (§4.3) |
 | D-MARGIN | m = 0.20 | m = 0: also no floor |
 | D-GAPDEFAULT | all ring-down | — |

@@ -21,8 +21,10 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
     - About 1 nF of extracted strays.
     - Each alone takes the realized-C ladder from 1.438 to below 0.96.
   - **Floor search** (r_out 300–580, D 775–1499 mm, integrity PASS throughout): z 0.811 → 0.854, monotone, asymptote ≈ 0.90.
-  - **Exports:** `docs/geometry/floor-56b6cb83.*` (top of range), with its integrity report read back from the STEP.
-  - **Levers:** narrower sectors lower z (c_w 20°: −0.012; 15°: −0.018; with r_in 200: −0.044); a larger Ca raises it (P5 refuted in direction); C_R1, Lx and the 1–8 / 4–7 parasitic are all ≤ 0.01.
+  - **Exports**, each with its integrity report read back from the STEP:
+    - `docs/geometry/floor-56b6cb83.*`: the top of the searched range;
+    - `docs/geometry/opt-c9ac780b.*`: the best combination, Ca × 2 at r_out 580, z 0.889.
+  - **Levers:** narrower sectors lower z (c_w 20°: −0.012; 15°: −0.018; with r_in 200: −0.044); a larger Ca raises it (Ca × 2: +0.034, P5 refuted in direction); a farther enclosure raises it (100 mm: +0.016, free space: +0.030); C_R1, Lx and the 1–8 / 4–7 parasitic are all ≤ 0.01.
   - **Predictions:** P1 confirmed (−0.0141); P3 confirmed in sign, negligible.
   - **Builder:** new parameters `sg_tip_deg`, `c_w_deg`, `cx_w_deg` and `ca_cal` (Python + JS). Their defaults leave the reference build unchanged.
   - **Candidate screening:** the builder's "(tank, shown only)" septum check is information, not an exclusion (the tank's reach is a core matter, brief §5).

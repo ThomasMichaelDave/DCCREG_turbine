@@ -296,7 +296,7 @@
   "pass_": true,
   "base": "b33baa2",
   "diff": "",
-  "time_s": 0.053450822830200195
+  "time_s": 0.013064384460449219
  },
  "FIREWALL": {
   "pass_": true,
@@ -484,7 +484,7 @@
  },
  "RT3": {
   "pass_": true,
-  "evaluated": 8,
+  "evaluated": 12,
   "excluded": [],
   "used_but_failing": [],
   "rows": [
@@ -537,6 +537,18 @@
     "used": true
    },
    {
+    "tag": "ca2",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 11,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   },
+   {
     "tag": "cw15",
     "integrity": "PASS",
     "counts": {
@@ -573,6 +585,30 @@
     "used": true
    },
    {
+    "tag": "freeze-t15-enc100",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 7,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   },
+   {
+    "tag": "freeze-t15-free",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 7,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
+   },
+   {
     "tag": "freeze-t15",
     "integrity": "PASS",
     "counts": {
@@ -583,9 +619,21 @@
     },
     "geometry_fails": [],
     "used": true
+   },
+   {
+    "tag": "opt-r580",
+    "integrity": "PASS",
+    "counts": {
+     "FAIL": 0,
+     "WARN": 8,
+     "PASS": 8,
+     "INFO": 1
+    },
+    "geometry_fails": [],
+    "used": true
    }
   ],
-  "time_s": 0.0005583763122558594
+  "time_s": 0.0005171298980712891
  },
  "D1-D2": {
   "pass_": true,
