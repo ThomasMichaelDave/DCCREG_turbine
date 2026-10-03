@@ -100,6 +100,14 @@ GEOM_DEFAULTS = dict(
     sg_rimgap=3.0,                            # trimmed ND2 / ND3 rim beyond its outermost foil + dielectric margin (mm) [IR]
     sg_clear=2.0,                             # running clearance: tip to the trimmed rim, load sphere to the flange face (mm) [IR]
     sg_stem_air=2.0,                          # rim stem left bare between the rim and its sphere (mm) [IR]
+    c_ws_deg=0.0,                             # stator C1 / C2 plate width (deg; 0 = the rotor-face width): narrower than the
+                                              # rotor face, the edges never coincide when disaligned (design loop) [IR]
+    counter_w_deg=0.0,                        # Ca / Cb counter-electrode width (deg; 0 = the sector pitch): <= c_ws_deg hides
+                                              # the counter behind its stator face from the rotor face [IR]
+    cr_w_deg=0.0,                             # C_R plate width (deg; 0 = the pitch): narrower hides it behind the rotor face [IR]
+    c1_mica=0.0,                              # mica facing per face inside the C1 / C2 gap (mm; the gap stays foil to foil),
+    c1_mica_m=1.0,                            # sectored: the foil's footprint + this margin (mm) [IR]
+    carrier_mat="G10",                        # carrier and rotor-disc material: "G10" (4.7) or "PTFE" (2.1) [IR mechanical]
     counter_trim=0,                           # 1 = the Ca / Cb counter-electrodes cover only their electrode's band +
                                               # the dielectric margin (0 = the full stator plate r_in-r_out, as drawn):
                                               # the rest of the plate faces the island Cx foils (ROUND-TRIP step 1) [IR]
@@ -303,25 +311,30 @@ def build(locked, geom=None):
     w_c = g["c_w_deg"] or w_sec                                       # C1 / C2 faces, on the sector centres
     w_x = g["cx_w_deg"] or w_sec                                      # island bars + pickups
     c_odd = [s + (w_sec - w_c) / 2 for s in odd]; c_even = [s + (w_sec - w_c) / 2 for s in even]
+    w_cs = g["c_ws_deg"] or w_c                                       # stator C1 / C2 plates, same centres
+    s_odd = [s + (w_sec - w_cs) / 2 for s in odd]; s_even = [s + (w_sec - w_cs) / 2 for s in even]
+    w_ct = g["counter_w_deg"] or w_sec; w_cr = g["cr_w_deg"] or w_sec
+    k_odd = [s + (w_sec - w_ct) / 2 for s in odd]; k_even = [s + (w_sec - w_ct) / 2 for s in even]
+    r_odd = [s + (w_sec - w_cr) / 2 for s in odd]
     x_odd = [s + (w_sec - w_x) / 2 for s in odd]; x_even = [s + (w_sec - w_x) / 2 for s in even]
     ct_ri = (lambda e: max(ri, e["r_in"] - g["ca_margin"])) if g["counter_trim"] else (lambda e: ri)
     fp = dict(
-        C1_stator=_fp("C1 stator plate", "1", "C1", ri, ro, c_odd, w_c),
+        C1_stator=_fp("C1 stator plate", "1", "C1", ri, ro, s_odd, w_cs),
         C1_rotor=_fp("C1 rotor face", "R-A", "C1", rr_in, ro, c_odd, w_c),
-        C2_stator=_fp("C2 stator plate", "4", "C2", ri, ro, c_even, w_c),
+        C2_stator=_fp("C2 stator plate", "4", "C2", ri, ro, s_even, w_cs),
         C2_rotor=_fp("C2 rotor face", "R-B", "C2", rr_in, ro, c_odd, w_c),
         Ca_el=_fp("Ca electrode", "2", "Ca", ca["r_in"], ca["r_out"], ca_starts, ca["w_deg"]),
-        Ca_counter=_fp("Ca counter (ND1 back face)", "1", "Ca", ct_ri(ca), ro, odd, w_sec),
+        Ca_counter=_fp("Ca counter (ND1 back face)", "1", "Ca", ct_ri(ca), ro, k_odd, w_ct),
         Cb_el=_fp("Cb electrode", "3", "Cb", cb["r_in"], cb["r_out"], cb_starts, cb["w_deg"]),
-        Cb_counter=_fp("Cb counter (ND4 back face)", "4", "Cb", ct_ri(cb), ro, even, w_sec),
+        Cb_counter=_fp("Cb counter (ND4 back face)", "4", "Cb", ct_ri(cb), ro, k_even, w_ct),
         Cx4_pickup=_fp("Cx4 pickup", "n23", "Cx4", cx_rin, cx_rout, x_even, w_x),   # n23 -Lx4- node 2 (netlist)
         Cx4_bars=_fp("island bars on A", "8", "Cx4", bar_rin, cx_rout, x_even, w_x),
         Cx3_pickup=_fp("Cx3 pickup", "n17", "Cx3", cx_rin, cx_rout, x_odd, w_x),   # n17 -Lx3- node 3 (netlist)
         Cx3_bars=_fp("island bars on B", "7", "Cx3", bar_rin, cx_rout, x_odd, w_x),
         # C_R faces: the rotor-face sectors (host Ametal_full = keptFrac x full radial span, index.html plateGeom),
         # aligned on A and B -- both discs co-rotate, so C_R is fixed and its sectoring is a free choice [OC host]
-        CR_A=_fp("C_R plate (rotor A)", "n18", "C_R", rr_in, ro, odd, w_sec),
-        CR_B=_fp("C_R plate (rotor B)", "n00", "C_R", rr_in, ro, odd, w_sec),
+        CR_A=_fp("C_R plate (rotor A)", "n18", "C_R", rr_in, ro, r_odd, w_cr),
+        CR_B=_fp("C_R plate (rotor B)", "n00", "C_R", rr_in, ro, r_odd, w_cr),
     )
     # ---- axial stack (z up, mm): a strict layer sequence from the septum outward, foils as their own layers
     #      (every gap value is foil-to-foil) [IR]; side A at z < 0, side B mirrored at z > 0 ----
@@ -827,13 +840,12 @@ def cx_facings(design):
     foil's footprint + the dielectric margin, on the foil's body (pickup: stator, bars: rotor) [OC freeze]."""
     g = design["geom"]; st = design["stack"]; fp = design["footprints"]
     on = _foil_carriers(st)
-    m, t = g["ca_margin"], g["cx_mica"]
     out = []
-    if t <= 0:
-        return out
+    caps = (("Cx3", "Cx4") if g["cx_mica"] > 0 else ()) + (("C1", "C2") if g["c1_mica"] > 0 else ())
     for i, it in enumerate(st):
-        if it["kind"] != "gap" or it["cap"] not in ("Cx3", "Cx4"):
+        if it["kind"] != "gap" or it["cap"] not in caps:
             continue
+        m, t = (g["ca_margin"], g["cx_mica"]) if it["cap"] in ("Cx3", "Cx4") else (g["c1_mica_m"], g["c1_mica"])
         for j, low in ((i - 1, True), (i + 1, False)):
             f = st[j]
             e = fp[f["key"]]
@@ -842,7 +854,7 @@ def cx_facings(design):
             dw = math.degrees(m / max(e["r_in"], 1e-9))
             body = ROTOR_BODY.get(on[f["id"]], "stator")
             for k, s0 in enumerate(e["starts"]):
-                out.append(dict(name=f"{it['cap']}_mica_{'bars' if body != 'stator' else 'pickup'}_{k + 1}", cap=it["cap"],
+                out.append(dict(name=f"{it['cap']}_mica_{('bars' if it['cap'][:2] == 'Cx' else 'rotor') if body != 'stator' else ('pickup' if it['cap'][:2] == 'Cx' else 'stator')}_{k + 1}", cap=it["cap"],
                                 foil=f["id"], r_in=rin, r_out=rout, start_deg=s0 - dw, w_deg=min(e["w_deg"] + 2 * dw, 360.0),
                                 z0=z0, z1=z1, body=body, carrier=on[f["id"]]))
     return out
@@ -1303,7 +1315,7 @@ def parts(design):
                   f"{it['id']} carrier{(' ring ' + str(ri + 1) + ' of ' + str(len(rings))) if len(rings) > 1 else ''}, "
                   f"insulating: {CARRIER_ROLE.get(it['id'], kind)}; r{_mm(r0)}-{_mm(r1)} mm, {_mm(z1 - z0)} mm thick"
                   f"{' (recessed spark-gap band)' if thin else ''}, z {_mm(z0)}..{_mm(z1)}",
-                  a, "carrier", it["id"], "", "", MATERIAL[kind], body, r0, r1, 0.0, 360.0, z0, z1, CARRIER_RGB)
+                  a, "carrier", it["id"], "", "", MATERIAL[kind].replace("G10", design["geom"]["carrier_mat"]), body, r0, r1, 0.0, 360.0, z0, z1, CARRIER_RGB)
         elif kind == "foil":
             car = carrier_of[it["id"]]
             a = node_group(it["node"])

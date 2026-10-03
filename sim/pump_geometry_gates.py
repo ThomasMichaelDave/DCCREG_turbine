@@ -208,7 +208,9 @@ def _rand_geom(rng):
                 zs_mode=rng.choice(["auto", "auto", "fixed"]), sg_frame=rng.uniform(20, 120), sg_khv=rng.uniform(1, 3),
                 sg_layout=rng.choice(["radial", "radial", "axial"]), sg_rimgap=rng.uniform(0, 10), sg_clear=rng.uniform(0.5, 6),
                 sg_stem_air=rng.uniform(0, 8), counter_trim=rng.choice([0, 1]), ca_cal=rng.choice([1.0, 1.0, 1.6]),
-                c_w_deg=rng.choice([0.0, 0.0, 20.0]), cx_w_deg=rng.choice([0.0, 0.0, 24.0]), sg_tip_deg=rng.choice([0.0, 15.0]))
+                c_w_deg=rng.choice([0.0, 0.0, 20.0]), cx_w_deg=rng.choice([0.0, 0.0, 24.0]), sg_tip_deg=rng.choice([0.0, 15.0]),
+                c_ws_deg=rng.choice([0.0, 0.0, 22.0]), counter_w_deg=rng.choice([0.0, 0.0, 22.0]), cr_w_deg=rng.choice([0.0, 0.0, 22.0]),
+                c1_mica=rng.choice([0.0, 0.0, 1.5]), carrier_mat=rng.choice(["G10", "G10", "PTFE"]))
 
 
 def gate_js(n=60):

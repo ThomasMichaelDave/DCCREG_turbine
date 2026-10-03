@@ -3,7 +3,8 @@ C1 rotor | A-disc carrier | CR_A. Variants: stator / rotor sector widths, carrie
 inter-sector gaps on the stator and/or rotor face plane. Returns per-mm C(1,RA), C(1,G), C(RA,G)."""
 import sys, numpy as np, scipy.sparse as sp, scipy.sparse.linalg as spla
 EPS0 = 8.8541878128e-15
-def solve(r, shift_deg, h=0.25, eps_c=4.7, ws=30.0, wr=30.0, g=7.0, guard_s=0.0, guard_r=0.0, see=True):
+def solve(r, shift_deg, h=0.25, eps_c=4.7, ws=30.0, wr=30.0, g=7.0, guard_s=0.0, guard_r=0.0, see=True,
+          film=0.0, eps_f=5.4, film_full=True):
     P = np.radians(60.0) * r
     nx = int(round(P / h)); hx = P / nx
     t_nd1, t_disc, tf = 18.5, 18.25, 1.0
@@ -25,6 +26,11 @@ def solve(r, shift_deg, h=0.25, eps_c=4.7, ws=30.0, wr=30.0, g=7.0, guard_s=0.0,
         return (xx >= 0.5 * P - 0.5 * ww) & (xx < 0.5 * P + 0.5 * ww)
     sh = np.radians(shift_deg) * r
     xr = (X - sh) % P
+    if film > 0:                          # dielectric film on both C1 faces inside the gap (air left: g - 2 film)
+        fs = (Zg > z_c1s1) & (Zg < z_c1s1 + film); fr = (Zg > z_r0 - film) & (Zg < z_r0)
+        if not film_full:                 # film only under the foils (sectored film)
+            fs &= band(xs, ws); fr &= band(xr, wr)
+        eps[fs | fr] = eps_f
     stator = band(xs, ws); rotor = band(xr, wr)
     if see:
         cond[band(xs, 30.0) & (Zg > z_ca0) & (Zg < z_ca1)] = 0
@@ -63,18 +69,18 @@ def solve(r, shift_deg, h=0.25, eps_c=4.7, ws=30.0, wr=30.0, g=7.0, guard_s=0.0,
     get = lambda a, b: -C[present.index(a), present.index(b)] if a in present and b in present else 0.0
     return get(0, 1) + get(0, 2), get(0, 3), get(1, 3) + get(2, 3)   # C(1, R-A incl n18), C(1,G), C(RA,G)
 if __name__ == "__main__":
-    r = 240.0
-    cases = [("base 30/30 G10", {}), ("base 30/30 PTFE", dict(eps_c=2.1)),
-             ("PTFE stator 22 / rotor 30", dict(eps_c=2.1, ws=22.0)),
-             ("PTFE stator 20 / rotor 20", dict(eps_c=2.1, ws=20.0, wr=20.0)),
-             ("PTFE 30/30, gap 3.5", dict(eps_c=2.1, g=3.5)),
-             ("PTFE 22/30, gap 3.5", dict(eps_c=2.1, ws=22.0, g=3.5)),
-             ("PTFE 30/30 + stator guard 10deg", dict(eps_c=2.1, ws=24.0, guard_s=4.0)),
-             ("PTFE 24/24 + guards 4deg both", dict(eps_c=2.1, ws=24.0, wr=24.0, guard_s=4.0, guard_r=4.0)),
-             ("PTFE 30/30 no see-through", dict(eps_c=2.1, see=False)),
-             ("PTFE 22/30 no see-through", dict(eps_c=2.1, ws=22.0, see=False)),
-             ("PTFE 22/30 gap 3.5 no see", dict(eps_c=2.1, ws=22.0, g=3.5, see=False))]
+    r = float(sys.argv[1]) if len(sys.argv) > 1 else 240.0
+    P = dict(eps_c=2.1)
+    cases = [("G10 30/30 (as built)", dict(eps_c=4.7)), ("PTFE 30/30", P)]
+    for ws in (26.0, 22.0, 18.0):
+        cases.append((f"PTFE stator {ws:g} / rotor 30", dict(P, ws=ws)))
+    for f in (1.0, 2.0, 2.5):
+        cases.append((f"PTFE 30/30 mica film {f:g}+{f:g} (sheet)", dict(P, film=f)))
+        cases.append((f"PTFE 30/30 mica film {f:g}+{f:g} (sectored)", dict(P, film=f, film_full=False)))
+    for ws in (22.0, 18.0):
+        for f in (2.0, 2.5):
+            cases.append((f"PTFE {ws:g}/30 sectored mica {f:g}+{f:g}", dict(P, ws=ws, film=f, film_full=False)))
+            cases.append((f"PTFE {ws:g}/30 sectored mica {f:g}+{f:g}, no see", dict(P, ws=ws, film=f, film_full=False, see=False)))
     for name, kw in cases:
         a = solve(r, 0.0, **kw); b = solve(r, 30.0, **kw)
-        print(f"{name:34s} aligned {a[0]*1e15:7.2f}  disaligned {b[0]*1e15:6.2f} fF/mm  kappa {a[0]/b[0]:5.2f}  "
-              f"guard C(1,G) {b[1]*1e15:5.2f} C(RA,G) {a[2]*1e15:5.2f}/{b[2]*1e15:5.2f}", flush=True)
+        print(f"{name:44s} aligned {a[0]*1e15:7.2f}  disaligned {b[0]*1e15:6.2f} fF/mm  kappa {a[0]/b[0]:5.2f}", flush=True)

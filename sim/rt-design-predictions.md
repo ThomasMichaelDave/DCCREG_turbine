@@ -186,3 +186,53 @@ The Cx island floor also fell (225 → 161). The budget says that alone costs z.
 - Guard strips trade the C1 floor for a strongly varying C(RA, guard). That is a new rotating stray, so they are rejected.
 - At the 7 mm gap the best combination found is κ ≈ 4.8. The **≥ 7 requirement needs the gap reduced to ~3.5 mm**, on top of PTFE, offset edges and hidden back plates.
 - 2-D at mid-radius over-estimates the 3-D κ: the 3-D base is 1.80 against 1.98 here, because the inner radii are worse and the hardware adds to the floor.
+
+## TMD rulings (this round)
+
+- **Asymmetry.** Rotor and stator geometry may differ: smaller node-1 / node-4 stator plates, to be simulated.
+- **The C1/C2 clearance (g_v, 7 mm) may be lowered.** This is distinct from the septum. Mica-based thin structural dielectrics may be used.
+- **Any dielectric facing or film** (mica, PTFE, Mylar, Kapton) and any screening is acceptable if it does not jeopardise the pump.
+
+## 2-D scouting, round 2 (r 240, `sim/rt_xsec2d.py`)
+
+| variant | κ |
+|---|---|
+| PTFE 30/30 | 2.75 |
+| PTFE, stator 26 / 22 / 18 against rotor 30 | 3.14 / 3.23 / 3.15 |
+| PTFE 30/30, mica 2.5 + 2.5 as a sheet | 3.64 |
+| PTFE 30/30, mica 2.5 + 2.5 **sectored** | 4.90 |
+| PTFE 22/30, sectored mica 2.5 + 2.5 | 6.28 |
+| PTFE 22/30, sectored mica 2.5 + 2.5, back plates hidden | **9.65** |
+| PTFE 18/30, same | **10.56** |
+
+A film helps only when sectored, lying under the foils. As a full sheet it raises the fringe almost as much as it raises C_max.
+
+## Step 2, round 2: combined candidates (3-D, free basis, 12 angles)
+
+**Common settings:**
+- carriers PTFE;
+- stator C1/C2 plates 22° against rotor faces 30° (`c_ws_deg=22`);
+- Ca/Cb counters 22° (`counter_w_deg=22`), hidden behind the stator face;
+- C_R plates 22° (`cr_w_deg=22`), hidden behind the rotor face;
+- Ca/Cb electrodes 20° wide (`ca_w=20`), so they fit inside the counters.
+
+**Candidates:**
+
+| | g_v | sectored mica per face | air left |
+|---|---|---|---|
+| **A** | 7 mm | 2.5 mm | 2 mm |
+| **B** | 4 mm | 1.0 mm | 2 mm |
+| **C** | 3.5 mm | none | 3.5 mm |
+| **D** | 3 mm | 0.5 mm | 2 mm |
+
+The ladder re-sizes with g_v (C_max 280 / 490 / 560 / 653 pF). All four build, pass every builder check and pass integrity.
+
+**Predictions** (recorded before the runs; 2-D κ derated by ×0.85 for 3-D, hardware floor ~25 pF kept):
+
+| | prediction |
+|---|---|
+| A | κ_C 5–7, z 0.98–1.12 |
+| B | κ_C 5–7; z within ±0.05 of A (same air, larger C overall, strays relatively smaller) |
+| C | κ_C 4–5, z 0.95–1.05 |
+| D | κ_C 6–8, the best z; **the first candidate expected to reach ≥ 1.1** |
+| R2-X | X falls relative to C_max by ≥ 2× against the reference (PTFE plus the larger C_max) |

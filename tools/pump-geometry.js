@@ -14,7 +14,7 @@
     cx_air: 3.0, cx_mica: 0.3, r_bore: 50.0, rotor_in_off: 20.0,
     sg_rbar: 375.0, sg_rrail: 410.0, sg_d: 12.0, sg_dbs: 25.0, sg_s_ret: 5.5, sg_s_load: 4.75, sg_s_fire: 5.5, sg_s_bs: 5.5,
     sg_glat: 1.0, sg_expose: 0.5, sg_stem: 4.0, sg_wall: 1.0, sg_seat: 3.0, sg_rod: 3.0, sg_cover: 2.0, sg_chord: 15.0, sg_bus: 3.0,
-    sg_frame: 60.0, sg_khv: 2.0, sg_layout: "radial", sg_rimgap: 3.0, sg_clear: 2.0, sg_stem_air: 2.0, sg_tip_deg: 0.0, counter_trim: 0, c_w_deg: 0.0, cx_w_deg: 0.0, ca_cal: 1.0, zs_mode: "auto" };
+    sg_frame: 60.0, sg_khv: 2.0, sg_layout: "radial", sg_rimgap: 3.0, sg_clear: 2.0, sg_stem_air: 2.0, sg_tip_deg: 0.0, c_ws_deg: 0.0, counter_w_deg: 0.0, cr_w_deg: 0.0, c1_mica: 0.0, c1_mica_m: 1.0, carrier_mat: "G10", counter_trim: 0, c_w_deg: 0.0, cx_w_deg: 0.0, ca_cal: 1.0, zs_mode: "auto" };
   // Z-stretch (TMD 2026-10-02): carrier base thicknesses, same-node links, the fixed gap each carrier faces [IR]
   const CARRIER_BASE = {ND1: "t_carrier", ND2: "t_carrier", ND3: "t_carrier", ND4: "t_carrier", "A-disc": "t_rotor",
     "B-disc": "t_rotor", "A-flange": "t_flange", "B-flange": "t_flange"};
@@ -135,24 +135,28 @@
     const ca_starts = odd.map(s => s + (w_sec - ca.w_deg) / 2), cb_starts = even.map(s => s + (w_sec - cb.w_deg) / 2);
     const w_c = g.c_w_deg || w_sec, w_x = g.cx_w_deg || w_sec;      // C1 / C2 faces, island bars + pickups, on the sector centres
     const c_odd = odd.map(s => s + (w_sec - w_c) / 2), c_even = even.map(s => s + (w_sec - w_c) / 2);
+    const w_cs = g.c_ws_deg || w_c, w_ct = g.counter_w_deg || w_sec, w_cr = g.cr_w_deg || w_sec;   // asymmetric faces, hidden backs [IR]
+    const s_odd = odd.map(s => s + (w_sec - w_cs) / 2), s_even = even.map(s => s + (w_sec - w_cs) / 2);
+    const k_odd = odd.map(s => s + (w_sec - w_ct) / 2), k_even = even.map(s => s + (w_sec - w_ct) / 2);
+    const r_odd = odd.map(s => s + (w_sec - w_cr) / 2);
     const x_odd = odd.map(s => s + (w_sec - w_x) / 2), x_even = even.map(s => s + (w_sec - w_x) / 2);
     const ct_ri = g.counter_trim ? (e => Math.max(ri, e.r_in - g.ca_margin)) : (e => ri);   // trimmed counters [IR]
     const fp = {
-      C1_stator: _fp("C1 stator plate", "1", "C1", ri, ro, c_odd, w_c),
+      C1_stator: _fp("C1 stator plate", "1", "C1", ri, ro, s_odd, w_cs),
       C1_rotor: _fp("C1 rotor face", "R-A", "C1", rr_in, ro, c_odd, w_c),
-      C2_stator: _fp("C2 stator plate", "4", "C2", ri, ro, c_even, w_c),
+      C2_stator: _fp("C2 stator plate", "4", "C2", ri, ro, s_even, w_cs),
       C2_rotor: _fp("C2 rotor face", "R-B", "C2", rr_in, ro, c_odd, w_c),
       Ca_el: _fp("Ca electrode", "2", "Ca", ca.r_in, ca.r_out, ca_starts, ca.w_deg),
-      Ca_counter: _fp("Ca counter (ND1 back face)", "1", "Ca", ct_ri(ca), ro, odd, w_sec),
+      Ca_counter: _fp("Ca counter (ND1 back face)", "1", "Ca", ct_ri(ca), ro, k_odd, w_ct),
       Cb_el: _fp("Cb electrode", "3", "Cb", cb.r_in, cb.r_out, cb_starts, cb.w_deg),
-      Cb_counter: _fp("Cb counter (ND4 back face)", "4", "Cb", ct_ri(cb), ro, even, w_sec),
+      Cb_counter: _fp("Cb counter (ND4 back face)", "4", "Cb", ct_ri(cb), ro, k_even, w_ct),
       Cx4_pickup: _fp("Cx4 pickup", "n23", "Cx4", cx_rin, cx_rout, x_even, w_x),
       Cx4_bars: _fp("island bars on A", "8", "Cx4", bar_rin, cx_rout, x_even, w_x),
       Cx3_pickup: _fp("Cx3 pickup", "n17", "Cx3", cx_rin, cx_rout, x_odd, w_x),
       Cx3_bars: _fp("island bars on B", "7", "Cx3", bar_rin, cx_rout, x_odd, w_x),
       // C_R faces: the rotor-face sectors, aligned on A and B (co-rotating discs: C_R fixed) [OC host]
-      CR_A: _fp("C_R plate (rotor A)", "n18", "C_R", rr_in, ro, odd, w_sec),
-      CR_B: _fp("C_R plate (rotor B)", "n00", "C_R", rr_in, ro, odd, w_sec),
+      CR_A: _fp("C_R plate (rotor A)", "n18", "C_R", rr_in, ro, r_odd, w_cr),
+      CR_B: _fp("C_R plate (rotor B)", "n00", "C_R", rr_in, ro, r_odd, w_cr),
     };
     const tf = g.t_foil, gv = P.g_vMm, tcx = g.cx_air + 2 * g.cx_mica;
     const zs = zstretch(g, P), tc = {};
@@ -255,7 +259,7 @@
           P(it.id.replace(/-/g, "_") + "_carrier" + (rings.length > 1 ? `_${ri + 1}` : ""),
             `${it.id} carrier${rings.length > 1 ? " ring " + (ri + 1) + " of " + rings.length : ""}, insulating: ${CARRIER_ROLE[it.id] || kind}; ` +
             `r${_mm(r0)}-${_mm(r1)} mm, ${_mm(z1 - z0)} mm thick${thin ? " (recessed spark-gap band)" : ""}, z ${_mm(z0)}..${_mm(z1)}`,
-            a, "carrier", it.id, "", "", MATERIAL[kind], body, r0, r1, 0.0, 360.0, z0, z1, CARRIER_RGB);
+            a, "carrier", it.id, "", "", MATERIAL[kind].replace("G10", design.geom.carrier_mat), body, r0, r1, 0.0, 360.0, z0, z1, CARRIER_RGB);
         });
       } else if (kind === "foil"){
         const car = carrier_of[it.id], a = node_group(it.node), body = ROTOR_BODY[car] || "stator", n = it.starts.length;
@@ -645,16 +649,17 @@
   }
 
   function cx_facings(design){
-    const g = design.geom, st = design.stack, fp = design.footprints, on = _foil_carriers(st), m = g.ca_margin, t = g.cx_mica, out = [];
-    if (t <= 0) return out;
+    const g = design.geom, st = design.stack, fp = design.footprints, on = _foil_carriers(st), out = [];
+    const caps = (g.cx_mica > 0 ? ["Cx3", "Cx4"] : []).concat(g.c1_mica > 0 ? ["C1", "C2"] : []);
     st.forEach((it, i) => {
-      if (it.kind !== "gap" || !["Cx3", "Cx4"].includes(it.cap)) return;
+      if (it.kind !== "gap" || !caps.includes(it.cap)) return;
+      const cx = it.cap.slice(0, 2) === "Cx", m = cx ? g.ca_margin : g.c1_mica_m, t = cx ? g.cx_mica : g.c1_mica;
       for (const [j, low] of [[i - 1, true], [i + 1, false]]){
         const f = st[j], e = fp[f.key];
         const z0 = low ? it.z0 : it.z1 - t, z1 = low ? it.z0 + t : it.z1;
         const rin = Math.max(0.0, e.r_in - m), rout = e.r_out + m, dw = deg(m / Math.max(e.r_in, 1e-9));
         const body = ROTOR_BODY[on[f.id]] || "stator";
-        e.starts.forEach((s0, k) => out.push({name: `${it.cap}_mica_${body !== "stator" ? "bars" : "pickup"}_${k + 1}`, cap: it.cap, foil: f.id,
+        e.starts.forEach((s0, k) => out.push({name: `${it.cap}_mica_${body !== "stator" ? (cx ? "bars" : "rotor") : (cx ? "pickup" : "stator")}_${k + 1}`, cap: it.cap, foil: f.id,
           r_in: rin, r_out: rout, start_deg: s0 - dw, w_deg: Math.min(e.w_deg + 2 * dw, 360.0), z0, z1, body, carrier: on[f.id]}));
       }
     });
