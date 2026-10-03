@@ -495,7 +495,7 @@ def _record(key, val):
     json.dump(d, open(RUNS, "w"), indent=1, default=float)
 
 
-def sweep_n(tag, n_theta, level="c", procs=4, log=None, outdir=None):
+def sweep_n(tag, n_theta, level="c", procs=4, log=None, outdir=None, enclosure=50.0):
     """the tag's sweep at n_theta angles, reusing every cached sweep whose angles are a subset."""
     outdir = outdir or os.path.join(ROOT, "docs", "geometry", "rt")
     spath = os.path.join(outdir, f"{tag}.{level}{n_theta}.sweep.json")
@@ -509,7 +509,7 @@ def sweep_n(tag, n_theta, level="c", procs=4, log=None, outdir=None):
             have.update({round(t, 9): s for t, s in zip(th, so)})
     todo = [t for t in thetas if round(t, 9) not in have]
     if todo:
-        new = sweep(os.path.join(outdir, f"{tag}.design.json"), todo, level=level, procs=procs, log=log)
+        new = sweep(os.path.join(outdir, f"{tag}.design.json"), todo, level=level, enclosure=enclosure, procs=procs, log=log)
         have.update({round(t, 9): s for t, s in zip(todo, new)})
     sols = [have[round(t, 9)] for t in thetas]
     save(spath, thetas, sols)
