@@ -38,3 +38,48 @@ The machine floats completely in practice. Every virtual ground used in a simula
 - **B4 [GROUND].** On the free basis, moving the virtual reference from infinity to R-A changes z by < 0.02.
 
 **Outcomes:** (filled after the run)
+
+The run was `python3 sim/rt_budget.py`, recorded in `sim/rt_budget.json`. Step 1's part-ownership solves are in `docs/geometry/rt/freeze-t15-free.attrib.json`.
+
+| | prediction | outcome |
+|---|---|---|
+| B1 | no single group alone reaches 1.2 | **CONFIRMED.** Best single group on free: X × 0 → 0.967. On can50: Ca × 3 → 0.903 |
+| B2 | C1 is the biggest single-group gain | **REFUTED.** X (the cross-strays) is bigger. On free: X × 0.1 → 0.955 against C1 × 0.1 → 0.886 |
+| B3 | (C1, E) at 0.25 reaches 1.2 on free | **REFUTED.** 0.886. On the free basis E barely matters: E × 0 → 0.868 from 0.861 |
+| B4 [GROUND] | free basis, reference ∞ → R-A changes z by < 0.02 | **CONFIRMED.** 0.8608 → 0.8624 (Δ 0.0016). On can50 the shift is 0.011 |
+
+**SURPRISE.** Cutting the island Cx floor *lowers* z inside the winning combinations: C1 × 0.1, E × 0.1, X × 0.1 gives 1.2034; adding Cx × 0.1 gives 1.1203. The island floor is not a target.
+
+**Budget on the physical (free) basis.**
+
+| C1 floor | X cross-strays | E | z | converged |
+|---|---|---|---|---|
+| × 0.1 (191 → ~19 pF) | × 0.1 (~620 → ~60 pF) | any | **1.14** | yes |
+| × 0.1 | × 0.1 | × 0.1 | **1.20** | yes |
+| × 0.25 | × 0.1 | × 1 | 1.06 | yes |
+| × 0.1 | × 0.25 | × 1 | 1.05 | yes |
+
+The threshold for a growing mode is C1 ≲ 0.25 together with X ≲ 0.25. **C1 and X must fall together, by roughly an order of magnitude each.** Ca × 3 adds about +0.06 on top.
+
+**Step 1: who owns the strays (free space; cross-strays 585 pF at θ 0, 654 pF at θ 30).**
+
+1. **The Ca/Cb counter foils (rails 1 and 4) facing the rotor's Cx island foils (n23/8 and n17/7).** About 110 pF per island side, about 225 pF in all. This is the single biggest X owner.
+2. **The bank bus rings (2, 3) facing the Cx foils.** About 28 pF each side.
+3. **The C2/C1 rotor faces facing the opposite Cx foils.** 30 pF.
+4. **Lead to lead.** About 45 pF.
+
+**The C1 floor at disalignment** (θ 30):
+
+| source | pF |
+|---|---|
+| face–face edge fringe | 79 |
+| n18 septum C_R foil → stator C1 face | 29 |
+| Ca counter → rotor C1 face | 28 |
+| rotor leads → stator C1 face | 27 |
+| node-1 lead / bus → rotor face | 16 |
+
+**Next moves, retargeted.**
+- **M1.** A screen, or a radial or axial separation, between the Ca/Cb band and the rotor Cx island faces. Target: X −200 pF or more.
+- **M2.** Offset or recessed C1 sector edges. Target: −79 → about −30 pF.
+- **M3.** Screen the septum C_R foil and the Ca counter from the C1 face. Target: −57 pF.
+- **M4.** Route the rotor leads out of the stator face's view. Target: −27 pF.
