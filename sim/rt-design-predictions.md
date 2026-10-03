@@ -163,7 +163,7 @@ Predictions (free basis), recorded before the run:
 | M5-a | C1 floor 110–140 pF | **CONFIRMED.** 192.3 → 138.3 |
 | M5-b | X 300–400 pF | **CONFIRMED.** 585 → 357 (θ 0), 654 → 406 (θ 30). Rail ↔ island halved: 1–n23 73 → 36 |
 | M5-c | C1 max falls by ≤ 5 % | **REFUTED (narrowly).** 345.5 → 324.5, −6.1 % |
-| M5-d | z 0.90–0.95 | pending the 12-angle sweep |
+| M5-d | z 0.90–0.95 | **CONFIRMED.** z 0.9020 (free basis, 12 angles; reference free 0.8608, +0.041), not converged: still no growing mode. Field C1 324.5 / 138.3 (κ 2.35), Cx 570 / 137–161, Ca 413, C_R1 874 |
 
 The Cx island floor also fell (225 → 161). The budget says that alone costs z.
 
