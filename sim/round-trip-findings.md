@@ -27,7 +27,7 @@ No lever tested in the build, alone or combined, restores z > 1 (§4).
 | FS3 two spheres vs image series | PASS | c11 −0.01 %, c12 −0.09 % |
 | FS4 dielectric slab + air gap | PASS | 0.02 % |
 | FS5 mesh convergence | **@@FS5RES@@** | @@FS5VAL@@ |
-| FS6 reciprocity + sign rules | @@FS6RES@@ | @@FS6VAL@@ |
+| FS6 reciprocity + sign rules | PASS | \|C_ij − C_ji\|/max 3.8e-9 (reference build, θ 7.5°, tol 1e-9); diagonal > 0, off-diagonal ≤ 0, row sums ≥ 0 |
 | FS7 cross-tool (field vs overlap) | reported | C1 max +16 %, Cx max +12 %, Ca +45 %, C_R1 +5.5 % fringe (§2.1) |
 | FS8 surrogate vs exact | **FAIL** | worst \|Δz\| 1.39e-3 at r 387 (0.78e-3 at 300, 0.93e-3 at 480, 0.21e-3 at 580); worst coupling residual 2.2 % (couplings ≥ 20 pF). No floor exists, so no final design needs confirming |
 | RT0 headline | PASS | z 1.3254745317 (Δ −4e-11), K1–K4 pass |

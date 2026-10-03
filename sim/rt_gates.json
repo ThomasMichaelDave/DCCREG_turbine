@@ -378,5 +378,13 @@
   },
   "G1m": "confirmed: no growing mode (z within 1e-5 of 1) -- with the motor branches the drawn pump does not pump",
   "time_s": 577.3807559013367
+ },
+ "FS6": {
+  "pass_": true,
+  "reciprocity": 3.7695497268431346e-09,
+  "sign_rules": true,
+  "theta_geom": 7.5,
+  "cells": 1906562,
+  "time_s": 265.48975110054016
  }
 }
