@@ -83,3 +83,20 @@ The threshold for a growing mode is C1 ≲ 0.25 together with X ≲ 0.25. **C1 a
 - **M2.** Offset or recessed C1 sector edges. Target: −79 → about −30 pF.
 - **M3.** Screen the septum C_R foil and the Ca counter from the C1 face. Target: −57 pF.
 - **M4.** Route the rotor leads out of the stator face's view. Target: −27 pF.
+
+## Size limit (TMD)
+
+The septum disc may be at most **1000 mm in diameter**: r_edge ≤ 500, which is the reference build (r_out 387). The size lever is therefore gone. Every move is judged at the reference size, and z ≥ 1.2 must be reached at D 1000.
+
+## Step 2, move M1: trim the Ca/Cb counter-electrodes to their band (`counter_trim=1`)
+
+The counter foils (rails 1 and 4) spanned the whole stator plate, r95–387, while the Ca/Cb electrodes are a 25 mm ring (r357–382). M1 trims the counters to r352–387, the electrode band plus the dielectric margin. All builder checks pass, integrity PASS, G-JS parity holds.
+
+Predictions, recorded before the run. All on the free basis.
+
+| | prediction |
+|---|---|
+| M1-a | the rail-counter ↔ island couplings (1–n23, 1–8, 4–n17, 4–7; ~223 pF at θ 30) fall by ≥ 70 %, so X falls by ≥ 150 pF |
+| M1-b | "Ca counter → rotor C1 face" (28 pF) falls to ≤ 8 pF, so the C1 floor falls by ~20 pF |
+| M1-c | Ca and Cb (field) change by ≤ 10 % |
+| M1-d | z rises to 0.88–0.90: a step, not a pump. Per the budget, X must also go ×0.1 and C1 ×0.1 |

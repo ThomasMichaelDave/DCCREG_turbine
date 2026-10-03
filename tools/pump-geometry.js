@@ -14,7 +14,7 @@
     cx_air: 3.0, cx_mica: 0.3, r_bore: 50.0, rotor_in_off: 20.0,
     sg_rbar: 375.0, sg_rrail: 410.0, sg_d: 12.0, sg_dbs: 25.0, sg_s_ret: 5.5, sg_s_load: 4.75, sg_s_fire: 5.5, sg_s_bs: 5.5,
     sg_glat: 1.0, sg_expose: 0.5, sg_stem: 4.0, sg_wall: 1.0, sg_seat: 3.0, sg_rod: 3.0, sg_cover: 2.0, sg_chord: 15.0, sg_bus: 3.0,
-    sg_frame: 60.0, sg_khv: 2.0, sg_layout: "radial", sg_rimgap: 3.0, sg_clear: 2.0, sg_stem_air: 2.0, sg_tip_deg: 0.0, c_w_deg: 0.0, cx_w_deg: 0.0, ca_cal: 1.0, zs_mode: "auto" };
+    sg_frame: 60.0, sg_khv: 2.0, sg_layout: "radial", sg_rimgap: 3.0, sg_clear: 2.0, sg_stem_air: 2.0, sg_tip_deg: 0.0, counter_trim: 0, c_w_deg: 0.0, cx_w_deg: 0.0, ca_cal: 1.0, zs_mode: "auto" };
   // Z-stretch (TMD 2026-10-02): carrier base thicknesses, same-node links, the fixed gap each carrier faces [IR]
   const CARRIER_BASE = {ND1: "t_carrier", ND2: "t_carrier", ND3: "t_carrier", ND4: "t_carrier", "A-disc": "t_rotor",
     "B-disc": "t_rotor", "A-flange": "t_flange", "B-flange": "t_flange"};
@@ -136,15 +136,16 @@
     const w_c = g.c_w_deg || w_sec, w_x = g.cx_w_deg || w_sec;      // C1 / C2 faces, island bars + pickups, on the sector centres
     const c_odd = odd.map(s => s + (w_sec - w_c) / 2), c_even = even.map(s => s + (w_sec - w_c) / 2);
     const x_odd = odd.map(s => s + (w_sec - w_x) / 2), x_even = even.map(s => s + (w_sec - w_x) / 2);
+    const ct_ri = g.counter_trim ? (e => Math.max(ri, e.r_in - g.ca_margin)) : (e => ri);   // trimmed counters [IR]
     const fp = {
       C1_stator: _fp("C1 stator plate", "1", "C1", ri, ro, c_odd, w_c),
       C1_rotor: _fp("C1 rotor face", "R-A", "C1", rr_in, ro, c_odd, w_c),
       C2_stator: _fp("C2 stator plate", "4", "C2", ri, ro, c_even, w_c),
       C2_rotor: _fp("C2 rotor face", "R-B", "C2", rr_in, ro, c_odd, w_c),
       Ca_el: _fp("Ca electrode", "2", "Ca", ca.r_in, ca.r_out, ca_starts, ca.w_deg),
-      Ca_counter: _fp("Ca counter (ND1 back face)", "1", "Ca", ri, ro, odd, w_sec),
+      Ca_counter: _fp("Ca counter (ND1 back face)", "1", "Ca", ct_ri(ca), ro, odd, w_sec),
       Cb_el: _fp("Cb electrode", "3", "Cb", cb.r_in, cb.r_out, cb_starts, cb.w_deg),
-      Cb_counter: _fp("Cb counter (ND4 back face)", "4", "Cb", ri, ro, even, w_sec),
+      Cb_counter: _fp("Cb counter (ND4 back face)", "4", "Cb", ct_ri(cb), ro, even, w_sec),
       Cx4_pickup: _fp("Cx4 pickup", "n23", "Cx4", cx_rin, cx_rout, x_even, w_x),
       Cx4_bars: _fp("island bars on A", "8", "Cx4", bar_rin, cx_rout, x_even, w_x),
       Cx3_pickup: _fp("Cx3 pickup", "n17", "Cx3", cx_rin, cx_rout, x_odd, w_x),

@@ -100,6 +100,9 @@ GEOM_DEFAULTS = dict(
     sg_rimgap=3.0,                            # trimmed ND2 / ND3 rim beyond its outermost foil + dielectric margin (mm) [IR]
     sg_clear=2.0,                             # running clearance: tip to the trimmed rim, load sphere to the flange face (mm) [IR]
     sg_stem_air=2.0,                          # rim stem left bare between the rim and its sphere (mm) [IR]
+    counter_trim=0,                           # 1 = the Ca / Cb counter-electrodes cover only their electrode's band +
+                                              # the dielectric margin (0 = the full stator plate r_in-r_out, as drawn):
+                                              # the rest of the plate faces the island Cx foils (ROUND-TRIP step 1) [IR]
     c_w_deg=0.0,                              # C1 / C2 kept-sector width (deg; 0 = the full sector pitch, as drawn).
                                               # Narrower sectors on the same centres widen the gaps between them and
                                               # cut the disaligned fringe (ROUND-TRIP lever 2) [IR]
@@ -301,15 +304,16 @@ def build(locked, geom=None):
     w_x = g["cx_w_deg"] or w_sec                                      # island bars + pickups
     c_odd = [s + (w_sec - w_c) / 2 for s in odd]; c_even = [s + (w_sec - w_c) / 2 for s in even]
     x_odd = [s + (w_sec - w_x) / 2 for s in odd]; x_even = [s + (w_sec - w_x) / 2 for s in even]
+    ct_ri = (lambda e: max(ri, e["r_in"] - g["ca_margin"])) if g["counter_trim"] else (lambda e: ri)
     fp = dict(
         C1_stator=_fp("C1 stator plate", "1", "C1", ri, ro, c_odd, w_c),
         C1_rotor=_fp("C1 rotor face", "R-A", "C1", rr_in, ro, c_odd, w_c),
         C2_stator=_fp("C2 stator plate", "4", "C2", ri, ro, c_even, w_c),
         C2_rotor=_fp("C2 rotor face", "R-B", "C2", rr_in, ro, c_odd, w_c),
         Ca_el=_fp("Ca electrode", "2", "Ca", ca["r_in"], ca["r_out"], ca_starts, ca["w_deg"]),
-        Ca_counter=_fp("Ca counter (ND1 back face)", "1", "Ca", ri, ro, odd, w_sec),
+        Ca_counter=_fp("Ca counter (ND1 back face)", "1", "Ca", ct_ri(ca), ro, odd, w_sec),
         Cb_el=_fp("Cb electrode", "3", "Cb", cb["r_in"], cb["r_out"], cb_starts, cb["w_deg"]),
-        Cb_counter=_fp("Cb counter (ND4 back face)", "4", "Cb", ri, ro, even, w_sec),
+        Cb_counter=_fp("Cb counter (ND4 back face)", "4", "Cb", ct_ri(cb), ro, even, w_sec),
         Cx4_pickup=_fp("Cx4 pickup", "n23", "Cx4", cx_rin, cx_rout, x_even, w_x),   # n23 -Lx4- node 2 (netlist)
         Cx4_bars=_fp("island bars on A", "8", "Cx4", bar_rin, cx_rout, x_even, w_x),
         Cx3_pickup=_fp("Cx3 pickup", "n17", "Cx3", cx_rin, cx_rout, x_odd, w_x),   # n17 -Lx3- node 3 (netlist)
