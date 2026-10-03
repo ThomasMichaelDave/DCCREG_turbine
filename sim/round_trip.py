@@ -81,22 +81,51 @@ def _worker(args):
     return [(t, solve_theta(design, t, level, enclosure, warm=warm)) for t in chunk]
 
 
+MEM_BUDGET = 12.5e9          # bytes for all workers together (the session's cgroup kills near 15 GB) [ME]
+BYTES_PER_CELL = 1100.0      # peak RSS per solve (3.7 GB at 3.5 M cells, OOM record): matrix, RS-AMG hierarchy, warm-start potentials [ME]
+
+
+def _procs_for(design, thetas, level, enclosure, procs):
+    """as many processes as the memory budget allows for the largest grid of the sweep."""
+    prims = FS.dedupe(FS.primitives(design["parts"]))
+    g, _ = FS.build_grid(prims, enclosure=enclosure, res=RES[level], theta_breaks=[0.0, 7.5, 15.0, 22.5])
+    est = BYTES_PER_CELL * float(np.prod(g.shape)) * 1.2          # the other angles snap more rotor edges in phi
+    return max(1, min(procs, len(thetas), int(MEM_BUDGET // est)))
+
+
 def sweep(design_path, thetas, level="c", enclosure=50.0, procs=4, log=None):
-    """Maxwell matrices at every relative angle: `procs` processes, each a contiguous run of angles
-    warm-started from its previous angle."""
+    """Maxwell matrices at every relative angle: up to `procs` processes (fewer if the memory budget says
+    so), each a contiguous run of angles warm-started from its previous angle. A killed worker raises
+    (BrokenProcessPool), never hangs."""
     import multiprocessing as mp
-    ctx = mp.get_context("fork")
-    n = len(thetas)
-    chunks = [list(thetas[k * n // procs:(k + 1) * n // procs]) for k in range(procs)]
-    chunks = [c for c in chunks if c]
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+    design = json.load(open(design_path)) if isinstance(design_path, str) else design_path
     out = {}
-    with ctx.Pool(len(chunks)) as pool:
-        for res in pool.imap_unordered(_worker, [(design_path, c, level, enclosure) for c in chunks]):
-            for th, r in res:
+    part = f"{design_path}.{level}.partial.json" if isinstance(design_path, str) else None
+    if part and os.path.exists(part):                       # angles a killed run already solved
+        out = {float(k): v for k, v in json.load(open(part)).items()}
+    thetas_all, thetas = list(thetas), [t for t in thetas if t not in out]
+    if not thetas:
+        return [out[t] for t in thetas_all]
+    procs = _procs_for(design, thetas, level, enclosure, procs)
+    n = len(thetas)
+    nch = procs
+    chunks = [list(thetas[k * n // nch:(k + 1) * n // nch]) for k in range(nch)]
+    chunks = [c for c in chunks if c]
+    if log:
+        log(f"sweep: {n} angles, {procs} processes, {len(chunks)} chunks")
+    with ProcessPoolExecutor(procs, mp_context=mp.get_context("fork")) as ex:
+        futs = [ex.submit(_worker, (design_path, c, level, enclosure)) for c in chunks]
+        for f in as_completed(futs):
+            for th, r in f.result():
                 out[th] = r
                 if log:
                     log(f"theta {th:g}: {r['info']['cells']} cells, {r['info']['t_solve']:.0f} s, its {sum(r['info']['iterations'])}")
-    return [out[t] for t in thetas]
+            if part:
+                json.dump({str(k): v for k, v in out.items()}, open(part, "w"))
+    if part and os.path.exists(part):
+        os.remove(part)
+    return [out[t] for t in thetas_all]
 
 
 # ---------------------------------------------------------------------------------------------------
