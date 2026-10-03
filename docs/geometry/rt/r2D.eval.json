@@ -1,0 +1,53 @@
+{
+ "tag": "r2D",
+ "plates": {
+  "g_vMm": 3.0
+ },
+ "geom": {
+  "sg_tip_deg": 15.0,
+  "carrier_mat": "PTFE",
+  "c_ws_deg": 22.0,
+  "counter_w_deg": 22.0,
+  "cr_w_deg": 22.0,
+  "ca_w": 20.0,
+  "c1_mica": 0.5
+ },
+ "level": "c",
+ "n_theta": 12,
+ "enclosure": null,
+ "geometry_fails": [],
+ "geometry_info": [
+  "C_R: septum C = 2.82 x C_max (tank, shown only)"
+ ],
+ "integrity": {
+  "verdict": "PASS",
+  "counts": {
+   "FAIL": 0,
+   "WARN": 11,
+   "PASS": 8,
+   "INFO": 1
+  },
+  "nets": 12,
+  "fails": []
+ },
+ "r_edge": 500.0,
+ "D_mm": 1000.0,
+ "z_total": 228.0,
+ "ladder_Ca": 718.2023645827242,
+ "field": {
+  "C1max": 757.3046972279171,
+  "C1min": 114.87352651935444,
+  "C2max": 757.3144927991567,
+  "C2min": 114.92994459241525,
+  "cx3_max": 569.4297727853649,
+  "cx3_min": 163.59832188788383,
+  "cx4_max": 571.5386901863963,
+  "cx4_min": 139.71881514563628,
+  "Ca": 816.5101556715391,
+  "Cb": 817.2666554266006,
+  "C_R1": 680.7875331080196
+ },
+ "z": 1.0576468607810197,
+ "converged": true,
+ "t_engine": 4.7340919971466064
+}

@@ -258,3 +258,26 @@ The ladder re-sizes with g_v (C_max 280 / 490 / 560 / 653 pF). All four build, p
 | Cx floor × 0.5 | 0.958 | no — the island floor must stay |
 
 **Next:** ownership solves on A, to name the parts behind its 108 pF C1 floor and its X.
+
+**Round-2 outcome, D** (g_v 3, sectored mica 0.5 / face, 2 mm air, otherwise as A; free basis; `docs/geometry/rt/r2D.eval.json`).
+
+| | prediction | outcome |
+|---|---|---|
+| D κ_C | 6–8 | **CONFIRMED: 6.59** (C1 757.3 / 114.9 pF) |
+| D is the best z | — | **CONFIRMED: z 1.0576, converged** (A 1.0195) |
+| D z ≥ 1.1 | — | **REFUTED** |
+
+**Engine-only follow-ups on D.**
+- **Re-sizing is flat.** Ca × 0.5–1.3 with Cx swing × 1–2 spans 1.054–1.065.
+- **The floors close it.**
+
+| change | z | converged |
+|---|---|---|
+| C1 floor × 0.5 | 1.103 | yes |
+| X × 0.5 | 1.123 | yes |
+| **both × 0.5** | **1.204** | yes, **the target** |
+| both × 0.7 | 1.127 | yes |
+
+**Remaining job, on D: halve the C1 floor (115 → ~57 pF) and halve X.**
+
+B and C were not run (stopped for compute). D dominates them on the 2-D and the A/D trend. Next: ownership solves on D.
