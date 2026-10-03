@@ -183,6 +183,114 @@ def max_rpm_rel(split=D_SPLIT, r_rotor_mm=491.49, r_stator_mm=None, rpm_I12=floa
     return min(lim)
 
 
+# ---------------------------------------------------------------------------------------------------
+# motor in, continuous time [ME]
+# ---------------------------------------------------------------------------------------------------
+import copy as _copy
+
+
+class MotorSim(PE.Sim):
+    """pump_engine's Sim with the motor branches integrated in continuous time:
+      * Strang splitting: half the capacitance change, the exact frozen-K motor flow (expm) over the step at
+        the midpoint, the other half -- second order in the step instead of the first-order split of
+        pump_engine's 'cont' mode;
+      * every gap event is located INSIDE the step: when the step ends with a closure, the step is redone by
+        bisection to the first instant at which the event fires (loc_it halvings), the event is applied
+        there and the rest of the step continues [ME]."""
+
+    def __init__(self, *a, loc_it=30, **k):
+        super().__init__(*a, **k)
+        self.loc_it = loc_it
+        self.n_located = 0
+
+    def _snap(self):
+        return (self.q.copy(), self.I.copy(), self.th, set(self.cond), set(self.latched), _copy.deepcopy(self.gs),
+                dict(self.ledger), dict(self.diss_by), set(self._trv_done),
+                None if self.tape is None else self.tape.copy(), len(self.events), self._ph_th, self._ph)
+
+    def _restore(self, s):
+        (self.q, self.I, self.th, self.cond, self.latched, self.gs, self.ledger, self.diss_by, self._trv_done, tape, ne,
+         self._ph_th, self._ph) = (s[0].copy(), s[1].copy(), s[2], set(s[3]), set(s[4]), _copy.deepcopy(s[5]),
+                                   dict(s[6]), dict(s[7]), set(s[8]), s[9], s[10], s[11], s[12])
+        self.tape = None if tape is None else tape.copy()
+        del self.events[ne:]
+
+    def _advance(self, th1):
+        th0 = self.th
+        tm = 0.5 * (th0 + th1)
+        self.stroke(tm)
+        self.motor_step((th1 - th0) * self.DEG)
+        self.stroke(th1)
+
+    def _fires(self, th):
+        s = self._snap()
+        self._fired = None
+        self.event(th, strike=self.vstrike is not None)
+        fired = self._fired is not None
+        self._restore(s)
+        self._fired = None
+        return fired
+
+    def _step_to(self, th_b, depth=0):
+        th_a = self.th
+        s0 = self._snap()
+        self._advance(th_b)
+        if depth > 6 or th_b - th_a < 1e-9 or not self._fires(th_b):
+            self._fired = None
+            self.event(th_b, strike=self.vstrike is not None)
+            return self._fired
+        lo, hi = th_a, th_b
+        for _ in range(self.loc_it):
+            mid = 0.5 * (lo + hi)
+            self._restore(s0); self._advance(mid)
+            if self._fires(mid):
+                hi = mid
+            else:
+                lo = mid
+        self._restore(s0); self._advance(hi)
+        self._fired = None
+        self.event(hi, strike=self.vstrike is not None)
+        f1 = self._fired
+        self.n_located += 1
+        if th_b - hi > 1e-12:
+            f2 = self._step_to(th_b, depth + 1)
+            return f1 if f2 is None else f2
+        return f1
+
+    def cycle(self, k, zth=None, cut=0.0, on_point=None):
+        if self.mode != "cont":
+            return super().cycle(k, zth, cut, on_point)
+        th0 = 60.0 * k + cut
+        g = sorted(set(self.grid(60.0 * k) + self.grid(60.0 * (k + 1))))
+        g = [x for x in g if th0 - 1e-12 <= x <= th0 + 60.0 + 1e-12]
+        if abs(g[0] - th0) > 1e-9:
+            g = [th0] + g
+        if abs(g[-1] - (th0 + 60.0)) > 1e-9:
+            g = g + [th0 + 60.0]
+        if zth is not None:
+            g = sorted(set(g) | {th0 + zth})
+        mag = None
+        pat = []
+        for th in g[1:]:
+            fired = self._step_to(th)
+            pat.append((tuple(sorted(self.cond)), fired))
+            if zth is not None and abs(th - (60.0 * k + zth)) < 1e-9:
+                mag = self.state_mag()
+            if on_point is not None:
+                on_point(self, th)
+        self.patterns.append(pat)
+        return mag
+
+
+def motor_monodromy(net, cfg, loc_it=30, **kw):
+    sim = MotorSim(net, mode="cont", dth=cfg["dth"], record_events=False, arming=cfg["arming"], rpm=cfg["rpm"],
+                   loc_it=loc_it)
+    PE.seed(sim, -1.0)
+    m = PE.monodromy(net, cfg, sim=sim, **kw)
+    m["n_located"] = sim.n_located
+    return m
+
+
 def _selftest():
     cfg = PE.make_config({})
     n0 = build_net(cfg)

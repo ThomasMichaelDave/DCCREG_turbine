@@ -266,3 +266,67 @@ def _selftest():
 
 
 SELFTEST_OK = _selftest()
+
+
+# ---------------------------------------------------------------------------------------------------
+# one design through the whole round trip
+# ---------------------------------------------------------------------------------------------------
+RT_GEOM = dict(sg_tip_deg=15.0)        # timing-consistent rotor tips (C1 aligned at engine theta 15) [IR]
+
+
+def design_for(plates=None, geom=None):
+    """stage-1 ladder for the plates -> lock -> the pump-geometry build (RT_GEOM + geom)."""
+    import pump_geometry as PG
+    import pump_sizing as PS
+    lad = PS.size(dict(plates or {}))
+    lock = PG.lock_record(lad, {}, 0.0, False, "round_trip")
+    g = dict(RT_GEOM)
+    # D-SCALING [IR, TMD-gated]: voltage-set features fixed; the outer class tracks r_out -- the return band
+    # keeps its 23 mm beyond the plates (r410 at r_out 387), the axial bar band its r375 / 387 ratio; the bars,
+    # pickups and carrier edge already scale with r_out in the builder
+    ro = lad["plates"]["r_outMm"]
+    g.update(sg_rrail=ro + 23.0, sg_rbar=ro * 375.0 / 387.0)
+    g.update(geom or {})
+    return PG.build(lock, g), lad
+
+
+def integrity(design):
+    import circuit_integrity as CI
+    rep = CI.analyze(CI.parts_from_design(design), CI.load_netlist(), "round-trip candidate")
+    return dict(verdict=rep["verdict"], counts=rep["counts"], nets=len(rep["nets"]),
+                fails=[f["text"] for f in rep["findings"] if f["level"] == "FAIL"][:5])
+
+
+def evaluate_design(tag, plates=None, geom=None, level="c", n_theta=12, enclosure=50.0, procs=4, outdir=None,
+                    log=None, firing=None):
+    """geometry -> integrity -> field sweep -> reduction -> engine. Cached by tag in outdir."""
+    import pump_synth as SY
+    import rt_engine as RT
+    outdir = outdir or os.path.join(ROOT, "docs", "geometry", "rt")
+    os.makedirs(outdir, exist_ok=True)
+    design, lad = design_for(plates, geom)
+    geo_fail = [k for k, v in design["checks"].items() if not v["pass_"]]
+    integ = integrity(design)
+    res = dict(tag=tag, plates=dict(plates or {}), geom=dict(RT_GEOM, **(geom or {})), level=level, n_theta=n_theta,
+               enclosure=enclosure, geometry_fails=geo_fail, integrity=integ, r_edge=design["r_edge"],
+               D_mm=2.0 * design["r_edge"], z_total=design["z_total"], ladder_Ca=lad["ladder"]["Ca"]["value"])
+    if geo_fail or integ["verdict"] != "PASS":
+        res["excluded"] = "INTEGRITY-FAIL" if integ["verdict"] != "PASS" else "GEOMETRY-CHECK-FAIL"
+        return res
+    dpath = os.path.join(outdir, f"{tag}.design.json")
+    json.dump(design, open(dpath, "w"))
+    spath = os.path.join(outdir, f"{tag}.{level}{n_theta}.sweep.json")
+    thetas = [PERIOD * k / n_theta for k in range(n_theta)]
+    if os.path.exists(spath):
+        thetas, sols = load(spath)
+    else:
+        sols = sweep(dpath, thetas, level=level, enclosure=enclosure, procs=procs, log=log)
+        save(spath, thetas, sols)
+    prof, nets = reduce(sols)
+    res["field"] = field_values(prof)
+    cfg = SY.engine_cfg(*SY.sized(dict(plates or {}, **(firing or {}))))
+    cm = CModel(thetas, prof, tip_deg=res["geom"]["sg_tip_deg"])
+    t0 = time.time()
+    m = RT.run(RT.build_net(cfg, cmodel=cm), cfg)
+    res.update(z=m["z"], converged=m["converged"], t_engine=time.time() - t0)
+    return res

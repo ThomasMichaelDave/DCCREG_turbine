@@ -60,6 +60,9 @@ GEOM_DEFAULTS = dict(
     ca_rin=110.0, ca_rout=175.0,              # mm (the pinned one is used; the other is solved) [OC DXF]
     ca_round=0.0,                             # manufacturing step on the solved dimension (mm or deg; 0 = exact)
     ca_margin=5.0,                            # dielectric overlap margin around the foil (mm, radial and arc) [IR]
+    ca_cal=1.0,                               # parallel-plate share of the locked Ca / Cb: the area law sizes the electrode
+                                              # for ca_cal x C, so a field-solved fringe (ROUND-TRIP FS7) can be
+                                              # calibrated out (1 = no fringe allowance, as stage 2) [ME]
     # stack placeholders [IR]; the carrier thicknesses are the BASE (minimum) values -- see zs_mode
     t_foil=1.0, t_carrier=3.0, t_rotor=10.0, t_flange=6.0, t_septum=12.0,
     cx_air=3.0, cx_mica=0.3,                  # Cx gap: air + mica per face (freeze v0.10) [OC]
@@ -97,6 +100,14 @@ GEOM_DEFAULTS = dict(
     sg_rimgap=3.0,                            # trimmed ND2 / ND3 rim beyond its outermost foil + dielectric margin (mm) [IR]
     sg_clear=2.0,                             # running clearance: tip to the trimmed rim, load sphere to the flange face (mm) [IR]
     sg_stem_air=2.0,                          # rim stem left bare between the rim and its sphere (mm) [IR]
+    c_w_deg=0.0,                              # C1 / C2 kept-sector width (deg; 0 = the full sector pitch, as drawn).
+                                              # Narrower sectors on the same centres widen the gaps between them and
+                                              # cut the disaligned fringe (ROUND-TRIP lever 2) [IR]
+    cx_w_deg=0.0,                             # island bars + Cx pickups sector width (deg; 0 = as drawn) [IR]
+    sg_tip_deg=0.0,                           # rotor-tip angle in the rotor frame (deg, mod 60). Stage 2 put the tips at 0
+                                              # (the C1 faces aligned when a tip meets its station); the engine's timing
+                                              # has C1 aligned 15 deg after theta = 0, which tips at 15 realize
+                                              # (ROUND-TRIP, sim/round-trip-findings.md) [IR]
     # ---- Z-stretch (TMD 2026-10-02): the two foils of a node sit on the two faces of one carrier and are joined by
     #      explicit links, so a carrier's thickness is free along z. 'auto' stretches every carrier to hold its gap
     #      seats and embedded leads with the margins above; 'fixed' keeps the base thicknesses (checks then show the
@@ -273,8 +284,8 @@ def build(locked, geom=None):
     L = locked["ladder"]; P = locked["plates"]
     nk = int(P["n_kept"])
     ri, ro = P["r_inMm"], P["r_outMm"]
-    ca = solve_transfer(L["Ca"], g, nk, ro - g["ca_margin"])        # Cb uses the same geometry spec; the
-    cb = solve_transfer(L["Cb"], g, nk, ro - g["ca_margin"])        # counters span the stator plate r_in-r_out
+    ca = solve_transfer(L["Ca"] * g["ca_cal"], g, nk, ro - g["ca_margin"])   # Cb uses the same geometry spec; the
+    cb = solve_transfer(L["Cb"] * g["ca_cal"], g, nk, ro - g["ca_margin"])   # counters span the stator plate r_in-r_out
     rr_in = max(0.0, ri - g["rotor_in_off"])
     # plate-carrier outer radius: the DXF R500 plate edge, scaled with the active band [IR]
     r_edge = ro * 500.0 / 387.0
@@ -286,19 +297,23 @@ def build(locked, geom=None):
     even = [2 * w_sec * k for k in range(sb // 2)]
     ca_starts = [s + (w_sec - ca["w_deg"]) / 2 for s in odd]         # centred in the facing sector
     cb_starts = [s + (w_sec - cb["w_deg"]) / 2 for s in even]
+    w_c = g["c_w_deg"] or w_sec                                       # C1 / C2 faces, on the sector centres
+    w_x = g["cx_w_deg"] or w_sec                                      # island bars + pickups
+    c_odd = [s + (w_sec - w_c) / 2 for s in odd]; c_even = [s + (w_sec - w_c) / 2 for s in even]
+    x_odd = [s + (w_sec - w_x) / 2 for s in odd]; x_even = [s + (w_sec - w_x) / 2 for s in even]
     fp = dict(
-        C1_stator=_fp("C1 stator plate", "1", "C1", ri, ro, odd, w_sec),
-        C1_rotor=_fp("C1 rotor face", "R-A", "C1", rr_in, ro, odd, w_sec),
-        C2_stator=_fp("C2 stator plate", "4", "C2", ri, ro, even, w_sec),
-        C2_rotor=_fp("C2 rotor face", "R-B", "C2", rr_in, ro, odd, w_sec),
+        C1_stator=_fp("C1 stator plate", "1", "C1", ri, ro, c_odd, w_c),
+        C1_rotor=_fp("C1 rotor face", "R-A", "C1", rr_in, ro, c_odd, w_c),
+        C2_stator=_fp("C2 stator plate", "4", "C2", ri, ro, c_even, w_c),
+        C2_rotor=_fp("C2 rotor face", "R-B", "C2", rr_in, ro, c_odd, w_c),
         Ca_el=_fp("Ca electrode", "2", "Ca", ca["r_in"], ca["r_out"], ca_starts, ca["w_deg"]),
         Ca_counter=_fp("Ca counter (ND1 back face)", "1", "Ca", ri, ro, odd, w_sec),
         Cb_el=_fp("Cb electrode", "3", "Cb", cb["r_in"], cb["r_out"], cb_starts, cb["w_deg"]),
         Cb_counter=_fp("Cb counter (ND4 back face)", "4", "Cb", ri, ro, even, w_sec),
-        Cx4_pickup=_fp("Cx4 pickup", "n23", "Cx4", cx_rin, cx_rout, even, w_sec),   # n23 -Lx4- node 2 (netlist)
-        Cx4_bars=_fp("island bars on A", "8", "Cx4", bar_rin, cx_rout, even, w_sec),
-        Cx3_pickup=_fp("Cx3 pickup", "n17", "Cx3", cx_rin, cx_rout, odd, w_sec),   # n17 -Lx3- node 3 (netlist)
-        Cx3_bars=_fp("island bars on B", "7", "Cx3", bar_rin, cx_rout, odd, w_sec),
+        Cx4_pickup=_fp("Cx4 pickup", "n23", "Cx4", cx_rin, cx_rout, x_even, w_x),   # n23 -Lx4- node 2 (netlist)
+        Cx4_bars=_fp("island bars on A", "8", "Cx4", bar_rin, cx_rout, x_even, w_x),
+        Cx3_pickup=_fp("Cx3 pickup", "n17", "Cx3", cx_rin, cx_rout, x_odd, w_x),   # n17 -Lx3- node 3 (netlist)
+        Cx3_bars=_fp("island bars on B", "7", "Cx3", bar_rin, cx_rout, x_odd, w_x),
         # C_R faces: the rotor-face sectors (host Ametal_full = keptFrac x full radial span, index.html plateGeom),
         # aligned on A and B -- both discs co-rotate, so C_R is fixed and its sectoring is a free choice [OC host]
         CR_A=_fp("C_R plate (rotor A)", "n18", "C_R", rr_in, ro, odd, w_sec),
@@ -718,7 +733,7 @@ def sparkgaps(design):
         f = target(rc, b["rotor_node"], lead_z[rc])
         zf = 0.5 * (f["z0"] + f["z1"])
         for k in range(SPOKES):
-            a = 60.0 * k                                   # tips at 0 mod 60 deg: fire angle = station angle [IR]
+            a = 60.0 * k + g["sg_tip_deg"]                 # a tip meets station s when the rotor has turned by s - tip [IR]
             ch = [f"tip-{side}-{band}", rc, rfoil]
             cen = _pol(b["r"], a, b["z_tip"])
             where = (f"hanging from {rc} at r{_mm(b['r'])} {_mm(a)} deg outside the {b['stator_carrier']} rim "

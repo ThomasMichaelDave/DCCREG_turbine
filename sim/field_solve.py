@@ -222,7 +222,7 @@ DEFAULT_RES = dict(h_max_r=4.0, h_min_r=0.5, h_max_z=3.0, h_min_z=0.5, h_max_p=1
                    r_fine_at=387.0, h_far=12.0)
 
 
-def build_grid(prims, enclosure=50.0, period=PERIOD, res=None, theta_breaks=()):
+def build_grid(prims, enclosure=50.0, period=PERIOD, res=None, theta_breaks=(), free_scale=25.0):
     """Tensor grid over one wedge [0, period) x [0, R] x [Z0, Z1]: every SECTOR boundary is a grid line
     (conductor boundaries graded to h_min), constant-height leads add their top / bottom planes and
     axial leads their radii; spheres and the angular extent of leads are rasterised [ME]."""
@@ -255,8 +255,9 @@ def build_grid(prims, enclosure=50.0, period=PERIOD, res=None, theta_breaks=()):
                 z_min = min(z_min, a[2] - q["R"], b[2] - q["R"])
     pb += list(theta_breaks); pf += list(theta_breaks)
     if enclosure is None:                    # free space: a far Robin boundary
-        Rr, Z0, Z1 = 3.0 * r_max + 50, z_min - 2.0 * r_max - 50, z_max + 2.0 * r_max + 50
-        h_far = max(R["h_far"], 0.2 * r_max)
+        ext = free_scale * max(r_max, z_max - z_min)
+        Rr, Z0, Z1 = r_max + ext, z_min - ext, z_max + ext
+        h_far = max(R["h_far"], 0.25 * ext)
     else:
         Rr, Z0, Z1 = r_max + enclosure, z_min - enclosure, z_max + enclosure
         h_far = R["h_far"]
@@ -512,9 +513,11 @@ def maxwell(g, eps, cond, names, bc, tol=1e-5, log=None, solver="auto", return_V
     BX = B.T @ X
     XAX = X.T @ (Auu @ X)
     C = Ckk - (BX + BX.T - XAX)
+    C_lin = Ckk - BX                                                      # the plain Schur complement
+    recip = float(np.max(np.abs(C_lin - C_lin.T)) / max(np.max(np.abs(C_lin)), 1e-300))
     C = 0.5 * (C + C.T)
     info = dict(cells=N, unknowns=int(u.size), conductor_cells=int(k.size), adjacent_conductor_faces=bad,
-                t_assemble=t1 - t0, t_solve=t2 - t1, iterations=it, asym=0.0)
+                t_assemble=t1 - t0, t_solve=t2 - t1, iterations=it, reciprocity=recip)
     if return_V:
         V = np.zeros((N, nc), dtype=np.float32); V[u] = X
         for j in range(nc):
