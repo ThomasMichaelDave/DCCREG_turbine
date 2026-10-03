@@ -5,6 +5,27 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **Round trip: geometry → integrity → 3-D field solve → reduction → engine (brief round-trip-floor r0.1).** Run verdict `FIELD-SOLVE-FAIL` (FS5, FS8; RT2 by 2e-5). Floor verdict `NO-FLOOR-IN-RANGE`: the round-tripped pump has no growing mode at any size. Findings: `sim/round-trip-findings.md`.
+  - **New modules:**
+    - `sim/field_solve.py`: finite volumes on a cylindrical grid snapped to sector edges, one 60° periodic wedge, variational Maxwell matrix, RS-AMG + CG with warm starts.
+    - `sim/rt_engine.py`: pump_engine extended with the series tank, C(θ)-matrix input, the enclosure reference, counter-rotation, and a continuous-time motor (MotorSim) that locates events in-step.
+    - `sim/round_trip.py`: sweeps, reduction, the ledger, the radius surrogate, the floor search and CAD export.
+    - `sim/rt_gates.py`: gate record `sim/rt_gates.json`.
+    - Every new module self-tests on load.
+  - **Gates:**
+    - **Pass:** FS1–FS4, FS6 and FS7 (reported); RT0 (1.3254745317), RT1 (785 pF → 1.3113581), RT3, RT4 (every G-* gate on the freeze reference), CR1 (3885 rpm), MC1–MC3 (`MOTOR-CERTIFIED`), D1, FROZEN and FIREWALL.
+    - **Fail:** FS5 (1–5 pF sphere/rod couplings move 20–25 % per refinement; ≥ 100 pF converge to 0.9 %), FS8 (1.4e-3) and RT2 (1.21e-4).
+  - **Ledger at the freeze point:** L0 1.3255 → series tank 1.3114 → realized overlap C's 1.4377 → field C's 0.943 → strays 0.840 → parasitic varicaps 0.819 → drawn profiles 0.841 → enclosure **0.830**. From L3 on nothing converges: two alternating firing patterns, and plain iteration decays to the neutral state.
+  - **Two fatal floors:**
+    - The disaligned C1 of 191 pF (P2 refuted, ×12): coincident-edge fringe 79 pF, see-through to the Ca counter 28 pF, tip/septum hardware 63 pF.
+    - About 1 nF of extracted strays.
+    - Each alone takes the realized-C ladder from 1.438 to below 0.96.
+  - **Floor search** (r_out 300–580, D 775–1499 mm, integrity PASS throughout): z 0.811 → 0.854, monotone, asymptote ≈ 0.90.
+  - **Exports:** `docs/geometry/floor-56b6cb83.*` (top of range), with its integrity report read back from the STEP.
+  - **Levers:** narrower sectors lower z (c_w 20°: −0.012; 15°: −0.018; with r_in 200: −0.044); a larger Ca raises it (P5 refuted in direction); C_R1, Lx and the 1–8 / 4–7 parasitic are all ≤ 0.01.
+  - **Predictions:** P1 confirmed (−0.0141); P3 confirmed in sign, negligible.
+  - **Builder:** new parameters `sg_tip_deg`, `c_w_deg`, `cx_w_deg` and `ca_cal` (Python + JS). Their defaults leave the reference build unchanged.
+  - **Candidate screening:** the builder's "(tank, shown only)" septum check is information, not an exclusion (the tank's reach is a core matter, brief §5).
 - **Radial bar band (TMD): three of the four bar-band spheres on horizontal stems.** A new field `sg_layout` chooses the layout: `radial` is the default; `axial` keeps rev 7 exactly. In the radial layout:
   - **ND2 / ND3** end at a trimmed rim, r390: Ca/Cb + margin + 3 mm.
   - **Island-bar tips** (nodes 8 / 7) hang from the flanges just outside the rim, at r404.5.
