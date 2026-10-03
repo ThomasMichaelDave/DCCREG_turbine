@@ -1,0 +1,47 @@
+{
+ "tag": "base-r300",
+ "plates": {
+  "r_outMm": 300.0
+ },
+ "geom": {
+  "sg_tip_deg": 15.0
+ },
+ "level": "c",
+ "n_theta": 12,
+ "enclosure": 50.0,
+ "geometry_fails": [],
+ "geometry_info": [
+  "C_R: septum C = 2.82 x C_max (tank, shown only)"
+ ],
+ "integrity": {
+  "verdict": "PASS",
+  "counts": {
+   "FAIL": 0,
+   "WARN": 7,
+   "PASS": 8,
+   "INFO": 1
+  },
+  "nets": 12,
+  "fails": []
+ },
+ "r_edge": 387.5968992248062,
+ "D_mm": 775.1937984496124,
+ "z_total": 228.0,
+ "ladder_Ca": 177.088807050144,
+ "field": {
+  "C1max": 213.6153300584662,
+  "C1min": 137.98650318804678,
+  "C2max": 213.3092681738104,
+  "C2min": 138.22466084328067,
+  "cx3_max": 362.21587119210375,
+  "cx3_min": 161.2499101192343,
+  "cx4_max": 364.01091378592497,
+  "cx4_min": 137.340069992799,
+  "Ca": 281.7139382903909,
+  "Cb": 281.57455153997444,
+  "C_R1": 562.6063200796933
+ },
+ "z": 0.810622995833697,
+ "converged": false,
+ "t_engine": 5.236130952835083
+}

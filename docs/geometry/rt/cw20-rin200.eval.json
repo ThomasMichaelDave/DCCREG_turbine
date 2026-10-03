@@ -1,0 +1,48 @@
+{
+ "tag": "cw20-rin200",
+ "plates": {
+  "r_inMm": 200.0
+ },
+ "geom": {
+  "sg_tip_deg": 15.0,
+  "c_w_deg": 20.0
+ },
+ "level": "c",
+ "n_theta": 12,
+ "enclosure": 50.0,
+ "geometry_fails": [],
+ "geometry_info": [
+  "C_R: septum C = 2.82 x C_max (tank, shown only)"
+ ],
+ "integrity": {
+  "verdict": "PASS",
+  "counts": {
+   "FAIL": 0,
+   "WARN": 13,
+   "PASS": 8,
+   "INFO": 1
+  },
+  "nets": 12,
+  "fails": []
+ },
+ "r_edge": 500.0,
+ "D_mm": 1000.0,
+ "z_total": 228.0,
+ "ladder_Ca": 240.06003409802113,
+ "field": {
+  "C1max": 229.1258254920741,
+  "C1min": 123.61528643153389,
+  "C2max": 228.64493702667653,
+  "C2min": 124.33757669402696,
+  "cx3_max": 586.623763459458,
+  "cx3_min": 220.1722258377453,
+  "cx4_max": 589.2644767325863,
+  "cx4_min": 186.24431003332336,
+  "Ca": 366.62487410290305,
+  "Cb": 366.3411821844416,
+  "C_R1": 760.1695013578629
+ },
+ "z": 0.787014849599421,
+ "converged": false,
+ "t_engine": 5.9867072105407715
+}
