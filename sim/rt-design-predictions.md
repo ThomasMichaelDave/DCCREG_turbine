@@ -100,3 +100,32 @@ Predictions, recorded before the run. All on the free basis.
 | M1-b | "Ca counter → rotor C1 face" (28 pF) falls to ≤ 8 pF, so the C1 floor falls by ~20 pF |
 | M1-c | Ca and Cb (field) change by ≤ 10 % |
 | M1-d | z rises to 0.88–0.90: a step, not a pump. Per the budget, X must also go ×0.1 and C1 ×0.1 |
+
+## Step 0b: the swing requirement (engine only, pump-synth's ideal ladder)
+
+The ideal ladder keeps its small strays (Cpar 20, island 5, gap 2 pF). C1/C2 min is set to C_max/κ, with Ca × {0.5…3} and Cx max × {0.5…3} re-sized for the best converged z:
+
+| κ = C_max/C_min | best z | at Ca, Cx |
+|---|---|---|
+| 17.5 (pump-synth) | 1.382 | Ca × 0.5, Cx × 3 |
+| 8 | 1.246 | Ca × 1, Cx × 3 |
+| 4 | 1.084 | Ca × 1, Cx × 3 |
+| 3 | no growing mode | — |
+| 2 | no growing mode | — |
+
+**Requirement:** z ≥ 1.2 needs **κ ≳ 7 even with ideal strays**. The drawn build has κ = 1.80.
+
+Screening every non-face contribution would leave only the 79 pF face-edge fringe, so κ ≈ 344/79 ≈ 4.4 at the 7 mm gap: still short. Reaching κ ≥ 7 also needs one of these:
+- a smaller gap: a voltage-set feature (D-MEDIUM);
+- edge treatment that cuts the face fringe itself (offset or recessed edges, field-shaping bars);
+- a higher-εr film on the faces, raising C_max more than the fringe.
+
+**Engine what-if (free basis), larger wanted swings against fixed strays:**
+
+| C1, Cx, Ca swings | strays | z |
+|---|---|---|
+| × 2 | as built | 0.940 |
+| × 3 | as built | 0.985 |
+| × 3 | X × 0.5 | 0.993 |
+
+Swing alone does not suffice: the strays must fall as well.
