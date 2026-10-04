@@ -489,3 +489,17 @@ Material tables now know glass-bonded mica (6.9) and PTFE (2.1). That covers fie
 - **integrity from the STEP: PASS** (12 nets, 0 FAIL).
 
 **Prediction (field), recorded before the run:** z falls slightly from N2's 1.279, from the mica plate εr and the trims: **z 1.22–1.28, converged.** κ_C ≥ 11.
+
+**Round-6 field outcome (6 angles)** (r5N2f, free basis, coarse).
+
+| | prediction | outcome |
+|---|---|---|
+| z | 1.22–1.28, converged | **CONFIRMED: z 1.2372, converged** |
+| κ_C | ≥ 11 | **REFUTED (narrowly): 10.1** (C1 2208.5 / 218.3 pF) |
+
+Other field values:
+- C1/C2: max 2208.5 / 2209.4, min 218.3 / 215.0 pF;
+- Cx: 1702 / 375–400 pF;
+- Ca 818, C_R1 686 pF.
+
+The mica plates and the sleeves raise the C1 floor (167 → 218 pF, against N2's) more than C1 max, so z falls from 1.279 to 1.237: still above the 1.2 target. The 12-angle confirmation and the mesh check are running.
