@@ -339,3 +339,24 @@ Builds, integrity PASS, G-JS parity holds.
 | E-b | C1 max 757 → 590–640 pF; the stator area is × 0.77 |
 | E-c | κ 6.5–7.5 |
 | E-d | z 1.05–1.09, roughly flat against D. The C_max loss offsets the floor gain. **If this holds, the C1 floor is not worth chasing further at fixed gap; the cross-side distance is.** |
+
+## TMD proposal: multi-layer (interleaved) C1/C2 stacks on sides A and B — engine estimate on D
+
+Multiplying C1/C2, with the ladder's Ca/Cb and Cx, by N. Strays fixed. Converged z in every case.
+
+| N | optimistic: only face–face scales (D's non-face floor of 74 pF stays) | pessimistic: the whole C1/C2 floor scales |
+|---|---|---|
+| 1 | 1.0576 (D) | 1.0576 |
+| 2 | 1.160 | 1.113 |
+| **3** | **1.212** | 1.131 |
+| 4 | 1.241 | 1.137 |
+
+With Cx not scaled: N = 2 → 1.121, N = 3 → 1.137.
+
+**Reading.** Multi-layer reaches z ≥ 1.2 at N ≈ 3, **provided**:
+1. the added layers bring only face-to-face fringe. The see-through and hardware floor of 74 pF must not repeat per layer. In an interleaved stack the inner rotor plates sit between same-node stator plates, so this is the expected case;
+2. the island Cx scales with C1/C2.
+
+The deeper A and B stacks also keep the two sides further apart. The cross-side rule says that helps.
+
+**Round 4 (to build):** interleaved C1/C2 stacks (N rotor plates between N+1 stator plates per side, sharing the D settings), with Cx scaled to match. **Prediction:** z between the two bounds, nearer the optimistic one.
