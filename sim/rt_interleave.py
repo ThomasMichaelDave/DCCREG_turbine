@@ -37,6 +37,8 @@ LINK_R = 2.0          # link rod radius (mm)
 CLEAR = 2.0           # radial clearance of a carrier edge to the other type's link rod (mm)
 TAB_W = 4.0           # tab width (deg)
 VIA_R = 1.0           # through-plate via radius (mm)
+SLEEVE = 3.0          # PTFE sleeve wall on every inter-plate link (mm): the link is then insulated [IR]
+PLATE_MAT = "glass-bonded mica plate"   # intermediate plates (mica-glass composite, eps ~6.9) [IR mechanical]
 
 
 def _zs(p):
@@ -134,7 +136,7 @@ def interleave(design, N, hv=None):
     fp = d["footprints"]
     parts = d["parts"]
     tf = g["t_foil"]
-    mat = g.get("carrier_mat", "G10")
+    mat = PLATE_MAT
     added = []
     for side in ("A", "B"):
         sgn = -1.0 if side == "A" else 1.0
@@ -166,10 +168,14 @@ def interleave(design, N, hv=None):
             ilink = "in" if fin["r_in"] <= fout["r_in"] else "out"       # linked at the inner rim
             tlink = "out" if ilink == "in" else "in"                      # linked at the outer rim (tabs)
             r_li = T[ilink]["fp"]["r_in"] + 4.0
-            r_lo = max(fin["r_out"], fout["r_out"]) + m_fac + LINK_R + CLEAR + 1.0
+            # C1 / C2: the link sits 4 mm beyond the foil edge, so the rotor spark-gap tips (r~404-416) keep the HV rule
+            # from its core; Cx: beyond the wider mica facing margin
+            r_lo = max(fin["r_out"], fout["r_out"]) + (4.0 if not cap.startswith("Cx") else m_fac + LINK_R + CLEAR + 1.0)
             # the other type's INTERMEDIATE foils keep hv from each exposed link (foil + facing margin)
-            trim = {tlink: dict(r_in=max(T[tlink]["fp"]["r_in"], r_li + LINK_R + hv + m_fac)),
-                    ilink: dict(r_out=min(T[ilink]["fp"]["r_out"], r_lo - LINK_R - hv - m_fac))}
+            # links are sleeved (insulated): the other type's intermediate foils (+ facing) keep CLEAR from the sleeve
+            r_sl = LINK_R + SLEEVE
+            trim = {tlink: dict(r_in=max(T[tlink]["fp"]["r_in"], r_li + r_sl + CLEAR + m_fac)),
+                    ilink: dict(r_out=min(T[ilink]["fp"]["r_out"], r_lo - r_sl - CLEAR - m_fac))}
             plates = {"in": [dict(foils=[(pin["z0"], pin["z1"])], base=True, chains=list(pin.get("chains", [])))], "out": []}
             z = z_face
             for k, ty in enumerate([("out" if k % 2 == 0 else "in") for k in range(2 * (N - 1))]):
@@ -183,12 +189,13 @@ def interleave(design, N, hv=None):
                 body = T[ty]["body"]
                 if ty == ilink:
                     c_ri = 0.0 if body.startswith("rotor") else max(0.0, e["r_in"] - 8.0)
-                    c_ro = r_lo - LINK_R - CLEAR
+                    c_ro = r_lo - r_sl - CLEAR
                 else:
-                    c_ri = r_li + LINK_R + CLEAR
-                    c_ro = max(d["r_edge"] * 402.0 / 500.0, r_lo + 6.0)
-                added.append(_sector(f"{tag}_carrier", f"carriers / {tag}_carrier - interleave plate {k + 1} carrier ({cap}), insulating [{mat} carrier, {body}]",
-                                     "carriers", "carrier", tag, "", "", f"{mat} carrier", body, c_ri, c_ro, 0.0, 360.0, cz[0], cz[1], [tag], [0.35, 0.4, 0.47]))
+                    c_ri = r_li + r_sl + CLEAR
+                    # ends inside the island-bar tip stems (r 404.5 - stem radius) and still holds the sleeved link end
+                    c_ro = max(d["r_edge"] * 398.0 / 500.0, r_lo + r_sl + 1.0)
+                added.append(_sector(f"{tag}_carrier", f"carriers / {tag}_carrier - interleave plate {k + 1} carrier ({cap}), insulating [{mat}, {body}]",
+                                     "carriers", "carrier", tag, "", "", mat, body, c_ri, c_ro, 0.0, 360.0, cz[0], cz[1], [tag], [0.35, 0.4, 0.47]))
                 for j, zf in enumerate((f0, f1)):
                     for s_i, s0 in enumerate(e["starts"]):
                         added.append(_sector(f"{tag}_foil{j}_{s_i + 1}", f"node-{T[ty]['node']} / {tag}_foil{j}_{s_i + 1} - interleave plate {k + 1} {cap} foil, r{ri:.1f}-{ro:.1f} [Al foil, {body}]",
@@ -229,8 +236,12 @@ def interleave(design, N, hv=None):
                 for s_i, s0 in enumerate(e["starts"]):
                     a = s0 + e["w_deg"] / 2
                     joins = [f"IL{side}-{cap}-{ty}"] + [c for q in pl for c in q["chains"]]     # joined on purpose
-                    added.append(_rod(f"IL{side}_{cap}_{ty}_link_{s_i + 1}", f"node-{T[ty]['node']} / IL{side}_{cap}_{ty}_link_{s_i + 1} - interleave link [Cu link, {body}]",
+                    nm = f"IL{side}_{cap}_{ty}_link_{s_i + 1}"
+                    added.append(_rod(nm, f"node-{T[ty]['node']} / {nm} - interleave link [Cu link, {body}]",
                                       f"node-{T[ty]['node']}", T[ty]["node"], body, _pol(r, a, z_a), _pol(r, a, z_b), LINK_R, joins))
+                    added.append(_rod(nm + "_sleeve", f"carriers / {nm}_sleeve - PTFE sleeve on the interleave link, {SLEEVE:g} mm wall [PTFE sleeve, {body}]",
+                                      "carriers", "", body, _pol(r, a, z_a), _pol(r, a, z_b), LINK_R + SLEEVE, joins + [nm],
+                                      role="sleeve", mat="PTFE sleeve"))
                     if how == "tab":
                         for q, f in ((pl[0], pl[0]["foils"][-1]), (pl[-1], pl[-1]["foils"][0])):
                             ro_f = q.get("ro", e["r_out"])

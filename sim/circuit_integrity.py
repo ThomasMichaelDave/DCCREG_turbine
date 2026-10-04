@@ -69,8 +69,8 @@ NODE_INFO = {
     "n23": "Cx4 pickup on ND2 (Lx4 to node 2)",
 }
 CONDUCTORS = ("Al foil", "Cu lead", "Cu link", "Cu stem", "Cu bus", "W-Cu sphere", "polished sphere")
-EPS_TABLE = (("mica", 5.4), ("garolite", 4.7), ("G10", 4.7), ("kapton", 3.4), ("mylar", 3.2), ("pp_film", 2.2),
-             ("PP film", 2.2))
+EPS_TABLE = (("glass-bonded", 6.9), ("mica", 5.4), ("garolite", 4.7), ("G10", 4.7), ("kapton", 3.4), ("mylar", 3.2), ("pp_film", 2.2),
+             ("PP film", 2.2), ("PTFE", 2.1))
 NODE_TOKEN = re.compile(r"\bnode (R-[AB]|n\d+|\d+)\b")
 GROUP_NODE = re.compile(r"\(node (R-[AB]|n\d+|\d+)[,):]")
 LEGACY_BODY = {"A-disc": "rotor A", "A-flange": "rotor A", "B-disc": "rotor B", "B-flange": "rotor B"}

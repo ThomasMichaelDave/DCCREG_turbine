@@ -454,3 +454,38 @@ Open before calling it feasible:
 4. **Mass +23 kg rotor, axial +74 mm.**
 
 **Field result of N2c:** pending (the 6-angle, then 12-angle sweep is running).
+
+## Round 6: sleeved links, glass-bonded mica plates, ⌀6 stems (TMD go-ahead) — design r5N2f
+
+**Base.** D rebuilt with `sg_stem=6` (every spark-gap stem ⌀6); all builder checks pass, integrity PASS.
+
+**Interleave N = 2** (`sim/rt_interleave.py`):
+- **sleeves:** every inter-plate link sleeved in PTFE, 3 mm wall, so it counts as insulated as the builder's embedded leads do;
+- **plates:** intermediate plates of glass-bonded mica (mica-glass composite, εr 6.9, ρ 2.9), 4 mm;
+- **trims:** the other type's intermediate foils keep 2 mm from the sleeves. The C1 rotor mid-plate foil runs r75–383; the Cx pickup mid-plate foil r58–348;
+- **C1 stator link:** moved to r391, so the rotor spark-gap tip spheres keep the 11 mm rule from its core;
+- **plate carriers:** end at r398, clear of the island-bar tip stems.
+
+Material tables now know glass-bonded mica (6.9) and PTFE (2.1). That covers field_solve, circuit_integrity and its JS mirror. Previously the integrity tool fell back to 4.7 for PTFE.
+
+**Machine-build review: BUILD-OK.**
+
+| check | result |
+|---|---|
+| counter-rotation collisions | 0 |
+| HV, exposed vs other body | tightest **11.0 mm** (rotor tip sphere ↔ the sleeved C1 stator link core) — rule met |
+| running clearance | 1.5 mm, the builder's riser rod-end artifact, as D |
+| axial length | 302 mm |
+| mass, rotor body | 148 kg |
+| mass, stator | 189 kg |
+| intermediate plates | 4 mm glass-bonded mica over a ~303–316 mm span |
+| rotor-tip stems | 28.5 mm long, now ⌀6 (slenderness 4.75, against 7.1 at ⌀4) |
+
+**CAD export** `docs/geometry/il2f-6563b90d.*`:
+- 1099 solids, all valid;
+- volumes exact;
+- **0 clashes.** A first export found 12 real ones (the ⌀6 island-bar tip stems 0.5 mm into the first Cx plate), fixed by ending the plates at r398;
+- STEP names complete;
+- **integrity from the STEP: PASS** (12 nets, 0 FAIL).
+
+**Prediction (field), recorded before the run:** z falls slightly from N2's 1.279, from the mica plate εr and the trims: **z 1.22–1.28, converged.** κ_C ≥ 11.

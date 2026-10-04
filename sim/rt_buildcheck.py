@@ -19,7 +19,7 @@ import math
 import os
 import sys
 
-DENS = {"al foil": 2.70, "cu ": 8.96, "w-cu": 15.0, "polished sphere": 15.0, "mica": 2.8, "ptfe": 2.2, "g10": 1.85,
+DENS = {"glass-bonded": 2.9, "al foil": 2.70, "cu ": 8.96, "w-cu": 15.0, "polished sphere": 15.0, "mica": 2.8, "ptfe": 2.2, "g10": 1.85,
         "garolite": 1.85}                                       # g/cm^3 [IR]
 CAP_ROLES = ("foil",)
 GAP_ROLES = ("gap-stator", "gap-rotor", "gap-stem")
@@ -85,7 +85,9 @@ def exposed_names(d):
         if it["kind"] == "sphere" or (it["kind"] == "rod" and (it["role"] == "gap-stem" or (
                 it["role"] == "gap-lead" and not it.get("embedded") and not it.get("riser")))):
             out.add(it["name"])
-    out |= {p["name"] for p in d["parts"] if p.get("role") == "link" and p["name"].startswith("IL")}   # VIA* are embedded
+    names = {p["name"] for p in d["parts"]}
+    out |= {p["name"] for p in d["parts"] if p.get("role") == "link" and p["name"].startswith("IL")
+            and p["name"] + "_sleeve" not in names}        # VIA* are embedded; a sleeved link is insulated
     return out
 
 

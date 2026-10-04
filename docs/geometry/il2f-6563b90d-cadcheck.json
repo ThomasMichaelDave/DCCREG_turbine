@@ -1,0 +1,17 @@
+{
+ "base": "docs/geometry/il2f-6563b90d",
+ "hash": "6563b90d",
+ "solids": 1099,
+ "worst_volume_rel": 6.281626964169306e-15,
+ "invalid": [],
+ "clashes": [],
+ "n_clashes": 0,
+ "step_names_missing": [],
+ "integrity_from_step": "PASS",
+ "counts": {
+  "FAIL": 0,
+  "WARN": 11,
+  "PASS": 8,
+  "INFO": 1
+ }
+}

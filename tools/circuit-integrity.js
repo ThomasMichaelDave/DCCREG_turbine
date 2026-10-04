@@ -20,7 +20,7 @@
     "n18": "ND9 - C_R plate on rotor A (L_R1 to R-A)", "n00": "ND10 - C_R plate on rotor B (L_R2 to R-B)",
     "n17": "Cx3 pickup on ND3 (Lx3 to node 3)", "n23": "Cx4 pickup on ND2 (Lx4 to node 2)"};
   const CONDUCTORS = ["Al foil", "Cu lead", "Cu link", "Cu stem", "Cu bus", "W-Cu sphere", "polished sphere"];
-  const EPS_TABLE = [["mica", 5.4], ["garolite", 4.7], ["G10", 4.7], ["kapton", 3.4], ["mylar", 3.2], ["pp_film", 2.2], ["PP film", 2.2]];
+  const EPS_TABLE = [["glass-bonded", 6.9], ["mica", 5.4], ["garolite", 4.7], ["G10", 4.7], ["kapton", 3.4], ["mylar", 3.2], ["pp_film", 2.2], ["PP film", 2.2], ["PTFE", 2.1]];
   const NODE_TOKEN = /\bnode (R-[AB]|n\d+|\d+)\b/, GROUP_NODE = /\(node (R-[AB]|n\d+|\d+)[,):]/;
   const LEGACY_BODY = {"A-disc": "rotor A", "A-flange": "rotor A", "B-disc": "rotor B", "B-flange": "rotor B"};
   const rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
