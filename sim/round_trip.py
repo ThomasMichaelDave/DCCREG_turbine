@@ -109,7 +109,7 @@ def sweep(design_path, thetas, level="c", enclosure=50.0, procs=4, log=None):
         return [out[t] for t in thetas_all]
     procs = _procs_for(design, thetas, level, enclosure, procs)
     n = len(thetas)
-    nch = procs
+    nch = procs if procs > 1 else n                               # one process: one angle per chunk, saved as it lands
     chunks = [list(thetas[k * n // nch:(k + 1) * n // nch]) for k in range(nch)]
     chunks = [c for c in chunks if c]
     if log:
