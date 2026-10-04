@@ -1,0 +1,56 @@
+{
+ "need_hv_mm": 11.0,
+ "C1_counter_rotation": {
+  "pass_": true,
+  "collisions": [],
+  "n": 0
+ },
+ "C2_running_clearance": {
+  "warn": true,
+  "tightest": "C1_mica_rotor_1 / ND1_link_1: 1.50 mm",
+  "mm": 1.5
+ },
+ "C3_hv_counter_rotating": {
+  "pass_": true,
+  "tightest": "bartip_A_lead_1b (node 8) / SG4a1_sph_1 (node 4): 13.40 mm",
+  "n_below": 0,
+  "below": []
+ },
+ "C4_hv_same_body_lower_bound": {
+  "warn": true,
+  "tightest": "SG1_stem_1 (node 2) / SG3a1_lead_1c (node 1): 0.00 mm",
+  "n_below": 2748
+ },
+ "M_mechanics": {
+  "longest_stem_mm": 138.75000000000006,
+  "longest_stem": "SG4a1_stem_5",
+  "stem_slenderness": 34.687500000000014,
+  "thinnest_wide_carriers": [
+   {
+    "t_mm": 8.0,
+    "span_mm": 500.0,
+    "name": "A_flange_carrier",
+    "material": "PTFE rotor flange"
+   },
+   {
+    "t_mm": 8.0,
+    "span_mm": 500.0,
+    "name": "B_flange_carrier",
+    "material": "PTFE rotor flange"
+   },
+   {
+    "t_mm": 20.25,
+    "span_mm": 402.0,
+    "name": "A_disc_carrier_1",
+    "material": "PTFE rotor disc"
+   }
+  ],
+  "axial_length_mm": 228.0,
+  "mass_kg": {
+   "rotor": 118.83220166780097,
+   "stator": 163.3863844647636
+  },
+  "rotor_outer_r_mm": 500.0
+ },
+ "verdict": "BUILD-OK"
+}

@@ -1,0 +1,93 @@
+{
+ "need_hv_mm": 11.0,
+ "C1_counter_rotation": {
+  "pass_": false,
+  "collisions": [
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica0_1",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica0_2",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica0_3",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica0_4",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica0_5",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica0_6",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica1_1",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica1_2",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica1_3",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica1_4",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica1_5",
+   "ILA_Cx4_out_link_1 / ILA_Cx4_2_mica1_6",
+   "ILA_Cx4_out_link_2 / ILA_Cx4_2_mica0_1",
+   "ILA_Cx4_out_link_2 / ILA_Cx4_2_mica0_2",
+   "ILA_Cx4_out_link_2 / ILA_Cx4_2_mica0_3",
+   "ILA_Cx4_out_link_2 / ILA_Cx4_2_mica0_4",
+   "ILA_Cx4_out_link_2 / ILA_Cx4_2_mica0_5",
+   "ILA_Cx4_out_link_2 / ILA_Cx4_2_mica0_6",
+   "ILA_Cx4_out_link_2 / ILA_Cx4_2_mica1_1",
+   "ILA_Cx4_out_link_2 / ILA_Cx4_2_mica1_2"
+  ],
+  "n": 144
+ },
+ "C2_running_clearance": {
+  "warn": true,
+  "tightest": "rotortip_A_lead_1d / ILA_C1_1_mica0_1: 1.50 mm",
+  "mm": 1.5
+ },
+ "C3_hv_counter_rotating": {
+  "pass_": false,
+  "tightest": "rotortip_A_lead_1d (node R-A) / ILA_C1_1_foil0_1 (node 1): 2.00 mm",
+  "n_below": 1572,
+  "below": [
+   "ILA_C1_2_foil1_1 (node R-A) / ND1_link_1 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_1 (node R-A) / ND1_link_2 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_1 (node R-A) / ND1_link_3 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_1 (node R-A) / ND1_link_4 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_1 (node R-A) / ND1_link_5 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_1 (node R-A) / ND1_link_6 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_2 (node R-A) / ND1_link_1 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_2 (node R-A) / ND1_link_2 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_2 (node R-A) / ND1_link_3 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_2 (node R-A) / ND1_link_4 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_2 (node R-A) / ND1_link_5 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_2 (node R-A) / ND1_link_6 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_3 (node R-A) / ND1_link_1 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_3 (node R-A) / ND1_link_2 (node 1): 2.00 mm",
+   "ILA_C1_2_foil1_3 (node R-A) / ND1_link_3 (node 1): 2.00 mm"
+  ]
+ },
+ "C4_hv_same_body_lower_bound": {
+  "warn": true,
+  "tightest": "SG1_stem_1 (node 2) / SG3a1_lead_1c (node 1): 0.00 mm",
+  "n_below": 2892
+ },
+ "M_mechanics": {
+  "longest_stem_mm": 138.75000000000006,
+  "longest_stem": "SG4a1_stem_5",
+  "stem_slenderness": 34.687500000000014,
+  "thinnest_wide_carriers": [
+   {
+    "t_mm": 4.0,
+    "span_mm": 302.0,
+    "name": "ILA_Cx4_2_carrier",
+    "material": "PTFE carrier"
+   },
+   {
+    "t_mm": 4.0,
+    "span_mm": 302.0,
+    "name": "ILB_Cx3_2_carrier",
+    "material": "PTFE carrier"
+   },
+   {
+    "t_mm": 4.0,
+    "span_mm": 319.0,
+    "name": "ILA_C1_1_carrier",
+    "material": "PTFE carrier"
+   }
+  ],
+  "axial_length_mm": 302.4,
+  "mass_kg": {
+   "rotor": 142.5917525031895,
+   "stator": 184.36108606392327
+  },
+  "rotor_outer_r_mm": 500.0
+ },
+ "verdict": "BUILD-ISSUES"
+}

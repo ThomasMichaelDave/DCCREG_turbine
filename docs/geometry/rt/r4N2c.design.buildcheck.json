@@ -1,0 +1,72 @@
+{
+ "need_hv_mm": 11.0,
+ "C1_counter_rotation": {
+  "pass_": true,
+  "collisions": [],
+  "n": 0
+ },
+ "C2_running_clearance": {
+  "warn": true,
+  "tightest": "rotortip_A_lead_1d / ILA_C1_1_mica0_1: 1.50 mm",
+  "mm": 1.5
+ },
+ "C3_hv_counter_rotating": {
+  "pass_": false,
+  "tightest": "C1_rotor_1 (node R-A) / ILA_C1_out_link_1 (node 1): 7.22 mm",
+  "n_below": 288,
+  "below": [
+   "C1_rotor_1 (node R-A) / ILA_C1_out_link_1 (node 1): 7.22 mm",
+   "C1_rotor_1 (node R-A) / ILA_C1_out_link_3 (node 1): 7.22 mm",
+   "C1_rotor_1 (node R-A) / ILA_C1_out_link_5 (node 1): 7.22 mm",
+   "C1_rotor_1 (node R-A) / ILA_C1_out_link_6 (node 1): 7.22 mm",
+   "C1_rotor_2 (node R-A) / ILA_C1_out_link_1 (node 1): 7.22 mm",
+   "C1_rotor_2 (node R-A) / ILA_C1_out_link_3 (node 1): 7.22 mm",
+   "C1_rotor_2 (node R-A) / ILA_C1_out_link_5 (node 1): 7.22 mm",
+   "C1_rotor_2 (node R-A) / ILA_C1_out_link_6 (node 1): 7.22 mm",
+   "C1_rotor_3 (node R-A) / ILA_C1_out_link_1 (node 1): 7.22 mm",
+   "C1_rotor_3 (node R-A) / ILA_C1_out_link_3 (node 1): 7.22 mm",
+   "C1_rotor_3 (node R-A) / ILA_C1_out_link_5 (node 1): 7.22 mm",
+   "C1_rotor_3 (node R-A) / ILA_C1_out_link_6 (node 1): 7.22 mm",
+   "C1_rotor_4 (node R-A) / ILA_C1_out_link_1 (node 1): 7.22 mm",
+   "C1_rotor_4 (node R-A) / ILA_C1_out_link_3 (node 1): 7.22 mm",
+   "C1_rotor_4 (node R-A) / ILA_C1_out_link_5 (node 1): 7.22 mm"
+  ]
+ },
+ "C4_hv_same_body_lower_bound": {
+  "warn": true,
+  "tightest": "SG1_stem_1 (node 2) / SG3a1_lead_1c (node 1): 0.00 mm",
+  "n_below": 2892
+ },
+ "M_mechanics": {
+  "longest_stem_mm": 138.75000000000006,
+  "longest_stem": "SG4a1_stem_5",
+  "stem_slenderness": 34.687500000000014,
+  "thinnest_wide_carriers": [
+   {
+    "t_mm": 4.0,
+    "span_mm": 306.0,
+    "name": "ILA_Cx4_2_carrier",
+    "material": "PTFE carrier"
+   },
+   {
+    "t_mm": 4.0,
+    "span_mm": 306.0,
+    "name": "ILB_Cx3_2_carrier",
+    "material": "PTFE carrier"
+   },
+   {
+    "t_mm": 4.0,
+    "span_mm": 319.0,
+    "name": "ILA_C1_1_carrier",
+    "material": "PTFE carrier"
+   }
+  ],
+  "axial_length_mm": 302.4,
+  "mass_kg": {
+   "rotor": 142.39497705097196,
+   "stator": 184.36879749661773
+  },
+  "rotor_outer_r_mm": 500.0
+ },
+ "verdict": "BUILD-ISSUES"
+}

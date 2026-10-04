@@ -36,6 +36,7 @@ T_MID = 4.0           # intermediate plate carrier thickness (mm) [IR mechanical
 LINK_R = 2.0          # link rod radius (mm)
 CLEAR = 2.0           # radial clearance of a carrier edge to the other type's link rod (mm)
 TAB_W = 4.0           # tab width (deg)
+VIA_R = 1.0           # through-plate via radius (mm)
 
 
 def _zs(p):
@@ -111,13 +112,26 @@ def _pol(r, a, z):
     return [r * math.cos(math.radians(a)), r * math.sin(math.radians(a)), z]
 
 
-def interleave(design, N):
+def _sector(name, label, asm, role, carrier, node, cap, mat, body, r_in, r_out, a0, w, z0, z1, chains, rgb):
+    return dict(name=name, label=label, assembly=asm, role=role, carrier=carrier, node=node, cap=cap, material=mat,
+                body=body, shape="sector", chains=chains, r_in=r_in, r_out=r_out, start_deg=a0, w_deg=w,
+                z0=min(z0, z1), z1=max(z0, z1), rgb=rgb, volume=0.0)
+
+
+def _rod(name, label, asm, node, body, p0, p1, r, chains, role="link", mat="Cu link"):
+    return dict(name=name, label=label, assembly=asm, role=role, carrier="", node=node, cap="", material=mat,
+                body=body, shape="rod", chains=chains, p0=p0, p1=p1, r=r, rgb=[0.9, 0.6, 0.3], volume=0.0)
+
+
+def interleave(design, N, hv=None):
+    """N rotor plates = N stator plates per stack (2N - 1 gaps). hv: the HV clearance kept between an exposed
+    inter-plate link and the other type's intermediate foils (default: the build's sg_khv x largest spacing)."""
     d = copy.deepcopy(design)
     if N <= 1:
         return d
     g = d["geom"]
+    hv = hv if hv is not None else g["sg_khv"] * max(g["sg_s_ret"], g["sg_s_load"], g["sg_s_fire"], g["sg_s_bs"])
     fp = d["footprints"]
-    stack = {it["id"]: it for it in d["stack"]}
     parts = d["parts"]
     tf = g["t_foil"]
     mat = g.get("carrier_mat", "G10")
@@ -125,108 +139,114 @@ def interleave(design, N):
     for side in ("A", "B"):
         sgn = -1.0 if side == "A" else 1.0
         for inner, outer, gap_id in STACKS[side]:
-            gi = stack[gap_id]
+            gi = {it["id"]: it for it in d["stack"]}[gap_id]
             gapt = gi["z1"] - gi["z0"]
             fin, fout = fp[inner], fp[outer]
+
             def find(e):
                 return next(p for p in parts if p.get("role") == "foil" and p["shape"] == "sector" and p.get("cap") == e["cap"]
                             and p["node"] == e["node"] and abs(p["r_in"] - e["r_in"]) < 1e-6 and abs(p["r_out"] - e["r_out"]) < 1e-6)
             pin, pout = find(fin), find(fout)
             cap = pin["cap"]
-            body_in, body_out = pin["body"], pout["body"]
-            # the face of the inner electrode toward the gap, and the boundary (the outer electrode's gap face)
-            z_face = gi["z1"] if side == "A" else gi["z0"]           # inner electrode's gap face
-            zb = gi["z0"] if side == "A" else gi["z1"]               # outer electrode's gap face
-            per = gapt + 2 * tf + T_MID
-            dz = 2 * (N - 1) * per
+            m_fac = g["ca_margin"] if cap.startswith("Cx") else g.get("c1_mica_m", 1.0)
+            fac = [p for p in parts if p.get("role") == "dielectric" and p.get("cap") == cap and p["name"].startswith(f"{cap}_mica")]
+            t_fac = (fac[0]["z1"] - fac[0]["z0"]) if fac else 0.0
+            z_face = gi["z1"] if side == "A" else gi["z0"]           # the inner electrode's gap face
+            zb = gi["z0"] if side == "A" else gi["z1"]               # the outer electrode's gap face
+            dz = 2 * (N - 1) * (gapt + 2 * tf + T_MID)
             outer_facings = [p["name"] for p in parts if p.get("role") == "dielectric" and f"facing on {outer} " in p.get("label", "")]
-            # move the outer electrode, its facings and everything beyond it
             before = {p["name"]: list(p["c"]) for p in parts if p["shape"] == "sphere"}
             _shift(parts, zb, dz, side, keep=outer_facings)
-            _follow_partners(parts, before, dz, sgn)
             for p in parts:
                 if p["name"] in outer_facings:
                     p["z0"], p["z1"] = p["z0"] + sgn * dz, p["z1"] + sgn * dz
+            _follow_partners(parts, before, dz, sgn)
             _shift_stack(d["stack"], zb, dz, side)
-            # inner-linked type: the smaller r_in
-            types = {"in": dict(fp=fin, node=fin["node"], body=body_in, part=pin), "out": dict(fp=fout, node=fout["node"], body=body_out, part=pout)}
-            inner_link = "in" if fin["r_in"] <= fout["r_in"] else "out"
-            tab_link = "out" if inner_link == "in" else "in"
-            r_link_in = types[inner_link]["fp"]["r_in"] + 4.0
-            r_link_out = max(fin["r_out"], fout["r_out"]) + 6.0
-            # facing thickness / margin as the build has them in this gap
-            fac = [p for p in parts if p.get("role") == "dielectric" and p.get("cap") == cap and p["name"].startswith(f"{cap}_mica")]
-            t_fac = (fac[0]["z1"] - fac[0]["z0"]) if fac else 0.0
-            m_fac = (g["ca_margin"] if cap.startswith("Cx") else g.get("c1_mica_m", 1.0))
+            T = {"in": dict(fp=fin, node=fin["node"], body=pin["body"]), "out": dict(fp=fout, node=fout["node"], body=pout["body"])}
+            ilink = "in" if fin["r_in"] <= fout["r_in"] else "out"       # linked at the inner rim
+            tlink = "out" if ilink == "in" else "in"                      # linked at the outer rim (tabs)
+            r_li = T[ilink]["fp"]["r_in"] + 4.0
+            r_lo = max(fin["r_out"], fout["r_out"]) + m_fac + LINK_R + CLEAR + 1.0
+            # the other type's INTERMEDIATE foils keep hv from each exposed link (foil + facing margin)
+            trim = {tlink: dict(r_in=max(T[tlink]["fp"]["r_in"], r_li + LINK_R + hv + m_fac)),
+                    ilink: dict(r_out=min(T[ilink]["fp"]["r_out"], r_lo - LINK_R - hv - m_fac))}
+            plates = {"in": [dict(foils=[(pin["z0"], pin["z1"])], base=True, chains=list(pin.get("chains", [])))], "out": []}
             z = z_face
-            seq = [("out" if k % 2 == 0 else "in") for k in range(2 * (N - 1))]
-            foils_by_type = {"in": [(pin, None)], "out": []}
-            for k, ty in enumerate(seq):
-                T = types[ty]
-                e = T["fp"]
-                z_gap_end = z + sgn * gapt
-                z_f1 = (z_gap_end, z_gap_end + sgn * tf)
-                z_c = (z_f1[1], z_f1[1] + sgn * T_MID)
-                z_f2 = (z_c[1], z_c[1] + sgn * tf)
-                z = z_f2[1]
-                lo = lambda a, b: (min(a, b), max(a, b))
-                if ty == inner_link:
-                    c_rin, c_rout = 0.0 if T["body"].startswith("rotor") else max(0.0, e["r_in"] - 8.0), r_link_out - LINK_R - CLEAR
-                else:
-                    c_rin, c_rout = r_link_in + LINK_R + CLEAR, max(d["r_edge"] * 402.0 / 500.0, r_link_out + 6.0)
+            for k, ty in enumerate([("out" if k % 2 == 0 else "in") for k in range(2 * (N - 1))]):
+                e = T[ty]["fp"]
+                ri, ro = trim[ty].get("r_in", e["r_in"]), trim[ty].get("r_out", e["r_out"])
+                f0 = (z + sgn * gapt, z + sgn * (gapt + tf))
+                cz = (f0[1], f0[1] + sgn * T_MID)
+                f1 = (cz[1], cz[1] + sgn * tf)
+                z = f1[1]
                 tag = f"IL{side}_{cap}_{k + 1}"
-                z0, z1 = lo(*z_c)
-                added.append(dict(name=f"{tag}_carrier", label=f"carriers / {tag}_carrier - interleave plate {k + 1} carrier ({cap}), insulating [{mat} carrier, {T['body']}]",
-                                  assembly="carriers", role="carrier", carrier=tag, node="", cap="", material=f"{mat} carrier",
-                                  body=T["body"], shape="sector", chains=[tag], r_in=c_rin, r_out=c_rout, start_deg=0.0, w_deg=360.0,
-                                  z0=z0, z1=z1, rgb=[0.35, 0.4, 0.47], volume=math.pi * (c_rout ** 2 - c_rin ** 2) * (z1 - z0)))
-                for j, zf in enumerate((z_f1, z_f2)):
-                    a0, a1 = lo(*zf)
+                body = T[ty]["body"]
+                if ty == ilink:
+                    c_ri = 0.0 if body.startswith("rotor") else max(0.0, e["r_in"] - 8.0)
+                    c_ro = r_lo - LINK_R - CLEAR
+                else:
+                    c_ri = r_li + LINK_R + CLEAR
+                    c_ro = max(d["r_edge"] * 402.0 / 500.0, r_lo + 6.0)
+                added.append(_sector(f"{tag}_carrier", f"carriers / {tag}_carrier - interleave plate {k + 1} carrier ({cap}), insulating [{mat} carrier, {body}]",
+                                     "carriers", "carrier", tag, "", "", f"{mat} carrier", body, c_ri, c_ro, 0.0, 360.0, cz[0], cz[1], [tag], [0.35, 0.4, 0.47]))
+                for j, zf in enumerate((f0, f1)):
                     for s_i, s0 in enumerate(e["starts"]):
-                        added.append(dict(name=f"{tag}_foil{j}_{s_i + 1}", label=f"node-{T['node']} / {tag}_foil{j}_{s_i + 1} - interleave plate {k + 1} {cap} foil [Al foil, {T['body']}]",
-                                          assembly=f"node-{T['node']}", role="foil", carrier=tag, node=T["node"], cap=cap, material="Al foil",
-                                          body=T["body"], shape="sector", chains=[tag], r_in=e["r_in"], r_out=e["r_out"], start_deg=s0,
-                                          w_deg=e["w_deg"], z0=a0, z1=a1, rgb=[0.8, 0.8, 0.8], volume=0.0))
-                        if t_fac > 0:                     # facing on the gap side of this foil
-                            # foil 0 faces back toward the previous gap, foil 1 outward to the next one
+                        added.append(_sector(f"{tag}_foil{j}_{s_i + 1}", f"node-{T[ty]['node']} / {tag}_foil{j}_{s_i + 1} - interleave plate {k + 1} {cap} foil, r{ri:.1f}-{ro:.1f} [Al foil, {body}]",
+                                             f"node-{T[ty]['node']}", "foil", tag, T[ty]["node"], cap, "Al foil", body, ri, ro, s0, e["w_deg"], zf[0], zf[1], [tag], [0.8, 0.8, 0.8]))
+                        if t_fac > 0:
+                            a0_, a1_ = min(zf), max(zf)
                             if side == "A":
-                                fz = (a1, a1 + t_fac) if j == 0 else (a0 - t_fac, a0)
+                                fz = (a1_, a1_ + t_fac) if j == 0 else (a0_ - t_fac, a0_)
                             else:
-                                fz = (a0 - t_fac, a0) if j == 0 else (a1, a1 + t_fac)
-                            dw = math.degrees(m_fac / max(e["r_in"], 1e-9))
-                            added.append(dict(name=f"{tag}_mica{j}_{s_i + 1}", label=f"dielectrics / {tag}_mica{j}_{s_i + 1} - {cap} mica facing [mica, {T['body']}]",
-                                              assembly="dielectrics", role="dielectric", carrier=tag, node="", cap=cap, material="mica",
-                                              body=T["body"], shape="sector", chains=[tag], r_in=max(0.0, e["r_in"] - m_fac),
-                                              r_out=e["r_out"] + m_fac, start_deg=s0 - dw, w_deg=e["w_deg"] + 2 * dw,
-                                              z0=min(fz), z1=max(fz), rgb=[0.9, 0.85, 0.6], volume=0.0))
-                    foils_by_type[ty].append((dict(z0=a0, z1=a1), tag))
-                z = z_f2[1]
-            # the facing on the inner face of the (moved) outer electrode exists already; the facing on the last
-            # intermediate's outer face toward it was added above. The outer electrode's own foils:
-            foils_by_type["out"].append((pout, None))
-            # links
-            for ty, how in ((inner_link, "inner"), (tab_link, "tab")):
-                T = types[ty]; e = T["fp"]
-                fl = foils_by_type[ty]
-                zmids = [0.5 * (f["z0"] + f["z1"]) for f, _ in fl]
-                z_lo, z_hi = min(zmids), max(zmids)
+                                fz = (a0_ - t_fac, a0_) if j == 0 else (a1_, a1_ + t_fac)
+                            dw = math.degrees(m_fac / max(ri, 1e-9))
+                            added.append(_sector(f"{tag}_mica{j}_{s_i + 1}", f"dielectrics / {tag}_mica{j}_{s_i + 1} - {cap} mica facing [mica, {body}]",
+                                                 "dielectrics", "dielectric", tag, "", cap, "mica", body, max(0.0, ri - m_fac), ro + m_fac,
+                                                 s0 - dw, e["w_deg"] + 2 * dw, fz[0], fz[1], [tag], [0.9, 0.85, 0.6]))
+                # the plate's two foils joined through its own carrier (embedded, as the build's ND1 links)
+                for s_i, s0 in enumerate(e["starts"]):
+                    a = s0 + e["w_deg"] / 2; rr = 0.5 * (ri + ro)
+                    # a 1 mm via from foil to foil inside the carrier: its end caps touch the foils' inner faces
+                    added.append(_rod(f"VIA{side}_{cap}_{k + 1}_{s_i + 1}", f"node-{T[ty]['node']} / VIA{side}_{cap}_{k + 1}_{s_i + 1} - through-plate via [Cu link, {body}]",
+                                      f"node-{T[ty]['node']}", T[ty]["node"], body, _pol(rr, a, cz[0] + sgn * VIA_R), _pol(rr, a, cz[1] - sgn * VIA_R),
+                                      VIA_R, [tag]))
+                plates[ty].append(dict(foils=[f0, f1], base=False, ri=ri, ro=ro, chains=[tag]))
+            plates["out"].append(dict(foils=[(pout["z0"], pout["z1"])], base=True, chains=list(pout.get("chains", []))))
+            # inter-plate links: from the first plate's outer foil to the last plate's inner foil of each type
+            for ty, how in ((ilink, "inner"), (tlink, "tab")):
+                pl = plates[ty]
+                if len(pl) < 2:
+                    continue
+                # end caps (radius LINK_R) touch each end foil from behind its gap face, without poking into a gap:
+                # the end point sits LINK_R behind the foil's gap-side face (inside the foil + its carrier)
+                fa, fb = pl[0]["foils"][-1], pl[-1]["foils"][0]
+                if side == "A":                                  # outward = decreasing z: fa above fb
+                    z_a, z_b = min(fa) + LINK_R, max(fb) - LINK_R
+                else:
+                    z_a, z_b = max(fa) - LINK_R, min(fb) + LINK_R
+                e = T[ty]["fp"]; body = T[ty]["body"]
+                r = r_li if how == "inner" else r_lo
                 for s_i, s0 in enumerate(e["starts"]):
                     a = s0 + e["w_deg"] / 2
-                    r = r_link_in if how == "inner" else r_link_out
-                    added.append(dict(name=f"IL{side}_{cap}_{ty}_link_{s_i + 1}", label=f"node-{T['node']} / IL{side}_{cap}_{ty}_link_{s_i + 1} - interleave link [Cu link, {T['body']}]",
-                                      assembly=f"node-{T['node']}", role="link", carrier="", node=T["node"], cap="", material="Cu link",
-                                      body=T["body"], shape="rod", chains=[f"IL{side}-{cap}-{ty}"], p0=_pol(r, a, z_lo), p1=_pol(r, a, z_hi),
-                                      r=LINK_R, rgb=[0.9, 0.6, 0.3], volume=0.0))
+                    joins = [f"IL{side}-{cap}-{ty}"] + [c for q in pl for c in q["chains"]]     # joined on purpose
+                    added.append(_rod(f"IL{side}_{cap}_{ty}_link_{s_i + 1}", f"node-{T[ty]['node']} / IL{side}_{cap}_{ty}_link_{s_i + 1} - interleave link [Cu link, {body}]",
+                                      f"node-{T[ty]['node']}", T[ty]["node"], body, _pol(r, a, z_a), _pol(r, a, z_b), LINK_R, joins))
                     if how == "tab":
-                        for f, tg in fl:
-                            added.append(dict(name=f"IL{side}_{cap}_{ty}_tab_{tg or 'base'}_{f['z0']:.2f}_{s_i + 1}", label=f"node-{T['node']} / tab - interleave link tab [Al foil, {T['body']}]",
-                                              assembly=f"node-{T['node']}", role="foil", carrier=tg or "", node=T["node"], cap="", material="Al foil",
-                                              body=T["body"], shape="sector", chains=[f"IL{side}-{cap}-{ty}"], r_in=e["r_out"] - 2.0,
-                                              r_out=r_link_out + LINK_R + 1.0, start_deg=a - TAB_W / 2, w_deg=TAB_W,
-                                              z0=f["z0"], z1=f["z1"], rgb=[0.8, 0.8, 0.8], volume=0.0))
-            stack = {it["id"]: it for it in d["stack"]}
+                        for q, f in ((pl[0], pl[0]["foils"][-1]), (pl[-1], pl[-1]["foils"][0])):
+                            ro_f = q.get("ro", e["r_out"])
+                            nm = f"IL{side}_{cap}_{ty}_tab_{f[0]:.2f}_{s_i + 1}"
+                            added.append(_sector(nm, f"node-{T[ty]['node']} / {nm} - interleave link tab, plate at z {f[0]:.2f} [Al foil, {body}]",
+                                                 f"node-{T[ty]['node']}", "foil", "", T[ty]["node"], "", "Al foil", body, ro_f - 2.0, r + LINK_R,
+                                                 a - TAB_W / 2, TAB_W, f[0], f[1], [f"IL{side}-{cap}-{ty}"] + q["chains"], [0.8, 0.8, 0.8]))
     d["parts"] = parts + added
-    d["interleave"] = dict(N=N, gaps_per_stack=2 * N - 1, t_mid=T_MID, note="screening build (sim/rt_interleave.py)")
+    for p in d["parts"]:                                   # the axial shift stretched some parts: volumes anew
+        if p["shape"] == "sector":
+            p["volume"] = math.pi * (p["r_out"] ** 2 - p["r_in"] ** 2) * (p["w_deg"] / 360.0) * (p["z1"] - p["z0"])
+        elif p["shape"] == "rod":
+            p["volume"] = math.pi * p["r"] ** 2 * math.dist(p["p0"], p["p1"])
+        else:
+            p["volume"] = 4.0 / 3.0 * math.pi * p["r"] ** 3
+    d["interleave"] = dict(N=N, gaps_per_stack=2 * N - 1, t_mid=T_MID, hv_mm=hv, note="screening build (sim/rt_interleave.py)")
     return d
 
 

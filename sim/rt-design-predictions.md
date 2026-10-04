@@ -414,3 +414,43 @@ Open before calling it feasible:
 2. mesh convergence (FS5) at this point;
 3. motor on;
 4. the TMD mechanical and HV flags: PTFE plates and discs, the longer tip stems, 2 mm air between mica facings, the axial span ±151 mm.
+
+## Round 5: N = 2 adopted for optimisation (TMD). Buildable variant N2c and its machine-build review
+
+**Wiring, revised for the build.**
+- Each intermediate plate's two foils are joined by embedded 1 mm vias through its own carrier.
+- The inter-plate links run only between the near foils of adjacent same-type plates.
+- The other type's intermediate foils are trimmed to keep the HV rule (11 mm) from each exposed link. The rotor mid-plate foil runs r75 → 380 instead of 387; the island bar plate starts at r80 instead of 75.
+- Link rods clear every mica facing.
+
+`docs/geometry/rt/r4N2c.design.json`: integrity PASS, 12 nets.
+
+**CAD export** (FreeCAD builder, OCC): `docs/geometry/il2-ce1a9380.{json,step,-parts.csv,-integrity.txt,-cadcheck.json}`.
+- 1051 solids, all valid;
+- volumes exact (6e-15);
+- **0 solid clashes**; intentional joins are declared by shared chains, as the builder does;
+- STEP names complete;
+- **integrity read back from the STEP: PASS** (12 nets, 0 FAIL, 11 WARN, as D).
+
+**Machine-build review** (`sim/rt_buildcheck.py`, from the parts list, calibrated: the freeze reference and D both read BUILD-OK):
+
+| check | D | N2c |
+|---|---|---|
+| counter-rotation collisions (revolved envelopes) | 0 | **0** |
+| tightest running clearance | 1.5 mm* | 1.5 mm* |
+| HV, exposed conductor vs other body (rule 11 mm) | 13.4 mm, OK | **7.2 mm, 288 pairs below.** All are the stator plate links (node 1/4) against the main rotor face (R-A/R-B) edge |
+| axial length | 228 mm | **302 mm** |
+| mass, rotor body (both rotor halves + septum) | 119 kg | **142 kg** (PTFE ρ 2.2) |
+| mass, stator | 163 kg | 184 kg |
+| thinnest wide carrier | 8 mm × 500 (flange) | **4 mm PTFE × 306–319 mm span**, the intermediate plates |
+| longest rotor-tip stem | 10.5 mm | **28.5 mm** (⌀4): the tips follow ND1 out by 18 mm |
+
+\* The rod-end artifact of the builder's lead risers, identical in D; accepted by the builder.
+
+**Flags for TMD (build feasibility):**
+1. **HV at the stator links:** 7.2 mm against the 11 mm spark-gap rule. The C1/C2 capacitor gaps themselves hold the same voltage across 2 mm air + mica, so the links are ~3× less stressed than the gap. But they are exposed rods: an insulating sleeve (PTFE tube) or a slightly larger rotor-face inset would close it.
+2. **4 mm PTFE intermediate plates spanning ~310 mm:** stiffness and flutter at speed. A mica-glass composite plate is the natural substitute; it raises the carrier εr, so it is to be field-checked.
+3. **28.5 mm ⌀4 rotor-tip stems:** bending at 3000+ rpm. A ⌀6 stem or a shorter path (tips moved to the outermost rotor plate) should be checked.
+4. **Mass +23 kg rotor, axial +74 mm.**
+
+**Field result of N2c:** pending (the 6-angle, then 12-angle sweep is running).
