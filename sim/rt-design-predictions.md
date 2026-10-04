@@ -503,3 +503,18 @@ Other field values:
 - Ca 818, C_R1 686 pF.
 
 The mica plates and the sleeves raise the C1 floor (167 → 218 pF, against N2's) more than C1 max, so z falls from 1.279 to 1.237: still above the 1.2 target. The 12-angle confirmation and the mesh check are running.
+
+**Mesh check on the final N = 2 build** (`sim/rt_meshcheck.py r5N2f 3.0 6`; `docs/geometry/rt/r5N2f.mesh.json`).
+
+Each direction is refined on its own, at θ 0 and 30 (8.8–9.9 M cells each). The per-coupling fine/coarse ratios are applied to the 6-angle coarse table.
+
+| refinement | worst change, ≥ 100 pF | ≥ 10 pF | ≥ 1 pF | ladder caps | z corrected |
+|---|---|---|---|---|---|
+| radial (h_min_r 1.0 → 0.6) | 0.14 % | 0.39 % | 1.4 % | ≤ 0.14 % | 1.2374 |
+| axial (h_min_z 1.0 → 0.6) | 0.42 % | 0.95 % | 1.8 % | ≤ 0.23 % | 1.2377 |
+| angular (h_max_p 2.5 → 2.0, arc 1.5 → 1.0) | 1.05 % | 4.8 % | 12.9 % | ≤ 0.57 % | 1.2407 |
+| **all three** | | | | | **1.2413, converged** (coarse 1.2372) |
+
+**Outcome.** The mesh error in z is **+0.004**, and it is upward: the finer mesh makes the pump slightly better. Radial and axial resolution are converged. The angular direction is the least converged: the small couplings ≥ 1 pF move ~13 %, at sector edges and around the spheres. Even so it moves z by only +0.003. **The z ≥ 1.2 result is mesh-robust.**
+
+Next, running: the 12-angle confirmation.
