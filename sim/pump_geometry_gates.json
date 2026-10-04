@@ -903,7 +903,7 @@
   "js": {
    "ok": true,
    "designs": 9,
-   "worst_rel": 1.5153534577229023e-14,
+   "worst_rel": 1.750741124186639e-14,
    "mismatches": [],
    "selftest": {
     "pass": true
