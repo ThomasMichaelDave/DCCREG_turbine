@@ -360,3 +360,32 @@ With Cx not scaled: N = 2 → 1.121, N = 3 → 1.137.
 The deeper A and B stacks also keep the two sides further apart. The cross-side rule says that helps.
 
 **Round 4 (to build):** interleaved C1/C2 stacks (N rotor plates between N+1 stator plates per side, sharing the D settings), with Cx scaled to match. **Prediction:** z between the two bounds, nearer the optimistic one.
+
+## Round 4: interleaved stacks (TMD go-ahead), `sim/rt_interleave.py`
+
+**Definition.** N = rotor plates per stack = stator plates per stack, so each stack has 2N − 1 gaps.
+
+**Build.** Derived from D. Each C1/C2 stack and each Cx3/Cx4 stack gets 2(N − 1) double-sided intermediate plates:
+- foil | 4 mm PTFE | foil, alternating rotor and stator;
+- sectored mica facings in every gap, as D has them;
+- rotor plates linked at their inner rim (axial rods through the stator plates' bores);
+- stator plates linked at their outer rim, by 4° tabs to an axial rod beyond the rotor plates.
+
+Everything beyond each stack moves axially outward. The rotor spark-gap tips on the disc rim follow their stator partners, so every gap keeps its spacing. Those tips get longer stems: **[IR] mechanical flag**.
+
+| | parts | axial span | integrity | C1 overlap | Cx overlap |
+|---|---|---|---|---|---|
+| N = 2 (r4N2) | 1027 | ±151.2 mm | PASS, 12 nets | 1976 pF (×3.0) | 1571 (×3.0) |
+| N = 3 (r4N3) | 1275 | ±188.4 mm | PASS, 12 nets | 3293 pF (×5.0) | 2618 (×5.0) |
+
+Ca is unchanged (719 pF). The engine on D says that is better: ×3 with Ca × 1 → 1.259 against Ca × 3 → 1.212; ×5 with Ca × 1 → 1.320 against 1.257.
+
+**Screening.** 6 angles per 60°. RT2 showed the angle count moves z by ~1e-3. The winner is extended to 12 angles.
+
+**Predictions,** recorded before the runs:
+
+| | prediction |
+|---|---|
+| N2 | z 1.15–1.26: between the pessimistic and optimistic engine bounds, κ_C ≥ 9 |
+| N3 | z 1.18–1.32. **Expected to be the first ≥ 1.2 field-solved build** |
+| IL-x | the cross-side harmful set does not grow by more than 20 %, since the stacks push the sides apart |
