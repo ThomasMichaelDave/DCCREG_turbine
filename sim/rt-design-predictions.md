@@ -518,3 +518,16 @@ Each direction is refined on its own, at θ 0 and 30 (8.8–9.9 M cells each). T
 **Outcome.** The mesh error in z is **+0.004**, and it is upward: the finer mesh makes the pump slightly better. Radial and axial resolution are converged. The angular direction is the least converged: the small couplings ≥ 1 pF move ~13 %, at sector edges and around the spheres. Even so it moves z by only +0.003. **The z ≥ 1.2 result is mesh-robust.**
 
 Next, running: the 12-angle confirmation.
+
+**12-angle confirmation on the final N = 2 build** (r5N2f, free basis).
+
+| | z |
+|---|---|
+| 6 angles | 1.2372 |
+| **12 angles** | **1.2400, converged** |
+
+The 6 → 12 step is +0.0028 (field values unchanged to 0.1 pF). With the mesh correction (+0.004, axial/radial/angular refinement), the best estimate is **z ≈ 1.244**. **The final N = 2 build pumps with z ≥ 1 + m (m = 0.20) at the 1000 mm diameter limit, robust to both angle sampling and mesh.**
+
+Still open:
+- motor-on;
+- the TMD engineering items: the 2 mm air between the mica facings at operating voltage, the structure of the 4 mm mica plates, and the PTFE rotor discs at speed.
