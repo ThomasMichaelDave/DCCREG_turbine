@@ -281,3 +281,61 @@ The ladder re-sizes with g_v (C_max 280 / 490 / 560 / 653 pF). All four build, p
 **Remaining job, on D: halve the C1 floor (115 → ~57 pF) and halve X.**
 
 B and C were not run (stopped for compute). D dominates them on the 2-D and the A/D trend. Next: ownership solves on D.
+
+## The cross-side rule (stray-sensitivity map on D; `sim/rt_stray_map_D.json`, dz per +10 pF, all converged)
+
+The nodes split by side of the septum: side A {1, 2, 8, n23, R-A} and side B {4, 3, 7, n17, R-B}.
+
+| coupling type | effect per +10 pF |
+|---|---|
+| **same-side** (e.g. rail/bank ↔ island on one side) | **harmless:** −0.0001 to +0.0013 |
+| **stator/island cross-side** {1, 2, 8, n23} × {4, 3, 7, n17} | **−0.008 to −0.009 per pair** |
+| rotor ↔ opposite-side stator | small per pair; 60 pF in all, worth +0.035 if removed |
+
+**Budget on D, by set:**
+
+| change | z |
+|---|---|
+| the harmful set (45 pF; largest rail 1 ↔ rail 4, 12.5 pF) → 0 | 1.115 |
+| the harmful set × 0.5 | 1.083 |
+| the rotor-cross set (60 pF) → 0 | 1.093 |
+| all cross-side × 0 + C1 floor × 0.7 | **1.227** |
+| all cross-side × 0.5 + C1 floor × 0.5 | 1.172 |
+| same-side × 0.5 (297 pF) | only 1.072 |
+
+**Consequence.** Converting a cross-side coupling into C1 floor costs about the same per pF, ~0.008 per 10 pF either way. So a screen tied to any pump node does not help. Cross-side coupling falls only with **distance between the two sides, lower permittivity, or a screen at a neutral potential** (infinity, or a virtual ground, which would be **[GROUND]**-flagged).
+
+**Owners on D, excluding C_R1:**
+- the stator plate seeing the *opposite* rotor through the rotor-sector gaps: about 27 pF per side (C2 stator ↔ C1 rotor face 10.9, ↔ n18 8.5, ↔ R-A lead 7.7);
+- rail ↔ rail 12.5 pF;
+- leads.
+
+**D's C1 floor owners at θ 30 (115 pF):**
+
+| source | pF |
+|---|---|
+| face–face | 40.5 |
+| Ca counter → rotor face | 18.9 |
+| rotor leads → stator face | 18.4 |
+| stator leads → rotor face | 10.3 |
+| C_R (n18) → stator face | 10.0 |
+| bus | 6.2 |
+
+## Round 3, candidate E: C1-floor moves on D
+
+Settings relative to D:
+- stator plates 18°, outer edge pulled in 12 mm (`c_s_inset=12`), so r95–375;
+- counters 16° (`counter_w_deg=16`);
+- C_R plates 16° (`cr_w_deg=16`);
+- Ca electrodes 14° (`ca_w=14`), r232–382.
+
+Builds, integrity PASS, G-JS parity holds.
+
+**Predictions,** recorded before the run:
+
+| | prediction |
+|---|---|
+| E-a | C1 floor 115 → 80–95 pF |
+| E-b | C1 max 757 → 590–640 pF; the stator area is × 0.77 |
+| E-c | κ 6.5–7.5 |
+| E-d | z 1.05–1.09, roughly flat against D. The C_max loss offsets the floor gain. **If this holds, the C1 floor is not worth chasing further at fixed gap; the cross-side distance is.** |

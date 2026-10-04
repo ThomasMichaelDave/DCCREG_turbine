@@ -210,7 +210,7 @@ def _rand_geom(rng):
                 sg_stem_air=rng.uniform(0, 8), counter_trim=rng.choice([0, 1]), ca_cal=rng.choice([1.0, 1.0, 1.6]),
                 c_w_deg=rng.choice([0.0, 0.0, 20.0]), cx_w_deg=rng.choice([0.0, 0.0, 24.0]), sg_tip_deg=rng.choice([0.0, 15.0]),
                 c_ws_deg=rng.choice([0.0, 0.0, 22.0]), counter_w_deg=rng.choice([0.0, 0.0, 22.0]), cr_w_deg=rng.choice([0.0, 0.0, 22.0]),
-                c1_mica=rng.choice([0.0, 0.0, 1.5]), carrier_mat=rng.choice(["G10", "G10", "PTFE"]))
+                c1_mica=rng.choice([0.0, 0.0, 1.5]), carrier_mat=rng.choice(["G10", "G10", "PTFE"]), c_s_inset=rng.choice([0.0, 0.0, 12.0]))
 
 
 def gate_js(n=60):

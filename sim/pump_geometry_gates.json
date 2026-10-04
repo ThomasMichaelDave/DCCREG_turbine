@@ -580,7 +580,7 @@
  "G-JS": {
   "pass_": true,
   "n": 60,
-  "worst_rel": 1.1973424559320139e-13,
+  "worst_rel": 2.558852924412502e-13,
   "mismatches": []
  },
  "G-RT": {

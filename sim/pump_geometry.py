@@ -100,6 +100,7 @@ GEOM_DEFAULTS = dict(
     sg_rimgap=3.0,                            # trimmed ND2 / ND3 rim beyond its outermost foil + dielectric margin (mm) [IR]
     sg_clear=2.0,                             # running clearance: tip to the trimmed rim, load sphere to the flange face (mm) [IR]
     sg_stem_air=2.0,                          # rim stem left bare between the rim and its sphere (mm) [IR]
+    c_s_inset=0.0,                            # stator C1 / C2 plate outer edge pulled in from the rotor face edge (mm) [IR]
     c_ws_deg=0.0,                             # stator C1 / C2 plate width (deg; 0 = the rotor-face width): narrower than the
                                               # rotor face, the edges never coincide when disaligned (design loop) [IR]
     counter_w_deg=0.0,                        # Ca / Cb counter-electrode width (deg; 0 = the sector pitch): <= c_ws_deg hides
@@ -319,9 +320,9 @@ def build(locked, geom=None):
     x_odd = [s + (w_sec - w_x) / 2 for s in odd]; x_even = [s + (w_sec - w_x) / 2 for s in even]
     ct_ri = (lambda e: max(ri, e["r_in"] - g["ca_margin"])) if g["counter_trim"] else (lambda e: ri)
     fp = dict(
-        C1_stator=_fp("C1 stator plate", "1", "C1", ri, ro, s_odd, w_cs),
+        C1_stator=_fp("C1 stator plate", "1", "C1", ri, ro - g["c_s_inset"], s_odd, w_cs),
         C1_rotor=_fp("C1 rotor face", "R-A", "C1", rr_in, ro, c_odd, w_c),
-        C2_stator=_fp("C2 stator plate", "4", "C2", ri, ro, s_even, w_cs),
+        C2_stator=_fp("C2 stator plate", "4", "C2", ri, ro - g["c_s_inset"], s_even, w_cs),
         C2_rotor=_fp("C2 rotor face", "R-B", "C2", rr_in, ro, c_odd, w_c),
         Ca_el=_fp("Ca electrode", "2", "Ca", ca["r_in"], ca["r_out"], ca_starts, ca["w_deg"]),
         Ca_counter=_fp("Ca counter (ND1 back face)", "1", "Ca", ct_ri(ca), ro, k_odd, w_ct),
