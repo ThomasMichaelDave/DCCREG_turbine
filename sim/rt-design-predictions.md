@@ -400,3 +400,17 @@ Ca is unchanged (719 pF). The engine on D says that is better: ×3 with Ca × 1 
 | E-d | z 1.05–1.09, about flat | **REFUTED (slightly low): 1.0408**, converged, below D's 1.0576 |
 
 **Verdict: DROPPED.** The conclusion predicted in E-d holds: at fixed gap, cutting the C1 floor by shrinking the stator plate loses as much C_max as it gains in floor. D stays the base for round 4.
+
+**Round-4 outcome, N = 2** (`docs/geometry/rt/r4N2.eval.json`; 6 angles, free basis, coarse level).
+
+| | prediction | outcome |
+|---|---|---|
+| N2 | z 1.15–1.26 | **EXCEEDED: z 1.2791, converged.** κ_C **13.09** (C1 2186.5 / 167.0 pF); Cx 1679 / 299–323; Ca 818; C_R1 685 |
+
+**The first field-solved build with z ≥ 1 + m (m = 0.20) inside the D 1000 mm limit.**
+
+Open before calling it feasible:
+1. the 12-angle confirmation (RT2-type), queued;
+2. mesh convergence (FS5) at this point;
+3. motor on;
+4. the TMD mechanical and HV flags: PTFE plates and discs, the longer tip stems, 2 mm air between mica facings, the axial span ±151 mm.
