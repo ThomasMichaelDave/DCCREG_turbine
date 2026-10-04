@@ -531,3 +531,18 @@ The 6 → 12 step is +0.0028 (field values unchanged to 0.1 pF). With the mesh c
 Still open:
 - motor-on;
 - the TMD engineering items: the 2 mm air between the mica facings at operating voltage, the structure of the 4 mm mica plates, and the PTFE rotor discs at speed.
+
+## Round 7 (TMD): motor-on check, and structural garolite instead of PTFE
+
+**TMD rulings:**
+- 2 mm air between the mica facings is acceptable, at tight machining tolerances;
+- mica composites are acceptable;
+- PTFE is rejected structurally in favour of structural garolite, optionally with a mica or Mylar layer.
+
+**Predictions,** recorded before the runs:
+
+| | prediction |
+|---|---|
+| MOT | with the motor branches in (MotorSim, continuous time), the final N = 2 build has **no growing mode**: z within 1e-3 of 1, the same result as G1m on the ideal ladder. TMD expects the same |
+| G10 | with every carrier, rotor disc and flange in garolite (G10, εr 4.7) instead of PTFE (the interleave plates stay glass-bonded mica), **z 1.20–1.22**: the M5 gain (+0.041 on the reference) is partly given back, less at N = 2 where the wanted C is ×3 |
+| G10-b | a thin Mylar or mica skin on the garolite does not change z by more than 0.005: thin film, εr close to garolite |
