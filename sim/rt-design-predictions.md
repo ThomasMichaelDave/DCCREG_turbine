@@ -389,3 +389,14 @@ Ca is unchanged (719 pF). The engine on D says that is better: ×3 with Ca × 1 
 | N2 | z 1.15–1.26: between the pessimistic and optimistic engine bounds, κ_C ≥ 9 |
 | N3 | z 1.18–1.32. **Expected to be the first ≥ 1.2 field-solved build** |
 | IL-x | the cross-side harmful set does not grow by more than 20 %, since the stacks push the sides apart |
+
+**Round-3 outcome, E** (`docs/geometry/rt/r3E.eval.json`).
+
+| | prediction | outcome |
+|---|---|---|
+| E-a | C1 floor 80–95 pF | **CONFIRMED: 90.6** (D 114.9) |
+| E-b | C1 max 590–640 pF | **CONFIRMED: 608.9** |
+| E-c | κ 6.5–7.5 | **CONFIRMED: 6.72** (D 6.59) |
+| E-d | z 1.05–1.09, about flat | **REFUTED (slightly low): 1.0408**, converged, below D's 1.0576 |
+
+**Verdict: DROPPED.** The conclusion predicted in E-d holds: at fixed gap, cutting the C1 floor by shrinking the stator plate loses as much C_max as it gains in floor. D stays the base for round 4.
