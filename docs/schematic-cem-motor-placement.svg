@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1320" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <rect x="0" y="0" width="1100" height="1320" fill="#ffffff"/>
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#333"/></marker>
+  </defs>
+  <style>
+    .w{stroke:#222;stroke-width:2;fill:none}
+    .wm{stroke:#c0392b;stroke-width:2.5;fill:none}
+    .wn{stroke:#1e7a46;stroke-width:2.5;fill:none}
+    .box{fill:#fff;stroke:#222;stroke-width:1.6}
+    .bm{fill:#fdecea;stroke:#c0392b;stroke-width:2}
+    .bn{fill:#e8f6ee;stroke:#1e7a46;stroke-width:2}
+    .node{fill:#222}
+    .nl{font-weight:bold;font-size:15}
+    .t{fill:#222}
+    .tm{fill:#c0392b;font-weight:bold}
+    .tn{fill:#1e7a46;font-weight:bold}
+    .small{font-size:11.5;fill:#444}
+    .h{font-size:19;font-weight:bold}
+    .zone{fill:#f4f6f9;stroke:#9aa5b1;stroke-dasharray:5 4}
+  </style>
+
+  <!-- ===================== PANEL 1: as in the netlist of record ===================== -->
+  <text x="30" y="36" class="h">1. Where the C-EMs sit today (netlist of record, topology_edge_list.csv)</text>
+  <text x="30" y="58" class="small">Stator body: nodes 1–4, Ca, Cb, islands 7/8, the 12 C-EM branches. Rotor body: R-A, R-B, the tank. Varicaps C1, C2 couple the two bodies.</text>
+
+  <rect x="20" y="75" width="1060" height="555" rx="8" class="zone"/>
+  <text x="34" y="96" class="small">STATOR (spins counter to the rotor; driven by the C-EM motor)</text>
+  <rect x="380" y="470" width="340" height="150" rx="8" fill="#fbf7ee" stroke="#b9a46c" stroke-dasharray="5 4"/>
+  <text x="392" y="490" class="small">ROTOR (belt-driven)</text>
+
+  <!-- rails -->
+  <line x1="120" y1="140" x2="490" y2="140" class="w"/>   <!-- node 1 -->
+  <line x1="120" y1="330" x2="490" y2="330" class="w"/>   <!-- node 2 -->
+  <line x1="610" y1="140" x2="980" y2="140" class="w"/>   <!-- node 4 -->
+  <line x1="610" y1="330" x2="980" y2="330" class="w"/>   <!-- node 3 -->
+  <text x="88" y="145" class="nl">1</text><text x="58" y="162" class="small">A-rail</text>
+  <text x="88" y="335" class="nl">2</text><text x="52" y="352" class="small">AR-bank</text>
+  <text x="992" y="145" class="nl">4</text><text x="992" y="162" class="small">B-rail</text>
+  <text x="992" y="335" class="nl">3</text><text x="992" y="352" class="small">BR-bank</text>
+
+  <!-- Ca, Cb -->
+  <line x1="160" y1="140" x2="160" y2="215" class="w"/><rect x="138" y="215" width="44" height="40" class="box"/><text x="148" y="240" class="t">Ca</text><line x1="160" y1="255" x2="160" y2="330" class="w"/>
+  <line x1="940" y1="140" x2="940" y2="215" class="w"/><rect x="918" y="215" width="44" height="40" class="box"/><text x="928" y="240" class="t">Cb</text><line x1="940" y1="255" x2="940" y2="330" class="w"/>
+
+  <!-- C-EM branches across Ca (x6) -->
+  <line x1="260" y1="140" x2="260" y2="170" class="wm"/>
+  <rect x="226" y="170" width="68" height="44" class="bm"/><text x="236" y="190" class="tm">L_A1…6</text><text x="236" y="206" class="small">0.64 H</text>
+  <line x1="260" y1="214" x2="260" y2="250" class="wm"/>
+  <rect x="226" y="250" width="68" height="44" class="bm"/><text x="234" y="270" class="tm">C_AR1…6</text><text x="236" y="286" class="small">440 nF</text>
+  <line x1="260" y1="294" x2="260" y2="330" class="wm"/>
+  <text x="232" y="356" class="tm">× 6 in parallel</text>
+  <text x="232" y="373" class="small" font-size="10.5">CEM_A1…A6 (30°+60k)</text>
+  <text x="232" y="389" class="small">300 Hz series LC</text>
+  <text x="232" y="405" class="tm">ACROSS Ca</text>
+
+  <!-- C-EM branches across Cb (x6) -->
+  <line x1="840" y1="140" x2="840" y2="170" class="wm"/>
+  <rect x="806" y="170" width="68" height="44" class="bm"/><text x="816" y="190" class="tm">L_B1…6</text><text x="816" y="206" class="small">0.64 H</text>
+  <line x1="840" y1="214" x2="840" y2="250" class="wm"/>
+  <rect x="806" y="250" width="68" height="44" class="bm"/><text x="814" y="270" class="tm">C_BR1…6</text><text x="816" y="286" class="small">440 nF</text>
+  <line x1="840" y1="294" x2="840" y2="330" class="wm"/>
+  <text x="762" y="356" class="tm">× 6 in parallel</text>
+  <text x="762" y="373" class="small" font-size="10.5">CEM_B1…B6 (0°+60k)</text>
+  <text x="762" y="389" class="small">300 Hz series LC</text>
+  <text x="762" y="405" class="tm">ACROSS Cb</text>
+
+  <!-- island A (node 7) -->
+  <line x1="420" y1="140" x2="420" y2="165" class="w"/><rect x="392" y="165" width="56" height="28" class="box"/><text x="398" y="184" class="t">SG3a</text>
+  <line x1="420" y1="193" x2="420" y2="215" class="w"/><circle cx="420" cy="215" r="4" class="node"/><text x="428" y="219" class="nl">7</text>
+  <line x1="420" y1="215" x2="540" y2="215" class="w"/>
+  <rect x="540" y="203" width="56" height="26" class="box"/><text x="545" y="221" class="t">SG3b</text>
+  <line x1="596" y1="216" x2="640" y2="216" class="w"/><line x1="640" y1="216" x2="640" y2="330" class="w"/>
+  <text x="456" y="250" class="small">BS3, Cx3–Lx3 also 7 → 3</text>
+
+  <!-- island B (node 8) -->
+  <line x1="680" y1="140" x2="680" y2="165" class="w"/><rect x="652" y="165" width="56" height="28" class="box"/><text x="658" y="184" class="t">SG4a</text>
+  <line x1="680" y1="193" x2="680" y2="285" class="w"/><circle cx="680" cy="285" r="4" class="node"/><text x="688" y="280" class="nl">8</text>
+  <line x1="680" y1="285" x2="560" y2="285" class="w"/>
+  <rect x="504" y="272" width="56" height="26" class="box"/><text x="509" y="290" class="t">SG4b</text>
+  <line x1="504" y1="285" x2="460" y2="285" class="w"/><line x1="460" y1="285" x2="460" y2="330" class="w"/>
+  <text x="556" y="315" class="small">BS4, Cx4–Lx4 also 8 → 2</text>
+
+  <!-- rotor: C1, C2, SG1, SG2, tank -->
+  <line x1="200" y1="140" x2="200" y2="400" class="w" stroke-dasharray="0"/>
+  <rect x="176" y="380" width="48" height="36" class="box"/><text x="186" y="403" class="t">C1</text>
+  <line x1="200" y1="416" x2="200" y2="560" class="w"/><line x1="200" y1="560" x2="440" y2="560" class="w"/>
+  <line x1="350" y1="330" x2="350" y2="440" class="w"/><rect x="326" y="440" width="48" height="28" class="box"/><text x="333" y="459" class="t">SG1</text>
+  <line x1="350" y1="468" x2="350" y2="560" class="w"/>
+  <circle cx="440" cy="560" r="4" class="node"/><text x="412" y="590" class="nl">R-A</text>
+  <line x1="900" y1="140" x2="900" y2="380" class="w"/>
+  <rect x="876" y="380" width="48" height="36" class="box"/><text x="886" y="403" class="t">C2</text>
+  <line x1="900" y1="416" x2="900" y2="560" class="w"/><line x1="900" y1="560" x2="660" y2="560" class="w"/>
+  <line x1="750" y1="330" x2="750" y2="440" class="w"/><rect x="726" y="440" width="48" height="28" class="box"/><text x="733" y="459" class="t">SG2</text>
+  <line x1="750" y1="468" x2="750" y2="560" class="w"/>
+  <circle cx="660" cy="560" r="4" class="node"/><text x="642" y="590" class="nl">R-B</text>
+  <line x1="440" y1="560" x2="470" y2="560" class="w"/><rect x="470" y="545" width="46" height="30" class="box"/><text x="476" y="565" class="t">L_R1</text>
+  <line x1="516" y1="560" x2="530" y2="560" class="w"/><rect x="530" y="545" width="40" height="30" class="box"/><text x="534" y="565" class="t">C_R</text>
+  <line x1="570" y1="560" x2="584" y2="560" class="w"/><rect x="584" y="545" width="46" height="30" class="box"/><text x="590" y="565" class="t">L_R2</text>
+  <line x1="630" y1="560" x2="660" y2="560" class="w"/>
+  <text x="470" y="604" class="small">tank (n18, n00)</text>
+
+  <!-- why it fails -->
+  <rect x="40" y="640" width="1020" height="62" rx="6" fill="#fdecea" stroke="#c0392b"/>
+  <text x="54" y="662" class="tm">Why it shorts the pump:</text>
+  <text x="54" y="681" class="t">each branch puts 440 nF (≈ 1400 × Ca) behind a coil straight across Ca / Cb. Over a stroke that is extra transfer capacitance,</text>
+  <text x="54" y="698" class="t">so the Bennet ratio collapses (z → 1.000 in every detuning tried). The torque path and the pump's storage element are the same two nodes.</text>
+
+  <!-- ===================== PANEL 2: proposed buffer + angle-gated fire ===================== -->
+  <text x="30" y="748" class="h">2. Your idea as a schematic edit: buffer cap, charged by the pump, fired into the C-EMs at a lower rate</text>
+  <text x="30" y="770" class="small">Group A shown; group B mirrors it on nodes 4 / 3. The C-EM branches leave Ca. Only a one-way charging element touches the pump.</text>
+
+  <rect x="20" y="785" width="1060" height="380" rx="8" class="zone"/>
+  <line x1="120" y1="840" x2="560" y2="840" class="w"/><text x="88" y="845" class="nl">1</text>
+  <line x1="120" y1="1080" x2="560" y2="1080" class="w"/><text x="88" y="1085" class="nl">2</text>
+  <line x1="160" y1="840" x2="160" y2="935" class="w"/><rect x="138" y="935" width="44" height="40" class="box"/><text x="148" y="960" class="t">Ca</text><line x1="160" y1="975" x2="160" y2="1080" class="w"/>
+  <text x="196" y="900" class="small">(pump unchanged:</text>
+  <text x="196" y="916" class="small">islands, gaps, C1,</text>
+  <text x="196" y="932" class="small">tank as above)</text>
+
+  <!-- charging element -->
+  <line x1="420" y1="840" x2="420" y2="870" class="wn"/>
+  <polygon points="404,870 436,870 420,898" class="bn"/><line x1="404" y1="900" x2="436" y2="900" class="wn"/>
+  <text x="444" y="884" class="tn">D_chA</text><text x="444" y="900" class="small">one-way gap / diodes</text>
+  <line x1="420" y1="900" x2="420" y2="925" class="wn"/>
+  <rect x="404" y="925" width="32" height="28" class="bn"/><text x="444" y="944" class="small">R/L_ch</text>
+  <line x1="420" y1="953" x2="420" y2="975" class="wn"/>
+  <circle cx="420" cy="975" r="4" class="node"/><text x="380" y="972" class="nl">b_A</text>
+  <line x1="420" y1="975" x2="420" y2="1000" class="wn"/>
+  <rect x="396" y="1000" width="48" height="40" class="bn"/><text x="400" y="1025" class="tn">C_buf</text>
+  <line x1="420" y1="1040" x2="420" y2="1080" class="wn"/>
+
+  <!-- fire loop: b_A -> S_A -> coils -> node 2 side of C_buf -->
+  <line x1="420" y1="975" x2="640" y2="975" class="wn"/>
+  <rect x="640" y="958" width="80" height="34" class="bn"/><text x="652" y="980" class="tn">S_A fire</text>
+  <line x1="720" y1="975" x2="800" y2="975" class="wn"/>
+  <rect x="800" y="955" width="88" height="40" class="bn"/><text x="808" y="972" class="tn">L_A1…6</text><text x="808" y="988" class="small">C-EM coils</text>
+  <line x1="888" y1="975" x2="940" y2="975" class="wn"/><line x1="940" y1="975" x2="940" y2="1080" class="wn"/>
+  <line x1="940" y1="1080" x2="560" y2="1080" class="wn"/>
+  <text x="560" y="1030" class="small">discharge loop C_buf → S_A → coils → back to C_buf:</text>
+  <text x="560" y="1046" class="small">it never passes through Ca, so a fire does not disturb the pump</text>
+
+  <text x="600" y="820" class="tn">S_A = angle-gated trigger</text>
+  <text x="600" y="838" class="small">a commutator segment (stator/rotor angle) in series with a threshold gap:</text>
+  <text x="600" y="854" class="small">it can fire only inside a rising-L window, and only once C_buf is at V_fire,</text>
+  <text x="600" y="870" class="small">so it fires on every k-th window — your lower firing rate</text>
+
+  <text x="40" y="1110" class="small">Charging: D_chA conducts only when V(1−2) exceeds V(b_A), so C_buf takes charge at the top of each stroke and fills over many strokes (R/L_ch limits each bite).</text>
+  <text x="40" y="1127" class="small">Fire: one half-cycle of C_buf with the coils, timed into the rising-L window, gives torque ½ i² dL/dθ. Group B: D_chB from node 4, C_buf between b_B and node 3.</text>
+  <text x="40" y="1144" class="small">Counter-rotation: torque acts between the stator C-EMs and the rotor poles; the belt supplies the reaction on the rotor.</text>
+
+  <!-- design relations -->
+  <rect x="40" y="1180" width="1020" height="122" rx="6" fill="#e8f6ee" stroke="#1e7a46"/>
+  <text x="54" y="1202" class="tn">Design relations to check (classic RLC + reluctance motor):</text>
+  <text x="54" y="1222" class="t">• pulse fits the window: π·√(L·C_buf) ≤ θ_window / ω_rel. 0.64 H with 10 nF gives 0.25 ms; a 5° window at 3000 rpm relative lasts 0.28 ms.</text>
+  <text x="54" y="1241" class="t">   A slower stator lengthens the window, which allows a bigger C_buf, so more energy per fire.</text>
+  <text x="54" y="1260" class="t">• firing rate: f_fire ≈ I_charge / (C_buf·V_fire). Average motor power ≈ ½·C_buf·V_fire²·f_fire must stay below the pump's surplus.</text>
+  <text x="54" y="1279" class="t">• to check: D_ch clamps V(1−2) at V(b_A) while it conducts. This must hold the pump's growth (z) — the one thing the engine has to verify first.</text>
+</svg>
