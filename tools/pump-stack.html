@@ -145,7 +145,8 @@
         <div class="brass" id="layoutTitle">Section</div>
         <div class="lay">
           <div><canvas id="cvLayout" height="760"></canvas></div>
-          <div><canvas id="cvZoom" height="760"></canvas></div>
+          <div><div class="seg" id="zoomSeg" style="margin-top:0"><button data-v="stack">close-up: C1 | hub | C2</button><button data-v="clock">close-up: reluctance + clocking</button></div>
+          <canvas id="cvZoom" height="760"></canvas></div>
         </div>
         <div class="note" id="layoutNote"></div>
       </div>
@@ -163,7 +164,9 @@
             diameter). <span style="color:var(--s-rot)">Rotor vanes</span> hang on the shaft sleeve,
             <span style="color:var(--s-sta)">stator vanes</span> on the outer posts; the fixed Ca / Cb plates are stator only
             (two nodes, alternating). Bottom = A side, top = B side, the bicone hub (C_R, AH coils, vacuum sphere) in the
-            middle. Right: the hub and both C1 / C2 stacks enlarged.
+            middle. Clocking: per station a rotor disc with its tip (red) under a stator ring with its sphere (amber),
+            spheres rotated into the cut and labelled with their station angle. Reluctance: the designer's C-EM
+            (core grey, spool green, coil amber) and utron, rotated into the cut. Right: a close-up.
           </div>
         </div>
       </div>
@@ -187,7 +190,8 @@
 const $ = (id) => document.getElementById(id);
 let W = null, READY = false, DEF = null, seq = 0;
 const pending = new Map();
-const state = {geo:"tube", top:"v4", d:{}, t:{}, c:{}, v:{}};
+const state = {geo:"tube", top:"v4", zoom:"clock", d:{}, t:{}, c:{}, v:{}};
+let LAST = null;
 
 /* ---- URL-hash state (no storage) ---- */
 function saveHash(){ try{ history.replaceState(null, "", "#" + encodeURIComponent(JSON.stringify(state))); }catch(e){} }
@@ -211,7 +215,8 @@ function bindFields(){
 function seg(id, key){
   const s = $(id);
   const paint = () => s.querySelectorAll("button").forEach(b => b.classList.toggle("on", b.dataset.v === state[key]));
-  s.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { state[key] = b.dataset.v; paint(); showMode(); saveHash(); }));
+  s.querySelectorAll("button").forEach(b => b.addEventListener("click", () => { state[key] = b.dataset.v; paint(); showMode(); saveHash();
+    if (key === "zoom" && LAST) drawLayout(LAST); }));
   paint();
 }
 function showMode(){
@@ -264,7 +269,7 @@ function render(r){
     tr.innerHTML = `<td>${k}${e.pinned ? " <span class='mut'>(pinned)</span>" : ""}</td><td class="n">${fmt(e.value, e.unit === "pF" ? 1 : 2)} ${e.unit}</td><td class="mut">${e.rule}</td><td class="mut">${e.tag}</td>`;
     tb.appendChild(tr);
   }
-  drawLayout(lad);
+  LAST = lad; drawLayout(lad);
   $("log").textContent = `evaluated in ${fmt(r.wall_s,1)} s`;
 }
 
@@ -306,9 +311,44 @@ function drawLayout(lad){
     c.strokeStyle = cssv("--s-sta"); c.globalAlpha = 0.35; c.lineWidth = Math.max(1, 3 * s);
     [-(ro + 10), ro + 10].forEach(r => { c.beginPath(); c.moveTo(X(r), Y(zlo)); c.lineTo(X(r), Y(zhi)); c.stroke(); });
     c.globalAlpha = 1;
+    const prof = lad.tube_profiles;
     for (const e of el){
       if (e.z1 < zlo || e.z0 > zhi) continue;
       c.fillStyle = cssv(col(e));
+      if (e.envelope){                                       // section outline + label only
+        c.strokeStyle = cssv(col(e)); c.lineWidth = 1; c.setLineDash([3, 3]);
+        c.strokeRect(X(-e.r1), Y(e.z1), 2 * e.r1 * s, (e.z1 - e.z0) * s); c.setLineDash([]);
+        c.fillStyle = cssv(col(e)); c.font = "10px " + cssv("--mono");
+        c.fillText(e.kind === "clocking" ? `clocking ${e.side}` : `reluctance ${e.side}`, X(-e.r1) + 3, Y(e.z1) + 11);
+        continue;
+      }
+      if (e.kind === "clk rotor disc" || e.kind === "clk stator ring" || e.kind === "utron hub"){
+        c.fillStyle = cssv(e.body === "rotor" ? "--s-rot" : "--s-sta"); c.globalAlpha = 0.55;
+        const w = (e.r1 - e.r0) * s, th = Math.max(1, (e.z1 - e.z0) * s);
+        c.fillRect(X(e.r0), Y(e.z1), w, th); c.fillRect(X(-e.r1), Y(e.z1), w, th); c.globalAlpha = 1;
+        continue;
+      }
+      if (e.kind === "clk tip" || e.kind === "clk sphere"){  // rotated into the cut (developed section)
+        c.fillStyle = cssv(e.kind === "clk tip" ? "--bad" : "--s-clk");
+        [-1, 1].forEach(sg => { c.beginPath(); c.arc(X(sg * e.r), Y(e.zc), Math.max(1.5, e.R * s), 0, 7); c.fill(); });
+        if (e.kind === "clk sphere" && s > 1.2){ c.fillStyle = cssv("--ink"); c.font = "9px " + cssv("--mono");
+          c.fillText(`${e.station} ${e.angles[0]}°`, X(e.r) + e.R * s + 3, Y(e.zc) + 3); }
+        continue;
+      }
+      if (e.kind === "cem" || e.kind === "utron"){         // the designer's C-EM / utron profile, rotated into the cut
+        const boxes = e.kind === "cem" ? [...prof.cem.core.map(b => ["--ne", b]), ["--s-ca2", prof.cem.spool], ["--warn", prof.cem.coil]]
+                                       : [["--s-hub", prof.utron.core]];
+        for (const [cc, b] of boxes){
+          const [x0, x1, z0, z1] = b; c.fillStyle = cc === "--ne" ? "#6b6f7a" : cssv(cc);
+          [-1, 1].forEach(sg => { const ra = e.r_u + x0, rb = e.r_u + x1;
+            const xa = sg > 0 ? X(ra) : X(-rb); c.fillRect(xa, Y(e.zc + z1), (rb - ra) * s, (z1 - z0) * s); });
+        }
+        if (e.kind === "cem" && s > 0.8){ c.fillStyle = cssv("--ink"); c.font = "10px " + cssv("--mono");
+          c.fillText(`C-EM ${e.side} ×6 @ ${e.angles[0]}°+60k`, X(e.r_u + 20), Y(e.zc + 64)); }
+        if (e.kind === "utron" && s > 0.8){ c.fillStyle = cssv("--ink"); c.font = "10px " + cssv("--mono");
+          c.fillText(`utron ×3`, X(-e.r_u - 22), Y(e.zc - 28)); }
+        continue;
+      }
       if (["hub", "clocking", "reluctance"].includes(e.kind)){
         c.globalAlpha = 0.22; c.fillRect(X(-ro), Y(e.z1), 2 * ro * s, (e.z1 - e.z0) * s); c.globalAlpha = 1;
         c.strokeStyle = cssv(col(e)); c.lineWidth = 1; c.strokeRect(X(-ro), Y(e.z1), 2 * ro * s, (e.z1 - e.z0) * s);
@@ -338,12 +378,18 @@ function drawLayout(lad){
   }
   scene(cv, 0, Lt, "whole machine (bottom: A side, top: B side)");
   const hub = el.find(e => e.kind === "hub"), c1 = el.filter(e => e.kind === "C1 vane"), c2 = el.filter(e => e.kind === "C2 vane");
-  const zl = Math.min(...c1.map(e => e.z0)) - 6, zh = Math.max(...c2.map(e => e.z1)) + 6;
-  scene(cz, zl, zh, `close-up: C1 (A) | hub | C2 (B), ${2 * p.n_plates} vanes each`);
+  const relA = el.find(e => e.kind === "reluctance" && e.side === "A"), clkA = el.find(e => e.kind === "clocking" && e.side === "A");
+  if (state.zoom === "clock")
+    scene(cz, relA.z0 - 2, clkA.z1 + 2, "close-up: reluctance A (C-EM + utron) | clocking A (4 decks)");
+  else {
+    const zl = Math.min(...c1.map(e => e.z0)) - 6, zh = Math.max(...c2.map(e => e.z1)) + 6;
+    scene(cz, zl, zh, `close-up: C1 (A) | hub | C2 (B), ${2 * p.n_plates} vanes each`);
+  }
   let lx = 8; const cl = cv.getContext("2d"); cl.font = "10px " + cssv("--mono");
   $("layoutNote").innerHTML = `Per side, from the hub outward: C1/C2 ${2 * p.n_plates} vanes (${2 * p.n_plates - 1} gaps, ${fmt(g.L_varicap_mm, 0)} mm) · ` +
     `Cx ${g.n_gap_cx + 1} vanes (${g.n_gap_cx} gaps, ${fmt(g.L_cx_mm, 0)} mm) · Ca/Cb ${g.n_gap_ca + 1} fixed plates (${fmt(g.L_ca_mm, 0)} mm) · ` +
-    `clocking ${p.clock_mm} mm · reluctance ${p.rel_mm} mm. Vane ${p.t_vaneMm} mm, air gap ${p.g_vMm} mm, plates ⌀ ${fmt(2 * ro, 0)} mm.` +
+    `clocking ${fmt(clkA.z1 - clkA.z0, 0)} mm (4 decks) · reluctance ${fmt(relA.z1 - relA.z0, 0)} mm (6 C-EMs, 3 utrons, ⌀ ${fmt(2 * relA.r1, 0)} mm). ` +
+    `Vane ${p.t_vaneMm} mm, air gap ${p.g_vMm} mm, plates ⌀ ${fmt(2 * ro, 0)} mm.` +
     ` <span style="color:var(--s-rot)">■ rotor vane</span> <span style="color:var(--s-sta)">■ stator vane</span>` +
     ` <span style="color:var(--s-ca)">■</span><span style="color:var(--s-ca2)">■ Ca/Cb plates (two nodes)</span>` +
     ` <span style="color:var(--s-clk)">■ clocking</span> <span style="color:var(--s-rel)">■ reluctance</span> <span style="color:var(--s-hub)">■ hub</span>`;
@@ -396,7 +442,7 @@ function boot(){
       if (!m.result.ok){ $("badge").className = "badge down"; $("badge").textContent = "SOLVER: CANARY-FAIL"; return; }
       READY = true; $("badge").className = "badge live";
       $("badge").textContent = `SOLVER: live · K1–K4 + anchor z ${m.result.gate.got.toFixed(7)} pass`;
-      defaultsInto(); bindFields(); seg("geoSeg", "geo"); seg("topSeg", "top"); showMode(); saveHash();
+      defaultsInto(); bindFields(); seg("geoSeg", "geo"); seg("topSeg", "top"); seg("zoomSeg", "zoom"); showMode(); saveHash();
       $("btnEval").disabled = false; $("btnSweep").disabled = false;
       doEval();
     }

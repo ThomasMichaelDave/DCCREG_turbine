@@ -60,12 +60,33 @@ The vane z positions come from `stack_sizing.layout()`, the same list that sets 
 
 ## Reference results (`sim/stack_sizing_results.json`)
 
-Tube with r 50–150 (300 mm plates), a 3 mm air gap, 1.5 mm vanes and 30° / 22° sectors:
+Tube with r 50–150 (300 mm plates), a 3 mm air gap, 1.5 mm vanes and 30° / 22° sectors. Lengths include the derived clocking (4 decks) and reluctance sections:
 
 | vanes per varicap per side | C1/C2 max | κ | length | z, strays fixed (record / v4) | z, strays scaled (record / v4) |
 |:--|:--|:--|:--|:--|:--|
-| 6 + 6 | 817 pF | 15.5 | 862 mm | 1.525 / 1.549 | 1.312 / 1.307 |
-| **8 + 8** | **1114 pF** | **15.7** | **979 mm** | **1.567 / 1.614** | **1.313 / 1.315** |
-| 10 + 10 | 1411 pF | 15.7 | 1087 mm | 1.593 / 1.658 | 1.313 / 1.321 |
+| 6 + 6 | 817 pF | 15.5 | 1004 mm | 1.525 / 1.549 | 1.312 / 1.307 |
+| **8 + 8** | **1114 pF** | **15.7** | **1121 mm** | **1.567 / 1.614** | **1.313 / 1.315** |
+| 10 + 10 | 1411 pF | 15.7 | 1229 mm | 1.593 / 1.658 | 1.313 / 1.321 |
 
 The default disc gives 1.3255 (record) and 1.3030 (v4).
+
+## Tube solids and STEP (`sim/tube_geometry.py`)
+
+`python3 sim/tube_geometry.py [--n-plates 8] [--r-out 150]` builds every element of `stack_sizing.layout()` as an
+OpenCascade solid.
+- **Vanes:** 6 sectors fused to a ring.
+- **Clocking:** a rotor disc and tips, a stator ring and spheres.
+- **Reluctance:** the designer's squared C-EM / utron STEP pieces, 6 C-EMs and 3 utrons per side.
+- **Structure:** shaft, rotor sleeve, insulating stator cages, and a hub placeholder (vacuum sphere + bicone).
+
+It writes:
+- `docs/geometry/tube/<tag>.step`: instanced, named, coloured (each repeated part stored once);
+- `<tag>.parts.json`: the placed parts;
+- three exact-cut renders: the section through the shaft, the reluctance plan, and the clocking plan per deck.
+
+Checks (`sim/tube_geometry_results.json`):
+- **G-TUBE-CLASH:** no two solids share volume, except intended joins;
+- **G-TUBE-SWEEP:** no stator solid in the volume any rotor solid sweeps;
+- **G-TUBE-GAP:** tip to sphere at alignment equals the set gap;
+- **G-TUBE-REL:** C-EM to C-EM distance, utron to sleeve, reluctance envelope;
+- **read-back:** the STEP reloads with every placed instance.

@@ -4,6 +4,21 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Geometry
+- **Tube machine as solids (`sim/tube_geometry.py`):** STEP `docs/geometry/tube/tube-r150-n8.step`, 289 placed solids from 23 prototypes, 2.8 MB.
+  - **Clocking:** 4 decks per side, one per station (SG1 / SG3a1 / SG3b1 / BS3 and SG2 / SG4a1 / SG4b1 / BS4).
+    - Each deck: rotor disc with 6 tips at 0 + 60k, stator ring with 6 spheres at the station angle.
+    - Build gaps: 5.5 / 4.75 / 5.5 / 5.5 mm.
+  - **Reluctance:** the designer's squared C-EM and utron STEP pieces, 6 C-EMs (A 30 + 60k, B 0 + 60k) and 3 utrons per side.
+    - Utron centre r 47.4; reluctance envelope ⌀ 364 mm, wider than the 300 mm plates.
+  - **Checks:**
+    - G-TUBE-CLASH 0 in 322 pairs, G-TUBE-SWEEP 0 hits;
+    - G-TUBE-GAP exact; C-EM to C-EM 13.9 mm;
+    - STEP read-back 289 / 289.
+  - **Renders:** exact-cut section and plans.
+  - **Calculator:** the pump-stack section view draws the clocking decks and the C-EM / utron profile, with a reluctance + clocking close-up.
+  - **Lengths:** tube length now includes the derived clocking (120 mm) and reluctance (129 mm) sections: 1121 mm at 8 + 8 vanes.
+
 ### Tools
 - **`tools/pump-stack.html` (new): disc or tube geometry, record or v4 topology.**
   - **Files:** sizing core `sim/stack_sizing.py`; worker `tools/pump-stack.worker.js`; `tools/pump-stack-README.md`.

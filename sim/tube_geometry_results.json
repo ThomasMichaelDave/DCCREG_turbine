@@ -1,0 +1,100 @@
+{
+ "tag": "tube-r150-n8",
+ "n_parts": 289,
+ "n_protos": 23,
+ "L_total_mm": 1121.1,
+ "vane_dia_mm": 300.0,
+ "C_max_pF": 1114.0680403203476,
+ "kappa": 15.655906720387156,
+ "G-TUBE-CLASH": {
+  "pairs_tested": 322,
+  "clashes": [],
+  "n_clash": 0,
+  "pass_": true
+ },
+ "G-TUBE-SWEEP": {
+  "hits": [],
+  "n_hits": 0,
+  "pass_": true,
+  "note": "each rotor solid revolved into a ring (its r and z extent) against every stator solid"
+ },
+ "G-TUBE-GAP": {
+  "rows": [
+   {
+    "station": "SG1",
+    "side": "A",
+    "set_mm": 5.5,
+    "got_mm": 5.5
+   },
+   {
+    "station": "SG3a1",
+    "side": "A",
+    "set_mm": 4.75,
+    "got_mm": 4.75
+   },
+   {
+    "station": "SG3b1",
+    "side": "A",
+    "set_mm": 5.5,
+    "got_mm": 5.5
+   },
+   {
+    "station": "BS3",
+    "side": "A",
+    "set_mm": 5.5,
+    "got_mm": 5.5
+   },
+   {
+    "station": "SG2",
+    "side": "B",
+    "set_mm": 5.5,
+    "got_mm": 5.5
+   },
+   {
+    "station": "SG4a1",
+    "side": "B",
+    "set_mm": 4.75,
+    "got_mm": 4.75
+   },
+   {
+    "station": "SG4b1",
+    "side": "B",
+    "set_mm": 5.5,
+    "got_mm": 5.5
+   },
+   {
+    "station": "BS4",
+    "side": "B",
+    "set_mm": 5.5,
+    "got_mm": 5.5
+   }
+  ],
+  "pass_": true
+ },
+ "G-TUBE-REL": {
+  "A": {
+   "cem_to_cem_mm": 13.88,
+   "utron_inner_r_mm": 24.41
+  },
+  "B": {
+   "cem_to_cem_mm": 13.88,
+   "utron_inner_r_mm": 24.41
+  },
+  "r_utron_centre": 47.4,
+  "reluctance_envelope_dia_mm": 364.0,
+  "sleeve_r": 20.0
+ },
+ "renders": [
+  "docs/geometry/tube/tube-r150-n8-section.png",
+  "docs/geometry/tube/tube-r150-n8-reluctance-plan.png",
+  "docs/geometry/tube/tube-r150-n8-clocking-plan.png"
+ ],
+ "step": "docs/geometry/tube/tube-r150-n8.step",
+ "step_bytes": 2799978,
+ "step_read_back": {
+  "instances": 289,
+  "assemblies": 9,
+  "products": 23,
+  "pass_": true
+ }
+}
