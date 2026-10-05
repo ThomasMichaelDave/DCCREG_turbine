@@ -140,8 +140,10 @@ def plot(npz, phi, spec, window=None, out=None, title=None):
     ax.set_aspect("equal"); ax.set_xlim(r0, r1); ax.set_ylim(z0, z1)
     ax.set_xlabel("r [mm]"); ax.set_ylabel("z [mm]")
     ph_used = float(d[f"phi_used@{phi:g}"])
-    ax.set_title(title or f"{os.path.basename(npz)}  meridional cut at phi = {ph_used:.2f} deg (rotor at {float(d['theta']):g} deg)\n{lab}"
-                 + ("" if unit else "   (cyan: 3 kV/mm)"), fontsize=9)
+    import textwrap
+    head = f"{os.path.basename(npz)}  meridional cut at phi = {ph_used:.2f} deg (rotor at {float(d['theta']):g} deg)"
+    body = textwrap.fill(lab + ("" if unit else "   (cyan contour: 3 kV/mm)"), 130)
+    ax.set_title(title or head + "\n" + body, fontsize=9)
     out = out or os.path.splitext(npz)[0] + f"-phi{phi:g}-{spec.replace(':', '_').replace(',', '_').replace(';', '_').replace('=', '')[:60]}.png"
     fig.tight_layout(); fig.savefig(out, dpi=90); plt.close(fig)
     return out
