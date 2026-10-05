@@ -8,10 +8,11 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 - **`tools/pump-stack.html` (new): disc or tube geometry, record or v4 topology.**
   - **Files:** sizing core `sim/stack_sizing.py`; worker `tools/pump-stack.worker.js`; `tools/pump-stack-README.md`.
   - **Tube model:** interleaved air vanes, C(θ) from a 2-D vane cell (parallel-plate check 0.3 % / 0.8 %).
-  - **Default tube** (r 50–160, 3 mm air, 7 + 7 vanes per side, 30° / 22° sectors):
-    - C1/C2 1.11 nF, κ 16.7;
-    - z 1.58–1.63 with strays fixed, 1.32 with strays scaled;
-    - length about 0.9 m, ⌀ 320 mm, rotor vanes 3.9 kg.
+  - **Default tube** (r 50–150 = 300 mm plates, 3 mm air, 8 + 8 vanes per side, 30° / 22° sectors):
+    - C1/C2 1.11 nF, κ 15.7;
+    - z 1.57–1.61 with strays fixed, 1.31–1.32 with strays scaled;
+    - length 979 mm, ⌀ 300 mm, rotor vanes 3.9 kg.
+  - **Section view:** vertical shaft, true scale, every vane at its height, plus a close-up of the hub and the C1/C2 stacks.
   - **Checks:** the disc anchor gate reproduces RT0 (z 1.3254745); headless Chromium shows 0 console errors.
   - **Frozen pages:** pump-synth / pump-calc are not edited.
 

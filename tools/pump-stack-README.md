@@ -45,14 +45,27 @@ The worker (`pump-stack.worker.js`) is fail-closed. Nothing is shown unless all 
 - **Strays:** either the disc design's absolute values ("fixed") or grown with C_max ("scaled"). The real tube sits between the
   two until its strays are field-solved.
 
+## Reading the section
+
+The section is a vertical cut through the shaft, drawn at the same scale in r and z.
+- **Shaft:** the dashed centre line.
+- **Vanes and plates:** each horizontal stroke is one vane or plate seen edge-on, so its full width is the plate diameter.
+  - **Rotor vanes** (blue) hang on the shaft sleeve; **stator vanes** (violet) hang on the outer posts.
+  - The fixed **Ca / Cb plates** (green) are stator only, with two nodes alternating.
+- **Order along the shaft:** bottom is the A side, top is the B side, and the bicone hub (C_R, AH coils, vacuum sphere) is in
+  the middle. Outward from the hub on each side: C1/C2 variable capacitor, Cx, Ca/Cb, clocking deck, reluctance section.
+- **Close-up (right):** the hub with both C1/C2 stacks enlarged.
+
+The vane z positions come from `stack_sizing.layout()`, the same list that sets the reported length.
+
 ## Reference results (`sim/stack_sizing_results.json`)
 
-Tube with r 50–160, a 3 mm air gap, 1.5 mm vanes and 30° / 22° sectors:
+Tube with r 50–150 (300 mm plates), a 3 mm air gap, 1.5 mm vanes and 30° / 22° sectors:
 
-| vanes per varicap per side | C1/C2 max | κ | z, strays fixed (record / v4) | z, strays scaled (record / v4) |
-|:--|:--|:--|:--|:--|
-| 5 + 5 | 769 pF | 16.4 | 1.527 / 1.548 | 1.318 / 1.313 |
-| **7 + 7** | **1111 pF** | **16.7** | **1.579 / 1.628** | **1.320 / 1.324** |
-| 9 + 9 | 1453 pF | 16.8 | 1.609 / 1.679 | 1.321 / 1.330 |
+| vanes per varicap per side | C1/C2 max | κ | length | z, strays fixed (record / v4) | z, strays scaled (record / v4) |
+|:--|:--|:--|:--|:--|:--|
+| 6 + 6 | 817 pF | 15.5 | 862 mm | 1.525 / 1.549 | 1.312 / 1.307 |
+| **8 + 8** | **1114 pF** | **15.7** | **979 mm** | **1.567 / 1.614** | **1.313 / 1.315** |
+| 10 + 10 | 1411 pF | 15.7 | 1087 mm | 1.593 / 1.658 | 1.313 / 1.321 |
 
 The default disc gives 1.3255 (record) and 1.3030 (v4).

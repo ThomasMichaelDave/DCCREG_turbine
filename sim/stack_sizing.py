@@ -29,10 +29,10 @@ import pump_sizing as PS
 EPS0_MM = 8.8541878128e-15                     # F/mm
 
 TUBE_DEFAULTS = dict(
-    r_inMm=50.0, r_outMm=160.0,                # vane band (the bicone hub sits between the A and B stacks)
+    r_inMm=50.0, r_outMm=150.0,                # vane band (300 mm plates) (the bicone hub sits between the A and B stacks)
     g_vMm=3.0, t_vaneMm=1.5,                   # air gap, vane thickness (Al)
     N_sec=12, ws_deg=30.0, wr_deg=22.0,        # 6 stator sectors of 30 deg, 6 rotor vanes of 22 deg
-    n_plates=7,                                # rotor vanes = stator vanes per varicap per side
+    n_plates=8,                                # rotor vanes = stator vanes per varicap per side (~1.1 nF at r 150)
     dielectric="air", tempC=20.0, p_hPa=1013.0, rh=50.0,
     C_edge_pF=2.0,                             # inner + outer edge fringe floor added to C_min [IR]
     h_mm=0.25, n_r=5,                          # 2-D cell resolution, radii for the r integral [ME]
@@ -134,17 +134,61 @@ def tube_geometry(p, lad, rpm):
     L_ca = n_ca * p["pitch_fixed_mm"]
     side = L_var + L_cx + L_ca + p["clock_mm"] + p["rel_mm"]
     L_tot = 2 * side + p["hub_mm"]
+    elements = layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot)
+    L_tot = max(e["z1"] for e in elements)                        # the drawn layout is the length (incl. section spacers)
+    side = 0.5 * (L_tot - p["hub_mm"])
     frac_r = (p["N_sec"] / 2) * p["wr_deg"] / 360.0
     A_rv = frac_r * A_full * 1e-6                                  # m^2 per rotor vane
     m_vane = A_rv * t * 1e-3 * p["rho_vane"]
-    n_rv = 2 * (n + math.ceil(n_cx / 2))                           # rotor vanes, both sides (C1/C2 + Cx)
+    n_rv = sum(1 for e in elements if e["body"] == "rotor" and e["kind"].endswith("vane"))
     m_rot = n_rv * m_vane
     I_rot = m_rot * 0.5 * ((p["r_inMm"] * 1e-3) ** 2 + (p["r_outMm"] * 1e-3) ** 2)
     w = 2 * math.pi * rpm / 60.0
-    return dict(L_varicap_mm=L_var, n_gap_cx=n_cx, L_cx_mm=L_cx, n_gap_ca=n_ca, L_ca_mm=L_ca, L_side_mm=side,
+    return dict(elements=elements, L_varicap_mm=L_var, n_gap_cx=n_cx, L_cx_mm=L_cx, n_gap_ca=n_ca, L_ca_mm=L_ca, L_side_mm=side,
                 L_total_mm=L_tot, diameter_mm=2 * p["r_outMm"], n_rotor_vanes=n_rv, m_rotor_vanes_kg=m_rot,
                 I_rotor_vanes_kgm2=I_rot, E_rot_J=0.5 * I_rot * w * w, rim_mps=w * p["r_outMm"] * 1e-3)
 
+
+def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
+    """every vane / plate / section along the (vertical) shaft, z = 0 at the bottom end (A side), z up.
+    From the hub outward on each side: C1 (A) / C2 (B) varicap, Cx, Ca / Cb fixed plates, clocking deck,
+    reluctance section. Stator vanes alternate with rotor vanes, starting and ending on a stator vane. [IR]"""
+    t, g, ri, ro = p["t_vaneMm"], p["g_vMm"], p["r_inMm"], p["r_outMm"]
+    el = []
+
+    def stack(z_hub_end, direction, nv, kind, nodes, side_lab, fixed=False):
+        """nv vanes from the hub end outward; returns the outer end z."""
+        pitch = (p["pitch_fixed_mm"] - t) if fixed else g
+        z = z_hub_end
+        for k in range(nv):
+            z0, z1 = (z, z + t) if direction > 0 else (z - t, z)
+            if fixed:
+                body, node = "stator", nodes[k % 2]
+            else:
+                body = "stator" if k % 2 == 0 else "rotor"
+                node = nodes[0] if body == "stator" else nodes[1]
+            el.append(dict(kind=kind, body=body, node=node, side=side_lab, z0=z0, z1=z1, r0=ri, r1=ro))
+            z = z1 + direction * pitch if direction > 0 else z0 - pitch
+        return z - direction * pitch
+
+    zc = side + 0.5 * p["hub_mm"]                                    # hub centre
+    el.append(dict(kind="hub", body="hub", node="R-A/R-B", side="hub", z0=side, z1=side + p["hub_mm"], r0=0.0, r1=ro))
+    for direction, lab, nodes_v, nodes_x, nodes_c in ((-1, "A", ("1", "R-A"), ("n23", "8"), ("1", "2")),
+                                                      (+1, "B", ("4", "R-B"), ("n17", "7"), ("4", "3"))):
+        z = zc - direction * 0 + direction * 0.5 * p["hub_mm"]
+        z = stack(z, direction, 2 * n, "C1 vane" if lab == "A" else "C2 vane", nodes_v, lab) + direction * g
+        z = stack(z, direction, n_cx + 1, "Cx vane", nodes_x, lab) + direction * g
+        z = stack(z, direction, n_ca + 1, "Ca plate" if lab == "A" else "Cb plate", nodes_c, lab, fixed=True)
+        z += direction * g
+        z_end_clock = z + direction * p["clock_mm"]
+        el.append(dict(kind="clocking", body="stator", node="gaps", side=lab, z0=min(z, z_end_clock), z1=max(z, z_end_clock), r0=ri, r1=ro))
+        z_end_rel = z_end_clock + direction * p["rel_mm"]
+        el.append(dict(kind="reluctance", body="stator", node="C-EM", side=lab, z0=min(z_end_clock, z_end_rel),
+                       z1=max(z_end_clock, z_end_rel), r0=ri, r1=ro))
+    zmin = min(e["z0"] for e in el)
+    for e in el:                                                   # shift so the bottom end is z = 0
+        e["z0"] -= zmin; e["z1"] -= zmin
+    return el
 
 # ---------------------------------------------------------------------------------------------------------
 # the ladder for either geometry (same dict shape as pump_sizing.size, so pump_synth.engine_cfg takes it)
