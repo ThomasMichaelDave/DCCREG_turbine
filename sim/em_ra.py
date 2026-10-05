@@ -369,7 +369,8 @@ def bench_all(log=print):
                 if var == "a":
                     v1 = ("PASS" if rd["flat"] <= 1.5 else ("KILL" if rd["flat"] >= 3 else "INCONCLUSIVE")) if rd["valid"] else "READOUT INVALID (front fit r2 < 0.9)"
                     pf = rd["posthoc"]["flat"]
-                    out["P-EDGE-1"] = dict(**rd, verdict=v1, verdict_posthoc="PASS" if pf <= 1.5 else ("KILL" if pf >= 3 else "INCONCLUSIVE"))
+                    out["P-EDGE-1"] = dict(**rd, verdict=v1, verdict_posthoc=("PASS" if pf <= 1.5 else ("KILL" if pf >= 3 else "INCONCLUSIVE"))
+                                           if rd["posthoc"].get("valid") else "READOUT INVALID (post-hoc fit r2 < 0.9)")
                     out["P-EDGE-4"] = dict(**st, verdict="PASS" if st["first_tenth"] else "KILL")
             if tr == 0.5e-9:
                 st05 = stress(B, lad, r, t50, _tau_use(rd), B.windings["AH"])
@@ -389,7 +390,8 @@ def bench_all(log=print):
     bp = fit_pow([x["n_per_m"] for x in rows], [x["posthoc"]["B_peak_fill"] for x in rows])
     vb = ("PASS" if abs(beta) < 0.3 else ("KILL" if beta > 0.7 else "INCONCLUSIVE")) if all(x["valid"] for x in rows) else "READOUT INVALID"
     out["P-EDGE-2"] = dict(beta=beta, beta_posthoc=bp, rows=rows, verdict=vb,
-                           verdict_posthoc="PASS" if abs(bp) < 0.3 else ("KILL" if bp > 0.7 else "INCONCLUSIVE"))
+                           verdict_posthoc=("PASS" if abs(bp) < 0.3 else ("KILL" if bp > 0.7 else "INCONCLUSIVE"))
+                           if all(x["posthoc"].get("valid") for x in rows) else "READOUT INVALID")
     log(f"P-EDGE-2 {out['P-EDGE-2']['verdict']}: beta {beta:+.3f}; post-hoc {bp:+.3f} {out['P-EDGE-2']['verdict_posthoc']}")
     rows = []
     for mu in (1.0, 4.0, 16.0, 64.0):
@@ -400,7 +402,8 @@ def bench_all(log=print):
     gp = fit_pow([x["mu"] for x in rows], [x["posthoc"]["B_peak_fill"] for x in rows])
     vg = ("PASS" if 0.35 < gam < 0.65 else ("KILL" if gam > 0.85 else "INCONCLUSIVE")) if all(x["valid"] for x in rows) else "READOUT INVALID"
     out["P-EDGE-3"] = dict(gamma=gam, gamma_posthoc=gp, rows=rows, verdict=vg,
-                           verdict_posthoc="PASS" if 0.35 < gp < 0.65 else ("KILL" if gp > 0.85 else "INCONCLUSIVE"))
+                           verdict_posthoc=("PASS" if 0.35 < gp < 0.65 else ("KILL" if gp > 0.85 else "INCONCLUSIVE"))
+                           if all(x["posthoc"].get("valid") for x in rows) else "READOUT INVALID")
     log(f"P-EDGE-3 {out['P-EDGE-3']['verdict']}: gamma {gam:.3f}; post-hoc {gp:.3f} {out['P-EDGE-3']['verdict_posthoc']}")
     # P-EDGE-6/7: 50 Ohm TDR read through the current, with and without the rod
     res67 = {}
@@ -429,7 +432,8 @@ def bench_all(log=print):
     valid7 = res67["rod"]["r2"] >= 0.9 and res67["norod"]["r2"] >= 0.9
     out["P-EDGE-7"] = dict(L_ratio=kL, C_ratio=kC, L_ratio_posthoc=kLp, C_ratio_posthoc=kCp, rod=res67["rod"], norod=res67["norod"],
                            verdict=("PASS (ladder)" if kC > kL else "KILL (ladder)") if valid7 else "READOUT INVALID",
-                           verdict_posthoc="PASS (ladder)" if kCp > kLp else "KILL (ladder)")
+                           verdict_posthoc=("PASS (ladder)" if kCp > kLp else "KILL (ladder)")
+                           if (res67["rod"]["r2_posthoc"] >= 0.9 and res67["norod"]["r2_posthoc"] >= 0.9) else "READOUT INVALID")
     log(f"P-EDGE-6 registered: Z0 {res67['rod']['Z0']:.0f} Ohm, tau {res67['rod']['tau'] * 1e9:.2f} ns; P-EDGE-7: C x{kC:.2f}, L x{kL:.2f}")
     return out
 

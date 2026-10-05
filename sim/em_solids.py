@@ -143,6 +143,11 @@ def same_body_overlap(parts_a, parts_b):
     return out
 
 
+def is_cond_em(p):
+    m = str(p.get("material", "")).lower()
+    return any(k in m for k in ("cu", "al foil", "steel", "316", "mnzn"))
+
+
 def g_clr_hub(log=print):
     d = json.load(open(BUILD))
     build = d["parts"]
@@ -157,16 +162,16 @@ def g_clr_hub(log=print):
             parts, A = ra_solids(gen[-1])
             if gen == "RA-a":
                 out["RA_dropped_TC_turns"] = A.meta["TC_dropped"]
-        coll_s, near_s = clash(parts, stator, need, skip=lambda a, b: not (BC.is_cond(b) or "Cu" in str(a.get("material")))
-                               and False)
-        cond_near = [x for x in near_s if any(k in x[1] for k in ("foil", "bus", "SG", "counter", "el_", "tab"))]
+        coll_s, _ = clash(parts, stator, 0.0)
+        conds = [p for p in parts if is_cond_em(p)]
+        _, near_s = clash(conds, [p for p in stator if BC.is_cond(p)], need)
         coll_r = same_body_overlap(parts, rotor)
         out[gen] = dict(collisions_with_stator=coll_s[:30], n_collisions_with_stator=len(coll_s),
                         interference_with_rotor_parts=coll_r[:30], n_interference_with_rotor=len(coll_r),
                         hv_below_rule_vs_stator=near_s[:15], n_hv_below=len(near_s), need_mm=need,
                         pass_=not coll_s and not coll_r and not near_s)
         log(f"G-CLR-HUB {gen}: {len(coll_s)} counter-rotating collisions, {len(coll_r)} same-body interferences, {len(near_s)} HV"
-            f" approaches < {need:.0f} mm; e.g. {(coll_s or coll_r or near_s)[:3]}")
+            f" conductor approaches < {need:.0f} mm; e.g. {(coll_s or coll_r)[:2]} / {near_s[:2]}")
     return out
 
 

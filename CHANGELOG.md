@@ -5,6 +5,27 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **Electromagnet register (BRIEF_ELECTROMAGNET_REGISTER r0.3).**
+  - **Inputs and outputs:**
+    - presets `presets/electromagnets-RA.json` and `-V15.json`, every value with its status word and source;
+    - code `sim/em_register.py`, `sim/em_ladder.py` (the edge driver generalised), `sim/em_ra.py` and `sim/em_solids.py`;
+    - results `sim/em_register_results.json`, raw per-turn data `sim/em_raw/`;
+    - solids `docs/geometry/em-register-*.json`;
+    - pre-registration `sim/em-register-predictions.md`, findings `sim/em-register-findings.md`.
+  - **Verdicts:** Phase 1 (RA) `REGISTER-COLLISION` on G-CLR-HUB; Phase 2 (motor) `REGISTER-COLLISION` on G-CLR-ROT, G-CLR-SG (as drawn) and G-HV-MOTOR.
+  - **Pre-registered numbers:** P-REG-1…9 all PASS (P-REG-4 at the registered precision; Q = 30.15).
+  - **P1-PUMP:** PASS, Δz −2.6e-6.
+  - **RA corrected:**
+    - L_tot 351–469 µH (the record says 856), f₀ 262–303 kHz;
+    - the 77 rod saturates at a 15 kV ring in all three D-11 windings (0.48–0.54 T, limit 0.30 T);
+    - the null moves 12–16 mm toward B with all four windings;
+    - with the stator present, R-B follows R-A only to 40 % during the flank.
+  - **Readouts:** the bench P-EDGE front readouts are invalid on the folded multi-layer AH coils (two fronts from t = 0).
+  - **Geometry:**
+    - outboard motor (r_pole ≥ 519 mm) clears the rotor but needs the frame moved;
+    - the CAD rotor spark-gap tips share the poles' 15° + 60k.
+
+### Simulation
 - **Edge-driven coil: turn-resolved ladder under a fast HV edge (BRIEF_EDGE_DRIVEN_COIL).** `sim/edge_coil.py`, results `sim/edge_coil_results.json`, raw per-turn currents/voltages `sim/edge_coil_raw/`, pre-registration `sim/edge-coil-predictions.md`, findings `sim/edge-coil-findings.md`. Geometry is assumed (O-1…O-4 open): anti-Helmholtz pair on Ø20 × 70 mm MnZn rods, 40 turns per coil, t_r 2 ns.
   - **Model:** elliptic mutuals between every pair of turns; FV electrostatic Maxwell C matrix (MnZn as a segmented resistive conductor); FV magnetostatic complex-μ core fitted passively; Foster skin network; MNA trapezoidal transient.
   - **Gates:** G-ES, ES-MESH, MS, PD, SKIN, CORE (4.2 %), SPICE (ngspice 0.09 %), DT and NULL all pass.
