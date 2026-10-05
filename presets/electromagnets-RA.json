@@ -1,0 +1,449 @@
+{
+ "schema": "electromagnet-register/1",
+ "generation": "RA",
+ "plan_view_side": "unknown",
+ "brief": "BRIEF_ELECTROMAGNET_REGISTER r0.3",
+ "note": "Every value carries its status word and source. RA = the RAPT four-winding chain, integrated first (D-1). Nothing is hard-coded in the tool.",
+ "stator": {
+  "cem_stations_deg": {
+   "value": {
+    "A1": 90,
+    "A2": 30,
+    "A3": 330,
+    "A4": 270,
+    "A5": 210,
+    "A6": 150,
+    "B1": 60,
+    "B2": 0,
+    "B3": 300,
+    "B4": 240,
+    "B5": 180,
+    "B6": 120
+   },
+   "unit": "deg",
+   "status": "DRAWN",
+   "source": "r0.15 DXF 'CEMS distribution' (00-LEGEND labels, MECH-CEMS rectangles); BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.2",
+   "tag": "[OC]"
+  },
+  "cem_label_to_refdes": {
+   "value": "CEM_Xk = L_Xk",
+   "unit": "-",
+   "status": "DRAWN",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.2",
+   "tag": "[IR \u2014 confirm]"
+  },
+  "cem_core_inner_rz": {
+   "value": [
+    [
+     410.48,
+     19.32
+    ],
+    [
+     436.63,
+     19.32
+    ],
+    [
+     446.53,
+     29.98
+    ],
+    [
+     471.15,
+     29.98
+    ],
+    [
+     477.5,
+     25.16
+    ],
+    [
+     477.5,
+     0.0
+    ]
+   ],
+   "unit": "mm (r,|z|)",
+   "status": "DRAWN",
+   "source": "r0.15 DXF axial section, +x copy; BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.3",
+   "tag": "[IR]"
+  },
+  "cem_core_outer_rz": {
+   "value": [
+    [
+     410.48,
+     19.32
+    ],
+    [
+     433.91,
+     44.55
+    ],
+    [
+     487.4,
+     44.55
+    ],
+    [
+     503.5,
+     25.16
+    ],
+    [
+     503.5,
+     0.0
+    ]
+   ],
+   "unit": "mm (r,|z|)",
+   "status": "DRAWN",
+   "source": "r0.15 DXF axial section, +x copy; BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.3",
+   "tag": "[IR]"
+  },
+  "cem_gap_each_mm": {
+   "value": 2.0,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.3",
+   "tag": "[IR]"
+  },
+  "cem_tangential_width_mm": {
+   "value": [
+    26.0,
+    44.0
+   ],
+   "unit": "mm (sweep range)",
+   "status": "OPEN",
+   "source": "D-5; BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.3/\u00a73.9",
+   "tag": "[IR]"
+  },
+  "cem_core_material": {
+   "value": "laminated Si-steel, rho 4.7e-7 Ohm m, 0.35 mm laminations",
+   "unit": "-",
+   "status": "RECORD",
+   "source": "docs/doc-circuit-topology-resonances-materials.md \u00a75.2",
+   "tag": "[IR]"
+  },
+  "cem_core_bonding": {
+   "value": "unknown (floating | rail end | cap end)",
+   "unit": "-",
+   "status": "OPEN",
+   "source": "D-6",
+   "tag": "[IR]"
+  },
+  "L_motor_H": {
+   "value": 0.64,
+   "unit": "H",
+   "status": "RECORD",
+   "source": "sim/pump_engine.py DEFAULTS",
+   "tag": "[IR]"
+  },
+  "R_motor_ohm": {
+   "value": 40.0,
+   "unit": "Ohm",
+   "status": "RECORD",
+   "source": "sim/pump_engine.py DEFAULTS",
+   "tag": "[IR]"
+  },
+  "C_motor_nF": {
+   "value": 440.0,
+   "unit": "nF",
+   "status": "RECORD",
+   "source": "sim/pump_engine.py DEFAULTS",
+   "tag": "[IR]"
+  },
+  "motor_topology": {
+   "value": [
+    "per_coil",
+    "per_branch"
+   ],
+   "unit": "-",
+   "status": "RECORD",
+   "source": "pump_engine motor_topology; per_branch decided, undrawn (\u00a73.8)",
+   "tag": "[IR]"
+  },
+  "block_cap_esl_nH": {
+   "value": [
+    10,
+    50
+   ],
+   "unit": "nH",
+   "status": "MODEL",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.7",
+   "tag": "[RH] until measured"
+  },
+  "pole_diameter_mm": {
+   "value": 34.65,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "r0.15 DXF (plan circle R 17.324)",
+   "tag": "[IR]"
+  },
+  "pole_centre_r_mm": {
+   "value": 424.32,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "r0.15 DXF",
+   "tag": "[IR]"
+  },
+  "pole_half_height_mm": {
+   "value": 17.33,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "r0.15 DXF",
+   "tag": "[IR]"
+  },
+  "pole_theta_r_deg": {
+   "value": "15 + 60k at the true-C1 datum",
+   "unit": "deg",
+   "status": "DRAWN",
+   "source": "r0.15 DXF; BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a74",
+   "tag": "[IR]"
+  },
+  "pole_material": {
+   "value": "solid low-carbon iron, floating",
+   "unit": "-",
+   "status": "RECORD",
+   "source": "materials doc \u00a75.1",
+   "tag": "[IR]"
+  },
+  "rotor_septum_r_out_dxf_mm": {
+   "value": 456.65,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a76",
+   "tag": "[IR]"
+  },
+  "stator_frame_R_mm": {
+   "value": 560.0,
+   "unit": "mm",
+   "status": "RECORD",
+   "source": "CAD build il2f-6563b90d",
+   "tag": "[IR]"
+  },
+  "gap_stations_phi_deg": {
+   "value": {
+    "SG1": 3,
+    "SG3a": 7.2,
+    "SG3b": 16.05,
+    "BS3": 19,
+    "SG2": 33,
+    "SG4a": 37.2,
+    "SG4b": 46.05,
+    "BS4": 49
+   },
+   "unit": "deg",
+   "status": "RECORD",
+   "source": "pump_engine DXF stations",
+   "tag": "[IR]"
+  }
+ },
+ "rotor": {
+  "septum": {
+   "value": {
+    "material": "garolite",
+    "half_thickness_mm": 6.0,
+    "eps_r": 4.8
+   },
+   "unit": "-",
+   "status": "CHAT-DECIDED",
+   "source": "2026-08-06 decisions; eps_r datasheet-class",
+   "tag": "[RH] eps_r"
+  },
+  "C_R_pF": {
+   "value": 789.0,
+   "unit": "pF",
+   "status": "CHAT-DECIDED",
+   "source": "2026-08-06 / Rev A C1: the two rotor electrodes across the 12 mm septum",
+   "tag": "[IR]"
+  },
+  "C_R_trim_factor": {
+   "value": 4.0,
+   "unit": "-",
+   "status": "MODEL",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a75.2 (x4 trim, 2.4 nF bank)",
+   "tag": "[IR]"
+  },
+  "hub_shell": {
+   "value": {
+    "material": "garolite",
+    "outer_r_plus_absz_mm": 105.0,
+    "thickness_mm": 5.0,
+    "R_mm": 100.0
+   },
+   "unit": "-",
+   "status": "CHAT-DECIDED",
+   "source": "bicone-penning-mockup.svg [IR until DXF]; 2026-08-06",
+   "tag": "[IR]"
+  },
+  "cone_bore_at_rod_d_mm": {
+   "value": 27.0,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "mockup, BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a75.4",
+   "tag": "[IR]"
+  },
+  "shaft": {
+   "value": {
+    "d_mm": 30.0,
+    "tip_absz_mm": 60.0,
+    "full_from_absz_mm": 70.0,
+    "bore_d_mm": 13.0,
+    "magnetic": false
+   },
+   "unit": "-",
+   "status": "CHAT-DECIDED",
+   "source": "2026-08-06; tip non-magnetic brass/316 BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a75.2",
+   "tag": "[IR]"
+  },
+  "vessel": {
+   "value": {
+    "od_mm": 52.0,
+    "rod_bore_mm": 12.0,
+    "pole_absz_mm": 26.0,
+    "material": "glass (assumed)",
+    "eps_r": 4.6
+   },
+   "unit": "-",
+   "status": "DECIDED",
+   "source": "r0.2 default: delivered ~52 mm spheres, 12 mm bore",
+   "tag": "[RH] material"
+  },
+  "vessel_alternate": {
+   "value": {
+    "od_mm": 40.0,
+    "rod_bore_mm": 8.0
+   },
+   "unit": "-",
+   "status": "DRAWN",
+   "source": "mockup alternate preset",
+   "tag": "[IR]"
+  },
+  "L_TC_L_BC": {
+   "value": {
+    "n": 34,
+    "r0_mm": 101.0,
+    "dr_mm": -2.394,
+    "z0_mm": 4.0,
+    "dz_mm": 2.394,
+    "conductor": "Cu capillary",
+    "od_mm": 3.0,
+    "id_mm": 1.6,
+    "hand_top": "RH",
+    "hand_bottom": "RH"
+   },
+   "unit": "-",
+   "status": "DRAWN",
+   "source": "mockup (pitch label 3.2 mm vs drawn 3.386 mm, F-10)",
+   "tag": "[IR]"
+  },
+  "AH_rod": {
+   "value": {
+    "part": "Fair-Rite 4077484611",
+    "material": "77 MnZn",
+    "d_mm": 12.3,
+    "len_mm": 41.3,
+    "absz_mm": [
+     30.7,
+     72.0
+    ],
+    "mu_i": 2000.0,
+    "f_r_MHz": 2.5,
+    "rho_ohm_m": 5.0,
+    "eps_bulk": 10000.0,
+    "Bsat_100C_T": 0.38
+   },
+   "unit": "-",
+   "status": "DECIDED",
+   "source": "D-1; mu(f) Debye, rho, eps, Bsat datasheet-class",
+   "tag": "[RH] material parameters until the 77 datasheet is read in"
+  },
+  "AH_former": {
+   "value": {
+    "material": "G-10",
+    "id_mm": 13.5,
+    "od_mm": 16.5,
+    "eps_r": 4.75
+   },
+   "unit": "-",
+   "status": "CHAT-DECIDED",
+   "source": "2026-08-06",
+   "tag": "[RH] eps_r"
+  },
+  "AH_wire": {
+   "value": {
+    "d_mm": 1.5,
+    "overall_mm": 1.6,
+    "enamel": "grade 2",
+    "eps_enamel": 3.5
+   },
+   "unit": "-",
+   "status": "CHAT-DECIDED",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a75.4",
+   "tag": "[RH] pitch until the wire is chosen"
+  },
+  "AH_variants": {
+   "value": {
+    "a": {
+     "layers": 2,
+     "turns_per_layer": 25,
+     "shaft_tip_absz_mm": 72.0,
+     "retention": "potted in the G-10 former"
+    },
+    "b": {
+     "layers": 3,
+     "turns_per_layer": 17,
+     "shaft_tip_absz_mm": 60.0,
+     "retention": "12 mm in the shaft bore"
+    },
+    "c": {
+     "layers": 2,
+     "turns_per_layer": 18,
+     "shaft_tip_absz_mm": 60.0,
+     "retention": "12 mm in the shaft bore"
+    }
+   },
+   "unit": "-",
+   "status": "DECIDED",
+   "source": "D-11 (run all three), BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a75.4",
+   "tag": "[IR]"
+  },
+  "AH_hand": {
+   "value": {
+    "top": "LH",
+    "bottom": "RH"
+   },
+   "unit": "-",
+   "status": "CHAT-DECIDED",
+   "source": "2026-08-06",
+   "tag": "[IR]"
+  },
+  "AH_rod_potential": {
+   "value": "tied to the coil's cold end (join side); 0.5 mm PEEK sleeve to the shaft",
+   "unit": "-",
+   "status": "CHAT-DECIDED",
+   "source": "2026-08-06 (D-6 confirm)",
+   "tag": "[IR]"
+  },
+  "chain": {
+   "value": "R-A -> L_TC -> L_TA -> join -> L_BA -> L_BC -> R-B, C_R across R-A/R-B (Option A)",
+   "unit": "-",
+   "status": "CHAT-DECIDED",
+   "source": "2026-08-06; documented edit of NR (L_R1, L_R2 replaced; n18/n00 retired)",
+   "tag": "[IR]"
+  },
+  "record_values": {
+   "value": {
+    "L_R_cone_uH": 139,
+    "M_cones_uH": 93,
+    "L_AH_uH": 197,
+    "mu_rod": 11,
+    "L_tot_uH": 856,
+    "f0_kHz": 194
+   },
+   "unit": "-",
+   "status": "MODEL",
+   "source": "2026-08-06 session (F-10)",
+   "tag": "[IR]"
+  },
+  "ring_amplitude_kV": {
+   "value": 15.0,
+   "unit": "kV on C_R",
+   "status": "MODEL",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a75.4",
+   "tag": "[IR]"
+  }
+ }
+}

@@ -1,0 +1,297 @@
+{
+ "schema": "electromagnet-register/1",
+ "generation": "V15",
+ "plan_view_side": "unknown",
+ "brief": "BRIEF_ELECTROMAGNET_REGISTER r0.3",
+ "note": "Regression reference (r0.15 DXF + netlist of record).",
+ "stator": {
+  "cem_stations_deg": {
+   "value": {
+    "A1": 90,
+    "A2": 30,
+    "A3": 330,
+    "A4": 270,
+    "A5": 210,
+    "A6": 150,
+    "B1": 60,
+    "B2": 0,
+    "B3": 300,
+    "B4": 240,
+    "B5": 180,
+    "B6": 120
+   },
+   "unit": "deg",
+   "status": "DRAWN",
+   "source": "r0.15 DXF 'CEMS distribution' (00-LEGEND labels, MECH-CEMS rectangles); BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.2",
+   "tag": "[OC]"
+  },
+  "cem_label_to_refdes": {
+   "value": "CEM_Xk = L_Xk",
+   "unit": "-",
+   "status": "DRAWN",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.2",
+   "tag": "[IR \u2014 confirm]"
+  },
+  "cem_core_inner_rz": {
+   "value": [
+    [
+     410.48,
+     19.32
+    ],
+    [
+     436.63,
+     19.32
+    ],
+    [
+     446.53,
+     29.98
+    ],
+    [
+     471.15,
+     29.98
+    ],
+    [
+     477.5,
+     25.16
+    ],
+    [
+     477.5,
+     0.0
+    ]
+   ],
+   "unit": "mm (r,|z|)",
+   "status": "DRAWN",
+   "source": "r0.15 DXF axial section, +x copy; BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.3",
+   "tag": "[IR]"
+  },
+  "cem_core_outer_rz": {
+   "value": [
+    [
+     410.48,
+     19.32
+    ],
+    [
+     433.91,
+     44.55
+    ],
+    [
+     487.4,
+     44.55
+    ],
+    [
+     503.5,
+     25.16
+    ],
+    [
+     503.5,
+     0.0
+    ]
+   ],
+   "unit": "mm (r,|z|)",
+   "status": "DRAWN",
+   "source": "r0.15 DXF axial section, +x copy; BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.3",
+   "tag": "[IR]"
+  },
+  "cem_gap_each_mm": {
+   "value": 2.0,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.3",
+   "tag": "[IR]"
+  },
+  "cem_tangential_width_mm": {
+   "value": [
+    26.0,
+    44.0
+   ],
+   "unit": "mm (sweep range)",
+   "status": "OPEN",
+   "source": "D-5; BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.3/\u00a73.9",
+   "tag": "[IR]"
+  },
+  "cem_core_material": {
+   "value": "laminated Si-steel, rho 4.7e-7 Ohm m, 0.35 mm laminations",
+   "unit": "-",
+   "status": "RECORD",
+   "source": "docs/doc-circuit-topology-resonances-materials.md \u00a75.2",
+   "tag": "[IR]"
+  },
+  "cem_core_bonding": {
+   "value": "unknown (floating | rail end | cap end)",
+   "unit": "-",
+   "status": "OPEN",
+   "source": "D-6",
+   "tag": "[IR]"
+  },
+  "L_motor_H": {
+   "value": 0.64,
+   "unit": "H",
+   "status": "RECORD",
+   "source": "sim/pump_engine.py DEFAULTS",
+   "tag": "[IR]"
+  },
+  "R_motor_ohm": {
+   "value": 40.0,
+   "unit": "Ohm",
+   "status": "RECORD",
+   "source": "sim/pump_engine.py DEFAULTS",
+   "tag": "[IR]"
+  },
+  "C_motor_nF": {
+   "value": 440.0,
+   "unit": "nF",
+   "status": "RECORD",
+   "source": "sim/pump_engine.py DEFAULTS",
+   "tag": "[IR]"
+  },
+  "motor_topology": {
+   "value": [
+    "per_coil",
+    "per_branch"
+   ],
+   "unit": "-",
+   "status": "RECORD",
+   "source": "pump_engine motor_topology; per_branch decided, undrawn (\u00a73.8)",
+   "tag": "[IR]"
+  },
+  "block_cap_esl_nH": {
+   "value": [
+    10,
+    50
+   ],
+   "unit": "nH",
+   "status": "MODEL",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a73.7",
+   "tag": "[RH] until measured"
+  },
+  "pole_diameter_mm": {
+   "value": 34.65,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "r0.15 DXF (plan circle R 17.324)",
+   "tag": "[IR]"
+  },
+  "pole_centre_r_mm": {
+   "value": 424.32,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "r0.15 DXF",
+   "tag": "[IR]"
+  },
+  "pole_half_height_mm": {
+   "value": 17.33,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "r0.15 DXF",
+   "tag": "[IR]"
+  },
+  "pole_theta_r_deg": {
+   "value": "15 + 60k at the true-C1 datum",
+   "unit": "deg",
+   "status": "DRAWN",
+   "source": "r0.15 DXF; BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a74",
+   "tag": "[IR]"
+  },
+  "pole_material": {
+   "value": "solid low-carbon iron, floating",
+   "unit": "-",
+   "status": "RECORD",
+   "source": "materials doc \u00a75.1",
+   "tag": "[IR]"
+  },
+  "rotor_septum_r_out_dxf_mm": {
+   "value": 456.65,
+   "unit": "mm",
+   "status": "DRAWN",
+   "source": "BRIEF_ELECTROMAGNET_REGISTER r0.3 \u00a76",
+   "tag": "[IR]"
+  },
+  "stator_frame_R_mm": {
+   "value": 560.0,
+   "unit": "mm",
+   "status": "RECORD",
+   "source": "CAD build il2f-6563b90d",
+   "tag": "[IR]"
+  },
+  "gap_stations_phi_deg": {
+   "value": {
+    "SG1": 3,
+    "SG3a": 7.2,
+    "SG3b": 16.05,
+    "BS3": 19,
+    "SG2": 33,
+    "SG4a": 37.2,
+    "SG4b": 46.05,
+    "BS4": 49
+   },
+   "unit": "deg",
+   "status": "RECORD",
+   "source": "pump_engine DXF stations",
+   "tag": "[IR]"
+  }
+ },
+ "rotor": {
+  "hub": {
+   "value": {
+    "cone_deg": 45,
+    "base_r_mm": 75,
+    "base_absz_mm": 6,
+    "top_r_mm": 25,
+    "top_absz_mm": 56,
+    "void_d_mm": 41
+   },
+   "unit": "-",
+   "status": "DRAWN",
+   "source": "MECH-HUB-A/B-BODY",
+   "tag": "[IR]"
+  },
+  "L_R": {
+   "value": {
+    "n": 18,
+    "r0_mm": 71.01,
+    "dr_mm": -2.121,
+    "z0_mm": 12.11,
+    "dz_mm": 2.121,
+    "conductor": "Cu capillary",
+    "od_mm": 3.0,
+    "id_mm": 1.0,
+    "hand": "RH-RH aiding"
+   },
+   "unit": "-",
+   "status": "DRAWN",
+   "source": "COIL_L_R (k=0 at the septum end)",
+   "tag": "[IR]"
+  },
+  "C_R_pF": {
+   "value": 789.0,
+   "unit": "pF",
+   "status": "RECORD",
+   "source": "freeze v0.10 \u00a73",
+   "tag": "[IR]"
+  },
+  "stray_RA_n18_pF": {
+   "value": 518.0,
+   "unit": "pF",
+   "status": "MODEL",
+   "source": "circuit integrity rev-6 build",
+   "tag": "[IR]"
+  },
+  "chain": {
+   "value": "R-A - L_R1 - n18 - C_R1 - n00 - L_R2 - R-B",
+   "unit": "-",
+   "status": "RECORD",
+   "source": "topology_edge_list.csv",
+   "tag": "[IR]"
+  },
+  "record_values": {
+   "value": {
+    "L_R_total_uH": 79,
+    "overlay_each_uH": 39.5
+   },
+   "unit": "-",
+   "status": "RECORD",
+   "source": "freeze v0.10; KiCad overlay (F-7)",
+   "tag": "[IR]"
+  }
+ }
+}
