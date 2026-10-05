@@ -7,7 +7,7 @@
  "C_max_pF": 1114.0680403203476,
  "kappa": 15.655906720387156,
  "G-TUBE-CLASH": {
-  "pairs_tested": 346,
+  "pairs_tested": 348,
   "clashes": [],
   "n_clash": 0,
   "pass_": true
@@ -73,20 +73,28 @@
  },
  "G-TUBE-REL": {
   "A": {
-   "cem_to_cem_mm": 14.38,
-   "utron_inner_r_mm": 24.91
+   "cem_to_cem_mm": 96.48,
+   "utron_inner_r_mm": 107.01
   },
   "B": {
-   "cem_to_cem_mm": 14.38,
-   "utron_inner_r_mm": 24.91
+   "cem_to_cem_mm": 96.48,
+   "utron_inner_r_mm": 107.01
   },
-  "r_utron_centre": 47.9,
-  "reluctance_envelope_dia_mm": 365.0,
+  "r_utron_centre": 130.0,
+  "reluctance_envelope_dia_mm": 529.2,
   "sleeve_r": 20.5
  },
  "renders": [
   "docs/geometry/tube/tube-r150-n8-section.png",
   "docs/geometry/tube/tube-r150-n8-reluctance-plan.png",
   "docs/geometry/tube/tube-r150-n8-clocking-plan.png"
- ]
+ ],
+ "step": "docs/geometry/tube/tube-r150-n8.step",
+ "step_bytes": 2877535,
+ "step_read_back": {
+  "instances": 307,
+  "assemblies": 10,
+  "products": 30,
+  "pass_": true
+ }
 }

@@ -39,7 +39,7 @@ TUBE_DEFAULTS = dict(
     rho_vane=2700.0,                           # Al, kg/m^3
     hub_mm=120.0, clock_mm=0.0, rel_mm=0.0,   # axial minimums (per side): clocking and reluctance are derived from their parts
     pitch_fixed_mm=4.5,                        # Ca / Cb fixed plates: 3 mm air + 1.5 mm plate per working gap
-    rel_shift_mm=0.0,                          # move the C-EMs + utrons outward (room for the rotor parts, shaft clearance)
+    rel_shift_mm=82.1,                         # C-EMs + utrons outward to r_u 130: swing 14.7 % (sim/tube_magnetic.py; 0 % at r_u 52)
 )
 # clocking: one sub-deck per station type and side; stator sphere (stator node) above a rotor tip (rotor node) [IR]
 # (angle deg, stator node, rotor node, sphere dia mm, gap mm) -- stations / nodes from the netlist of record,
