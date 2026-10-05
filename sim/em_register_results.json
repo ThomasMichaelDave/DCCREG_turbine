@@ -483,7 +483,7 @@
    "note": "poles 15+60k map to 45+60k: alignment order of the groups reverses with the rotation sense"
   }
  },
- "stamp": "2026-10-05 05:14:47 UTC",
+ "stamp": "2026-10-05 06:08:40 UTC",
  "P1-PUMP": {
   "z_anchor": 1.3254745316585308,
   "RT0_record": 1.3254745,
@@ -591,5 +591,4123 @@
    }
   ],
   "verdict": "PASS"
+ },
+ "solids": {
+  "G-CLR-HUB": {
+   "RA_dropped_TC_turns": [
+    0,
+    1
+   ],
+   "RA-a": {
+    "collisions_with_stator": [
+     [
+      "RA_hub_shell_A_50",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_52",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_54",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_hub_shell_B_50",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_hub_shell_B_52",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_hub_shell_B_54",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_L_TC_t17",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_L_TC_t18",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_L_TC_t19",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_L_BC_t144",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_L_BC_t145",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_L_BC_t146",
+      "ND4_carrier_1"
+     ]
+    ],
+    "n_collisions_with_stator": 12,
+    "interference_with_rotor_parts": [
+     [
+      "RA_CR_electrode_A",
+      "CR_A_1"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_2"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_3"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_4"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_5"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_6"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_1"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_2"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_3"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_4"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_5"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_6"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_1"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_2"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_3"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_4"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_5"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_6"
+     ],
+     [
+      "RA_hub_shell_A_8",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_10",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_12",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_14",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_16",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_18",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_1_sleeve"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_2_sleeve"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_3_sleeve"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_4_sleeve"
+     ]
+    ],
+    "n_interference_with_rotor": 435,
+    "hv_below_rule_vs_stator": [
+     [
+      0.17,
+      "RA_L_BC_t143",
+      "ND4_carrier_1"
+     ],
+     [
+      0.17,
+      "RA_L_TC_t20",
+      "ND1_carrier_1"
+     ],
+     [
+      0.25,
+      "RA_hub_shell_A_48",
+      "ND1_carrier_1"
+     ],
+     [
+      0.25,
+      "RA_hub_shell_B_48",
+      "ND4_carrier_1"
+     ],
+     [
+      1.0,
+      "RA_hub_shell_A_56",
+      "ND1_carrier_1"
+     ],
+     [
+      1.0,
+      "RA_hub_shell_B_56",
+      "ND4_carrier_1"
+     ],
+     [
+      1.66,
+      "RA_L_BC_t147",
+      "ND4_carrier_1"
+     ],
+     [
+      1.66,
+      "RA_L_TC_t16",
+      "ND1_carrier_1"
+     ],
+     [
+      2.25,
+      "RA_hub_shell_A_46",
+      "ND1_carrier_1"
+     ],
+     [
+      2.25,
+      "RA_hub_shell_B_46",
+      "ND4_carrier_1"
+     ],
+     [
+      2.56,
+      "RA_L_BC_t142",
+      "ND4_carrier_1"
+     ],
+     [
+      2.56,
+      "RA_L_TC_t21",
+      "ND1_carrier_1"
+     ],
+     [
+      3.0,
+      "RA_hub_shell_A_58",
+      "ND1_carrier_1"
+     ],
+     [
+      3.0,
+      "RA_hub_shell_B_58",
+      "ND4_carrier_1"
+     ],
+     [
+      4.05,
+      "RA_L_BC_t148",
+      "ND4_carrier_1"
+     ]
+    ],
+    "n_hv_below": 60,
+    "need_mm": 11.0,
+    "pass_": false
+   },
+   "RA-b": {
+    "collisions_with_stator": [
+     [
+      "RA_hub_shell_A_50",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_52",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_54",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_hub_shell_B_50",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_hub_shell_B_52",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_hub_shell_B_54",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_L_TC_t17",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_L_TC_t18",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_L_TC_t19",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_L_BC_t146",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_L_BC_t147",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_L_BC_t148",
+      "ND4_carrier_1"
+     ]
+    ],
+    "n_collisions_with_stator": 12,
+    "interference_with_rotor_parts": [
+     [
+      "RA_CR_electrode_A",
+      "CR_A_1"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_2"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_3"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_4"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_5"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_6"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_1"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_2"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_3"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_4"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_5"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_6"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_1"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_2"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_3"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_4"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_5"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_6"
+     ],
+     [
+      "RA_hub_shell_A_8",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_10",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_12",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_14",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_16",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_18",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_1_sleeve"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_2_sleeve"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_3_sleeve"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_4_sleeve"
+     ]
+    ],
+    "n_interference_with_rotor": 439,
+    "hv_below_rule_vs_stator": [
+     [
+      0.17,
+      "RA_L_BC_t145",
+      "ND4_carrier_1"
+     ],
+     [
+      0.17,
+      "RA_L_TC_t20",
+      "ND1_carrier_1"
+     ],
+     [
+      0.25,
+      "RA_hub_shell_A_48",
+      "ND1_carrier_1"
+     ],
+     [
+      0.25,
+      "RA_hub_shell_B_48",
+      "ND4_carrier_1"
+     ],
+     [
+      1.0,
+      "RA_hub_shell_A_56",
+      "ND1_carrier_1"
+     ],
+     [
+      1.0,
+      "RA_hub_shell_B_56",
+      "ND4_carrier_1"
+     ],
+     [
+      1.66,
+      "RA_L_BC_t149",
+      "ND4_carrier_1"
+     ],
+     [
+      1.66,
+      "RA_L_TC_t16",
+      "ND1_carrier_1"
+     ],
+     [
+      2.25,
+      "RA_hub_shell_A_46",
+      "ND1_carrier_1"
+     ],
+     [
+      2.25,
+      "RA_hub_shell_B_46",
+      "ND4_carrier_1"
+     ],
+     [
+      2.56,
+      "RA_L_BC_t144",
+      "ND4_carrier_1"
+     ],
+     [
+      2.56,
+      "RA_L_TC_t21",
+      "ND1_carrier_1"
+     ],
+     [
+      3.0,
+      "RA_hub_shell_A_58",
+      "ND1_carrier_1"
+     ],
+     [
+      3.0,
+      "RA_hub_shell_B_58",
+      "ND4_carrier_1"
+     ],
+     [
+      4.05,
+      "RA_L_BC_t150",
+      "ND4_carrier_1"
+     ]
+    ],
+    "n_hv_below": 60,
+    "need_mm": 11.0,
+    "pass_": false
+   },
+   "RA-c": {
+    "collisions_with_stator": [
+     [
+      "RA_hub_shell_A_50",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_52",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_54",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_hub_shell_B_50",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_hub_shell_B_52",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_hub_shell_B_54",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_L_TC_t17",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_L_TC_t18",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_L_TC_t19",
+      "ND1_carrier_1"
+     ],
+     [
+      "RA_L_BC_t116",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_L_BC_t117",
+      "ND4_carrier_1"
+     ],
+     [
+      "RA_L_BC_t118",
+      "ND4_carrier_1"
+     ]
+    ],
+    "n_collisions_with_stator": 12,
+    "interference_with_rotor_parts": [
+     [
+      "RA_CR_electrode_A",
+      "CR_A_1"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_2"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_3"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_4"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_5"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "CR_A_6"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_1"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_2"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_3"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_4"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_5"
+     ],
+     [
+      "RA_CR_electrode_A",
+      "bus_A_disc_n18_riser_6"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_1"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_2"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_3"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_4"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_5"
+     ],
+     [
+      "RA_hub_shell_A_6",
+      "CR_A_6"
+     ],
+     [
+      "RA_hub_shell_A_8",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_10",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_12",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_14",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_16",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_18",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "A_disc_carrier_1"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_1_sleeve"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_2_sleeve"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_3_sleeve"
+     ],
+     [
+      "RA_hub_shell_A_20",
+      "ILA_C1_in_link_4_sleeve"
+     ]
+    ],
+    "n_interference_with_rotor": 435,
+    "hv_below_rule_vs_stator": [
+     [
+      0.17,
+      "RA_L_BC_t115",
+      "ND4_carrier_1"
+     ],
+     [
+      0.17,
+      "RA_L_TC_t20",
+      "ND1_carrier_1"
+     ],
+     [
+      0.25,
+      "RA_hub_shell_A_48",
+      "ND1_carrier_1"
+     ],
+     [
+      0.25,
+      "RA_hub_shell_B_48",
+      "ND4_carrier_1"
+     ],
+     [
+      1.0,
+      "RA_hub_shell_A_56",
+      "ND1_carrier_1"
+     ],
+     [
+      1.0,
+      "RA_hub_shell_B_56",
+      "ND4_carrier_1"
+     ],
+     [
+      1.66,
+      "RA_L_BC_t119",
+      "ND4_carrier_1"
+     ],
+     [
+      1.66,
+      "RA_L_TC_t16",
+      "ND1_carrier_1"
+     ],
+     [
+      2.25,
+      "RA_hub_shell_A_46",
+      "ND1_carrier_1"
+     ],
+     [
+      2.25,
+      "RA_hub_shell_B_46",
+      "ND4_carrier_1"
+     ],
+     [
+      2.56,
+      "RA_L_BC_t114",
+      "ND4_carrier_1"
+     ],
+     [
+      2.56,
+      "RA_L_TC_t21",
+      "ND1_carrier_1"
+     ],
+     [
+      3.0,
+      "RA_hub_shell_A_58",
+      "ND1_carrier_1"
+     ],
+     [
+      3.0,
+      "RA_hub_shell_B_58",
+      "ND4_carrier_1"
+     ],
+     [
+      4.05,
+      "RA_L_BC_t120",
+      "ND4_carrier_1"
+     ]
+    ],
+    "n_hv_below": 60,
+    "need_mm": 11.0,
+    "pass_": false
+   },
+   "V15": {
+    "collisions_with_stator": [],
+    "n_collisions_with_stator": 0,
+    "interference_with_rotor_parts": [
+     [
+      "V15_L_R1_t0",
+      "A_disc_carrier_1"
+     ],
+     [
+      "V15_L_R1_t1",
+      "A_disc_carrier_1"
+     ],
+     [
+      "V15_L_R1_t2",
+      "A_disc_carrier_1"
+     ],
+     [
+      "V15_L_R1_t3",
+      "A_disc_carrier_1"
+     ],
+     [
+      "V15_L_R1_t4",
+      "A_disc_carrier_1"
+     ],
+     [
+      "V15_L_R1_t5",
+      "A_disc_carrier_1"
+     ],
+     [
+      "V15_L_R1_t6",
+      "A_disc_carrier_1"
+     ],
+     [
+      "V15_L_R1_t7",
+      "A_disc_carrier_1"
+     ],
+     [
+      "V15_L_R1_t14",
+      "ILA_C1_2_carrier"
+     ],
+     [
+      "V15_L_R1_t15",
+      "ILA_C1_2_carrier"
+     ],
+     [
+      "V15_L_R1_t16",
+      "ILA_C1_2_carrier"
+     ],
+     [
+      "V15_L_R2_t0",
+      "B_disc_carrier_1"
+     ],
+     [
+      "V15_L_R2_t1",
+      "B_disc_carrier_1"
+     ],
+     [
+      "V15_L_R2_t2",
+      "B_disc_carrier_1"
+     ],
+     [
+      "V15_L_R2_t3",
+      "B_disc_carrier_1"
+     ],
+     [
+      "V15_L_R2_t4",
+      "B_disc_carrier_1"
+     ],
+     [
+      "V15_L_R2_t5",
+      "B_disc_carrier_1"
+     ],
+     [
+      "V15_L_R2_t6",
+      "B_disc_carrier_1"
+     ],
+     [
+      "V15_L_R2_t7",
+      "B_disc_carrier_1"
+     ],
+     [
+      "V15_L_R2_t14",
+      "ILB_C2_2_carrier"
+     ],
+     [
+      "V15_L_R2_t15",
+      "ILB_C2_2_carrier"
+     ],
+     [
+      "V15_L_R2_t16",
+      "ILB_C2_2_carrier"
+     ]
+    ],
+    "n_interference_with_rotor": 22,
+    "hv_below_rule_vs_stator": [
+     [
+      9.99,
+      "V15_L_R1_t14",
+      "ND1_carrier_1"
+     ],
+     [
+      9.99,
+      "V15_L_R2_t14",
+      "ND4_carrier_1"
+     ],
+     [
+      10.38,
+      "V15_L_R1_t13",
+      "ND1_carrier_1"
+     ],
+     [
+      10.38,
+      "V15_L_R2_t13",
+      "ND4_carrier_1"
+     ],
+     [
+      10.48,
+      "V15_L_R1_t15",
+      "ND1_carrier_1"
+     ],
+     [
+      10.48,
+      "V15_L_R2_t15",
+      "ND4_carrier_1"
+     ]
+    ],
+    "n_hv_below": 6,
+    "need_mm": 11.0,
+    "pass_": false
+   }
+  },
+  "G-CLR-AH": {
+   "a": {
+    "windable_mm": 41.3,
+    "span_mm": 40.0,
+    "axial_margin_mm": 1.2999999999999972,
+    "finished_od_mm": 22.9,
+    "radial_margin_mm": 2.0500000000000007,
+    "radial_margin_at_lead_mm": 0.4500000000000006,
+    "return_lead": true,
+    "turns": 50,
+    "rod_in_bore_mm": 0.0,
+    "shaft_engagement_note": "rod potted in the former; shaft tip at |z| 72",
+    "peek_sleeve_od_mm": 13.3,
+    "peek_sleeve_fits_bore": null,
+    "seat_space_mm": 4.699999999999999,
+    "pass_": true
+   },
+   "b": {
+    "windable_mm": 29.3,
+    "span_mm": 27.200000000000003,
+    "axial_margin_mm": 2.099999999999998,
+    "finished_od_mm": 26.1,
+    "radial_margin_mm": 0.4499999999999993,
+    "radial_margin_at_lead_mm": 0.4499999999999993,
+    "return_lead": false,
+    "turns": 51,
+    "rod_in_bore_mm": 12.0,
+    "shaft_engagement_note": "rod 12.0 mm in the \u00d813 bore",
+    "peek_sleeve_od_mm": 13.3,
+    "peek_sleeve_fits_bore": false,
+    "seat_space_mm": 4.699999999999999,
+    "pass_": false
+   },
+   "c": {
+    "windable_mm": 29.3,
+    "span_mm": 28.8,
+    "axial_margin_mm": 0.5,
+    "finished_od_mm": 22.9,
+    "radial_margin_mm": 2.0500000000000007,
+    "radial_margin_at_lead_mm": 0.4500000000000006,
+    "return_lead": true,
+    "turns": 36,
+    "rod_in_bore_mm": 12.0,
+    "shaft_engagement_note": "rod 12.0 mm in the \u00d813 bore",
+    "peek_sleeve_od_mm": 13.3,
+    "peek_sleeve_fits_bore": false,
+    "seat_space_mm": 4.699999999999999,
+    "pass_": false
+   }
+  },
+  "exports": [
+   "docs/geometry/em-register-RA-a.json",
+   "docs/geometry/em-register-RA-b.json",
+   "docs/geometry/em-register-RA-c.json",
+   "docs/geometry/em-register-V15.json",
+   "docs/geometry/em-register-motor-drawn-w35.json"
+  ],
+  "G-MOTOR-SWEEP": {
+   "rows": [
+    {
+     "r_pole": 424.32,
+     "w_t": 26.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": true
+     },
+     "binding": [
+      "G_CLR_ROT"
+     ],
+     "margins": {
+      "rotor_collisions": 17,
+      "hv_near": 24,
+      "spine_outer_r": 503.6677972632358,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 9.630049573590137,
+       "d_rotor_tip_to_pole_mm": -8.54119580052555,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 9.26552514457078,
+       "d_rotor_tip_to_pole_mm": -8.54119580052555,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_2",
+      "A_disc_carrier_3",
+      "septum",
+      "B_disc_carrier_2",
+      "B_disc_carrier_3",
+      "rotortip_A_stem_1",
+      "rotortip_A_stem_2",
+      "rotortip_A_stem_3",
+      "rotortip_A_stem_4",
+      "rotortip_A_stem_5",
+      "rotortip_A_stem_6",
+      "rotortip_B_stem_1"
+     ],
+     "hv_near": [
+      [
+       7.56,
+       "rotortip_A_lead_1a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_2a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_3a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_4a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_5a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_6a"
+      ],
+      [
+       7.56,
+       "rotortip_B_lead_1a"
+      ],
+      [
+       7.56,
+       "rotortip_B_lead_2a"
+      ]
+     ],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "poles inside the rotor discs",
+     "rim_speed_pole_m_s": 69.37327729510054,
+     "rising_window_deg": 5.1803539627724025,
+     "L_depth_est": 9.66
+    },
+    {
+     "r_pole": 424.32,
+     "w_t": 35.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": true
+     },
+     "binding": [
+      "G_CLR_ROT"
+     ],
+     "margins": {
+      "rotor_collisions": 17,
+      "hv_near": 24,
+      "spine_outer_r": 503.80402936062353,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 6.040078350251855,
+       "d_rotor_tip_to_pole_mm": -8.54119580052555,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 5.457086874881215,
+       "d_rotor_tip_to_pole_mm": -8.54119580052555,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_2",
+      "A_disc_carrier_3",
+      "septum",
+      "B_disc_carrier_2",
+      "B_disc_carrier_3",
+      "rotortip_A_stem_1",
+      "rotortip_A_stem_2",
+      "rotortip_A_stem_3",
+      "rotortip_A_stem_4",
+      "rotortip_A_stem_5",
+      "rotortip_A_stem_6",
+      "rotortip_B_stem_1"
+     ],
+     "hv_near": [
+      [
+       7.56,
+       "rotortip_A_lead_1a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_2a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_3a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_4a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_5a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_6a"
+      ],
+      [
+       7.56,
+       "rotortip_B_lead_1a"
+      ],
+      [
+       7.56,
+       "rotortip_B_lead_2a"
+      ]
+     ],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "poles inside the rotor discs",
+     "rim_speed_pole_m_s": 69.37327729510054,
+     "rising_window_deg": 5.789883532060512,
+     "L_depth_est": 9.5634
+    },
+    {
+     "r_pole": 424.32,
+     "w_t": 44.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": true
+     },
+     "binding": [
+      "G_CLR_ROT"
+     ],
+     "margins": {
+      "rotor_collisions": 17,
+      "hv_near": 24,
+      "spine_outer_r": 503.9804063651681,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 3.9970072829847814,
+       "d_rotor_tip_to_pole_mm": -8.54119580052555,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 3.1146628755296257,
+       "d_rotor_tip_to_pole_mm": -8.54119580052555,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_2",
+      "A_disc_carrier_3",
+      "septum",
+      "B_disc_carrier_2",
+      "B_disc_carrier_3",
+      "rotortip_A_stem_1",
+      "rotortip_A_stem_2",
+      "rotortip_A_stem_3",
+      "rotortip_A_stem_4",
+      "rotortip_A_stem_5",
+      "rotortip_A_stem_6",
+      "rotortip_B_stem_1"
+     ],
+     "hv_near": [
+      [
+       7.56,
+       "rotortip_A_lead_1a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_2a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_3a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_4a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_5a"
+      ],
+      [
+       7.56,
+       "rotortip_A_lead_6a"
+      ],
+      [
+       7.56,
+       "rotortip_B_lead_1a"
+      ],
+      [
+       7.56,
+       "rotortip_B_lead_2a"
+      ]
+     ],
+     "SG1_feasible_deltas": [
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0
+     ],
+     "SG2_feasible_deltas": [
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0
+     ],
+     "host": "poles inside the rotor discs",
+     "rim_speed_pole_m_s": 69.37327729510054,
+     "rising_window_deg": 6.399413101348622,
+     "L_depth_est": 7.6072500000000005
+    },
+    {
+     "r_pole": 450.0,
+     "w_t": 26.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": true
+     },
+     "binding": [
+      "G_CLR_ROT"
+     ],
+     "margins": {
+      "rotor_collisions": 2,
+      "hv_near": 0,
+      "spine_outer_r": 529.3396569311618,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 10.8195380015107,
+       "d_rotor_tip_to_pole_mm": 16.844008414657512,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 10.497096340821008,
+       "d_rotor_tip_to_pole_mm": 16.844008414657512,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_3",
+      "B_disc_carrier_3"
+     ],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "poles inside the rotor discs",
+     "rim_speed_pole_m_s": 73.40708226230984,
+     "rising_window_deg": 4.884432802114852,
+     "L_depth_est": 9.66
+    },
+    {
+     "r_pole": 450.0,
+     "w_t": 35.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": true
+     },
+     "binding": [
+      "G_CLR_ROT"
+     ],
+     "margins": {
+      "rotor_collisions": 2,
+      "hv_near": 0,
+      "spine_outer_r": 529.4692837171955,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 7.024530322747269,
+       "d_rotor_tip_to_pole_mm": 16.844008414657512,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 6.522255474001671,
+       "d_rotor_tip_to_pole_mm": 16.844008414657512,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_3",
+      "B_disc_carrier_3"
+     ],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "poles inside the rotor discs",
+     "rim_speed_pole_m_s": 73.40708226230984,
+     "rising_window_deg": 5.459076217932073,
+     "L_depth_est": 9.5634
+    },
+    {
+     "r_pole": 450.0,
+     "w_t": 44.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": true
+     },
+     "binding": [
+      "G_CLR_ROT"
+     ],
+     "margins": {
+      "rotor_collisions": 2,
+      "hv_near": 0,
+      "spine_outer_r": 529.6371138808156,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 4.326753567148965,
+       "d_rotor_tip_to_pole_mm": 16.844008414657512,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 3.516886088317163,
+       "d_rotor_tip_to_pole_mm": 16.844008414657512,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_3",
+      "B_disc_carrier_3"
+     ],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0
+     ],
+     "SG2_feasible_deltas": [
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0
+     ],
+     "host": "poles inside the rotor discs",
+     "rim_speed_pole_m_s": 73.40708226230984,
+     "rising_window_deg": 6.033719633749293,
+     "L_depth_est": 7.6072500000000005
+    },
+    {
+     "r_pole": 480.0,
+     "w_t": 26.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": true,
+      "frame": false
+     },
+     "binding": [
+      "G_CLR_ROT",
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 2,
+      "hv_near": 0,
+      "spine_outer_r": 559.331093718202,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 12.245211978005814,
+       "d_rotor_tip_to_pole_mm": 46.77214040730057,
+       "feasible": true
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 11.963091191209081,
+       "d_rotor_tip_to_pole_mm": 46.77214040730057,
+       "feasible": true
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_3",
+      "B_disc_carrier_3"
+     ],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -30.0,
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0,
+      24.0,
+      30.0
+     ],
+     "SG2_feasible_deltas": [
+      -30.0,
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0,
+      24.0,
+      30.0
+     ],
+     "host": "poles inside the rotor discs",
+     "rim_speed_pole_m_s": 78.11947124269452,
+     "rising_window_deg": 4.578869638753021,
+     "L_depth_est": 9.66
+    },
+    {
+     "r_pole": 480.0,
+     "w_t": 35.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": false
+     },
+     "binding": [
+      "G_CLR_ROT",
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 2,
+      "hv_near": 0,
+      "spine_outer_r": 559.4537714592691,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 8.283482226724285,
+       "d_rotor_tip_to_pole_mm": 46.77214040730057,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 7.857897451458964,
+       "d_rotor_tip_to_pole_mm": 46.77214040730057,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_3",
+      "B_disc_carrier_3"
+     ],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "poles inside the rotor discs",
+     "rim_speed_pole_m_s": 78.11947124269452,
+     "rising_window_deg": 5.117498801886786,
+     "L_depth_est": 9.5634
+    },
+    {
+     "r_pole": 480.0,
+     "w_t": 44.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": false
+     },
+     "binding": [
+      "G_CLR_ROT",
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 2,
+      "hv_near": 0,
+      "spine_outer_r": 559.6126092217723,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 5.04917751819518,
+       "d_rotor_tip_to_pole_mm": 46.77214040730057,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 4.354502073201522,
+       "d_rotor_tip_to_pole_mm": 46.77214040730057,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_3",
+      "B_disc_carrier_3"
+     ],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "poles inside the rotor discs",
+     "rim_speed_pole_m_s": 78.11947124269452,
+     "rising_window_deg": 5.65612796502055,
+     "L_depth_est": 7.6072500000000005
+    },
+    {
+     "r_pole": 500.0,
+     "w_t": 26.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": true,
+      "frame": false
+     },
+     "binding": [
+      "G_CLR_ROT",
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 2,
+      "hv_near": 0,
+      "spine_outer_r": 579.3258775507961,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 13.212290721948815,
+       "d_rotor_tip_to_pole_mm": 66.75079614187308,
+       "feasible": true
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 12.952850769883105,
+       "d_rotor_tip_to_pole_mm": 66.75079614187308,
+       "feasible": true
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_3",
+      "B_disc_carrier_3"
+     ],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -30.0,
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0,
+      24.0,
+      30.0
+     ],
+     "SG2_feasible_deltas": [
+      -30.0,
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0,
+      24.0,
+      30.0
+     ],
+     "host": "poles straddle the disc rim",
+     "rim_speed_pole_m_s": 81.26106389628431,
+     "rising_window_deg": 4.395550100452273,
+     "L_depth_est": 9.66
+    },
+    {
+     "r_pole": 500.0,
+     "w_t": 35.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": false
+     },
+     "binding": [
+      "G_CLR_ROT",
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 2,
+      "hv_near": 0,
+      "spine_outer_r": 579.4443220879812,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 9.169169614441753,
+       "d_rotor_tip_to_pole_mm": 66.75079614187308,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 8.785632648385313,
+       "d_rotor_tip_to_pole_mm": 66.75079614187308,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_3",
+      "B_disc_carrier_3"
+     ],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "poles straddle the disc rim",
+     "rim_speed_pole_m_s": 81.26106389628431,
+     "rising_window_deg": 4.912577067262393,
+     "L_depth_est": 9.5634
+    },
+    {
+     "r_pole": 500.0,
+     "w_t": 44.0,
+     "gates": {
+      "G_CLR_ROT": false,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": false
+     },
+     "binding": [
+      "G_CLR_ROT",
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 2,
+      "hv_near": 0,
+      "spine_outer_r": 579.5976814998487,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 5.6829418005237065,
+       "d_rotor_tip_to_pole_mm": 66.75079614187308,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 5.064045095771776,
+       "d_rotor_tip_to_pole_mm": 66.75079614187308,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [
+      "A_disc_carrier_3",
+      "B_disc_carrier_3"
+     ],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "poles straddle the disc rim",
+     "rim_speed_pole_m_s": 81.26106389628431,
+     "rising_window_deg": 5.429604034072512,
+     "L_depth_est": 7.6072500000000005
+    },
+    {
+     "r_pole": 519.324,
+     "w_t": 26.0,
+     "gates": {
+      "G_CLR_ROT": true,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": true,
+      "frame": false
+     },
+     "binding": [
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 0,
+      "hv_near": 0,
+      "spine_outer_r": 598.6451687068057,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 14.155882806504872,
+       "d_rotor_tip_to_pole_mm": 86.06158349252419,
+       "feasible": true
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 13.915764405086707,
+       "d_rotor_tip_to_pole_mm": 86.06158349252419,
+       "feasible": true
+      }
+     },
+     "rotor_collisions": [],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -30.0,
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0,
+      24.0,
+      30.0
+     ],
+     "SG2_feasible_deltas": [
+      -30.0,
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0,
+      24.0,
+      30.0
+     ],
+     "host": "discs must be extended to host the poles",
+     "rim_speed_pole_m_s": 84.29647071818276,
+     "rising_window_deg": 4.231850444733974,
+     "L_depth_est": 9.66
+    },
+    {
+     "r_pole": 519.324,
+     "w_t": 35.0,
+     "gates": {
+      "G_CLR_ROT": true,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": false
+     },
+     "binding": [
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 0,
+      "hv_near": 0,
+      "spine_outer_r": 598.7597915825677,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 10.049692006357201,
+       "d_rotor_tip_to_pole_mm": 86.06158349252419,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 9.701079091331767,
+       "d_rotor_tip_to_pole_mm": 86.06158349252419,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "discs must be extended to host the poles",
+     "rim_speed_pole_m_s": 84.29647071818276,
+     "rising_window_deg": 4.729589859504652,
+     "L_depth_est": 9.5634
+    },
+    {
+     "r_pole": 519.324,
+     "w_t": 44.0,
+     "gates": {
+      "G_CLR_ROT": true,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": false
+     },
+     "binding": [
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 0,
+      "hv_near": 0,
+      "spine_outer_r": 598.9082049997311,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 6.378679624741423,
+       "d_rotor_tip_to_pole_mm": 86.06158349252419,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 5.8261205029884495,
+       "d_rotor_tip_to_pole_mm": 86.06158349252419,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "discs must be extended to host the poles",
+     "rim_speed_pole_m_s": 84.29647071818276,
+     "rising_window_deg": 5.227329274275331,
+     "L_depth_est": 7.6072500000000005
+    },
+    {
+     "r_pole": 540.0,
+     "w_t": 26.0,
+     "gates": {
+      "G_CLR_ROT": true,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": true,
+      "frame": false
+     },
+     "binding": [
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 0,
+      "hv_near": 0,
+      "spine_outer_r": 619.3164557800802,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 15.174669855678847,
+       "d_rotor_tip_to_pole_mm": 106.7277931441162,
+       "feasible": true
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 14.952859966944995,
+       "d_rotor_tip_to_pole_mm": 106.7277931441162,
+       "feasible": true
+      }
+     },
+     "rotor_collisions": [],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -30.0,
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0,
+      24.0,
+      30.0
+     ],
+     "SG2_feasible_deltas": [
+      -30.0,
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0,
+      24.0,
+      30.0
+     ],
+     "host": "discs must be extended to host the poles",
+     "rim_speed_pole_m_s": 87.54424920346389,
+     "rising_window_deg": 4.069682681840742,
+     "L_depth_est": 9.66
+    },
+    {
+     "r_pole": 540.0,
+     "w_t": 35.0,
+     "gates": {
+      "G_CLR_ROT": true,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": false
+     },
+     "binding": [
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 0,
+      "hv_near": 0,
+      "spine_outer_r": 619.4272535173118,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 11.014132719827831,
+       "d_rotor_tip_to_pole_mm": 106.7277931441162,
+       "feasible": true
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 10.69775248363055,
+       "d_rotor_tip_to_pole_mm": 106.7277931441162,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -30.0,
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0,
+      24.0,
+      30.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "discs must be extended to host the poles",
+     "rim_speed_pole_m_s": 87.54424920346389,
+     "rising_window_deg": 4.548317507356577,
+     "L_depth_est": 9.5634
+    },
+    {
+     "r_pole": 540.0,
+     "w_t": 44.0,
+     "gates": {
+      "G_CLR_ROT": true,
+      "G_CLR_SG": true,
+      "G_CLR_SG_as_drawn": false,
+      "frame": false
+     },
+     "binding": [
+      "frame"
+     ],
+     "margins": {
+      "rotor_collisions": 0,
+      "hv_near": 0,
+      "spine_outer_r": 619.5707162221275,
+      "R_frame": 560.0,
+      "SG1_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 7.192060104483506,
+       "d_rotor_tip_to_pole_mm": 106.7277931441162,
+       "feasible": false
+      },
+      "SG2_drawn": {
+       "delta_deg": 0.0,
+       "d_stator_items_to_CEM_mm": 6.701415634440059,
+       "d_rotor_tip_to_pole_mm": 106.7277931441162,
+       "feasible": false
+      }
+     },
+     "rotor_collisions": [],
+     "hv_near": [],
+     "SG1_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "SG2_feasible_deltas": [
+      -29.0,
+      -28.0,
+      -27.0,
+      -26.0,
+      -25.0,
+      -24.0,
+      -23.0,
+      -22.0,
+      -21.0,
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0,
+      21.0,
+      22.0,
+      23.0
+     ],
+     "host": "discs must be extended to host the poles",
+     "rim_speed_pole_m_s": 87.54424920346389,
+     "rising_window_deg": 5.026952332872414,
+     "L_depth_est": 7.6072500000000005
+    }
+   ],
+   "need_mm": 11.0,
+   "rotor_r_out": 500.0
+  },
+  "G-HV-MOTOR": {
+   "gap_mm": 2.0,
+   "withstand_kV": [
+    6.0,
+    8.0
+   ],
+   "stator_rotor_kV_class": 20.0,
+   "pass_": false,
+   "note": "the floating pole and the core bonding (D-6) set the real gap voltage; at a 20 kV class difference the 2 mm gap does not hold unless the core is bonded so the difference stays < 6 kV"
+  },
+  "G-HV-POLE": {
+   "creepage_mm": 40.0,
+   "ring_kV": 15.0,
+   "rule_mm_per_kV": 2.5,
+   "need_mm": 37.5,
+   "pass_": true,
+   "jaw_pole_C_pF": 3.0272822075
+  }
+ },
+ "ra": {
+  "magnetics": {
+   "a": {
+    "var": "a",
+    "flipped": false,
+    "L_table_uH": {
+     "L_TC": {
+      "L_TC": 89.46275772182814,
+      "L_TA": 22.663261015142552,
+      "L_BA": -4.576076437336425,
+      "L_BC": 25.840110125475825,
+      "leads": 0.0
+     },
+     "L_TA": {
+      "L_TC": 22.66326101514255,
+      "L_TA": 98.51997807391655,
+      "L_BA": -1.2460244106979799,
+      "L_BC": 4.576076437336353,
+      "leads": 0.0
+     },
+     "L_BA": {
+      "L_TC": -4.576076437336425,
+      "L_TA": -1.2460244106979799,
+      "L_BA": 98.51997807391777,
+      "L_BC": -22.663261015144244,
+      "leads": 0.0
+     },
+     "L_BC": {
+      "L_TC": 25.84011012547582,
+      "L_TA": 4.576076437336353,
+      "L_BA": -22.663261015144247,
+      "L_BC": 89.46275772183395,
+      "leads": 0.0
+     },
+     "leads": {
+      "L_TC": 0.0,
+      "L_TA": 0.0,
+      "L_BA": 0.0,
+      "L_BC": 0.0,
+      "leads": 0.13598913648507277
+     }
+    },
+    "L_tot_uH": 425.28963215753356,
+    "f0_kHz": 274.75096869461385,
+    "f0_x4_kHz": 137.37548434730692,
+    "Z0_ohm": 734.1822763468326,
+    "Z0_x4_ohm": 367.0911381734163,
+    "mu_f0": [
+     1976.1440225258598,
+     -217.06909340014244
+    ],
+    "R_core_ohm": 0.20973021525498625,
+    "I_pk_A": 20.43089363943444,
+    "ring_kV": 15.0,
+    "Bz_centre_T": -0.007096138045724159,
+    "grad_centre_T_per_m": 0.38766775005739074,
+    "B_pole_A_T": 0.05554333005351404,
+    "B_pole_B_T": 0.02413762715460161,
+    "B_eq_wall_T": 0.0065983812601259784,
+    "null_AH_alone_rel": 2.7941862323912855e-14,
+    "null_offset_all_mm": 14.503215664028978,
+    "null_offset_AH_mm": -2.1271873151818e-13,
+    "rod_B_max_T": 0.5115834562508007,
+    "rod_B_p99_T": 0.5067711829445155,
+    "G_AH_SAT_pass": false,
+    "core_loss_steinmetz_W": 298.79776306483967,
+    "core_loss_mu2_W": 43.77294160012585,
+    "N_AH": 50,
+    "NI_AH": 1021.5446819717221,
+    "L_pd": true,
+    "C_R_record_pF": 789.0,
+    "axis_profile": {
+     "z_mm": [
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      -5.0,
+      -4.0,
+      -3.0,
+      -2.0,
+      -1.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0
+     ],
+     "Bz_all_T": [
+      -0.02737170700266775,
+      -0.024716654875471127,
+      -0.022444281926467507,
+      -0.020490722276519033,
+      -0.018802570353065314,
+      -0.01733563714993552,
+      -0.016053521485184713,
+      -0.01492625581676049,
+      -0.013929122706265786,
+      -0.013041661798204542,
+      -0.012246854579409303,
+      -0.011530462614321071,
+      -0.010880493017287107,
+      -0.010286767011039708,
+      -0.009740570856122708,
+      -0.009234372009264653,
+      -0.008761586584564685,
+      -0.008316386892359211,
+      -0.007893540009354976,
+      -0.007488270041520417,
+      -0.007096138045724161,
+      -0.006712934541405638,
+      -0.0063345802230228235,
+      -0.005957030917812368,
+      -0.005576183048361769,
+      -0.005187775869812988,
+      -0.004787286559577235,
+      -0.004369813834823212,
+      -0.003929945141998911,
+      -0.0034616015792809773,
+      -0.0029578535534101574,
+      -0.0024106987274976573,
+      -0.0018107921203763823,
+      -0.001147116408525829,
+      -0.0004065789183940363,
+      0.00042647870353693004,
+      0.0013708698638460323,
+      0.0024492545513954815,
+      0.003688914213607121,
+      0.005122542329506592,
+      0.006788881434713052
+     ]
+    },
+    "P-REG-8": {
+     "ratio": 0.987944374809762,
+     "at_turns": [
+      32,
+      81
+     ],
+     "at_absz_mm": 70.55000000000001,
+     "registered": 1.0,
+     "rel": -0.01205562519023795,
+     "pass_": true
+    }
+   },
+   "b": {
+    "var": "b",
+    "flipped": false,
+    "L_table_uH": {
+     "L_TC": {
+      "L_TC": 89.46275792439171,
+      "L_TA": 23.758383011662904,
+      "L_BA": -5.182164255746385,
+      "L_BC": 25.840110205373804,
+      "leads": 0.0
+     },
+     "L_TA": {
+      "L_TC": 23.758383011662904,
+      "L_TA": 121.03208791970485,
+      "L_BA": -1.680360284228422,
+      "L_BC": 5.1821642557463115,
+      "leads": 0.0
+     },
+     "L_BA": {
+      "L_TC": -5.182164255746385,
+      "L_TA": -1.680360284228422,
+      "L_BA": 121.03208791970711,
+      "L_BC": -23.75838301166466,
+      "leads": 0.0
+     },
+     "L_BC": {
+      "L_TC": 25.840110205373804,
+      "L_TA": 5.1821642557463115,
+      "L_BA": -23.75838301166466,
+      "L_BC": 89.46275792439717,
+      "leads": 0.0
+     },
+     "leads": {
+      "L_TC": 0.0,
+      "L_TA": 0.0,
+      "L_BA": 0.0,
+      "L_BC": 0.0,
+      "leads": 0.07327379717106214
+     }
+    },
+    "L_tot_uH": 469.382465327659,
+    "f0_kHz": 261.5280039700958,
+    "f0_x4_kHz": 130.7640019850479,
+    "Z0_ohm": 771.3028377938989,
+    "Z0_x4_ohm": 385.65141889694945,
+    "mu_f0": [
+     1978.3607457625462,
+     -206.85408358723978
+    ],
+    "R_core_ohm": 0.21312213163122296,
+    "I_pk_A": 19.447614173057374,
+    "ring_kV": 15.0,
+    "Bz_centre_T": -0.006754621625367402,
+    "grad_centre_T_per_m": 0.4635235899017095,
+    "B_pole_A_T": 0.06331330731667904,
+    "B_pole_B_T": 0.03341906873692383,
+    "B_eq_wall_T": 0.006479803573032515,
+    "null_AH_alone_rel": 2.8443776538445863e-14,
+    "null_offset_all_mm": 12.242077324625264,
+    "null_offset_AH_mm": -2.111991137532243e-13,
+    "rod_B_max_T": 0.5358351700298939,
+    "rod_B_p99_T": 0.529118019761711,
+    "G_AH_SAT_pass": false,
+    "core_loss_steinmetz_W": 286.55165112599263,
+    "core_loss_mu2_W": 40.30242841668782,
+    "N_AH": 51,
+    "NI_AH": 991.8283228259261,
+    "L_pd": true,
+    "C_R_record_pF": 789.0,
+    "axis_profile": {
+     "z_mm": [
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      -5.0,
+      -4.0,
+      -3.0,
+      -2.0,
+      -1.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0
+     ],
+     "Bz_all_T": [
+      -0.03051953581174493,
+      -0.027413731388716087,
+      -0.024754100665115797,
+      -0.022466881814361704,
+      -0.020490157658398185,
+      -0.018772520678224897,
+      -0.01727149242202076,
+      -0.015952004449305394,
+      -0.014785058650316436,
+      -0.013746595406902696,
+      -0.012816558992978854,
+      -0.011978135047818866,
+      -0.011217131793364555,
+      -0.010521478401657305,
+      -0.009880817410239018,
+      -0.009286171882857358,
+      -0.00872967150511919,
+      -0.008204324774764193,
+      -0.007703826861104928,
+      -0.007222394610023031,
+      -0.0067546216253674025,
+      -0.006295347430219612,
+      -0.005839535457740518,
+      -0.005382155083014997,
+      -0.004918063111930187,
+      -0.004441880104156486,
+      -0.003947856625109066,
+      -0.00342972398474678,
+      -0.0028805232076908713,
+      -0.002292404862159781,
+      -0.0016563909305691371,
+      -0.0009620881302925986,
+      -0.0001973400474800585,
+      0.0006521966738527273,
+      0.0016035685547025143,
+      0.002677150606977749,
+      0.0038973939513193717,
+      0.005293697169558284,
+      0.0069013739328907505,
+      0.008762626137842013,
+      0.010927301379968722
+     ]
+    },
+    "P-REG-8": {
+     "ratio": 0.6563693699088747,
+     "at_turns": [
+      49,
+      82
+     ],
+     "at_absz_mm": 31.8,
+     "registered": 0.6666666666666666,
+     "rel": -0.015445945136687844,
+     "pass_": true
+    }
+   },
+   "c": {
+    "var": "c",
+    "flipped": false,
+    "L_table_uH": {
+     "L_TC": {
+      "L_TC": 89.46275726197253,
+      "L_TA": 16.62261295293213,
+      "L_BA": -3.577936118858278,
+      "L_BC": 25.840109944093044,
+      "leads": 0.0
+     },
+     "L_TA": {
+      "L_TC": 16.622612952932133,
+      "L_TA": 60.702080365035364,
+      "L_BA": -0.7945099835317511,
+      "L_BC": 3.5779361188583194,
+      "leads": 0.0
+     },
+     "L_BA": {
+      "L_TC": -3.5779361188582777,
+      "L_TA": -0.794509983531751,
+      "L_BA": 60.70208036503522,
+      "L_BC": -16.622612952932908,
+      "leads": 0.0
+     },
+     "L_BC": {
+      "L_TC": 25.840109944093044,
+      "L_TA": 3.5779361188583194,
+      "L_BA": -16.622612952932908,
+      "L_BC": 89.46275726197783,
+      "leads": 0.0
+     },
+     "leads": {
+      "L_TC": 0.0,
+      "L_TA": 0.0,
+      "L_BA": 0.0,
+      "L_BC": 0.0,
+      "leads": 0.1146444746256319
+     }
+    },
+    "L_tot_uH": 350.53551964976776,
+    "f0_kHz": 302.63253401354,
+    "f0_x4_kHz": 151.31626700677,
+    "Z0_ohm": 666.5419905438322,
+    "Z0_x4_ohm": 333.2709952719161,
+    "mu_f0": [
+     1971.1300450981485,
+     -238.49017915370501
+    ],
+    "R_core_ohm": 0.1575997347349572,
+    "I_pk_A": 22.50420860621472,
+    "ring_kV": 15.0,
+    "Bz_centre_T": -0.007816249774622246,
+    "grad_centre_T_per_m": 0.3659445384597065,
+    "B_pole_A_T": 0.056181653251839006,
+    "B_pole_B_T": 0.02158892031564431,
+    "B_eq_wall_T": 0.007122960643077055,
+    "null_AH_alone_rel": 2.6941739170629417e-15,
+    "null_offset_all_mm": 15.929998950994477,
+    "null_offset_AH_mm": -1.8866852524723754e-14,
+    "rod_B_max_T": 0.4778659275330953,
+    "rod_B_p99_T": 0.4723463152702153,
+    "G_AH_SAT_pass": false,
+    "core_loss_steinmetz_W": 247.74447406692127,
+    "core_loss_mu2_W": 39.907357943036644,
+    "N_AH": 36,
+    "NI_AH": 810.15150982373,
+    "L_pd": true,
+    "C_R_record_pF": 789.0,
+    "axis_profile": {
+     "z_mm": [
+      -20.0,
+      -19.0,
+      -18.0,
+      -17.0,
+      -16.0,
+      -15.0,
+      -14.0,
+      -13.0,
+      -12.0,
+      -11.0,
+      -10.0,
+      -9.0,
+      -8.0,
+      -7.0,
+      -6.0,
+      -5.0,
+      -4.0,
+      -3.0,
+      -2.0,
+      -1.0,
+      0.0,
+      1.0,
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0,
+      9.0,
+      10.0,
+      11.0,
+      12.0,
+      13.0,
+      14.0,
+      15.0,
+      16.0,
+      17.0,
+      18.0,
+      19.0,
+      20.0
+     ],
+     "Bz_all_T": [
+      -0.027829709544573863,
+      -0.02516991122080691,
+      -0.02289739994658957,
+      -0.02094740053903148,
+      -0.019265748409707805,
+      -0.017807638212306662,
+      -0.01653617889881628,
+      -0.015421020785682096,
+      -0.014437153821867901,
+      -0.013563898327956613,
+      -0.01278407594219808,
+      -0.012083336465073436,
+      -0.011449614142362084,
+      -0.010872688937612998,
+      -0.010343831774977686,
+      -0.009855516334290116,
+      -0.009401183236514205,
+      -0.008975045201280127,
+      -0.00857192397696799,
+      -0.008187111587374231,
+      -0.007816249774622246,
+      -0.007455222510454817,
+      -0.007100057151702062,
+      -0.006746830271873105,
+      -0.006391574437598473,
+      -0.0060301822316737134,
+      -0.005658303657792254,
+      -0.005271232689358312,
+      -0.0048637781309850275,
+      -0.004430113125920286,
+      -0.003963596546623382,
+      -0.0034565581457144954,
+      -0.0029000377623737195,
+      -0.0022834672210035926,
+      -0.0015942821913210463,
+      -0.0008174510167507288,
+      6.508993692723588e-05,
+      0.0010750960779640126,
+      0.0022387494266358624,
+      0.0035874006289555583,
+      0.005158152024749281
+     ]
+    },
+    "P-REG-8": {
+     "ratio": 0.9730230069610336,
+     "at_turns": [
+      32,
+      67
+     ],
+     "at_absz_mm": 59.0,
+     "registered": 1.0,
+     "rel": -0.02697699303896639,
+     "pass_": true
+    }
+   }
+  },
+  "P-REG-9": {
+   "NI_a": 1021.5446819717221,
+   "NI_c": 810.15150982373,
+   "ratio_c_over_a": 0.7930651728909458,
+   "Ltot_ratio_a_over_c": 1.213256883589016,
+   "verdict": "PASS"
+  },
+  "T-MIRROR": {
+   "scalar_rel": {
+    "L_tot_uH": 0.0,
+    "f0_kHz": 0.0,
+    "Z0_ohm": 0.0,
+    "I_pk_A": 0.0,
+    "B_pole_A_T": 0.0,
+    "B_pole_B_T": 0.0,
+    "B_eq_wall_T": 0.0,
+    "rod_B_max_T": 0.0,
+    "core_loss_steinmetz_W": 0.0,
+    "null_offset_all_mm": 0.0
+   },
+   "L_table_rel": 0.0,
+   "Bz_sum_rel": 0.0,
+   "grad_sum_rel": 0.0,
+   "pass_": true,
+   "note": "for axisymmetric parts the theta -> -theta mirror and the all-hands flip are the same operation"
+  },
+  "late_layer": {
+   "a": {
+    "ratio": 0.9808861920862345
+   },
+   "b": {
+    "ratio": 0.6611865205386807
+   },
+   "c": {
+    "ratio": 1.1239104829939803
+   }
+  }
+ },
+ "ra_magnetics": {
+  "a": {
+   "L_tot_uH": 425.28963215753356
+  },
+  "b": {
+   "L_tot_uH": 469.382465327659
+  },
+  "c": {
+   "L_tot_uH": 350.53551964976776
+  }
  }
 }
