@@ -546,3 +546,52 @@ Still open:
 | MOT | with the motor branches in (MotorSim, continuous time), the final N = 2 build has **no growing mode**: z within 1e-3 of 1, the same result as G1m on the ideal ladder. TMD expects the same |
 | G10 | with every carrier, rotor disc and flange in garolite (G10, εr 4.7) instead of PTFE (the interleave plates stay glass-bonded mica), **z 1.20–1.22**: the M5 gain (+0.041 on the reference) is partly given back, less at N = 2 where the wanted C is ×3 |
 | G10-b | a thin Mylar or mica skin on the garolite does not change z by more than 0.005: thin film, εr close to garolite |
+
+**Round-7 outcomes.**
+
+| | prediction | outcome |
+|---|---|---|
+| MOT | motor in → no growing mode | **CONFIRMED** (as TMD expected) |
+| G10 | garolite carriers / discs / flanges (r7N2g): z 1.20–1.22 | **REFUTED: z 1.1524** (6 angles, converged) — below the 1.2 target |
+
+**MOT detail.** On the final N = 2 field model (12 angles), motor off gives z 1.2400. With the motor in (MotorSim):
+
+| motor branch | z |
+|---|---|
+| dθ 0.05 | 1.0005 |
+| dθ 0.025 | 1.0000 |
+
+Neither run converges: the neutral mode only.
+
+**Cause:** each motor branch is L_A (0.64 H) + C_AR (440 nF) from rail 1 to bank 2 (and B side). That is a **300 Hz series resonator directly across the transfer capacitor Ca**, which empties the charge step Ca must hold.
+
+**Scan** (`sim/rt_motor_scan_N2f.jsonl`): no motor-branch setting tried restores a growing mode.
+
+| setting | f_LC | z |
+|---|---|---|
+| C × 0.1 | 948 Hz | 1.0000 |
+| C × 0.01 | 3.0 kHz | 0.9898 |
+| R × 10 | — | 1.0000 |
+| L × 10 | 95 Hz | 1.0000 |
+| L × 100 | 30 Hz | 1.0000 |
+| R × 100, × 1000 | — | not evaluated: the stiff branch (L/R ≈ 0.16 ms) stalls MotorSim, 2 h without finishing a cycle set |
+
+**The motor is a topology problem, not a parameter problem**: wherever its branch sits across Ca, the pump does not grow.
+
+**G10 detail** (against r5N2f, PTFE):
+
+| | PTFE | G10 |
+|---|---|---|
+| C1 max (pF) | 2209 | 2245 |
+| C1 min (pF) | 218 | 295 |
+| κ | 10.1 | 7.6 |
+| Cx min (pF) | 375–400 | 429–464 |
+| Ca (pF) | 818 | 850 |
+| z | 1.237 | **1.152** |
+
+Garolite restores the strays that PTFE had cut, and at N = 2 that costs 0.085 in z — twice the predicted loss.
+
+Options to recover (not yet run):
+1. garolite only where structural (rotor discs and flanges, the spinning load paths), with the stator carriers in a low-εr laminate or PTFE;
+2. garolite with machined air pockets / honeycomb in the non-foil regions;
+3. N = 3 with garolite (more wanted C against the same strays).
