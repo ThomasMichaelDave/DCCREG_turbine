@@ -5,6 +5,12 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Simulation
+- **Edge-driven coil: turn-resolved ladder under a fast HV edge (BRIEF_EDGE_DRIVEN_COIL).** `sim/edge_coil.py`, results `sim/edge_coil_results.json`, raw per-turn currents/voltages `sim/edge_coil_raw/`, pre-registration `sim/edge-coil-predictions.md`, findings `sim/edge-coil-findings.md`. Geometry is assumed (O-1…O-4 open): anti-Helmholtz pair on Ø20 × 70 mm MnZn rods, 40 turns per coil, t_r 2 ns.
+  - **Model:** elliptic mutuals between every pair of turns; FV electrostatic Maxwell C matrix (MnZn as a segmented resistive conductor); FV magnetostatic complex-μ core fitted passively; Foster skin network; MNA trapezoidal transient.
+  - **Gates:** G-ES, ES-MESH, MS, PD, SKIN, CORE (4.2 %), SPICE (ngspice 0.09 %), DT and NULL all pass.
+  - **Registered verdicts:** P-EDGE-1 PASS, P-EDGE-2 PASS (β −0.18), P-EDGE-3 INCONCLUSIVE, P-EDGE-4 KILL, P-EDGE-5 KILL (end-fed pair: coil B 0.96 of coil A during the flank; junction/odd feeds hold the null), P-EDGE-6 registered, P-EDGE-7 readout invalid. The τ and TDR readouts misfire on this winding; post-hoc front-tracking readouts and controls (strapped rod, NiZn-like rod) are reported beside the registered verdicts, never instead of them.
+  - **Physics:** a floating MnZn rod jumps to about half the edge and launches a second front from the grounded end. With the rod strapped, the ladder reproduces §3: Z₀ 466 vs 473 Ω, and B 1.72 vs 1.77 µT/V.
+
 - **Round trip: geometry → integrity → 3-D field solve → reduction → engine (brief round-trip-floor r0.1).** Run verdict `FIELD-SOLVE-FAIL` (FS5, FS8; RT2 by 2e-5). Floor verdict `NO-FLOOR-IN-RANGE`: the round-tripped pump has no growing mode at any size. Findings: `sim/round-trip-findings.md`.
   - **New modules:**
     - `sim/field_solve.py`: finite volumes on a cylindrical grid snapped to sector edges, one 60° periodic wedge, variational Maxwell matrix, RS-AMG + CG with warm starts.

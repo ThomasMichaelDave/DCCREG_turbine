@@ -52,6 +52,8 @@ GEOM = dict(                                        # every value an assumption 
     rod_seg=5.0, rod_rho=5.0, rod_eps_bulk=1e4,     # MnZn: Ohm m, bulk eps_r between segments
     mu_i=2300.0, f_r=1.5e6,                         # Debye mu(f) = 1 + (mu_i - 1)/(1 + j f/f_r)
     rod=True, mu=None,                              # mu None -> the Debye MnZn; a number -> frequency-independent
+    rod_kind="conductor",                           # 'conductor' (MnZn, floating) | 'grounded' (MnZn strapped to the
+    rod_eps=12.0, rod_tie=1.0,                      #  can at its far-end segment, rod_tie Ohm) | 'dielectric' (NiZn)
     h_es=0.05, h_ms=0.25,                           # FV cell sizes in the winding band, mm
 )
 
@@ -235,6 +237,8 @@ def es_extract(g, turns, rods, log=print):
     eps = np.ones((nr - 1, nz - 1))
     for r0, r1 in rods:                                # PTFE former along the rod length
         eps[(RC >= g["r_rod"]) & (RC <= g["r_rod"] + g["former_t"]) & (ZC >= r0) & (ZC <= r1)] = g["former_eps"]
+        if g["rod"] and g.get("rod_kind") == "dielectric":
+            eps[(RC <= g["r_rod"]) & (ZC >= r0) & (ZC <= r1)] = g["rod_eps"]
     rows, cols, vals, idx = fv_laplacian(r, z, eps * EPS0, "es")
     R, Z = np.meshgrid(r * 1e3, z * 1e3, indexing="ij")
     cid = -np.ones((nr, nz), int)                     # -1 free; 0 ground; 1.. conductors
@@ -248,7 +252,7 @@ def es_extract(g, turns, rods, log=print):
         assert m.sum() >= 4, "wire under-resolved"
         cid[m] = len(names)
     seg_of = []
-    if g["rod"]:
+    if g["rod"] and g.get("rod_kind") != "dielectric":
         for ir, (r0, r1) in enumerate(rods):
             ns = max(1, int(round((r1 - r0) / g["rod_seg"])))
             edges = r0 + (r1 - r0) * np.arange(ns + 1) / ns
@@ -618,6 +622,13 @@ class Ladder:
             for (x, y, val) in ((u, u, 1), (v, v, 1), (u, v, -1), (v, u, -1)):
                 Gn[x, y] += val * Gs
                 Cn[x, y] += val * Cs
+        if g.get("rod_kind") == "grounded":           # strap: the far-end segment of each rod to the can  [IR]
+            last = {}
+            for s, seg in enumerate(es["rod_segs"]):
+                if seg["rod"] not in last or abs(seg["z1"]) > abs(es["rod_segs"][last[seg["rod"]]]["z1"]):
+                    last[seg["rod"]] = s
+            for s in last.values():
+                Gn[self.rod_nodes[s], self.rod_nodes[s]] += 1.0 / g["rod_tie"]
         for sd in self.src:
             if sd["node"] != sd["term"]:
                 G = 1.0 / Rs
@@ -1220,6 +1231,198 @@ def runs(log=print):
     return res
 
 
+def front_readout(npz_or_run, frac=0.5, Rs=0.0):
+    """POST-HOC readout (not pre-registered): track the input-launched front along coil A's chain.
+    I_early = median terminal current over (2 t_r, 4 t_r); arrival at turn k = first time its current exceeds
+    frac x I_early; tau_front = N x slope of a straight-line fit over turns 2 .. N/4 (before any collision);
+    Z0_early = V_terminal / I_early."""
+    if isinstance(npz_or_run, str):
+        d = np.load(npz_or_run)
+        meta = json.loads(str(d["meta"]))
+        t, i_br, v, i_s = d["t"], d["i_branch"].astype(float), d["v_node"].astype(float), d["i_source"]
+        names = list(d["node_names"])
+        bturn = list(d["branch_turn"])
+        bfrom = d["branch_from"]
+    else:
+        raise TypeError
+    t50, tr = meta["t50"], meta["tr"]
+    chain = [k for k, nm in enumerate(bturn) if nm.startswith("T0.")]
+    if meta.get("feed") == "junction":
+        chain = chain                                   # junction: coil A's chain already runs from the junction
+    N = len(chain)
+    if Rs > 0:
+        vt = v[:, names.index(next(nm for nm in names if not nm.startswith("src:") and nm in ("n0.0",)))]
+        vsrc = v[:, names.index("src:n0.0")]
+        it = (vsrc - vt) / Rs
+    else:
+        it = i_s[:, 0]
+        vt = None
+    w = (t > t50 + 2 * tr) & (t < t50 + 4 * tr)
+    I = float(np.median(it[w]))
+    V = float(np.median(vt[w])) if vt is not None else 1.0
+    arr = []
+    for k in chain:
+        hit = np.where(i_br[:, k] * np.sign(I) > frac * abs(I))[0]
+        arr.append(t[hit[0]] - t50 if len(hit) else np.nan)
+    arr = np.array(arr)
+    ks = np.arange(1, max(3, N // 4))
+    ok = np.isfinite(arr[ks])
+    slope, icpt = np.polyfit(ks[ok], arr[ks][ok], 1)
+    pred = slope * ks[ok] + icpt
+    r2 = 1 - np.sum((arr[ks][ok] - pred) ** 2) / max(np.sum((arr[ks][ok] - arr[ks][ok].mean()) ** 2), 1e-40)
+    tau = float(slope * N)
+    return dict(tau_front=tau, Z0_early=V / I, I_early=I, fit_r2=float(r2), arrival=arr.tolist(), N=N)
+
+
+def posthoc(log=print):
+    """post-hoc readouts on the registered raw data + controls (dielectric NiZn-like rod; MnZn strapped to the
+    can; ES mesh refinement). Nothing here changes a registered verdict; it is reported beside it."""
+    res = dict(note="POST-HOC: not pre-registered; reported beside the registered verdicts, never instead of them.")
+    P = lambda nm: os.path.join(RAW, nm + ".npz")
+
+    def window_peak(nm, tau, coil_sum=True, target=0):
+        d = np.load(P(nm))
+        meta = json.loads(str(d["meta"]))
+        t = d["t"] - meta["t50"]
+        w = (t >= 0) & (t <= 1.5 * tau)
+        B = d["B"][:, target, :].sum(1)
+        return float(np.abs(B[w]).max())
+
+    def flat(nm, tau):
+        d = np.load(P(nm))
+        meta = json.loads(str(d["meta"]))
+        t = d["t"] - meta["t50"]
+        i = d["i_source"][:, 0]
+        return float(np.interp(1.6 * tau, t, i) / np.interp(0.4 * tau, t, i))
+
+    def stress(nm, tau):
+        d = np.load(P(nm))
+        meta = json.loads(str(d["meta"]))
+        t = d["t"] - meta["t50"]
+        v = d["v_node"].astype(float)
+        bf, bt = d["branch_from"], d["branch_to"]
+        bturn = list(d["branch_turn"])
+        w = (t >= 0) & (t <= tau)
+        prof = []
+        for k, nm_ in enumerate(bturn):
+            if not nm_.startswith("T0."):
+                continue
+            va = v[:, bf[k]] if bf[k] >= 0 else 0 * t
+            vb = v[:, bt[k]] if bt[k] >= 0 else 0 * t
+            prof.append(float(np.abs(va - vb)[w].max()))
+        prof = np.array(prof)
+        return dict(section=int(prof.argmax()) + 1, N=len(prof), V_max_per_V=float(prof.max()),
+                    first_tenth=bool(prof.argmax() + 1 <= max(1, len(prof) // 10)), profile=prof.tolist())
+
+    def block(prefix, over_base, log):
+        out = {}
+        # P1 + P4 at N = 40, mu = 1
+        nm1 = f"{prefix}single_N40_mu1"
+        if not os.path.exists(P(nm1)):
+            run_case(nm1, over=dict(over_base, mu=1.0), log=log)
+        f1 = front_readout(P(nm1))
+        al = json.loads(str(np.load(P(nm1))["meta"]))["alpha"]
+        out["P-EDGE-1"] = dict(tau_front=f1["tau_front"], Z0_early=f1["Z0_early"], fit_r2=f1["fit_r2"],
+                               flat=flat(nm1, f1["tau_front"]), raw=f"edge_coil_raw/{nm1}.npz")
+        out["P-EDGE-1"]["verdict_posthoc"] = ("PASS" if out["P-EDGE-1"]["flat"] <= 1.5 else
+                                             ("KILL" if out["P-EDGE-1"]["flat"] >= 3 else "INCONCLUSIVE"))
+        stx = stress(nm1, f1["tau_front"])
+        out["P-EDGE-4"] = dict(alpha=al["alpha"], **stx, ratio_to_V0_over_N=stx["V_max_per_V"] * stx["N"],
+                               verdict_posthoc=("PASS" if stx["first_tenth"] else "KILL") if al["alpha"] >= 3 else "N/A")
+        rows = []
+        for N in (20, 40, 60, 80):
+            nm = f"{prefix}single_N{N}_mu1"
+            if not os.path.exists(P(nm)):
+                run_case(nm, over=dict(over_base, mu=1.0, n_turns=N, pitch=60.0 / N), log=log)
+            fr = front_readout(P(nm))
+            rows.append(dict(N=N, n=N / 0.06, tau_front=fr["tau_front"], Z0_early=fr["Z0_early"], fit_r2=fr["fit_r2"],
+                             B=window_peak(nm, fr["tau_front"])))
+        beta = fit_power([r["n"] for r in rows], [r["B"] for r in rows])
+        out["P-EDGE-2"] = dict(beta=beta, rows=rows, beta_Z0=fit_power([r["n"] for r in rows], [r["Z0_early"] for r in rows]),
+                               beta_tau=fit_power([r["n"] for r in rows], [r["tau_front"] for r in rows]),
+                               verdict_posthoc="PASS" if abs(beta) < 0.3 else ("KILL" if beta > 0.7 else "INCONCLUSIVE"))
+        rows = []
+        for mu in (1, 4, 16, 64):
+            nm = f"{prefix}single_N40_mu{mu}"
+            if not os.path.exists(P(nm)):
+                run_case(nm, over=dict(over_base, mu=float(mu)), log=log)
+            fr = front_readout(P(nm))
+            meta = json.loads(str(np.load(P(nm))["meta"]))
+            rows.append(dict(mu=mu, mu_eff_dc=meta["mu_eff_dc"], tau_front=fr["tau_front"], Z0_early=fr["Z0_early"],
+                             fit_r2=fr["fit_r2"], B=window_peak(nm, fr["tau_front"])))
+        gam = fit_power([r["mu"] for r in rows], [r["B"] for r in rows])
+        out["P-EDGE-3"] = dict(gamma=gam, gamma_vs_mu_eff=fit_power([r["mu_eff_dc"] for r in rows], [r["B"] for r in rows]),
+                               gamma_vs_mu_tau=fit_power([r["mu"] for r in rows], [r["tau_front"] for r in rows]),
+                               rows=rows, verdict_posthoc="PASS" if 0.35 < gam < 0.65 else ("KILL" if gam > 0.85 else "INCONCLUSIVE"))
+        for k in ("P-EDGE-1", "P-EDGE-2", "P-EDGE-3", "P-EDGE-4"):
+            log(f"  {prefix or 'registered '}{k}: " + json.dumps({a: (round(b, 4) if isinstance(b, float) else b)
+                                                              for a, b in out[k].items() if a not in ("rows", "profile", "raw")}))
+        return out
+
+    log("post-hoc readouts on the registered MnZn-rod runs (floating conductor):")
+    res["mnzn_floating"] = block("", {}, log)
+    log("control: dielectric (NiZn-like) rod, same magnetic test values:")
+    res["control_dielectric_rod"] = block("ctl_diel_", dict(rod_kind="dielectric"), log)
+    log("control: MnZn rod strapped to the can:")
+    res["control_grounded_rod"] = block("ctl_gnd_", dict(rod_kind="grounded"), log)
+    # P5 with the front tau, and the strapped-rod end-fed pair
+    f_def = front_readout(P("single_N40_mnzn"))
+    tau1 = f_def["tau_front"]
+    p5 = {}
+    for nm in ("pair_end", "pair_junction", "pair_odd", "pair_junction_mismatch1"):
+        d = np.load(P(nm))
+        meta = json.loads(str(d["meta"]))
+        t = d["t"] - meta["t50"]
+        w = (t >= 0) & (t <= tau1)
+        A, B = d["B"][w, 0, 0], d["B"][w, 0, 1]
+        p5[nm] = dict(B_over_A=float(np.abs(B).max() / np.abs(A).max()), sum_over_A=float(np.abs(A + B).max() / np.abs(A).max()))
+    for kind in ("grounded", "dielectric"):
+        nm = f"ctl_{kind}_pair_end"
+        over = dict(rod_kind=kind) if kind == "grounded" else dict(rod_kind=kind, mu=16.0)
+        if not os.path.exists(P(nm)):
+            run_case(nm, over=over, pair=True, feed="end", targets=(0.0, -1.0, 1.0), tau_hint=tau1, log=log)
+        d = np.load(P(nm))
+        meta = json.loads(str(d["meta"]))
+        t = d["t"] - meta["t50"]
+        fA = front_readout(P(f"ctl_{'gnd' if kind == 'grounded' else 'diel'}_single_N40_mu{'1' if kind == 'grounded' else '16'}"))
+        w = (t >= 0) & (t <= fA["tau_front"])
+        A, B = d["B"][w, 0, 0], d["B"][w, 0, 1]
+        p5[nm] = dict(B_over_A=float(np.abs(B).max() / np.abs(A).max()), sum_over_A=float(np.abs(A + B).max() / np.abs(A).max()),
+                      tau1=fA["tau_front"])
+    res["P-EDGE-5"] = dict(tau1_front=tau1, cases=p5,
+                           verdict_posthoc="PASS" if p5["pair_end"]["B_over_A"] < 0.1 and p5["pair_junction"]["sum_over_A"] < 0.1 else "KILL")
+    log("  P-EDGE-5 (front tau): " + json.dumps({k: {a: round(b, 3) for a, b in v.items()} for k, v in p5.items()}))
+    # P7 from the ideal-step runs (registered single_N40_mnzn vs a rod-less ideal-step run) and the TDR currents
+    if not os.path.exists(P("ctl_norod_single_N40")):
+        run_case("ctl_norod_single_N40", over=dict(rod=False, mu=1.0), log=log)
+    fw, fn = f_def, front_readout(P("ctl_norod_single_N40"))
+    LS = lambda f: f["Z0_early"] * f["tau_front"]
+    CS = lambda f: f["tau_front"] / f["Z0_early"]
+    res["P-EDGE-7"] = dict(with_rod=dict(Z0=fw["Z0_early"], tau=fw["tau_front"], L_seen=LS(fw), C_seen=CS(fw)),
+                           without_rod=dict(Z0=fn["Z0_early"], tau=fn["tau_front"], L_seen=LS(fn), C_seen=CS(fn)),
+                           L_ratio=LS(fw) / LS(fn), C_ratio=CS(fw) / CS(fn))
+    res["P-EDGE-7"]["verdict_posthoc_ladder"] = "PASS" if res["P-EDGE-7"]["C_ratio"] > res["P-EDGE-7"]["L_ratio"] else "KILL"
+    # TDR (50 Ohm) runs read through the current (Z0 >> 50 Ohm makes the voltage reading ill-conditioned)
+    tdrs = {}
+    for nm in ("tdr_N40_mnzn", "tdr_N40_norod"):
+        tdrs[nm] = front_readout(P(nm), Rs=50.0)
+        tdrs[nm] = {k: v for k, v in tdrs[nm].items() if k != "arrival"}
+    res["P-EDGE-7"]["tdr_50ohm_front"] = tdrs
+    log("  P-EDGE-7 (front tau, ideal step): " + json.dumps({k: (round(v, 3) if isinstance(v, float) else v)
+                                                          for k, v in res["P-EDGE-7"].items() if not isinstance(v, dict)}))
+    # ES mesh refinement on the default coil
+    g = dict(GEOM)
+    a, turns, rods = coil_layout(g, False)
+    e0 = es_extract(g, turns, rods, log=log)
+    e1 = es_extract(dict(g, h_es=0.035), turns, rods, log=log)
+    q = lambda e: dict(C_g=alpha_of(e)["C_g"], C_tt=alpha_of(e)["C_tt_mean"], C_turn20_rod=float(-e["C"][20, 40:].sum()))
+    q0, q1 = q(e0), q(e1)
+    res["gate_es_mesh"] = dict(h005=q0, h0035=q1, rel={k: q1[k] / q0[k] - 1 for k in q0})
+    res["gate_es_mesh"]["pass_"] = all(abs(v) <= 0.03 for v in res["gate_es_mesh"]["rel"].values())
+    log("  G-ES-MESH: " + json.dumps({k: round(v, 4) for k, v in res["gate_es_mesh"]["rel"].items()}))
+    return res
+
+
 def _jsonable(o):
     if isinstance(o, dict):
         return {str(k): _jsonable(v) for k, v in o.items()}
@@ -1241,6 +1444,8 @@ if __name__ == "__main__":
         out["gates"] = gates()
     if what in ("runs", "all"):
         out.update(runs())
+    if what in ("posthoc", "all"):
+        out["posthoc"] = posthoc()
     out["stamp"] = time.strftime("%Y-%m-%d %H:%M:%S %Z")
     json.dump(_jsonable(out), open(RESULTS, "w"), indent=1)
     print("->", RESULTS)
