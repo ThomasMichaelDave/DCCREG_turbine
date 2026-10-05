@@ -1,8 +1,8 @@
 {
 "parts": [
 {
-"name": "shaft",
-"proto": "shaft",
+"name": "shaft_A",
+"proto": "shaft_A",
 "body": "rotor",
 "node": "",
 "group": "rotor",
@@ -12,11 +12,11 @@
 "dz": 0.0,
 "rot": 0.0
 },
-"label": "rotor / shaft - rotor axle [steel shaft, rotor]"
+"label": "rotor / shaft_A - shaft half A [steel shaft half, rotor]"
 },
 {
-"name": "rotor_sleeve",
-"proto": "sleeve",
+"name": "shaft_B",
+"proto": "shaft_B",
 "body": "rotor",
 "node": "",
 "group": "rotor",
@@ -26,7 +26,259 @@
 "dz": 0.0,
 "rot": 0.0
 },
-"label": "rotor / rotor_sleeve - rotor sleeve, carries every rotor part [G10 rotor sleeve, rotor]"
+"label": "rotor / shaft_B - shaft half B [steel shaft half, rotor]"
+},
+{
+"name": "A_flange",
+"proto": "flange",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 563.55,
+"rot": 0.0
+},
+"label": "hub / A_flange - shaft-half flange A, bolted to the bicone apex [steel flange, rotor]"
+},
+{
+"name": "B_flange",
+"proto": "flange",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 691.55,
+"rot": 0.0
+},
+"label": "hub / B_flange - shaft-half flange B, bolted to the bicone apex [steel flange, rotor]"
+},
+{
+"name": "rotor_sleeve_1",
+"proto": "sleeve_0",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / rotor_sleeve_1 - rotor sleeve segment [G10 rotor sleeve, rotor]"
+},
+{
+"name": "rotor_sleeve_2",
+"proto": "sleeve_1",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / rotor_sleeve_2 - rotor sleeve segment [G10 rotor sleeve, rotor]"
+},
+{
+"name": "rotor_sleeve_3",
+"proto": "sleeve_2",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / rotor_sleeve_3 - rotor sleeve segment [G10 rotor sleeve, rotor]"
+},
+{
+"name": "rotor_sleeve_4",
+"proto": "sleeve_3",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / rotor_sleeve_4 - rotor sleeve segment [G10 rotor sleeve, rotor]"
+},
+{
+"name": "A_bearing_end",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-0",
+"place": {
+"dx": 0.0,
+"dz": 2.5,
+"rot": 0.0
+},
+"label": "bearings / A_bearing_end - bearing, end [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "A_spider_end",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "brg-0",
+"place": {
+"dx": 0.0,
+"dz": 6.0,
+"rot": 0.0
+},
+"label": "bearings / A_spider_end - frame bearing hub [G10 bearing spider, stator]"
+},
+{
+"name": "A_bearing_Ca-clocking",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-1",
+"place": {
+"dx": 0.0,
+"dz": 296.55,
+"rot": 0.0
+},
+"label": "bearings / A_bearing_Ca-clocking - bearing, Ca|clocking [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "A_spider_Ca-clocking",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 300.05,
+"rot": 0.0
+},
+"label": "bearings / A_spider_Ca-clocking - bearing hub, tied into the stator cage [G10 bearing spider, stator]"
+},
+{
+"name": "A_bearing_hub_face",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-2",
+"place": {
+"dx": 0.0,
+"dz": 546.05,
+"rot": 0.0
+},
+"label": "bearings / A_bearing_hub_face - bearing, hub face [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "A_spider_hub_face",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 549.55,
+"rot": 0.0
+},
+"label": "bearings / A_spider_hub_face - bearing hub, tied into the stator cage [G10 bearing spider, stator]"
+},
+{
+"name": "B_bearing_hub_face",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-3",
+"place": {
+"dx": 0.0,
+"dz": 702.05,
+"rot": 0.0
+},
+"label": "bearings / B_bearing_hub_face - bearing, hub face [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "B_spider_hub_face",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 705.55,
+"rot": 0.0
+},
+"label": "bearings / B_spider_hub_face - bearing hub, tied into the stator cage [G10 bearing spider, stator]"
+},
+{
+"name": "B_bearing_Ca-clocking",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-4",
+"place": {
+"dx": 0.0,
+"dz": 951.55,
+"rot": 0.0
+},
+"label": "bearings / B_bearing_Ca-clocking - bearing, Ca|clocking [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "B_spider_Ca-clocking",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 955.05,
+"rot": 0.0
+},
+"label": "bearings / B_spider_Ca-clocking - bearing hub, tied into the stator cage [G10 bearing spider, stator]"
+},
+{
+"name": "B_bearing_end",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-5",
+"place": {
+"dx": 0.0,
+"dz": 1245.6,
+"rot": 0.0
+},
+"label": "bearings / B_bearing_end - bearing, end [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "B_spider_end",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "brg-5",
+"place": {
+"dx": 0.0,
+"dz": 1249.1,
+"rot": 0.0
+},
+"label": "bearings / B_spider_end - frame bearing hub [G10 bearing spider, stator]"
 },
 {
 "name": "hub_vacuum_sphere",
@@ -37,7 +289,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 560.55,
+"dz": 631.55,
 "rot": 0.0
 },
 "label": "hub / hub_vacuum_sphere - vacuum sphere, AH / C_R hub (placeholder) [glass vacuum vessel (placeholder), rotor]"
@@ -51,7 +303,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 560.55,
+"dz": 631.55,
 "rot": 0.0
 },
 "label": "hub / hub_bicone_lower - bicone shell, lower [G10 bicone (placeholder), rotor]"
@@ -65,7 +317,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 560.55,
+"dz": 631.55,
 "rot": 0.0
 },
 "label": "hub / hub_bicone_upper - bicone shell, upper [G10 bicone (placeholder), rotor]"
@@ -79,7 +331,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 499.05,
+"dz": 542.05,
 "rot": 0.0
 },
 "label": "side-A / A_C1_s01 - C1 vane, node 1 [Al vane, stator]"
@@ -93,7 +345,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 494.55,
+"dz": 537.55,
 "rot": 0.0
 },
 "label": "side-A / A_C1_r02 - C1 vane, node R-A [Al vane, rotor]"
@@ -107,7 +359,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 490.05,
+"dz": 533.05,
 "rot": 0.0
 },
 "label": "side-A / A_C1_s03 - C1 vane, node 1 [Al vane, stator]"
@@ -121,7 +373,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 485.55,
+"dz": 528.55,
 "rot": 0.0
 },
 "label": "side-A / A_C1_r04 - C1 vane, node R-A [Al vane, rotor]"
@@ -135,7 +387,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 481.05,
+"dz": 524.05,
 "rot": 0.0
 },
 "label": "side-A / A_C1_s05 - C1 vane, node 1 [Al vane, stator]"
@@ -149,7 +401,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 476.55,
+"dz": 519.55,
 "rot": 0.0
 },
 "label": "side-A / A_C1_r06 - C1 vane, node R-A [Al vane, rotor]"
@@ -163,7 +415,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 472.05,
+"dz": 515.05,
 "rot": 0.0
 },
 "label": "side-A / A_C1_s07 - C1 vane, node 1 [Al vane, stator]"
@@ -177,7 +429,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 467.55,
+"dz": 510.55,
 "rot": 0.0
 },
 "label": "side-A / A_C1_r08 - C1 vane, node R-A [Al vane, rotor]"
@@ -191,7 +443,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 463.05,
+"dz": 506.05,
 "rot": 0.0
 },
 "label": "side-A / A_C1_s09 - C1 vane, node 1 [Al vane, stator]"
@@ -205,7 +457,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 458.55,
+"dz": 501.55,
 "rot": 0.0
 },
 "label": "side-A / A_C1_r10 - C1 vane, node R-A [Al vane, rotor]"
@@ -219,7 +471,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 454.05,
+"dz": 497.05,
 "rot": 0.0
 },
 "label": "side-A / A_C1_s11 - C1 vane, node 1 [Al vane, stator]"
@@ -233,7 +485,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 449.55,
+"dz": 492.55,
 "rot": 0.0
 },
 "label": "side-A / A_C1_r12 - C1 vane, node R-A [Al vane, rotor]"
@@ -247,7 +499,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 445.05,
+"dz": 488.05,
 "rot": 0.0
 },
 "label": "side-A / A_C1_s13 - C1 vane, node 1 [Al vane, stator]"
@@ -261,7 +513,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 440.55,
+"dz": 483.55,
 "rot": 0.0
 },
 "label": "side-A / A_C1_r14 - C1 vane, node R-A [Al vane, rotor]"
@@ -275,7 +527,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 436.05,
+"dz": 479.05,
 "rot": 0.0
 },
 "label": "side-A / A_C1_s15 - C1 vane, node 1 [Al vane, stator]"
@@ -289,7 +541,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 431.55,
+"dz": 474.55,
 "rot": 0.0
 },
 "label": "side-A / A_C1_r16 - C1 vane, node R-A [Al vane, rotor]"
@@ -303,7 +555,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 427.05,
+"dz": 470.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s01 - Cx vane, node n23 [Al vane, stator]"
@@ -317,7 +569,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 422.55,
+"dz": 465.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r02 - Cx vane, node 8 [Al vane, rotor]"
@@ -331,7 +583,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 418.05,
+"dz": 461.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s03 - Cx vane, node n23 [Al vane, stator]"
@@ -345,7 +597,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 413.55,
+"dz": 456.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r04 - Cx vane, node 8 [Al vane, rotor]"
@@ -359,7 +611,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 409.05,
+"dz": 452.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s05 - Cx vane, node n23 [Al vane, stator]"
@@ -373,7 +625,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 404.55,
+"dz": 447.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r06 - Cx vane, node 8 [Al vane, rotor]"
@@ -387,7 +639,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 400.05,
+"dz": 443.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s07 - Cx vane, node n23 [Al vane, stator]"
@@ -401,7 +653,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 395.55,
+"dz": 438.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r08 - Cx vane, node 8 [Al vane, rotor]"
@@ -415,7 +667,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 391.05,
+"dz": 434.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s09 - Cx vane, node n23 [Al vane, stator]"
@@ -429,7 +681,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 386.55,
+"dz": 429.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r10 - Cx vane, node 8 [Al vane, rotor]"
@@ -443,7 +695,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 382.05,
+"dz": 425.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s11 - Cx vane, node n23 [Al vane, stator]"
@@ -457,7 +709,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 377.55,
+"dz": 420.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r12 - Cx vane, node 8 [Al vane, rotor]"
@@ -471,7 +723,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 373.05,
+"dz": 416.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s13 - Cx vane, node n23 [Al vane, stator]"
@@ -485,7 +737,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 368.55,
+"dz": 411.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r14 - Cx vane, node 8 [Al vane, rotor]"
@@ -499,7 +751,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 364.05,
+"dz": 407.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s15 - Cx vane, node n23 [Al vane, stator]"
@@ -513,7 +765,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 359.55,
+"dz": 402.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r16 - Cx vane, node 8 [Al vane, rotor]"
@@ -527,7 +779,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 355.05,
+"dz": 398.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s17 - Cx vane, node n23 [Al vane, stator]"
@@ -541,7 +793,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 350.55,
+"dz": 393.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r18 - Cx vane, node 8 [Al vane, rotor]"
@@ -555,7 +807,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 346.05,
+"dz": 389.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s19 - Cx vane, node n23 [Al vane, stator]"
@@ -569,7 +821,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 341.55,
+"dz": 384.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r20 - Cx vane, node 8 [Al vane, rotor]"
@@ -583,7 +835,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 337.05,
+"dz": 380.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s21 - Cx vane, node n23 [Al vane, stator]"
@@ -597,7 +849,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 332.55,
+"dz": 375.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r22 - Cx vane, node 8 [Al vane, rotor]"
@@ -611,7 +863,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 328.05,
+"dz": 371.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s23 - Cx vane, node n23 [Al vane, stator]"
@@ -625,7 +877,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 323.55,
+"dz": 366.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r24 - Cx vane, node 8 [Al vane, rotor]"
@@ -639,7 +891,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 319.05,
+"dz": 362.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s25 - Cx vane, node n23 [Al vane, stator]"
@@ -653,7 +905,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 314.55,
+"dz": 357.55,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_r26 - Cx vane, node 8 [Al vane, rotor]"
@@ -667,7 +919,7 @@
 "join": "cage-A",
 "place": {
 "dx": 0.0,
-"dz": 310.05,
+"dz": 353.05,
 "rot": 0.0
 },
 "label": "side-A / A_Cx_s27 - Cx vane, node n23 [Al vane, stator]"
@@ -681,7 +933,7 @@
 "join": "A_Ca_01",
 "place": {
 "dx": 0.0,
-"dz": 305.55,
+"dz": 348.55,
 "rot": 0.0
 },
 "label": "side-A / A_Ca_01 - Ca plate, node 1 (connection not drawn) [Al plate, stator]"
@@ -695,7 +947,7 @@
 "join": "A_Ca_02",
 "place": {
 "dx": 0.0,
-"dz": 301.05,
+"dz": 344.05,
 "rot": 0.0
 },
 "label": "side-A / A_Ca_02 - Ca plate, node 2 (connection not drawn) [Al plate, stator]"
@@ -709,7 +961,7 @@
 "join": "A_Ca_03",
 "place": {
 "dx": 0.0,
-"dz": 296.55,
+"dz": 339.55,
 "rot": 0.0
 },
 "label": "side-A / A_Ca_03 - Ca plate, node 1 (connection not drawn) [Al plate, stator]"
@@ -723,7 +975,7 @@
 "join": "A_Ca_04",
 "place": {
 "dx": 0.0,
-"dz": 292.05,
+"dz": 335.05,
 "rot": 0.0
 },
 "label": "side-A / A_Ca_04 - Ca plate, node 2 (connection not drawn) [Al plate, stator]"
@@ -737,7 +989,7 @@
 "join": "A_Ca_05",
 "place": {
 "dx": 0.0,
-"dz": 287.55,
+"dz": 330.55,
 "rot": 0.0
 },
 "label": "side-A / A_Ca_05 - Ca plate, node 1 (connection not drawn) [Al plate, stator]"
@@ -751,7 +1003,7 @@
 "join": "A_Ca_06",
 "place": {
 "dx": 0.0,
-"dz": 283.05,
+"dz": 326.05,
 "rot": 0.0
 },
 "label": "side-A / A_Ca_06 - Ca plate, node 2 (connection not drawn) [Al plate, stator]"
@@ -765,7 +1017,7 @@
 "join": "A_Ca_07",
 "place": {
 "dx": 0.0,
-"dz": 278.55,
+"dz": 321.55,
 "rot": 0.0
 },
 "label": "side-A / A_Ca_07 - Ca plate, node 1 (connection not drawn) [Al plate, stator]"
@@ -779,7 +1031,7 @@
 "join": "A_Ca_08",
 "place": {
 "dx": 0.0,
-"dz": 274.05,
+"dz": 317.05,
 "rot": 0.0
 },
 "label": "side-A / A_Ca_08 - Ca plate, node 2 (connection not drawn) [Al plate, stator]"
@@ -793,7 +1045,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 265.05,
+"dz": 285.05,
 "rot": 0.0
 },
 "label": "clock-A / A_SG1_rotor_disc - clocking rotor disc, SG1 [G10 rotor disc, rotor]"
@@ -807,7 +1059,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 265.05,
+"dz": 285.05,
 "rot": 0.0
 },
 "label": "clock-A / A_SG1_tip_1 - SG1 rotor tip, node R-A [W-Cu sphere, rotor]"
@@ -821,7 +1073,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 265.05,
+"dz": 285.05,
 "rot": 60.0
 },
 "label": "clock-A / A_SG1_tip_2 - SG1 rotor tip, node R-A [W-Cu sphere, rotor]"
@@ -835,7 +1087,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 265.05,
+"dz": 285.05,
 "rot": 120.0
 },
 "label": "clock-A / A_SG1_tip_3 - SG1 rotor tip, node R-A [W-Cu sphere, rotor]"
@@ -849,7 +1101,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 265.05,
+"dz": 285.05,
 "rot": 180.0
 },
 "label": "clock-A / A_SG1_tip_4 - SG1 rotor tip, node R-A [W-Cu sphere, rotor]"
@@ -863,7 +1115,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 265.05,
+"dz": 285.05,
 "rot": 240.0
 },
 "label": "clock-A / A_SG1_tip_5 - SG1 rotor tip, node R-A [W-Cu sphere, rotor]"
@@ -877,7 +1129,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 265.05,
+"dz": 285.05,
 "rot": 300.0
 },
 "label": "clock-A / A_SG1_tip_6 - SG1 rotor tip, node R-A [W-Cu sphere, rotor]"
@@ -891,7 +1143,7 @@
 "join": "ring-A-SG1",
 "place": {
 "dx": 125.0,
-"dz": 247.55,
+"dz": 267.55,
 "rot": 3.0
 },
 "label": "clock-A / A_SG1_sph_1 - SG1 stator sphere, node mA [W-Cu sphere, stator]"
@@ -905,7 +1157,7 @@
 "join": "ring-A-SG1",
 "place": {
 "dx": 125.0,
-"dz": 247.55,
+"dz": 267.55,
 "rot": 63.0
 },
 "label": "clock-A / A_SG1_sph_2 - SG1 stator sphere, node mA [W-Cu sphere, stator]"
@@ -919,7 +1171,7 @@
 "join": "ring-A-SG1",
 "place": {
 "dx": 125.0,
-"dz": 247.55,
+"dz": 267.55,
 "rot": 123.0
 },
 "label": "clock-A / A_SG1_sph_3 - SG1 stator sphere, node mA [W-Cu sphere, stator]"
@@ -933,7 +1185,7 @@
 "join": "ring-A-SG1",
 "place": {
 "dx": 125.0,
-"dz": 247.55,
+"dz": 267.55,
 "rot": 183.0
 },
 "label": "clock-A / A_SG1_sph_4 - SG1 stator sphere, node mA [W-Cu sphere, stator]"
@@ -947,7 +1199,7 @@
 "join": "ring-A-SG1",
 "place": {
 "dx": 125.0,
-"dz": 247.55,
+"dz": 267.55,
 "rot": 243.0
 },
 "label": "clock-A / A_SG1_sph_5 - SG1 stator sphere, node mA [W-Cu sphere, stator]"
@@ -961,7 +1213,7 @@
 "join": "ring-A-SG1",
 "place": {
 "dx": 125.0,
-"dz": 247.55,
+"dz": 267.55,
 "rot": 303.0
 },
 "label": "clock-A / A_SG1_sph_6 - SG1 stator sphere, node mA [W-Cu sphere, stator]"
@@ -975,7 +1227,7 @@
 "join": "ring-A-SG1",
 "place": {
 "dx": 0.0,
-"dz": 241.55,
+"dz": 261.55,
 "rot": 0.0
 },
 "label": "clock-A / A_SG1_stator_ring - clocking stator ring, SG1 [G10 stator ring, stator]"
@@ -989,7 +1241,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 232.55,
+"dz": 252.55,
 "rot": 0.0
 },
 "label": "clock-A / A_SG3a1_rotor_disc - clocking rotor disc, SG3a1 [G10 rotor disc, rotor]"
@@ -1003,7 +1255,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 232.55,
+"dz": 252.55,
 "rot": 0.0
 },
 "label": "clock-A / A_SG3a1_tip_1 - SG3a1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1017,7 +1269,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 232.55,
+"dz": 252.55,
 "rot": 60.0
 },
 "label": "clock-A / A_SG3a1_tip_2 - SG3a1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1031,7 +1283,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 232.55,
+"dz": 252.55,
 "rot": 120.0
 },
 "label": "clock-A / A_SG3a1_tip_3 - SG3a1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1045,7 +1297,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 232.55,
+"dz": 252.55,
 "rot": 180.0
 },
 "label": "clock-A / A_SG3a1_tip_4 - SG3a1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1059,7 +1311,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 232.55,
+"dz": 252.55,
 "rot": 240.0
 },
 "label": "clock-A / A_SG3a1_tip_5 - SG3a1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1073,7 +1325,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 232.55,
+"dz": 252.55,
 "rot": 300.0
 },
 "label": "clock-A / A_SG3a1_tip_6 - SG3a1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1087,7 +1339,7 @@
 "join": "ring-A-SG3a1",
 "place": {
 "dx": 125.0,
-"dz": 215.8,
+"dz": 235.8,
 "rot": 7.2
 },
 "label": "clock-A / A_SG3a1_sph_1 - SG3a1 stator sphere, node 1 [W-Cu sphere, stator]"
@@ -1101,7 +1353,7 @@
 "join": "ring-A-SG3a1",
 "place": {
 "dx": 125.0,
-"dz": 215.8,
+"dz": 235.8,
 "rot": 67.2
 },
 "label": "clock-A / A_SG3a1_sph_2 - SG3a1 stator sphere, node 1 [W-Cu sphere, stator]"
@@ -1115,7 +1367,7 @@
 "join": "ring-A-SG3a1",
 "place": {
 "dx": 125.0,
-"dz": 215.8,
+"dz": 235.8,
 "rot": 127.2
 },
 "label": "clock-A / A_SG3a1_sph_3 - SG3a1 stator sphere, node 1 [W-Cu sphere, stator]"
@@ -1129,7 +1381,7 @@
 "join": "ring-A-SG3a1",
 "place": {
 "dx": 125.0,
-"dz": 215.8,
+"dz": 235.8,
 "rot": 187.2
 },
 "label": "clock-A / A_SG3a1_sph_4 - SG3a1 stator sphere, node 1 [W-Cu sphere, stator]"
@@ -1143,7 +1395,7 @@
 "join": "ring-A-SG3a1",
 "place": {
 "dx": 125.0,
-"dz": 215.8,
+"dz": 235.8,
 "rot": 247.2
 },
 "label": "clock-A / A_SG3a1_sph_5 - SG3a1 stator sphere, node 1 [W-Cu sphere, stator]"
@@ -1157,7 +1409,7 @@
 "join": "ring-A-SG3a1",
 "place": {
 "dx": 125.0,
-"dz": 215.8,
+"dz": 235.8,
 "rot": 307.2
 },
 "label": "clock-A / A_SG3a1_sph_6 - SG3a1 stator sphere, node 1 [W-Cu sphere, stator]"
@@ -1171,7 +1423,7 @@
 "join": "ring-A-SG3a1",
 "place": {
 "dx": 0.0,
-"dz": 209.8,
+"dz": 229.8,
 "rot": 0.0
 },
 "label": "clock-A / A_SG3a1_stator_ring - clocking stator ring, SG3a1 [G10 stator ring, stator]"
@@ -1185,7 +1437,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 200.8,
+"dz": 220.8,
 "rot": 0.0
 },
 "label": "clock-A / A_SG3b1_rotor_disc - clocking rotor disc, SG3b1 [G10 rotor disc, rotor]"
@@ -1199,7 +1451,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 200.8,
+"dz": 220.8,
 "rot": 0.0
 },
 "label": "clock-A / A_SG3b1_tip_1 - SG3b1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1213,7 +1465,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 200.8,
+"dz": 220.8,
 "rot": 60.0
 },
 "label": "clock-A / A_SG3b1_tip_2 - SG3b1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1227,7 +1479,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 200.8,
+"dz": 220.8,
 "rot": 120.0
 },
 "label": "clock-A / A_SG3b1_tip_3 - SG3b1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1241,7 +1493,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 200.8,
+"dz": 220.8,
 "rot": 180.0
 },
 "label": "clock-A / A_SG3b1_tip_4 - SG3b1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1255,7 +1507,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 200.8,
+"dz": 220.8,
 "rot": 240.0
 },
 "label": "clock-A / A_SG3b1_tip_5 - SG3b1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1269,7 +1521,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 200.8,
+"dz": 220.8,
 "rot": 300.0
 },
 "label": "clock-A / A_SG3b1_tip_6 - SG3b1 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1283,7 +1535,7 @@
 "join": "ring-A-SG3b1",
 "place": {
 "dx": 125.0,
-"dz": 183.3,
+"dz": 203.3,
 "rot": 16.05
 },
 "label": "clock-A / A_SG3b1_sph_1 - SG3b1 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1297,7 +1549,7 @@
 "join": "ring-A-SG3b1",
 "place": {
 "dx": 125.0,
-"dz": 183.3,
+"dz": 203.3,
 "rot": 76.05
 },
 "label": "clock-A / A_SG3b1_sph_2 - SG3b1 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1311,7 +1563,7 @@
 "join": "ring-A-SG3b1",
 "place": {
 "dx": 125.0,
-"dz": 183.3,
+"dz": 203.3,
 "rot": 136.05
 },
 "label": "clock-A / A_SG3b1_sph_3 - SG3b1 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1325,7 +1577,7 @@
 "join": "ring-A-SG3b1",
 "place": {
 "dx": 125.0,
-"dz": 183.3,
+"dz": 203.3,
 "rot": 196.05
 },
 "label": "clock-A / A_SG3b1_sph_4 - SG3b1 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1339,7 +1591,7 @@
 "join": "ring-A-SG3b1",
 "place": {
 "dx": 125.0,
-"dz": 183.3,
+"dz": 203.3,
 "rot": 256.05
 },
 "label": "clock-A / A_SG3b1_sph_5 - SG3b1 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1353,7 +1605,7 @@
 "join": "ring-A-SG3b1",
 "place": {
 "dx": 125.0,
-"dz": 183.3,
+"dz": 203.3,
 "rot": 316.05
 },
 "label": "clock-A / A_SG3b1_sph_6 - SG3b1 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1367,7 +1619,7 @@
 "join": "ring-A-SG3b1",
 "place": {
 "dx": 0.0,
-"dz": 177.3,
+"dz": 197.3,
 "rot": 0.0
 },
 "label": "clock-A / A_SG3b1_stator_ring - clocking stator ring, SG3b1 [G10 stator ring, stator]"
@@ -1381,7 +1633,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 168.3,
+"dz": 188.3,
 "rot": 0.0
 },
 "label": "clock-A / A_BS3_rotor_disc - clocking rotor disc, BS3 [G10 rotor disc, rotor]"
@@ -1395,7 +1647,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 168.3,
+"dz": 188.3,
 "rot": 0.0
 },
 "label": "clock-A / A_BS3_tip_1 - BS3 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1409,7 +1661,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 168.3,
+"dz": 188.3,
 "rot": 60.0
 },
 "label": "clock-A / A_BS3_tip_2 - BS3 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1423,7 +1675,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 168.3,
+"dz": 188.3,
 "rot": 120.0
 },
 "label": "clock-A / A_BS3_tip_3 - BS3 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1437,7 +1689,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 168.3,
+"dz": 188.3,
 "rot": 180.0
 },
 "label": "clock-A / A_BS3_tip_4 - BS3 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1451,7 +1703,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 168.3,
+"dz": 188.3,
 "rot": 240.0
 },
 "label": "clock-A / A_BS3_tip_5 - BS3 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1465,7 +1717,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 168.3,
+"dz": 188.3,
 "rot": 300.0
 },
 "label": "clock-A / A_BS3_tip_6 - BS3 rotor tip, node 7 [W-Cu sphere, rotor]"
@@ -1479,7 +1731,7 @@
 "join": "ring-A-BS3",
 "place": {
 "dx": 125.0,
-"dz": 144.3,
+"dz": 164.3,
 "rot": 19.0
 },
 "label": "clock-A / A_BS3_sph_1 - BS3 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1493,7 +1745,7 @@
 "join": "ring-A-BS3",
 "place": {
 "dx": 125.0,
-"dz": 144.3,
+"dz": 164.3,
 "rot": 79.0
 },
 "label": "clock-A / A_BS3_sph_2 - BS3 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1507,7 +1759,7 @@
 "join": "ring-A-BS3",
 "place": {
 "dx": 125.0,
-"dz": 144.3,
+"dz": 164.3,
 "rot": 139.0
 },
 "label": "clock-A / A_BS3_sph_3 - BS3 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1521,7 +1773,7 @@
 "join": "ring-A-BS3",
 "place": {
 "dx": 125.0,
-"dz": 144.3,
+"dz": 164.3,
 "rot": 199.0
 },
 "label": "clock-A / A_BS3_sph_4 - BS3 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1535,7 +1787,7 @@
 "join": "ring-A-BS3",
 "place": {
 "dx": 125.0,
-"dz": 144.3,
+"dz": 164.3,
 "rot": 259.0
 },
 "label": "clock-A / A_BS3_sph_5 - BS3 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1549,7 +1801,7 @@
 "join": "ring-A-BS3",
 "place": {
 "dx": 125.0,
-"dz": 144.3,
+"dz": 164.3,
 "rot": 319.0
 },
 "label": "clock-A / A_BS3_sph_6 - BS3 stator sphere, node 3 [W-Cu sphere, stator]"
@@ -1563,7 +1815,7 @@
 "join": "ring-A-BS3",
 "place": {
 "dx": 0.0,
-"dz": 131.8,
+"dz": 151.8,
 "rot": 0.0
 },
 "label": "clock-A / A_BS3_stator_ring - clocking stator ring, BS3 [G10 stator ring, stator]"
@@ -1576,8 +1828,8 @@
 "group": "rel-A",
 "join": "cem-A-0",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 30.0
 },
 "label": "rel-A / A_CEM1_core - C-EM A1 core, bonded to node 2 [C-EM core (laminated, material OPEN), stator]"
@@ -1590,8 +1842,8 @@
 "group": "rel-A",
 "join": "cem-A-1",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 90.0
 },
 "label": "rel-A / A_CEM2_core - C-EM A2 core, bonded to node 2 [C-EM core (laminated, material OPEN), stator]"
@@ -1604,8 +1856,8 @@
 "group": "rel-A",
 "join": "cem-A-2",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 150.0
 },
 "label": "rel-A / A_CEM3_core - C-EM A3 core, bonded to node 2 [C-EM core (laminated, material OPEN), stator]"
@@ -1618,8 +1870,8 @@
 "group": "rel-A",
 "join": "cem-A-3",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 210.0
 },
 "label": "rel-A / A_CEM4_core - C-EM A4 core, bonded to node 2 [C-EM core (laminated, material OPEN), stator]"
@@ -1632,8 +1884,8 @@
 "group": "rel-A",
 "join": "cem-A-4",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 270.0
 },
 "label": "rel-A / A_CEM5_core - C-EM A5 core, bonded to node 2 [C-EM core (laminated, material OPEN), stator]"
@@ -1646,8 +1898,8 @@
 "group": "rel-A",
 "join": "cem-A-5",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 330.0
 },
 "label": "rel-A / A_CEM6_core - C-EM A6 core, bonded to node 2 [C-EM core (laminated, material OPEN), stator]"
@@ -1660,8 +1912,8 @@
 "group": "rel-A",
 "join": "cem-A-0",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 30.0
 },
 "label": "rel-A / A_CEM1_spool_1 - C-EM A1 spool_1 [spool (insulating), stator]"
@@ -1674,8 +1926,8 @@
 "group": "rel-A",
 "join": "cem-A-1",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 90.0
 },
 "label": "rel-A / A_CEM2_spool_1 - C-EM A2 spool_1 [spool (insulating), stator]"
@@ -1688,8 +1940,8 @@
 "group": "rel-A",
 "join": "cem-A-2",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 150.0
 },
 "label": "rel-A / A_CEM3_spool_1 - C-EM A3 spool_1 [spool (insulating), stator]"
@@ -1702,8 +1954,8 @@
 "group": "rel-A",
 "join": "cem-A-3",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 210.0
 },
 "label": "rel-A / A_CEM4_spool_1 - C-EM A4 spool_1 [spool (insulating), stator]"
@@ -1716,8 +1968,8 @@
 "group": "rel-A",
 "join": "cem-A-4",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 270.0
 },
 "label": "rel-A / A_CEM5_spool_1 - C-EM A5 spool_1 [spool (insulating), stator]"
@@ -1730,8 +1982,8 @@
 "group": "rel-A",
 "join": "cem-A-5",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 330.0
 },
 "label": "rel-A / A_CEM6_spool_1 - C-EM A6 spool_1 [spool (insulating), stator]"
@@ -1744,8 +1996,8 @@
 "group": "rel-A",
 "join": "cem-A-0",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 30.0
 },
 "label": "rel-A / A_CEM1_spool_2 - C-EM A1 spool_2 [spool (insulating), stator]"
@@ -1758,8 +2010,8 @@
 "group": "rel-A",
 "join": "cem-A-1",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 90.0
 },
 "label": "rel-A / A_CEM2_spool_2 - C-EM A2 spool_2 [spool (insulating), stator]"
@@ -1772,8 +2024,8 @@
 "group": "rel-A",
 "join": "cem-A-2",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 150.0
 },
 "label": "rel-A / A_CEM3_spool_2 - C-EM A3 spool_2 [spool (insulating), stator]"
@@ -1786,8 +2038,8 @@
 "group": "rel-A",
 "join": "cem-A-3",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 210.0
 },
 "label": "rel-A / A_CEM4_spool_2 - C-EM A4 spool_2 [spool (insulating), stator]"
@@ -1800,8 +2052,8 @@
 "group": "rel-A",
 "join": "cem-A-4",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 270.0
 },
 "label": "rel-A / A_CEM5_spool_2 - C-EM A5 spool_2 [spool (insulating), stator]"
@@ -1814,8 +2066,8 @@
 "group": "rel-A",
 "join": "cem-A-5",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 330.0
 },
 "label": "rel-A / A_CEM6_spool_2 - C-EM A6 spool_2 [spool (insulating), stator]"
@@ -1828,8 +2080,8 @@
 "group": "rel-A",
 "join": "cem-A-0",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 30.0
 },
 "label": "rel-A / A_CEM1_coil - C-EM A1 coil [Cu magnet wire, stator]"
@@ -1842,8 +2094,8 @@
 "group": "rel-A",
 "join": "cem-A-1",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 90.0
 },
 "label": "rel-A / A_CEM2_coil - C-EM A2 coil [Cu magnet wire, stator]"
@@ -1856,8 +2108,8 @@
 "group": "rel-A",
 "join": "cem-A-2",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 150.0
 },
 "label": "rel-A / A_CEM3_coil - C-EM A3 coil [Cu magnet wire, stator]"
@@ -1870,8 +2122,8 @@
 "group": "rel-A",
 "join": "cem-A-3",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 210.0
 },
 "label": "rel-A / A_CEM4_coil - C-EM A4 coil [Cu magnet wire, stator]"
@@ -1884,8 +2136,8 @@
 "group": "rel-A",
 "join": "cem-A-4",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 270.0
 },
 "label": "rel-A / A_CEM5_coil - C-EM A5 coil [Cu magnet wire, stator]"
@@ -1898,8 +2150,8 @@
 "group": "rel-A",
 "join": "cem-A-5",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 330.0
 },
 "label": "rel-A / A_CEM6_coil - C-EM A6 coil [Cu magnet wire, stator]"
@@ -1912,8 +2164,8 @@
 "group": "rel-A",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 15.0
 },
 "label": "rel-A / A_UTRON1_core - utron A1 core [utron core (laminated M235-35A, OPEN), rotor]"
@@ -1926,8 +2178,8 @@
 "group": "rel-A",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 135.0
 },
 "label": "rel-A / A_UTRON2_core - utron A2 core [utron core (laminated M235-35A, OPEN), rotor]"
@@ -1940,8 +2192,8 @@
 "group": "rel-A",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 255.0
 },
 "label": "rel-A / A_UTRON3_core - utron A3 core [utron core (laminated M235-35A, OPEN), rotor]"
@@ -1954,8 +2206,8 @@
 "group": "rel-A",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 15.0
 },
 "label": "rel-A / A_UTRON1_coil_1 - utron A1 coil_1 [Cu, open (not in the circuit), rotor]"
@@ -1968,8 +2220,8 @@
 "group": "rel-A",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 135.0
 },
 "label": "rel-A / A_UTRON2_coil_1 - utron A2 coil_1 [Cu, open (not in the circuit), rotor]"
@@ -1982,8 +2234,8 @@
 "group": "rel-A",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 255.0
 },
 "label": "rel-A / A_UTRON3_coil_1 - utron A3 coil_1 [Cu, open (not in the circuit), rotor]"
@@ -1996,8 +2248,8 @@
 "group": "rel-A",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 15.0
 },
 "label": "rel-A / A_UTRON1_coil_2 - utron A1 coil_2 [Cu, open (not in the circuit), rotor]"
@@ -2010,8 +2262,8 @@
 "group": "rel-A",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 135.0
 },
 "label": "rel-A / A_UTRON2_coil_2 - utron A2 coil_2 [Cu, open (not in the circuit), rotor]"
@@ -2024,22 +2276,22 @@
 "group": "rel-A",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 64.4,
+"dx": 47.9,
+"dz": 84.40000000000003,
 "rot": 255.0
 },
 "label": "rel-A / A_UTRON3_coil_2 - utron A3 coil_2 [Cu, open (not in the circuit), rotor]"
 },
 {
 "name": "A_utron_hub",
-"proto": "utron_hub_24.40",
+"proto": "utron_hub_24.90",
 "body": "rotor",
 "node": "",
 "group": "rel-A",
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 44.400000000000006,
+"dz": 64.40000000000003,
 "rot": 0.0
 },
 "label": "rel-A / A_utron_hub - utron hub ring [G10 rotor hub, rotor]"
@@ -2053,7 +2305,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 620.55,
+"dz": 719.55,
 "rot": 0.0
 },
 "label": "side-B / B_C2_s01 - C2 vane, node 4 [Al vane, stator]"
@@ -2067,7 +2319,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 625.05,
+"dz": 724.05,
 "rot": 0.0
 },
 "label": "side-B / B_C2_r02 - C2 vane, node R-B [Al vane, rotor]"
@@ -2081,7 +2333,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 629.55,
+"dz": 728.55,
 "rot": 0.0
 },
 "label": "side-B / B_C2_s03 - C2 vane, node 4 [Al vane, stator]"
@@ -2095,7 +2347,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 634.05,
+"dz": 733.05,
 "rot": 0.0
 },
 "label": "side-B / B_C2_r04 - C2 vane, node R-B [Al vane, rotor]"
@@ -2109,7 +2361,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 638.55,
+"dz": 737.55,
 "rot": 0.0
 },
 "label": "side-B / B_C2_s05 - C2 vane, node 4 [Al vane, stator]"
@@ -2123,7 +2375,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 643.05,
+"dz": 742.05,
 "rot": 0.0
 },
 "label": "side-B / B_C2_r06 - C2 vane, node R-B [Al vane, rotor]"
@@ -2137,7 +2389,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 647.55,
+"dz": 746.55,
 "rot": 0.0
 },
 "label": "side-B / B_C2_s07 - C2 vane, node 4 [Al vane, stator]"
@@ -2151,7 +2403,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 652.05,
+"dz": 751.05,
 "rot": 0.0
 },
 "label": "side-B / B_C2_r08 - C2 vane, node R-B [Al vane, rotor]"
@@ -2165,7 +2417,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 656.55,
+"dz": 755.55,
 "rot": 0.0
 },
 "label": "side-B / B_C2_s09 - C2 vane, node 4 [Al vane, stator]"
@@ -2179,7 +2431,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 661.05,
+"dz": 760.05,
 "rot": 0.0
 },
 "label": "side-B / B_C2_r10 - C2 vane, node R-B [Al vane, rotor]"
@@ -2193,7 +2445,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 665.55,
+"dz": 764.55,
 "rot": 0.0
 },
 "label": "side-B / B_C2_s11 - C2 vane, node 4 [Al vane, stator]"
@@ -2207,7 +2459,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 670.05,
+"dz": 769.05,
 "rot": 0.0
 },
 "label": "side-B / B_C2_r12 - C2 vane, node R-B [Al vane, rotor]"
@@ -2221,7 +2473,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 674.55,
+"dz": 773.55,
 "rot": 0.0
 },
 "label": "side-B / B_C2_s13 - C2 vane, node 4 [Al vane, stator]"
@@ -2235,7 +2487,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 679.05,
+"dz": 778.05,
 "rot": 0.0
 },
 "label": "side-B / B_C2_r14 - C2 vane, node R-B [Al vane, rotor]"
@@ -2249,7 +2501,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 683.55,
+"dz": 782.55,
 "rot": 0.0
 },
 "label": "side-B / B_C2_s15 - C2 vane, node 4 [Al vane, stator]"
@@ -2263,7 +2515,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 688.05,
+"dz": 787.05,
 "rot": 0.0
 },
 "label": "side-B / B_C2_r16 - C2 vane, node R-B [Al vane, rotor]"
@@ -2277,7 +2529,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 692.55,
+"dz": 791.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s01 - Cx vane, node n17 [Al vane, stator]"
@@ -2291,7 +2543,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 697.05,
+"dz": 796.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r02 - Cx vane, node 7 [Al vane, rotor]"
@@ -2305,7 +2557,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 701.55,
+"dz": 800.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s03 - Cx vane, node n17 [Al vane, stator]"
@@ -2319,7 +2571,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 706.05,
+"dz": 805.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r04 - Cx vane, node 7 [Al vane, rotor]"
@@ -2333,7 +2585,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 710.55,
+"dz": 809.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s05 - Cx vane, node n17 [Al vane, stator]"
@@ -2347,7 +2599,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 715.05,
+"dz": 814.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r06 - Cx vane, node 7 [Al vane, rotor]"
@@ -2361,7 +2613,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 719.55,
+"dz": 818.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s07 - Cx vane, node n17 [Al vane, stator]"
@@ -2375,7 +2627,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 724.05,
+"dz": 823.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r08 - Cx vane, node 7 [Al vane, rotor]"
@@ -2389,7 +2641,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 728.55,
+"dz": 827.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s09 - Cx vane, node n17 [Al vane, stator]"
@@ -2403,7 +2655,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 733.05,
+"dz": 832.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r10 - Cx vane, node 7 [Al vane, rotor]"
@@ -2417,7 +2669,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 737.55,
+"dz": 836.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s11 - Cx vane, node n17 [Al vane, stator]"
@@ -2431,7 +2683,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 742.05,
+"dz": 841.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r12 - Cx vane, node 7 [Al vane, rotor]"
@@ -2445,7 +2697,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 746.55,
+"dz": 845.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s13 - Cx vane, node n17 [Al vane, stator]"
@@ -2459,7 +2711,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 751.05,
+"dz": 850.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r14 - Cx vane, node 7 [Al vane, rotor]"
@@ -2473,7 +2725,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 755.55,
+"dz": 854.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s15 - Cx vane, node n17 [Al vane, stator]"
@@ -2487,7 +2739,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 760.05,
+"dz": 859.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r16 - Cx vane, node 7 [Al vane, rotor]"
@@ -2501,7 +2753,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 764.55,
+"dz": 863.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s17 - Cx vane, node n17 [Al vane, stator]"
@@ -2515,7 +2767,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 769.05,
+"dz": 868.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r18 - Cx vane, node 7 [Al vane, rotor]"
@@ -2529,7 +2781,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 773.55,
+"dz": 872.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s19 - Cx vane, node n17 [Al vane, stator]"
@@ -2543,7 +2795,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 778.05,
+"dz": 877.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r20 - Cx vane, node 7 [Al vane, rotor]"
@@ -2557,7 +2809,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 782.55,
+"dz": 881.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s21 - Cx vane, node n17 [Al vane, stator]"
@@ -2571,7 +2823,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 787.05,
+"dz": 886.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r22 - Cx vane, node 7 [Al vane, rotor]"
@@ -2585,7 +2837,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 791.55,
+"dz": 890.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s23 - Cx vane, node n17 [Al vane, stator]"
@@ -2599,7 +2851,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 796.05,
+"dz": 895.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r24 - Cx vane, node 7 [Al vane, rotor]"
@@ -2613,7 +2865,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 800.55,
+"dz": 899.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s25 - Cx vane, node n17 [Al vane, stator]"
@@ -2627,7 +2879,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 805.05,
+"dz": 904.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_r26 - Cx vane, node 7 [Al vane, rotor]"
@@ -2641,7 +2893,7 @@
 "join": "cage-B",
 "place": {
 "dx": 0.0,
-"dz": 809.55,
+"dz": 908.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cx_s27 - Cx vane, node n17 [Al vane, stator]"
@@ -2655,7 +2907,7 @@
 "join": "B_Cb_01",
 "place": {
 "dx": 0.0,
-"dz": 814.05,
+"dz": 913.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cb_01 - Cb plate, node 4 (connection not drawn) [Al plate, stator]"
@@ -2669,7 +2921,7 @@
 "join": "B_Cb_02",
 "place": {
 "dx": 0.0,
-"dz": 818.55,
+"dz": 917.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cb_02 - Cb plate, node 3 (connection not drawn) [Al plate, stator]"
@@ -2683,7 +2935,7 @@
 "join": "B_Cb_03",
 "place": {
 "dx": 0.0,
-"dz": 823.05,
+"dz": 922.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cb_03 - Cb plate, node 4 (connection not drawn) [Al plate, stator]"
@@ -2697,7 +2949,7 @@
 "join": "B_Cb_04",
 "place": {
 "dx": 0.0,
-"dz": 827.55,
+"dz": 926.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cb_04 - Cb plate, node 3 (connection not drawn) [Al plate, stator]"
@@ -2711,7 +2963,7 @@
 "join": "B_Cb_05",
 "place": {
 "dx": 0.0,
-"dz": 832.05,
+"dz": 931.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cb_05 - Cb plate, node 4 (connection not drawn) [Al plate, stator]"
@@ -2725,7 +2977,7 @@
 "join": "B_Cb_06",
 "place": {
 "dx": 0.0,
-"dz": 836.55,
+"dz": 935.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cb_06 - Cb plate, node 3 (connection not drawn) [Al plate, stator]"
@@ -2739,7 +2991,7 @@
 "join": "B_Cb_07",
 "place": {
 "dx": 0.0,
-"dz": 841.05,
+"dz": 940.05,
 "rot": 0.0
 },
 "label": "side-B / B_Cb_07 - Cb plate, node 4 (connection not drawn) [Al plate, stator]"
@@ -2753,7 +3005,7 @@
 "join": "B_Cb_08",
 "place": {
 "dx": 0.0,
-"dz": 845.55,
+"dz": 944.55,
 "rot": 0.0
 },
 "label": "side-B / B_Cb_08 - Cb plate, node 3 (connection not drawn) [Al plate, stator]"
@@ -2767,7 +3019,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 850.05,
+"dz": 972.05,
 "rot": 0.0
 },
 "label": "clock-B / B_SG2_rotor_disc - clocking rotor disc, SG2 [G10 rotor disc, rotor]"
@@ -2781,7 +3033,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 856.05,
+"dz": 978.05,
 "rot": 0.0
 },
 "label": "clock-B / B_SG2_tip_1 - SG2 rotor tip, node R-B [W-Cu sphere, rotor]"
@@ -2795,7 +3047,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 856.05,
+"dz": 978.05,
 "rot": 60.0
 },
 "label": "clock-B / B_SG2_tip_2 - SG2 rotor tip, node R-B [W-Cu sphere, rotor]"
@@ -2809,7 +3061,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 856.05,
+"dz": 978.05,
 "rot": 120.0
 },
 "label": "clock-B / B_SG2_tip_3 - SG2 rotor tip, node R-B [W-Cu sphere, rotor]"
@@ -2823,7 +3075,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 856.05,
+"dz": 978.05,
 "rot": 180.0
 },
 "label": "clock-B / B_SG2_tip_4 - SG2 rotor tip, node R-B [W-Cu sphere, rotor]"
@@ -2837,7 +3089,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 856.05,
+"dz": 978.05,
 "rot": 240.0
 },
 "label": "clock-B / B_SG2_tip_5 - SG2 rotor tip, node R-B [W-Cu sphere, rotor]"
@@ -2851,7 +3103,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 856.05,
+"dz": 978.05,
 "rot": 300.0
 },
 "label": "clock-B / B_SG2_tip_6 - SG2 rotor tip, node R-B [W-Cu sphere, rotor]"
@@ -2865,7 +3117,7 @@
 "join": "ring-B-SG2",
 "place": {
 "dx": 125.0,
-"dz": 873.55,
+"dz": 995.55,
 "rot": 33.0
 },
 "label": "clock-B / B_SG2_sph_1 - SG2 stator sphere, node mB [W-Cu sphere, stator]"
@@ -2879,7 +3131,7 @@
 "join": "ring-B-SG2",
 "place": {
 "dx": 125.0,
-"dz": 873.55,
+"dz": 995.55,
 "rot": 93.0
 },
 "label": "clock-B / B_SG2_sph_2 - SG2 stator sphere, node mB [W-Cu sphere, stator]"
@@ -2893,7 +3145,7 @@
 "join": "ring-B-SG2",
 "place": {
 "dx": 125.0,
-"dz": 873.55,
+"dz": 995.55,
 "rot": 153.0
 },
 "label": "clock-B / B_SG2_sph_3 - SG2 stator sphere, node mB [W-Cu sphere, stator]"
@@ -2907,7 +3159,7 @@
 "join": "ring-B-SG2",
 "place": {
 "dx": 125.0,
-"dz": 873.55,
+"dz": 995.55,
 "rot": 213.0
 },
 "label": "clock-B / B_SG2_sph_4 - SG2 stator sphere, node mB [W-Cu sphere, stator]"
@@ -2921,7 +3173,7 @@
 "join": "ring-B-SG2",
 "place": {
 "dx": 125.0,
-"dz": 873.55,
+"dz": 995.55,
 "rot": 273.0
 },
 "label": "clock-B / B_SG2_sph_5 - SG2 stator sphere, node mB [W-Cu sphere, stator]"
@@ -2935,7 +3187,7 @@
 "join": "ring-B-SG2",
 "place": {
 "dx": 125.0,
-"dz": 873.55,
+"dz": 995.55,
 "rot": 333.0
 },
 "label": "clock-B / B_SG2_sph_6 - SG2 stator sphere, node mB [W-Cu sphere, stator]"
@@ -2949,7 +3201,7 @@
 "join": "ring-B-SG2",
 "place": {
 "dx": 0.0,
-"dz": 873.55,
+"dz": 995.55,
 "rot": 0.0
 },
 "label": "clock-B / B_SG2_stator_ring - clocking stator ring, SG2 [G10 stator ring, stator]"
@@ -2963,7 +3215,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 882.55,
+"dz": 1004.55,
 "rot": 0.0
 },
 "label": "clock-B / B_SG4a1_rotor_disc - clocking rotor disc, SG4a1 [G10 rotor disc, rotor]"
@@ -2977,7 +3229,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 888.55,
+"dz": 1010.55,
 "rot": 0.0
 },
 "label": "clock-B / B_SG4a1_tip_1 - SG4a1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -2991,7 +3243,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 888.55,
+"dz": 1010.55,
 "rot": 60.0
 },
 "label": "clock-B / B_SG4a1_tip_2 - SG4a1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3005,7 +3257,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 888.55,
+"dz": 1010.55,
 "rot": 120.0
 },
 "label": "clock-B / B_SG4a1_tip_3 - SG4a1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3019,7 +3271,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 888.55,
+"dz": 1010.55,
 "rot": 180.0
 },
 "label": "clock-B / B_SG4a1_tip_4 - SG4a1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3033,7 +3285,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 888.55,
+"dz": 1010.55,
 "rot": 240.0
 },
 "label": "clock-B / B_SG4a1_tip_5 - SG4a1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3047,7 +3299,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 888.55,
+"dz": 1010.55,
 "rot": 300.0
 },
 "label": "clock-B / B_SG4a1_tip_6 - SG4a1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3061,7 +3313,7 @@
 "join": "ring-B-SG4a1",
 "place": {
 "dx": 125.0,
-"dz": 905.3,
+"dz": 1027.3,
 "rot": 37.2
 },
 "label": "clock-B / B_SG4a1_sph_1 - SG4a1 stator sphere, node 4 [W-Cu sphere, stator]"
@@ -3075,7 +3327,7 @@
 "join": "ring-B-SG4a1",
 "place": {
 "dx": 125.0,
-"dz": 905.3,
+"dz": 1027.3,
 "rot": 97.2
 },
 "label": "clock-B / B_SG4a1_sph_2 - SG4a1 stator sphere, node 4 [W-Cu sphere, stator]"
@@ -3089,7 +3341,7 @@
 "join": "ring-B-SG4a1",
 "place": {
 "dx": 125.0,
-"dz": 905.3,
+"dz": 1027.3,
 "rot": 157.2
 },
 "label": "clock-B / B_SG4a1_sph_3 - SG4a1 stator sphere, node 4 [W-Cu sphere, stator]"
@@ -3103,7 +3355,7 @@
 "join": "ring-B-SG4a1",
 "place": {
 "dx": 125.0,
-"dz": 905.3,
+"dz": 1027.3,
 "rot": 217.2
 },
 "label": "clock-B / B_SG4a1_sph_4 - SG4a1 stator sphere, node 4 [W-Cu sphere, stator]"
@@ -3117,7 +3369,7 @@
 "join": "ring-B-SG4a1",
 "place": {
 "dx": 125.0,
-"dz": 905.3,
+"dz": 1027.3,
 "rot": 277.2
 },
 "label": "clock-B / B_SG4a1_sph_5 - SG4a1 stator sphere, node 4 [W-Cu sphere, stator]"
@@ -3131,7 +3383,7 @@
 "join": "ring-B-SG4a1",
 "place": {
 "dx": 125.0,
-"dz": 905.3,
+"dz": 1027.3,
 "rot": 337.2
 },
 "label": "clock-B / B_SG4a1_sph_6 - SG4a1 stator sphere, node 4 [W-Cu sphere, stator]"
@@ -3145,7 +3397,7 @@
 "join": "ring-B-SG4a1",
 "place": {
 "dx": 0.0,
-"dz": 905.3,
+"dz": 1027.3,
 "rot": 0.0
 },
 "label": "clock-B / B_SG4a1_stator_ring - clocking stator ring, SG4a1 [G10 stator ring, stator]"
@@ -3159,7 +3411,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 914.3,
+"dz": 1036.3,
 "rot": 0.0
 },
 "label": "clock-B / B_SG4b1_rotor_disc - clocking rotor disc, SG4b1 [G10 rotor disc, rotor]"
@@ -3173,7 +3425,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 920.3,
+"dz": 1042.3,
 "rot": 0.0
 },
 "label": "clock-B / B_SG4b1_tip_1 - SG4b1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3187,7 +3439,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 920.3,
+"dz": 1042.3,
 "rot": 60.0
 },
 "label": "clock-B / B_SG4b1_tip_2 - SG4b1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3201,7 +3453,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 920.3,
+"dz": 1042.3,
 "rot": 120.0
 },
 "label": "clock-B / B_SG4b1_tip_3 - SG4b1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3215,7 +3467,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 920.3,
+"dz": 1042.3,
 "rot": 180.0
 },
 "label": "clock-B / B_SG4b1_tip_4 - SG4b1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3229,7 +3481,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 920.3,
+"dz": 1042.3,
 "rot": 240.0
 },
 "label": "clock-B / B_SG4b1_tip_5 - SG4b1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3243,7 +3495,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 920.3,
+"dz": 1042.3,
 "rot": 300.0
 },
 "label": "clock-B / B_SG4b1_tip_6 - SG4b1 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3257,7 +3509,7 @@
 "join": "ring-B-SG4b1",
 "place": {
 "dx": 125.0,
-"dz": 937.8,
+"dz": 1059.8,
 "rot": 46.05
 },
 "label": "clock-B / B_SG4b1_sph_1 - SG4b1 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3271,7 +3523,7 @@
 "join": "ring-B-SG4b1",
 "place": {
 "dx": 125.0,
-"dz": 937.8,
+"dz": 1059.8,
 "rot": 106.05
 },
 "label": "clock-B / B_SG4b1_sph_2 - SG4b1 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3285,7 +3537,7 @@
 "join": "ring-B-SG4b1",
 "place": {
 "dx": 125.0,
-"dz": 937.8,
+"dz": 1059.8,
 "rot": 166.05
 },
 "label": "clock-B / B_SG4b1_sph_3 - SG4b1 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3299,7 +3551,7 @@
 "join": "ring-B-SG4b1",
 "place": {
 "dx": 125.0,
-"dz": 937.8,
+"dz": 1059.8,
 "rot": 226.05
 },
 "label": "clock-B / B_SG4b1_sph_4 - SG4b1 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3313,7 +3565,7 @@
 "join": "ring-B-SG4b1",
 "place": {
 "dx": 125.0,
-"dz": 937.8,
+"dz": 1059.8,
 "rot": 286.05
 },
 "label": "clock-B / B_SG4b1_sph_5 - SG4b1 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3327,7 +3579,7 @@
 "join": "ring-B-SG4b1",
 "place": {
 "dx": 125.0,
-"dz": 937.8,
+"dz": 1059.8,
 "rot": 346.05
 },
 "label": "clock-B / B_SG4b1_sph_6 - SG4b1 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3341,7 +3593,7 @@
 "join": "ring-B-SG4b1",
 "place": {
 "dx": 0.0,
-"dz": 937.8,
+"dz": 1059.8,
 "rot": 0.0
 },
 "label": "clock-B / B_SG4b1_stator_ring - clocking stator ring, SG4b1 [G10 stator ring, stator]"
@@ -3355,7 +3607,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 946.8,
+"dz": 1068.8,
 "rot": 0.0
 },
 "label": "clock-B / B_BS4_rotor_disc - clocking rotor disc, BS4 [G10 rotor disc, rotor]"
@@ -3369,7 +3621,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 952.8,
+"dz": 1074.8,
 "rot": 0.0
 },
 "label": "clock-B / B_BS4_tip_1 - BS4 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3383,7 +3635,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 952.8,
+"dz": 1074.8,
 "rot": 60.0
 },
 "label": "clock-B / B_BS4_tip_2 - BS4 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3397,7 +3649,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 952.8,
+"dz": 1074.8,
 "rot": 120.0
 },
 "label": "clock-B / B_BS4_tip_3 - BS4 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3411,7 +3663,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 952.8,
+"dz": 1074.8,
 "rot": 180.0
 },
 "label": "clock-B / B_BS4_tip_4 - BS4 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3425,7 +3677,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 952.8,
+"dz": 1074.8,
 "rot": 240.0
 },
 "label": "clock-B / B_BS4_tip_5 - BS4 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3439,7 +3691,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 125.0,
-"dz": 952.8,
+"dz": 1074.8,
 "rot": 300.0
 },
 "label": "clock-B / B_BS4_tip_6 - BS4 rotor tip, node 8 [W-Cu sphere, rotor]"
@@ -3453,7 +3705,7 @@
 "join": "ring-B-BS4",
 "place": {
 "dx": 125.0,
-"dz": 976.8,
+"dz": 1098.8,
 "rot": 49.0
 },
 "label": "clock-B / B_BS4_sph_1 - BS4 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3467,7 +3719,7 @@
 "join": "ring-B-BS4",
 "place": {
 "dx": 125.0,
-"dz": 976.8,
+"dz": 1098.8,
 "rot": 109.0
 },
 "label": "clock-B / B_BS4_sph_2 - BS4 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3481,7 +3733,7 @@
 "join": "ring-B-BS4",
 "place": {
 "dx": 125.0,
-"dz": 976.8,
+"dz": 1098.8,
 "rot": 169.0
 },
 "label": "clock-B / B_BS4_sph_3 - BS4 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3495,7 +3747,7 @@
 "join": "ring-B-BS4",
 "place": {
 "dx": 125.0,
-"dz": 976.8,
+"dz": 1098.8,
 "rot": 229.0
 },
 "label": "clock-B / B_BS4_sph_4 - BS4 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3509,7 +3761,7 @@
 "join": "ring-B-BS4",
 "place": {
 "dx": 125.0,
-"dz": 976.8,
+"dz": 1098.8,
 "rot": 289.0
 },
 "label": "clock-B / B_BS4_sph_5 - BS4 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3523,7 +3775,7 @@
 "join": "ring-B-BS4",
 "place": {
 "dx": 125.0,
-"dz": 976.8,
+"dz": 1098.8,
 "rot": 349.0
 },
 "label": "clock-B / B_BS4_sph_6 - BS4 stator sphere, node 2 [W-Cu sphere, stator]"
@@ -3537,7 +3789,7 @@
 "join": "ring-B-BS4",
 "place": {
 "dx": 0.0,
-"dz": 976.8,
+"dz": 1098.8,
 "rot": 0.0
 },
 "label": "clock-B / B_BS4_stator_ring - clocking stator ring, BS4 [G10 stator ring, stator]"
@@ -3550,8 +3802,8 @@
 "group": "rel-B",
 "join": "cem-B-0",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 0.0
 },
 "label": "rel-B / B_CEM1_core - C-EM B1 core, bonded to node 3 [C-EM core (laminated, material OPEN), stator]"
@@ -3564,8 +3816,8 @@
 "group": "rel-B",
 "join": "cem-B-1",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 60.0
 },
 "label": "rel-B / B_CEM2_core - C-EM B2 core, bonded to node 3 [C-EM core (laminated, material OPEN), stator]"
@@ -3578,8 +3830,8 @@
 "group": "rel-B",
 "join": "cem-B-2",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 120.0
 },
 "label": "rel-B / B_CEM3_core - C-EM B3 core, bonded to node 3 [C-EM core (laminated, material OPEN), stator]"
@@ -3592,8 +3844,8 @@
 "group": "rel-B",
 "join": "cem-B-3",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 180.0
 },
 "label": "rel-B / B_CEM4_core - C-EM B4 core, bonded to node 3 [C-EM core (laminated, material OPEN), stator]"
@@ -3606,8 +3858,8 @@
 "group": "rel-B",
 "join": "cem-B-4",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 240.0
 },
 "label": "rel-B / B_CEM5_core - C-EM B5 core, bonded to node 3 [C-EM core (laminated, material OPEN), stator]"
@@ -3620,8 +3872,8 @@
 "group": "rel-B",
 "join": "cem-B-5",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 300.0
 },
 "label": "rel-B / B_CEM6_core - C-EM B6 core, bonded to node 3 [C-EM core (laminated, material OPEN), stator]"
@@ -3634,8 +3886,8 @@
 "group": "rel-B",
 "join": "cem-B-0",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 0.0
 },
 "label": "rel-B / B_CEM1_spool_1 - C-EM B1 spool_1 [spool (insulating), stator]"
@@ -3648,8 +3900,8 @@
 "group": "rel-B",
 "join": "cem-B-1",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 60.0
 },
 "label": "rel-B / B_CEM2_spool_1 - C-EM B2 spool_1 [spool (insulating), stator]"
@@ -3662,8 +3914,8 @@
 "group": "rel-B",
 "join": "cem-B-2",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 120.0
 },
 "label": "rel-B / B_CEM3_spool_1 - C-EM B3 spool_1 [spool (insulating), stator]"
@@ -3676,8 +3928,8 @@
 "group": "rel-B",
 "join": "cem-B-3",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 180.0
 },
 "label": "rel-B / B_CEM4_spool_1 - C-EM B4 spool_1 [spool (insulating), stator]"
@@ -3690,8 +3942,8 @@
 "group": "rel-B",
 "join": "cem-B-4",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 240.0
 },
 "label": "rel-B / B_CEM5_spool_1 - C-EM B5 spool_1 [spool (insulating), stator]"
@@ -3704,8 +3956,8 @@
 "group": "rel-B",
 "join": "cem-B-5",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 300.0
 },
 "label": "rel-B / B_CEM6_spool_1 - C-EM B6 spool_1 [spool (insulating), stator]"
@@ -3718,8 +3970,8 @@
 "group": "rel-B",
 "join": "cem-B-0",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 0.0
 },
 "label": "rel-B / B_CEM1_spool_2 - C-EM B1 spool_2 [spool (insulating), stator]"
@@ -3732,8 +3984,8 @@
 "group": "rel-B",
 "join": "cem-B-1",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 60.0
 },
 "label": "rel-B / B_CEM2_spool_2 - C-EM B2 spool_2 [spool (insulating), stator]"
@@ -3746,8 +3998,8 @@
 "group": "rel-B",
 "join": "cem-B-2",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 120.0
 },
 "label": "rel-B / B_CEM3_spool_2 - C-EM B3 spool_2 [spool (insulating), stator]"
@@ -3760,8 +4012,8 @@
 "group": "rel-B",
 "join": "cem-B-3",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 180.0
 },
 "label": "rel-B / B_CEM4_spool_2 - C-EM B4 spool_2 [spool (insulating), stator]"
@@ -3774,8 +4026,8 @@
 "group": "rel-B",
 "join": "cem-B-4",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 240.0
 },
 "label": "rel-B / B_CEM5_spool_2 - C-EM B5 spool_2 [spool (insulating), stator]"
@@ -3788,8 +4040,8 @@
 "group": "rel-B",
 "join": "cem-B-5",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 300.0
 },
 "label": "rel-B / B_CEM6_spool_2 - C-EM B6 spool_2 [spool (insulating), stator]"
@@ -3802,8 +4054,8 @@
 "group": "rel-B",
 "join": "cem-B-0",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 0.0
 },
 "label": "rel-B / B_CEM1_coil - C-EM B1 coil [Cu magnet wire, stator]"
@@ -3816,8 +4068,8 @@
 "group": "rel-B",
 "join": "cem-B-1",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 60.0
 },
 "label": "rel-B / B_CEM2_coil - C-EM B2 coil [Cu magnet wire, stator]"
@@ -3830,8 +4082,8 @@
 "group": "rel-B",
 "join": "cem-B-2",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 120.0
 },
 "label": "rel-B / B_CEM3_coil - C-EM B3 coil [Cu magnet wire, stator]"
@@ -3844,8 +4096,8 @@
 "group": "rel-B",
 "join": "cem-B-3",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 180.0
 },
 "label": "rel-B / B_CEM4_coil - C-EM B4 coil [Cu magnet wire, stator]"
@@ -3858,8 +4110,8 @@
 "group": "rel-B",
 "join": "cem-B-4",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 240.0
 },
 "label": "rel-B / B_CEM5_coil - C-EM B5 coil [Cu magnet wire, stator]"
@@ -3872,8 +4124,8 @@
 "group": "rel-B",
 "join": "cem-B-5",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 300.0
 },
 "label": "rel-B / B_CEM6_coil - C-EM B6 coil [Cu magnet wire, stator]"
@@ -3886,8 +4138,8 @@
 "group": "rel-B",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 15.0
 },
 "label": "rel-B / B_UTRON1_core - utron B1 core [utron core (laminated M235-35A, OPEN), rotor]"
@@ -3900,8 +4152,8 @@
 "group": "rel-B",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 135.0
 },
 "label": "rel-B / B_UTRON2_core - utron B2 core [utron core (laminated M235-35A, OPEN), rotor]"
@@ -3914,8 +4166,8 @@
 "group": "rel-B",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 255.0
 },
 "label": "rel-B / B_UTRON3_core - utron B3 core [utron core (laminated M235-35A, OPEN), rotor]"
@@ -3928,8 +4180,8 @@
 "group": "rel-B",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 15.0
 },
 "label": "rel-B / B_UTRON1_coil_1 - utron B1 coil_1 [Cu, open (not in the circuit), rotor]"
@@ -3942,8 +4194,8 @@
 "group": "rel-B",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 135.0
 },
 "label": "rel-B / B_UTRON2_coil_1 - utron B2 coil_1 [Cu, open (not in the circuit), rotor]"
@@ -3956,8 +4208,8 @@
 "group": "rel-B",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 255.0
 },
 "label": "rel-B / B_UTRON3_coil_1 - utron B3 coil_1 [Cu, open (not in the circuit), rotor]"
@@ -3970,8 +4222,8 @@
 "group": "rel-B",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 15.0
 },
 "label": "rel-B / B_UTRON1_coil_2 - utron B1 coil_2 [Cu, open (not in the circuit), rotor]"
@@ -3984,8 +4236,8 @@
 "group": "rel-B",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 135.0
 },
 "label": "rel-B / B_UTRON2_coil_2 - utron B2 coil_2 [Cu, open (not in the circuit), rotor]"
@@ -3998,22 +4250,22 @@
 "group": "rel-B",
 "join": "rotor-core",
 "place": {
-"dx": 47.4,
-"dz": 1056.7,
+"dx": 47.9,
+"dz": 1178.7,
 "rot": 255.0
 },
 "label": "rel-B / B_UTRON3_coil_2 - utron B3 coil_2 [Cu, open (not in the circuit), rotor]"
 },
 {
 "name": "B_utron_hub",
-"proto": "utron_hub_24.40",
+"proto": "utron_hub_24.90",
 "body": "rotor",
 "node": "",
 "group": "rel-B",
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 1036.7,
+"dz": 1158.7,
 "rot": 0.0
 },
 "label": "rel-B / B_utron_hub - utron hub ring [G10 rotor hub, rotor]"
@@ -4053,18 +4305,40 @@
 "body": "hub",
 "node": "R-A/R-B",
 "side": "hub",
-"z0": 500.55,
-"z1": 620.55,
+"z0": 571.55,
+"z1": 691.55,
 "r0": 0.0,
 "r1": 150.0
 },
 {
+"kind": "flange",
+"body": "rotor",
+"node": "",
+"side": "A",
+"z0": 563.55,
+"z1": 571.55,
+"r0": 0.0,
+"r1": 32.0
+},
+{
+"kind": "bearing",
+"body": "stator",
+"node": "",
+"side": "A",
+"where": "hub face",
+"z0": 543.55,
+"z1": 563.55,
+"zc": 553.55,
+"r0": 12.5,
+"r1": 162.0
+},
+{
 "kind": "C1 vane",
 "body": "stator",
 "node": "1",
 "side": "A",
-"z0": 499.05,
-"z1": 500.55,
+"z0": 542.05,
+"z1": 543.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4073,8 +4347,8 @@
 "body": "rotor",
 "node": "R-A",
 "side": "A",
-"z0": 494.55,
-"z1": 496.05,
+"z0": 537.55,
+"z1": 539.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4083,8 +4357,8 @@
 "body": "stator",
 "node": "1",
 "side": "A",
-"z0": 490.05,
-"z1": 491.55,
+"z0": 533.05,
+"z1": 534.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4093,8 +4367,8 @@
 "body": "rotor",
 "node": "R-A",
 "side": "A",
-"z0": 485.55,
-"z1": 487.05,
+"z0": 528.55,
+"z1": 530.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4103,8 +4377,8 @@
 "body": "stator",
 "node": "1",
 "side": "A",
-"z0": 481.05,
-"z1": 482.55,
+"z0": 524.05,
+"z1": 525.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4113,8 +4387,8 @@
 "body": "rotor",
 "node": "R-A",
 "side": "A",
-"z0": 476.55,
-"z1": 478.05,
+"z0": 519.55,
+"z1": 521.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4123,8 +4397,8 @@
 "body": "stator",
 "node": "1",
 "side": "A",
-"z0": 472.05,
-"z1": 473.55,
+"z0": 515.05,
+"z1": 516.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4133,8 +4407,8 @@
 "body": "rotor",
 "node": "R-A",
 "side": "A",
-"z0": 467.55,
-"z1": 469.05,
+"z0": 510.55,
+"z1": 512.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4143,8 +4417,8 @@
 "body": "stator",
 "node": "1",
 "side": "A",
-"z0": 463.05,
-"z1": 464.55,
+"z0": 506.05,
+"z1": 507.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4153,8 +4427,8 @@
 "body": "rotor",
 "node": "R-A",
 "side": "A",
-"z0": 458.55,
-"z1": 460.05,
+"z0": 501.55,
+"z1": 503.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4163,8 +4437,8 @@
 "body": "stator",
 "node": "1",
 "side": "A",
-"z0": 454.05,
-"z1": 455.55,
+"z0": 497.05,
+"z1": 498.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4173,8 +4447,8 @@
 "body": "rotor",
 "node": "R-A",
 "side": "A",
-"z0": 449.55,
-"z1": 451.05,
+"z0": 492.55,
+"z1": 494.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4183,8 +4457,8 @@
 "body": "stator",
 "node": "1",
 "side": "A",
-"z0": 445.05,
-"z1": 446.55,
+"z0": 488.05,
+"z1": 489.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4193,8 +4467,8 @@
 "body": "rotor",
 "node": "R-A",
 "side": "A",
-"z0": 440.55,
-"z1": 442.05,
+"z0": 483.55,
+"z1": 485.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4203,8 +4477,8 @@
 "body": "stator",
 "node": "1",
 "side": "A",
-"z0": 436.05,
-"z1": 437.55,
+"z0": 479.05,
+"z1": 480.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4213,8 +4487,8 @@
 "body": "rotor",
 "node": "R-A",
 "side": "A",
-"z0": 431.55,
-"z1": 433.05,
+"z0": 474.55,
+"z1": 476.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4223,8 +4497,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 427.05,
-"z1": 428.55,
+"z0": 470.05,
+"z1": 471.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4233,8 +4507,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 422.55,
-"z1": 424.05,
+"z0": 465.55,
+"z1": 467.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4243,8 +4517,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 418.05,
-"z1": 419.55,
+"z0": 461.05,
+"z1": 462.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4253,8 +4527,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 413.55,
-"z1": 415.05,
+"z0": 456.55,
+"z1": 458.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4263,8 +4537,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 409.05,
-"z1": 410.55,
+"z0": 452.05,
+"z1": 453.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4273,8 +4547,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 404.55,
-"z1": 406.05,
+"z0": 447.55,
+"z1": 449.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4283,8 +4557,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 400.05,
-"z1": 401.55,
+"z0": 443.05,
+"z1": 444.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4293,8 +4567,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 395.55,
-"z1": 397.05,
+"z0": 438.55,
+"z1": 440.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4303,8 +4577,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 391.05,
-"z1": 392.55,
+"z0": 434.05,
+"z1": 435.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4313,8 +4587,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 386.55,
-"z1": 388.05,
+"z0": 429.55,
+"z1": 431.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4323,8 +4597,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 382.05,
-"z1": 383.55,
+"z0": 425.05,
+"z1": 426.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4333,8 +4607,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 377.55,
-"z1": 379.05,
+"z0": 420.55,
+"z1": 422.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4343,8 +4617,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 373.05,
-"z1": 374.55,
+"z0": 416.05,
+"z1": 417.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4353,8 +4627,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 368.55,
-"z1": 370.05,
+"z0": 411.55,
+"z1": 413.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4363,8 +4637,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 364.05,
-"z1": 365.55,
+"z0": 407.05,
+"z1": 408.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4373,8 +4647,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 359.55,
-"z1": 361.05,
+"z0": 402.55,
+"z1": 404.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4383,8 +4657,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 355.05,
-"z1": 356.55,
+"z0": 398.05,
+"z1": 399.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4393,8 +4667,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 350.55,
-"z1": 352.05,
+"z0": 393.55,
+"z1": 395.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4403,8 +4677,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 346.05,
-"z1": 347.55,
+"z0": 389.05,
+"z1": 390.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4413,8 +4687,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 341.55,
-"z1": 343.05,
+"z0": 384.55,
+"z1": 386.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4423,8 +4697,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 337.05,
-"z1": 338.55,
+"z0": 380.05,
+"z1": 381.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4433,8 +4707,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 332.55,
-"z1": 334.05,
+"z0": 375.55,
+"z1": 377.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4443,8 +4717,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 328.05,
-"z1": 329.55,
+"z0": 371.05,
+"z1": 372.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4453,8 +4727,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 323.55,
-"z1": 325.05,
+"z0": 366.55,
+"z1": 368.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4463,8 +4737,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 319.05,
-"z1": 320.55,
+"z0": 362.05,
+"z1": 363.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4473,8 +4747,8 @@
 "body": "rotor",
 "node": "8",
 "side": "A",
-"z0": 314.55,
-"z1": 316.05,
+"z0": 357.55,
+"z1": 359.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4483,8 +4757,8 @@
 "body": "stator",
 "node": "n23",
 "side": "A",
-"z0": 310.05,
-"z1": 311.55,
+"z0": 353.05,
+"z1": 354.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4493,48 +4767,8 @@
 "body": "stator",
 "node": "1",
 "side": "A",
-"z0": 305.55,
-"z1": 307.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Ca plate",
-"body": "stator",
-"node": "2",
-"side": "A",
-"z0": 301.05,
-"z1": 302.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Ca plate",
-"body": "stator",
-"node": "1",
-"side": "A",
-"z0": 296.55,
-"z1": 298.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Ca plate",
-"body": "stator",
-"node": "2",
-"side": "A",
-"z0": 292.05,
-"z1": 293.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Ca plate",
-"body": "stator",
-"node": "1",
-"side": "A",
-"z0": 287.55,
-"z1": 289.05,
+"z0": 348.55,
+"z1": 350.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4543,8 +4777,8 @@
 "body": "stator",
 "node": "2",
 "side": "A",
-"z0": 283.05,
-"z1": 284.55,
+"z0": 344.05,
+"z1": 345.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4553,8 +4787,8 @@
 "body": "stator",
 "node": "1",
 "side": "A",
-"z0": 278.55,
-"z1": 280.05,
+"z0": 339.55,
+"z1": 341.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -4563,10 +4797,62 @@
 "body": "stator",
 "node": "2",
 "side": "A",
-"z0": 274.05,
-"z1": 275.55,
+"z0": 335.05,
+"z1": 336.55,
 "r0": 50.0,
 "r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 330.55,
+"z1": 332.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "2",
+"side": "A",
+"z0": 326.05,
+"z1": 327.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 321.55,
+"z1": 323.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "2",
+"side": "A",
+"z0": 317.05,
+"z1": 318.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "bearing",
+"body": "stator",
+"node": "",
+"side": "A",
+"where": "Ca|clocking",
+"z0": 294.05,
+"z1": 314.05,
+"zc": 304.05,
+"r0": 12.5,
+"r1": 162.0
 },
 {
 "kind": "clk rotor disc",
@@ -4574,9 +4860,9 @@
 "node": "R-A",
 "side": "A",
 "station": "SG1",
-"z0": 265.05,
-"z1": 271.05,
-"r0": 20.0,
+"z0": 285.05,
+"z1": 291.05,
+"r0": 20.5,
 "r1": 143.0
 },
 {
@@ -4585,7 +4871,7 @@
 "node": "R-A",
 "side": "A",
 "station": "SG1",
-"zc": 265.05,
+"zc": 285.05,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -4596,8 +4882,8 @@
 240.0,
 300.0
 ],
-"z0": 259.05,
-"z1": 265.05,
+"z0": 279.05,
+"z1": 285.05,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -4607,7 +4893,7 @@
 "node": "mA",
 "side": "A",
 "station": "SG1",
-"zc": 247.55,
+"zc": 267.55,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -4619,8 +4905,8 @@
 303.0
 ],
 "gap": 5.5,
-"z0": 247.55,
-"z1": 253.55,
+"z0": 267.55,
+"z1": 273.55,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -4630,8 +4916,8 @@
 "node": "mA",
 "side": "A",
 "station": "SG1",
-"z0": 241.55,
-"z1": 247.55,
+"z0": 261.55,
+"z1": 267.55,
 "r0": 105.0,
 "r1": 162.0
 },
@@ -4641,9 +4927,9 @@
 "node": "7",
 "side": "A",
 "station": "SG3a1",
-"z0": 232.55,
-"z1": 238.55,
-"r0": 20.0,
+"z0": 252.55,
+"z1": 258.55,
+"r0": 20.5,
 "r1": 143.0
 },
 {
@@ -4652,7 +4938,7 @@
 "node": "7",
 "side": "A",
 "station": "SG3a1",
-"zc": 232.55,
+"zc": 252.55,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -4663,8 +4949,8 @@
 240.0,
 300.0
 ],
-"z0": 226.55,
-"z1": 232.55,
+"z0": 246.55,
+"z1": 252.55,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -4674,7 +4960,7 @@
 "node": "1",
 "side": "A",
 "station": "SG3a1",
-"zc": 215.8,
+"zc": 235.8,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -4686,8 +4972,8 @@
 307.2
 ],
 "gap": 4.75,
-"z0": 215.8,
-"z1": 221.8,
+"z0": 235.8,
+"z1": 241.8,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -4697,8 +4983,8 @@
 "node": "1",
 "side": "A",
 "station": "SG3a1",
-"z0": 209.8,
-"z1": 215.8,
+"z0": 229.8,
+"z1": 235.8,
 "r0": 105.0,
 "r1": 162.0
 },
@@ -4708,9 +4994,9 @@
 "node": "7",
 "side": "A",
 "station": "SG3b1",
-"z0": 200.8,
-"z1": 206.8,
-"r0": 20.0,
+"z0": 220.8,
+"z1": 226.8,
+"r0": 20.5,
 "r1": 143.0
 },
 {
@@ -4719,7 +5005,7 @@
 "node": "7",
 "side": "A",
 "station": "SG3b1",
-"zc": 200.8,
+"zc": 220.8,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -4730,8 +5016,8 @@
 240.0,
 300.0
 ],
-"z0": 194.8,
-"z1": 200.8,
+"z0": 214.8,
+"z1": 220.8,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -4741,7 +5027,7 @@
 "node": "3",
 "side": "A",
 "station": "SG3b1",
-"zc": 183.3,
+"zc": 203.3,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -4753,8 +5039,8 @@
 316.05
 ],
 "gap": 5.5,
-"z0": 183.3,
-"z1": 189.3,
+"z0": 203.3,
+"z1": 209.3,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -4764,8 +5050,8 @@
 "node": "3",
 "side": "A",
 "station": "SG3b1",
-"z0": 177.3,
-"z1": 183.3,
+"z0": 197.3,
+"z1": 203.3,
 "r0": 105.0,
 "r1": 162.0
 },
@@ -4775,9 +5061,9 @@
 "node": "7",
 "side": "A",
 "station": "BS3",
-"z0": 168.3,
-"z1": 174.3,
-"r0": 20.0,
+"z0": 188.3,
+"z1": 194.3,
+"r0": 20.5,
 "r1": 143.0
 },
 {
@@ -4786,7 +5072,7 @@
 "node": "7",
 "side": "A",
 "station": "BS3",
-"zc": 168.3,
+"zc": 188.3,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -4797,8 +5083,8 @@
 240.0,
 300.0
 ],
-"z0": 162.3,
-"z1": 168.3,
+"z0": 182.3,
+"z1": 188.3,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -4808,7 +5094,7 @@
 "node": "3",
 "side": "A",
 "station": "BS3",
-"zc": 144.3,
+"zc": 164.3,
 "R": 12.5,
 "r": 125.0,
 "angles": [
@@ -4820,8 +5106,8 @@
 319.0
 ],
 "gap": 5.5,
-"z0": 144.3,
-"z1": 156.8,
+"z0": 164.3,
+"z1": 176.8,
 "r0": 112.5,
 "r1": 137.5
 },
@@ -4831,8 +5117,8 @@
 "node": "3",
 "side": "A",
 "station": "BS3",
-"z0": 131.8,
-"z1": 144.3,
+"z0": 151.8,
+"z1": 164.3,
 "r0": 105.0,
 "r1": 162.0
 },
@@ -4841,8 +5127,8 @@
 "body": "stator",
 "node": "gaps",
 "side": "A",
-"z0": 128.8,
-"z1": 271.05,
+"z0": 148.8,
+"z1": 291.05,
 "r0": 50.0,
 "r1": 150.0,
 "envelope": true
@@ -4852,8 +5138,8 @@
 "body": "stator",
 "node": "2",
 "side": "A",
-"r_u": 47.4,
-"zc": 64.4,
+"r_u": 47.9,
+"zc": 84.40000000000003,
 "angles": [
 30.0,
 90.0,
@@ -4862,273 +5148,87 @@
 270.0,
 330.0
 ],
-"z0": 5.0,
-"z1": 123.80000000000001,
-"r0": 41.4,
-"r1": 182.0
+"z0": 25.000000000000057,
+"z1": 143.80000000000004,
+"r0": 41.9,
+"r1": 182.5
 },
 {
 "kind": "utron",
 "body": "rotor",
 "node": "floating",
 "side": "A",
-"r_u": 47.4,
-"zc": 64.4,
+"r_u": 47.9,
+"zc": 84.40000000000003,
 "angles": [
 15.0,
 135.0,
 255.0
 ],
-"z0": 39.900000000000006,
-"z1": 88.9,
-"r0": 23.0,
-"r1": 71.9
+"z0": 59.900000000000034,
+"z1": 108.90000000000003,
+"r0": 23.5,
+"r1": 72.4
 },
 {
 "kind": "utron hub",
 "body": "rotor",
 "node": "floating",
 "side": "A",
-"z0": 44.400000000000006,
-"z1": 84.4,
-"r0": 20.0,
-"r1": 24.4
+"z0": 64.40000000000003,
+"z1": 104.40000000000003,
+"r0": 20.5,
+"r1": 24.9
 },
 {
 "kind": "reluctance",
 "body": "stator",
 "node": "C-EM",
 "side": "A",
-"z0": 0.0,
-"z1": 128.8,
+"z0": 20.0,
+"z1": 148.8,
 "r0": 50.0,
-"r1": 182.0,
+"r1": 182.5,
 "envelope": true
 },
 {
-"kind": "C2 vane",
+"kind": "bearing",
 "body": "stator",
-"node": "4",
-"side": "B",
-"z0": 620.55,
-"z1": 622.05,
-"r0": 50.0,
-"r1": 150.0
+"node": "",
+"side": "A",
+"where": "end",
+"z0": 0.0,
+"z1": 20.0,
+"zc": 10.0,
+"r0": 12.5,
+"r1": 162.0
 },
 {
-"kind": "C2 vane",
+"kind": "flange",
 "body": "rotor",
-"node": "R-B",
+"node": "",
 "side": "B",
-"z0": 625.05,
-"z1": 626.55,
-"r0": 50.0,
-"r1": 150.0
+"z0": 691.55,
+"z1": 699.55,
+"r0": 0.0,
+"r1": 32.0
 },
 {
-"kind": "C2 vane",
+"kind": "bearing",
 "body": "stator",
-"node": "4",
+"node": "",
 "side": "B",
-"z0": 629.55,
-"z1": 631.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "rotor",
-"node": "R-B",
-"side": "B",
-"z0": 634.05,
-"z1": 635.55,
-"r0": 50.0,
-"r1": 150.0
+"where": "hub face",
+"z0": 699.55,
+"z1": 719.55,
+"zc": 709.55,
+"r0": 12.5,
+"r1": 162.0
 },
 {
 "kind": "C2 vane",
 "body": "stator",
 "node": "4",
-"side": "B",
-"z0": 638.55,
-"z1": 640.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "rotor",
-"node": "R-B",
-"side": "B",
-"z0": 643.05,
-"z1": 644.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "stator",
-"node": "4",
-"side": "B",
-"z0": 647.55,
-"z1": 649.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "rotor",
-"node": "R-B",
-"side": "B",
-"z0": 652.05,
-"z1": 653.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "stator",
-"node": "4",
-"side": "B",
-"z0": 656.55,
-"z1": 658.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "rotor",
-"node": "R-B",
-"side": "B",
-"z0": 661.05,
-"z1": 662.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "stator",
-"node": "4",
-"side": "B",
-"z0": 665.55,
-"z1": 667.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "rotor",
-"node": "R-B",
-"side": "B",
-"z0": 670.05,
-"z1": 671.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "stator",
-"node": "4",
-"side": "B",
-"z0": 674.55,
-"z1": 676.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "rotor",
-"node": "R-B",
-"side": "B",
-"z0": 679.05,
-"z1": 680.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "stator",
-"node": "4",
-"side": "B",
-"z0": 683.55,
-"z1": 685.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "C2 vane",
-"body": "rotor",
-"node": "R-B",
-"side": "B",
-"z0": 688.05,
-"z1": 689.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Cx vane",
-"body": "stator",
-"node": "n17",
-"side": "B",
-"z0": 692.55,
-"z1": 694.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Cx vane",
-"body": "rotor",
-"node": "7",
-"side": "B",
-"z0": 697.05,
-"z1": 698.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Cx vane",
-"body": "stator",
-"node": "n17",
-"side": "B",
-"z0": 701.55,
-"z1": 703.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Cx vane",
-"body": "rotor",
-"node": "7",
-"side": "B",
-"z0": 706.05,
-"z1": 707.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Cx vane",
-"body": "stator",
-"node": "n17",
-"side": "B",
-"z0": 710.55,
-"z1": 712.05,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Cx vane",
-"body": "rotor",
-"node": "7",
-"side": "B",
-"z0": 715.05,
-"z1": 716.55,
-"r0": 50.0,
-"r1": 150.0
-},
-{
-"kind": "Cx vane",
-"body": "stator",
-"node": "n17",
 "side": "B",
 "z0": 719.55,
 "z1": 721.05,
@@ -5136,9 +5236,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "rotor",
-"node": "7",
+"node": "R-B",
 "side": "B",
 "z0": 724.05,
 "z1": 725.55,
@@ -5146,9 +5246,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "stator",
-"node": "n17",
+"node": "4",
 "side": "B",
 "z0": 728.55,
 "z1": 730.05,
@@ -5156,9 +5256,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "rotor",
-"node": "7",
+"node": "R-B",
 "side": "B",
 "z0": 733.05,
 "z1": 734.55,
@@ -5166,9 +5266,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "stator",
-"node": "n17",
+"node": "4",
 "side": "B",
 "z0": 737.55,
 "z1": 739.05,
@@ -5176,9 +5276,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "rotor",
-"node": "7",
+"node": "R-B",
 "side": "B",
 "z0": 742.05,
 "z1": 743.55,
@@ -5186,9 +5286,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "stator",
-"node": "n17",
+"node": "4",
 "side": "B",
 "z0": 746.55,
 "z1": 748.05,
@@ -5196,9 +5296,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "rotor",
-"node": "7",
+"node": "R-B",
 "side": "B",
 "z0": 751.05,
 "z1": 752.55,
@@ -5206,9 +5306,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "stator",
-"node": "n17",
+"node": "4",
 "side": "B",
 "z0": 755.55,
 "z1": 757.05,
@@ -5216,9 +5316,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "rotor",
-"node": "7",
+"node": "R-B",
 "side": "B",
 "z0": 760.05,
 "z1": 761.55,
@@ -5226,9 +5326,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "stator",
-"node": "n17",
+"node": "4",
 "side": "B",
 "z0": 764.55,
 "z1": 766.05,
@@ -5236,9 +5336,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "rotor",
-"node": "7",
+"node": "R-B",
 "side": "B",
 "z0": 769.05,
 "z1": 770.55,
@@ -5246,9 +5346,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "stator",
-"node": "n17",
+"node": "4",
 "side": "B",
 "z0": 773.55,
 "z1": 775.05,
@@ -5256,9 +5356,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "rotor",
-"node": "7",
+"node": "R-B",
 "side": "B",
 "z0": 778.05,
 "z1": 779.55,
@@ -5266,9 +5366,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "stator",
-"node": "n17",
+"node": "4",
 "side": "B",
 "z0": 782.55,
 "z1": 784.05,
@@ -5276,9 +5376,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cx vane",
+"kind": "C2 vane",
 "body": "rotor",
-"node": "7",
+"node": "R-B",
 "side": "B",
 "z0": 787.05,
 "z1": 788.55,
@@ -5336,9 +5436,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cb plate",
-"body": "stator",
-"node": "4",
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
 "side": "B",
 "z0": 814.05,
 "z1": 815.55,
@@ -5346,9 +5446,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cb plate",
+"kind": "Cx vane",
 "body": "stator",
-"node": "3",
+"node": "n17",
 "side": "B",
 "z0": 818.55,
 "z1": 820.05,
@@ -5356,9 +5456,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cb plate",
-"body": "stator",
-"node": "4",
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
 "side": "B",
 "z0": 823.05,
 "z1": 824.55,
@@ -5366,9 +5466,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cb plate",
+"kind": "Cx vane",
 "body": "stator",
-"node": "3",
+"node": "n17",
 "side": "B",
 "z0": 827.55,
 "z1": 829.05,
@@ -5376,9 +5476,9 @@
 "r1": 150.0
 },
 {
-"kind": "Cb plate",
-"body": "stator",
-"node": "4",
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
 "side": "B",
 "z0": 832.05,
 "z1": 833.55,
@@ -5386,12 +5486,172 @@
 "r1": 150.0
 },
 {
-"kind": "Cb plate",
+"kind": "Cx vane",
 "body": "stator",
-"node": "3",
+"node": "n17",
 "side": "B",
 "z0": 836.55,
 "z1": 838.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
+"side": "B",
+"z0": 841.05,
+"z1": 842.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "stator",
+"node": "n17",
+"side": "B",
+"z0": 845.55,
+"z1": 847.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
+"side": "B",
+"z0": 850.05,
+"z1": 851.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "stator",
+"node": "n17",
+"side": "B",
+"z0": 854.55,
+"z1": 856.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
+"side": "B",
+"z0": 859.05,
+"z1": 860.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "stator",
+"node": "n17",
+"side": "B",
+"z0": 863.55,
+"z1": 865.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
+"side": "B",
+"z0": 868.05,
+"z1": 869.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "stator",
+"node": "n17",
+"side": "B",
+"z0": 872.55,
+"z1": 874.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
+"side": "B",
+"z0": 877.05,
+"z1": 878.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "stator",
+"node": "n17",
+"side": "B",
+"z0": 881.55,
+"z1": 883.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
+"side": "B",
+"z0": 886.05,
+"z1": 887.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "stator",
+"node": "n17",
+"side": "B",
+"z0": 890.55,
+"z1": 892.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
+"side": "B",
+"z0": 895.05,
+"z1": 896.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "stator",
+"node": "n17",
+"side": "B",
+"z0": 899.55,
+"z1": 901.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "rotor",
+"node": "7",
+"side": "B",
+"z0": 904.05,
+"z1": 905.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cx vane",
+"body": "stator",
+"node": "n17",
+"side": "B",
+"z0": 908.55,
+"z1": 910.05,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -5400,8 +5660,8 @@
 "body": "stator",
 "node": "4",
 "side": "B",
-"z0": 841.05,
-"z1": 842.55,
+"z0": 913.05,
+"z1": 914.55,
 "r0": 50.0,
 "r1": 150.0
 },
@@ -5410,10 +5670,82 @@
 "body": "stator",
 "node": "3",
 "side": "B",
-"z0": 845.55,
-"z1": 847.05,
+"z0": 917.55,
+"z1": 919.05,
 "r0": 50.0,
 "r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 922.05,
+"z1": 923.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "3",
+"side": "B",
+"z0": 926.55,
+"z1": 928.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 931.05,
+"z1": 932.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "3",
+"side": "B",
+"z0": 935.55,
+"z1": 937.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 940.05,
+"z1": 941.55,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "3",
+"side": "B",
+"z0": 944.55,
+"z1": 946.05,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "bearing",
+"body": "stator",
+"node": "",
+"side": "B",
+"where": "Ca|clocking",
+"z0": 949.05,
+"z1": 969.05,
+"zc": 959.05,
+"r0": 12.5,
+"r1": 162.0
 },
 {
 "kind": "clk rotor disc",
@@ -5421,9 +5753,9 @@
 "node": "R-B",
 "side": "B",
 "station": "SG2",
-"z0": 850.05,
-"z1": 856.05,
-"r0": 20.0,
+"z0": 972.05,
+"z1": 978.05,
+"r0": 20.5,
 "r1": 143.0
 },
 {
@@ -5432,7 +5764,7 @@
 "node": "R-B",
 "side": "B",
 "station": "SG2",
-"zc": 856.05,
+"zc": 978.05,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -5443,8 +5775,8 @@
 240.0,
 300.0
 ],
-"z0": 856.05,
-"z1": 862.05,
+"z0": 978.05,
+"z1": 984.05,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -5454,7 +5786,7 @@
 "node": "mB",
 "side": "B",
 "station": "SG2",
-"zc": 873.55,
+"zc": 995.55,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -5466,8 +5798,8 @@
 333.0
 ],
 "gap": 5.5,
-"z0": 867.55,
-"z1": 873.55,
+"z0": 989.55,
+"z1": 995.55,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -5477,8 +5809,8 @@
 "node": "mB",
 "side": "B",
 "station": "SG2",
-"z0": 873.55,
-"z1": 879.55,
+"z0": 995.55,
+"z1": 1001.55,
 "r0": 105.0,
 "r1": 162.0
 },
@@ -5488,9 +5820,9 @@
 "node": "8",
 "side": "B",
 "station": "SG4a1",
-"z0": 882.55,
-"z1": 888.55,
-"r0": 20.0,
+"z0": 1004.55,
+"z1": 1010.55,
+"r0": 20.5,
 "r1": 143.0
 },
 {
@@ -5499,7 +5831,7 @@
 "node": "8",
 "side": "B",
 "station": "SG4a1",
-"zc": 888.55,
+"zc": 1010.55,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -5510,8 +5842,8 @@
 240.0,
 300.0
 ],
-"z0": 888.55,
-"z1": 894.55,
+"z0": 1010.55,
+"z1": 1016.55,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -5521,7 +5853,7 @@
 "node": "4",
 "side": "B",
 "station": "SG4a1",
-"zc": 905.3,
+"zc": 1027.3,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -5533,8 +5865,8 @@
 337.2
 ],
 "gap": 4.75,
-"z0": 899.3,
-"z1": 905.3,
+"z0": 1021.3,
+"z1": 1027.3,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -5544,8 +5876,8 @@
 "node": "4",
 "side": "B",
 "station": "SG4a1",
-"z0": 905.3,
-"z1": 911.3,
+"z0": 1027.3,
+"z1": 1033.3,
 "r0": 105.0,
 "r1": 162.0
 },
@@ -5555,9 +5887,9 @@
 "node": "8",
 "side": "B",
 "station": "SG4b1",
-"z0": 914.3,
-"z1": 920.3,
-"r0": 20.0,
+"z0": 1036.3,
+"z1": 1042.3,
+"r0": 20.5,
 "r1": 143.0
 },
 {
@@ -5566,7 +5898,7 @@
 "node": "8",
 "side": "B",
 "station": "SG4b1",
-"zc": 920.3,
+"zc": 1042.3,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -5577,8 +5909,8 @@
 240.0,
 300.0
 ],
-"z0": 920.3,
-"z1": 926.3,
+"z0": 1042.3,
+"z1": 1048.3,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -5588,7 +5920,7 @@
 "node": "2",
 "side": "B",
 "station": "SG4b1",
-"zc": 937.8,
+"zc": 1059.8,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -5600,8 +5932,8 @@
 346.05
 ],
 "gap": 5.5,
-"z0": 931.8,
-"z1": 937.8,
+"z0": 1053.8,
+"z1": 1059.8,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -5611,8 +5943,8 @@
 "node": "2",
 "side": "B",
 "station": "SG4b1",
-"z0": 937.8,
-"z1": 943.8,
+"z0": 1059.8,
+"z1": 1065.8,
 "r0": 105.0,
 "r1": 162.0
 },
@@ -5622,9 +5954,9 @@
 "node": "8",
 "side": "B",
 "station": "BS4",
-"z0": 946.8,
-"z1": 952.8,
-"r0": 20.0,
+"z0": 1068.8,
+"z1": 1074.8,
+"r0": 20.5,
 "r1": 143.0
 },
 {
@@ -5633,7 +5965,7 @@
 "node": "8",
 "side": "B",
 "station": "BS4",
-"zc": 952.8,
+"zc": 1074.8,
 "R": 6.0,
 "r": 125.0,
 "angles": [
@@ -5644,8 +5976,8 @@
 240.0,
 300.0
 ],
-"z0": 952.8,
-"z1": 958.8,
+"z0": 1074.8,
+"z1": 1080.8,
 "r0": 119.0,
 "r1": 131.0
 },
@@ -5655,7 +5987,7 @@
 "node": "2",
 "side": "B",
 "station": "BS4",
-"zc": 976.8,
+"zc": 1098.8,
 "R": 12.5,
 "r": 125.0,
 "angles": [
@@ -5667,8 +5999,8 @@
 349.0
 ],
 "gap": 5.5,
-"z0": 964.3,
-"z1": 976.8,
+"z0": 1086.3,
+"z1": 1098.8,
 "r0": 112.5,
 "r1": 137.5
 },
@@ -5678,8 +6010,8 @@
 "node": "2",
 "side": "B",
 "station": "BS4",
-"z0": 976.8,
-"z1": 989.3,
+"z0": 1098.8,
+"z1": 1111.3,
 "r0": 105.0,
 "r1": 162.0
 },
@@ -5688,8 +6020,8 @@
 "body": "stator",
 "node": "gaps",
 "side": "B",
-"z0": 850.05,
-"z1": 992.3,
+"z0": 972.05,
+"z1": 1114.3,
 "r0": 50.0,
 "r1": 150.0,
 "envelope": true
@@ -5699,8 +6031,8 @@
 "body": "stator",
 "node": "3",
 "side": "B",
-"r_u": 47.4,
-"zc": 1056.7,
+"r_u": 47.9,
+"zc": 1178.7,
 "angles": [
 0.0,
 60.0,
@@ -5709,48 +6041,60 @@
 240.0,
 300.0
 ],
-"z0": 997.3,
-"z1": 1116.1,
-"r0": 41.4,
-"r1": 182.0
+"z0": 1119.3,
+"z1": 1238.1,
+"r0": 41.9,
+"r1": 182.5
 },
 {
 "kind": "utron",
 "body": "rotor",
 "node": "floating",
 "side": "B",
-"r_u": 47.4,
-"zc": 1056.7,
+"r_u": 47.9,
+"zc": 1178.7,
 "angles": [
 15.0,
 135.0,
 255.0
 ],
-"z0": 1032.2,
-"z1": 1081.2,
-"r0": 23.0,
-"r1": 71.9
+"z0": 1154.2,
+"z1": 1203.2,
+"r0": 23.5,
+"r1": 72.4
 },
 {
 "kind": "utron hub",
 "body": "rotor",
 "node": "floating",
 "side": "B",
-"z0": 1036.7,
-"z1": 1076.7,
-"r0": 20.0,
-"r1": 24.4
+"z0": 1158.7,
+"z1": 1198.7,
+"r0": 20.5,
+"r1": 24.9
 },
 {
 "kind": "reluctance",
 "body": "stator",
 "node": "C-EM",
 "side": "B",
-"z0": 992.3,
-"z1": 1121.1,
+"z0": 1114.3,
+"z1": 1243.1,
 "r0": 50.0,
-"r1": 182.0,
+"r1": 182.5,
 "envelope": true
+},
+{
+"kind": "bearing",
+"body": "stator",
+"node": "",
+"side": "B",
+"where": "end",
+"z0": 1243.1,
+"z1": 1263.1,
+"zc": 1253.1,
+"r0": 12.5,
+"r1": 162.0
 }
 ]
 }

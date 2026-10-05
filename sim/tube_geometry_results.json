@@ -1,13 +1,13 @@
 {
  "tag": "tube-r150-n8",
- "n_parts": 289,
- "n_protos": 23,
- "L_total_mm": 1121.1,
+ "n_parts": 307,
+ "n_protos": 30,
+ "L_total_mm": 1263.1,
  "vane_dia_mm": 300.0,
  "C_max_pF": 1114.0680403203476,
  "kappa": 15.655906720387156,
  "G-TUBE-CLASH": {
-  "pairs_tested": 322,
+  "pairs_tested": 346,
   "clashes": [],
   "n_clash": 0,
   "pass_": true
@@ -73,28 +73,20 @@
  },
  "G-TUBE-REL": {
   "A": {
-   "cem_to_cem_mm": 13.88,
-   "utron_inner_r_mm": 24.41
+   "cem_to_cem_mm": 14.38,
+   "utron_inner_r_mm": 24.91
   },
   "B": {
-   "cem_to_cem_mm": 13.88,
-   "utron_inner_r_mm": 24.41
+   "cem_to_cem_mm": 14.38,
+   "utron_inner_r_mm": 24.91
   },
-  "r_utron_centre": 47.4,
-  "reluctance_envelope_dia_mm": 364.0,
-  "sleeve_r": 20.0
+  "r_utron_centre": 47.9,
+  "reluctance_envelope_dia_mm": 365.0,
+  "sleeve_r": 20.5
  },
  "renders": [
   "docs/geometry/tube/tube-r150-n8-section.png",
   "docs/geometry/tube/tube-r150-n8-reluctance-plan.png",
   "docs/geometry/tube/tube-r150-n8-clocking-plan.png"
- ],
- "step": "docs/geometry/tube/tube-r150-n8.step",
- "step_bytes": 2799978,
- "step_read_back": {
-  "instances": 289,
-  "assemblies": 9,
-  "products": 23,
-  "pass_": true
- }
+ ]
 }

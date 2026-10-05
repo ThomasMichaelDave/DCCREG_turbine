@@ -133,11 +133,40 @@ class Machine:
         self.proto("rotor_vane", rotor_vane, COL["rotor vane"], "Al vane")
         self.proto("fixed_plate", lambda: sector(ri, ro, 0.0, t), COL["fixed plate"], "Al plate")
         z_lo, z_hi = min(e["z0"] for e in el), max(e["z1"] for e in el)
-        # shaft (rotor axle) and the rotor sleeve over the whole length
-        self.proto("shaft", lambda: sector(0.0, S.SHAFT_R, z_lo, z_hi), COL["steel"], "steel shaft")
-        self.proto("sleeve", lambda: sector(S.SHAFT_R, S.SLEEVE_R, z_lo + 5.0, z_hi - 5.0), COL["g10"], "G10 rotor sleeve")
-        self.add("shaft", "shaft", "rotor", "", "rotor", join="rotor-core", desc="rotor axle")
-        self.add("rotor_sleeve", "sleeve", "rotor", "", "rotor", join="rotor-core", desc="rotor sleeve, carries every rotor part")
+        # the shaft is split at the hub: two halves, each ending in a flange bolted to its bicone apex [OC: TMD]
+        hub = [e for e in el if e["kind"] == "hub"][0]
+        fl = {e["side"]: e for e in el if e["kind"] == "flange"}
+        brg = sorted([e for e in el if e["kind"] == "bearing"], key=lambda e: e["z0"])
+        self.proto("shaft_A", lambda: sector(0.0, S.SHAFT_R, z_lo, fl["A"]["z0"]), COL["steel"], "steel shaft half")
+        self.proto("shaft_B", lambda: sector(0.0, S.SHAFT_R, fl["B"]["z1"], z_hi), COL["steel"], "steel shaft half")
+        self.proto("flange", lambda: sector(0.0, S.FLANGE_R, 0.0, S.FLANGE_T), COL["steel"], "steel flange")
+        self.add("shaft_A", "shaft_A", "rotor", "", "rotor", join="rotor-core", desc="shaft half A")
+        self.add("shaft_B", "shaft_B", "rotor", "", "rotor", join="rotor-core", desc="shaft half B")
+        for side in ("A", "B"):
+            self.add(f"{side}_flange", "flange", "rotor", "", "hub", join="rotor-core", dz=fl[side]["z0"],
+                     desc=f"shaft-half flange {side}, bolted to the bicone apex")
+        # rotor sleeve: one segment between each pair of neighbouring bearing hubs (not across the hub)
+        cuts = [b["z1"] for b in brg] , [b["z0"] for b in brg]
+        segs = []
+        for b0, b1 in zip(brg[:-1], brg[1:]):
+            if b0["z1"] <= hub["z0"] <= b1["z0"]:
+                continue                                       # the hub span: flanges + bicone, no sleeve
+            segs.append((b0["z1"], b1["z0"]))
+        for i, (a, b) in enumerate(segs):
+            key = f"sleeve_{i}"
+            self.proto(key, lambda a=a, b=b: sector(S.SHAFT_R, S.SLEEVE_R, a, b), COL["g10"], "G10 rotor sleeve")
+            self.add(f"rotor_sleeve_{i + 1}", key, "rotor", "", "rotor", join="rotor-core", desc="rotor sleeve segment")
+        # bearing hubs: the bearing (inner ring on the shaft) in a G10 spider tied into the stator cage / the frame
+        B = S.BEARING
+        self.proto("bearing", lambda: sector(S.SHAFT_R, 0.5 * B["od"], 0.0, B["width"]), COL["steel"], f"{B['name']} bearing")
+        self.proto("spider", lambda: sector(0.5 * B["od"], ro + 12.0, 0.0, B["spider_t"]), COL["g10"], "G10 bearing spider")
+        for i, b in enumerate(brg):
+            frame = b["where"] == "end"
+            self.add(f"{b['side']}_bearing_{b['where'].replace(' ', '_').replace('|', '-')}", "bearing", "bearing", "",
+                     f"bearings", join=f"brg-{i}", dz=b["zc"] - 0.5 * B["width"], desc=f"bearing, {b['where']}")
+            self.add(f"{b['side']}_spider_{b['where'].replace(' ', '_').replace('|', '-')}", "spider", "stator", "",
+                     f"bearings", join=f"brg-{i}" if frame else f"cage-{b['side']}", dz=b["zc"] - 0.5 * B["spider_t"],
+                     desc=("frame bearing hub" if frame else "bearing hub, tied into the stator cage"))
         counts = {}
         for e in el:
             k = e["kind"]
@@ -198,15 +227,16 @@ class Machine:
                 rs = min(45.0, hh - 8.0)
                 rb = min(0.8 * ro, hh * 1.25)
                 self.proto("vac_sphere", lambda: sphere(rs, (0, 0, 0)), COL["glass"], "glass vacuum vessel (placeholder)")
-                self.proto("bicone_lo", lambda: cone_shell(S.SLEEVE_R + 2, rb, -hh + 2, 0.0, 3.0), COL["hub"], "G10 bicone (placeholder)")
-                self.proto("bicone_hi", lambda: cone_shell(S.SLEEVE_R + 2, rb, hh - 2, 0.0, 3.0), COL["hub"], "G10 bicone (placeholder)")
+                self.proto("bicone_lo", lambda: cone_shell(S.FLANGE_R, rb, -hh, 0.0, 3.0), COL["hub"], "G10 bicone (placeholder)")
+                self.proto("bicone_hi", lambda: cone_shell(S.FLANGE_R, rb, hh, 0.0, 3.0), COL["hub"], "G10 bicone (placeholder)")
                 self.add("hub_vacuum_sphere", "vac_sphere", "rotor", "", "hub", join="rotor-core", dz=zc, desc="vacuum sphere, AH / C_R hub (placeholder)")
                 self.add("hub_bicone_lower", "bicone_lo", "rotor", "", "hub", join="rotor-core", dz=zc, desc="bicone shell, lower")
                 self.add("hub_bicone_upper", "bicone_hi", "rotor", "", "hub", join="rotor-core", dz=zc, desc="bicone shell, upper")
         # insulating stator cage per side (holds the stator vanes' outer rings and the clocking stator rings)
         for side in ("A", "B"):
             zs = [e for e in el if e["side"] == side and e["body"] == "stator" and e["kind"] in
-                  ("C1 vane", "C2 vane", "Cx vane", "Ca plate", "Cb plate", "clk stator ring")]
+                  ("C1 vane", "C2 vane", "Cx vane", "Ca plate", "Cb plate", "clk stator ring")] + \
+                 [e for e in el if e["side"] == side and e["kind"] == "bearing" and e["where"] != "end"]
             z0, z1 = min(e["z0"] for e in zs), max(e["z1"] for e in zs)
             key = f"cage_{side}"
             self.proto(key, lambda z0=z0, z1=z1: sector(ro + 12.0, ro + 16.0, z0, z1), COL["g10"], "G10 stator cage")
@@ -273,7 +303,7 @@ def checks(m, log=print):
     stator = [(pt, s) for pt, s in shapes if pt["body"] == "stator"]
     from OCP.BRepPrimAPI import BRepPrimAPI_MakeRevol
     for pr, sr in rotor:
-        if pr["proto"] in ("shaft", "sleeve"):
+        if pr["proto"].startswith(("shaft", "sleeve", "flange")):
             continue
         r0, r1, z0, z1 = revs[pr["name"]] or rev(sr)
         ring = MG.annulus(max(0.0, r0 - 0.05), r1 + 0.05, z0 - 0.05, z1 + 0.05)

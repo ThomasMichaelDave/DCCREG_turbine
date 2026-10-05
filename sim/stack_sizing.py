@@ -39,6 +39,7 @@ TUBE_DEFAULTS = dict(
     rho_vane=2700.0,                           # Al, kg/m^3
     hub_mm=120.0, clock_mm=0.0, rel_mm=0.0,   # axial minimums (per side): clocking and reluctance are derived from their parts
     pitch_fixed_mm=4.5,                        # Ca / Cb fixed plates: 3 mm air + 1.5 mm plate per working gap
+    rel_shift_mm=0.0,                          # move the C-EMs + utrons outward (room for the rotor parts, shaft clearance)
 )
 # clocking: one sub-deck per station type and side; stator sphere (stator node) above a rotor tip (rotor node) [IR]
 # (angle deg, stator node, rotor node, sphere dia mm, gap mm) -- stations / nodes from the netlist of record,
@@ -56,7 +57,9 @@ CEM_PROFILE = dict(core=[(-6.0, 14.0, 30.0, 59.0), (-6.0, 14.0, -59.0, -30.0), (
                    spool=(74.5, 134.6, -27.5, 27.5), coil=(81.6, 127.5, -25.5, 25.5), core_w=30.0, spool_w=65.0)
 UTRON_PROFILE = dict(core=(-23.0, 23.0, -23.0, 23.0), coil=(-24.4, 24.5, -24.5, 24.5), w=65.0)
 REL_X_MIN, REL_X_MAX, REL_Z_HALF = -24.4, 134.6, 59.4
-SHAFT_R, SLEEVE_R, UTRON_CLEAR = 12.0, 20.0, 3.0
+SHAFT_R, SLEEVE_R, UTRON_CLEAR = 12.5, 20.5, 3.0            # shaft d 25 (sim/shaft_bearings.py), G10 sleeve 8 mm
+BEARING = dict(bore=25.0, od=52.0, width=15.0, slot=20.0, spider_t=8.0, name="6205-class deep-groove")   # [IR]
+FLANGE_R, FLANGE_T = 32.0, 8.0                              # shaft-half flange bolted to the bicone apex [IR]
 
 V4_DEFAULTS = dict(L_coil_H=1.85, R_coil=44.0, n_coils=6, C_mid_pF=1.0, C_screen_pF=57.0,
                    L_tank_uH=425.0, C_tank_pF=789.0, Q_tank=30.0)
@@ -194,10 +197,21 @@ def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
     for direction, lab, nodes_v, nodes_x, nodes_c in ((-1, "A", ("1", "R-A"), ("n23", "8"), ("1", "2")),
                                                       (+1, "B", ("4", "R-B"), ("n17", "7"), ("4", "3"))):
         z = zc - direction * 0 + direction * 0.5 * p["hub_mm"]
+
+        def bearing(z, where):
+            """a bearing hub slot: the bearing on the shaft, its G10 spider tied into the stator cage."""
+            z1 = z + direction * BEARING["slot"]
+            el.append(dict(kind="bearing", body="stator", node="", side=lab, where=where, z0=min(z, z1), z1=max(z, z1),
+                           zc=0.5 * (z + z1), r0=0.5 * BEARING["bore"], r1=ro + 12.0))
+            return z1
+        el.append(dict(kind="flange", body="rotor", node="", side=lab, z0=min(z, z + direction * FLANGE_T),
+                       z1=max(z, z + direction * FLANGE_T), r0=0.0, r1=FLANGE_R))
+        z = bearing(z + direction * FLANGE_T, "hub face")
         z = stack(z, direction, 2 * n, "C1 vane" if lab == "A" else "C2 vane", nodes_v, lab) + direction * g
         z = stack(z, direction, n_cx + 1, "Cx vane", nodes_x, lab) + direction * g
         z = stack(z, direction, n_ca + 1, "Ca plate" if lab == "A" else "Cb plate", nodes_c, lab, fixed=True)
         z += direction * g
+        z = bearing(z, "Ca|clocking") + direction * g
         # clocking: one sub-deck per station, outward from the hub: rotor disc | tip (rotor node) | gap | sphere
         # (stator node) | stator ring (the spheres half-embedded in their disc / ring) [IR]
         r_clk = ro - 25.0
@@ -233,7 +247,7 @@ def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
         el.append(dict(kind="clocking", body="stator", node="gaps", side=lab, z0=min(z_clk0, z), z1=max(z_clk0, z), r0=ri, r1=ro,
                        envelope=True))
         # reluctance: C-EMs (stator) and utrons (rotor) at the utron radius r_u, centred in the section
-        r_u = SLEEVE_R + UTRON_CLEAR - REL_X_MIN
+        r_u = SLEEVE_R + UTRON_CLEAR - REL_X_MIN + p.get("rel_shift_mm", 0.0)
         L_rel = max(2 * REL_Z_HALF + 10.0, p["rel_mm"])
         zr = z + direction * 0.5 * L_rel
         cem0 = 30.0 if lab == "A" else 0.0
@@ -248,6 +262,7 @@ def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
         z_end = z + direction * L_rel
         el.append(dict(kind="reluctance", body="stator", node="C-EM", side=lab, z0=min(z, z_end), z1=max(z, z_end),
                        r0=ri, r1=r_u + REL_X_MAX, envelope=True))
+        bearing(z_end, "end")
     zmin = min(e["z0"] for e in el)
     for e in el:                                                   # shift so the bottom end is z = 0 (centres too)
         e["z0"] -= zmin; e["z1"] -= zmin
@@ -299,7 +314,8 @@ def size_stack(geometry="disc", plates=None, choices=None):
     lad["tube_geometry"] = tube_geometry(p, dict(per_gap_max_pF=tc["per_gap_max_pF"], cx_max=L["cx_max"]["value"],
                                                  Ca=L["Ca"]["value"]), c["rpm"])
     lad["rotor_dia_mm"] = 2 * p["r_outMm"]; lad["rim_mps"] = lad["tube_geometry"]["rim_mps"]
-    lad["tube_profiles"] = dict(cem=CEM_PROFILE, utron=UTRON_PROFILE, sleeve_r=SLEEVE_R, shaft_r=SHAFT_R)
+    lad["tube_profiles"] = dict(cem=CEM_PROFILE, utron=UTRON_PROFILE, sleeve_r=SLEEVE_R, shaft_r=SHAFT_R, bearing=BEARING,
+                                flange_r=FLANGE_R)
     return lad
 
 
