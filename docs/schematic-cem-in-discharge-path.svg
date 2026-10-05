@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1180" font-family="Helvetica, Arial, sans-serif" font-size="13">
+  <rect x="0" y="0" width="1100" height="1180" fill="#ffffff"/>
+  <style>
+    .w{stroke:#222;stroke-width:2;fill:none}
+    .wn{stroke:#1e7a46;stroke-width:3;fill:none}
+    .wa{stroke:#7f8c8d;stroke-width:1.6;fill:none;stroke-dasharray:6 4}
+    .box{fill:#fff;stroke:#222;stroke-width:1.6}
+    .bn{fill:#e8f6ee;stroke:#1e7a46;stroke-width:2}
+    .ba{fill:#f4f6f7;stroke:#7f8c8d;stroke-width:1.4;stroke-dasharray:5 3}
+    .node{fill:#222}
+    .nl{font-weight:bold;font-size:15}
+    .t{fill:#222}
+    .tn{fill:#1e7a46;font-weight:bold}
+    .ta{fill:#6c7a7d}
+    .small{font-size:11.5;fill:#444}
+    .h{font-size:19;font-weight:bold}
+    .zone{fill:#f4f6f9;stroke:#9aa5b1;stroke-dasharray:5 4}
+    .rz{fill:#fbf7ee;stroke:#b9a46c;stroke-dasharray:5 4}
+  </style>
+
+  <text x="30" y="36" class="h">C-EMs in the discharge path (rail gaps SG1 / SG2) instead of across Ca / Cb</text>
+  <text x="30" y="58" class="small">Edit of the netlist of record. Removed: the 12 shunt branches L_Ak + C_ARk (1 → 2) and C_BRk + L_Bk (3 → 4), and with them all 12 block caps (440 nF).</text>
+  <text x="30" y="76" class="small">Added: nothing new. The same 12 coils, each in series with its own spark-gap station. No extra gaps, no buffer.</text>
+
+  <rect x="20" y="92" width="1060" height="560" rx="8" class="zone"/>
+  <text x="34" y="112" class="small">STATOR (counter-rotating; the C-EMs drive it)</text>
+  <rect x="300" y="486" width="500" height="156" rx="8" class="rz"/>
+  <text x="312" y="506" class="small">ROTOR (belt-driven)</text>
+
+  <!-- rails -->
+  <line x1="120" y1="150" x2="490" y2="150" class="w"/>
+  <line x1="120" y1="330" x2="490" y2="330" class="w"/>
+  <line x1="610" y1="150" x2="980" y2="150" class="w"/>
+  <line x1="610" y1="330" x2="980" y2="330" class="w"/>
+  <text x="88" y="155" class="nl">1</text><text x="58" y="172" class="small">A-rail</text>
+  <text x="88" y="335" class="nl">2</text><text x="52" y="352" class="small">AR-bank</text>
+  <text x="992" y="155" class="nl">4</text><text x="992" y="172" class="small">B-rail</text>
+  <text x="992" y="335" class="nl">3</text><text x="992" y="352" class="small">BR-bank</text>
+
+  <!-- Ca, Cb: now clean -->
+  <line x1="160" y1="150" x2="160" y2="220" class="w"/><rect x="138" y="220" width="44" height="40" class="box"/><text x="148" y="245" class="t">Ca</text><line x1="160" y1="260" x2="160" y2="330" class="w"/>
+  <line x1="940" y1="150" x2="940" y2="220" class="w"/><rect x="918" y="220" width="44" height="40" class="box"/><text x="928" y="245" class="t">Cb</text><line x1="940" y1="260" x2="940" y2="330" class="w"/>
+  <text x="228" y="236" class="tn">no shunt</text><text x="228" y="252" class="small">across Ca</text>
+  <text x="806" y="236" class="tn">no shunt</text><text x="806" y="252" class="small">across Cb</text>
+
+  <!-- islands (unchanged) -->
+  <line x1="420" y1="150" x2="420" y2="172" class="w"/><rect x="392" y="172" width="56" height="28" class="box"/><text x="398" y="191" class="t">SG3a</text>
+  <line x1="420" y1="200" x2="420" y2="222" class="w"/><circle cx="420" cy="222" r="4" class="node"/><text x="404" y="218" class="nl">7</text>
+  <line x1="420" y1="222" x2="540" y2="222" class="w"/>
+  <rect x="540" y="210" width="56" height="26" class="box"/><text x="545" y="228" class="t">SG3b</text>
+  <line x1="596" y1="223" x2="640" y2="223" class="w"/><line x1="640" y1="223" x2="640" y2="330" class="w"/>
+  <text x="440" y="258" class="small">BS3, Cx3–Lx3 also 7 → 3</text>
+  <line x1="680" y1="150" x2="680" y2="172" class="w"/><rect x="652" y="172" width="56" height="28" class="box"/><text x="658" y="191" class="t">SG4a</text>
+  <line x1="680" y1="200" x2="680" y2="290" class="w"/><circle cx="680" cy="290" r="4" class="node"/><text x="688" y="286" class="nl">8</text>
+  <line x1="680" y1="290" x2="560" y2="290" class="w"/>
+  <rect x="504" y="277" width="56" height="26" class="box"/><text x="509" y="295" class="t">SG4b</text>
+  <line x1="504" y1="290" x2="460" y2="290" class="w"/><line x1="460" y1="290" x2="460" y2="330" class="w"/>
+  <text x="566" y="318" class="small">BS4, Cx4–Lx4 also 8 → 2</text>
+
+  <!-- C1 / C2 -->
+  <line x1="215" y1="150" x2="215" y2="400" class="w"/>
+  <rect x="191" y="400" width="48" height="36" class="box"/><text x="201" y="423" class="t">C1</text>
+  <line x1="215" y1="436" x2="215" y2="590" class="w"/><line x1="215" y1="590" x2="420" y2="590" class="w"/>
+  <line x1="885" y1="150" x2="885" y2="400" class="w"/>
+  <rect x="861" y="400" width="48" height="36" class="box"/><text x="871" y="423" class="t">C2</text>
+  <line x1="885" y1="436" x2="885" y2="590" class="w"/><line x1="885" y1="590" x2="680" y2="590" class="w"/>
+
+  <!-- NEW: node 2 -> L_A (x6, one per SG1 station) -> SG1 -> R-A -->
+  <line x1="330" y1="330" x2="330" y2="368" class="wn"/>
+  <rect x="280" y="368" width="100" height="44" class="bn"/><text x="288" y="388" class="tn">L_A1…6</text><text x="288" y="404" class="small">C-EM group A</text>
+  <line x1="330" y1="412" x2="330" y2="440" class="wn"/>
+  <rect x="306" y="440" width="48" height="28" class="bn"/><text x="313" y="459" class="tn">SG1</text>
+  <line x1="330" y1="468" x2="330" y2="590" class="wn"/><line x1="330" y1="590" x2="420" y2="590" class="wn"/>
+  <circle cx="420" cy="590" r="4" class="node"/><text x="404" y="618" class="nl">R-A</text>
+  <text x="362" y="459" class="small">fires φ 3° + 60k</text>
+
+  <!-- NEW: node 3 -> L_B (x6) -> SG2 -> R-B -->
+  <line x1="770" y1="330" x2="770" y2="368" class="wn"/>
+  <rect x="720" y="368" width="100" height="44" class="bn"/><text x="728" y="388" class="tn">L_B1…6</text><text x="728" y="404" class="small">C-EM group B</text>
+  <line x1="770" y1="412" x2="770" y2="440" class="wn"/>
+  <rect x="746" y="440" width="48" height="28" class="bn"/><text x="753" y="459" class="tn">SG2</text>
+  <line x1="770" y1="468" x2="770" y2="590" class="wn"/><line x1="770" y1="590" x2="680" y2="590" class="wn"/>
+  <circle cx="680" cy="590" r="4" class="node"/><text x="664" y="618" class="nl">R-B</text>
+  <text x="648" y="459" class="small">fires φ 33° + 60k</text>
+
+  <!-- tank (unchanged) -->
+  <line x1="420" y1="590" x2="450" y2="590" class="w"/><rect x="450" y="575" width="46" height="30" class="box"/><text x="456" y="595" class="t">L_R1</text>
+  <line x1="496" y1="590" x2="520" y2="590" class="w"/><rect x="520" y="575" width="56" height="30" class="box"/><text x="530" y="595" class="t">C_R1</text>
+  <line x1="576" y1="590" x2="600" y2="590" class="w"/><rect x="600" y="575" width="46" height="30" class="box"/><text x="606" y="595" class="t">L_R2</text>
+  <line x1="646" y1="590" x2="680" y2="590" class="w"/>
+  <text x="488" y="632" class="small">tank, unchanged</text>
+
+  <!-- ===== inset: what "x6" means physically ===== -->
+  <text x="30" y="690" class="h">Per station: one coil in series with its own SG1 gap</text>
+  <rect x="20" y="704" width="520" height="250" rx="8" class="zone"/>
+  <line x1="60" y1="740" x2="500" y2="740" class="w"/><text x="34" y="745" class="nl">2</text>
+  <line x1="60" y1="920" x2="500" y2="920" class="w"/><text x="26" y="912" class="nl">R-A</text>
+  <g>
+    <line x1="100" y1="740" x2="100" y2="770" class="wn"/><rect x="78" y="770" width="44" height="40" class="bn"/><text x="84" y="794" class="tn">L_A1</text>
+    <line x1="100" y1="810" x2="100" y2="840" class="wn"/><rect x="80" y="840" width="46" height="26" class="bn"/><text x="83" y="858" class="small">SG1.1</text>
+    <line x1="100" y1="866" x2="100" y2="920" class="wn"/>
+    <line x1="170" y1="740" x2="170" y2="770" class="wn"/><rect x="148" y="770" width="44" height="40" class="bn"/><text x="154" y="794" class="tn">L_A2</text>
+    <line x1="170" y1="810" x2="170" y2="840" class="wn"/><rect x="148" y="840" width="46" height="26" class="bn"/><text x="154" y="858" class="small">SG1.2</text>
+    <line x1="170" y1="866" x2="170" y2="920" class="wn"/>
+    <text x="214" y="828" class="t">· · ·</text>
+    <line x1="290" y1="740" x2="290" y2="770" class="wn"/><rect x="268" y="770" width="44" height="40" class="bn"/><text x="274" y="794" class="tn">L_A6</text>
+    <line x1="290" y1="810" x2="290" y2="840" class="wn"/><rect x="268" y="840" width="46" height="26" class="bn"/><text x="274" y="858" class="small">SG1.6</text>
+    <line x1="290" y1="866" x2="290" y2="920" class="wn"/>
+  </g>
+  <text x="330" y="772" class="small">The six SG1 stations (3° + 60k)</text>
+  <text x="330" y="788" class="small">align at the same instant, so</text>
+  <text x="330" y="804" class="small">the six coils fire together.</text>
+  <text x="330" y="828" class="small">Each coil sits on the stator side</text>
+  <text x="330" y="844" class="small">of its station's sphere.</text>
+  <text x="330" y="868" class="small">Group B: the same with SG2</text>
+  <text x="330" y="884" class="small">(33° + 60k), node 3 → R-B.</text>
+  <text x="30" y="944" class="small">Electrically: the gap in series with (six 0.64 H coils in parallel) = 0.107 H, 6.7 Ω.</text>
+
+  <!-- ===== other positions considered ===== -->
+  <text x="560" y="690" class="h">Other series positions (not drawn)</text>
+  <rect x="560" y="704" width="520" height="250" rx="8" class="zone"/>
+  <text x="576" y="730" class="t">• Load gaps SG3a (1 → 7) / SG4a (4 → 8), φ 7.2° / 37.2°</text>
+  <text x="576" y="750" class="t">• Fire gaps SG3b (7 → 3) / SG4b (8 → 2), φ 16.05° / 46.05°</text>
+  <text x="576" y="770" class="t">• In place of the island inductors Lx3 / Lx4</text>
+  <text x="576" y="800" class="small">Why SG1 / SG2 first: they carry the rail transfers into the rotor halves,</text>
+  <text x="576" y="816" class="small">they are 30° apart like groups A and B, and they leave the islands'</text>
+  <text x="576" y="832" class="small">tuned Cx–Lx sink untouched. The other positions are worth one engine run each.</text>
+  <text x="576" y="862" class="small">The fire gaps land just after an alignment (falling L → braking)</text>
+  <text x="576" y="878" class="small">unless the C-EMs are re-clocked.</text>
+
+  <!-- ===== clocking ===== -->
+  <rect x="20" y="970" width="1060" height="196" rx="6" fill="#e8f6ee" stroke="#1e7a46"/>
+  <text x="34" y="994" class="tn">What changes, in classic terms</text>
+  <text x="34" y="1016" class="t">1. Ca and Cb carry no motor branch any more, so the Bennet ratio is not diluted. The 440 nF block caps disappear: the gap itself blocks DC.</text>
+  <text x="34" y="1038" class="t">2. Each rail transfer becomes a resonant half-cycle through the coils (inductive charging) instead of an abrupt spark equalisation.</text>
+  <text x="34" y="1056" class="t">    π·√(0.107 H × ~200 pF) ≈ 15 µs, far inside the 233 µs between events. The gap opens at current zero, so the transfer is less lossy;</text>
+  <text x="34" y="1074" class="t">    it also changes how much charge each stroke moves, which is what the engine must check (pump z).</text>
+  <text x="34" y="1096" class="t">3. Torque = ½ i² dL/dθ on each pulse, so the pulse must land on rising L. As drawn, A aligns at φ 15° and SG1 fires at 3°, 12° early.</text>
+  <text x="34" y="1114" class="t">    Re-clock the C-EMs, per your offset ruling, so each group aligns 2–4° after its gap fires: both groups turn by about −9°,</text>
+  <text x="34" y="1132" class="t">    A to ≈ 21° + 60k and B to ≈ 51° + 60k, still 30° apart. The exact offset comes from the torque model.</text>
+  <text x="34" y="1154" class="t">4. The torque acts between the stator C-EMs and the rotor poles; the belt supplies the reaction. Each pulse scales with the transferred charge, so torque ∝ V².</text>
+</svg>
