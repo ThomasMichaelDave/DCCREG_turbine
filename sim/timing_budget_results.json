@@ -274,5 +274,77 @@
     2.68
    ]
   ]
+ },
+ "kappa_xsec2d_r160_g3": {
+  "note": "rt_xsec2d C1 strip at r 160, 3 mm air gap, stator sectors 30 deg on a 60 deg period; see=False (no Ca counter / C_R backing plates); kappa = aligned / opposed",
+  "rotor_width_backing": [
+   [
+    "30 deg, with backing",
+    2.22
+   ],
+   [
+    "26",
+    2.53
+   ],
+   [
+    "22",
+    2.69
+   ],
+   [
+    "18",
+    2.78
+   ]
+  ],
+  "rotor_width_no_backing": [
+   [
+    30,
+    2.5
+   ],
+   [
+    26,
+    2.91
+   ],
+   [
+    22,
+    3.12
+   ],
+   [
+    18,
+    3.22
+   ]
+  ],
+  "carrier_eps": [
+   [
+    4.7,
+    22,
+    3.12
+   ],
+   [
+    4.7,
+    18,
+    3.22
+   ],
+   [
+    2.1,
+    22,
+    5.47
+   ],
+   [
+    2.1,
+    18,
+    5.79
+   ],
+   [
+    1.0,
+    22,
+    9.46
+   ],
+   [
+    1.0,
+    18,
+    10.38
+   ]
+  ],
+  "Cmax_pF_per_gap_r50_160": "~87 pF per working gap (6 periods, eps_c 1, rotor 22 deg); 1 nF -> ~12 gaps -> 6-7 rotor + 6-7 stator plates per side"
  }
 }
