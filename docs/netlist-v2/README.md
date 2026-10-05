@@ -31,3 +31,37 @@ Each group is modelled as six coils in parallel (0.107 H, 6.7 Ω), with constant
 Design rule from this: keep the capacitance of the coil–gap node to the rest of the machine low (≤ about 20 pF for
 z ≥ 1.26). Capacitance across the coil is harmless. For the C-EM core this means bonding it to the coil's rail end
 (node 2 / 3), so the winding capacitance sits across the coil rather than to ground (D-6).
+
+## v4 (2026-10-05): C-EMs in series with their own gaps, parallel tank, so this is the series form
+
+From the v4 PDF:
+- each C-EM has its own gap: 2 → L_Ak → mA_k → SG1-k → R-A, and 3 → L_Bk → mB_k → SG2-k → R-B, for k = 1…6;
+- C_R1 is directly across R-A / R-B, with L_R1 – L_AH1 – L_AH2 – L_R2 across it.
+
+The `.net` export still carries no spark-gap pins: every SG line in the `.cir` is node-less. The gaps in
+`topology_edge_list_v4.csv` are therefore taken from the PDF.
+
+**Pump check.** `sim/netlist_v4_pump.py` runs rt_engine with the RT0 configuration and the parallel tank (425 µH ∥ 789 pF,
+Q 30). Each side has six coils (0.64 H, 40 Ω), each with its own gap. Every SG1-k / SG2-k copies the RT0 rail gap, so all
+six on a side fire at the same angle. L is held constant. Results are in `sim/netlist_v4_pump_results.json`.
+
+| stray per coil–gap node to the machine | z (RT0 anchor 1.3254745) |
+|:--|:--|
+| 0.5 pF | 1.3437 |
+| 1 pF | 1.3266 |
+| 2 pF | 1.2990 |
+| 3.3 pF | 1.2660 |
+| 5 pF | 1.2325 |
+| 10 pF | 1.1533 |
+| 1 pF, plus 50 pF across each coil | 1.3030 |
+| lumped equivalent (one 0.107 H coil, 6 pF node) | 1.3266 (equal to the 1 pF per-coil case) |
+
+The six per-coil node strays add up. The lumped rule of ≤ about 20 pF (z ≥ 1.26) becomes **≤ about 3.3 pF per coil–gap
+node**. That covers each mA_k / mB_k node, its SG1-k / SG2-k sphere, and the lead between them.
+
+The v3 note that capacitance across the coil is harmless was too strong. 50 pF across each of the six coils (300 pF
+lumped) costs Δz ≈ −0.024. That is still much milder than node stray, so bonding the core to the rail end (D-6) remains the
+right choice.
+
+To keep the node small, keep the coil-to-gap lead short and keep the gap sphere small and well away from the rotor body and
+the other rail.
