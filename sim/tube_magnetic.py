@@ -42,11 +42,12 @@ def permeance(names, C_pF):
     return float(x @ Cr @ x) / CI.EPS0_MM / 6.0 - (CI.N_PLATE - 1) * A / g * (1.0 / CI.N_PLATE) ** 2
 
 
-def main(rus):
+def main(rus, shafts=(False, True)):
     import round_trip as RTR
     out = []
+    prev = json.load(open(os.path.join(HERE, "tube_magnetic_results.json"))) if os.path.exists(os.path.join(HERE, "tube_magnetic_results.json")) else []
     for r_u in rus:
-        for shaft in (False, True):
+        for shaft in shafts:
             d = design(r_u, shaft)
             row = dict(r_u=r_u, shaft="steel" if shaft else "none / non-magnetic")
             for th, key in ((15.0, "aligned"), (45.0, "between")):
@@ -55,8 +56,10 @@ def main(rus):
             row["swing"] = row["aligned"] / row["between"] - 1
             out.append(row)
             print(f"r_u {r_u:6.1f}  shaft {row['shaft']:20s}  P aligned {row['aligned']:7.1f}  between {row['between']:7.1f} mm  swing {row['swing']*100:5.1f} %", flush=True)
-    json.dump(out, open(os.path.join(HERE, "tube_magnetic_results.json"), "w"), indent=1)
+    keep = [r for r in prev if (r["r_u"], r["shaft"]) not in {(o["r_u"], o["shaft"]) for o in out}]
+    json.dump(sorted(keep + out, key=lambda r: (r["r_u"], r["shaft"])), open(os.path.join(HERE, "tube_magnetic_results.json"), "w"), indent=1)
 
 
 if __name__ == "__main__":
-    main([float(x) for x in sys.argv[1:]] or [47.4, 70.0])
+    args = [a for a in sys.argv[1:] if a != "--no-shaft"]
+    main([float(x) for x in args] or [47.4, 70.0], shafts=(False,) if "--no-shaft" in sys.argv else (False, True))
