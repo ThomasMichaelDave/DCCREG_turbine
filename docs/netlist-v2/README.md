@@ -14,3 +14,20 @@ netlist of record (1–4, 7, 8, R-A, R-B); renamed parts are given in `nr_name`.
    sit across it as a parallel tank. The wiring, though, puts C_R mid-chain.
    - Parallel form (the register's RA form): L_R1 – L_AH1 – join – L_AH2 – L_R2 from R-A to R-B, with C_R1
      directly R-A – R-B.
+
+## v3 (2026-10-05 13:36): pump check in rt_engine, RT0 configuration, parallel tank (425 µH ∥ 789 pF, Q 30)
+
+The tank in v3 is parallel: C_R1 across R-A / R-B. The C-EMs are still drawn in parallel with SG1 / SG2.
+Each group is modelled as six coils in parallel (0.107 H, 6.7 Ω), with constant L; the torque model is not in yet.
+
+| case | z (RT0 anchor 1.3254745) |
+|:--|:--|
+| parallel tank only | 1.325472 |
+| v3 as drawn: C-EMs in parallel with SG1 / SG2 | **0.554: the pump dies** |
+| series form 2 → L_A → m_A → SG1 → R-A (B mirrored), m_A → reference 2 pF | 1.3488 |
+| same, 5 / 10 / 20 / 50 / 100 pF | 1.3319 / 1.3077 / 1.2652 / 1.1772 / 1.0435 (not converged) |
+| m_A → ref 2 pF, plus 50 / 200 / 1000 pF across the coil | 1.3345 / 1.3181 / 1.3181 |
+
+Design rule from this: keep the capacitance of the coil–gap node to the rest of the machine low (≤ about 20 pF for
+z ≥ 1.26). Capacitance across the coil is harmless. For the C-EM core this means bonding it to the coil's rail end
+(node 2 / 3), so the winding capacitance sits across the coil rather than to ground (D-6).
