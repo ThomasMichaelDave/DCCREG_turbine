@@ -1,0 +1,34 @@
+component,node_a,node_b,source,status,nr_name
+Ca1,1,2,DCCREG_Turbine_circuit_v2.net,netlisted,Ca1
+Cb1,4,3,DCCREG_Turbine_circuit_v2.net,netlisted,Cb1
+C1,1,R-A,DCCREG_Turbine_circuit_v2.net,netlisted,C1
+C2,4,R-B,DCCREG_Turbine_circuit_v2.net,netlisted,C2
+SG1,2,R-A,schematic plot (2026-10-05),from plot (not netlisted: no pins),SG1
+SG2,3,R-B,schematic plot (2026-10-05),from plot (not netlisted: no pins),SG2
+SG3a1,1,7,DCCREG_Turbine_circuit_v2.net,netlisted,SG3a1
+SG3b1,7,3,schematic plot (2026-10-05),from plot (not netlisted: no pins),SG3b1
+BS1,7,3,schematic plot (2026-10-05),from plot (not netlisted: no pins),BS3
+Cx1,7,n17,DCCREG_Turbine_circuit_v2.net,netlisted,Cx3
+Lx1,n17,3,DCCREG_Turbine_circuit_v2.net,netlisted,Lx3
+SG4a1,4,8,DCCREG_Turbine_circuit_v2.net,netlisted,SG4a1
+SG4b1,8,2,schematic plot (2026-10-05),from plot (not netlisted: no pins),SG4b1
+BS2,8,2,schematic plot (2026-10-05),from plot (not netlisted: no pins),BS4
+Cx2,8,n23,DCCREG_Turbine_circuit_v2.net,netlisted,Cx4
+Lx2,n23,2,DCCREG_Turbine_circuit_v2.net,netlisted,Lx4
+L_A1,R-A,2,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG1 (shorts it),L_A1
+L_A2,R-A,2,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG1 (shorts it),L_A2
+L_A3,R-A,2,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG1 (shorts it),L_A3
+L_A4,R-A,2,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG1 (shorts it),L_A4
+L_A5,R-A,2,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG1 (shorts it),L_A5
+L_A6,R-A,2,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG1 (shorts it),L_A6
+L_B1,R-B,3,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG2 (shorts it),L_B1
+L_B2,R-B,3,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG2 (shorts it),L_B2
+L_B3,R-B,3,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG2 (shorts it),L_B3
+L_B4,R-B,3,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG2 (shorts it),L_B4
+L_B5,R-B,3,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG2 (shorts it),L_B5
+L_B6,R-B,3,DCCREG_Turbine_circuit_v2.net,netlisted -- in parallel with SG2 (shorts it),L_B6
+L_R1,R-A,n18,DCCREG_Turbine_circuit_v2.net,netlisted,L_R1
+L_AH1,n18,nAH1,DCCREG_Turbine_circuit_v2.net,netlisted,(new)
+C_R1,nAH1,nAH2,DCCREG_Turbine_circuit_v2.net,netlisted -- drawn mid-chain; the sheet note says parallel tank (electrodes = R-A / R-B),C_R1
+L_AH2,nAH2,n00,DCCREG_Turbine_circuit_v2.net,netlisted,(new)
+L_R2,n00,R-B,DCCREG_Turbine_circuit_v2.net,netlisted,L_R2
