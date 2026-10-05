@@ -138,6 +138,8 @@ def _main():
         json.dump(dict(thetas=THETAS, sols=sols), open(os.path.join(RT_DIR, f"{TAG}.sweep.json"), "w"))
     elif cmd == "report":
         report()
+    elif cmd == "motor":
+        motor(float(sys.argv[2]) if len(sys.argv) > 2 else 300.0)
 
 
 def report():
@@ -152,9 +154,6 @@ def report():
         print(f"theta {r[0]:5.1f}  P {r[1]:8.2f} mm  (raw {r[2]:.2f}, gap term {r[3]:.2f})")
     return out
 
-
-if __name__ == "__main__":
-    _main()
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -190,3 +189,51 @@ def pump_with(L1_H, R1_ohm, steps=("split", "motor", "utron"), v_peak=20e3):
     i2 = {mid: by.get(f"L_{mid}_R", 0.0) * s ** 2 / (R1_ohm / 6) for mid in ("mA", "mB")}
     return dict(z=m["z"], converged=bool(m["converged"]), int_I2_lumped=i2, W_belt_J=rec["ledger"]["W"] * s ** 2,
                 scale=s, by={k: v * s ** 2 for k, v in by.items()})
+
+
+# ---------------------------------------------------------------------------------------------------------
+# the motor at a given rpm: winding options, core permeability, pump z, torque
+# ---------------------------------------------------------------------------------------------------------
+CORE_PATH_MM, CORE_A_MM2 = 300.0, 750.0                  # core mean path, spine section [RH]
+CORE_MU = {"ideal": None, "0.1 mm Si-steel (mu' 1166)": 1166.0, "0.35 mm M235-35A (mu' 270)": 270.0}
+
+
+def with_core(P_mm, mu):
+    """series core permeance (mu A / l) with the external permeance (leakage + gap) [RH: the core carries the total flux]."""
+    if mu is None:
+        return np.asarray(P_mm, float)
+    Pc = mu * CORE_A_MM2 / CORE_PATH_MM
+    return 1.0 / (1.0 / Pc + 1.0 / np.asarray(P_mm, float))
+
+
+def motor(rpm_rel=300.0, v_peak=20e3, wires=(0.25, 0.4, 0.63), core="0.1 mm Si-steel (mu' 1166)", log=print):
+    d = json.load(open(os.path.join(HERE, "cem_inductance_results.json")))
+    th = np.array(d["thetas"]); P = with_core(d["P_mm"], CORE_MU[core])
+    dP = np.gradient(P, np.radians(th))                       # mm / rad
+    k = int(np.argmax(dP))                                     # fire at the steepest rise [OC]
+    out = dict(rpm_rel=rpm_rel, v_peak=v_peak, core=core, theta=list(th), P_mm=list(P), dP_mm_per_rad=list(dP),
+               fire_theta=float(th[k]), fire_before_alignment_deg=float(15.0 - th[k]),
+               swing=float(P.max() / P.min() - 1), rows=[])
+    f_side = 6 * rpm_rel / 60.0                                 # firings per second per side (6 per rev)
+    for dw in wires:
+        w = winding(dw)
+        mu0m = MU0 * 1e-3                                       # H per (turn^2 mm)
+        L_fire = w["N"] ** 2 * mu0m * P[k]; dL = w["N"] ** 2 * mu0m * dP[k]
+        r = pump_with(L_fire, w["R_ohm"], v_peak=v_peak)
+        T_side = {m: 0.5 * (dL / 6) * r["int_I2_lumped"][m] * f_side for m in ("mA", "mB")}
+        T = sum(T_side.values())
+        omega = 2 * math.pi * rpm_rel / 60.0
+        P_belt = r["W_belt_J"] * (6 * rpm_rel / 60.0)
+        T_pulse = math.pi * math.sqrt(L_fire / 6 * 213e-12)     # lumped group with the ~213 pF transfer [RH]
+        row = dict(w, L_fire_H=L_fire, dL_dtheta_H_per_rad=dL, z=r["z"], converged=r["converged"],
+                   int_I2_lumped=r["int_I2_lumped"], torque_Nm=T, P_mech_W=T * omega, P_belt_W=P_belt,
+                   pulse_us=T_pulse * 1e6, travel_during_pulse_mm=T_pulse * omega * 627.4)
+        out["rows"].append(row)
+        log(f"d {dw} mm: N {w['N']}, R {w['R_ohm']:.0f} ohm, L {L_fire:.2f} H, z {r['z']:.4f}, torque {T:.2e} N m, "
+            f"P_mech {T * omega:.2e} W vs belt {P_belt:.2f} W, pulse {T_pulse * 1e6:.0f} us")
+    json.dump(out, open(os.path.join(HERE, "cem_motor_results.json"), "w"), indent=1, default=float)
+    return out
+
+
+if __name__ == "__main__":
+    _main()

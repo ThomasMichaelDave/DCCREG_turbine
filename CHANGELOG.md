@@ -29,6 +29,12 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
     - Steps: 1.240 → parallel tank 1.311 → series C-EMs 1.372 → mid node 1.371 → screened lead 1.347 → cores 1.302 → utrons **1.297**.
     - The pump stays above z ≥ 1.2.
     - Biggest cost: the cores' coupling to the other rail through the lead frame.
+  - **C-EM winding, inductance and torque (`sim/cem_inductance.py`):**
+    - **Inductance:** 3-D magnetostatic analogue; permeance swing only +16 % (leakage-dominated C, 60 mm between the jaws).
+    - **Winding:** 0.40 mm wire, N 1846, 44 Ω, about 1.9 H.
+    - **Pump:** z 1.2966, independent of the winding.
+    - **Torque at 300 rpm / 20 kV:** about 4 µN·m direct, 7 mN·m freewheel ceiling, against about 70 mN·m of bearing drag.
+    - **Verdict:** the C-EMs cannot counter-rotate the stator.
   - **Field slices (`sim/field_slice.py`):** meridional cuts showing |E|, equipotentials and field lines, from unit excitations
     superposed, with floating nets set by charge balance.
   - **Core materials (`sim/utron_material.py`):**

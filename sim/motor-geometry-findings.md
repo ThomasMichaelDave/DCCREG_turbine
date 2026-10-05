@@ -171,3 +171,58 @@ v4 wiring in the engine:
 - core and utron eddy loss per pulse (`sim/utron_material.py`: about 2 % for laminated M235-35A, 12 % for a 0.35 mm C-EM core);
 - the rerouted frame leads;
 - mesh refinement (+0.004 on r5N2f).
+
+## C-EM winding, inductance against angle, and torque at 300 rpm (`sim/cem_inductance.py`)
+
+**Inductance model (3-D, classic magnetostatic ↔ electrostatic analogy).**
+- The core and utron are ideal iron, so they are magnetic equipotentials:
+  - the top half-core is at ψ = 1 and the bottom half at 0;
+  - 12 spine plates under the winding carry the winding's linear magnetomotive force;
+  - the utron floats, with zero net flux.
+- With that mapping the field solver's Maxwell matrix is the permeance matrix, and L = N²·μ₀·P(θ). The 21 angles are at 1.5°
+  steps. The plate-gap term (19.1 mm) is subtracted, and it does not depend on angle.
+- The core's finite μ_eff enters as a series permeance (μ·A/l, A 750 mm², l ≈ 300 mm) [RH].
+
+| | unaligned | aligned | swing |
+|:--|:--|:--|:--|
+| external permeance P (ideal iron) | 458.7 mm | 532.0 mm | **+16 %** |
+| with a 0.1 mm Si-steel core (μ′ ≈ 1170) | 393 mm | 446 mm | +13.5 % |
+| with a 0.35 mm M235-35A core (μ′ ≈ 270) | 273 mm | 297 mm | +9 % |
+
+The swing is small because the C's flux mostly leaks around the jaws: jaw to jaw is 60 mm and the arms are 74 mm apart, about
+as large as the core itself. dL/dθ peaks about 3° before alignment (firing point, [OC]) and changes sign after alignment
+(`docs/geometry/motor/cem-inductance-vs-angle.png`).
+
+**Winding (bobbin window ≈ 48 × 13 mm on a 29 × 33 mm tube, fill 0.45, mean turn 176 mm):**
+
+| wire Ø | N | R | L at firing (0.1 mm core) | pulse (π√(L/6·213 pF)) | z |
+|:--|:--|:--|:--|:--|:--|
+| 0.25 mm | 4251 | 262 Ω | 9.8 H | 59 µs | 1.2966 |
+| **0.40 mm** | **1846** | **44 Ω** | **1.85 H** | **25 µs** | **1.2966** |
+| 0.63 mm | 796 | 8 Ω | 0.34 H | 11 µs | 1.2965 |
+
+The pump does not care which winding is used: z is 1.2966 throughout. The suggested winding is 0.40 mm, giving ~2 H and 44 Ω.
+At 20 kV the peak current is a few tens of mA per coil and the gap flux density a few mT, so the core is nowhere near saturation.
+
+**Torque at 300 rpm (relative), eigen-state scaled to a 20 kV cycle peak:**
+- **Direct (pulse only): about 2–10 µN·m.** That is 0.06–0.3 mW of mechanical power, against 3.8 W taken from the belt.
+  - The reason: a 10–60 µs pulse lasts while the utron moves only 0.006–0.04 mm, against a 4.8 ms jaw transit at 300 rpm.
+  - So F = ½ i²·dL/dx acts over almost no distance.
+- **Ceiling (every joule stored in the coils converted): 0.22 W, about 7 mN·m.** This would need a freewheel diode across each
+  coil (so the current keeps flowing through the coil, decaying with L/R ≈ 40 ms, while the utron crosses), and a perfect
+  conversion. With the real swing (~13 %) about 1 mN·m is attainable.
+- **Needed:** bearing drag alone on a 189 kg stator is about 0.07 N·m, about 2.2 W at 300 rpm [RH: deep-groove bearing, 50 mm
+  bore, μ 0.0015, no windage or seals].
+
+**Verdict: at 300 rpm and 20 kV the C-EMs cannot counter-rotate the stator.**
+- The direct drive is about 4 orders short.
+- Even the freewheel ceiling is about 10× short.
+- It is a power-budget limit, not a winding choice: the pump's whole belt input at 300 rpm / 20 kV is 3.8 W.
+- Torque scales with V² and with rpm, but so does the drag at speed, and the C-EM can only ever take a fraction of the transfer
+  energy.
+
+**Levers, in order of effect:**
+1. **Drive the stator externally.** For example a second belt or a counter-rotating gear from the rotor drive.
+2. **If the C-EMs stay: freewheel diodes across each coil, and a much larger swing.** That means jaw gaps of 1–2 mm instead
+   of 7 mm and flux-concentrating pole faces. The ceiling then still sets the limit: about 0.2 W × (V / 20 kV)².
+3. **Higher operating voltage.** Every 2× in V gives 4× energy, but the HV clearances grow with it.
