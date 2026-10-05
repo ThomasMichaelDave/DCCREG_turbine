@@ -1,0 +1,487 @@
+{
+ "arith": {
+  "P-REG-1": {
+   "L_cone_uH": 33.80434179035725,
+   "M_uH": 8.261877930479283,
+   "series_aiding_uH": 84.13243944167307,
+   "k": 0.244402863446257,
+   "target": {
+    "L_cone_uH": 33.8,
+    "M_uH": 8.3,
+    "series_aiding_uH": 84.1
+   },
+   "rel": {
+    "L_cone_uH": 0.0001284553360134666,
+    "M_uH": -0.004593020424182859,
+    "series_aiding_uH": 0.0003857246334491027
+   },
+   "verdict": "PASS"
+  },
+  "P-REG-2": {
+   "L_cone_uH": 98.90824715038802,
+   "M_uH": 34.64957399808262,
+   "series_aiding_uH": 267.1156422969413,
+   "k": 0.35032037263180527,
+   "target": {
+    "L_cone_uH": 98.9,
+    "M_uH": 34.7
+   },
+   "rel": {
+    "L_cone_uH": 8.338878046521003e-05,
+    "M_uH": -0.0014531989025181602
+   },
+   "verdict": "PASS"
+  },
+  "P-REG-3": {
+   "f_srf_MHz": 1.2028096441688414,
+   "f_srf_tool_L_MHz": 1.2027323979522773,
+   "ratio_to_f0": 1.8882411996371138,
+   "verdict": "PASS"
+  },
+  "P-REG-4": {
+   "per_coil": {
+    "n_L": 12,
+    "n_C": 12,
+    "L_H": 0.64,
+    "R_ohm": 40.0,
+    "C_F": 4.4e-07,
+    "f_res_Hz": 299.9188805489676,
+    "Z0_ohm": 1206.0453783110545,
+    "Q": 30.15113445777636
+   },
+   "per_branch": {
+    "n_L": 12,
+    "n_C": 2,
+    "L_H": 0.64,
+    "R_ohm": 40.0,
+    "C_F": 2.64e-06,
+    "f_res_Hz": 122.44137026195155,
+    "Z0_ohm": 492.36596391733093,
+    "Q": 12.309149097933274,
+    "branch_L_H": 0.10666666666666667,
+    "branch_f_res_Hz": 299.9188805489676,
+    "branch_Z0_ohm": 201.00756305184242,
+    "branch_Q": 30.15113445777636
+   },
+   "strict_rel": {
+    "f": 6.295614860829524e-05,
+    "Z0": 3.762712359400844e-05,
+    "Q": -0.0016180643120410343,
+    "Zb": 3.762712359423048e-05,
+    "fb": 6.295614860829524e-05
+   },
+   "at_registered_precision": true,
+   "verdict": "PASS at the registered precision only (Q = 30.151; the registered 30.2 is its 1-decimal rounding, 0.17 % from it)"
+  },
+  "P-REG-7": {
+   "a": {
+    "windable_mm": 41.3,
+    "span_mm": 40.0,
+    "axial_margin_mm": 1.2999999999999972,
+    "finished_od_mm": 22.9,
+    "radial_margin_mm": 2.0500000000000007,
+    "radial_margin_at_lead_mm": 0.4500000000000006,
+    "return_lead": true,
+    "turns": 50,
+    "rod_in_bore_mm": 0.0,
+    "shaft_engagement_note": "rod potted in the former; shaft tip at |z| 72",
+    "peek_sleeve_od_mm": 13.3,
+    "peek_sleeve_fits_bore": null,
+    "seat_space_mm": 4.699999999999999,
+    "registered": {
+     "ax": 1.3,
+     "rad": 2.0
+    },
+    "d_axial": -2.886579864025407e-15,
+    "d_radial": 0.05000000000000071
+   },
+   "b": {
+    "windable_mm": 29.3,
+    "span_mm": 27.200000000000003,
+    "axial_margin_mm": 2.099999999999998,
+    "finished_od_mm": 26.1,
+    "radial_margin_mm": 0.4499999999999993,
+    "radial_margin_at_lead_mm": 0.4499999999999993,
+    "return_lead": false,
+    "turns": 51,
+    "rod_in_bore_mm": 12.0,
+    "shaft_engagement_note": "rod 12.0 mm in the \u00d813 bore",
+    "peek_sleeve_od_mm": 13.3,
+    "peek_sleeve_fits_bore": false,
+    "seat_space_mm": 4.699999999999999,
+    "registered": {
+     "ax": 2.1,
+     "rad": 0.45
+    },
+    "d_axial": -2.220446049250313e-15,
+    "d_radial": -7.216449660063518e-16
+   },
+   "c": {
+    "windable_mm": 29.3,
+    "span_mm": 28.8,
+    "axial_margin_mm": 0.5,
+    "finished_od_mm": 22.9,
+    "radial_margin_mm": 2.0500000000000007,
+    "radial_margin_at_lead_mm": 0.4500000000000006,
+    "return_lead": true,
+    "turns": 36,
+    "rod_in_bore_mm": 12.0,
+    "shaft_engagement_note": "rod 12.0 mm in the \u00d813 bore",
+    "peek_sleeve_od_mm": 13.3,
+    "peek_sleeve_fits_bore": false,
+    "seat_space_mm": 4.699999999999999,
+    "registered": {
+     "ax": 0.5,
+     "rad": 2.0
+    },
+    "d_axial": 0.0,
+    "d_radial": 0.05000000000000071
+   },
+   "verdict": "PASS"
+  },
+  "G-EM-ID": {
+   "pass_": true,
+   "map": {
+    "CEM_A1": {
+     "coil": "L_A1",
+     "coil_nodes": [
+      "1",
+      "n19"
+     ],
+     "cap_nodes": [
+      "n19",
+      "2"
+     ],
+     "shared": "n19",
+     "rail_end": "1"
+    },
+    "CEM_A2": {
+     "coil": "L_A2",
+     "coil_nodes": [
+      "1",
+      "n10"
+     ],
+     "cap_nodes": [
+      "n10",
+      "2"
+     ],
+     "shared": "n10",
+     "rail_end": "1"
+    },
+    "CEM_A3": {
+     "coil": "L_A3",
+     "coil_nodes": [
+      "1",
+      "n09"
+     ],
+     "cap_nodes": [
+      "n09",
+      "2"
+     ],
+     "shared": "n09",
+     "rail_end": "1"
+    },
+    "CEM_A4": {
+     "coil": "L_A4",
+     "coil_nodes": [
+      "1",
+      "n13"
+     ],
+     "cap_nodes": [
+      "n13",
+      "2"
+     ],
+     "shared": "n13",
+     "rail_end": "1"
+    },
+    "CEM_A5": {
+     "coil": "L_A5",
+     "coil_nodes": [
+      "1",
+      "n14"
+     ],
+     "cap_nodes": [
+      "n14",
+      "2"
+     ],
+     "shared": "n14",
+     "rail_end": "1"
+    },
+    "CEM_A6": {
+     "coil": "L_A6",
+     "coil_nodes": [
+      "1",
+      "n22"
+     ],
+     "cap_nodes": [
+      "n22",
+      "2"
+     ],
+     "shared": "n22",
+     "rail_end": "1"
+    },
+    "CEM_B1": {
+     "coil": "L_B1",
+     "coil_nodes": [
+      "n21",
+      "4"
+     ],
+     "cap_nodes": [
+      "3",
+      "n21"
+     ],
+     "shared": "n21",
+     "rail_end": "4"
+    },
+    "CEM_B2": {
+     "coil": "L_B2",
+     "coil_nodes": [
+      "n11",
+      "4"
+     ],
+     "cap_nodes": [
+      "3",
+      "n11"
+     ],
+     "shared": "n11",
+     "rail_end": "4"
+    },
+    "CEM_B3": {
+     "coil": "L_B3",
+     "coil_nodes": [
+      "n20",
+      "4"
+     ],
+     "cap_nodes": [
+      "3",
+      "n20"
+     ],
+     "shared": "n20",
+     "rail_end": "4"
+    },
+    "CEM_B4": {
+     "coil": "L_B4",
+     "coil_nodes": [
+      "n03",
+      "4"
+     ],
+     "cap_nodes": [
+      "3",
+      "n03"
+     ],
+     "shared": "n03",
+     "rail_end": "4"
+    },
+    "CEM_B5": {
+     "coil": "L_B5",
+     "coil_nodes": [
+      "n12",
+      "4"
+     ],
+     "cap_nodes": [
+      "3",
+      "n12"
+     ],
+     "shared": "n12",
+     "rail_end": "4"
+    },
+    "CEM_B6": {
+     "coil": "L_B6",
+     "coil_nodes": [
+      "n15",
+      "4"
+     ],
+     "cap_nodes": [
+      "3",
+      "n15"
+     ],
+     "shared": "n15",
+     "rail_end": "4"
+    }
+   },
+   "dxf_labels": [
+    "CEM_A1",
+    "CEM_A2",
+    "CEM_A3",
+    "CEM_A4",
+    "CEM_A5",
+    "CEM_A6",
+    "CEM_B1",
+    "CEM_B2",
+    "CEM_B3",
+    "CEM_B4",
+    "CEM_B5",
+    "CEM_B6"
+   ]
+  },
+  "G-EM-STATION": {
+   "pass_": true,
+   "dxf": {
+    "CEM_A1": 90.0,
+    "CEM_B6": 120.0,
+    "CEM_A6": 150.0,
+    "CEM_B5": 180.0,
+    "CEM_A5": 210.0,
+    "CEM_B4": 240.0,
+    "CEM_A4": 270.0,
+    "CEM_B3": 300.0,
+    "CEM_A3": 330.0,
+    "CEM_B2": 360.0,
+    "CEM_A2": 30.0,
+    "CEM_B1": 60.0
+   },
+   "preset_dev_deg": {
+    "CEM_A1": 0.0,
+    "CEM_B6": 0.0,
+    "CEM_A6": 0.0,
+    "CEM_B5": 0.0,
+    "CEM_A5": 0.0,
+    "CEM_B4": 0.0,
+    "CEM_A4": 0.0,
+    "CEM_B3": 0.0,
+    "CEM_A3": 0.0,
+    "CEM_B2": 0.0,
+    "CEM_A2": 0.0,
+    "CEM_B1": 0.0
+   },
+   "poles": [
+    [
+     15.0,
+     424.32,
+     17.324
+    ],
+    [
+     75.0,
+     424.32,
+     17.324
+    ],
+    [
+     135.0,
+     424.32,
+     17.324
+    ],
+    [
+     195.0,
+     424.32,
+     17.324
+    ],
+    [
+     255.0,
+     424.32,
+     17.324
+    ],
+    [
+     315.0,
+     424.32,
+     17.324
+    ]
+   ],
+   "blockD_S6_delta_deg": {
+    "groupA": 30.0,
+    "note": "Block D / S6 put group A at 0 + 60k (F-2)"
+   },
+   "numbering": "clockwise"
+  },
+  "G-EM-SENSE": {
+   "report": {
+    "iA+_iB+": {
+     "map": {
+      "CEM_A2": "N",
+      "CEM_B1": "N",
+      "CEM_A1": "N",
+      "CEM_B6": "N",
+      "CEM_A6": "N",
+      "CEM_B5": "N",
+      "CEM_A5": "N",
+      "CEM_B4": "N",
+      "CEM_A4": "N",
+      "CEM_B3": "N",
+      "CEM_A3": "N",
+      "CEM_B2": "N"
+     },
+     "alternating": false
+    },
+    "iA+_iB-": {
+     "map": {
+      "CEM_A2": "N",
+      "CEM_B1": "S",
+      "CEM_A1": "N",
+      "CEM_B6": "S",
+      "CEM_A6": "N",
+      "CEM_B5": "S",
+      "CEM_A5": "N",
+      "CEM_B4": "S",
+      "CEM_A4": "N",
+      "CEM_B3": "S",
+      "CEM_A3": "N",
+      "CEM_B2": "S"
+     },
+     "alternating": true
+    },
+    "iA-_iB+": {
+     "map": {
+      "CEM_A2": "S",
+      "CEM_B1": "N",
+      "CEM_A1": "S",
+      "CEM_B6": "N",
+      "CEM_A6": "S",
+      "CEM_B5": "N",
+      "CEM_A5": "S",
+      "CEM_B4": "N",
+      "CEM_A4": "S",
+      "CEM_B3": "N",
+      "CEM_A3": "S",
+      "CEM_B2": "N"
+     },
+     "alternating": true
+    },
+    "iA-_iB-": {
+     "map": {
+      "CEM_A2": "S",
+      "CEM_B1": "S",
+      "CEM_A1": "S",
+      "CEM_B6": "S",
+      "CEM_A6": "S",
+      "CEM_B5": "S",
+      "CEM_A5": "S",
+      "CEM_B4": "S",
+      "CEM_A4": "S",
+      "CEM_B3": "S",
+      "CEM_A3": "S",
+      "CEM_B2": "S"
+     },
+     "alternating": false
+    }
+   },
+   "start_node": {
+    "CEM_A1": "1",
+    "CEM_A2": "1",
+    "CEM_A3": "1",
+    "CEM_A4": "1",
+    "CEM_A5": "1",
+    "CEM_A6": "1",
+    "CEM_B1": "4",
+    "CEM_B2": "4",
+    "CEM_B3": "4",
+    "CEM_B4": "4",
+    "CEM_B5": "4",
+    "CEM_B6": "4"
+   },
+   "pin_note": "L_A: pin 1 = rail end (node 1); L_B: pin 2 = rail end (node 4) -- sense from start_node, not pins"
+  },
+  "T-MIRROR-stations": {
+   "A_set_invariant": true,
+   "B_set_invariant": false,
+   "poles_mirror": [
+    45.0,
+    105.0,
+    165.0,
+    225.0,
+    285.0,
+    345.0
+   ],
+   "note": "poles 15+60k map to 45+60k: alignment order of the groups reverses with the rotation sense"
+  }
+ },
+ "stamp": "2026-10-05 05:10:39 UTC"
+}
