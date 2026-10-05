@@ -25,6 +25,12 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
     - The source had it turned 5.17° about its own z axis, with the 30 mm core plate's mid-plane 8.6 mm off the utron centre.
     - Both are now corrected and re-checked (0.000°).
   - **Utron coils:** open or omitted, not in the circuit.
+  - **Pump with the placed motor (`sim/motor_field.py`):** field ledger on r5N2f (c12, deltas from a gap model and a motor model).
+    - Steps: 1.240 → parallel tank 1.311 → series C-EMs 1.372 → mid node 1.371 → screened lead 1.347 → cores 1.302 → utrons **1.297**.
+    - The pump stays above z ≥ 1.2.
+    - Biggest cost: the cores' coupling to the other rail through the lead frame.
+  - **Field slices (`sim/field_slice.py`):** meridional cuts showing |E|, equipotentials and field lines, from unit excitations
+    superposed, with floating nets set by charge balance.
   - **Core materials (`sim/utron_material.py`):**
     - the circuit is gap-dominated, so the utron needs only μ_eff ≳ 30;
     - solid or hollow soft steel shields the flux and repels;

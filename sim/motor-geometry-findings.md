@@ -124,3 +124,50 @@ Hollow steel only saves mass. **What works with soft steel is splitting it, not 
 - 0.2 mm reaches 0.98 at about 7.5 %; 0.1 mm or amorphous cut cores (Metglas AMCC) about 3 % or less.
 - Solid or 1 mm-and-thicker steel is unusable for the C core.
 - The 0.64 H / 40 Ω per C-EM is an engine default, not derived from this geometry, and should be recomputed from it. **[next]**
+
+## Pump feasibility with the placed motor: field ledger (`sim/motor_field.py`, `sim/motor_field_results.json`)
+
+**Method.** The whole machine plus the motor would need 14–16 M grid cells, and the solver's memory limit is about 11 M. So
+the motor and the v4 wiring enter as two deltas on the full-machine 12-angle capacitance model of r5N2f, which is the CAD build
+il2f-6563b90d with record z 1.2400. Both deltas use the coarse level, the free basis and the same 12 rotor angles.
+
+1. **Gap model** (r 380…563, |z| ≤ 90, 3.5–3.8 M cells). The SG1 / SG2 spheres and stems are their own nets, mA / mB. Merging
+   them back into 2 / 3 recovers the before-state exactly from the same solve.
+2. **Motor model** (the motor and everything beyond r 450, 2.2–2.5 M cells). The motor parts are proxies [IR]:
+   - C-EM core: the squared section as five (r, z) boxes, 30 mm tangential, with the coil lumped in;
+   - utron: an envelope including its open coil.
+
+   The cores' and utrons' couplings are added. The shielding they give existing pairs is neglected, which is conservative.
+
+v4 wiring in the engine:
+- SG1 is re-noded from 2 to mA. The six C-EMs per side are lumped as 0.107 H / 6.7 Ω, the engine default per coil divided by 6.
+- The screened lead is 6 × 57 pF across each coil group.
+- The parallel tank is the coil chain across R-A / R-B.
+
+| step | z | Δz |
+|:--|:--|:--|
+| 0. r5N2f as solved (series-tank basis, old netlist) | 1.2400 | (record 1.2400) |
+| 1. + v4 parallel tank | 1.3114 | +0.071 |
+| 2. + v4 series C-EMs, mid node 0.5 pF only | 1.3722 | +0.061 |
+| 3. + field: the SG1 / SG2 spheres + stems are the mid node | 1.3713 | −0.001 |
+| 4. + screened lead, 57 pF across each coil | 1.3471 | −0.024 |
+| 5. + C-EM cores (bonded to 2 / 3) | 1.3022 | −0.045 |
+| 6. + floating utrons | **1.2967** | −0.006 |
+
+**z = 1.297, converged, with everything placed: the pump stays above z ≥ 1.2.** By step:
+- **Mid node.** 5.2 pF lumped, about 0.9 pF per coil–gap node: 2.5 to node 1, 1.8 to R-A (the gap's own capacitance), 0.3 to
+  R-B and 0.3 to node 4. A further 4.3 pF goes to node 2, across the coil. That is well inside the 3.3 pF per-node budget. The
+  sphere and stem were never the problem; the bare lead was, and the screen fixes it.
+- **C-EM cores (the largest motor cost).** Each core couples about 2 pF to free space. The six on each rail also couple 5–9 pF
+  to the *other* rail's input node (A cores to node 4, B cores to node 1), through the stator lead frame at r 560. Those frame
+  leads have to be rerouted anyway (G-MOT-TRUNNION). Moving them away from the cores, or screening the cores toward the frame,
+  wins back part of the −0.045.
+- **Utrons.** They couple up to 43.9 pF to the aligned cores (about 7 pF per pair), but they float. With zero net charge they
+  carry no charge unless they spark or leak, so they cost only −0.006. The jaw gaps hold: in a ±15 kV operating set the utron
+  floats at +10.5 kV and the peak field is about 1 kV/mm (`docs/geometry/rt/slices/`).
+
+**Not yet in this number:**
+- the C-EM's own L and R from its geometry (0.64 H / 40 Ω is still a placeholder);
+- core and utron eddy loss per pulse (`sim/utron_material.py`: about 2 % for laminated M235-35A, 12 % for a 0.35 mm C-EM core);
+- the rerouted frame leads;
+- mesh refinement (+0.004 on r5N2f).
