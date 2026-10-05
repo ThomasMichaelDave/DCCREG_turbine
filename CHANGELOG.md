@@ -5,6 +5,13 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Geometry
+- **Tube shaft, bearings and reluctance radius** (`sim/tube-shaft-findings.md`):
+  - Utron ring moved out to r_u 130 mm (C-EMs outward): reluctance swing 0 % at r 52 → 14.7 %; envelope ⌀ 529 mm.
+  - Steel shaft: +2–3 % leakage, no swing change; non-magnetic shaft still recommended.
+  - Six symmetric bearing hubs (ends, Ca | clocking, hub faces), split shaft ⌀ 25 with flanges bolted to the bicone apexes:
+    f1 230–239 Hz, 1 g deflection 5 µm, loads ≤ 75 N, 6205-class bearings.
+  - Intermediate hubs run rotor-to-stator at the relative speed (counter-rotating stator).
+  - Rebuilt STEP: 307 solids / 30 prototypes, L 1263 mm, clash 0 / 348, sweep 0, read-back 307 / 307.
 - **Tube machine as solids (`sim/tube_geometry.py`):** STEP `docs/geometry/tube/tube-r150-n8.step`, 289 placed solids from 23 prototypes, 2.8 MB.
   - **Clocking:** 4 decks per side, one per station (SG1 / SG3a1 / SG3b1 / BS3 and SG2 / SG4a1 / SG4b1 / BS4).
     - Each deck: rotor disc with 6 tips at 0 + 60k, stator ring with 6 spheres at the station angle.

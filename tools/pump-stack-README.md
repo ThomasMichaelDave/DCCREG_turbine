@@ -60,13 +60,13 @@ The vane z positions come from `stack_sizing.layout()`, the same list that sets 
 
 ## Reference results (`sim/stack_sizing_results.json`)
 
-Tube with r 50–150 (300 mm plates), a 3 mm air gap, 1.5 mm vanes and 30° / 22° sectors. Lengths include the derived clocking (4 decks) and reluctance sections:
+Tube with r 50–150 (300 mm plates), a 3 mm air gap, 1.5 mm vanes and 30° / 22° sectors. Lengths include the derived clocking (4 decks) and reluctance sections (utron ring at r_u 130 mm, ⌀ 529 mm envelope), the split shaft flanges and six bearing hubs:
 
 | vanes per varicap per side | C1/C2 max | κ | length | z, strays fixed (record / v4) | z, strays scaled (record / v4) |
 |:--|:--|:--|:--|:--|:--|
-| 6 + 6 | 817 pF | 15.5 | 1004 mm | 1.525 / 1.549 | 1.312 / 1.307 |
-| **8 + 8** | **1114 pF** | **15.7** | **1121 mm** | **1.567 / 1.614** | **1.313 / 1.315** |
-| 10 + 10 | 1411 pF | 15.7 | 1229 mm | 1.593 / 1.658 | 1.313 / 1.321 |
+| 6 + 6 | 817 pF | 15.5 | 1146 mm | 1.525 / 1.549 | 1.312 / 1.307 |
+| **8 + 8** | **1114 pF** | **15.7** | **1263 mm** | **1.567 / 1.614** | **1.313 / 1.315** |
+| 10 + 10 | 1411 pF | 15.7 | 1371 mm | 1.593 / 1.658 | 1.313 / 1.321 |
 
 The default disc gives 1.3255 (record) and 1.3030 (v4).
 
@@ -77,7 +77,7 @@ OpenCascade solid.
 - **Vanes:** 6 sectors fused to a ring.
 - **Clocking:** a rotor disc and tips, a stator ring and spheres.
 - **Reluctance:** the designer's squared C-EM / utron STEP pieces, 6 C-EMs and 3 utrons per side.
-- **Structure:** shaft, rotor sleeve, insulating stator cages, and a hub placeholder (vacuum sphere + bicone).
+- **Structure:** split shaft (⌀ 25, flanges bolted to the bicone apexes at r 32), six 6205-class bearing hubs (ends, Ca | clocking, both hub faces), rotor sleeve segments, insulating stator cages, and a hub placeholder (vacuum sphere + bicone).
 
 It writes:
 - `docs/geometry/tube/<tag>.step`: instanced, named, coloured (each repeated part stored once);
