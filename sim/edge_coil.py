@@ -258,10 +258,10 @@ def es_extract(g, turns, rods, log=print):
                 cid[m] = len(names)
                 seg_of.append(dict(rod=ir, s=s, z0=edges[s], z1=edges[s + 1]))
     flat = cid.ravel()
-    rodset = np.zeros(len(names) + 1, bool)
+    rodset = np.zeros(len(names) + 2, bool)            # indexed by cid + 1 (free -1 -> 0, ground 0 -> 1)
     for k, nm in enumerate(names):
-        rodset[k + 1] = nm.startswith("R")
-    keep = ~(rodset[flat[rows]] & rodset[flat[cols]] & (flat[rows] != flat[cols]))   # rod segment | segment: R || C
+        rodset[k + 2] = nm.startswith("R")
+    keep = ~(rodset[flat[rows] + 1] & rodset[flat[cols] + 1] & (flat[rows] != flat[cols]))   # segment | segment: R || C
     L = lap_from_edges(nr * nz, rows[keep], cols[keep], vals[keep])
     free = np.where(flat < 0)[0]
     K = len(names)
@@ -391,8 +391,10 @@ def debye_mu(g, f):
     return 1 + (g["mu_i"] - 1) / (1 + 1j * np.asarray(f) / g["f_r"])
 
 
-def core_fit(ms, g, log=print, nf=34, fband=(1e3, 3e9), npole=14):
-    """dL(jw) = L_inf + sum K_q/(jw + p_q), K_q, L_inf PSD; dT(jw) = T_inf + sum d_q p_q/(jw + p_q)."""
+def core_fit(ms, g, log=print, nf=34, fband=(1e3, 3e9), npole=22):
+    """dL(jw) = L_inf + sum K_q/(jw + p_q) fitted per eigen-mode of dL(0) with NNLS (K_q = U diag(c_q) U^T, c >= 0:
+    positive-real, passive); the modal cross terms dropped are reported (off). dT(jw) = T_inf + sum d_q p_q/(jw + p_q)
+    by least squares on the same poles."""
     M1, T1 = ms.solve(1.0)
     f = np.logspace(math.log10(fband[0]), math.log10(fband[1]), nf)
     dL, dT = [], []
@@ -403,34 +405,33 @@ def core_fit(ms, g, log=print, nf=34, fband=(1e3, 3e9), npole=14):
         dT.append(Tk - T1)
     dL, dT = np.array(dL), np.array(dT)
     w = 2 * math.pi * f
-    p = 2 * math.pi * np.logspace(math.log10(fband[0]), math.log10(fband[1]), npole)
+    p = 2 * math.pi * np.logspace(math.log10(fband[0]), math.log10(fband[1]) + 0.5, npole)
     basisL = np.hstack([np.ones((nf, 1)), 1 / (1j * w[:, None] + p[None, :])])
-    basisT = np.hstack([np.ones((nf, 1)), p[None, :] / (1j * w[:, None] + p[None, :])])
-    sc = 1 / np.linalg.norm(dL.reshape(nf, -1), axis=1)
+    ev, U = np.linalg.eigh(0.5 * (dL[0].real + dL[0].real.T))
+    D = np.einsum("ia,fij,jb->fab", U, dL, U)
+    off = float(max(np.linalg.norm(Dk - np.diag(np.diag(Dk))) / np.linalg.norm(Dk) for Dk in D))
     N = dL.shape[1]
-
-    def lsq(basis, Y, s):
-        A = np.vstack([basis.real * s[:, None], basis.imag * s[:, None]])
-        B = np.vstack([Y.real * s[:, None], Y.imag * s[:, None]])
-        return np.linalg.lstsq(A, B, rcond=None)[0]
-
-    X = lsq(basisL, dL.reshape(nf, -1), sc).reshape(npole + 1, N, N)
-    Xp = []
-    for Kq in X:                                       # PSD projection (passivity)
-        Kq = 0.5 * (Kq + Kq.T)
-        ev, V = np.linalg.eigh(Kq)
-        Xp.append((V * np.clip(ev, 0, None)) @ V.T)
-    Xp = np.array(Xp)
+    c = np.zeros((npole + 1, N))
+    for m in range(N):
+        y = D[:, m, m]
+        s = 1 / np.clip(np.abs(y), 1e-30, None)
+        A = np.vstack([basisL.real * s[:, None], basisL.imag * s[:, None]])
+        c[:, m], _ = nnls(A, np.concatenate([y.real * s, y.imag * s]))
+    Xp = np.einsum("ia,qa,ja->qij", U, c, U)
     fitL = np.einsum("fq,qij->fij", basisL, Xp)
-    errL = float(np.max(np.linalg.norm((fitL - dL).reshape(nf, -1), axis=1) * sc))
+    errL = float(np.max(np.linalg.norm((fitL - dL).reshape(nf, -1), axis=1) / np.linalg.norm(dL.reshape(nf, -1), axis=1)))
+    basisT = np.hstack([np.ones((nf, 1)), p[None, :] / (1j * w[:, None] + p[None, :])])
     scT = 1 / np.maximum(np.linalg.norm(dT.reshape(nf, -1), axis=1), 1e-30)
-    D = lsq(basisT, dT.reshape(nf, -1), scT).reshape(npole + 1, *dT.shape[1:])
-    fitT = np.einsum("fq,qij->fij", basisT, D)
+    A = np.vstack([basisT.real * scT[:, None], basisT.imag * scT[:, None]])
+    Y = dT.reshape(nf, -1)
+    B = np.vstack([Y.real * scT[:, None], Y.imag * scT[:, None]])
+    Dt = np.linalg.lstsq(A, B, rcond=None)[0].reshape(npole + 1, *dT.shape[1:])
+    fitT = np.einsum("fq,qij->fij", basisT, Dt)
     errT = float(np.max(np.linalg.norm((fitT - dT).reshape(nf, -1), axis=1) * scT))
-    log(f"  core fit: {nf} complex solves {time.time() - t0:.0f} s; dL err {errL * 100:.2f} %, dT err {errT * 100:.2f} %"
-        f"; dL(0)/L_air(diag) {np.trace(dL[0].real) / np.trace(M1):.2f}")
-    return dict(p=p, L_inf=Xp[0], K=Xp[1:], T_inf=D[0], d=D[1:], errL=errL, errT=errT, f=f,
-                dL_diag=np.array([np.trace(x) for x in dL]), M1=M1, T1=T1)
+    log(f"  core fit: {nf} complex solves {time.time() - t0:.0f} s; dL err {errL * 100:.2f} % (modal cross terms"
+        f" {off * 100:.1f} %), dT err {errT * 100:.2f} %; tr dL(0)/tr L_air {np.trace(dL[0].real) / np.trace(M1):.2f}")
+    return dict(p=p, L_inf=Xp[0], K=Xp[1:], T_inf=Dt[0], d=Dt[1:], errL=errL, errT=errT, off=off, f=f,
+                dL_tr=np.array([np.trace(x) for x in dL]), dL0=dL[0].real, M1=M1, T1=T1)
 
 
 def gate_ms(log=print):
@@ -769,22 +770,15 @@ class Ladder:
         L.append("* edge_coil ladder (G-SPICE)")
         for k, b in enumerate(self.br):
             a_, b_ = nm(b[0]), nm(b[1])
-            mids = [f"X{k}_{j}" for j in range(len(self.relax) + 1)]
-            L.append(f"L{k} {a_} {mids[0]} {self.Lb[k, k]:.9e}")
-            L.append(f"R0_{k} {mids[0]} {mids[1] if self.relax else b_} {max(self.R0b[k], 1e-6):.9e}")
-            for q, (p, K, d) in enumerate(self.relax):
-                if K.ndim != 1:
-                    raise ValueError("G-SPICE deck supports the skin network and static mu only")
-                n1 = mids[q + 1]
-                n2 = mids[q + 2] if q + 2 < len(mids) else b_
-                if q + 1 == len(mids) - 1:
-                    n2 = b_
-                Rq = K[k]
-                if Rq <= 0:
-                    L.append(f"Rz{k}_{q} {n1} {n2} 1e-9")
-                    continue
-                L.append(f"Rf{k}_{q} {n1} {n2} {Rq:.9e}")
-                L.append(f"Lf{k}_{q} {n1} {n2} {Rq / p:.9e}")
+            secs = [(K[k], p) for p, K, d in self.relax if K.ndim == 1 and K[k] > 0]
+            if any(K.ndim != 1 for p, K, d in self.relax):
+                raise ValueError("G-SPICE deck supports the skin network and static mu only")
+            chain = [a_] + [f"X{k}_{j}" for j in range(len(secs) + 1)] + [b_]
+            L.append(f"L{k} {chain[0]} {chain[1]} {self.Lb[k, k]:.12e}")
+            L.append(f"R0_{k} {chain[1]} {chain[2]} {max(self.R0b[k], 1e-9):.12e}")
+            for q, (Rq, p) in enumerate(secs):
+                L.append(f"Rf{k}_{q} {chain[q + 2]} {chain[q + 3]} {Rq:.12e}")
+                L.append(f"Lf{k}_{q} {chain[q + 2]} {chain[q + 3]} {Rq / p:.12e}")
         kk = 0
         for k1 in range(nb):
             for k2 in range(k1 + 1, nb):
@@ -804,7 +798,7 @@ class Ladder:
                     L.append(f"Cm{cc} {nm(x)} {nm(y)} {-Cn[x, y]:.9e}")
                     cc += 1
                 if Gn[x, y] < 0:
-                    L.append(f"Gr{cc} {nm(x)} {nm(y)} {-1 / Gn[x, y]:.9e}")
+                    L.append(f"Rrod{cc} {nm(x)} {nm(y)} {-1 / Gn[x, y]:.9e}")
                     cc += 1
         sd = self.src[0]
         T = tr / 0.5903
@@ -905,3 +899,348 @@ def tdr(t, vt, t50, Rs, Vs=1.0, tau0=None):
             break
         tau = tnew
     return dict(Z0=Z0, tau=tau, L_seen=Z0 * tau, C_seen=tau / Z0)
+
+
+# ======================================================================================================
+# 8. experiments: gates, P-EDGE-1..7, regime ratios -> results JSON + raw per-turn npz               [ME]
+# ======================================================================================================
+_CACHE = {}
+
+
+def build(over=None, pair=False, mismatch=0, targets=(0.0,), log=print):
+    g = dict(GEOM, **(over or {}))
+    a, turns, rods = coil_layout(g, pair, mismatch)
+    key = json.dumps([{k: g[k] for k in sorted(g) if k not in ("mu",)}, pair, mismatch], sort_keys=True)
+    if key not in _CACHE:
+        log(f"extract: pair={pair} mismatch={mismatch} N={g['n_turns']} pitch={g['pitch']} rod={g['rod']}")
+        es = es_extract(g, turns, rods, log=log)
+        _CACHE[key] = dict(es=es, ms={}, core={})
+    ent = _CACHE[key]
+    tk = tuple(targets)
+    if g["rod"] and tk not in ent["ms"]:
+        ent["ms"][tk] = MS(g, turns, rods, targets)
+    core = None
+    if g["rod"]:
+        ms = ent["ms"][tk]
+        mk = (tk, "debye" if g["mu"] is None else float(g["mu"]))
+        if mk not in ent["core"]:
+            if g["mu"] is None:
+                ent["core"][mk] = core_fit(ms, g, log=log)
+            elif float(g["mu"]) != 1.0:
+                M1, T1 = ms.solve(1.0)
+                Mm, Tm = ms.solve(float(g["mu"]))
+                ent["core"][mk] = dict(static=(Mm - M1, Tm - T1))
+            else:
+                ent["core"][mk] = None
+        core = ent["core"][mk]
+    return g, turns, rods, ent["es"], core
+
+
+def _save_raw(name, lad, r, meta):
+    os.makedirs(RAW, exist_ok=True)
+    inv = {v: k for k, v in lad.nodes.items()}
+    turn_of = [f"T{lad.turns[b[2]]['coil']}.{lad.turns[b[2]]['k']}" if b[2] is not None else "lead" for b in lad.br]
+    np.savez_compressed(
+        os.path.join(RAW, name + ".npz"), t=r["t"], v_node=r["v"].astype(np.float32), i_branch=r["i"].astype(np.float32),
+        i_source=r["i_s"], B=r["B"], node_names=np.array([inv[k] for k in range(lad.nn)]),
+        branch_turn=np.array(turn_of), branch_from=np.array([b[0] for b in lad.br]),
+        branch_to=np.array([b[1] for b in lad.br]), branch_sign=lad.sgn,
+        turn_z_mm=np.array([lad.turns[b[2]]["z"] if b[2] is not None else np.nan for b in lad.br]),
+        meta=json.dumps(meta))
+
+
+def run_case(name, over=None, pair=False, feed="single", mismatch=0, tr=2e-9, Rs=0.0, targets=(0.0,), t_mult=4.0,
+             tau_hint=None, h=None, save=True, cap_map="mean", log=print):
+    g, turns, rods, es, core = build(over, pair, mismatch, targets, log=log)
+    lad = Ladder(g, turns, rods, es, core=core, feed=feed, Rs=Rs, targets=targets, cap_map=cap_map)
+    N0 = len(lad.coil_turns[0])
+    mu_eff = float(lad.Lb[np.ix_(lad.isturn, lad.isturn)].sum() / lad.L_air[np.ix_(lad.isturn, lad.isturn)].sum())
+    idg = ideal_line(g, es, turns, coil_ix=0, mu_eff=mu_eff, rod_grounded=True)
+    tau_g = tau_hint or idg["tau"]
+    vs, t50 = edge(tr)
+    h = h or min(tr / 50, tau_g / (6 * N0))
+    t_end = t50 + t_mult * tau_g * (2 if pair else 1)
+    t0 = time.time()
+    r = lad.transient(lambda t: vs(t), t_end, h)
+    meta = dict(name=name, over=over or {}, pair=pair, feed=feed, mismatch=mismatch, tr=tr, Rs=Rs, h=h,
+                targets_mm=list(targets), t50=t50, L_pd=lad.L_pd, L_min_eig=lad.L_min_eig, mu_eff_dc=mu_eff,
+                ideal_rod_grounded=idg, ideal_rod_floating=ideal_line(g, es, turns, coil_ix=0, mu_eff=mu_eff),
+                ideal_mu1_rod_floating=ideal_line(g, es, turns, coil_ix=0), alpha=alpha_of(es, 0) if True else None,
+                units=dict(t="s", v_node="V per V of source", i_branch="A per V (wire direction a->b)",
+                           i_source="A per V", B="T per V, [time, target, coil]"),
+                cpu_s=time.time() - t0)
+    log(f"  run {name}: {len(r['t'])} steps h={h * 1e12:.0f} ps, {time.time() - t0:.1f} s, L_pd={lad.L_pd}")
+    if save:
+        _save_raw(name, lad, r, meta)
+    return dict(lad=lad, r=r, meta=meta, t50=t50, es=es, g=g, turns=turns)
+
+
+def readout_single(c, tau0):
+    r, t50 = c["r"], c["t50"]
+    t = r["t"]
+    tr = c["meta"]["tr"]
+    if c["meta"]["Rs"] > 0:
+        lad = c["lad"]
+        vt = r["v"][:, lad.src[0]["term"]]
+        out = tdr(t, vt, t50, c["meta"]["Rs"], tau0=tau0)
+    else:
+        out = tau_from_current(t, r["i_s"][:, 0], t50, tau0=tau0, tr=tr)
+    tau = out["tau"]
+    w = (t >= t50) & (t <= t50 + 1.5 * tau)
+    Bc = r["B"][:, 0, :].sum(axis=1)
+    out["B_peak_fill"] = float(np.max(np.abs(Bc[w])))
+    out["B_peak_record"] = float(np.max(np.abs(Bc)))
+    vsf, _ = edge(tr)
+    Vs = np.array([vsf(x) for x in t])
+    P = Vs * r["i_s"][:, 0]
+    E_src = float(np.trapezoid(P[w], t[w]))
+    out["E_src_fill"] = E_src
+    if c["meta"]["Rs"] > 0:
+        vt = r["v"][:, c["lad"].src[0]["term"]]
+        out["E_coil_fill"] = float(np.trapezoid((vt * r["i_s"][:, 0])[w], t[w]))
+        out["accepted_share"] = out["E_coil_fill"] / E_src
+    out["B_per_J"] = out["B_peak_fill"] / E_src
+    out["B_per_sqrtJ"] = out["B_peak_fill"] / math.sqrt(E_src)
+    out["tr_over_tau"] = tr / tau
+    out["tr_over_tau_turn"] = tr / (tau / len(c["lad"].coil_turns[0]))
+    return out
+
+
+def section_stress(c, tau):
+    """max |v_k - v_k+1| over (0, tau) along coil 0's chain (single feed)."""
+    r, t50, lad = c["r"], c["t50"], c["lad"]
+    t = r["t"]
+    w = (t >= t50) & (t <= t50 + tau)
+    secs = [k for k in range(lad.nb) if lad.isturn[k]]
+    vs = []
+    for k in secs:
+        a_, b_ = lad.br[k][0], lad.br[k][1]
+        va = r["v"][:, a_] if a_ >= 0 else 0 * t
+        vb = r["v"][:, b_] if b_ >= 0 else 0 * t
+        vs.append(np.abs(va - vb)[w].max())
+    vs = np.array(vs)
+    kmax = int(vs.argmax())
+    N = len(secs)
+    return dict(V_max_per_V=float(vs.max()), section=kmax + 1, N=N, first_tenth=kmax + 1 <= max(1, N // 10),
+                profile=vs.tolist())
+
+
+def fit_power(x, y):
+    b, a = np.polyfit(np.log(x), np.log(y), 1)
+    return float(b)
+
+
+def gates(log=print):
+    out = dict(G_ES=gate_es(log), G_MS=gate_ms(log))
+    R0, p, R, err = skin_fit(GEOM["wire_d"] / 2e3, 2 * math.pi * (GEOM["r_rod"] + GEOM["former_t"] + GEOM["wire_d"] / 2) * 1e-3)
+    out["G_SKIN"] = dict(max_rel_err=err, poles_used=int((R > 0).sum()), pass_=err <= 0.03)
+    log(f"G-SKIN Foster fit max |dZ|/|Z| {err * 100:.2f} % ({int((R > 0).sum())} R-L sections)")
+    # G-SPICE: the default single coil, mu = 1, end-lumped capacitance (physical caps for SPICE)
+    c = run_case("gspice", over=dict(mu=1.0), cap_map="end", save=False, h=2e-11, t_mult=3.0, log=log)
+    lad, r = c["lad"], c["r"]
+    with tempfile.TemporaryDirectory() as td:
+        base = os.path.join(td, "g")
+        lad.spice_deck(2e-9, r["t"][-1], 2e-11, base)
+        subprocess.run(["ngspice", "-b", base + ".cir"], capture_output=True, text=True, timeout=3000)
+        d = np.loadtxt(base + ".dat")
+    ts, isp = d[:, 0], -d[:, 1]
+    mine = np.interp(ts, r["t"], r["i_s"][:, 0])
+    w = ts > c["t50"]
+    e = float(np.max(np.abs(isp[w] - mine[w])) / np.max(np.abs(mine[w])))
+    out["G_SPICE"] = dict(max_rel_err=e, pass_=e <= 0.01, n_steps=int(len(ts)))
+    log(f"G-SPICE ngspice vs ladder terminal current: max diff {e * 100:.3f} % of peak")
+    return out
+
+
+def runs(log=print):
+    res = dict(assumptions=GEOM, predictions={}, regime={}, runs={})
+    T1 = (0.0,)
+    # --- P-EDGE-1, 4 (mu = 1) and the default Debye single coil ---------------------------------------
+    c1 = run_case("single_N40_mu1", over=dict(mu=1.0), log=log)
+    r1 = readout_single(c1, c1["meta"]["ideal_rod_grounded"]["tau"])
+    st = section_stress(c1, r1["tau"])
+    al = c1["meta"]["alpha"]
+    res["runs"]["single_N40_mu1"] = dict(readout=r1, stress=st, meta=c1["meta"])
+    ide = c1["meta"]["ideal_rod_floating"]
+    ideg = c1["meta"]["ideal_rod_grounded"]
+    v1 = "PASS" if r1["flat"] <= 1.5 else ("KILL" if r1["flat"] >= 3.0 else "INCONCLUSIVE")
+    res["predictions"]["P-EDGE-1"] = dict(
+        verdict=v1, flat_ratio_i16_over_i04=r1["flat"], lumped_ramp_ratio=4.0, Z0_ladder=r1["Z0"], tau_ladder=r1["tau"],
+        Z0_ideal_rod_floating=ide["Z0"], Z0_ideal_rod_grounded=ideg["Z0"], tau_ideal_rod_floating=ide["tau"],
+        tau_ideal_rod_grounded=ideg["tau"], raw="edge_coil_raw/single_N40_mu1.npz")
+    log(f"P-EDGE-1 {v1}: flat {r1['flat']:.2f}; Z0 ladder {r1['Z0']:.0f} vs ideal {ide['Z0']:.0f} (rod floating) /"
+        f" {ideg['Z0']:.0f} (rod grounded) Ohm; tau {r1['tau'] * 1e9:.2f} ns")
+    ok4 = al["alpha"] >= 3
+    V0N = 1.0 / st["N"]
+    res["predictions"]["P-EDGE-4"] = dict(
+        verdict=("PASS" if st["first_tenth"] else "KILL") if ok4 else "NOT-APPLICABLE (alpha < 3)",
+        alpha=al["alpha"], C_g=al["C_g"], C_s=al["C_s"], section_of_max=st["section"], N=st["N"],
+        V_max_per_kV=st["V_max_per_V"] * 1e3, ratio_to_V0_over_N=st["V_max_per_V"] / V0N,
+        alpha_coth_alpha=al["alpha"] / math.tanh(al["alpha"]), profile_per_V=st["profile"],
+        raw="edge_coil_raw/single_N40_mu1.npz")
+    log(f"P-EDGE-4: alpha {al['alpha']:.1f}; max section voltage at section {st['section']}/{st['N']},"
+        f" {st['V_max_per_V'] / V0N:.1f} x V0/N (alpha coth alpha {al['alpha'] / math.tanh(al['alpha']):.1f})")
+    # --- P-EDGE-2: n sweep, mu = 1 --------------------------------------------------------------------
+    rows = []
+    for N in (20, 40, 60, 80):
+        nm = f"single_N{N}_mu1"
+        c = c1 if N == 40 else run_case(nm, over=dict(mu=1.0, n_turns=N, pitch=60.0 / N), log=log)
+        rd = r1 if N == 40 else readout_single(c, c["meta"]["ideal_rod_grounded"]["tau"])
+        stn = section_stress(c, rd["tau"])
+        rows.append(dict(N=N, n_per_m=N / 0.060, B_peak=rd["B_peak_fill"], Z0=rd["Z0"], tau=rd["tau"], flat=rd["flat"],
+                         alpha=c["meta"]["alpha"]["alpha"], stress_section=stn["section"], stress_first_tenth=stn["first_tenth"],
+                         raw=f"edge_coil_raw/{nm}.npz"))
+        res["runs"][nm] = dict(readout=rd, stress=stn, meta=c["meta"])
+    beta = fit_power([x["n_per_m"] for x in rows], [x["B_peak"] for x in rows])
+    v2 = "PASS" if abs(beta) < 0.3 else ("KILL" if beta > 0.7 else "INCONCLUSIVE")
+    res["predictions"]["P-EDGE-2"] = dict(verdict=v2, beta=beta, rows=rows,
+                                          beta_Z0=fit_power([x["n_per_m"] for x in rows], [x["Z0"] for x in rows]),
+                                          beta_tau=fit_power([x["n_per_m"] for x in rows], [x["tau"] for x in rows]))
+    log(f"P-EDGE-2 {v2}: beta {beta:+.3f} (Z0 ~ n^{res['predictions']['P-EDGE-2']['beta_Z0']:.2f},"
+        f" tau ~ n^{res['predictions']['P-EDGE-2']['beta_tau']:.2f})")
+    # --- P-EDGE-3: mu sweep -------------------------------------------------------------------------
+    rows = []
+    for mu in (1.0, 4.0, 16.0, 64.0):
+        nm = f"single_N40_mu{int(mu)}"
+        c = c1 if mu == 1 else run_case(nm, over=dict(mu=mu), log=log)
+        rd = r1 if mu == 1 else readout_single(c, c["meta"]["ideal_rod_grounded"]["tau"])
+        rows.append(dict(mu=mu, mu_eff_dc=c["meta"]["mu_eff_dc"], B_peak=rd["B_peak_fill"], Z0=rd["Z0"], tau=rd["tau"],
+                         flat=rd["flat"], raw=f"edge_coil_raw/{nm}.npz"))
+        res["runs"][nm] = dict(readout=rd, meta=c["meta"])
+    gam = fit_power([x["mu"] for x in rows], [x["B_peak"] for x in rows])
+    gam_eff = fit_power([x["mu_eff_dc"] for x in rows], [x["B_peak"] for x in rows])
+    v3 = "PASS" if 0.35 < gam < 0.65 else ("KILL" if gam > 0.85 else "INCONCLUSIVE")
+    res["predictions"]["P-EDGE-3"] = dict(verdict=v3, gamma=gam, gamma_vs_mu_eff=gam_eff, rows=rows)
+    log(f"P-EDGE-3 {v3}: gamma {gam:.3f} vs the test mu; {gam_eff:.3f} vs the ladder's mu_eff")
+    # --- default apparatus coil (Debye MnZn), TDRs (P-EDGE-6/7), regime ---------------------------------
+    cd = run_case("single_N40_mnzn", log=log)
+    rd = readout_single(cd, cd["meta"]["ideal_rod_grounded"]["tau"])
+    res["runs"]["single_N40_mnzn"] = dict(readout=rd, stress=section_stress(cd, rd["tau"]), meta=cd["meta"])
+    tau1 = rd["tau"]
+    log(f"default coil (MnZn): Z0 {rd['Z0']:.0f} Ohm, tau {tau1 * 1e9:.2f} ns, flat {rd['flat']:.2f}, B {rd['B_peak_fill'] * 1e6:.3f} uT/V")
+    ct = run_case("tdr_N40_mnzn", Rs=50.0, tau_hint=tau1, log=log)
+    rt = readout_single(ct, tau1)
+    cn = run_case("tdr_N40_norod", over=dict(rod=False, mu=1.0), Rs=50.0, tau_hint=tau1, log=log)
+    rn = readout_single(cn, cn["meta"]["ideal_rod_grounded"]["tau"])
+    res["runs"]["tdr_N40_mnzn"] = dict(readout=rt, meta=ct["meta"])
+    res["runs"]["tdr_N40_norod"] = dict(readout=rn, meta=cn["meta"])
+    kL, kC = rt["L_seen"] / rn["L_seen"], rt["C_seen"] / rn["C_seen"]
+    res["predictions"]["P-EDGE-7"] = dict(
+        verdict="PASS (ladder)" if kC > kL else "KILL (ladder)", ladder_L_seen_ratio=kL, ladder_C_seen_ratio=kC,
+        with_rod=dict(Z0=rt["Z0"], tau=rt["tau"], L_seen=rt["L_seen"], C_seen=rt["C_seen"]),
+        without_rod=dict(Z0=rn["Z0"], tau=rn["tau"], L_seen=rn["L_seen"], C_seen=rn["C_seen"]),
+        note="ladder values registered before bench TDR; the bench verdict is TMD's",
+        raw=["edge_coil_raw/tdr_N40_mnzn.npz", "edge_coil_raw/tdr_N40_norod.npz"])
+    log(f"P-EDGE-7 (ladder): rod raises C_seen x{kC:.2f}, L_seen x{kL:.2f}")
+    reg = []
+    for trx in (0.5e-9, 2e-9, 10e-9, 50e-9):
+        reg.append(dict(t_r=trx, tau=tau1, tau_turn=tau1 / 40, tr_over_tau=trx / tau1, tr_over_tau_turn=trx / (tau1 / 40),
+                        regime=("lumped (>= 10 tau)" if trx >= 10 * tau1 else
+                                ("ladder; full-wave check (t_r < tau_turn)" if trx < tau1 / 40 else "ladder"))))
+    c05 = run_case("single_N40_mnzn_tr0p5", tr=0.5e-9, tau_hint=tau1, log=log)
+    r05 = readout_single(c05, tau1)
+    res["runs"]["single_N40_mnzn_tr0p5"] = dict(readout=r05, meta=c05["meta"])
+    res["regime"] = dict(default_coil=reg, per_run={k: dict(tr_over_tau=v["readout"]["tr_over_tau"],
+                                                           tr_over_tau_turn=v["readout"]["tr_over_tau_turn"])
+                                                    for k, v in res["runs"].items() if "readout" in v})
+    # --- P-EDGE-5: the pair --------------------------------------------------------------------------
+    tg = (0.0, -1.0, 1.0)
+    p5 = {}
+    for feed, mm in (("end", 0), ("junction", 0), ("odd", 0), ("junction", 1)):
+        nm = f"pair_{feed}" + (f"_mismatch{mm}" if mm else "")
+        c = run_case(nm, pair=True, feed=feed, mismatch=mm, targets=tg, tau_hint=tau1, log=log)
+        xv, Bdc = c["lad"].dc()
+        B_A, B_B = c["r"]["B"][:, 0, 0], c["r"]["B"][:, 0, 1]
+        t, t50 = c["r"]["t"], c["t50"]
+        w = (t >= t50) & (t <= t50 + tau1)
+        gradA = (c["r"]["B"][:, 2, 0] - c["r"]["B"][:, 1, 0]) / 2e-3
+        gradB = (c["r"]["B"][:, 2, 1] - c["r"]["B"][:, 1, 1]) / 2e-3
+        row = dict(
+            dc_B_centre_A=float(Bdc[0][0]), dc_B_centre_B=float(Bdc[1][0]),
+            dc_null_rel=float(abs(Bdc[0][0] + Bdc[1][0]) / max(abs(Bdc[0][0]), 1e-30)),
+            dc_gradient=float((Bdc[0][2] + Bdc[1][2] - Bdc[0][1] - Bdc[1][1]) / 2e-3),
+            maxA=float(np.abs(B_A[w]).max()), maxB=float(np.abs(B_B[w]).max()), maxSum=float(np.abs((B_A + B_B)[w]).max()),
+            ratio_B_over_A=float(np.abs(B_B[w]).max() / np.abs(B_A[w]).max()),
+            ratio_sum_over_A=float(np.abs((B_A + B_B)[w]).max() / np.abs(B_A[w]).max()),
+            grad_peak_fill=float(np.abs((gradA + gradB)[w]).max()), grad_peak_record=float(np.abs(gradA + gradB).max()),
+            raw=f"edge_coil_raw/{nm}.npz", L_pd=c["meta"]["L_pd"])
+        vsf, _ = edge(2e-9)
+        P = np.array([vsf(x) for x in t])[:, None] * c["r"]["i_s"] * np.array([sd["amp"] for sd in c["lad"].src])[None, :]
+        row["E_src_fill"] = float(np.trapezoid(P[w].sum(axis=1), t[w]))
+        row["grad_per_sqrtJ"] = row["grad_peak_fill"] / math.sqrt(row["E_src_fill"])
+        p5[nm] = row
+        res["runs"][nm] = dict(readout=row, meta=c["meta"])
+        log(f"  {nm}: DC null rel {row['dc_null_rel']:.2e}; flank: |B_B|/|B_A| {row['ratio_B_over_A']:.3f},"
+            f" |B_A+B_B|/|B_A| {row['ratio_sum_over_A']:.3f}; grad {row['grad_peak_fill']:.3e} T/m/V")
+    e, j = p5["pair_end"], p5["pair_junction"]
+    ve = e["ratio_B_over_A"] < 0.10
+    vj = j["ratio_sum_over_A"] < 0.10
+    res["predictions"]["P-EDGE-5"] = dict(
+        verdict="PASS" if (ve and vj) else "KILL", end_fed_pass=ve, symmetric_pass=vj, tau1=tau1,
+        end_fed_ratio_B_over_A=e["ratio_B_over_A"], junction_ratio_sum_over_A=j["ratio_sum_over_A"],
+        odd_ratio_sum_over_A=p5["pair_odd"]["ratio_sum_over_A"],
+        junction_mismatch1_ratio_sum_over_A=p5["pair_junction_mismatch1"]["ratio_sum_over_A"], cases=p5)
+    log(f"P-EDGE-5 {res['predictions']['P-EDGE-5']['verdict']}: end-fed B/A {e['ratio_B_over_A']:.3f}; junction"
+        f" sum/A {j['ratio_sum_over_A']:.3f}; odd {p5['pair_odd']['ratio_sum_over_A']:.3f}; 1-turn mismatch"
+        f" {p5['pair_junction_mismatch1']['ratio_sum_over_A']:.3f}")
+    # --- P-EDGE-6: registered ladder values -----------------------------------------------------------
+    cj50 = run_case("pair_junction_Rs50", pair=True, feed="junction", targets=tg, Rs=50.0, tau_hint=tau1, log=log)
+    t, t50 = cj50["r"]["t"], cj50["t50"]
+    g50 = (cj50["r"]["B"][:, 2, :].sum(1) - cj50["r"]["B"][:, 1, :].sum(1)) / 2e-3
+    w = (t >= t50) & (t <= t50 + tau1)
+    res["predictions"]["P-EDGE-6"] = dict(
+        verdict="REGISTERED (bench data pending)",
+        TDR_50ohm=dict(Z0=rt["Z0"], tau=rt["tau"]), ideal_step=dict(Z0=rd["Z0"], tau=rd["tau"]),
+        B_centre_single_per_V=dict(Zs0_fill=rd["B_peak_fill"], Zs0_record=rd["B_peak_record"],
+                                   Zs50_fill=rt["B_peak_fill"], Zs50_record=rt["B_peak_record"]),
+        gradient_pair_junction_per_V=dict(Zs0_fill=j["grad_peak_fill"], Zs0_record=j["grad_peak_record"],
+                                          Zs50_fill=float(np.abs(g50[w]).max()), Zs50_record=float(np.abs(g50).max())),
+        accepted_share_Zs50_single=rt.get("accepted_share"),
+        raw=["edge_coil_raw/tdr_N40_mnzn.npz", "edge_coil_raw/single_N40_mnzn.npz", "edge_coil_raw/pair_junction.npz",
+             "edge_coil_raw/pair_junction_Rs50.npz"])
+    res["runs"]["pair_junction_Rs50"] = dict(meta=cj50["meta"])
+    # --- G-DT: halve the step on the default coil and the junction pair ---------------------------------
+    ch = run_case("dt_check_single", h=cd["meta"]["h"] / 2, tau_hint=None, save=False, log=log)
+    rh = readout_single(ch, cd["meta"]["ideal_rod_grounded"]["tau"])
+    cjh = run_case("dt_check_pair", pair=True, feed="junction", targets=tg, tau_hint=tau1, save=False,
+                   h=res["runs"]["pair_junction"]["meta"]["h"] / 2, log=log)
+    tt, t50 = cjh["r"]["t"], cjh["t50"]
+    ww = (tt >= t50) & (tt <= t50 + tau1)
+    gh = (cjh["r"]["B"][:, 2, :].sum(1) - cjh["r"]["B"][:, 1, :].sum(1)) / 2e-3
+    dts = dict(Z0=rh["Z0"] / rd["Z0"] - 1, tau=rh["tau"] / rd["tau"] - 1, B=rh["B_peak_fill"] / rd["B_peak_fill"] - 1,
+               grad=float(np.abs(gh[ww]).max()) / j["grad_peak_fill"] - 1)
+    res["gate_dt"] = dict(changes=dts, pass_=all(abs(v) <= 0.01 for v in dts.values()))
+    log(f"G-DT: {json.dumps({k: round(v, 5) for k, v in dts.items()})}")
+    # core-fit quality for the record
+    for key, ent in _CACHE.items():
+        for mk, cf in ent["core"].items():
+            if cf is not None and "errL" in cf:
+                res.setdefault("core_fits", []).append(dict(targets=list(mk[0]), errL=cf["errL"], errT=cf["errT"],
+                                                            modal_cross_terms=cf["off"]))
+    return res
+
+
+def _jsonable(o):
+    if isinstance(o, dict):
+        return {str(k): _jsonable(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [_jsonable(v) for v in o]
+    if isinstance(o, (np.floating, np.integer)):
+        return o.item()
+    if isinstance(o, np.bool_):
+        return bool(o)
+    if isinstance(o, np.ndarray):
+        return o.tolist()
+    return o
+
+
+if __name__ == "__main__":
+    what = sys.argv[1] if len(sys.argv) > 1 else "all"
+    out = json.load(open(RESULTS)) if os.path.exists(RESULTS) else {}
+    if what in ("gates", "all"):
+        out["gates"] = gates()
+    if what in ("runs", "all"):
+        out.update(runs())
+    out["stamp"] = time.strftime("%Y-%m-%d %H:%M:%S %Z")
+    json.dump(_jsonable(out), open(RESULTS, "w"), indent=1)
+    print("->", RESULTS)
