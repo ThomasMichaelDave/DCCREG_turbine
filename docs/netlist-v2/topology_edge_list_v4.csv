@@ -1,0 +1,44 @@
+component,node_a,node_b,source,status,nr_name
+Ca1,1,2,DCCREG_Turbine_circuit_v4.net,netlisted,Ca1
+Cb1,4,3,DCCREG_Turbine_circuit_v4.net,netlisted,Cb1
+C1,1,R-A,DCCREG_Turbine_circuit_v4.net,netlisted,C1
+C2,4,R-B,DCCREG_Turbine_circuit_v4.net,netlisted,C2
+L_A1,2,mA1,DCCREG_Turbine_circuit_v4.net,netlisted (mA1 = Net-(L_A1-Pad1)),L_A1
+SG1-1,mA1,R-A,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG1 (split x6)
+L_A2,2,mA2,DCCREG_Turbine_circuit_v4.net,netlisted (mA2 = Net-(L_A2-Pad1)),L_A2
+SG1-2,mA2,R-A,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG1 (split x6)
+L_A3,2,mA3,DCCREG_Turbine_circuit_v4.net,netlisted (mA3 = Net-(L_A3-Pad1)),L_A3
+SG1-3,mA3,R-A,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG1 (split x6)
+L_A4,2,mA4,DCCREG_Turbine_circuit_v4.net,netlisted (mA4 = Net-(L_A4-Pad1)),L_A4
+SG1-4,mA4,R-A,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG1 (split x6)
+L_A5,2,mA5,DCCREG_Turbine_circuit_v4.net,netlisted (mA5 = Net-(L_A5-Pad1)),L_A5
+SG1-5,mA5,R-A,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG1 (split x6)
+L_A6,2,mA6,DCCREG_Turbine_circuit_v4.net,netlisted (mA6 = Net-(L_A6-Pad1)),L_A6
+SG1-6,mA6,R-A,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG1 (split x6)
+L_B1,3,mB1,DCCREG_Turbine_circuit_v4.net,netlisted (mB1 = Net-(L_B1-Pad1)),L_B1
+SG2-1,mB1,R-B,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG2 (split x6)
+L_B2,3,mB2,DCCREG_Turbine_circuit_v4.net,netlisted (mB2 = Net-(L_B2-Pad1)),L_B2
+SG2-2,mB2,R-B,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG2 (split x6)
+L_B3,3,mB3,DCCREG_Turbine_circuit_v4.net,netlisted (mB3 = Net-(L_B3-Pad1)),L_B3
+SG2-3,mB3,R-B,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG2 (split x6)
+L_B4,3,mB4,DCCREG_Turbine_circuit_v4.net,netlisted (mB4 = Net-(L_B4-Pad1)),L_B4
+SG2-4,mB4,R-B,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG2 (split x6)
+L_B5,3,mB5,DCCREG_Turbine_circuit_v4.net,netlisted (mB5 = Net-(L_B5-Pad1)),L_B5
+SG2-5,mB5,R-B,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG2 (split x6)
+L_B6,3,mB6,DCCREG_Turbine_circuit_v4.net,netlisted (mB6 = Net-(L_B6-Pad1)),L_B6
+SG2-6,mB6,R-B,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG2 (split x6)
+SG3a1,1,7,DCCREG_Turbine_circuit_v4.net,netlisted,SG3a1
+SG3b1,7,3,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG3b1
+BS1,7,3,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),BS3
+Cx1,7,n17,DCCREG_Turbine_circuit_v4.net,netlisted,Cx3
+Lx1,n17,3,DCCREG_Turbine_circuit_v4.net,netlisted,Lx3
+SG4a1,4,8,DCCREG_Turbine_circuit_v4.net,netlisted,SG4a1
+SG4b1,8,2,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),SG4b1
+BS2,8,2,schematic PDF v4 (2026-10-05),from PDF (not netlisted: no pins),BS4
+Cx2,8,n23,DCCREG_Turbine_circuit_v4.net,netlisted,Cx4
+Lx2,n23,2,DCCREG_Turbine_circuit_v4.net,netlisted,Lx4
+C_R1,R-A,R-B,DCCREG_Turbine_circuit_v4.net,netlisted -- parallel tank,C_R1
+L_R1,R-A,nR1,DCCREG_Turbine_circuit_v4.net,netlisted,L_R1
+L_AH1,nR1,nJ,DCCREG_Turbine_circuit_v4.net,netlisted,(new)
+L_AH2,nR2,nJ,DCCREG_Turbine_circuit_v4.net,netlisted,(new)
+L_R2,R-B,nR2,DCCREG_Turbine_circuit_v4.net,netlisted,L_R2
