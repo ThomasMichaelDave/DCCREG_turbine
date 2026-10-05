@@ -9,7 +9,7 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Files:**
     - code `sim/motor_geometry.py`; findings `sim/motor-geometry-findings.md`; results `sim/motor_geometry_results.json`;
     - source and pieces under `docs/geometry/motor/`;
-    - build + motor STEP `docs/geometry/il2f-6563b90d-rc40-motor.step` (each piece stored once, then instanced).
+    - build + motor STEP `docs/geometry/il2f-6563b90d-rc40-FULL-pump+motor.step` (each piece stored once, then instanced).
   - **Placement:**
     - utron centre r 627.4 (r 563 + 40 mm clearance), z 0;
     - 12 C-EMs at the register stations, 6 utrons at 15 + 60k;

@@ -5,9 +5,9 @@
 - Source: `docs/geometry/motor/C-em_and_motor_coil_export.step`, from Fusion 360. It holds one C-EM and one utron, spaced as
   the designer drew them.
 - Outputs:
-  - `docs/geometry/il2f-6563b90d-rc40-motor.step`: the CAD build plus the motor. Each piece is stored once and placed 12×
+  - `docs/geometry/il2f-6563b90d-rc40-FULL-pump+motor.step`: the CAD build plus the motor. Each piece is stored once and placed 12×
     (C-EM) or 6× (utron).
-  - `docs/geometry/motor/motor-il2f-6563b90d-rc40.step`: the motor only.
+  - `docs/geometry/motor/MOTOR-ONLY-il2f-6563b90d-rc40.step`: the motor only.
   - `docs/geometry/motor/src/*.step`: each source solid in its local frame.
   - `docs/geometry/motor/il2f-6563b90d-rc40+motor.json`: the build plus the motor in the `pump-geometry/1` schema, for
     `tools/pump-geometry.FCMacro` and the Fusion add-in. Both now accept `shape: "import"`.

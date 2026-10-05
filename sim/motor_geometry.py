@@ -16,7 +16,7 @@ Placement:
 Outputs:
   * docs/geometry/motor/src/<piece>.step: each source solid in the local frame;
   * docs/geometry/motor/motor-<tag>.json: the motor parts in the bill-of-solids schema, with shape "import";
-  * docs/geometry/<build>-motor.step: the build plus the motor as one STEP, with each piece stored once and
+  * docs/geometry/<build>-rc<r>-FULL-pump+motor.step: the complete machine (charge pump + motor) under one root, with each piece stored once and
     instanced;
   * sim/motor_geometry_results.json: the checks.
 Usage: python3 sim/motor_geometry.py [--r-clear 40] [--no-step]
@@ -440,6 +440,14 @@ def write_combined(pieces, parts, out_path, base_step):
     stl = XCAFDoc_DocumentTool.ShapeTool_s(doc.Main())
     col = XCAFDoc_DocumentTool.ColorTool_s(doc.Main())
     name = lambda lab, t: TDataStd_Name.Set_s(lab, TCollection_ExtendedString(t))
+    from OCP.TDF import TDF_ChildIterator
+    base_roots = []
+    it = TDF_ChildIterator(stl.Label(), False)
+    while it.More():
+        lab = it.Value()
+        if stl.IsFree_s(lab) and stl.IsShape_s(lab):
+            base_roots.append(lab)
+        it.Next()
     top = stl.NewShape(); name(top, "motor - C-EMs (stator) and utrons (rotor), from C-em_and_motor_coil_export.step")
     groups = {}
     for g in ("motor-stator", "motor-rotor"):
@@ -454,6 +462,11 @@ def write_combined(pieces, parts, out_path, base_step):
         name(comp, p["label"])
     for g, lab in groups.items():
         c = stl.AddComponent(top, lab, TopLoc_Location()); name(c, g)
+    if base_roots:                                   # one root: the machine = the charge pump + the motor
+        machine = stl.NewShape(); name(machine, "DCCREG machine - charge pump + motor")
+        for lab in base_roots:
+            c = stl.AddComponent(machine, lab, TopLoc_Location()); name(c, "charge pump")
+        c = stl.AddComponent(machine, top, TopLoc_Location()); name(c, "motor")
     stl.UpdateAssemblies()
     Interface_Static.SetCVal_s("write.step.product.name", "PumpGeometry+motor")
     w = STEPCAFControl_Writer(); w.SetNameMode(True); w.SetColorMode(True)
@@ -548,10 +561,10 @@ def main():
     res["G-MOT-MACRO"] = macro_check(pieces, parts, only_json)
     res.update(checks(pieces, pl, parts, build))
     if not a.no_step:
-        out = os.path.join(ROOT, "docs", "geometry", f"{tag}-motor.step")
+        out = os.path.join(ROOT, "docs", "geometry", f"{tag}-FULL-pump+motor.step")
         write_combined(pieces, parts, out, os.path.join(ROOT, "docs", "geometry", BUILD_TAG + ".step"))
         res["step"] = os.path.relpath(out, ROOT)
-        mo = os.path.join(MOTOR_DIR, f"motor-{tag}.step")
+        mo = os.path.join(MOTOR_DIR, f"MOTOR-ONLY-{tag}.step")
         write_combined(pieces, parts, mo, None)
         res["step_motor_only"] = os.path.relpath(mo, ROOT)
     json.dump(res, open(RESULTS, "w"), indent=1, default=float)

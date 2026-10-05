@@ -190,6 +190,6 @@
   "pass_bare": false,
   "note": "the lead SG-k -> coil is the mid node; bare, it uses up the 3.3 pF budget; screened (inner = mid node, screen = the rail-end node, the core bonded to it) its capacitance moves across the coil, where 50 pF costs dz ~ -0.024"
  },
- "step": "docs/geometry/il2f-6563b90d-rc40-motor.step",
- "step_motor_only": "docs/geometry/motor/motor-il2f-6563b90d-rc40.step"
+ "step": "docs/geometry/il2f-6563b90d-rc40-FULL-pump+motor.step",
+ "step_motor_only": "docs/geometry/motor/MOTOR-ONLY-il2f-6563b90d-rc40.step"
 }

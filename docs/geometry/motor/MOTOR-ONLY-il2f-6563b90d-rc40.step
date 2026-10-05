@@ -1,7 +1,7 @@
 ISO-10303-21;
 HEADER;
 FILE_DESCRIPTION(('Open CASCADE Model'),'2;1');
-FILE_NAME('Open CASCADE Shape Model','2026-10-05T13:14:59',('Author'),(
+FILE_NAME('Open CASCADE Shape Model','2026-10-05T13:36:08',('Author'),(
     'Open CASCADE'),'Open CASCADE STEP processor 8.0','Open CASCADE 8.0'
   ,'Unknown');
 FILE_SCHEMA(('AUTOMOTIVE_DESIGN { 1 0 10303 214 1 1 1 1 }'));
@@ -357,14 +357,14 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #236 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15);
 #237 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',#238
   );
-#238 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1298','motor-stator','',#5,#31,$
+#238 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1300','motor-stator','',#5,#31,$
   );
 #239 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#33));
 #240 = SHAPE_DEFINITION_REPRESENTATION(#241,#247);
 #241 = PRODUCT_DEFINITION_SHAPE('','',#242);
 #242 = PRODUCT_DEFINITION('design','',#243,#246);
 #243 = PRODUCT_DEFINITION_FORMATION('','',#244);
-#244 = PRODUCT('PumpGeometry+motor 11.1.1','PumpGeometry+motor 11.1.1',
+#244 = PRODUCT('PumpGeometry+motor 10.1.1','PumpGeometry+motor 10.1.1',
   '',(#245));
 #245 = PRODUCT_CONTEXT('',#2,'mechanical');
 #246 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -2720,7 +2720,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #2049 = ITEM_DEFINED_TRANSFORMATION('','',#11,#37);
 #2050 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #2051);
-#2051 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1250',
+#2051 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1252',
 'motor-stator / CEM_A1_core - C-EM A1 core, bonded to node 2 (rail end 
 of L_A1) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -2729,7 +2729,7 @@ see findings), stator]','',#31,#242,$);
 #2054 = PRODUCT_DEFINITION_SHAPE('','',#2055);
 #2055 = PRODUCT_DEFINITION('design','',#2056,#2059);
 #2056 = PRODUCT_DEFINITION_FORMATION('','',#2057);
-#2057 = PRODUCT('PumpGeometry+motor 11.1.2','PumpGeometry+motor 11.1.2',
+#2057 = PRODUCT('PumpGeometry+motor 10.1.2','PumpGeometry+motor 10.1.2',
   '',(#2058));
 #2058 = PRODUCT_CONTEXT('',#2,'mechanical');
 #2059 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -5018,7 +5018,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #3830 = ITEM_DEFINED_TRANSFORMATION('','',#11,#41);
 #3831 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #3832);
-#3832 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1251',
+#3832 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1253',
 'motor-stator / CEM_A1_spool1 - C-EM A1 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #3833 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#2057));
@@ -5026,7 +5026,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #3835 = PRODUCT_DEFINITION_SHAPE('','',#3836);
 #3836 = PRODUCT_DEFINITION('design','',#3837,#3840);
 #3837 = PRODUCT_DEFINITION_FORMATION('','',#3838);
-#3838 = PRODUCT('PumpGeometry+motor 11.1.3','PumpGeometry+motor 11.1.3',
+#3838 = PRODUCT('PumpGeometry+motor 10.1.3','PumpGeometry+motor 10.1.3',
   '',(#3839));
 #3839 = PRODUCT_CONTEXT('',#2,'mechanical');
 #3840 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -7315,7 +7315,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #5611 = ITEM_DEFINED_TRANSFORMATION('','',#11,#45);
 #5612 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #5613);
-#5613 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1252',
+#5613 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1254',
 'motor-stator / CEM_A1_spool2 - C-EM A1 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #5614 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#3838));
@@ -7323,7 +7323,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #5616 = PRODUCT_DEFINITION_SHAPE('','',#5617);
 #5617 = PRODUCT_DEFINITION('design','',#5618,#5621);
 #5618 = PRODUCT_DEFINITION_FORMATION('','',#5619);
-#5619 = PRODUCT('PumpGeometry+motor 11.1.4','PumpGeometry+motor 11.1.4',
+#5619 = PRODUCT('PumpGeometry+motor 10.1.4','PumpGeometry+motor 10.1.4',
   '',(#5620));
 #5620 = PRODUCT_CONTEXT('',#2,'mechanical');
 #5621 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -25928,7 +25928,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15595 = ITEM_DEFINED_TRANSFORMATION('','',#11,#49);
 #15596 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15597);
-#15597 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1253',
+#15597 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1255',
 'motor-stator / CEM_A1_coil - L_A1: node 2 -> mA1 -> SG1-1 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15598 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#5619));
@@ -25939,7 +25939,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15601 = ITEM_DEFINED_TRANSFORMATION('','',#11,#53);
 #15602 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15603);
-#15603 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1254',
+#15603 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1256',
 'motor-stator / CEM_A2_core - C-EM A2 core, bonded to node 2 (rail end 
 of L_A2) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -25950,7 +25950,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15606 = ITEM_DEFINED_TRANSFORMATION('','',#11,#57);
 #15607 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15608);
-#15608 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1255',
+#15608 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1257',
 'motor-stator / CEM_A2_spool1 - C-EM A2 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15609 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15610,#15612);
@@ -25960,7 +25960,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15611 = ITEM_DEFINED_TRANSFORMATION('','',#11,#61);
 #15612 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15613);
-#15613 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1256',
+#15613 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1258',
 'motor-stator / CEM_A2_spool2 - C-EM A2 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15614 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15615,#15617);
@@ -25970,7 +25970,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15616 = ITEM_DEFINED_TRANSFORMATION('','',#11,#65);
 #15617 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15618);
-#15618 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1257',
+#15618 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1259',
 'motor-stator / CEM_A2_coil - L_A2: node 2 -> mA2 -> SG1-2 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15619 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15620,#15622);
@@ -25980,7 +25980,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15621 = ITEM_DEFINED_TRANSFORMATION('','',#11,#69);
 #15622 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15623);
-#15623 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1258',
+#15623 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1260',
 'motor-stator / CEM_A3_core - C-EM A3 core, bonded to node 2 (rail end 
 of L_A3) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -25991,7 +25991,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15626 = ITEM_DEFINED_TRANSFORMATION('','',#11,#73);
 #15627 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15628);
-#15628 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1259',
+#15628 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1261',
 'motor-stator / CEM_A3_spool1 - C-EM A3 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15629 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15630,#15632);
@@ -26001,7 +26001,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15631 = ITEM_DEFINED_TRANSFORMATION('','',#11,#77);
 #15632 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15633);
-#15633 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1260',
+#15633 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1262',
 'motor-stator / CEM_A3_spool2 - C-EM A3 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15634 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15635,#15637);
@@ -26011,7 +26011,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15636 = ITEM_DEFINED_TRANSFORMATION('','',#11,#81);
 #15637 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15638);
-#15638 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1261',
+#15638 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1263',
 'motor-stator / CEM_A3_coil - L_A3: node 2 -> mA3 -> SG1-3 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15639 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15640,#15642);
@@ -26021,7 +26021,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15641 = ITEM_DEFINED_TRANSFORMATION('','',#11,#85);
 #15642 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15643);
-#15643 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1262',
+#15643 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1264',
 'motor-stator / CEM_A4_core - C-EM A4 core, bonded to node 2 (rail end 
 of L_A4) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -26032,7 +26032,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15646 = ITEM_DEFINED_TRANSFORMATION('','',#11,#89);
 #15647 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15648);
-#15648 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1263',
+#15648 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1265',
 'motor-stator / CEM_A4_spool1 - C-EM A4 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15649 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15650,#15652);
@@ -26042,7 +26042,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15651 = ITEM_DEFINED_TRANSFORMATION('','',#11,#93);
 #15652 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15653);
-#15653 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1264',
+#15653 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1266',
 'motor-stator / CEM_A4_spool2 - C-EM A4 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15654 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15655,#15657);
@@ -26052,7 +26052,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15656 = ITEM_DEFINED_TRANSFORMATION('','',#11,#97);
 #15657 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15658);
-#15658 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1265',
+#15658 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1267',
 'motor-stator / CEM_A4_coil - L_A4: node 2 -> mA4 -> SG1-4 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15659 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15660,#15662);
@@ -26062,7 +26062,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15661 = ITEM_DEFINED_TRANSFORMATION('','',#11,#101);
 #15662 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15663);
-#15663 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1266',
+#15663 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1268',
 'motor-stator / CEM_A5_core - C-EM A5 core, bonded to node 2 (rail end 
 of L_A5) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -26073,7 +26073,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15666 = ITEM_DEFINED_TRANSFORMATION('','',#11,#105);
 #15667 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15668);
-#15668 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1267',
+#15668 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1269',
 'motor-stator / CEM_A5_spool1 - C-EM A5 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15669 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15670,#15672);
@@ -26083,7 +26083,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15671 = ITEM_DEFINED_TRANSFORMATION('','',#11,#109);
 #15672 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15673);
-#15673 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1268',
+#15673 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1270',
 'motor-stator / CEM_A5_spool2 - C-EM A5 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15674 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15675,#15677);
@@ -26093,7 +26093,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15676 = ITEM_DEFINED_TRANSFORMATION('','',#11,#113);
 #15677 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15678);
-#15678 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1269',
+#15678 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1271',
 'motor-stator / CEM_A5_coil - L_A5: node 2 -> mA5 -> SG1-5 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15679 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15680,#15682);
@@ -26103,7 +26103,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15681 = ITEM_DEFINED_TRANSFORMATION('','',#11,#117);
 #15682 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15683);
-#15683 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1270',
+#15683 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1272',
 'motor-stator / CEM_A6_core - C-EM A6 core, bonded to node 2 (rail end 
 of L_A6) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -26114,7 +26114,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15686 = ITEM_DEFINED_TRANSFORMATION('','',#11,#121);
 #15687 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15688);
-#15688 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1271',
+#15688 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1273',
 'motor-stator / CEM_A6_spool1 - C-EM A6 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15689 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15690,#15692);
@@ -26124,7 +26124,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15691 = ITEM_DEFINED_TRANSFORMATION('','',#11,#125);
 #15692 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15693);
-#15693 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1272',
+#15693 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1274',
 'motor-stator / CEM_A6_spool2 - C-EM A6 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15694 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15695,#15697);
@@ -26134,7 +26134,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15696 = ITEM_DEFINED_TRANSFORMATION('','',#11,#129);
 #15697 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15698);
-#15698 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1273',
+#15698 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1275',
 'motor-stator / CEM_A6_coil - L_A6: node 2 -> mA6 -> SG1-6 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15699 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15700,#15702);
@@ -26144,7 +26144,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15701 = ITEM_DEFINED_TRANSFORMATION('','',#11,#133);
 #15702 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15703);
-#15703 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1274',
+#15703 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1276',
 'motor-stator / CEM_B1_core - C-EM B1 core, bonded to node 3 (rail end 
 of L_B1) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -26155,7 +26155,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15706 = ITEM_DEFINED_TRANSFORMATION('','',#11,#137);
 #15707 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15708);
-#15708 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1275',
+#15708 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1277',
 'motor-stator / CEM_B1_spool1 - C-EM B1 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15709 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15710,#15712);
@@ -26165,7 +26165,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15711 = ITEM_DEFINED_TRANSFORMATION('','',#11,#141);
 #15712 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15713);
-#15713 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1276',
+#15713 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1278',
 'motor-stator / CEM_B1_spool2 - C-EM B1 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15714 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15715,#15717);
@@ -26175,7 +26175,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15716 = ITEM_DEFINED_TRANSFORMATION('','',#11,#145);
 #15717 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15718);
-#15718 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1277',
+#15718 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1279',
 'motor-stator / CEM_B1_coil - L_B1: node 3 -> mB1 -> SG2-1 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15719 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15720,#15722);
@@ -26185,7 +26185,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15721 = ITEM_DEFINED_TRANSFORMATION('','',#11,#149);
 #15722 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15723);
-#15723 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1278',
+#15723 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1280',
 'motor-stator / CEM_B2_core - C-EM B2 core, bonded to node 3 (rail end 
 of L_B2) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -26196,7 +26196,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15726 = ITEM_DEFINED_TRANSFORMATION('','',#11,#153);
 #15727 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15728);
-#15728 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1279',
+#15728 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1281',
 'motor-stator / CEM_B2_spool1 - C-EM B2 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15729 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15730,#15732);
@@ -26206,7 +26206,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15731 = ITEM_DEFINED_TRANSFORMATION('','',#11,#157);
 #15732 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15733);
-#15733 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1280',
+#15733 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1282',
 'motor-stator / CEM_B2_spool2 - C-EM B2 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15734 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15735,#15737);
@@ -26216,7 +26216,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15736 = ITEM_DEFINED_TRANSFORMATION('','',#11,#161);
 #15737 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15738);
-#15738 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1281',
+#15738 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1283',
 'motor-stator / CEM_B2_coil - L_B2: node 3 -> mB2 -> SG2-2 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15739 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15740,#15742);
@@ -26226,7 +26226,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15741 = ITEM_DEFINED_TRANSFORMATION('','',#11,#165);
 #15742 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15743);
-#15743 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1282',
+#15743 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1284',
 'motor-stator / CEM_B3_core - C-EM B3 core, bonded to node 3 (rail end 
 of L_B3) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -26237,7 +26237,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15746 = ITEM_DEFINED_TRANSFORMATION('','',#11,#169);
 #15747 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15748);
-#15748 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1283',
+#15748 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1285',
 'motor-stator / CEM_B3_spool1 - C-EM B3 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15749 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15750,#15752);
@@ -26247,7 +26247,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15751 = ITEM_DEFINED_TRANSFORMATION('','',#11,#173);
 #15752 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15753);
-#15753 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1284',
+#15753 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1286',
 'motor-stator / CEM_B3_spool2 - C-EM B3 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15754 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15755,#15757);
@@ -26257,7 +26257,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15756 = ITEM_DEFINED_TRANSFORMATION('','',#11,#177);
 #15757 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15758);
-#15758 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1285',
+#15758 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1287',
 'motor-stator / CEM_B3_coil - L_B3: node 3 -> mB3 -> SG2-3 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15759 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15760,#15762);
@@ -26267,7 +26267,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15761 = ITEM_DEFINED_TRANSFORMATION('','',#11,#181);
 #15762 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15763);
-#15763 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1286',
+#15763 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1288',
 'motor-stator / CEM_B4_core - C-EM B4 core, bonded to node 3 (rail end 
 of L_B4) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -26278,7 +26278,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15766 = ITEM_DEFINED_TRANSFORMATION('','',#11,#185);
 #15767 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15768);
-#15768 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1287',
+#15768 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1289',
 'motor-stator / CEM_B4_spool1 - C-EM B4 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15769 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15770,#15772);
@@ -26288,7 +26288,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15771 = ITEM_DEFINED_TRANSFORMATION('','',#11,#189);
 #15772 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15773);
-#15773 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1288',
+#15773 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1290',
 'motor-stator / CEM_B4_spool2 - C-EM B4 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15774 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15775,#15777);
@@ -26298,7 +26298,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15776 = ITEM_DEFINED_TRANSFORMATION('','',#11,#193);
 #15777 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15778);
-#15778 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1289',
+#15778 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1291',
 'motor-stator / CEM_B4_coil - L_B4: node 3 -> mB4 -> SG2-4 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15779 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15780,#15782);
@@ -26308,7 +26308,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15781 = ITEM_DEFINED_TRANSFORMATION('','',#11,#197);
 #15782 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15783);
-#15783 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1290',
+#15783 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1292',
 'motor-stator / CEM_B5_core - C-EM B5 core, bonded to node 3 (rail end 
 of L_B5) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -26319,7 +26319,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15786 = ITEM_DEFINED_TRANSFORMATION('','',#11,#201);
 #15787 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15788);
-#15788 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1291',
+#15788 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1293',
 'motor-stator / CEM_B5_spool1 - C-EM B5 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15789 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15790,#15792);
@@ -26329,7 +26329,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15791 = ITEM_DEFINED_TRANSFORMATION('','',#11,#205);
 #15792 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15793);
-#15793 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1292',
+#15793 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1294',
 'motor-stator / CEM_B5_spool2 - C-EM B5 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15794 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15795,#15797);
@@ -26339,7 +26339,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15796 = ITEM_DEFINED_TRANSFORMATION('','',#11,#209);
 #15797 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15798);
-#15798 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1293',
+#15798 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1295',
 'motor-stator / CEM_B5_coil - L_B5: node 3 -> mB5 -> SG2-5 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15799 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15800,#15802);
@@ -26349,7 +26349,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15801 = ITEM_DEFINED_TRANSFORMATION('','',#11,#213);
 #15802 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15803);
-#15803 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1294',
+#15803 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1296',
 'motor-stator / CEM_B6_core - C-EM B6 core, bonded to node 3 (rail end 
 of L_B6) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, 
 see findings), stator]','',#31,#242,$);
@@ -26360,7 +26360,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15806 = ITEM_DEFINED_TRANSFORMATION('','',#11,#217);
 #15807 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15808);
-#15808 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1295',
+#15808 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1297',
 'motor-stator / CEM_B6_spool1 - C-EM B6 spool half [spool, insulating 
 (printed), stator]','',#31,#2055,$);
 #15809 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15810,#15812);
@@ -26370,7 +26370,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15811 = ITEM_DEFINED_TRANSFORMATION('','',#11,#221);
 #15812 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15813);
-#15813 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1296',
+#15813 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1298',
 'motor-stator / CEM_B6_spool2 - C-EM B6 spool half [spool, insulating 
 (printed), stator]','',#31,#3836,$);
 #15814 = CONTEXT_DEPENDENT_SHAPE_REPRESENTATION(#15815,#15817);
@@ -26380,7 +26380,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15816 = ITEM_DEFINED_TRANSFORMATION('','',#11,#225);
 #15817 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15818);
-#15818 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1297',
+#15818 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1299',
 'motor-stator / CEM_B6_coil - L_B6: node 3 -> mB6 -> SG2-6 [Cu magnet 
 wire, enamelled, stator]','',#31,#5617,$);
 #15819 = SHAPE_DEFINITION_REPRESENTATION(#15820,#15826);
@@ -26512,14 +26512,14 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #15906 = ITEM_DEFINED_TRANSFORMATION('','',#11,#19);
 #15907 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #15908);
-#15908 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1317','motor-rotor','',#5,
+#15908 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1319','motor-rotor','',#5,
   #15821,$);
 #15909 = PRODUCT_RELATED_PRODUCT_CATEGORY('part',$,(#15823));
 #15910 = SHAPE_DEFINITION_REPRESENTATION(#15911,#15917);
 #15911 = PRODUCT_DEFINITION_SHAPE('','',#15912);
 #15912 = PRODUCT_DEFINITION('design','',#15913,#15916);
 #15913 = PRODUCT_DEFINITION_FORMATION('','',#15914);
-#15914 = PRODUCT('PumpGeometry+motor 11.2.1','PumpGeometry+motor 11.2.1'
+#15914 = PRODUCT('PumpGeometry+motor 10.2.1','PumpGeometry+motor 10.2.1'
   ,'',(#15915));
 #15915 = PRODUCT_CONTEXT('',#2,'mechanical');
 #15916 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -26880,7 +26880,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #16171 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15827);
 #16172 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #16173);
-#16173 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1299',
+#16173 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1301',
 'motor-rotor / UTRON_1_core - utron 1 core, floating [utron core 
 (material OPEN: laminated steel / SMC, see findings), rotor AB]','',
   #15821,#15912,$);
@@ -26889,7 +26889,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #16176 = PRODUCT_DEFINITION_SHAPE('','',#16177);
 #16177 = PRODUCT_DEFINITION('design','',#16178,#16181);
 #16178 = PRODUCT_DEFINITION_FORMATION('','',#16179);
-#16179 = PRODUCT('PumpGeometry+motor 11.2.2','PumpGeometry+motor 11.2.2'
+#16179 = PRODUCT('PumpGeometry+motor 10.2.2','PumpGeometry+motor 10.2.2'
   ,'',(#16180));
 #16180 = PRODUCT_CONTEXT('',#2,'mechanical');
 #16181 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -38870,7 +38870,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #21756 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15831);
 #21757 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #21758);
-#21758 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1300',
+#21758 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1302',
 'motor-rotor / UTRON_1_coil1 - utron 1 coil half 1, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#16177,$);
@@ -38879,7 +38879,7 @@ omitted), rotor AB]','',#15821,#16177,$);
 #21761 = PRODUCT_DEFINITION_SHAPE('','',#21762);
 #21762 = PRODUCT_DEFINITION('design','',#21763,#21766);
 #21763 = PRODUCT_DEFINITION_FORMATION('','',#21764);
-#21764 = PRODUCT('PumpGeometry+motor 11.2.3','PumpGeometry+motor 11.2.3'
+#21764 = PRODUCT('PumpGeometry+motor 10.2.3','PumpGeometry+motor 10.2.3'
   ,'',(#21765));
 #21765 = PRODUCT_CONTEXT('',#2,'mechanical');
 #21766 = PRODUCT_DEFINITION_CONTEXT('part definition',#2,'design');
@@ -50860,7 +50860,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27341 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15835);
 #27342 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27343);
-#27343 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1301',
+#27343 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1303',
 'motor-rotor / UTRON_1_coil2 - utron 1 coil half 2, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#21762,$);
@@ -50872,7 +50872,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27347 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15839);
 #27348 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27349);
-#27349 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1302',
+#27349 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1304',
 'motor-rotor / UTRON_2_core - utron 2 core, floating [utron core 
 (material OPEN: laminated steel / SMC, see findings), rotor AB]','',
   #15821,#15912,$);
@@ -50883,7 +50883,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27352 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15843);
 #27353 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27354);
-#27354 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1303',
+#27354 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1305',
 'motor-rotor / UTRON_2_coil1 - utron 2 coil half 1, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#16177,$);
@@ -50894,7 +50894,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27357 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15847);
 #27358 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27359);
-#27359 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1304',
+#27359 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1306',
 'motor-rotor / UTRON_2_coil2 - utron 2 coil half 2, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#21762,$);
@@ -50905,7 +50905,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27362 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15851);
 #27363 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27364);
-#27364 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1305',
+#27364 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1307',
 'motor-rotor / UTRON_3_core - utron 3 core, floating [utron core 
 (material OPEN: laminated steel / SMC, see findings), rotor AB]','',
   #15821,#15912,$);
@@ -50916,7 +50916,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27367 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15855);
 #27368 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27369);
-#27369 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1306',
+#27369 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1308',
 'motor-rotor / UTRON_3_coil1 - utron 3 coil half 1, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#16177,$);
@@ -50927,7 +50927,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27372 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15859);
 #27373 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27374);
-#27374 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1307',
+#27374 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1309',
 'motor-rotor / UTRON_3_coil2 - utron 3 coil half 2, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#21762,$);
@@ -50938,7 +50938,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27377 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15863);
 #27378 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27379);
-#27379 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1308',
+#27379 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1310',
 'motor-rotor / UTRON_4_core - utron 4 core, floating [utron core 
 (material OPEN: laminated steel / SMC, see findings), rotor AB]','',
   #15821,#15912,$);
@@ -50949,7 +50949,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27382 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15867);
 #27383 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27384);
-#27384 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1309',
+#27384 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1311',
 'motor-rotor / UTRON_4_coil1 - utron 4 coil half 1, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#16177,$);
@@ -50960,7 +50960,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27387 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15871);
 #27388 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27389);
-#27389 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1310',
+#27389 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1312',
 'motor-rotor / UTRON_4_coil2 - utron 4 coil half 2, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#21762,$);
@@ -50971,7 +50971,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27392 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15875);
 #27393 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27394);
-#27394 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1311',
+#27394 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1313',
 'motor-rotor / UTRON_5_core - utron 5 core, floating [utron core 
 (material OPEN: laminated steel / SMC, see findings), rotor AB]','',
   #15821,#15912,$);
@@ -50982,7 +50982,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27397 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15879);
 #27398 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27399);
-#27399 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1312',
+#27399 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1314',
 'motor-rotor / UTRON_5_coil1 - utron 5 coil half 1, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#16177,$);
@@ -50993,7 +50993,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27402 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15883);
 #27403 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27404);
-#27404 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1313',
+#27404 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1315',
 'motor-rotor / UTRON_5_coil2 - utron 5 coil half 2, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#21762,$);
@@ -51004,7 +51004,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27407 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15887);
 #27408 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27409);
-#27409 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1314',
+#27409 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1316',
 'motor-rotor / UTRON_6_core - utron 6 core, floating [utron core 
 (material OPEN: laminated steel / SMC, see findings), rotor AB]','',
   #15821,#15912,$);
@@ -51015,7 +51015,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27412 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15891);
 #27413 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27414);
-#27414 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1315',
+#27414 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1317',
 'motor-rotor / UTRON_6_coil1 - utron 6 coil half 1, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#16177,$);
@@ -51026,7 +51026,7 @@ SHAPE_REPRESENTATION_RELATIONSHIP() );
 #27417 = ITEM_DEFINED_TRANSFORMATION('','',#11,#15895);
 #27418 = PRODUCT_DEFINITION_SHAPE('Placement','Placement of an item',
   #27419);
-#27419 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1316',
+#27419 = NEXT_ASSEMBLY_USAGE_OCCURRENCE('1318',
 'motor-rotor / UTRON_6_coil2 - utron 6 coil half 2, open, not in the 
 circuit [Cu magnet wire, open ends (not in the circuit; may be 
 omitted), rotor AB]','',#15821,#21762,$);
