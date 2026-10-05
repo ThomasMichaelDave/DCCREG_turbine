@@ -1,0 +1,187 @@
+{
+ "placement": {
+  "r_utron_centre": 627.359394033717,
+  "r_clear": 40.0,
+  "local_x_min": -24.359394033716896,
+  "build_r_out": 563.0000000000001,
+  "build_r_out_part": "SG4a1_stem_5"
+ },
+ "parts_json": "docs/geometry/motor/motor-il2f-6563b90d-rc40.json",
+ "n_parts": 66,
+ "source_products_not_used": [
+  "trunion pair"
+ ],
+ "design_json": "docs/geometry/motor/il2f-6563b90d-rc40+motor.json",
+ "design_json_motor_only": "docs/geometry/motor/il2f-6563b90d-rc40-motor-only.json",
+ "G-MOT-MACRO": {
+  "n": 66,
+  "n_built": 66,
+  "worst_rel_volume": 9.534806073080299e-13,
+  "worst_centroid_mm": 3.235848485786287e-11,
+  "pass_": true
+ },
+ "G-MOT-ZONE": {
+  "build_r_out": 563.0000000000001,
+  "build_r_out_part": "SG4a1_stem_5",
+  "r_clear": 40.0,
+  "motor_r_min": {
+   "cem_core": 618.53,
+   "cem_spool_1": 729.33,
+   "cem_spool_2": 699.58,
+   "cem_coil": 708.5,
+   "utron_core": 604.37,
+   "utron_coil_1": 603.94,
+   "utron_coil_2": 603.94
+  },
+  "pass_": true
+ },
+ "G-MOT-SWEEP": {
+  "utron_ring": [
+   603.9389782027689,
+   650.8920847688995,
+   -23.411300596559897,
+   23.54176578594553
+  ],
+  "cem_ring": [
+   618.5275493951192,
+   764.2785121958069,
+   -59.39096652180703,
+   59.39048594268819
+  ],
+  "utron_ring_vs_cem_mm3": {},
+  "utron_ring_vs_build_stator": [],
+  "cem_ring_vs_build_rotor": [],
+  "pass_": true
+ },
+ "G-MOT-TRUNNION": {
+  "band": {
+   "r": [
+    500.0,
+    603.9389782027689
+   ],
+   "z": [
+    -25.0,
+    25.0
+   ]
+  },
+  "stator_parts_in_band": [
+   "SG4a1_lead_1a",
+   "SG4a1_lead_2a",
+   "SG4a1_lead_3a",
+   "SG4a1_lead_4a",
+   "SG4a1_lead_5a",
+   "SG4a1_lead_6a",
+   "SG3a1_lead_1a",
+   "SG3a1_lead_2a",
+   "SG3a1_lead_3a",
+   "SG3a1_lead_4a",
+   "SG3a1_lead_5a",
+   "SG3a1_lead_6a"
+  ],
+  "pass_": false,
+  "note": "a rotor spoke / trunnion from the septum rim to the utron sweeps this band at every angle"
+ },
+ "G-MOT-JAW": {
+  "jaw_inner_z_min": 30.0,
+  "jaw_x_range_over_utron": [
+   -6.988502147758574,
+   21.011497852241426
+  ],
+  "utron_core_half_height": 22.98083428287948,
+  "utron_coil_half_height": 24.480743988714625,
+  "gap_core_mm": 7.019165717120519,
+  "gap_coil_mm": 5.519256011285375,
+  "overlap_mm2_per_jaw": 604.0,
+  "C_pF_parallel_plate": 1.5237753931228855
+ },
+ "G-MOT-LEAD": {
+  "leads": [
+   {
+    "cem": "A1",
+    "sphere": "SG1_sph_2",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "A2",
+    "sphere": "SG1_sph_1",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "A3",
+    "sphere": "SG1_sph_6",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "A4",
+    "sphere": "SG1_sph_5",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "A5",
+    "sphere": "SG1_sph_4",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "A6",
+    "sphere": "SG1_sph_3",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "B1",
+    "sphere": "SG2_sph_1",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "B2",
+    "sphere": "SG2_sph_6",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "B3",
+    "sphere": "SG2_sph_5",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "B4",
+    "sphere": "SG2_sph_4",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "B5",
+    "sphere": "SG2_sph_3",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   },
+   {
+    "cem": "B6",
+    "sphere": "SG2_sph_2",
+    "arc_deg": 26.8,
+    "route_mm": 568.0
+   }
+  ],
+  "route_mm": [
+   568.0,
+   568.0
+  ],
+  "C_bare_pF_per_mm": 0.013991043181425016,
+  "C_bare_pF": [
+   7.946912527049409,
+   7.946912527049409
+  ],
+  "budget_pF": 3.3,
+  "pass_bare": false,
+  "note": "the lead SG-k -> coil is the mid node; bare, it uses up the 3.3 pF budget; screened (inner = mid node, screen = the rail-end node, the core bonded to it) its capacitance moves across the coil, where 50 pF costs dz ~ -0.024"
+ },
+ "step": "docs/geometry/il2f-6563b90d-rc40-motor.step",
+ "step_motor_only": "docs/geometry/motor/motor-il2f-6563b90d-rc40.step"
+}

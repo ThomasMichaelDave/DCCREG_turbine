@@ -65,9 +65,29 @@ def annulus(tbm, rin, rout, z0, z1, a0, w):
     return body
 
 
-def solid(tbm, p):
-    """One part of the bill of solids: an annular sector, a sphere (gap electrode) or a rod (post / arm / lead)."""
+def imported(tbm, p, base_dir):
+    """A solid read from a STEP in its local frame (shape "import": file relative to the JSON), then placed:
+    translate x by place.r, rotate about z by place.theta_deg, then z += place.z."""
+    path = os.path.join(base_dir, p["file"])
+    bodies = tbm.createFromFile(path)
+    if bodies is None or bodies.count < 1:
+        raise RuntimeError("could not read %s (Fusion's TemporaryBRepManager.createFromFile)" % path)
+    body = bodies.item(0)
+    pl = p["place"]
+    a = math.radians(pl["theta_deg"])
+    c, s, r, z = math.cos(a), math.sin(a), pl["r"] * MM, pl.get("z", 0.0) * MM
+    m = adsk.core.Matrix3D.create()
+    m.setWithArray([c, -s, 0, c * r, s, c, 0, s * r, 0, 0, 1, z, 0, 0, 0, 1])
+    tbm.transform(body, m)
+    return body
+
+
+def solid(tbm, p, base_dir=""):
+    """One part of the bill of solids: an annular sector, a sphere (gap electrode), a rod (post / arm / lead) or
+    an imported STEP solid (the motor)."""
     shape = p.get("shape", "sector")
+    if shape == "import":
+        return imported(tbm, p, base_dir)
     P = adsk.core.Point3D.create
     if shape == "sphere":
         c = p["c"]
@@ -104,7 +124,7 @@ def _appearance(app, design, key, rgb, cache):
     return ap
 
 
-def build(app, design, data):
+def build(app, design, data, base_dir=""):
     tbm = adsk.fusion.TemporaryBRepManager.get()
     root = design.rootComponent
     parametric = design.designType == adsk.fusion.DesignTypes.ParametricDesignType
@@ -126,7 +146,7 @@ def build(app, design, data):
             bf = comp.features.baseFeatures.add()
             bf.startEdit()
         for p in plist:
-            body = solid(tbm, p)
+            body = solid(tbm, p, base_dir)
             b = comp.bRepBodies.add(body, bf) if bf else comp.bRepBodies.add(body)
             b.name = _name(p["label"])
             ap = _appearance(app, design, "%.3f,%.3f,%.3f" % tuple(p["rgb"]), p["rgb"], cache)
@@ -156,7 +176,7 @@ def run(context):
             return
         app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
         design = adsk.fusion.Design.cast(app.activeProduct)
-        made = build(app, design, data)
+        made = build(app, design, data, os.path.dirname(os.path.abspath(path)))
         err = max(abs(m["volume"] - m["expect"]) / m["expect"] for m in made) if made else 0.0
         globals()["RESULT"] = made
         ui.messageBox("PumpGeometry %s: %d bodies in %d components built (worst volume error %.1e).\n\n"

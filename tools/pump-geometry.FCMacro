@@ -52,9 +52,29 @@ def annulus(r_in, r_out, z0, z1, start_deg=0.0, w_deg=360.0):
     return outer
 
 
-def solid(p):
-    """One part of the bill of solids: an annular sector, a sphere (gap electrode) or a rod (post / arm / lead)."""
+_IMPORTED = {}
+
+
+def imported(p, base_dir):
+    """A solid read from a STEP in its local frame (shape "import": file relative to the JSON), then placed:
+    translate x by place.r, rotate about z by place.theta_deg, then z += place.z."""
+    path = os.path.join(base_dir, p["file"])
+    if path not in _IMPORTED:
+        _IMPORTED[path] = Part.read(path)
+    shp = _IMPORTED[path].copy()
+    pl = p["place"]
+    shp.translate(FreeCAD.Vector(pl["r"], 0, 0))
+    shp.rotate(FreeCAD.Vector(0, 0, 0), FreeCAD.Vector(0, 0, 1), pl["theta_deg"])
+    shp.translate(FreeCAD.Vector(0, 0, pl.get("z", 0.0)))
+    return shp
+
+
+def solid(p, base_dir=""):
+    """One part of the bill of solids: an annular sector, a sphere (gap electrode), a rod (post / arm / lead) or
+    an imported STEP solid (the motor)."""
     shape = p.get("shape", "sector")
+    if shape == "import":
+        return imported(p, base_dir)
     if shape == "sphere":
         return Part.makeSphere(p["r"], FreeCAD.Vector(*p["c"]))
     if shape == "rod":
@@ -70,7 +90,7 @@ def _colour(obj, rgb):
         obj.ViewObject.ShapeColor = tuple(rgb)
 
 
-def build(design, doc):
+def build(design, doc, base_dir=""):
     """Build exactly the bill of solids in design['parts'] (names, labels, assemblies and colours are decided
     by sim/pump_geometry.py / tools/pump-geometry.js, so FreeCAD and Fusion 360 name everything identically)."""
     groups = {}
@@ -80,7 +100,7 @@ def build(design, doc):
         groups[a["key"]] = g
     made = []
     for p in design["parts"]:
-        shp = solid(p)
+        shp = solid(p, base_dir)
         o = doc.addObject("Part::Feature", p["name"])
         o.Shape = shp
         o.Label = p["label"]
@@ -134,7 +154,7 @@ def main():
         raise RuntimeError("this JSON predates the bill of solids: re-export it from tools/pump-synth.html stage 2")
     doc = FreeCAD.newDocument("PumpGeometry_" + design["lock"]["hash"])
     doc.Label = design["top_label"]
-    made, groups = build(design, doc)
+    made, groups = build(design, doc, os.path.dirname(os.path.abspath(path)))
     base = os.path.splitext(path)[0]
     export_step(doc, groups, base + ".step", design["top_label"])
     write_parts_table(made, base + "-parts.csv")

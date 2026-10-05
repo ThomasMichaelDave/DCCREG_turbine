@@ -4,6 +4,26 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Geometry
+- **Motor from the designer's STEP (C-EM + utron), placed outside the spark-gap zone.**
+  - **Files:**
+    - code `sim/motor_geometry.py`; findings `sim/motor-geometry-findings.md`; results `sim/motor_geometry_results.json`;
+    - source and pieces under `docs/geometry/motor/`;
+    - build + motor STEP `docs/geometry/il2f-6563b90d-rc40-motor.step` (each piece stored once, then instanced).
+  - **Placement:**
+    - utron centre r 627.4 (r 563 + 40 mm clearance), z 0;
+    - 12 C-EMs at the register stations, 6 utrons at 15 + 60k;
+    - jaw gap 7.0 / 5.5 mm (core / coil).
+  - **Macros:** `tools/pump-geometry.FCMacro` and the Fusion add-in take `shape: "import"` parts.
+    - FreeCAD path checked: G-MOT-MACRO PASS.
+    - Fusion path untested.
+  - **Checks:**
+    - G-MOT-ZONE PASS, G-MOT-SWEEP PASS;
+    - G-MOT-TRUNNION FAIL: 12 SG3a1 / SG4a1 frame leads cross the rotor-spoke band at r 560;
+    - G-MOT-LEAD FAIL bare: mid-node lead ≥ 568 mm ≈ 7.9 pF vs the 3.3 pF budget. A screened lead is needed.
+  - **Utron coil:** leave it open (or omit it) for a reluctance drive; shorted means a repulsion drive, fired after alignment.
+  - **Cores:** both need ferrite or ≤ 0.05 mm tape at 15 µs pulses (skin depth 0.03–0.06 mm).
+
 ### Simulation
 - **Electromagnet register (BRIEF_ELECTROMAGNET_REGISTER r0.3).**
   - **Inputs and outputs:**

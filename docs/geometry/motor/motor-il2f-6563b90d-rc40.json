@@ -1,0 +1,1937 @@
+{
+ "schema": "motor-parts/1",
+ "build": "il2f-6563b90d",
+ "source": "docs/geometry/motor/C-em_and_motor_coil_export.step",
+ "local_origin": [
+  292.0,
+  0.0,
+  0.0
+ ],
+ "frame": "x radial (C opening toward the axis), y tangential, z axial; placed by translate x by place.r, then rotate about z by place.theta_deg, then z += place.z",
+ "placement": {
+  "r_utron_centre": 627.359394033717,
+  "r_clear": 40.0,
+  "local_x_min": -24.359394033716896,
+  "build_r_out": 563.0000000000001,
+  "build_r_out_part": "SG4a1_stem_5"
+ },
+ "pieces": {
+  "cem_core": {
+   "source_product": "em- V2",
+   "role": "cem-core",
+   "body": "stator",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "file": "src/cem_core.step",
+   "volume": 211176.43122297438,
+   "centre": [
+    66.16875182252869,
+    -2.72615149352508,
+    -0.0002470859524687149
+   ],
+   "bb_min": [
+    -8.856698501675227,
+    -24.333071670259947,
+    -59.390966621807046
+   ],
+   "bb_max": [
+    117.93502455032154,
+    16.77564187104489,
+    59.39048604268823
+   ]
+  },
+  "cem_spool_1": {
+   "source_product": "spool half V2",
+   "role": "cem-spool",
+   "body": "stator",
+   "material": "spool, insulating (printed)",
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "file": "src/cem_spool_1.step",
+   "volume": 15185.579592545753,
+   "centre": [
+    117.96491040678308,
+    1.9617821941942282,
+    -0.00024028956037687934
+   ],
+   "bb_min": [
+    101.22068148387336,
+    -31.656250253873445,
+    -27.500240389561704
+   ],
+   "bb_max": [
+    136.52724721875938,
+    35.35297515505073,
+    27.499759810440725
+   ]
+  },
+  "cem_spool_2": {
+   "source_product": "spool half V2 v1(Mirror)",
+   "role": "cem-spool",
+   "body": "stator",
+   "material": "spool, insulating (printed)",
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "file": "src/cem_spool_2.step",
+   "volume": 15185.579592545742,
+   "centre": [
+    90.30274070892585,
+    -0.5418478190439373,
+    -0.00024028955964072612
+   ],
+   "bb_min": [
+    71.74040389694947,
+    -33.93304077990031,
+    -27.50024038956101
+   ],
+   "bb_max": [
+    107.04696963183564,
+    33.07618462902393,
+    27.499759810441468
+   ]
+  },
+  "cem_coil": {
+   "source_product": "C magnet coil",
+   "role": "cem-coil",
+   "body": "stator",
+   "material": "Cu magnet wire, enamelled",
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "file": "src/cem_coil.step",
+   "volume": 5309.981082477829,
+   "centre": [
+    101.84131642850761,
+    -2.426898269829345,
+    -0.00014637602034629549
+   ],
+   "bb_min": [
+    81.14921800122441,
+    -22.26304252860929,
+    -25.501290576968728
+   ],
+   "bb_max": [
+    127.12993566626041,
+    23.664376828464384,
+    25.500846551826946
+   ]
+  },
+  "utron_core": {
+   "source_product": "utron",
+   "role": "utron-core",
+   "body": "rotor AB",
+   "material": "utron core (material OPEN: ferrite for reluctance drive)",
+   "rgb": [
+    0.3,
+    0.3,
+    0.35
+   ],
+   "file": "src/utron_core.step",
+   "volume": 71917.49962827956,
+   "centre": [
+    -0.0021683330294865783,
+    -1.616888279003387e-14,
+    -0.0021683330285071664
+   ],
+   "bb_min": [
+    -22.988502147758574,
+    -32.50471078508482,
+    -22.988502147758062
+   ],
+   "bb_max": [
+    22.980834282879073,
+    32.50471078508479,
+    22.98083428287948
+   ]
+  },
+  "utron_coil_1": {
+   "source_product": "utron coil top",
+   "role": "utron-coil",
+   "body": "rotor AB",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "file": "src/utron_coil_1.step",
+   "volume": 3295.2896753636537,
+   "centre": [
+    4.221727869343085,
+    -1.8365702106971662,
+    10.522042312318536
+   ],
+   "bb_min": [
+    -23.437981475243006,
+    -34.16461479350176,
+    -23.658259443804123
+   ],
+   "bb_max": [
+    24.531671335574046,
+    33.11500915916209,
+    24.480743988714625
+   ]
+  },
+  "utron_coil_2": {
+   "source_product": "utron coil top(Mirror)",
+   "role": "utron-coil",
+   "body": "rotor AB",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "file": "src/utron_coil_2.step",
+   "volume": 3295.2896753636683,
+   "centre": [
+    -10.400692357321361,
+    -1.83657021069721,
+    -4.100377914345756
+   ],
+   "bb_min": [
+    -24.359394033716896,
+    -34.16461479350176,
+    -24.410321380577543
+   ],
+   "bb_max": [
+    23.7796093988009,
+    33.11500915916209,
+    23.559331430240533
+   ]
+  }
+ },
+ "source_products_not_used": [
+  "trunion pair"
+ ],
+ "parts": [
+  {
+   "name": "CEM_A1_core",
+   "label": "motor-stator / CEM_A1_core - C-EM A1 core, bonded to node 2 (rail end of L_A1) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "2",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 90,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-A1"
+   ]
+  },
+  {
+   "name": "CEM_A1_spool1",
+   "label": "motor-stator / CEM_A1_spool1 - C-EM A1 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 90,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-A1"
+   ]
+  },
+  {
+   "name": "CEM_A1_spool2",
+   "label": "motor-stator / CEM_A1_spool2 - C-EM A1 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 90,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-A1"
+   ]
+  },
+  {
+   "name": "CEM_A1_coil",
+   "label": "motor-stator / CEM_A1_coil - L_A1: node 2 -> mA1 -> SG1-1 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 90,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-A1"
+   ]
+  },
+  {
+   "name": "CEM_A2_core",
+   "label": "motor-stator / CEM_A2_core - C-EM A2 core, bonded to node 2 (rail end of L_A2) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "2",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 30,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-A2"
+   ]
+  },
+  {
+   "name": "CEM_A2_spool1",
+   "label": "motor-stator / CEM_A2_spool1 - C-EM A2 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 30,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-A2"
+   ]
+  },
+  {
+   "name": "CEM_A2_spool2",
+   "label": "motor-stator / CEM_A2_spool2 - C-EM A2 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 30,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-A2"
+   ]
+  },
+  {
+   "name": "CEM_A2_coil",
+   "label": "motor-stator / CEM_A2_coil - L_A2: node 2 -> mA2 -> SG1-2 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 30,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-A2"
+   ]
+  },
+  {
+   "name": "CEM_A3_core",
+   "label": "motor-stator / CEM_A3_core - C-EM A3 core, bonded to node 2 (rail end of L_A3) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "2",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 330,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-A3"
+   ]
+  },
+  {
+   "name": "CEM_A3_spool1",
+   "label": "motor-stator / CEM_A3_spool1 - C-EM A3 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 330,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-A3"
+   ]
+  },
+  {
+   "name": "CEM_A3_spool2",
+   "label": "motor-stator / CEM_A3_spool2 - C-EM A3 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 330,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-A3"
+   ]
+  },
+  {
+   "name": "CEM_A3_coil",
+   "label": "motor-stator / CEM_A3_coil - L_A3: node 2 -> mA3 -> SG1-3 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 330,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-A3"
+   ]
+  },
+  {
+   "name": "CEM_A4_core",
+   "label": "motor-stator / CEM_A4_core - C-EM A4 core, bonded to node 2 (rail end of L_A4) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "2",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 270,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-A4"
+   ]
+  },
+  {
+   "name": "CEM_A4_spool1",
+   "label": "motor-stator / CEM_A4_spool1 - C-EM A4 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 270,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-A4"
+   ]
+  },
+  {
+   "name": "CEM_A4_spool2",
+   "label": "motor-stator / CEM_A4_spool2 - C-EM A4 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 270,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-A4"
+   ]
+  },
+  {
+   "name": "CEM_A4_coil",
+   "label": "motor-stator / CEM_A4_coil - L_A4: node 2 -> mA4 -> SG1-4 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 270,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-A4"
+   ]
+  },
+  {
+   "name": "CEM_A5_core",
+   "label": "motor-stator / CEM_A5_core - C-EM A5 core, bonded to node 2 (rail end of L_A5) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "2",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 210,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-A5"
+   ]
+  },
+  {
+   "name": "CEM_A5_spool1",
+   "label": "motor-stator / CEM_A5_spool1 - C-EM A5 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 210,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-A5"
+   ]
+  },
+  {
+   "name": "CEM_A5_spool2",
+   "label": "motor-stator / CEM_A5_spool2 - C-EM A5 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 210,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-A5"
+   ]
+  },
+  {
+   "name": "CEM_A5_coil",
+   "label": "motor-stator / CEM_A5_coil - L_A5: node 2 -> mA5 -> SG1-5 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 210,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-A5"
+   ]
+  },
+  {
+   "name": "CEM_A6_core",
+   "label": "motor-stator / CEM_A6_core - C-EM A6 core, bonded to node 2 (rail end of L_A6) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "2",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 150,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-A6"
+   ]
+  },
+  {
+   "name": "CEM_A6_spool1",
+   "label": "motor-stator / CEM_A6_spool1 - C-EM A6 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 150,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-A6"
+   ]
+  },
+  {
+   "name": "CEM_A6_spool2",
+   "label": "motor-stator / CEM_A6_spool2 - C-EM A6 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 150,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-A6"
+   ]
+  },
+  {
+   "name": "CEM_A6_coil",
+   "label": "motor-stator / CEM_A6_coil - L_A6: node 2 -> mA6 -> SG1-6 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 150,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-A6"
+   ]
+  },
+  {
+   "name": "CEM_B1_core",
+   "label": "motor-stator / CEM_B1_core - C-EM B1 core, bonded to node 3 (rail end of L_B1) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "3",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 60,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-B1"
+   ]
+  },
+  {
+   "name": "CEM_B1_spool1",
+   "label": "motor-stator / CEM_B1_spool1 - C-EM B1 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 60,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-B1"
+   ]
+  },
+  {
+   "name": "CEM_B1_spool2",
+   "label": "motor-stator / CEM_B1_spool2 - C-EM B1 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 60,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-B1"
+   ]
+  },
+  {
+   "name": "CEM_B1_coil",
+   "label": "motor-stator / CEM_B1_coil - L_B1: node 3 -> mB1 -> SG2-1 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 60,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-B1"
+   ]
+  },
+  {
+   "name": "CEM_B2_core",
+   "label": "motor-stator / CEM_B2_core - C-EM B2 core, bonded to node 3 (rail end of L_B2) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "3",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-B2"
+   ]
+  },
+  {
+   "name": "CEM_B2_spool1",
+   "label": "motor-stator / CEM_B2_spool1 - C-EM B2 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-B2"
+   ]
+  },
+  {
+   "name": "CEM_B2_spool2",
+   "label": "motor-stator / CEM_B2_spool2 - C-EM B2 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-B2"
+   ]
+  },
+  {
+   "name": "CEM_B2_coil",
+   "label": "motor-stator / CEM_B2_coil - L_B2: node 3 -> mB2 -> SG2-2 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-B2"
+   ]
+  },
+  {
+   "name": "CEM_B3_core",
+   "label": "motor-stator / CEM_B3_core - C-EM B3 core, bonded to node 3 (rail end of L_B3) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "3",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 300,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-B3"
+   ]
+  },
+  {
+   "name": "CEM_B3_spool1",
+   "label": "motor-stator / CEM_B3_spool1 - C-EM B3 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 300,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-B3"
+   ]
+  },
+  {
+   "name": "CEM_B3_spool2",
+   "label": "motor-stator / CEM_B3_spool2 - C-EM B3 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 300,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-B3"
+   ]
+  },
+  {
+   "name": "CEM_B3_coil",
+   "label": "motor-stator / CEM_B3_coil - L_B3: node 3 -> mB3 -> SG2-3 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 300,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-B3"
+   ]
+  },
+  {
+   "name": "CEM_B4_core",
+   "label": "motor-stator / CEM_B4_core - C-EM B4 core, bonded to node 3 (rail end of L_B4) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "3",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 240,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-B4"
+   ]
+  },
+  {
+   "name": "CEM_B4_spool1",
+   "label": "motor-stator / CEM_B4_spool1 - C-EM B4 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 240,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-B4"
+   ]
+  },
+  {
+   "name": "CEM_B4_spool2",
+   "label": "motor-stator / CEM_B4_spool2 - C-EM B4 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 240,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-B4"
+   ]
+  },
+  {
+   "name": "CEM_B4_coil",
+   "label": "motor-stator / CEM_B4_coil - L_B4: node 3 -> mB4 -> SG2-4 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 240,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-B4"
+   ]
+  },
+  {
+   "name": "CEM_B5_core",
+   "label": "motor-stator / CEM_B5_core - C-EM B5 core, bonded to node 3 (rail end of L_B5) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "3",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 180,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-B5"
+   ]
+  },
+  {
+   "name": "CEM_B5_spool1",
+   "label": "motor-stator / CEM_B5_spool1 - C-EM B5 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 180,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-B5"
+   ]
+  },
+  {
+   "name": "CEM_B5_spool2",
+   "label": "motor-stator / CEM_B5_spool2 - C-EM B5 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 180,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-B5"
+   ]
+  },
+  {
+   "name": "CEM_B5_coil",
+   "label": "motor-stator / CEM_B5_coil - L_B5: node 3 -> mB5 -> SG2-5 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 180,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-B5"
+   ]
+  },
+  {
+   "name": "CEM_B6_core",
+   "label": "motor-stator / CEM_B6_core - C-EM B6 core, bonded to node 3 (rail end of L_B6) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-core",
+   "node": "3",
+   "material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_core.step",
+   "piece": "cem_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 120,
+    "z": 0.0
+   },
+   "rgb": [
+    0.45,
+    0.45,
+    0.5
+   ],
+   "volume": 211176.43122297438,
+   "chains": [
+    "motor-B6"
+   ]
+  },
+  {
+   "name": "CEM_B6_spool1",
+   "label": "motor-stator / CEM_B6_spool1 - C-EM B6 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_1.step",
+   "piece": "cem_spool_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 120,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545753,
+   "chains": [
+    "motor-B6"
+   ]
+  },
+  {
+   "name": "CEM_B6_spool2",
+   "label": "motor-stator / CEM_B6_spool2 - C-EM B6 spool half [spool, insulating (printed), stator]",
+   "assembly": "motor-stator",
+   "role": "cem-spool",
+   "node": "",
+   "material": "spool, insulating (printed)",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_spool_2.step",
+   "piece": "cem_spool_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 120,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.85,
+    0.8
+   ],
+   "volume": 15185.579592545742,
+   "chains": [
+    "motor-B6"
+   ]
+  },
+  {
+   "name": "CEM_B6_coil",
+   "label": "motor-stator / CEM_B6_coil - L_B6: node 3 -> mB6 -> SG2-6 [Cu magnet wire, enamelled, stator]",
+   "assembly": "motor-stator",
+   "role": "cem-coil",
+   "node": "",
+   "material": "Cu magnet wire, enamelled",
+   "body": "stator",
+   "shape": "import",
+   "file": "src/cem_coil.step",
+   "piece": "cem_coil",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 120,
+    "z": 0.0
+   },
+   "rgb": [
+    0.85,
+    0.5,
+    0.2
+   ],
+   "volume": 5309.981082477829,
+   "chains": [
+    "motor-B6"
+   ]
+  },
+  {
+   "name": "UTRON_1_core",
+   "label": "motor-rotor / UTRON_1_core - utron 1 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-core",
+   "node": "floating",
+   "material": "utron core (material OPEN: ferrite for reluctance drive)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_core.step",
+   "piece": "utron_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 15.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.3,
+    0.3,
+    0.35
+   ],
+   "volume": 71917.49962827956,
+   "chains": [
+    "motor-1"
+   ]
+  },
+  {
+   "name": "UTRON_1_coil1",
+   "label": "motor-rotor / UTRON_1_coil1 - utron 1 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_1.step",
+   "piece": "utron_coil_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 15.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636537,
+   "chains": [
+    "motor-1"
+   ]
+  },
+  {
+   "name": "UTRON_1_coil2",
+   "label": "motor-rotor / UTRON_1_coil2 - utron 1 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_2.step",
+   "piece": "utron_coil_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 15.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636683,
+   "chains": [
+    "motor-1"
+   ]
+  },
+  {
+   "name": "UTRON_2_core",
+   "label": "motor-rotor / UTRON_2_core - utron 2 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-core",
+   "node": "floating",
+   "material": "utron core (material OPEN: ferrite for reluctance drive)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_core.step",
+   "piece": "utron_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 75.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.3,
+    0.3,
+    0.35
+   ],
+   "volume": 71917.49962827956,
+   "chains": [
+    "motor-2"
+   ]
+  },
+  {
+   "name": "UTRON_2_coil1",
+   "label": "motor-rotor / UTRON_2_coil1 - utron 2 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_1.step",
+   "piece": "utron_coil_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 75.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636537,
+   "chains": [
+    "motor-2"
+   ]
+  },
+  {
+   "name": "UTRON_2_coil2",
+   "label": "motor-rotor / UTRON_2_coil2 - utron 2 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_2.step",
+   "piece": "utron_coil_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 75.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636683,
+   "chains": [
+    "motor-2"
+   ]
+  },
+  {
+   "name": "UTRON_3_core",
+   "label": "motor-rotor / UTRON_3_core - utron 3 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-core",
+   "node": "floating",
+   "material": "utron core (material OPEN: ferrite for reluctance drive)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_core.step",
+   "piece": "utron_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 135.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.3,
+    0.3,
+    0.35
+   ],
+   "volume": 71917.49962827956,
+   "chains": [
+    "motor-3"
+   ]
+  },
+  {
+   "name": "UTRON_3_coil1",
+   "label": "motor-rotor / UTRON_3_coil1 - utron 3 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_1.step",
+   "piece": "utron_coil_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 135.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636537,
+   "chains": [
+    "motor-3"
+   ]
+  },
+  {
+   "name": "UTRON_3_coil2",
+   "label": "motor-rotor / UTRON_3_coil2 - utron 3 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_2.step",
+   "piece": "utron_coil_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 135.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636683,
+   "chains": [
+    "motor-3"
+   ]
+  },
+  {
+   "name": "UTRON_4_core",
+   "label": "motor-rotor / UTRON_4_core - utron 4 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-core",
+   "node": "floating",
+   "material": "utron core (material OPEN: ferrite for reluctance drive)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_core.step",
+   "piece": "utron_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 195.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.3,
+    0.3,
+    0.35
+   ],
+   "volume": 71917.49962827956,
+   "chains": [
+    "motor-4"
+   ]
+  },
+  {
+   "name": "UTRON_4_coil1",
+   "label": "motor-rotor / UTRON_4_coil1 - utron 4 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_1.step",
+   "piece": "utron_coil_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 195.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636537,
+   "chains": [
+    "motor-4"
+   ]
+  },
+  {
+   "name": "UTRON_4_coil2",
+   "label": "motor-rotor / UTRON_4_coil2 - utron 4 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_2.step",
+   "piece": "utron_coil_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 195.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636683,
+   "chains": [
+    "motor-4"
+   ]
+  },
+  {
+   "name": "UTRON_5_core",
+   "label": "motor-rotor / UTRON_5_core - utron 5 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-core",
+   "node": "floating",
+   "material": "utron core (material OPEN: ferrite for reluctance drive)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_core.step",
+   "piece": "utron_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 255.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.3,
+    0.3,
+    0.35
+   ],
+   "volume": 71917.49962827956,
+   "chains": [
+    "motor-5"
+   ]
+  },
+  {
+   "name": "UTRON_5_coil1",
+   "label": "motor-rotor / UTRON_5_coil1 - utron 5 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_1.step",
+   "piece": "utron_coil_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 255.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636537,
+   "chains": [
+    "motor-5"
+   ]
+  },
+  {
+   "name": "UTRON_5_coil2",
+   "label": "motor-rotor / UTRON_5_coil2 - utron 5 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_2.step",
+   "piece": "utron_coil_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 255.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636683,
+   "chains": [
+    "motor-5"
+   ]
+  },
+  {
+   "name": "UTRON_6_core",
+   "label": "motor-rotor / UTRON_6_core - utron 6 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-core",
+   "node": "floating",
+   "material": "utron core (material OPEN: ferrite for reluctance drive)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_core.step",
+   "piece": "utron_core",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 315.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.3,
+    0.3,
+    0.35
+   ],
+   "volume": 71917.49962827956,
+   "chains": [
+    "motor-6"
+   ]
+  },
+  {
+   "name": "UTRON_6_coil1",
+   "label": "motor-rotor / UTRON_6_coil1 - utron 6 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_1.step",
+   "piece": "utron_coil_1",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 315.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636537,
+   "chains": [
+    "motor-6"
+   ]
+  },
+  {
+   "name": "UTRON_6_coil2",
+   "label": "motor-rotor / UTRON_6_coil2 - utron 6 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+   "assembly": "motor-rotor",
+   "role": "utron-coil",
+   "node": "floating",
+   "material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+   "body": "rotor AB",
+   "shape": "import",
+   "file": "src/utron_coil_2.step",
+   "piece": "utron_coil_2",
+   "place": {
+    "r": 627.359394033717,
+    "theta_deg": 315.0,
+    "z": 0.0
+   },
+   "rgb": [
+    0.8,
+    0.45,
+    0.2
+   ],
+   "volume": 3295.2896753636683,
+   "chains": [
+    "motor-6"
+   ]
+  }
+ ]
+}
