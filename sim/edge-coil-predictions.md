@@ -80,3 +80,22 @@ pair centre (junction feed), per volt of source, Z_s = 0 and 50 Ω.
 rod raises the capacitance seen (τ/Z₀) by ≈ 3–10× (it is a conductor 1.25 mm from the wire, against a can at 40 mm),
 and the inductance seen (Z₀·τ) by ≤ 1.5× (μ′ of the Debye ferrite at the ~0.1 GHz edge content is ≈ 1.5, and μ″
 shows up as loss, not inductance).
+
+## D. Addendum — operational readouts (fixed before any prediction run, 2026-10-05 04:40 CEST)
+
+- **Time origin:** t = 0 at the source edge's 50 % point; windows "(0, 1.5 τ)" etc. are measured from there.
+- **τ and Z₀ from the ladder (P-EDGE-1…3):** far end grounded, ideal step; Z₀ = V/I_plateau with I_plateau the median
+  terminal current over (0.4 τ, 1.6 τ); 2τ = the time the terminal current first exceeds 2 I_plateau (a short far
+  end returns ≈ 3 I); iterated to self-consistency.
+- **P-EDGE-1 plateau test:** PASS if i(1.6 τ)/i(0.4 τ) ≤ 1.5. A lumped inductor ramp gives 4.0. KILL if ≥ 3.0;
+  in between, inconclusive.
+- **P-EDGE-2:** rod present electrically, μ = 1 (so n is the only thing changing). Peak |B_z| on the axis at the
+  coil centre over (0, 1.5 τ_own), with each run's own τ.
+- **P-EDGE-3:** N = 40, μ ∈ {1, 4, 16, 64} as a frequency-independent rod permeability; same readout.
+- **P-EDGE-4:** turn-to-turn voltage = the voltage across one section |v_k − v_k+1| (adjacent turns at the same
+  azimuth differ by one turn's drop), max over (0, τ); "first tenth" = sections 1 … N/10.
+- **P-EDGE-5:** τ₁ = coil A's own τ, from the single-coil ladder with the same rod model. "Coil B contributes
+  < 10 %" = max|B_B| ≤ 0.1 max|B_A| over (0, τ₁). Symmetric feed: max|B_A + B_B| ≤ 0.1 max|B_A| over (0, τ₁).
+  The apparatus' MnZn (Debye) is used for P-EDGE-5, 6 and 7; μ = 1 for 1, 2, 4.
+- **TDR (P-EDGE-6/7):** 50 Ω source, far end grounded, Z(t) = 50(1 + ρ)/(1 − ρ); Z₀ = median over (0.4 τ, 1.6 τ);
+  2τ = the time the terminal voltage falls below half its plateau.
