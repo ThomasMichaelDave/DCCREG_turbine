@@ -299,12 +299,16 @@ def ra_net(cfg, L_tot, Q, C_R_pF):
 def p1_pump(L_tot_list, log=print):
     import pump_engine as PE
     import rt_engine as RT
-    cfg = PE.make_config(dict(rpm=3000.0))
+    import pump_synth as SY
+    lad, fi = SY.sized({})
+    cfg = SY.engine_cfg(lad, fi)                 # the RT0 configuration (rt_gates.gate_rt0)
     t0 = time.time()
     m0 = RT.run(RT.build_net(cfg), cfg)
     z0 = m0["z"]
-    log(f"  RT0 collapsed anchor z = {z0:.10f} ({time.time() - t0:.0f} s)")
+    log(f"  RT0 collapsed anchor z = {z0:.10f} (record 1.3254745317), rpm {cfg['rpm']:.0f} ({time.time() - t0:.0f} s)")
     rows = []
+    zs = RT.run(RT.build_net(cfg, tank="series", C_R1_pF=789.0), cfg)["z"]
+    log(f"  reference: series C_R 789 pF alone (no chain, = RT1 form) z {zs:.7f} (dz {zs - z0:+.2e})")
     for name, L in L_tot_list:
         for Q in (30.0, 50.0, 100.0):
             net, f0, R = ra_net(cfg, L, Q, 789.0)
@@ -315,7 +319,7 @@ def p1_pump(L_tot_list, log=print):
             log(f"  RA tank {name} L {L * 1e6:.0f} uH, Q {Q:.0f}: z {m['z']:.7f} (dz {m['z'] - z0:+.2e}), conv {m['converged']}, {time.time() - t0:.0f} s")
     judged = [r for r in rows if r["Q"] <= 30]
     ok = all(abs(r["dz"]) <= 1e-3 and r["converged"] for r in judged)
-    return {"P1-PUMP": dict(z_anchor=z0, RT0_record=1.3254745, rows=rows, verdict="PASS" if ok else "RA-BREAKS-PUMP")}
+    return {"P1-PUMP": dict(z_anchor=z0, RT0_record=1.3254745, z_series_CR_only=zs, rpm=cfg["rpm"], rows=rows, verdict="PASS" if ok else "RA-BREAKS-PUMP")}
 
 
 def _jsonable(o):
