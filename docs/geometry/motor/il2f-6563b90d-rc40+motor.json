@@ -51816,11 +51816,11 @@
 },
 {
 "name": "CEM_A1_core",
-"label": "motor-stator / CEM_A1_core - C-EM A1 core, bonded to node 2 (rail end of L_A1) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_A1_core - C-EM A1 core, bonded to node 2 (rail end of L_A1) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "2",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -51835,7 +51835,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-A1"
 ]
@@ -51861,7 +51861,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-A1"
 ]
@@ -51887,7 +51887,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-A1"
 ]
@@ -51913,18 +51913,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-A1"
 ]
 },
 {
 "name": "CEM_A2_core",
-"label": "motor-stator / CEM_A2_core - C-EM A2 core, bonded to node 2 (rail end of L_A2) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_A2_core - C-EM A2 core, bonded to node 2 (rail end of L_A2) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "2",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -51939,7 +51939,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-A2"
 ]
@@ -51965,7 +51965,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-A2"
 ]
@@ -51991,7 +51991,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-A2"
 ]
@@ -52017,18 +52017,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-A2"
 ]
 },
 {
 "name": "CEM_A3_core",
-"label": "motor-stator / CEM_A3_core - C-EM A3 core, bonded to node 2 (rail end of L_A3) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_A3_core - C-EM A3 core, bonded to node 2 (rail end of L_A3) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "2",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -52043,7 +52043,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-A3"
 ]
@@ -52069,7 +52069,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-A3"
 ]
@@ -52095,7 +52095,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-A3"
 ]
@@ -52121,18 +52121,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-A3"
 ]
 },
 {
 "name": "CEM_A4_core",
-"label": "motor-stator / CEM_A4_core - C-EM A4 core, bonded to node 2 (rail end of L_A4) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_A4_core - C-EM A4 core, bonded to node 2 (rail end of L_A4) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "2",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -52147,7 +52147,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-A4"
 ]
@@ -52173,7 +52173,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-A4"
 ]
@@ -52199,7 +52199,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-A4"
 ]
@@ -52225,18 +52225,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-A4"
 ]
 },
 {
 "name": "CEM_A5_core",
-"label": "motor-stator / CEM_A5_core - C-EM A5 core, bonded to node 2 (rail end of L_A5) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_A5_core - C-EM A5 core, bonded to node 2 (rail end of L_A5) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "2",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -52251,7 +52251,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-A5"
 ]
@@ -52277,7 +52277,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-A5"
 ]
@@ -52303,7 +52303,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-A5"
 ]
@@ -52329,18 +52329,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-A5"
 ]
 },
 {
 "name": "CEM_A6_core",
-"label": "motor-stator / CEM_A6_core - C-EM A6 core, bonded to node 2 (rail end of L_A6) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_A6_core - C-EM A6 core, bonded to node 2 (rail end of L_A6) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "2",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -52355,7 +52355,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-A6"
 ]
@@ -52381,7 +52381,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-A6"
 ]
@@ -52407,7 +52407,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-A6"
 ]
@@ -52433,18 +52433,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-A6"
 ]
 },
 {
 "name": "CEM_B1_core",
-"label": "motor-stator / CEM_B1_core - C-EM B1 core, bonded to node 3 (rail end of L_B1) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_B1_core - C-EM B1 core, bonded to node 3 (rail end of L_B1) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "3",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -52459,7 +52459,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-B1"
 ]
@@ -52485,7 +52485,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-B1"
 ]
@@ -52511,7 +52511,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-B1"
 ]
@@ -52537,18 +52537,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-B1"
 ]
 },
 {
 "name": "CEM_B2_core",
-"label": "motor-stator / CEM_B2_core - C-EM B2 core, bonded to node 3 (rail end of L_B2) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_B2_core - C-EM B2 core, bonded to node 3 (rail end of L_B2) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "3",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -52563,7 +52563,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-B2"
 ]
@@ -52589,7 +52589,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-B2"
 ]
@@ -52615,7 +52615,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-B2"
 ]
@@ -52641,18 +52641,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-B2"
 ]
 },
 {
 "name": "CEM_B3_core",
-"label": "motor-stator / CEM_B3_core - C-EM B3 core, bonded to node 3 (rail end of L_B3) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_B3_core - C-EM B3 core, bonded to node 3 (rail end of L_B3) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "3",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -52667,7 +52667,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-B3"
 ]
@@ -52693,7 +52693,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-B3"
 ]
@@ -52719,7 +52719,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-B3"
 ]
@@ -52745,18 +52745,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-B3"
 ]
 },
 {
 "name": "CEM_B4_core",
-"label": "motor-stator / CEM_B4_core - C-EM B4 core, bonded to node 3 (rail end of L_B4) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_B4_core - C-EM B4 core, bonded to node 3 (rail end of L_B4) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "3",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -52771,7 +52771,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-B4"
 ]
@@ -52797,7 +52797,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-B4"
 ]
@@ -52823,7 +52823,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-B4"
 ]
@@ -52849,18 +52849,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-B4"
 ]
 },
 {
 "name": "CEM_B5_core",
-"label": "motor-stator / CEM_B5_core - C-EM B5 core, bonded to node 3 (rail end of L_B5) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_B5_core - C-EM B5 core, bonded to node 3 (rail end of L_B5) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "3",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -52875,7 +52875,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-B5"
 ]
@@ -52901,7 +52901,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-B5"
 ]
@@ -52927,7 +52927,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-B5"
 ]
@@ -52953,18 +52953,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-B5"
 ]
 },
 {
 "name": "CEM_B6_core",
-"label": "motor-stator / CEM_B6_core - C-EM B6 core, bonded to node 3 (rail end of L_B6) [C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings), stator]",
+"label": "motor-stator / CEM_B6_core - C-EM B6 core, bonded to node 3 (rail end of L_B6) [C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings), stator]",
 "assembly": "motor-stator",
 "role": "cem-core",
 "node": "3",
-"material": "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)",
+"material": "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)",
 "body": "stator",
 "shape": "import",
 "file": "src/cem_core.step",
@@ -52979,7 +52979,7 @@
 0.45,
 0.5
 ],
-"volume": 211176.43122297438,
+"volume": 211176.43122297444,
 "chains": [
 "motor-B6"
 ]
@@ -53005,7 +53005,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545753,
+"volume": 15185.579592545759,
 "chains": [
 "motor-B6"
 ]
@@ -53031,7 +53031,7 @@
 0.85,
 0.8
 ],
-"volume": 15185.579592545742,
+"volume": 15185.579592545706,
 "chains": [
 "motor-B6"
 ]
@@ -53057,18 +53057,18 @@
 0.5,
 0.2
 ],
-"volume": 5309.981082477829,
+"volume": 5309.981082477816,
 "chains": [
 "motor-B6"
 ]
 },
 {
 "name": "UTRON_1_core",
-"label": "motor-rotor / UTRON_1_core - utron 1 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+"label": "motor-rotor / UTRON_1_core - utron 1 core, floating [utron core (material OPEN: laminated steel / SMC, see findings), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-core",
 "node": "floating",
-"material": "utron core (material OPEN: ferrite for reluctance drive)",
+"material": "utron core (material OPEN: laminated steel / SMC, see findings)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_core.step",
@@ -53090,11 +53090,11 @@
 },
 {
 "name": "UTRON_1_coil1",
-"label": "motor-rotor / UTRON_1_coil1 - utron 1 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_1_coil1 - utron 1 coil half 1, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_1.step",
@@ -53116,11 +53116,11 @@
 },
 {
 "name": "UTRON_1_coil2",
-"label": "motor-rotor / UTRON_1_coil2 - utron 1 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_1_coil2 - utron 1 coil half 2, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_2.step",
@@ -53142,11 +53142,11 @@
 },
 {
 "name": "UTRON_2_core",
-"label": "motor-rotor / UTRON_2_core - utron 2 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+"label": "motor-rotor / UTRON_2_core - utron 2 core, floating [utron core (material OPEN: laminated steel / SMC, see findings), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-core",
 "node": "floating",
-"material": "utron core (material OPEN: ferrite for reluctance drive)",
+"material": "utron core (material OPEN: laminated steel / SMC, see findings)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_core.step",
@@ -53168,11 +53168,11 @@
 },
 {
 "name": "UTRON_2_coil1",
-"label": "motor-rotor / UTRON_2_coil1 - utron 2 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_2_coil1 - utron 2 coil half 1, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_1.step",
@@ -53194,11 +53194,11 @@
 },
 {
 "name": "UTRON_2_coil2",
-"label": "motor-rotor / UTRON_2_coil2 - utron 2 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_2_coil2 - utron 2 coil half 2, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_2.step",
@@ -53220,11 +53220,11 @@
 },
 {
 "name": "UTRON_3_core",
-"label": "motor-rotor / UTRON_3_core - utron 3 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+"label": "motor-rotor / UTRON_3_core - utron 3 core, floating [utron core (material OPEN: laminated steel / SMC, see findings), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-core",
 "node": "floating",
-"material": "utron core (material OPEN: ferrite for reluctance drive)",
+"material": "utron core (material OPEN: laminated steel / SMC, see findings)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_core.step",
@@ -53246,11 +53246,11 @@
 },
 {
 "name": "UTRON_3_coil1",
-"label": "motor-rotor / UTRON_3_coil1 - utron 3 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_3_coil1 - utron 3 coil half 1, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_1.step",
@@ -53272,11 +53272,11 @@
 },
 {
 "name": "UTRON_3_coil2",
-"label": "motor-rotor / UTRON_3_coil2 - utron 3 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_3_coil2 - utron 3 coil half 2, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_2.step",
@@ -53298,11 +53298,11 @@
 },
 {
 "name": "UTRON_4_core",
-"label": "motor-rotor / UTRON_4_core - utron 4 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+"label": "motor-rotor / UTRON_4_core - utron 4 core, floating [utron core (material OPEN: laminated steel / SMC, see findings), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-core",
 "node": "floating",
-"material": "utron core (material OPEN: ferrite for reluctance drive)",
+"material": "utron core (material OPEN: laminated steel / SMC, see findings)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_core.step",
@@ -53324,11 +53324,11 @@
 },
 {
 "name": "UTRON_4_coil1",
-"label": "motor-rotor / UTRON_4_coil1 - utron 4 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_4_coil1 - utron 4 coil half 1, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_1.step",
@@ -53350,11 +53350,11 @@
 },
 {
 "name": "UTRON_4_coil2",
-"label": "motor-rotor / UTRON_4_coil2 - utron 4 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_4_coil2 - utron 4 coil half 2, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_2.step",
@@ -53376,11 +53376,11 @@
 },
 {
 "name": "UTRON_5_core",
-"label": "motor-rotor / UTRON_5_core - utron 5 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+"label": "motor-rotor / UTRON_5_core - utron 5 core, floating [utron core (material OPEN: laminated steel / SMC, see findings), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-core",
 "node": "floating",
-"material": "utron core (material OPEN: ferrite for reluctance drive)",
+"material": "utron core (material OPEN: laminated steel / SMC, see findings)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_core.step",
@@ -53402,11 +53402,11 @@
 },
 {
 "name": "UTRON_5_coil1",
-"label": "motor-rotor / UTRON_5_coil1 - utron 5 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_5_coil1 - utron 5 coil half 1, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_1.step",
@@ -53428,11 +53428,11 @@
 },
 {
 "name": "UTRON_5_coil2",
-"label": "motor-rotor / UTRON_5_coil2 - utron 5 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_5_coil2 - utron 5 coil half 2, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_2.step",
@@ -53454,11 +53454,11 @@
 },
 {
 "name": "UTRON_6_core",
-"label": "motor-rotor / UTRON_6_core - utron 6 core, floating [utron core (material OPEN: ferrite for reluctance drive), rotor AB]",
+"label": "motor-rotor / UTRON_6_core - utron 6 core, floating [utron core (material OPEN: laminated steel / SMC, see findings), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-core",
 "node": "floating",
-"material": "utron core (material OPEN: ferrite for reluctance drive)",
+"material": "utron core (material OPEN: laminated steel / SMC, see findings)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_core.step",
@@ -53480,11 +53480,11 @@
 },
 {
 "name": "UTRON_6_coil1",
-"label": "motor-rotor / UTRON_6_coil1 - utron 6 coil half 1 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_6_coil1 - utron 6 coil half 1, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_1.step",
@@ -53506,11 +53506,11 @@
 },
 {
 "name": "UTRON_6_coil2",
-"label": "motor-rotor / UTRON_6_coil2 - utron 6 coil half 2 [Cu magnet wire, enamelled (open / shorted: OPEN), rotor AB]",
+"label": "motor-rotor / UTRON_6_coil2 - utron 6 coil half 2, open, not in the circuit [Cu magnet wire, open ends (not in the circuit; may be omitted), rotor AB]",
 "assembly": "motor-rotor",
 "role": "utron-coil",
 "node": "floating",
-"material": "Cu magnet wire, enamelled (open / shorted: OPEN)",
+"material": "Cu magnet wire, open ends (not in the circuit; may be omitted)",
 "body": "rotor AB",
 "shape": "import",
 "file": "src/utron_coil_2.step",

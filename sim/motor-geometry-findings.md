@@ -28,13 +28,19 @@ has no geometry, and the designer will add the trunnions later.
 | outermost stator object of the build | SG4a1 stem, r 563.0 (stems and lead frame at r 560; the spark-gap spheres reach only r 427) |
 | clearance used (`--r-clear`) | 40 mm |
 | utron centre | r 627.4 mm, z 0 (the septum plane) [OC] |
-| motor radial extent | utron coil r 603.9 (innermost) … C-EM spool r 764.3; machine Ø grows from 1.12 m to 1.53 m |
+| motor radial extent | utron coil r 603.9 (innermost) … C-EM spool r 762.4; machine Ø grows from 1.12 m to 1.52 m |
 | C-EMs | 12, at the register stations (A 30 + 60k, B 0 + 60k), stator |
 | utrons | 6, at 15 + 60k (rotor angle 0), rotor |
 | air gap jaw – utron | 7.0 mm (core), 5.5 mm (coil), each side |
 
-Copies are made by translation and rotation only. The tips are asymmetric in y (chamfered), so the sense of rotation matters. If
-the chamfer should lead the other way, the C-EM needs mirroring in y. **[OPEN]**
+**C-EM squared to the utron.** In the source, the C-EM's 30 mm core plate is turned 5.17° about its own z axis, and its mid-plane
+sits 8.6 mm off the utron centre. All four C-EM pieces (core, spools, coil) are turned back by −5.17° about the z axis through the
+mid-plane, then shifted 8.6 mm tangentially so the mid-plane passes through the utron centre. That shift equals 0.8° of station
+angle, which is a clocking variable anyway. `cem_squaring` measures the turn from the core's plate faces and re-checks it to
+0.000° after the correction (`placement.cem_squaring`).
+
+Copies are then made by translation and rotation only. The tips are asymmetric in y (chamfered), so the sense of rotation
+matters. If the chamfer should lead the other way, the C-EM needs mirroring in y. **[OPEN]**
 
 ## Checks (`sim/motor_geometry_results.json`)
 
@@ -44,7 +50,7 @@ the chamfer should lead the other way, the C-EM needs mirroring in y. **[OPEN]**
 | **G-MOT-SWEEP**: the rotor's utron ring vs every stator solid (build + C-EM, exact); the C-EM ring vs every rotor solid | PASS: no overlap |
 | **G-MOT-MACRO**: the FCMacro (through the OpenCascade stand-in) vs the instanced STEP, all 66 solids | PASS: volume 1e-12, centroid 3e-11 mm |
 | **G-MOT-TRUNNION**: band r 500 … 604, z ±25 must be free of stator parts (a rotor spoke sweeps it at every angle) | **FAIL**: the 12 frame leads SG3a1_lead_ka / SG4a1_lead_ka run axially at r 560 from z −116 to +67 |
-| **G-MOT-LEAD**: lead SG-k → C-EM coil (the mid node mA_k / mB_k) vs the 3.3 pF per-node budget (v4 pump check) | **FAIL bare**: ≥ 568 mm (26.8° of arc to the nearest SG sphere), ≈ 7.9 pF bare |
+| **G-MOT-LEAD**: lead SG-k → C-EM coil (the mid node mA_k / mB_k) vs the 3.3 pF per-node budget (v4 pump check) | **FAIL bare**: ≥ 567 mm (26.8° of arc to the nearest SG sphere), ≈ 7.9 pF bare |
 | jaw – utron capacitance at alignment | 1.5 pF parallel-plate (604 mm² per jaw overlap, 7.0 mm), about 3 pF with fringing [RH] |
 
 What follows from the two FAILs:
@@ -64,36 +70,57 @@ What follows from the two FAILs:
 The floating utron passes A cores (node 2) and B cores (node 3) alternately, every 15°. That makes it a small charge carrier
 between nodes 2 and 3, of about 3 pF. It is not yet in the pump model. **[next: rt_engine check]**
 
-## The utron coil: open or shorted? (classic theory)
+## The utron coil
 
-**Coupling.** Both halves of the utron winding have the same area vector: about 49,800 mm² per half, pointing along (−x −z)/√2.
-So the winding links the jaw-to-jaw (z) flux with an effective N·A ≈ 70,500 mm². It is not decoupled.
+There is no wire path to the utrons. The utron coils are left open or omitted, and they are **not part of the circuit**. Open,
+the winding still picks up e = N·A·dB/dt, about 1 kV at its ends for 0.1 T rising in 7.5 µs (N·A ≈ 70,500 mm² linked to the
+jaw flux). It needs kV insulation, or it should be left off. It does nothing for the force: the drive is reluctance, with the
+utron pulled toward alignment, so it fires while approaching.
 
-**The force.** The energy method gives F = ½ i² dL/dx for the C-EM coil, with L its inductance as seen at the terminals.
+## Utron core material without ferrite (`sim/utron_material.py`, `sim/utron_material_results.json`)
 
-- **Open coil (or no coil).** The utron acts as iron in the gap. L rises as it enters the jaws, so the force attracts it toward
-  alignment. This is a switched-reluctance drive: fire while the utron approaches (the planned re-clock). The open winding does
-  nothing for the force, but at its ends it sees e = N·A·dB/dt. For example, 0.1 T rising in 7.5 µs gives ≈ 0.94 kV. An open
-  winding therefore needs kV insulation, or it should be left off. It could be kept as a pickup coil for firing timing.
-- **Shorted coil.** For a shorted winding the time constant is τ = L₂/R₂. With 4.6 m of wire per half (about 0.1 Ω at 1 mm Cu),
-  τ is far longer than the 15 µs pulse. So the shorted winding keeps the flux out of the utron, and L_eff = L₁(1 − k²) *falls*
-  as the utron enters. The force repels: an induction / Thomson-repulsion drive. It must fire *after* alignment, and the
-  winding's I²R loss takes a share of every pulse comparable to the work it does.
-- **Which is stronger.** Jaw-to-jaw is 60 mm and the utron is 46 mm, which leaves 14 mm of air. A permeable utron changes the gap
-  reluctance over its footprint by about 4× (ΔL/L up to about 0.7). Shorted, the swing is k² of the linked flux (about 0.3–0.5).
-  [RH]
-- **Advice: leave the coil open (or omit it) and make the utron magnetically fast.** Reluctance gives the larger swing with no
-  secondary loss, and it keeps the clocking already worked out. Go shorted only if you choose the repulsion drive. The utron then
-  need not be iron at all: a Cu / Al block works.
+**Model.** The pulse is a 15 µs half-sine, about 33 kHz. The circuit is gap-dominated: aligned, the 60 mm between the jaws is
+46 mm of utron plus 14 mm of air; unaligned, it is 60 mm of air. So the utron needs only a modest μ_eff: once μ_eff is above
+about 30, its reluctance (46 mm / μ_eff) is small next to the 14 mm of air. What it must not do is shield the flux with eddy
+currents. μ_eff follows the classic lamination law μ·tanh(kt/2)/(kt/2) [RH: 1-D, fringing, saturation and hysteresis ignored].
 
-**The material governs either way (classic skin effect).**
-- A 15 µs half-sine is about 33 kHz. Skin depth δ = √(2ρ/ωμ):
-  - solid low-carbon iron: δ ≈ 0.03 mm;
-  - Si-steel: δ ≈ 0.06 mm.
-- A **solid iron utron is itself a shorted turn**: the eddy currents exclude the flux. The intended reluctance utron would behave
-  as a lossy repulsion block.
-- The register's C-EM core (Si-steel, **0.35 mm** laminations) carries the pulse flux in a skin of about 0.06 mm. Its effective
-  permeability collapses.
-- **Both cores need ferrite (MnZn), or tape of 0.05 mm or less (amorphous / nanocrystalline).**
-- The 0.64 H / 40 Ω per C-EM used so far is an engine default, not derived from this geometry. It should be recomputed from this
-  core and winding. **[next]**
+| utron core | μ_eff (′ / ″) | L′ aligned / ideal | torque swing (ideal 0.767) | loss per pulse ≈ π·tan_L | B_sat |
+|:--|:--|:--|:--|:--|:--|
+| solid soft steel block | 0.7 / 0.7 | 0.20 | **−0.15 (repels)** | 220 % | 2.0 T |
+| soft steel, hollow with the bore along z | flux excluded | – | **repels** | – | 2.0 T |
+| soft steel, 3 mm fins (comb) | 11 / 11 | 0.85 | 0.73 | 41 % | 2.0 T |
+| soft steel, 1 mm sheet stack | 33 / 33 | 0.95 | 0.75 | 15 % | 2.0 T |
+| soft steel, 0.5 mm sheet stack | 65 / 65 | 0.98 | 0.76 | 8 % | 2.0 T |
+| **electrical steel M235-35A, 0.35 mm** | 271 / 270 | 0.99 | 0.77 | **2 %** | 1.9 T |
+| electrical steel 0.2 mm | 437 / 456 | 1.00 | 0.77 | 1.3 % | 1.9 T |
+| SMC (Somaloy-class), machined | 400 / 60 | 0.99 | 0.77 | 0.3 % | 1.6 T |
+| iron powder (μ 75) | 75 / 1.5 | 0.96 | 0.76 | 0.3 % | 1.2 T |
+| MnZn ferrite (reference) | 2000 / 20 | 1.00 | 0.77 | 0.1 % | **0.45 T** |
+
+**Hollowing out soft steel does not work.** The eddy currents run in a 0.03 mm skin on the outside whether the block is solid or
+hollow, so the steel keeps the flux out either way:
+- with the bore along z, the tube is a closed shorted turn around the flux, which is the worst case;
+- with the bore along x or y, the top and bottom plates face the flux and screen it.
+
+Hollow steel only saves mass. **What works with soft steel is splitting it, not hollowing it:**
+- the steel must be in thin sheets or fins whose planes contain z (the flux direction);
+- they must be insulated from each other, or joined along one edge only (a comb), so that no closed metal loop encircles the z-flux;
+- 1 mm sheet already gives 95 % of the ideal swing, at about 15 % loss per pulse; 0.5 mm gives 8 %.
+- Mass can then be removed by leaving out middle sheets, as long as the flux path along z stays continuous.
+
+**Best next material: a stack of electrical-steel laminations (M235-35A / M270-35A, 0.35 mm, or 0.2 mm grades).**
+- It is easy to source as transformer or motor lamination sheet: laser-cut 46 × 46 mm squares, varnished or bonded, about
+  185 sheets for the 65 mm length.
+- It gives 99 % of the ideal swing at about 2 % loss per pulse.
+- It saturates at 1.9 T, versus about 0.45 T for ferrite. Torque scales as B², so it carries roughly 18× the flux-density²
+  that ferrite can. Ferrite would not have been the best choice even if available.
+- Stack the sheets along y (the direction of travel), so that each sheet lies in an x–z plane.
+- SMC (machinable, isotropic, no stacking) is the alternative where blanks can be had. Iron powder is low-loss but saturates
+  early.
+
+**C-EM core (path ≈ 300 mm, same model).** The core needs a higher μ_eff than the utron, because its path is long.
+- The register's 0.35 mm Si-steel reaches 0.96 of ideal at about 12 % loss per pulse (π·0.038). That corrects the earlier note:
+  it works, but lossy.
+- 0.2 mm reaches 0.98 at about 7.5 %; 0.1 mm or amorphous cut cores (Metglas AMCC) about 3 % or less.
+- Solid or 1 mm-and-thicker steel is unusable for the C core.
+- The 0.64 H / 40 Ω per C-EM is an engine default, not derived from this geometry, and should be recomputed from it. **[next]**

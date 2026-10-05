@@ -4,7 +4,15 @@
   "r_clear": 40.0,
   "local_x_min": -24.359394033716896,
   "build_r_out": 563.0000000000001,
-  "build_r_out_part": "SG4a1_stem_5"
+  "build_r_out_part": "SG4a1_stem_5",
+  "cem_squaring": {
+   "source_tilt_deg": 5.171599391742009,
+   "source_midplane_offset_mm": -8.679434037599243,
+   "core_plate_mm": 30.000000000000007,
+   "after_tilt_deg": 7.95138670365876e-16,
+   "after_midplane_offset_mm": 1.7763568394002505e-15,
+   "note": "C-EM turned by -tilt about its own z axis, mid-plane shifted onto the utron centre (the shift is 0.79 deg of station angle at the placement radius)"
+  }
  },
  "parts_json": "docs/geometry/motor/motor-il2f-6563b90d-rc40.json",
  "n_parts": 66,
@@ -16,8 +24,8 @@
  "G-MOT-MACRO": {
   "n": 66,
   "n_built": 66,
-  "worst_rel_volume": 9.534806073080299e-13,
-  "worst_centroid_mm": 3.235848485786287e-11,
+  "worst_rel_volume": 6.093411871075306e-13,
+  "worst_centroid_mm": 5.815869291128079e-11,
   "pass_": true
  },
  "G-MOT-ZONE": {
@@ -25,10 +33,10 @@
   "build_r_out_part": "SG4a1_stem_5",
   "r_clear": 40.0,
   "motor_r_min": {
-   "cem_core": 618.53,
-   "cem_spool_1": 729.33,
-   "cem_spool_2": 699.58,
-   "cem_coil": 708.5,
+   "cem_core": 620.0,
+   "cem_spool_1": 732.09,
+   "cem_spool_2": 702.44,
+   "cem_coil": 708.92,
    "utron_core": 604.37,
    "utron_coil_1": 603.94,
    "utron_coil_2": 603.94
@@ -43,9 +51,9 @@
    23.54176578594553
   ],
   "cem_ring": [
-   618.5275493951192,
-   764.2785121958069,
-   -59.39096652180703,
+   620.0023845103304,
+   762.4282100391259,
+   -59.39096652180704,
    59.39048594268819
   ],
   "utron_ring_vs_cem_mm3": {},
@@ -91,8 +99,8 @@
   "utron_coil_half_height": 24.480743988714625,
   "gap_core_mm": 7.019165717120519,
   "gap_coil_mm": 5.519256011285375,
-  "overlap_mm2_per_jaw": 604.0,
-  "C_pF_parallel_plate": 1.5237753931228855
+  "overlap_mm2_per_jaw": 600.0,
+  "C_pF_parallel_plate": 1.5136841653538593
  },
  "G-MOT-LEAD": {
   "leads": [
@@ -100,83 +108,83 @@
     "cem": "A1",
     "sphere": "SG1_sph_2",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "A2",
     "sphere": "SG1_sph_1",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "A3",
     "sphere": "SG1_sph_6",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "A4",
     "sphere": "SG1_sph_5",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "A5",
     "sphere": "SG1_sph_4",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "A6",
     "sphere": "SG1_sph_3",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "B1",
     "sphere": "SG2_sph_1",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "B2",
     "sphere": "SG2_sph_6",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "B3",
     "sphere": "SG2_sph_5",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "B4",
     "sphere": "SG2_sph_4",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "B5",
     "sphere": "SG2_sph_3",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    },
    {
     "cem": "B6",
     "sphere": "SG2_sph_2",
     "arc_deg": 26.8,
-    "route_mm": 568.0
+    "route_mm": 567.0
    }
   ],
   "route_mm": [
-   568.0,
-   568.0
+   567.0,
+   567.0
   ],
   "C_bare_pF_per_mm": 0.013991043181425016,
   "C_bare_pF": [
-   7.946912527049409,
-   7.946912527049409
+   7.932921483867984,
+   7.932921483867984
   ],
   "budget_pF": 3.3,
   "pass_bare": false,

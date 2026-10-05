@@ -44,13 +44,13 @@ LOCAL_ORIGIN = (292.0, 0.0, 0.0)                         # utron centre in the s
 
 # source product -> piece key, role, body, material, colour
 PIECES = {
-    "em- V2": ("cem_core", "cem-core", "stator", "C-EM core (material OPEN: ferrite / <=0.05 mm tape, see findings)", (0.45, 0.45, 0.5)),
+    "em- V2": ("cem_core", "cem-core", "stator", "C-EM core (material OPEN: <=0.1 mm laminations / amorphous, see findings)", (0.45, 0.45, 0.5)),
     "spool half V2": ("cem_spool_1", "cem-spool", "stator", "spool, insulating (printed)", (0.85, 0.85, 0.8)),
     "spool half V2 v1(Mirror)": ("cem_spool_2", "cem-spool", "stator", "spool, insulating (printed)", (0.85, 0.85, 0.8)),
     "C magnet coil": ("cem_coil", "cem-coil", "stator", "Cu magnet wire, enamelled", (0.85, 0.5, 0.2)),
-    "utron": ("utron_core", "utron-core", "rotor AB", "utron core (material OPEN: ferrite for reluctance drive)", (0.3, 0.3, 0.35)),
-    "utron coil top": ("utron_coil_1", "utron-coil", "rotor AB", "Cu magnet wire, enamelled (open / shorted: OPEN)", (0.8, 0.45, 0.2)),
-    "utron coil top(Mirror)": ("utron_coil_2", "utron-coil", "rotor AB", "Cu magnet wire, enamelled (open / shorted: OPEN)", (0.8, 0.45, 0.2)),
+    "utron": ("utron_core", "utron-core", "rotor AB", "utron core (material OPEN: laminated steel / SMC, see findings)", (0.3, 0.3, 0.35)),
+    "utron coil top": ("utron_coil_1", "utron-coil", "rotor AB", "Cu magnet wire, open ends (not in the circuit; may be omitted)", (0.8, 0.45, 0.2)),
+    "utron coil top(Mirror)": ("utron_coil_2", "utron-coil", "rotor AB", "Cu magnet wire, open ends (not in the circuit; may be omitted)", (0.8, 0.45, 0.2)),
 }
 POLE_DEG = [15.0 + 60.0 * k for k in range(6)]
 
@@ -144,8 +144,44 @@ def mesh_points(shape, defl=0.3):
     return np.array(P)
 
 
+def cem_squaring(core):
+    """the C-EM core is a flat plate (30 mm); in the source it is turned about its own z axis and its mid-plane
+    is off the utron centre. Returns (tilt_deg, mid-plane offset mm, the correcting transform): rotate by -tilt
+    about the z axis through the mid-plane point nearest the utron centre, then shift tangentially so that the
+    mid-plane passes through the utron centre (y = 0).                                               [OC]"""
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_FACE
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Surface
+    from OCP.GeomAbs import GeomAbs_Plane
+    from OCP.GProp import GProp_GProps
+    from OCP.BRepGProp import BRepGProp
+    from OCP.gp import gp_Trsf, gp_Vec, gp_Ax1, gp_Pnt, gp_Dir
+    n, offs = None, []
+    e = TopExp_Explorer(core, TopAbs_FACE)
+    while e.More():
+        f = TopoDS.Face(e.Current()); ad = BRepAdaptor_Surface(f)
+        if ad.GetType() == GeomAbs_Plane:
+            d = ad.Plane().Axis().Direction(); d = np.array([d.X(), d.Y(), d.Z()])
+            if abs(d[2]) < 1e-6 and abs(d[1]) > 0.9:                       # the two plate faces
+                n = d * np.sign(d[1]) if n is None else n
+                g = GProp_GProps(); BRepGProp.SurfaceProperties_s(f, g); c = g.CentreOfMass()
+                offs.append(float(np.dot([c.X(), c.Y(), c.Z()], n)))
+        e.Next()
+    tilt = math.degrees(math.atan2(-n[0], n[1]))
+    mid = 0.5 * (min(offs) + max(offs))
+    p0 = mid * n
+    r = gp_Trsf(); r.SetRotation(gp_Ax1(gp_Pnt(p0[0], p0[1], 0.0), gp_Dir(0, 0, 1)), math.radians(-tilt))
+    t = gp_Trsf(); t.SetTranslation(gp_Vec(0.0, -p0[1], 0.0))
+    return tilt, mid, max(offs) - min(offs), t.Multiplied(r)
+
+
+CEM_KEYS = ("cem_core", "cem_spool_1", "cem_spool_2", "cem_coil")
+
+
 def split_source():
-    """each source solid -> src/<key>.step in the local frame; returns {key: (shape, props, meta)}."""
+    """each source solid -> src/<key>.step in the local frame (the C-EM squared to the utron, cem_squaring);
+    returns ({key: (shape, props, meta)}, unused products, squaring)."""
     from OCP.STEPControl import STEPControl_Writer, STEPControl_AsIs
     from OCP.Interface import Interface_Static
     leaves = read_leaves(SRC_STEP)
@@ -154,15 +190,24 @@ def split_source():
         raise SystemExit(f"source STEP lacks {missing}; has {sorted(leaves)}")
     os.makedirs(SRC_DIR, exist_ok=True)
     t = trsf(-LOCAL_ORIGIN[0], -LOCAL_ORIGIN[1], -LOCAL_ORIGIN[2])
+    core_prod = [p for p, v in PIECES.items() if v[0] == "cem_core"][0]
+    tilt, mid, thick, sq = cem_squaring(moved(leaves[core_prod], t))
     out = {}
     for prod, (key, role, body, mat, rgb) in PIECES.items():
         s = moved(leaves[prod], t)
+        if key in CEM_KEYS:
+            s = moved(s, sq)
         path = os.path.join(SRC_DIR, key + ".step")
         Interface_Static.SetCVal_s("write.step.product.name", key)
         w = STEPControl_Writer(); w.Transfer(s, STEPControl_AsIs); w.Write(path)
         out[key] = (s, props(s), dict(source_product=prod, role=role, body=body, material=mat, rgb=rgb,
                                       file=os.path.relpath(path, MOTOR_DIR)))
-    return out, sorted(set(leaves) - set(PIECES))
+    check_tilt, check_mid, _, _ = cem_squaring(out["cem_core"][0])
+    squaring = dict(source_tilt_deg=tilt, source_midplane_offset_mm=mid, core_plate_mm=thick,
+                    after_tilt_deg=check_tilt, after_midplane_offset_mm=check_mid,
+                    note="C-EM turned by -tilt about its own z axis, mid-plane shifted onto the utron centre "
+                         "(the shift is %.2f deg of station angle at the placement radius)" % 0.0)
+    return out, sorted(set(leaves) - set(PIECES)), squaring
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -221,8 +266,8 @@ def motor_parts(pieces, pl):
         add("cem_coil", f"CEM_{lab}_coil", th, "", "motor-stator", f"L_{lab}: node {node} -> {mid} -> SG{1 if side == 'A' else 2}-{k}")
     for k, th in enumerate(POLE_DEG, 1):
         add("utron_core", f"UTRON_{k}_core", th, "floating", "motor-rotor", f"utron {k} core, floating")
-        add("utron_coil_1", f"UTRON_{k}_coil1", th, "floating", "motor-rotor", f"utron {k} coil half 1")
-        add("utron_coil_2", f"UTRON_{k}_coil2", th, "floating", "motor-rotor", f"utron {k} coil half 2")
+        add("utron_coil_1", f"UTRON_{k}_coil1", th, "floating", "motor-rotor", f"utron {k} coil half 1, open, not in the circuit")
+        add("utron_coil_2", f"UTRON_{k}_coil2", th, "floating", "motor-rotor", f"utron {k} coil half 2, open, not in the circuit")
     return parts
 
 
@@ -485,8 +530,10 @@ def main():
     ap.add_argument("--no-step", action="store_true")
     a = ap.parse_args()
     build = json.load(open(BUILD))
-    pieces, skipped = split_source()
+    pieces, skipped, squaring = split_source()
     pl = placement(pieces, build, a.r_clear)
+    squaring["note"] = squaring["note"].replace("0.00 deg", "%.2f deg" % math.degrees(abs(squaring["source_midplane_offset_mm"]) / pl["r_utron_centre"]))
+    pl["cem_squaring"] = squaring
     parts = motor_parts(pieces, pl)
     tag = f"{BUILD_TAG}-rc{a.r_clear:g}"
     jpath = os.path.join(MOTOR_DIR, f"motor-{tag}.json")

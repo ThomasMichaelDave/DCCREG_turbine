@@ -21,8 +21,16 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
     - G-MOT-ZONE PASS, G-MOT-SWEEP PASS;
     - G-MOT-TRUNNION FAIL: 12 SG3a1 / SG4a1 frame leads cross the rotor-spoke band at r 560;
     - G-MOT-LEAD FAIL bare: mid-node lead ≥ 568 mm ≈ 7.9 pF vs the 3.3 pF budget. A screened lead is needed.
-  - **Utron coil:** leave it open (or omit it) for a reluctance drive; shorted means a repulsion drive, fired after alignment.
-  - **Cores:** both need ferrite or ≤ 0.05 mm tape at 15 µs pulses (skin depth 0.03–0.06 mm).
+  - **C-EM orientation:** the C-EM is squared to the utron.
+    - The source had it turned 5.17° about its own z axis, with the 30 mm core plate's mid-plane 8.6 mm off the utron centre.
+    - Both are now corrected and re-checked (0.000°).
+  - **Utron coils:** open or omitted, not in the circuit.
+  - **Core materials (`sim/utron_material.py`):**
+    - the circuit is gap-dominated, so the utron needs only μ_eff ≳ 30;
+    - solid or hollow soft steel shields the flux and repels;
+    - steel works only as thin sheets in planes containing z: 1 mm gives 95 % of ideal at ~15 % loss per pulse;
+    - **best next material: electrical-steel laminations (M235-35A, 0.35 mm)** — 99 %, ~2 % loss, B_sat 1.9 T vs 0.45 T for ferrite;
+    - the C-EM core works in 0.35 mm Si-steel at ~12 % loss per pulse; 0.2 / 0.1 mm or amorphous reduce that to 7.5 / 3 %.
 
 ### Simulation
 - **Electromagnet register (BRIEF_ELECTROMAGNET_REGISTER r0.3).**

@@ -1,0 +1,310 @@
+{
+ "f_eq_Hz": 33333.333333333336,
+ "gap_mm": 14.0,
+ "utron_mm": 46.0,
+ "unaligned_mm": 60.0,
+ "swing_ideal": 0.7666666666666666,
+ "utron": [
+  {
+   "material": "solid low-carbon steel (block, t = 46 mm)",
+   "mu_eff": [
+    0.7090664634877187,
+    0.7090664634877187
+   ],
+   "delta_mm": 0.032617057320435065,
+   "L_rel": 0.2026201618422563,
+   "swing": -0.15158003631932648,
+   "tan_L": 0.6985163712057455,
+   "B_sat_T": 2.0,
+   "sourcing": "any steel stock"
+  },
+  {
+   "material": "soft steel, hollow (bore along z: a closed shorted turn)",
+   "mu_eff": [
+    0.0,
+    0.0
+   ],
+   "delta_mm": null,
+   "L_rel": 0.0,
+   "swing": "negative (repulsion)",
+   "tan_L": null,
+   "B_sat_T": 2.0,
+   "sourcing": "-"
+  },
+  {
+   "material": "soft steel, 3 mm slotted fins (comb)",
+   "mu_eff": [
+    10.872352440145022,
+    10.872352440145022
+   ],
+   "delta_mm": 0.032617057320435065,
+   "L_rel": 0.8540151806406103,
+   "swing": 0.7267808130081408,
+   "tan_L": 0.13126884787358487,
+   "B_sat_T": 2.0,
+   "sourcing": "steel bar, wire-EDM slots"
+  },
+  {
+   "material": "soft steel, 1 mm fins / sheet stack",
+   "mu_eff": [
+    32.6170573204306,
+    32.61705732043494
+   ],
+   "delta_mm": 0.032617057320435065,
+   "L_rel": 0.9498630710007014,
+   "swing": 0.7543505580362109,
+   "tan_L": 0.04795275086333351,
+   "B_sat_T": 2.0,
+   "sourcing": "1 mm DC01 sheet, laser-cut, varnished"
+  },
+  {
+   "material": "soft steel, 0.5 mm sheet stack",
+   "mu_eff": [
+    65.23415192859581,
+    65.23413070726448
+   ],
+   "delta_mm": 0.032617057320435065,
+   "L_rel": 0.9748463647900506,
+   "swing": 0.7606460445861276,
+   "tan_L": 0.02456534992426363,
+   "B_sat_T": 2.0,
+   "sourcing": "0.5 mm DC01 sheet, laser-cut, varnished"
+  },
+  {
+   "material": "electrical steel M235-35A, 0.35 mm",
+   "mu_eff": [
+    270.70348545343177,
+    270.1069678431415
+   ],
+   "delta_mm": 0.04734692374470302,
+   "L_rel": 0.993918372837636,
+   "swing": 0.7652389374117646,
+   "tan_L": 0.0060321400620853985,
+   "B_sat_T": 1.9,
+   "sourcing": "transformer / motor laminations, laser-cut"
+  },
+  {
+   "material": "electrical steel NO20 / 0.2 mm",
+   "mu_eff": [
+    436.78050014043686,
+    456.1848672179166
+   ],
+   "delta_mm": 0.044449556589752234,
+   "L_rel": 0.9964010319886735,
+   "swing": 0.7658238742811883,
+   "tan_L": 0.0037442657477263185,
+   "B_sat_T": 1.9,
+   "sourcing": "thin-gauge NO steel (EV motor grade)"
+  },
+  {
+   "material": "electrical steel 0.1 mm (10JNEX900 / Arnon 5)",
+   "mu_eff": [
+    1166.4754954560653,
+    834.447021466834
+   ],
+   "delta_mm": 0.044449556589752234,
+   "L_rel": 0.9981384186538038,
+   "swing": 0.7662314875645888,
+   "tan_L": 0.0013304323597081269,
+   "B_sat_T": 1.8,
+   "sourcing": "specialist thin gauge"
+  },
+  {
+   "material": "amorphous ribbon 2605SA1, 25 um (cut core)",
+   "mu_eff": [
+    2996.4029063221774,
+    94.76187129731899
+   ],
+   "delta_mm": 0.05738413080613819,
+   "L_rel": 0.9989057402466877,
+   "swing": 0.7664110596904671,
+   "tan_L": 3.460615671180854e-05,
+   "B_sat_T": 1.56,
+   "sourcing": "Metglas AMCC cut cores"
+  },
+  {
+   "material": "SMC (Somaloy-class), machined blank",
+   "mu_eff": [
+    400.0,
+    60.0
+   ],
+   "delta_mm": null,
+   "L_rel": 0.9920290743775051,
+   "swing": 0.76479183991684,
+   "tan_L": 0.001195426195426195,
+   "B_sat_T": 1.6,
+   "sourcing": "SMC prototype blanks, machinable"
+  },
+  {
+   "material": "iron powder (carbonyl / mix -26, mu 75)",
+   "mu_eff": [
+    75.0,
+    1.5
+   ],
+   "delta_mm": null,
+   "L_rel": 0.9580446000813876,
+   "swing": 0.7564483602188131,
+   "tan_L": 0.0008390945075792124,
+   "B_sat_T": 1.2,
+   "sourcing": "powder cores / bars"
+  },
+  {
+   "material": "MnZn ferrite (reference)",
+   "mu_eff": [
+    2000.0,
+    20.0
+   ],
+   "delta_mm": null,
+   "L_rel": 0.9983600008723503,
+   "swing": 0.7662833715999734,
+   "tan_L": 1.6399988591312284e-05,
+   "B_sat_T": 0.45,
+   "sourcing": "hard to source at this size"
+  }
+ ],
+ "cem_core": [
+  {
+   "material": "solid low-carbon steel (block, t = 46 mm)",
+   "mu_eff": [
+    0.7090664634877187,
+    0.7090664634877187
+   ],
+   "delta_mm": 0.032617057320435065,
+   "L_rel": 0.033021943307000735,
+   "swing": -6.0660085375371,
+   "tan_L": 0.9379283372819969,
+   "B_sat_T": 2.0,
+   "sourcing": "any steel stock"
+  },
+  {
+   "material": "soft steel, 3 mm slotted fins (comb)",
+   "mu_eff": [
+    10.872352440145022,
+    10.872352440145022
+   ],
+   "delta_mm": 0.032617057320435065,
+   "L_rel": 0.4041082623436272,
+   "swing": 0.42259697443423727,
+   "tan_L": 0.4963387831692805,
+   "B_sat_T": 2.0,
+   "sourcing": "steel bar, wire-EDM slots"
+  },
+  {
+   "material": "soft steel, 1 mm fins / sheet stack",
+   "mu_eff": [
+    32.6170573204306,
+    32.61705732043494
+   ],
+   "delta_mm": 0.032617057320435065,
+   "L_rel": 0.7093656107876769,
+   "swing": 0.6710675992958823,
+   "tan_L": 0.2472641040851646,
+   "B_sat_T": 2.0,
+   "sourcing": "1 mm DC01 sheet, laser-cut, varnished"
+  },
+  {
+   "material": "soft steel, 0.5 mm sheet stack",
+   "mu_eff": [
+    65.23415192859581,
+    65.23413070726448
+   ],
+   "delta_mm": 0.032617057320435065,
+   "L_rel": 0.8421663203722214,
+   "swing": 0.7229367552596921,
+   "tan_L": 0.1410731485084559,
+   "B_sat_T": 2.0,
+   "sourcing": "0.5 mm DC01 sheet, laser-cut, varnished"
+  },
+  {
+   "material": "electrical steel M235-35A, 0.35 mm",
+   "mu_eff": [
+    270.70348545343177,
+    270.1069678431415
+   ],
+   "delta_mm": 0.04734692374470302,
+   "L_rel": 0.9604547337736287,
+   "swing": 0.7570595207370511,
+   "tan_L": 0.038069237068013254,
+   "B_sat_T": 1.9,
+   "sourcing": "transformer / motor laminations, laser-cut"
+  },
+  {
+   "material": "electrical steel NO20 / 0.2 mm",
+   "mu_eff": [
+    436.78050014043686,
+    456.1848672179166
+   ],
+   "delta_mm": 0.044449556589752234,
+   "L_rel": 0.9765135113555354,
+   "swing": 0.7610546801247691,
+   "tan_L": 0.023945120510268772,
+   "B_sat_T": 1.9,
+   "sourcing": "thin-gauge NO steel (EV motor grade)"
+  },
+  {
+   "material": "electrical steel 0.1 mm (10JNEX900 / Arnon 5)",
+   "mu_eff": [
+    1166.4754954560653,
+    834.447021466834
+   ],
+   "delta_mm": 0.044449556589752234,
+   "L_rel": 0.987921196312245,
+   "swing": 0.7638138201666994,
+   "tan_L": 0.008588533599264552,
+   "B_sat_T": 1.8,
+   "sourcing": "specialist thin gauge"
+  },
+  {
+   "material": "amorphous ribbon 2605SA1, 25 um (cut core)",
+   "mu_eff": [
+    2996.4029063221774,
+    94.76187129731899
+   ],
+   "delta_mm": 0.05738413080613819,
+   "L_rel": 0.9929063422496931,
+   "swing": 0.764999654645518,
+   "tan_L": 0.00022433683604148564,
+   "B_sat_T": 1.56,
+   "sourcing": "Metglas AMCC cut cores"
+  },
+  {
+   "material": "SMC (Somaloy-class), machined blank",
+   "mu_eff": [
+    400.0,
+    60.0
+   ],
+   "delta_mm": null,
+   "L_rel": 0.9501627453851265,
+   "swing": 0.7544280340745657,
+   "tan_L": 0.007467640225688682,
+   "B_sat_T": 1.6,
+   "sourcing": "SMC prototype blanks, machinable"
+  },
+  {
+   "material": "iron powder (carbonyl / mix -26, mu 75)",
+   "mu_eff": [
+    75.0,
+    1.5
+   ],
+   "delta_mm": null,
+   "L_rel": 0.7778315370601682,
+   "swing": 0.7000207342900727,
+   "tan_L": 0.004443062158439597,
+   "B_sat_T": 1.2,
+   "sourcing": "powder cores / bars"
+  },
+  {
+   "material": "MnZn ferrite (reference)",
+   "mu_eff": [
+    2000.0,
+    20.0
+   ],
+   "delta_mm": null,
+   "L_rel": 0.9894003308994462,
+   "swing": 0.7641669139920196,
+   "tan_L": 0.00010599657984369038,
+   "B_sat_T": 0.45,
+   "sourcing": "hard to source at this size"
+  }
+ ]
+}
