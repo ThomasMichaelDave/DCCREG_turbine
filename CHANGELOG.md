@@ -5,6 +5,14 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Physics
+- **Diode stack vs spark gaps on the tube** (`sim/diode_stack_compare.py`, `sim/diode-stack-findings.md`):
+  - The bare de Queiroz 4-diode core with smooth capacitances gives η 1.00 and 3.0 W at 20 kV, against 1.3 W at η 0.53
+    with spark gaps.
+  - Diodes in the record schematic turn the islands into voltage multipliers (node 8 at 8× node 1), so they don't fit
+    there.
+  - The repo's 0.39–0.52 doubler η comes from the two-state stepped capacitance model (re-check flagged).
+
+### Physics
 - **The Goldie floating-rotor generator in the exact engine** (`sim/goldie_tube.py`, `sim/goldie-tube-findings.md`):
   - Diodes: z 1.088 per cycle, η 1.00, 3.4 W surplus at 20 kV, against 1.3 W for the spark-gap Bennet tube.
   - Timed spark gaps reach the same z at η 0.97 at the best windows, but are timing-sensitive: 6° early shorts the
