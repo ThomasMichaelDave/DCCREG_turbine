@@ -4,6 +4,14 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Docs
+- **Context package: the reversed US 2,945,141 as the stator drive** (`docs/context-reverse-vdg/`, `sim/reverse_vdg_budget.py`):
+  - The patent's toothed iron rotor, magnetised C-cores, one rectifier per coil and series stack, run backwards: the
+    HV link drives 12 PM-biased toothed C-EMs through one switch per coil, and their back-EMF matches the 20 kV link.
+  - Budget: 66–88 µA from the link, 21–45 mN·m of torque, against 19 mN·m of drag in a shell or vacuum and 225 mN·m in
+    open air. It closes only with windage removed, and costs the belt 2–4× what a reversing gear would.
+  - Gates for the work block, with G-LOAD (the pump holds 20 kV while loaded) first, plus the designer's open forks.
+
 ### Physics
 - **Tube energy ledger and motor** (`sim/tube_ledger.py`, `sim/tube-ledger-findings.md`):
   - The ledger closes to round-off: belt 82 mJ / cycle = growth 44–59 mJ + losses 24–38 mJ; at 300 rpm and 20 kV that is
