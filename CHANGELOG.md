@@ -4,6 +4,15 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Tools
+- **pump-stack: the bare de Queiroz diode doubler, a 20 kV power ledger, gap breakdown, and a vacuum default:**
+  - **New topology** "de Queiroz diodes": the `solveDoubler4` 4-diode core with continuous varicaps (`stack_sizing.core_net`).
+  - **New cards:** belt and surplus power with the highest node at 20 kV, η, the highest node, and the gap breakdown
+    with its margin.
+  - **Breakdown model:** air uses the uniform-field formula; vacuum (≤ 1e-4 mbar) a 10 kV/mm design field [RH].
+  - **Tube default:** a 3 mm gap in vacuum with the diode core. 30 kV design breakdown (×1.5); 3.0 W at 300 rpm.
+    Air would need 8 mm, which gives 0.78 W.
+
 ### Physics
 - **Diode stack vs spark gaps on the tube** (`sim/diode_stack_compare.py`, `sim/diode-stack-findings.md`):
   - The bare de Queiroz 4-diode core with smooth capacitances gives η 1.00 and 3.0 W at 20 kV, against 1.3 W at η 0.53

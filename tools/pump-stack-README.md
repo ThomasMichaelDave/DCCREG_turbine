@@ -28,7 +28,14 @@
 - **Highest node · lost:** which node sets that 20 kV, and the power lost in gaps, rings and relaxation.
 - **Gap air breakdown:** the uniform-field air breakdown of the vane gap, 24.4 d + 6.53 √d kV with d in cm, and its margin
   at 20 kV. Vane edges and humidity lower it, so a margin under ×1.2 is thin.
-- **Tube default gap is now 8 mm** (about 25 kV breakdown, ×1.27 at 20 kV). The 3 mm gap broke down near 10.9 kV.
+- **Gap breakdown by medium** (`stack_sizing.gap_breakdown_kV`):
+  - **air:** the formula above. A 3 mm gap breaks down near 10.9 kV, so air needs about 8 mm for 20 kV.
+  - **vacuum** (≤ 1e-4 mbar, below the Paschen region): a conservative large-area design field of 10 kV/mm [RH].
+- **Tube default: 3 mm gap in vacuum, de Queiroz diode core.**
+  - 30 kV design breakdown (×1.5 at 20 kV); 1114 / 71 pF, κ 15.7; 3.0 W surplus at 300 rpm.
+  - Air at 8 mm gives only 0.78 W, because κ falls to 4.3 and C to 460 pF.
+  - The spark-gap topologies (record, v4) need a gas for their gaps to strike, so with the vacuum default they are a
+    comparison only.
 
 ## Run it
 

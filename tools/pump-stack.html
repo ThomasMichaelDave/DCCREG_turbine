@@ -88,10 +88,11 @@
           <div class="f"><label>sectors / kept</label><input data-k="d.N_sec" type="number" step="2"></div>
         </div>
         <div id="tubeFields">
-          <div class="brass">Tube: interleaved air vanes, per varicap per side</div>
+          <div class="brass">Tube: interleaved vanes, per varicap per side</div>
           <div class="f"><label>r in (mm)</label><input data-k="t.r_inMm" type="number" step="1"></div>
           <div class="f"><label>r out (mm)</label><input data-k="t.r_outMm" type="number" step="1"></div>
-          <div class="f"><label>air gap (mm)</label><input data-k="t.g_vMm" type="number" step="0.1"></div>
+          <div class="f"><label>vane gap (mm)</label><input data-k="t.g_vMm" type="number" step="0.1"></div>
+          <div class="f"><label>medium</label><select data-k="t.dielectric"><option>vacuum</option><option>air</option></select></div>
           <div class="f"><label>vane thickness (mm)</label><input data-k="t.t_vaneMm" type="number" step="0.1"></div>
           <div class="f"><label>rotor = stator vanes</label><input data-k="t.n_plates" type="number" step="1" min="1"></div>
           <div class="f"><label>sectors (2 × periods)</label><input data-k="t.N_sec" type="number" step="2"></div>
@@ -143,7 +144,7 @@
         <div class="cards" style="margin-top:8px">
           <div class="card"><div class="k">Belt · surplus (highest node 20 kV)</div><div class="v" id="oP">—</div></div>
           <div class="card"><div class="k">η = surplus / belt</div><div class="v" id="oEta">—</div></div>
-          <div class="card"><div class="k">Gap air breakdown · margin</div><div class="v" id="oBd">—</div></div>
+          <div class="card"><div class="k">Gap breakdown · margin</div><div class="v" id="oBd">—</div></div>
           <div class="card"><div class="k">Highest node · lost</div><div class="v" id="oTop">—</div></div>
         </div>
       </div>
@@ -197,7 +198,7 @@
 const $ = (id) => document.getElementById(id);
 let W = null, READY = false, DEF = null, seq = 0;
 const pending = new Map();
-const state = {geo:"tube", top:"v4", zoom:"clock", d:{}, t:{}, c:{}, v:{}};
+const state = {geo:"tube", top:"core", zoom:"clock", d:{}, t:{}, c:{}, v:{}};
 let LAST = null;
 
 /* ---- URL-hash state (no storage) ---- */
@@ -235,7 +236,7 @@ function showMode(){
 function defaultsInto(){
   const pick = (src, keys) => Object.fromEntries(keys.filter(k => k in src).map(k => [k, src[k]]));
   state.d = Object.assign(pick(DEF.disc_defaults, ["r_inMm","r_outMm","g_vMm","dielectric","N_sec"]), state.d);
-  state.t = Object.assign(pick(DEF.tube_defaults, ["r_inMm","r_outMm","g_vMm","t_vaneMm","n_plates","N_sec","ws_deg","wr_deg","C_edge_pF","hub_mm","clock_mm","rel_mm"]), state.t);
+  state.t = Object.assign(pick(DEF.tube_defaults, ["r_inMm","r_outMm","g_vMm","dielectric","t_vaneMm","n_plates","N_sec","ws_deg","wr_deg","C_edge_pF","hub_mm","clock_mm","rel_mm"]), state.t);
   state.c = Object.assign(pick(DEF.choice_defaults, ["cpar_mode","ratio_Ca","ratio_Cx"]), {rpm: 300}, state.c);   // the 300 rpm prototype
   state.v = Object.assign(pick(DEF.v4_defaults, ["L_coil_H","R_coil","C_mid_pF","C_screen_pF"]), state.v);
 }
@@ -265,7 +266,7 @@ function render(r){
   } else { for (const id of ["oP", "oEta", "oTop"]) $(id).textContent = "—"; }
   if (bd && bd.breakdown_kV){
     const ok = bd.margin_at_V_op >= 1.0;
-    $("oBd").innerHTML = `${fmt(bd.breakdown_kV,1)} kV <small class="${ok ? "" : "warn"}">· ×${fmt(bd.margin_at_V_op,2)} at 20 kV</small>`;
+    $("oBd").innerHTML = `${fmt(bd.breakdown_kV,1)} kV <small class="${ok ? "" : "warn"}">· ×${fmt(bd.margin_at_V_op,2)} at 20 kV · ${bd.dielectric}</small>`;
   } else $("oBd").textContent = "—";
   $("oK").textContent = fmt(lad.kappa_C, 1);
   if (lad.geometry === "tube"){

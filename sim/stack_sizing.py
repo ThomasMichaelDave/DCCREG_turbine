@@ -30,10 +30,10 @@ EPS0_MM = 8.8541878128e-15                     # F/mm
 
 TUBE_DEFAULTS = dict(
     r_inMm=50.0, r_outMm=150.0,                # vane band (300 mm plates) (the bicone hub sits between the A and B stacks)
-    g_vMm=8.0, t_vaneMm=1.5,                   # air gap (8 mm: air breakdown ~25 kV, holds the 20 kV peak), vane thickness (Al)
+    g_vMm=3.0, t_vaneMm=1.5,                   # vane gap; in vacuum 3 mm holds 30 kV at the 10 kV/mm design field (air: 8 mm), vane thickness (Al)
     N_sec=12, ws_deg=30.0, wr_deg=22.0,        # 6 stator sectors of 30 deg, 6 rotor vanes of 22 deg
     n_plates=8,                                # rotor vanes = stator vanes per varicap per side (~1.1 nF at r 150)
-    dielectric="air", tempC=20.0, p_hPa=1013.0, rh=50.0,
+    dielectric="vacuum", tempC=20.0, p_hPa=1013.0, rh=50.0,    # diode core: no spark gaps, so the tube runs in vacuum (<= 1e-4 mbar)
     C_edge_pF=2.0,                             # inner + outer edge fringe floor added to C_min [IR]
     h_mm=0.25, n_r=5,                          # 2-D cell resolution, radii for the r integral [ME]
     rho_vane=2700.0,                           # Al, kg/m^3
@@ -325,9 +325,18 @@ def size_stack(geometry="disc", plates=None, choices=None):
 V_OP = 20e3                                       # operating peak (highest node) for the power ledger [IR]
 
 
-def gap_breakdown_kV(g_mm):
-    """uniform-field air breakdown at 1 atm, 20 C: V = 24.4 d + 6.53 sqrt(d) kV, d in cm [OC]. Vane edges and humidity
-    lower it; treat as an upper bound."""
+E_VAC_DESIGN_KV_PER_MM = 10.0                     # vacuum design field, large-area conditioned Al vanes, mm gaps [RH]
+
+
+def gap_breakdown_kV(g_mm, dielectric="air"):
+    """breakdown of the vane gap.
+    air: uniform-field breakdown at 1 atm, 20 C, V = 24.4 d + 6.53 sqrt(d) kV, d in cm [OC]; vane edges and humidity
+    lower it, so treat it as an upper bound.
+    vacuum (<= 1e-4 mbar, below the Paschen region): a conservative large-area DESIGN field, 10 kV/mm. Small
+    conditioned gaps hold several times more (V ~ k sqrt(d)), but large electrode area, edges and insulator surface
+    flashover dominate a real machine [RH]."""
+    if dielectric == "vacuum":
+        return E_VAC_DESIGN_KV_PER_MM * g_mm
     d = g_mm / 10.0
     return 24.4 * d + 6.53 * math.sqrt(d)
 
@@ -370,8 +379,9 @@ def z_stack(lad, firing=None, topology="record", v4=None, log=None, ledger=True)
     cfg = SY.engine_cfg(lad, fi)
     n_sec = (lad.get("tube") or lad.get("plates") or {}).get("N_sec", 12)
     cyc = math.ceil(n_sec / 2) * cfg["rpm"] / 60.0          # cycles per second (pump_sizing machinePRF)
-    g = (lad.get("tube") or lad.get("plates") or {}).get("g_vMm")
-    bd = dict(gap_mm=g, breakdown_kV=gap_breakdown_kV(g) if g else None)
+    geo = lad.get("tube") or lad.get("plates") or {}
+    g, diel = geo.get("g_vMm"), geo.get("dielectric", "air")
+    bd = dict(gap_mm=g, dielectric=diel, breakdown_kV=gap_breakdown_kV(g, diel) if g else None)
     if bd["breakdown_kV"]:
         bd["margin_at_V_op"] = bd["breakdown_kV"] * 1e3 / V_OP
     if topology == "record":
