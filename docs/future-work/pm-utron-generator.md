@@ -59,3 +59,39 @@ stator**, their reaction torque drags the stator along with the rotor, exactly l
    through one C-EM.
 2. **G-PM-EMF:** EMF and power against rpm, with core loss.
 3. **G-FRAME:** a frame-fixed coil ring at r_u 130 that clears the stator cage, plus the stator-to-shell motor envelope.
+
+## Variant (2026-10-06): belt on the stator, PM utrons + C-EMs as a BLDC motor that drives the rotor backwards
+
+Setup:
+- the older (record) schematic, with the C-EMs entirely out of the Bennet circuit;
+- the belt drives the stator;
+- the C-EMs, in two groups A / B, are energised from an outside supply and commutated by rotor position;
+- the PM utrons make the pair a brushless PM motor that turns the rotor the other way.
+
+Record schematic, tube at 20 kV (`RT.build_net(cfg)`):
+
+| strays | z | pump work per cycle | ledger closure | pump reaction torque |
+|:--|:--|:--|:--|:--|
+| fixed | 1.567 | 82 mJ | 5e-14 J | 78.5 mN·m |
+| scaled | 1.313 | 83 mJ | 3e-15 J | 79 mN·m |
+
+- **The pump starts as soon as the stator turns.** Only relative motion counts. Left free, the rotor is dragged along with
+  the stator, by the pump reaction (78 mN·m), the bearings (15 mN·m), vane shear and PM cogging, and that kills the
+  relative speed. The motor's job is to hold the rotor back or reverse it.
+- **Shorted, passive C-EM coils make it worse.** By Lenz, the induced currents couple the rotor to the stator. The coils
+  must be driven.
+- **Torque the motor must supply.** About 100 mN·m at 20 kV (45 mN·m at the air cap). At a symmetric split (each body at
+  150 rpm, 300 relative) that is about 1.6 W from the motor and 1.6 W from the belt. The total, T·ω_rel, equals the pump
+  work plus drag, the same as driving one body.
+- **The motor itself is easy.** The existing winding (1846 turns) has about 23 V peak back-EMF per coil at 300 rpm
+  relative, so the job takes milliamps. It is an ordinary 2-phase BLDC; a 2-phase machine has dead points, so it needs
+  an asymmetric gap or start-up logic.
+- **Energy must come from outside the rotor–stator pair:** low-voltage slip rings to the stator, or a small alternator
+  between the stator and the frame. A motor powered by the pump cannot do it (`sim/spinup-findings.md`).
+- **What counter-rotation buys:**
+  - each body at half speed;
+  - windage per body ×1/8 (total ×1/4 at the same relative speed);
+  - centrifugal stress ×1/4;
+  - same relative-speed bearing load.
+- **Isolation.** The C-EMs sat bonded to nodes 2 / 3 in v4. Out of the circuit, they and their low-voltage supply must be
+  insulated from the stator's HV nodes, or placed in a frame-referenced end section.
