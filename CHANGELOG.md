@@ -4,6 +4,14 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Physics (hypothetical)
+- **Invented hub conditions for break-even and runaway** (`sim/hub_runaway.py`, `sim/hub-runaway-findings.md`):
+  1. The hub must feed the motor's DC link. Onto the pump nodes it stops SG1 firing above about 6.5 mJ per switch
+     (α 5 → 7: z 2.16 → 0.88).
+  2. It must release more than 21 mJ per switch (air cap) or 42 mJ (20 kV) at 300 rpm.
+  3. For a runaway the release must grow with rpm (exponent above 0.07–0.38).
+  - In a shell, a release ∝ rpm or rpm² runs away to the motor's top speed in 10–50 min. In open air it always settles.
+
 ### Physics
 - **Stator balance corrected and rpm feedback** (`sim/spinup_equilibrium.py`, `sim/spinup-findings.md`):
   - The pump's own reaction torque on the stator (78 mN·m at 20 kV) was missing from the earlier balances. Since the
