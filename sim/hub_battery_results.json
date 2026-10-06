@@ -1,0 +1,339 @@
+{
+ "premise": "HYPOTHETICAL hub source; origin not modelled; booked as ledger term ext",
+ "V_on": 10000.0,
+ "T_need_Nm": [
+  0.01928947223330328,
+  0.22470552830179097
+ ],
+ "rows": [
+  {
+   "alpha": 0.0,
+   "z": 1.614123656578471,
+   "converged": true,
+   "closure_J": 1.4065137943219952e-14,
+   "P_belt_W": 2.461897093235146,
+   "P_ext_W": 0.0,
+   "P_loss_W": 1.1490181364869603,
+   "P_surplus_W": 1.3128789567477637,
+   "int_I2": {
+    "mA": 9.067631021557432e-08,
+    "mB": 1.4548698232821976e-07
+   },
+   "releases": [],
+   "cycles_to_V_on": 9.618306981906764,
+   "cycles_V_on_to_20kV": 1.4476994545291166,
+   "seconds_total": 0.3688668812145294,
+   "seconds_V_on_to_20kV": 0.04825664848430389,
+   "T_cem_direct_mNm": 0.0005780284988275331,
+   "T_cem_ceiling_mNm": 1.201843172927413,
+   "T_cem_realistic_mNm": 0.15366709152849184,
+   "T_rvdg_mNm": [
+    20.895117564773727,
+    33.43218810363796
+   ],
+   "cem_closes_shell": false,
+   "rvdg_closes_shell": true,
+   "cem_closes_open_air": false,
+   "rvdg_closes_open_air": false
+  },
+  {
+   "alpha": 0.01,
+   "z": 1.617098906344507,
+   "converged": true,
+   "closure_J": 1.1254885912137524e-14,
+   "P_belt_W": 2.4612274795337283,
+   "P_ext_W": 0.0015745083876952753,
+   "P_loss_W": 1.1501285168858861,
+   "P_surplus_W": 1.3126734710352,
+   "int_I2": {
+    "mA": 8.920515534599067e-08,
+    "mB": 1.4337200436047693e-07
+   },
+   "releases": [
+    {
+     "th": 3.0,
+     "side": "A",
+     "dq": -1.948955489728328e-12,
+     "dE": 2.4207556275711057e-13,
+     "into": "node 2 from rail 5",
+     "dq_uC": -0.01774259379029602,
+     "dE_mJ": 0.02006232806497265
+    },
+    {
+     "th": 33.0,
+     "side": "B",
+     "dq": -2.4775724770936807e-12,
+     "dE": 3.912008991150362e-13,
+     "into": "node 3 from rail 6",
+     "dq_uC": -0.022554933798523132,
+     "dE_mJ": 0.03242128485820319
+    }
+   ],
+   "cycles_to_V_on": 9.618306981906764,
+   "cycles_V_on_to_20kV": 1.4421525482666395,
+   "seconds_total": 0.3686819843391135,
+   "seconds_V_on_to_20kV": 0.048071751608887985,
+   "T_cem_direct_mNm": 0.0005692511526183563,
+   "T_cem_ceiling_mNm": 1.183593218748135,
+   "T_cem_realistic_mNm": 0.15133366114220695,
+   "T_rvdg_mNm": [
+    20.891847158084797,
+    33.42695545293568
+   ],
+   "cem_closes_shell": false,
+   "rvdg_closes_shell": true,
+   "cem_closes_open_air": false,
+   "rvdg_closes_open_air": false
+  },
+  {
+   "alpha": 0.03,
+   "z": 1.622971552607258,
+   "converged": true,
+   "closure_J": 1.0019762797242038e-14,
+   "P_belt_W": 2.459923378068675,
+   "P_ext_W": 0.00472238283723304,
+   "P_loss_W": 1.152279692796685,
+   "P_surplus_W": 1.3123660681089226,
+   "int_I2": {
+    "mA": 8.6377130820358e-08,
+    "mB": 1.3929469911357158e-07
+   },
+   "releases": [
+    {
+     "th": 3.0,
+     "side": "A",
+     "dq": -5.767398397729306e-12,
+     "dE": 7.282303025780988e-13,
+     "into": "node 2 from rail 5",
+     "dq_uC": -0.0523669537683043,
+     "dE_mJ": 0.06003761953296617
+    },
+    {
+     "th": 33.0,
+     "side": "B",
+     "dq": -7.345007974436028e-12,
+     "dE": 1.181118263204349e-12,
+     "into": "node 3 from rail 6",
+     "dq_uC": -0.06669136870734535,
+     "dE_mJ": 0.09737514170813515
+    }
+   ],
+   "cycles_to_V_on": 9.618306981906764,
+   "cycles_V_on_to_20kV": 1.4313570280721821,
+   "seconds_total": 0.3683221336659649,
+   "seconds_V_on_to_20kV": 0.047711900935739404,
+   "T_cem_direct_mNm": 0.0005523498071156929,
+   "T_cem_ceiling_mNm": 1.148451756438118,
+   "T_cem_realistic_mNm": 0.14684049062971397,
+   "T_rvdg_mNm": [
+    20.886954688561,
+    33.41912750169761
+   ],
+   "cem_closes_shell": false,
+   "rvdg_closes_shell": true,
+   "cem_closes_open_air": false,
+   "rvdg_closes_open_air": false
+  },
+  {
+   "alpha": 0.1,
+   "z": 1.642753827807878,
+   "converged": true,
+   "closure_J": 1.1622647289044608e-14,
+   "P_belt_W": 2.455697961390698,
+   "P_ext_W": 0.01569491456428456,
+   "P_loss_W": 1.159137586508467,
+   "P_surplus_W": 1.312255289446167,
+   "int_I2": {
+    "mA": 7.754510810994525e-08,
+    "mB": 1.2645627996700533e-07
+   },
+   "releases": [
+    {
+     "th": 3.0,
+     "side": "A",
+     "dq": -1.8361298832386307e-11,
+     "dE": 2.4442887911597794e-12,
+     "into": "node 2 from rail 5",
+     "dq_uC": -0.1652742286465924,
+     "dE_mJ": 0.19804140391134722
+    },
+    {
+     "th": 33.0,
+     "side": "B",
+     "dq": -2.352604138758277e-11,
+     "dE": 4.012762274933483e-12,
+     "into": "node 3 from rail 6",
+     "dq_uC": -0.21176325155071932,
+     "dE_mJ": 0.3251224148981382
+    }
+   ],
+   "cycles_to_V_on": 9.618306981906764,
+   "cycles_V_on_to_20kV": 1.3964212163968328,
+   "seconds_total": 0.3671576066101199,
+   "seconds_V_on_to_20kV": 0.046547373879894424,
+   "T_cem_direct_mNm": 0.0004993096718745396,
+   "T_cem_ceiling_mNm": 1.0381701274872475,
+   "T_cem_realistic_mNm": 0.132739934457625,
+   "T_rvdg_mNm": [
+    20.885191591384334,
+    33.41630654621493
+   ],
+   "cem_closes_shell": false,
+   "rvdg_closes_shell": true,
+   "cem_closes_open_air": false,
+   "rvdg_closes_open_air": false
+  },
+  {
+   "alpha": 0.3,
+   "z": 1.6935926937287786,
+   "converged": true,
+   "closure_J": 6.70991040507829e-15,
+   "P_belt_W": 2.4459467901449887,
+   "P_ext_W": 0.04613386151229822,
+   "P_loss_W": 1.174161807826714,
+   "P_surplus_W": 1.3179188438303715,
+   "int_I2": {
+    "mA": 5.901101691930316e-08,
+    "mB": 9.891126021850822e-08
+   },
+   "releases": [
+    {
+     "th": 3.0,
+     "side": "A",
+     "dq": -4.898670966715571e-11,
+     "dE": 7.358432859216478e-12,
+     "into": "node 2 from rail 5",
+     "dq_uC": -0.43157253162178777,
+     "dE_mJ": 0.5711318534348347
+    },
+    {
+     "th": 33.0,
+     "side": "B",
+     "dq": -6.373056160778631e-11,
+     "dE": 1.2454442249103902e-11,
+     "into": "node 3 from rail 6",
+     "dq_uC": -0.5614657526833569,
+     "dE_mJ": 0.9666635303084392
+    }
+   ],
+   "cycles_to_V_on": 9.618306981906764,
+   "cycles_V_on_to_20kV": 1.3156389531809254,
+   "seconds_total": 0.36446486450292304,
+   "seconds_V_on_to_20kV": 0.043854631772697515,
+   "T_cem_direct_mNm": 0.0003865273718118879,
+   "T_cem_ceiling_mNm": 0.8036719364252317,
+   "T_cem_realistic_mNm": 0.10275710824460053,
+   "T_rvdg_mNm": [
+    20.975329858955927,
+    33.560527774329486
+   ],
+   "cem_closes_shell": false,
+   "rvdg_closes_shell": true,
+   "cem_closes_open_air": false,
+   "rvdg_closes_open_air": false
+  },
+  {
+   "alpha": 1.0,
+   "z": 1.8274043799777537,
+   "converged": true,
+   "closure_J": 3.885780586188048e-15,
+   "P_belt_W": 2.4267420624548097,
+   "P_ext_W": 0.1368778438776682,
+   "P_loss_W": 1.1985797067003625,
+   "P_surplus_W": 1.365040199631999,
+   "int_I2": {
+    "mA": 2.9295889542289376e-08,
+    "mB": 5.2254835696526486e-08
+   },
+   "releases": [
+    {
+     "th": 3.0,
+     "side": "A",
+     "dq": -1.199600104144475e-10,
+     "dE": 2.305479163794792e-11,
+     "into": "node 2 from rail 5",
+     "dq_uC": -1.003797304698903,
+     "dE_mJ": 1.6142851899821362
+    },
+    {
+     "th": 33.0,
+     "side": "B",
+     "dq": -1.6211862337850996e-10,
+     "dE": 4.2106973458551244e-11,
+     "into": "node 3 from rail 6",
+     "dq_uC": -1.3565707157461682,
+     "dE_mJ": 2.9483096059401355
+    }
+   ],
+   "cycles_to_V_on": 9.618306981906764,
+   "cycles_V_on_to_20kV": 1.1496949790043538,
+   "seconds_total": 0.3589333986970373,
+   "seconds_V_on_to_20kV": 0.0383231659668118,
+   "T_cem_direct_mNm": 0.00019960190586921104,
+   "T_cem_ceiling_mNm": 0.415014464440425,
+   "T_cem_realistic_mNm": 0.053063550327848416,
+   "T_rvdg_mNm": [
+    21.725289529058024,
+    34.76046324649285
+   ],
+   "cem_closes_shell": false,
+   "rvdg_closes_shell": true,
+   "cem_closes_open_air": false,
+   "rvdg_closes_open_air": false
+  },
+  {
+   "alpha": 3.0,
+   "z": 2.0412111614872224,
+   "converged": true,
+   "closure_J": -1.1005085731596864e-14,
+   "P_belt_W": 2.410671251079079,
+   "P_ext_W": 0.29868977957445825,
+   "P_loss_W": 1.205930215750785,
+   "P_surplus_W": 1.5034308149030828,
+   "int_I2": {
+    "mA": 9.71683857539535e-09,
+    "mB": 1.8184087012141513e-08
+   },
+   "releases": [
+    {
+     "th": 3.0,
+     "side": "A",
+     "dq": -2.1339199599590397e-10,
+     "dE": 5.3902131751851147e-11,
+     "into": "node 2 from rail 5",
+     "dq_uC": -1.6632893038542569,
+     "dE_mJ": 3.2748037520141278
+    },
+    {
+     "th": 33.0,
+     "side": "B",
+     "dq": -3.048057777313837e-10,
+     "dE": 1.0997553411491223e-10,
+     "into": "node 3 from rail 6",
+     "dq_uC": -2.3758163350387327,
+     "dE_mJ": 6.681522233801148
+    }
+   ],
+   "cycles_to_V_on": 9.618306981906764,
+   "cycles_V_on_to_20kV": 0.9714156707253406,
+   "seconds_total": 0.3529907550877368,
+   "seconds_V_on_to_20kV": 0.032380522357511356,
+   "T_cem_direct_mNm": 6.828974121908447e-05,
+   "T_cem_ceiling_mNm": 0.1419887763866549,
+   "T_cem_realistic_mNm": 0.01815461683231149,
+   "T_rvdg_mNm": [
+    23.9278445788502,
+    38.28455132616032
+   ],
+   "cem_closes_shell": false,
+   "rvdg_closes_shell": true,
+   "cem_closes_open_air": false,
+   "rvdg_closes_open_air": false
+  }
+ ],
+ "literal_rail56_alpha0.1": {
+  "z": 1.614123656578471,
+  "P_ext_W": 0.0,
+  "closure_J": 1.4065137943219952e-14
+ }
+}

@@ -4,6 +4,14 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Physics (hypothetical)
+- **The hub as an energy source** (`sim/hub_battery.py`, `sim/hub-battery-findings.md`), a what-if with the source
+  booked as its own ledger term (closure ≤ 1.1e-14 J):
+  - A release between rotor halves 5 and 6 is shorted by the central coil and adds nothing.
+  - In series with SG1 / SG2, a release ∝ the pump's voltage lifts z from 1.61 to 2.04 at α 3, but adds only 0.3 W at
+    20 kV.
+  - The pulse C-EMs get worse (ceiling 1.2 → 0.14 mN·m); the reversed-VdG drive gains 3–5 mN·m.
+
 ### Docs
 - **Context package: the reversed US 2,945,141 as the stator drive** (`docs/context-reverse-vdg/`, `sim/reverse_vdg_budget.py`):
   - The patent's toothed iron rotor, magnetised C-cores, one rectifier per coil and series stack, run backwards: the
