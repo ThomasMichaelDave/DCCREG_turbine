@@ -31,7 +31,8 @@ STATOR_KG = 52.0       # from the STEP solids: Al vanes/plates 11.8, C-EM cores 
 MU_AIR, RHO_AIR = 1.8e-5, 1.2
 
 
-def ledger(cpar_mode):
+def tube_v4_net(cpar_mode):
+    """the v4 tube pump net (stack_sizing defaults; strays fixed or scaled) and its engine cfg."""
     lad = S.size_stack("tube", {}, {} if cpar_mode is None else dict(cpar_mode=cpar_mode))
     fi = dict(SY.FIRING_DEFAULTS) if hasattr(SY, "FIRING_DEFAULTS") else SY.split({})[2]
     cfg = SY.engine_cfg(lad, fi)
@@ -48,15 +49,24 @@ def ledger(cpar_mode):
         net.inds.append((f"L_{mid}", ni, nm, q["L_coil_H"] / n, q["R_coil"] / n, "lx"))
         net.caps.append((f"Cmid_{mid}", nm, PE.GND, n * q["C_mid_pF"] * 1e-12))
         net.caps.append((f"Cscreen_{mid}", nm, ni, n * q["C_screen_pF"] * 1e-12))
-    m = RT.run(net, cfg, record=True)
+    return net, cfg, q
+
+
+def ledger(cpar_mode, m=None, net_q=None):
+    """the 20 kV-scaled ledger of one monodromy run m (default: a plain run of the tube net)."""
+    net, cfg, q = net_q or tube_v4_net(cpar_mode)
+    n = q["n_coils"]
+    if m is None:
+        m = RT.run(net, cfg, record=True)
     rec = m["rec"]
     s2 = (V_PEAK / np.abs(np.array([p["V"] for p in rec["points"]])).max()) ** 2
     by = {k: v * s2 for k, v in rec["by"].items()}
+    ext = rec["ledger"].get("ext", 0.0) * s2                         # hypothetical hub source (sim/hub_battery.py)
     W, dE, diss = rec["ledger"]["W"] * s2, (rec["E1"] - rec["E0"]) * s2, sum(by.values())
     f = CYC_PER_REV * RPM_REL / 60.0
     I2 = {mid: by[f"L_{mid}_R"] / (q["R_coil"] / n) for mid in ("mA", "mB")}
     return dict(cpar_mode=cpar_mode or "fixed", z=m["z"], converged=bool(m["converged"]), W_J=W, dE_J=dE, diss_J=diss,
-                closure_J=W - dE - diss, diss_by_J=by, P_belt_W=W * f, P_loss_W=diss * f, P_surplus_W=dE * f,
+                closure_J=W + ext - dE - diss, ext_J=ext, P_ext_W=ext * CYC_PER_REV * RPM_REL / 60.0, diss_by_J=by, P_belt_W=W * f, P_loss_W=diss * f, P_surplus_W=dE * f,
                 int_I2_A2s=I2, L_group_H=q["L_coil_H"] / n, f_cycles=f)
 
 
