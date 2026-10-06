@@ -4,6 +4,13 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Physics
+- **Tube energy ledger and motor** (`sim/tube_ledger.py`, `sim/tube-ledger-findings.md`):
+  - The ledger closes to round-off: belt 82 mJ / cycle = growth 44–59 mJ + losses 24–38 mJ; at 300 rpm and 20 kV that is
+    2.5 W from the belt, 0.7–1.15 W lost, 1.3–1.8 W available to a load.
+  - The C-EM motor cannot counter-rotate the stator: 5.8e-7 N·m direct, 1.2 mN·m freewheel ceiling, against an
+    estimated 19–225 mN·m stator drag. Drive the relative speed from the belt (stationary stator, or reversing gear).
+
 ### Geometry
 - **Tube shaft, bearings and reluctance radius** (`sim/tube-shaft-findings.md`):
   - Utron ring moved out to r_u 130 mm (C-EMs outward): reluctance swing 0 % at r 52 → 14.7 %; envelope ⌀ 529 mm.
