@@ -80,15 +80,16 @@ The section is a vertical cut through the shaft, drawn at the same scale in r an
 
 The vane z positions come from `stack_sizing.layout()`, the same list that sets the reported length.
 
-## Reference results (`sim/stack_sizing_results.json`)
+## Reference results (`sim/stack_sizing_results.json`, `sim/stack_sizing_reference.py`)
 
-Tube with r 50–150 (300 mm plates), a 3 mm air gap, 1.5 mm vanes and 30° / 22° sectors. Lengths include the derived clocking (4 decks) and reluctance sections (utron ring at r_u 130 mm, ⌀ 529 mm envelope), the split shaft flanges and six bearing hubs:
+Tube with r 50–150 (300 mm plates), a 3 mm gap in vacuum (30 kV design breakdown), 1.5 mm vanes and 30° / 22° sectors, 300 rpm. Surplus is the eigen-state ledger with the highest node at 20 kV. Lengths include the clocking and reluctance sections and the bearing hubs. \* = not converged (shown, not trusted).
 
-| vanes per varicap per side | C1/C2 max | κ | length | z, strays fixed (record / v4) | z, strays scaled (record / v4) |
-|:--|:--|:--|:--|:--|:--|
-| 6 + 6 | 817 pF | 15.5 | 1146 mm | 1.525 / 1.549 | 1.312 / 1.307 |
-| **8 + 8** | **1114 pF** | **15.7** | **1263 mm** | **1.567 / 1.614** | **1.313 / 1.315** |
-| 10 + 10 | 1411 pF | 15.7 | 1371 mm | 1.593 / 1.658 | 1.313 / 1.321 |
+| vanes per varicap per side | C1/C2 max | κ | length | z, strays fixed (record / v4 / diode core) | surplus at 20 kV, strays fixed (record / v4 / diode core) | z, strays scaled (record / v4 / diode core) |
+|:--|:--|:--|:--|:--|:--|:--|
+| 6 + 6 | 816 pF | 15.5 | 1146 mm | 1.525 / 1.549 / 1.495 | 1.01 / 1.03 / 2.18 W | 1.311 / 1.307 / 1.378* |
+| **8 + 8** | **1113 pF** | 15.7 | 1263 mm | 1.567 / 1.614 / 1.515 | 1.30 / 1.31 / 3.01 W | 1.313 / 1.315 / 1.379 |
+| 12 + 12 | 1707 pF | 15.8 | 1488 mm | 1.611 / 1.690 / 1.535* | 1.86 / 1.87 / 4.67 W | 1.314 / 1.325 / 1.380 |
+| 16 + 16 | 2301 pF | 15.9 | 1713 mm | 1.634 / 1.732 / 1.545 | 2.42 / 2.43 / 6.33 W | 1.314 / 1.330 / 1.381 |
 
 The default disc gives 1.3255 (record) and 1.3030 (v4).
 

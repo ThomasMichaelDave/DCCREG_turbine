@@ -21,6 +21,6 @@ for strays in ("fixed", "scaled"):
                              eta=L["eta"], top_node=L["top_node"]))
             print(rows[-1], flush=True)
 p = S.TUBE_DEFAULTS
-json.dump(dict(defaults=f"r {p['r_inMm']:g}-{p['r_outMm']:g}, {p['g_vMm']:g} mm air (breakdown {S.gap_breakdown_kV(p['g_vMm']):.1f} kV), "
+json.dump(dict(defaults=f"r {p['r_inMm']:g}-{p['r_outMm']:g}, {p['g_vMm']:g} mm {p['dielectric']} (breakdown {S.gap_breakdown_kV(p['g_vMm'], p['dielectric']):.1f} kV), "
                         f"{p['t_vaneMm']:g} mm vanes, {p['ws_deg']:g}/{p['wr_deg']:g} deg, 300 rpm, ledger at {S.V_OP / 1e3:g} kV",
                rows=rows), open(os.path.join(HERE, "stack_sizing_results.json"), "w"), indent=1, default=float)
