@@ -49,6 +49,7 @@
   .card .v{font-size:20px;color:var(--amber);margin-top:3px}
   .card .v small{font-size:11px;color:var(--mut)}
   .verdict{font-size:22px;letter-spacing:.06em}
+  small.warn{color:var(--bad)}
   .yes{color:var(--good)} .no{color:var(--bad)} .na{color:var(--mut)}
   table{border-collapse:collapse;width:100%;font-size:11.5px}
   th,td{border-bottom:1px solid var(--line);padding:4px 6px;text-align:left}
@@ -66,7 +67,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>PUMP-STACK — disc or tube, record or v4</h1>
+  <h1>PUMP-STACK — disc or tube; record, v4 or the de Queiroz diode doubler</h1>
   <div class="sub">Machine geometry → capacitance ladder → the exact engine's growth factor z per cycle.
     <span id="badge" class="badge boot">SOLVER: booting…</span></div>
 
@@ -76,7 +77,7 @@
         <div class="brass">Geometry</div>
         <div class="seg" id="geoSeg"><button data-v="disc">Disc</button><button data-v="tube">Tube</button></div>
         <div class="brass">Topology</div>
-        <div class="seg" id="topSeg"><button data-v="record">Netlist of record</button><button data-v="v4">v4 (series C-EMs)</button></div>
+        <div class="seg" id="topSeg"><button data-v="record">Netlist of record</button><button data-v="v4">v4 (series C-EMs)</button><button data-v="core">de Queiroz diodes</button></div>
 
         <div id="discFields">
           <div class="brass">Disc: one rotor / stator plate pair per varicap</div>
@@ -138,6 +139,12 @@
           <div class="card"><div class="k">Length</div><div class="v" id="oL">—</div></div>
           <div class="card"><div class="k">Rotor vanes · inertia</div><div class="v" id="oM">—</div></div>
           <div class="card"><div class="k">Rotational energy · rim</div><div class="v" id="oE">—</div></div>
+        </div>
+        <div class="cards" style="margin-top:8px">
+          <div class="card"><div class="k">Belt · surplus (highest node 20 kV)</div><div class="v" id="oP">—</div></div>
+          <div class="card"><div class="k">η = surplus / belt</div><div class="v" id="oEta">—</div></div>
+          <div class="card"><div class="k">Gap air breakdown · margin</div><div class="v" id="oBd">—</div></div>
+          <div class="card"><div class="k">Highest node · lost</div><div class="v" id="oTop">—</div></div>
         </div>
       </div>
 
@@ -250,6 +257,16 @@ function render(r){
   if (!conv){ v.textContent = "NOT CONVERGED"; v.className = "v verdict na"; $("oZ").textContent = "—"; }
   else { const p = z > 1.0 + 1e-6; v.textContent = p ? "PUMPS" : "NO"; v.className = "v verdict " + (p ? "yes" : "no"); $("oZ").innerHTML = fmt(z, 4) + ` <small>${r.result.topology}</small>`; }
   $("oC").innerHTML = `${fmt(L.C_max.value,0)} <small>· ${fmt(L.C_min.value,1)} pF</small>`;
+  const lg = r.result.ledger, bd = r.result.breakdown;
+  if (lg && conv){
+    $("oP").innerHTML = `${fmt(lg.P_belt_W,2)} <small>· ${fmt(lg.P_surplus_W,2)} W</small>`;
+    $("oEta").textContent = lg.eta == null ? "—" : fmt(lg.eta, 3);
+    $("oTop").innerHTML = `${lg.top_node} <small>· ${fmt(lg.P_loss_W,2)} W</small>`;
+  } else { for (const id of ["oP", "oEta", "oTop"]) $(id).textContent = "—"; }
+  if (bd && bd.breakdown_kV){
+    const ok = bd.margin_at_V_op >= 1.0;
+    $("oBd").innerHTML = `${fmt(bd.breakdown_kV,1)} kV <small class="${ok ? "" : "warn"}">· ×${fmt(bd.margin_at_V_op,2)} at 20 kV</small>`;
+  } else $("oBd").textContent = "—";
   $("oK").textContent = fmt(lad.kappa_C, 1);
   if (lad.geometry === "tube"){
     const g = lad.tube_geometry;

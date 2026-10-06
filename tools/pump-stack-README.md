@@ -1,4 +1,4 @@
-# tools/pump-stack: disc or tube, record or v4
+# tools/pump-stack: disc or tube; record, v4 or the de Queiroz diode doubler
 
 `pump-stack.html` sizes the pump for either machine shape and runs the exact engine on it.
 
@@ -14,6 +14,21 @@
 - **Netlist of record:** the calculator's path (`pump_synth.engine_cfg` + `z_of`).
 - **v4:** `DCCREG_Turbine_circuit_v4`. The C-EMs are in series with SG1 / SG2 (six per side, lumped), with the coil–gap node
   stray and the screened lead across each coil, and the parallel tank.
+- **de Queiroz diodes:** the bare electronic Bennet doubler (A. C. M. de Queiroz, IEEE 2018):
+  - the `solveDoubler4` topology, with 4 nodes and ideal diodes D1 2 → ref, D2 3 → ref, D3 1 → 3, D4 4 → 2;
+  - continuous varicaps (the engine profile) in place of `solveDoubler4`'s two-state steps;
+  - no islands and no spark gaps (`stack_sizing.core_net`).
+
+  With continuous capacitance the ideal diodes switch at zero voltage across them, so η ≈ 1
+  (`sim/diode-stack-findings.md`).
+
+**Power and breakdown cards**
+- **Belt · surplus:** the eigen-state ledger scaled so the highest node peaks at 20 kV (`stack_sizing.V_OP`), times the
+  cycle rate (N_sec / 2 × rpm / 60).
+- **Highest node · lost:** which node sets that 20 kV, and the power lost in gaps, rings and relaxation.
+- **Gap air breakdown:** the uniform-field air breakdown of the vane gap, 24.4 d + 6.53 √d kV with d in cm, and its margin
+  at 20 kV. Vane edges and humidity lower it, so a margin under ×1.2 is thin.
+- **Tube default gap is now 8 mm** (about 25 kV breakdown, ×1.27 at 20 kV). The 3 mm gap broke down near 10.9 kV.
 
 ## Run it
 

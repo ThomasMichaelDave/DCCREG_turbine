@@ -30,7 +30,7 @@ EPS0_MM = 8.8541878128e-15                     # F/mm
 
 TUBE_DEFAULTS = dict(
     r_inMm=50.0, r_outMm=150.0,                # vane band (300 mm plates) (the bicone hub sits between the A and B stacks)
-    g_vMm=3.0, t_vaneMm=1.5,                   # air gap, vane thickness (Al)
+    g_vMm=8.0, t_vaneMm=1.5,                   # air gap (8 mm: air breakdown ~25 kV, holds the 20 kV peak), vane thickness (Al)
     N_sec=12, ws_deg=30.0, wr_deg=22.0,        # 6 stator sectors of 30 deg, 6 rotor vanes of 22 deg
     n_plates=8,                                # rotor vanes = stator vanes per varicap per side (~1.1 nF at r 150)
     dielectric="air", tempC=20.0, p_hPa=1013.0, rh=50.0,
@@ -322,16 +322,72 @@ def size_stack(geometry="disc", plates=None, choices=None):
 # ---------------------------------------------------------------------------------------------------------
 # z under the record or the v4 topology
 # ---------------------------------------------------------------------------------------------------------
-def z_stack(lad, firing=None, topology="record", v4=None, log=None):
+V_OP = 20e3                                       # operating peak (highest node) for the power ledger [IR]
+
+
+def gap_breakdown_kV(g_mm):
+    """uniform-field air breakdown at 1 atm, 20 C: V = 24.4 d + 6.53 sqrt(d) kV, d in cm [OC]. Vane edges and humidity
+    lower it; treat as an upper bound."""
+    d = g_mm / 10.0
+    return 24.4 * d + 6.53 * math.sqrt(d)
+
+
+def core_net(cfg):
+    """the bare de Queiroz electronic Bennet doubler (pump_engine.core_net = the solveDoubler4 topology: 4 nodes,
+    ideal diodes D1 2->ref, D2 3->ref, D3 1->3, D4 4->2) with CONTINUOUS varicaps (the engine profile) instead of the
+    two-state steps, diodes always armed. [OC] topology; [IR] continuous capacitance (the physical varicap)."""
+    import pump_engine as PE
+    net = PE.core_net(cfg)
+    net.prof = PE.make_profile(cfg)
+    net.caps = [(nm, i, j, nm if nm in ("C1", "C2") else C) for nm, i, j, C in net.caps]
+    net.gaps = [(g[0], g[1], g[2], g[3], (0.0, 60.0), g[5], g[6]) for g in net.gaps]
+    return net
+
+
+def _ledger(m, net, cyc_per_s):
+    """the cycle ledger of an eigen-state run, scaled so the highest node peaks at V_OP."""
+    import numpy as np
+    rec = m["rec"]
+    V = np.array([p["V"] for p in rec["points"]])
+    pk = np.abs(V).max(axis=0)
+    top = float(pk.max())
+    s2 = (V_OP / top) ** 2
+    W, dE, L = rec["ledger"]["W"] * s2, (rec["E1"] - rec["E0"]) * s2, sum(rec["by"].values()) * s2
+    hi = max(net.idx, key=lambda n: pk[net.idx[n]])
+    return dict(V_op_kV=V_OP / 1e3, top_node=hi, W_mJ=W * 1e3, surplus_mJ=dE * 1e3, loss_mJ=L * 1e3,
+                closure_J=W - dE - L, cycles_per_s=cyc_per_s, P_belt_W=W * cyc_per_s, P_surplus_W=dE * cyc_per_s,
+                P_loss_W=L * cyc_per_s, eta=dE / W if W > 0 else None)
+
+
+def z_stack(lad, firing=None, topology="record", v4=None, log=None, ledger=True):
+    """z (and, with ledger, the belt / surplus / loss power at V_OP on the highest node) under the netlist of record,
+    the v4 topology, or the bare de Queiroz diode core."""
     import pump_synth as SY
     import rt_engine as RT
     import pump_engine as PE
     fi = dict(SY.FIRING_DEFAULTS) if hasattr(SY, "FIRING_DEFAULTS") else SY.split({})[2]
     fi.update(firing or {})
     cfg = SY.engine_cfg(lad, fi)
+    n_sec = (lad.get("tube") or lad.get("plates") or {}).get("N_sec", 12)
+    cyc = math.ceil(n_sec / 2) * cfg["rpm"] / 60.0          # cycles per second (pump_sizing machinePRF)
+    g = (lad.get("tube") or lad.get("plates") or {}).get("g_vMm")
+    bd = dict(gap_mm=g, breakdown_kV=gap_breakdown_kV(g) if g else None)
+    if bd["breakdown_kV"]:
+        bd["margin_at_V_op"] = bd["breakdown_kV"] * 1e3 / V_OP
     if topology == "record":
         z, conv = SY.z_of(cfg)
-        return dict(z=z, converged=bool(conv), topology="record")
+        out = dict(z=z, converged=bool(conv), topology="record", breakdown=bd)
+        if ledger:
+            net = PE.build_net(cfg)
+            out["ledger"] = _ledger(RT.run(net, cfg, record=True), net, cyc)
+        return out
+    if topology == "core":
+        net = core_net(cfg)
+        m = RT.run(net, cfg, record=ledger, log=log)
+        out = dict(z=m["z"], converged=bool(m["converged"]), topology="core", breakdown=bd)
+        if ledger:
+            out["ledger"] = _ledger(m, net, cyc)
+        return out
     if topology != "v4":
         raise ValueError(topology)
     q = dict(V4_DEFAULTS); q.update(v4 or {})
@@ -348,13 +404,16 @@ def z_stack(lad, firing=None, topology="record", v4=None, log=None):
         net.inds.append((f"L_{mid}", ni, nm, q["L_coil_H"] / n, q["R_coil"] / n, "lx"))
         net.caps.append((f"Cmid_{mid}", nm, PE.GND, n * q["C_mid_pF"] * 1e-12))
         net.caps.append((f"Cscreen_{mid}", nm, ni, n * q["C_screen_pF"] * 1e-12))
-    m = RT.run(net, cfg, log=log)
-    return dict(z=m["z"], converged=bool(m["converged"]), topology="v4")
+    m = RT.run(net, cfg, log=log, record=ledger)
+    out = dict(z=m["z"], converged=bool(m["converged"]), topology="v4", breakdown=bd)
+    if ledger:
+        out["ledger"] = _ledger(m, net, cyc)
+    return out
 
 
-def evaluate(geometry="disc", plates=None, choices=None, firing=None, topology="record", v4=None, log=None):
+def evaluate(geometry="disc", plates=None, choices=None, firing=None, topology="record", v4=None, log=None, ledger=True):
     lad = size_stack(geometry, plates, choices)
-    r = z_stack(lad, firing, topology, v4, log)
+    r = z_stack(lad, firing, topology, v4, log, ledger)
     return json.loads(json.dumps(dict(ladder=lad, result=r), default=float))
 
 
@@ -370,7 +429,7 @@ def _selftest():
     pp = EPS0_MM * w / 1.0
     ok &= 0.995 < c / pp < 1.06                            # parallel plate + a little edge fringe
     # opposed with zero overlap is far below aligned
-    p2 = dict(TUBE_DEFAULTS, dielectric="vacuum")
+    p2 = dict(TUBE_DEFAULTS, g_vMm=3.0, dielectric="vacuum")
     cmx, _ = _cell(160.0, p2, 0.0); cmn, _ = _cell(160.0, p2, 30.0)
     ok &= cmx / cmn > 10.0
     # disc mode is pump_sizing verbatim

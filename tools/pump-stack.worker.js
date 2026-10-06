@@ -1,4 +1,4 @@
-/* tools/pump-stack.worker.js — the PUMP-STACK engine worker (Pyodide): DISC or TUBE sizing, record or v4 topology.
+/* tools/pump-stack.worker.js — the PUMP-STACK engine worker (Pyodide): DISC or TUBE sizing; record, v4 or the bare de Queiroz diode-core topology.
  *
  * Boot path copied from tools/pump-synth.worker.js (this branch; that file is frozen and is not edited):
  * Pyodide 0.26.2 from the jsdelivr CDN, loadPackage("numpy"), the REAL repo files fetched into the virtual FS.
@@ -59,7 +59,7 @@ def _call(fn, payload, rid):
         for i, v in enumerate(a["values"]):
             log(f"sweep {a['key']} = {v} ({i + 1}/{len(a['values'])})")
             p = dict(kw["plates"]); p[a["key"]] = v
-            r = _st.evaluate(**dict(kw, plates=p))
+            r = _st.evaluate(**dict(kw, plates=p), ledger=False)
             L = r["ladder"]["ladder"]
             out.append(dict(v=v, z=r["result"]["z"], converged=r["result"]["converged"], C_max=L["C_max"]["value"],
                             C_min=L["C_min"]["value"]))
@@ -69,7 +69,7 @@ def _call(fn, payload, rid):
 def _boot():
     can = _pe.canaries()
     t = time.time()
-    anchor = _st.evaluate("disc", topology="record")["result"]
+    anchor = _st.evaluate("disc", topology="record", ledger=False)["result"]
     gate = dict(id="ANCHOR", check="default disc, record topology = RT0 headline", expected=${RT0_Z}, got=anchor["z"],
                 tol="1e-6", pass_=bool(anchor["converged"] and abs(anchor["z"] - ${RT0_Z}) < 1e-6), time_s=time.time() - t)
     ok = bool(can["pass_"] and _pe.SELFTEST["pass_"] and _ps.SELFTEST_OK and _syn.SELFTEST_OK and _st.SELFTEST_OK and gate["pass_"])
