@@ -5,6 +5,14 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Docs
+- **Future work: a diode-commutated, floating-rotor tube after US 3,013,201** (Goldie, HVEC 1961;
+  `docs/future-work/goldie-diode-commutated-tube.md`):
+  - Each section has a charge diode and a dump diode on one stator electrode; A and B are cross-fed in opposite
+    polarity.
+  - It removes the rotor contacts, the clocking decks and the timing budget.
+  - Ideal-diode bound: about 5.2 W at 20 kV and 300 rpm.
+
+### Docs
 - **Future work parked** (`docs/future-work/`):
   - The hub-to-motor dump path: a v5-hub variant with dump gap pairs, L_d and C_link.
   - Permanent-magnet utrons as the patent's DC generator: roughly 19 W at 300 rpm untoothed, rising ∝ rpm². Its
