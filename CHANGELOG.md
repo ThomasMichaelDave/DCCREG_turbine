@@ -4,6 +4,16 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Physics
+- **Stator balance corrected and rpm feedback** (`sim/spinup_equilibrium.py`, `sim/spinup-findings.md`):
+  - The pump's own reaction torque on the stator (78 mN·m at 20 kV) was missing from the earlier balances. Since the
+    motor torque ≤ η × surplus < pump work, the stator cannot counter-rotate without an outside source. Earlier notes
+    are flagged.
+  - The C1 vane gap carries the full 20 kV across 3 mm, above air breakdown (about 10.9 kV): the tube needs gas,
+    vacuum or a wider gap.
+  - Per-cycle energies do not depend on speed, so power rises with rpm but torque does not: a stable fixed point, not a
+    runaway. Break-even hub release: 21–42 mJ per switch in a shell, 171 mJ or more in open air.
+
 ### Physics (hypothetical)
 - **The hub as an energy source** (`sim/hub_battery.py`, `sim/hub-battery-findings.md`), a what-if with the source
   booked as its own ledger term (closure ≤ 1.1e-14 J):

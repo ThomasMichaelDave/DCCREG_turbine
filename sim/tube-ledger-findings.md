@@ -31,6 +31,9 @@ Verdict: the direct drive is about 5 orders short. Even the freewheel ceiling is
 (1.3–1.8 W) only matches the no-windage drag at 100 % conversion, and a 13 % swing reluctance motor gets nowhere near
 that. Same conclusion as the disc design (`sim/motor-geometry-findings.md`).
 
+> **Correction (2026-10-06, `sim/spinup-findings.md`):** this balance leaves out the pump's own reaction torque on the stator, about 78 mN·m at 20 kV (the belt's work per cycle, taken from the same rotor–stator motion). With it the motor (≤ η × surplus < pump work) can never counter-rotate the stator without an outside source. The 20 kV point also exceeds air breakdown across the 3 mm vane gap (about 10.9 kV).
+
+
 ## 3. What works
 
 The pump only needs the **relative** speed. Options, all on the belt:

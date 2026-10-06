@@ -31,6 +31,10 @@ It does **not** change the ledger. The motor can only spend what the belt put in
 300 rpm relative. That gives 21–45 mN·m against an estimated 19 mN·m of stator drag in a shell or vacuum, and 225 mN·m
 in open air.
 
+> **Correction (2026-10-06, `sim/spinup-findings.md`):** the stator also carries the pump's own reaction torque
+> (78 mN·m at 20 kV), which always exceeds the motor's. The drive does **not** close in any enclosure without an
+> outside source. The paragraph below is the superseded first pass.
+
 So the drive closes on paper **only** with windage removed, uses the pump's entire surplus, and costs the belt 2–4×
 more than a reversing gear would.
 

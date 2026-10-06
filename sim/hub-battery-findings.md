@@ -45,6 +45,8 @@ Stator drag to beat: 19 mN·m in a shell or vacuum, 225 mN·m in open air.
   - the rest displaces belt work (the belt draws 0.05 W less).
 - **The as-built pulse C-EMs get worse.** The release refills node 2 / node 3 right after the switch, so less charge
   rings through the coils. The ceiling falls from 1.2 to 0.14 mN·m.
+- **Correction:** the stator also carries the pump's reaction torque (78 mN·m at 20 kV), so no row here counter-rotates
+  the stator; see `sim/spinup-findings.md`.
 - **The reversed-VdG drive gains 3–5 mN·m.** It already closed in a shell without the hub. In open air it needs about
   14 W of surplus, roughly 50× what this release law gives at α 3.
 

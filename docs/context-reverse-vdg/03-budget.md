@@ -28,6 +28,11 @@ Needed (stator drag estimate, `tube-ledger-findings.md`):
 - **Shell or vacuum:** closes with 10–140 % margin, using all of the pump's surplus.
 - **Open air:** 5–10× short.
 
+> **Correction (2026-10-06, `sim/spinup-findings.md`):** the drag above leaves out the pump's own reaction torque on
+> the stator, 78 mN·m at 20 kV. The motor torque is at most η × surplus, which is always below the pump's work, so the
+> verdict is **does not close** in any enclosure without an outside source. In air the 3 mm vane gap also caps the
+> pump near 10.9 kV.
+
 Either way, the electrical path costs the belt 1 / (η_pump·η_motor) ≈ 2–4× the drag power. A reversing gear costs about
 1.05×. [OC]
 

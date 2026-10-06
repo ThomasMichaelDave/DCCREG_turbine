@@ -9,7 +9,7 @@
 | **G-LEDGER-L** | the ledger still closes with the load | belt = growth + losses + P_m, closure ≤ 1e-12 J | extends `tube_ledger.py` |
 | **G-SWING** | the PM-biased toothed C-core gives the assumed flux swing | 2-D/3-D magnetostatic solve (the `tube_magnetic.py` analogy plus a PM source) of one toothed C-EM over one tooth pitch: ΔΦ ≥ 0.3 mWb, no saturation | extends `tube_magnetic.py` |
 | **G-EMF** | the string matches the link | 12 coils × N × π·f·ΔΦ = 20 kV ± 10 % at 300 rpm relative | `reverse_vdg_budget.py` with the G-SWING ΔΦ |
-| **G-TORQUE** | torque ≥ drag | η·P_m(G-LOAD) / ω_rel ≥ stator drag for the chosen enclosure (19 mN·m shell/vacuum) | budget |
+| **G-TORQUE** | torque ≥ drag + pump reaction | η·P_m(G-LOAD) / ω_rel ≥ stator drag + W·6/2π (the pump's reaction torque on the stator, 78 mN·m at 20 kV) | `spinup_equilibrium.py` |
 | **G-HV** | each C-EM and switch at its string potential clears its neighbours | the clearance gates already used for the tube STEP (G-TUBE-CLASH/GAP) plus a per-coil ΔV rule | `tube_geometry.py` |
 | **G-STEP** | the toothed ring and the toothed jaws build and sweep clean | G-TUBE-CLASH 0, G-TUBE-SWEEP 0, read-back n/n | `tube_geometry.py` |
 

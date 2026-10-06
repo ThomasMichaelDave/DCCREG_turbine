@@ -1,0 +1,916 @@
+{
+ "V_air_3mm": 10896.628300508733,
+ "T_bear_Nm": 0.014729714999999999,
+ "k_shear_Nms": 0.00014514158059584844,
+ "c_wind_Nms2": 0.0008005999175999997,
+ "net": [
+  {
+   "alpha": 0.0,
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "T_motor_mNm": 6.20253325141399,
+   "T_pump_mNm": 23.261852897965493,
+   "T_net_mNm": -36.34879187985479,
+   "P_ext_W": 0.0
+  },
+  {
+   "alpha": 0.0,
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "T_motor_mNm": 9.924053202262385,
+   "T_pump_mNm": 23.261852897965493,
+   "T_net_mNm": -32.62727192900639,
+   "P_ext_W": 0.0
+  },
+  {
+   "alpha": 0.0,
+   "cap": "20 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 20.895117564773727,
+   "T_pump_mNm": 78.36461835438843,
+   "T_net_mNm": -76.75897302291798,
+   "P_ext_W": 0.0
+  },
+  {
+   "alpha": 0.0,
+   "cap": "20 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 33.43218810363796,
+   "T_pump_mNm": 78.36461835438843,
+   "T_net_mNm": -64.22190248405376,
+   "P_ext_W": 0.0
+  },
+  {
+   "alpha": 0.0,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 47.01401452074088,
+   "T_pump_mNm": 176.320391297374,
+   "T_net_mNm": -148.5958490099364,
+   "P_ext_W": 0.0
+  },
+  {
+   "alpha": 0.0,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 75.22242323318541,
+   "T_pump_mNm": 176.320391297374,
+   "T_net_mNm": -120.38744029749185,
+   "P_ext_W": 0.0
+  },
+  {
+   "alpha": 0.01,
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "T_motor_mNm": 6.20156245973642,
+   "T_pump_mNm": 23.255525884759443,
+   "T_net_mNm": -36.34343565832631,
+   "P_ext_W": 0.00046737907068655115
+  },
+  {
+   "alpha": 0.01,
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "T_motor_mNm": 9.922499935578273,
+   "T_pump_mNm": 23.255525884759443,
+   "T_net_mNm": -32.62249818248445,
+   "P_ext_W": 0.00046737907068655115
+  },
+  {
+   "alpha": 0.01,
+   "cap": "20 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 20.891847158084797,
+   "T_pump_mNm": 78.34330388827989,
+   "T_net_mNm": -76.74092896349838,
+   "P_ext_W": 0.0015745083876952753
+  },
+  {
+   "alpha": 0.01,
+   "cap": "20 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 33.42695545293567,
+   "T_pump_mNm": 78.34330388827989,
+   "T_net_mNm": -64.2058206686475,
+   "P_ext_W": 0.0015745083876952753
+  },
+  {
+   "alpha": 0.01,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 47.00665610569079,
+   "T_pump_mNm": 176.27243374862977,
+   "T_net_mNm": -148.55524987624227,
+   "P_ext_W": 0.0035426438723143694
+  },
+  {
+   "alpha": 0.01,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 75.21064976910526,
+   "T_pump_mNm": 176.27243374862977,
+   "T_net_mNm": -120.3512562128278,
+   "P_ext_W": 0.0035426438723143694
+  },
+  {
+   "alpha": 0.03,
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "T_motor_mNm": 6.200110172865633,
+   "T_pump_mNm": 23.243203754591026,
+   "T_net_mNm": -36.33256581502867,
+   "P_ext_W": 0.0014017981226018463
+  },
+  {
+   "alpha": 0.03,
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "T_motor_mNm": 9.920176276585012,
+   "T_pump_mNm": 23.243203754591026,
+   "T_net_mNm": -32.61249971130929,
+   "P_ext_W": 0.0014017981226018463
+  },
+  {
+   "alpha": 0.03,
+   "cap": "20 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 20.886954688560998,
+   "T_pump_mNm": 78.30179304938858,
+   "T_net_mNm": -76.70431059413087,
+   "P_ext_W": 0.00472238283723304
+  },
+  {
+   "alpha": 0.03,
+   "cap": "20 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 33.4191275016976,
+   "T_pump_mNm": 78.30179304938858,
+   "T_net_mNm": -64.17213778099426,
+   "P_ext_W": 0.00472238283723304
+  },
+  {
+   "alpha": 0.03,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 46.99564804926226,
+   "T_pump_mNm": 176.1790343611243,
+   "T_net_mNm": -148.47285854516534,
+   "P_ext_W": 0.010625361383774339
+  },
+  {
+   "alpha": 0.03,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 75.19303687881961,
+   "T_pump_mNm": 176.1790343611243,
+   "T_net_mNm": -120.27546971560798,
+   "P_ext_W": 0.010625361383774339
+  },
+  {
+   "alpha": 0.1,
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "T_motor_mNm": 6.19958681285917,
+   "T_pump_mNm": 23.203278844055248,
+   "T_net_mNm": -36.29316426449935,
+   "P_ext_W": 0.004658898384337992
+  },
+  {
+   "alpha": 0.1,
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "T_motor_mNm": 9.919338900574674,
+   "T_pump_mNm": 23.203278844055248,
+   "T_net_mNm": -32.573412176783854,
+   "P_ext_W": 0.004658898384337992
+  },
+  {
+   "alpha": 0.1,
+   "cap": "20 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 20.885191591384334,
+   "T_pump_mNm": 78.16729385920398,
+   "T_net_mNm": -76.57157450112292,
+   "P_ext_W": 0.01569491456428456
+  },
+  {
+   "alpha": 0.1,
+   "cap": "20 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 33.41630654621493,
+   "T_pump_mNm": 78.16729385920398,
+   "T_net_mNm": -64.04045954629233,
+   "P_ext_W": 0.01569491456428456
+  },
+  {
+   "alpha": 0.1,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 46.991681080614754,
+   "T_pump_mNm": 175.87641118320897,
+   "T_net_mNm": -148.17420233589755,
+   "P_ext_W": 0.035313557769640264
+  },
+  {
+   "alpha": 0.1,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 75.18668972898361,
+   "T_pump_mNm": 175.87641118320897,
+   "T_net_mNm": -119.97919368752866,
+   "P_ext_W": 0.035313557769640264
+  },
+  {
+   "alpha": 0.3,
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "T_motor_mNm": 6.226343570752708,
+   "T_pump_mNm": 23.11114245390155,
+   "T_net_mNm": -36.174271116452125,
+   "P_ext_W": 0.013694434078158131
+  },
+  {
+   "alpha": 0.3,
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "T_motor_mNm": 9.962149713204333,
+   "T_pump_mNm": 23.11114245390155,
+   "T_net_mNm": -32.438464974000496,
+   "P_ext_W": 0.013694434078158131
+  },
+  {
+   "alpha": 0.3,
+   "cap": "20 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 20.975329858955924,
+   "T_pump_mNm": 77.85690443826594,
+   "T_net_mNm": -76.1710468126133,
+   "P_ext_W": 0.04613386151229822
+  },
+  {
+   "alpha": 0.3,
+   "cap": "20 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 33.56052777432948,
+   "T_pump_mNm": 77.85690443826594,
+   "T_net_mNm": -63.58584889723974,
+   "P_ext_W": 0.04613386151229822
+  },
+  {
+   "alpha": 0.3,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 47.19449218265083,
+   "T_pump_mNm": 175.17803498609837,
+   "T_net_mNm": -147.27301503675082,
+   "P_ext_W": 0.103801188402671
+  },
+  {
+   "alpha": 0.3,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 75.51118749224133,
+   "T_pump_mNm": 175.17803498609837,
+   "T_net_mNm": -118.95631972716032,
+   "P_ext_W": 0.103801188402671
+  },
+  {
+   "alpha": 1.0,
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "T_motor_mNm": 6.448962552273528,
+   "T_pump_mNm": 22.929681761778397,
+   "T_net_mNm": -35.77019144280815,
+   "P_ext_W": 0.04063099312082208
+  },
+  {
+   "alpha": 1.0,
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "T_motor_mNm": 10.318340083637645,
+   "T_pump_mNm": 22.929681761778397,
+   "T_net_mNm": -31.900813911444033,
+   "P_ext_W": 0.04063099312082208
+  },
+  {
+   "alpha": 1.0,
+   "cap": "20 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 21.725289529058024,
+   "T_pump_mNm": 77.24559896974078,
+   "T_net_mNm": -74.80978167398604,
+   "P_ext_W": 0.1368778438776682
+  },
+  {
+   "alpha": 1.0,
+   "cap": "20 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 34.76046324649284,
+   "T_pump_mNm": 77.24559896974078,
+   "T_net_mNm": -61.77460795655123,
+   "P_ext_W": 0.1368778438776682
+  },
+  {
+   "alpha": 1.0,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 48.88190144038056,
+   "T_pump_mNm": 173.80259768191678,
+   "T_net_mNm": -144.2101684748395,
+   "P_ext_W": 0.3079751487247534
+  },
+  {
+   "alpha": 1.0,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 78.2110423046089,
+   "T_pump_mNm": 173.80259768191678,
+   "T_net_mNm": -114.88102761061116,
+   "P_ext_W": 0.3079751487247534
+  },
+  {
+   "alpha": 3.0,
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "T_motor_mNm": 7.102771792257754,
+   "T_pump_mNm": 22.777832664917106,
+   "T_net_mNm": -34.96453310596263,
+   "P_ext_W": 0.08866345374344176
+  },
+  {
+   "alpha": 3.0,
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "T_motor_mNm": 11.364434867612406,
+   "T_pump_mNm": 22.777832664917106,
+   "T_net_mNm": -30.702870030607983,
+   "P_ext_W": 0.08866345374344176
+  },
+  {
+   "alpha": 3.0,
+   "cap": "20 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 23.9278445788502,
+   "T_pump_mNm": 76.7340491557518,
+   "T_net_mNm": -72.09567681020489,
+   "P_ext_W": 0.29868977957445825
+  },
+  {
+   "alpha": 3.0,
+   "cap": "20 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 38.28455132616032,
+   "T_pump_mNm": 76.7340491557518,
+   "T_net_mNm": -57.73897006289476,
+   "P_ext_W": 0.29868977957445825
+  },
+  {
+   "alpha": 3.0,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "T_motor_mNm": 53.83765030241294,
+   "T_pump_mNm": 172.65161060044153,
+   "T_net_mNm": -138.1034325313319,
+   "P_ext_W": 0.6720520040425311
+  },
+  {
+   "alpha": 3.0,
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "T_motor_mNm": 86.14024048386072,
+   "T_pump_mNm": 172.65161060044153,
+   "T_net_mNm": -105.8008423498841,
+   "P_ext_W": 0.6720520040425311
+  }
+ ],
+ "breakeven": [
+  {
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.07612873169107323,
+   "E_ext_per_switch_J": 0.038064365845536616,
+   "P_ext_W": 2.283861950732197,
+   "drag_per_cycle_J": 0.020199888086589964,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 0.08567866490860558,
+   "E_ext_per_switch_J": 0.04283933245430279,
+   "P_ext_W": 5.1407198945163355,
+   "drag_per_cycle_J": 0.024974854695356135,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 0.10477853134367027,
+   "E_ext_per_switch_J": 0.052389265671835133,
+   "P_ext_W": 12.57342376124043,
+   "drag_per_cycle_J": 0.03452478791288848,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 0.14297826421379964,
+   "E_ext_per_switch_J": 0.07148913210689982,
+   "P_ext_W": 34.314783411311915,
+   "drag_per_cycle_J": 0.05362465434795317,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.4898557742799204,
+   "E_ext_per_switch_J": 0.2449278871399602,
+   "P_ext_W": 14.695673228397611,
+   "drag_per_cycle_J": 0.22706340938101352,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 1.7405868352639942,
+   "E_ext_per_switch_J": 0.8702934176319971,
+   "P_ext_W": 104.43521011583962,
+   "drag_per_cycle_J": 0.8524289398730505,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 6.724411212765225,
+   "E_ext_per_switch_J": 3.3622056063826125,
+   "P_ext_W": 806.9293455318269,
+   "drag_per_cycle_J": 3.3443411286236655,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 26.621508989900015,
+   "E_ext_per_switch_J": 13.310754494950007,
+   "P_ext_W": 6389.162157576004,
+   "drag_per_cycle_J": 13.292890017191061,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.04270899908284705,
+   "E_ext_per_switch_J": 0.021354499541423527,
+   "P_ext_W": 1.2812699724854117,
+   "drag_per_cycle_J": 0.020199888086589964,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 0.04867770734380477,
+   "E_ext_per_switch_J": 0.024338853671902385,
+   "P_ext_W": 2.9206624406282864,
+   "drag_per_cycle_J": 0.024974854695356135,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 0.060615123865720204,
+   "E_ext_per_switch_J": 0.030307561932860102,
+   "P_ext_W": 7.2738148638864235,
+   "drag_per_cycle_J": 0.03452478791288848,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 0.08448995690955105,
+   "E_ext_per_switch_J": 0.042244978454775525,
+   "P_ext_W": 20.27758965829225,
+   "drag_per_cycle_J": 0.05362465434795317,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.3012884007008765,
+   "E_ext_per_switch_J": 0.15064420035043824,
+   "P_ext_W": 9.038652021026294,
+   "drag_per_cycle_J": 0.22706340938101352,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 1.0829953138159227,
+   "E_ext_per_switch_J": 0.5414976569079614,
+   "P_ext_W": 64.97971882895537,
+   "drag_per_cycle_J": 0.8524289398730505,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 4.197885549754192,
+   "E_ext_per_switch_J": 2.098942774877096,
+   "P_ext_W": 503.746265970503,
+   "drag_per_cycle_J": 3.3443411286236655,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "air 3 mm",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 16.633571660463435,
+   "E_ext_per_switch_J": 8.316785830231717,
+   "P_ext_W": 3992.057198511224,
+   "drag_per_cycle_J": 13.292890017191061,
+   "W_per_cycle_J": 0.024359755391044947
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.1607636171639168,
+   "E_ext_per_switch_J": 0.0803818085819584,
+   "P_ext_W": 4.822908514917504,
+   "drag_per_cycle_J": 0.020199888086589964,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 0.17031355038144913,
+   "E_ext_per_switch_J": 0.08515677519072457,
+   "P_ext_W": 10.218813022886948,
+   "drag_per_cycle_J": 0.024974854695356135,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 0.18941341681651386,
+   "E_ext_per_switch_J": 0.09470670840825693,
+   "P_ext_W": 22.729610017981663,
+   "drag_per_cycle_J": 0.03452478791288848,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 0.2276131496866432,
+   "E_ext_per_switch_J": 0.1138065748433216,
+   "P_ext_W": 54.627155924794366,
+   "drag_per_cycle_J": 0.05362465434795317,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.5744906597527639,
+   "E_ext_per_switch_J": 0.28724532987638196,
+   "P_ext_W": 17.23471979258292,
+   "drag_per_cycle_J": 0.22706340938101352,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 1.8252217207368377,
+   "E_ext_per_switch_J": 0.9126108603684189,
+   "P_ext_W": 109.51330324421028,
+   "drag_per_cycle_J": 0.8524289398730505,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 6.809046098238068,
+   "E_ext_per_switch_J": 3.404523049119034,
+   "P_ext_W": 817.0855317885681,
+   "drag_per_cycle_J": 3.3443411286236655,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 26.70614387537286,
+   "E_ext_per_switch_J": 13.35307193768643,
+   "P_ext_W": 6409.4745300894865,
+   "drag_per_cycle_J": 13.292890017191061,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.08406627376809567,
+   "E_ext_per_switch_J": 0.042033136884047834,
+   "P_ext_W": 2.52198821304287,
+   "drag_per_cycle_J": 0.020199888086589964,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 0.09003498202905338,
+   "E_ext_per_switch_J": 0.04501749101452669,
+   "P_ext_W": 5.402098921743203,
+   "drag_per_cycle_J": 0.024974854695356135,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 0.10197239855096882,
+   "E_ext_per_switch_J": 0.05098619927548441,
+   "P_ext_W": 12.23668782611626,
+   "drag_per_cycle_J": 0.03452478791288848,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 0.12584723159479966,
+   "E_ext_per_switch_J": 0.06292361579739983,
+   "P_ext_W": 30.20333558275192,
+   "drag_per_cycle_J": 0.05362465434795317,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.3426456753861251,
+   "E_ext_per_switch_J": 0.17132283769306256,
+   "P_ext_W": 10.279370261583754,
+   "drag_per_cycle_J": 0.22706340938101352,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 1.1243525885011711,
+   "E_ext_per_switch_J": 0.5621762942505856,
+   "P_ext_W": 67.46115531007027,
+   "drag_per_cycle_J": 0.8524289398730505,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 4.23924282443944,
+   "E_ext_per_switch_J": 2.11962141221972,
+   "P_ext_W": 508.7091389327328,
+   "drag_per_cycle_J": 3.3443411286236655,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "20 kV",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 16.674928935148685,
+   "E_ext_per_switch_J": 8.337464467574343,
+   "P_ext_W": 4001.9829444356847,
+   "drag_per_cycle_J": 13.292890017191061,
+   "W_per_cycle_J": 0.08206323644117153
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.3112184184023379,
+   "E_ext_per_switch_J": 0.15560920920116894,
+   "P_ext_W": 9.336552552070136,
+   "drag_per_cycle_J": 0.020199888086589964,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 0.3207683516198702,
+   "E_ext_per_switch_J": 0.1603841758099351,
+   "P_ext_W": 19.24610109719221,
+   "drag_per_cycle_J": 0.024974854695356135,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 0.33986821805493495,
+   "E_ext_per_switch_J": 0.16993410902746747,
+   "P_ext_W": 40.78418616659219,
+   "drag_per_cycle_J": 0.03452478791288848,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 0.3780679509250643,
+   "E_ext_per_switch_J": 0.18903397546253214,
+   "P_ext_W": 90.73630822201544,
+   "drag_per_cycle_J": 0.05362465434795317,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.724945460991185,
+   "E_ext_per_switch_J": 0.3624727304955925,
+   "P_ext_W": 21.74836382973555,
+   "drag_per_cycle_J": 0.22706340938101352,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 1.9756765219752588,
+   "E_ext_per_switch_J": 0.9878382609876294,
+   "P_ext_W": 118.54059131851552,
+   "drag_per_cycle_J": 0.8524289398730505,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 6.959500899476489,
+   "E_ext_per_switch_J": 3.4797504497382445,
+   "P_ext_W": 835.1401079371785,
+   "drag_per_cycle_J": 3.3443411286236655,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.5,
+   "enclosure": "open air",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 26.85659867661128,
+   "E_ext_per_switch_J": 13.42829933830564,
+   "P_ext_W": 6445.583682386708,
+   "drag_per_cycle_J": 13.292890017191061,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.15758679084291843,
+   "E_ext_per_switch_J": 0.07879339542145922,
+   "P_ext_W": 4.727603725287553,
+   "drag_per_cycle_J": 0.020199888086589964,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 0.16355549910387618,
+   "E_ext_per_switch_J": 0.08177774955193809,
+   "P_ext_W": 9.813329946232571,
+   "drag_per_cycle_J": 0.024974854695356135,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 0.1754929156257916,
+   "E_ext_per_switch_J": 0.0877464578128958,
+   "P_ext_W": 21.059149875094995,
+   "drag_per_cycle_J": 0.03452478791288848,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "enclosure": "shell/vacuum",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 0.19936774866962242,
+   "E_ext_per_switch_J": 0.09968387433481121,
+   "P_ext_W": 47.84825968070938,
+   "drag_per_cycle_J": 0.05362465434795317,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 300.0,
+   "E_ext_per_cycle_J": 0.4161661924609479,
+   "E_ext_per_switch_J": 0.20808309623047394,
+   "P_ext_W": 12.484985773828438,
+   "drag_per_cycle_J": 0.22706340938101352,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 600.0,
+   "E_ext_per_cycle_J": 1.197873105575994,
+   "E_ext_per_switch_J": 0.598936552787997,
+   "P_ext_W": 71.87238633455964,
+   "drag_per_cycle_J": 0.8524289398730505,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 1200.0,
+   "E_ext_per_cycle_J": 4.3127633415142625,
+   "E_ext_per_switch_J": 2.1563816707571313,
+   "P_ext_W": 517.5316009817116,
+   "drag_per_cycle_J": 3.3443411286236655,
+   "W_per_cycle_J": 0.18464228199263594
+  },
+  {
+   "cap": "SF6-class ~30 kV",
+   "eta": 0.8,
+   "enclosure": "open air",
+   "rpm_rel": 2400.0,
+   "E_ext_per_cycle_J": 16.748449452223507,
+   "E_ext_per_switch_J": 8.374224726111754,
+   "P_ext_W": 4019.627868533641,
+   "drag_per_cycle_J": 13.292890017191061,
+   "W_per_cycle_J": 0.18464228199263594
+  }
+ ]
+}
