@@ -1,0 +1,61 @@
+# Parked: permanent-magnet rotor cores — the C-EMs as the patent's DC generator
+
+**Idea.** Make the utrons (rotor reluctance cores) permanent magnets. Each utron passing a C-EM then swings the flux
+through its coil, which is US 2,945,141 run *forwards*. Each coil gets an AC EMF; rectify it per coil and stack the
+outputs in series, and the result is an extra DC source.
+
+## First-pass budget [RH]
+
+Inputs:
+- NdFeB utron, about 0.6 T across the 2 × 7 mm jaws, a 900 mm² jaw face, about 50 % of the flux captured by the C-core;
+- 3 utrons per side, so each C-EM sees 3 passes per revolution;
+- the existing bobbin, matched load.
+
+| rpm rel | f per coil | winding | EMF per coil (pk) | 12-coil string (rectified, open) | power (matched) |
+|:--|:--|:--|:--|:--|:--|
+| 300 | 15 Hz | 1846 t / 44 Ω | 23 V | 282 V | ~19 W |
+| 300 | 15 Hz | 6207 t / 0.6 kΩ | 79 V | 948 V | ~16 W |
+| 600 | 30 Hz | 1846 t | 47 V | 564 V | ~75 W |
+| 1200 | 60 Hz | 1846 t | 94 V | 1.1 kV | ~300 W |
+
+- **Power.** Even untoothed, this is about 7× the electrostatic pump's whole belt draw (2.5 W) at 300 rpm, and it grows
+  ∝ rpm² until core loss, saturation or the winding's current limit. It is far more power than the variable capacitors
+  give: electromagnetic conversion is the dense route.
+- **Voltage.** It is low: hundreds of V at 15 Hz. Reaching 20 kV takes the patent's recipe:
+  - a toothed rotor and toothed jaws, raising f about 20×;
+  - fine-wire coils;
+  - per-coil rectifiers in series.
+
+  With 60 teeth and 0.20 mm wire, the earlier budget gives about 21 kV per 12-coil string at 300 rpm
+  (`sim/reverse_vdg_budget.py`).
+
+## The catch: where the reaction torque goes [OC]
+
+The power is taken from the rotor–stator relative motion. If the generator coils sit on the **counter-rotating
+stator**, their reaction torque drags the stator along with the rotor, exactly like the pump's own reaction
+(`sim/spinup-findings.md`).
+- **No generator plus motor pair working between the same two bodies can counter-rotate the stator.** The motor's
+  torque is at most η × what the generator took.
+- **The way out is to react against the frame.**
+  - Put the generator coils on a **frame-fixed ring**: rotor (PM utrons) against the frame, so the belt pays and the frame
+    takes the reaction.
+  - Put the motor **between the stator and the frame/shell**: the outer guides, which were already future design.
+  - That is an electrical reversing gear: belt → PM generator (rotor vs frame) → DC → motor (stator vs shell).
+  - Chain efficiency about 0.6–0.8, against about 0.95 for a mechanical gear. Its merit is no mechanical link to the
+    stator.
+
+## Side effects to check
+
+- **The pump.** PM utrons near the HV structure: the C-EM cores are bonded to nodes 2 / 3, and the utrons float.
+  Magnetised utrons add no charge coupling, but they make eddy-current drag in all nearby conductors: the Al vanes and
+  the tips.
+- **Cogging.** PM utron to C-EM attraction gives cogging torque at 3 × 6 per revolution, and that loads the shaft
+  bearings.
+- **Magnets.** Demagnetisation margin under the coil currents, and a temperature limit (NdFeB about 80–120 °C).
+
+## First gates
+
+1. **G-PM-FLUX:** magnetostatic solve (the `tube_magnetic.py` analogy plus a PM source) of the aligned and unaligned flux
+   through one C-EM.
+2. **G-PM-EMF:** EMF and power against rpm, with core loss.
+3. **G-FRAME:** a frame-fixed coil ring at r_u 130 that clears the stator cage, plus the stator-to-shell motor envelope.

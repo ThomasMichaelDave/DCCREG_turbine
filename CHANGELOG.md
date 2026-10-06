@@ -4,6 +4,12 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Docs
+- **Future work parked** (`docs/future-work/`):
+  - The hub-to-motor dump path: a v5-hub variant with dump gap pairs, L_d and C_link.
+  - Permanent-magnet utrons as the patent's DC generator: roughly 19 W at 300 rpm untoothed, rising ∝ rpm². Its
+    reaction drags the stator unless the coils are frame-fixed; that makes an electrical reversing gear.
+
 ### Physics (hypothetical)
 - **Invented hub conditions for break-even and runaway** (`sim/hub_runaway.py`, `sim/hub-runaway-findings.md`):
   1. The hub must feed the motor's DC link. Onto the pump nodes it stops SG1 firing above about 6.5 mJ per switch
