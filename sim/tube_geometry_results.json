@@ -88,13 +88,5 @@
   "docs/geometry/tube/tube-r150-n8-section.png",
   "docs/geometry/tube/tube-r150-n8-reluctance-plan.png",
   "docs/geometry/tube/tube-r150-n8-clocking-plan.png"
- ],
- "step": "docs/geometry/tube/tube-r150-n8.step",
- "step_bytes": 2877535,
- "step_read_back": {
-  "instances": 307,
-  "assemblies": 10,
-  "products": 30,
-  "pass_": true
- }
+ ]
 }

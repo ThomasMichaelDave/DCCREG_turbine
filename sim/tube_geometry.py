@@ -506,8 +506,12 @@ def renders(m, out_dir, tag):
     f = os.path.join(out_dir, f"{tag}-section.png"); fig.tight_layout(); fig.savefig(f, dpi=110); plt.close(fig); files.append(f)
     # 2. reluctance A: plan cuts at the jaw height and the utron mid-plane
     cem = [e for e in el if e["kind"] == "cem" and e["side"] == "A"][0]
+    r_u = cem["r_u"]
+    lim = 10.0 * math.ceil((r_u + S.REL_X_MAX + 25.0) / 10.0)          # reluctance envelope + margin
     fig, axs = plt.subplots(1, 2, figsize=(14, 7))
     for a, (zz, title) in zip(axs, ((cem["zc"] + 44.0, "jaw / arm height (z = utron centre + 44)"), (cem["zc"], "utron mid-plane"))):
+        t = [2 * math.pi * i / 180 for i in range(181)]
+        a.plot([r_u * math.cos(x) for x in t], [r_u * math.sin(x) for x in t], color="#bbb", lw=0.6, ls="--")
         for pt, s in shapes + coils:
             lo, hi = bbox(s)
             if lo[2] > zz or hi[2] < zz or pt["group"] not in ("rel-A", "rotor"):
@@ -515,8 +519,9 @@ def renders(m, out_dir, tag):
             for P in cut_polylines(s, ("z", zz)):
                 a.plot(P[:, 0], P[:, 1], color=colours[pt["name"]], lw=0.8)
         a.set_aspect("equal"); a.set_title(f"reluctance A: {title}", fontsize=9)
-        a.set_xlim(-200, 200); a.set_ylim(-200, 200)
-    fig.suptitle(f"{tag}: 6 C-EMs (A at 30 + 60k) and 3 utrons (15 + 120k, rotor angle 0) around the sleeve (r 20)", fontsize=9)
+        a.set_xlim(-lim, lim); a.set_ylim(-lim, lim)
+    fig.suptitle(f"{tag}: 6 C-EMs (A at 30 + 60k) and 3 utrons (15 + 120k, rotor angle 0) around the sleeve (r 20); "
+                 f"dashed: utron-centre circle r {r_u:.0f}", fontsize=9)
     f = os.path.join(out_dir, f"{tag}-reluctance-plan.png"); fig.tight_layout(); fig.savefig(f, dpi=100); plt.close(fig); files.append(f)
     # 3. clocking A: each deck cut at its gap height (between the tip and the sphere)
     decks = [e for e in el if e["kind"] == "clk sphere" and e["side"] == "A"]
