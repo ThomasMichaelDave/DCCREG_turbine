@@ -4,6 +4,13 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Physics
+- **The Goldie floating-rotor generator in the exact engine** (`sim/goldie_tube.py`, `sim/goldie-tube-findings.md`):
+  - Diodes: z 1.088 per cycle, η 1.00, 3.4 W surplus at 20 kV, against 1.3 W for the spark-gap Bennet tube.
+  - Timed spark gaps reach the same z at η 0.97 at the best windows, but are timing-sensitive: 6° early shorts the
+    output.
+  - Real relaxation gaps estimated at η 0.75–0.90.
+
 ### Docs
 - **Future work: a diode-commutated, floating-rotor tube after US 3,013,201** (Goldie, HVEC 1961;
   `docs/future-work/goldie-diode-commutated-tube.md`):

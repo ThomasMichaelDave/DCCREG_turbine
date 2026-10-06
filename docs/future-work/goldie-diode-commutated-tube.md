@@ -75,3 +75,10 @@ That is an upper bound. Real HV diode leakage, the divider, corona and the serie
 2. **G-GOLDIE-LOAD.** Output power at the 20 kV cap, swept over the feedback ratio k, with diode leakage.
 3. **G-GOLDIE-GEOM.** Interleaved induction and collector stator sectors in the vane cell (2-D solve), and their mutual
    stray.
+
+## Engine result (2026-10-06)
+
+See `sim/goldie-tube-findings.md`:
+- **Diodes:** z 1.088, η 1.00, 3.4 W at 20 kV.
+- **Timed spark gaps (engine gap model):** the same z at η 0.97, with the windows tight (charge −24° → C_max, dump 16° → C_min).
+- **Real relaxation gaps:** expect η 0.75–0.90 at V_b 1–3 kV.
