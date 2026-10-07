@@ -43,3 +43,32 @@ For comparison, the Goldie two-section machine with diodes (`goldie-tube-finding
    - Ratings: the nodes reach 20 kV, and D3 / D4 see up to about the sum of two node swings, so use stacks rated
      ≥ 40 kV. HV rectifier sticks at 30–100 kV / few mA are stock. Their ~1 pF and µA leakage are small next to the
      1 nF-class capacitors.
+
+## Diode parts for the stack (default tube: 3 mm vacuum, diode core, highest node 20 kV)
+
+Engine, per diode position:
+
+| position | function | peak reverse | design rating (×2) |
+|:--|:--|:--|:--|
+| D1 | node 2 → rotor rail | 9.1 kV | ≥ 20 kV |
+| D2 | node 3 → rotor rail | 8.6 kV | ≥ 20 kV |
+| D3 | node 1 → node 3 | 17.9 kV | ≥ 40 kV |
+| D4 | node 4 → node 2 | 15.8 kV | ≥ 40 kV |
+
+Currents are sub-mA (about 0.3 mA average, about 1 mA peak at 300 rpm). The switching rate is 30 Hz, so recovery time is
+irrelevant.
+
+| choice | D1 / D2 | D3 / D4 | notes |
+|:--|:--|:--|:--|
+| **2CL77** (20 kV, 5 mA, I_R 2 µA at 25 °C / 5 µA at 100 °C, avalanche) | 1 | 2 in series | stock at LCSC; the recommended stick |
+| **C67X040D20TTS** (CSDC, 40 kV, 20 mA) | — | 1 | one stick per position |
+| CL01-12 (microwave, 12 kV, 350 mA, I_R 5 µA) | 2 in series | 3–4 in series | cheap and robust; higher leakage and V_F |
+
+- **Leakage loss.** I_R × V_R ≈ 2 µA × 18 kV ≈ 36 mW per D3 / D4 position at 25 °C, about 0.1 W in total (~3 % of the 3 W).
+  It rises ~2.5× hot, so keep the stacks cool and in air, oil or potting at 1 atm, outside the vacuum. Epoxy bodies
+  outgas and flash over along their surface in vacuum.
+- **Series sharing.** Use avalanche-rated parts from one lot. Do **not** grade with resistors: 200 MΩ across 20 kV
+  would burn 2 W, most of the surplus. Avoid large grading capacitors too, since they add stray capacitance across the
+  pump nodes.
+- **Surge.** A vane flashover dumps the stored charge (~0.24 J at 20 kV) through the stack. A 10–47 kΩ HV resistor per
+  position limits the current, for about 10–50 mW of I²R at 1 mA peak.
