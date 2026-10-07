@@ -1,0 +1,244 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">
+<title>Switchless C-EM placements</title>
+<rect width="1200" height="900" fill="#ffffff"/>
+<style>
+    .w{stroke:#111;stroke-width:2;fill:none} .new{stroke:#c0392b;stroke-width:2.4;fill:none}
+    .cm{stroke:#1f6fb2;stroke-width:2.4;fill:none} .cl{stroke:#7d3c98;stroke-width:2.2;fill:none}
+    .t{fill:#111} .tn{fill:#c0392b} .tc{fill:#1f6fb2} .tz{fill:#7d3c98} .m{fill:#555;font-size:11.5px}
+    .h{font-size:16px;font-weight:bold;fill:#111} .h2{font-size:14px;font-weight:bold;fill:#111}
+    .box{stroke:#999;stroke-dasharray:5 4;fill:none} .dot{fill:#111}
+  </style>
+<text x="20" y="28" class="h" >Diode machine (de Queiroz core, no flying bucket): C-EMs connected WITHOUT switches — two placements</text>
+<text x="20" y="48" class="m" >black = core (solveDoubler4 netlist: D1 2→ref, D2 3→ref, D3 1→3, D4 4→2, anode→cathode) · blue = C-EM strings (PM utrons) · purple = avalanche clamp · red = bus parts</text>
+<text x="20" y="64" class="m" >Negative polarity (all nodes ≤ 0). No transistor, thyristor, spark gap, commutator or controller anywhere: every one-way element is a diode. Wires that cross without a dot are not connected.</text>
+<rect x="20" y="80" width="560" height="620" class="box"/>
+<text x="30" y="100" class="h2" >(a) LEG — each string in series with its varicap</text>
+<line x1="30" y1="670" x2="570" y2="670" class="w"/>
+<text x="34" y="690" class="m" >REF = rotor rail R-A / R-B</text>
+<line x1="130" y1="230" x2="130" y2="380" class="w"/>
+<path d="M130 380 q10 6 0 12 q10 6 0 12 q10 6 0 12 q10 6 0 12 q10 6 0 12 q10 6 0 12" class="cm"/>
+<text x="146" y="400" class="tc" font-weight="bold">C-EM A</text>
+<text x="146" y="416" class="m" >6 coils in</text>
+<text x="146" y="430" class="m" >series + PM</text>
+<line x1="130" y1="452" x2="130" y2="480" class="cm"/>
+<text x="38" y="470" class="m" >node 1v</text>
+<line x1="110" y1="480" x2="150" y2="480" class="w"/>
+<line x1="110" y1="492" x2="150" y2="492" class="w"/>
+<line x1="102" y1="505" x2="158" y2="467" class="w"/>
+<polygon points="158,467 148,469 153,476" fill="#111"/>
+<line x1="130" y1="492" x2="130" y2="670" class="w"/>
+<text x="70" y="500" class="t" >C1(θ)</text>
+<line x1="460" y1="230" x2="460" y2="380" class="w"/>
+<path d="M460 380 q10 6 0 12 q10 6 0 12 q10 6 0 12 q10 6 0 12 q10 6 0 12 q10 6 0 12" class="cm"/>
+<text x="386" y="400" class="tc" font-weight="bold">C-EM B</text>
+<text x="386" y="416" class="m" >6 coils</text>
+<text x="386" y="430" class="m" >+ PM</text>
+<line x1="460" y1="452" x2="460" y2="480" class="cm"/>
+<line x1="440" y1="480" x2="480" y2="480" class="w"/>
+<line x1="440" y1="492" x2="480" y2="492" class="w"/>
+<line x1="432" y1="505" x2="488" y2="467" class="w"/>
+<polygon points="488,467 478,469 483,476" fill="#111"/>
+<line x1="460" y1="492" x2="460" y2="670" class="w"/>
+<text x="376" y="500" class="t" >C2(θ)</text>
+<circle cx="130" cy="230" r="3.5" class="dot"/>
+<circle cx="460" cy="230" r="3.5" class="dot"/>
+<text x="74" y="234" class="t" >node 1</text>
+<text x="468" y="248" class="t" >node 4</text>
+<circle cx="130" cy="280" r="3.5" class="dot"/>
+<line x1="130" y1="280" x2="179" y2="280" class="w"/>
+<line x1="179" y1="264" x2="179" y2="296" class="w"/>
+<line x1="191" y1="264" x2="191" y2="296" class="w"/>
+<line x1="191" y1="280" x2="240" y2="280" class="w"/>
+<text x="172" y="258" class="t" >Ca</text>
+<circle cx="460" cy="280" r="3.5" class="dot"/>
+<line x1="460" y1="280" x2="411" y2="280" class="w"/>
+<line x1="399" y1="264" x2="399" y2="296" class="w"/>
+<line x1="411" y1="264" x2="411" y2="296" class="w"/>
+<line x1="399" y1="280" x2="350" y2="280" class="w"/>
+<text x="392" y="258" class="t" >Cb</text>
+<circle cx="240" cy="280" r="3.5" class="dot"/>
+<line x1="240" y1="280" x2="240" y2="560" class="w"/>
+<polygon points="228,560 252,560 240,580" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="228" y1="580" x2="252" y2="580" class="w"/>
+<line x1="240" y1="580" x2="240" y2="670" class="w"/>
+<text x="256" y="576" class="t" >D1</text>
+<text x="246" y="272" class="m" >node 2</text>
+<circle cx="350" cy="280" r="3.5" class="dot"/>
+<line x1="350" y1="280" x2="350" y2="560" class="w"/>
+<polygon points="338,560 362,560 350,580" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="338" y1="580" x2="362" y2="580" class="w"/>
+<line x1="350" y1="580" x2="350" y2="670" class="w"/>
+<text x="366" y="576" class="t" >D2</text>
+<text x="356" y="272" class="m" >node 3</text>
+<circle cx="130" cy="330" r="3.5" class="dot"/>
+<line x1="130" y1="330" x2="310" y2="330" class="w"/>
+<polygon points="310,318 310,342 330,330" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="330" y1="318" x2="330" y2="342" class="w"/>
+<line x1="330" y1="330" x2="350" y2="330" class="w"/>
+<circle cx="350" cy="330" r="3.5" class="dot"/>
+<text x="306" y="314" class="t" >D3</text>
+<circle cx="460" cy="360" r="3.5" class="dot"/>
+<line x1="460" y1="360" x2="280" y2="360" class="w"/>
+<polygon points="280,348 280,372 260,360" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="260" y1="348" x2="260" y2="372" class="w"/>
+<line x1="260" y1="360" x2="240" y2="360" class="w"/>
+<circle cx="240" cy="360" r="3.5" class="dot"/>
+<text x="262" y="344" class="t" >D4</text>
+<circle cx="130" cy="250" r="3.5" class="dot"/>
+<line x1="130" y1="250" x2="60" y2="250" class="cl"/>
+<line x1="60" y1="250" x2="60" y2="590" class="cl"/>
+<polygon points="48,590 72,590 60,610" fill="none" stroke="#7d3c98" stroke-width="2"/>
+<line x1="48" y1="610" x2="72" y2="610" class="cl"/>
+<line x1="48" y1="610" x2="44" y2="605" class="cl"/>
+<line x1="72" y1="610" x2="76" y2="615" class="cl"/>
+<line x1="60" y1="610" x2="60" y2="670" class="cl"/>
+<circle cx="60" cy="670" r="3.5" class="dot"/>
+<circle cx="460" cy="250" r="3.5" class="dot"/>
+<line x1="460" y1="250" x2="510" y2="250" class="cl"/>
+<line x1="510" y1="250" x2="510" y2="590" class="cl"/>
+<polygon points="498,590 522,590 510,610" fill="none" stroke="#7d3c98" stroke-width="2"/>
+<line x1="498" y1="610" x2="522" y2="610" class="cl"/>
+<line x1="498" y1="610" x2="494" y2="605" class="cl"/>
+<line x1="522" y1="610" x2="526" y2="615" class="cl"/>
+<line x1="510" y1="610" x2="510" y2="670" class="cl"/>
+<circle cx="510" cy="670" r="3.5" class="dot"/>
+<text x="42" y="640" class="tz" >Z1</text>
+<text x="520" y="640" class="tz" >Z4</text>
+<circle cx="130" cy="670" r="3.5" class="dot"/>
+<circle cx="240" cy="670" r="3.5" class="dot"/>
+<circle cx="350" cy="670" r="3.5" class="dot"/>
+<circle cx="460" cy="670" r="3.5" class="dot"/>
+<rect x="620" y="80" width="560" height="620" class="box"/>
+<text x="630" y="100" class="h2" >(b) BUS — each string in series with D5 / D6 into C_bus</text>
+<line x1="630" y1="670" x2="1170" y2="670" class="w"/>
+<text x="634" y="690" class="m" >REF = rotor rail R-A / R-B</text>
+<line x1="730" y1="230" x2="730" y2="380" class="w"/>
+<line x1="730" y1="380" x2="730" y2="480" class="w"/>
+<line x1="710" y1="480" x2="750" y2="480" class="w"/>
+<line x1="710" y1="492" x2="750" y2="492" class="w"/>
+<line x1="702" y1="505" x2="758" y2="467" class="w"/>
+<polygon points="758,467 748,469 753,476" fill="#111"/>
+<line x1="730" y1="492" x2="730" y2="670" class="w"/>
+<text x="670" y="500" class="t" >C1(θ)</text>
+<line x1="1060" y1="230" x2="1060" y2="380" class="w"/>
+<line x1="1060" y1="380" x2="1060" y2="480" class="w"/>
+<line x1="1040" y1="480" x2="1080" y2="480" class="w"/>
+<line x1="1040" y1="492" x2="1080" y2="492" class="w"/>
+<line x1="1032" y1="505" x2="1088" y2="467" class="w"/>
+<polygon points="1088,467 1078,469 1083,476" fill="#111"/>
+<line x1="1060" y1="492" x2="1060" y2="670" class="w"/>
+<text x="976" y="500" class="t" >C2(θ)</text>
+<circle cx="730" cy="230" r="3.5" class="dot"/>
+<circle cx="1060" cy="230" r="3.5" class="dot"/>
+<text x="674" y="234" class="t" >node 1</text>
+<text x="1068" y="248" class="t" >node 4</text>
+<circle cx="730" cy="280" r="3.5" class="dot"/>
+<line x1="730" y1="280" x2="779" y2="280" class="w"/>
+<line x1="779" y1="264" x2="779" y2="296" class="w"/>
+<line x1="791" y1="264" x2="791" y2="296" class="w"/>
+<line x1="791" y1="280" x2="840" y2="280" class="w"/>
+<text x="772" y="258" class="t" >Ca</text>
+<circle cx="1060" cy="280" r="3.5" class="dot"/>
+<line x1="1060" y1="280" x2="1011" y2="280" class="w"/>
+<line x1="999" y1="264" x2="999" y2="296" class="w"/>
+<line x1="1011" y1="264" x2="1011" y2="296" class="w"/>
+<line x1="999" y1="280" x2="950" y2="280" class="w"/>
+<text x="992" y="258" class="t" >Cb</text>
+<circle cx="840" cy="280" r="3.5" class="dot"/>
+<line x1="840" y1="280" x2="840" y2="560" class="w"/>
+<polygon points="828,560 852,560 840,580" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="828" y1="580" x2="852" y2="580" class="w"/>
+<line x1="840" y1="580" x2="840" y2="670" class="w"/>
+<text x="856" y="576" class="t" >D1</text>
+<text x="846" y="272" class="m" >node 2</text>
+<circle cx="950" cy="280" r="3.5" class="dot"/>
+<line x1="950" y1="280" x2="950" y2="560" class="w"/>
+<polygon points="938,560 962,560 950,580" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="938" y1="580" x2="962" y2="580" class="w"/>
+<line x1="950" y1="580" x2="950" y2="670" class="w"/>
+<text x="966" y="576" class="t" >D2</text>
+<text x="956" y="272" class="m" >node 3</text>
+<circle cx="730" cy="330" r="3.5" class="dot"/>
+<line x1="730" y1="330" x2="910" y2="330" class="w"/>
+<polygon points="910,318 910,342 930,330" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="930" y1="318" x2="930" y2="342" class="w"/>
+<line x1="930" y1="330" x2="950" y2="330" class="w"/>
+<circle cx="950" cy="330" r="3.5" class="dot"/>
+<text x="906" y="314" class="t" >D3</text>
+<circle cx="1060" cy="450" r="3.5" class="dot"/>
+<line x1="1060" y1="450" x2="880" y2="450" class="w"/>
+<polygon points="880,438 880,462 860,450" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="860" y1="438" x2="860" y2="462" class="w"/>
+<line x1="860" y1="450" x2="840" y2="450" class="w"/>
+<circle cx="840" cy="450" r="3.5" class="dot"/>
+<text x="862" y="434" class="t" >D4</text>
+<circle cx="730" cy="250" r="3.5" class="dot"/>
+<line x1="730" y1="250" x2="660" y2="250" class="cl"/>
+<line x1="660" y1="250" x2="660" y2="590" class="cl"/>
+<polygon points="648,590 672,590 660,610" fill="none" stroke="#7d3c98" stroke-width="2"/>
+<line x1="648" y1="610" x2="672" y2="610" class="cl"/>
+<line x1="648" y1="610" x2="644" y2="605" class="cl"/>
+<line x1="672" y1="610" x2="676" y2="615" class="cl"/>
+<line x1="660" y1="610" x2="660" y2="670" class="cl"/>
+<circle cx="660" cy="670" r="3.5" class="dot"/>
+<circle cx="1060" cy="250" r="3.5" class="dot"/>
+<line x1="1060" y1="250" x2="1110" y2="250" class="cl"/>
+<line x1="1110" y1="250" x2="1110" y2="590" class="cl"/>
+<polygon points="1098,590 1122,590 1110,610" fill="none" stroke="#7d3c98" stroke-width="2"/>
+<line x1="1098" y1="610" x2="1122" y2="610" class="cl"/>
+<line x1="1098" y1="610" x2="1094" y2="605" class="cl"/>
+<line x1="1122" y1="610" x2="1126" y2="615" class="cl"/>
+<line x1="1110" y1="610" x2="1110" y2="670" class="cl"/>
+<circle cx="1110" cy="670" r="3.5" class="dot"/>
+<text x="642" y="640" class="tz" >Z1</text>
+<text x="1120" y="640" class="tz" >Z4</text>
+<circle cx="730" cy="670" r="3.5" class="dot"/>
+<circle cx="840" cy="670" r="3.5" class="dot"/>
+<circle cx="950" cy="670" r="3.5" class="dot"/>
+<circle cx="1060" cy="670" r="3.5" class="dot"/>
+<line x1="730" y1="130" x2="1155" y2="130" class="new"/>
+<text x="770" y="122" class="tn" font-weight="bold">DC BUS (−V)</text>
+<text x="910" y="122" class="m" >C_bus 10 nF ∥ R_bleed 10 GΩ to REF</text>
+<circle cx="730" cy="130" r="3.5" class="dot"/>
+<rect x="723" y="136" width="14" height="22" fill="none" stroke="#c0392b" stroke-width="2"/>
+<line x1="730" y1="130" x2="730" y2="136" class="new"/>
+<line x1="730" y1="158" x2="730" y2="166" class="new"/>
+<text x="742" y="152" class="tn" >R_s</text>
+<polygon points="718,166 742,166 730,186" fill="none" stroke="#c0392b" stroke-width="2"/>
+<line x1="718" y1="186" x2="742" y2="186" class="new"/>
+<text x="746" y="182" class="tn" >D5</text>
+<line x1="730" y1="186" x2="730" y2="190" class="new"/>
+<path d="M730 190 q10 6 0 12 q10 6 0 12 q10 6 0 12" class="cm"/>
+<text x="746" y="210" class="tc" >C-EM A</text>
+<line x1="730" y1="226" x2="730" y2="230" class="cm"/>
+<circle cx="1060" cy="130" r="3.5" class="dot"/>
+<rect x="1053" y="136" width="14" height="22" fill="none" stroke="#c0392b" stroke-width="2"/>
+<line x1="1060" y1="130" x2="1060" y2="136" class="new"/>
+<line x1="1060" y1="158" x2="1060" y2="166" class="new"/>
+<text x="1072" y="152" class="tn" >R_s</text>
+<polygon points="1048,166 1072,166 1060,186" fill="none" stroke="#c0392b" stroke-width="2"/>
+<line x1="1048" y1="186" x2="1072" y2="186" class="new"/>
+<text x="1076" y="182" class="tn" >D6</text>
+<line x1="1060" y1="186" x2="1060" y2="190" class="new"/>
+<path d="M1060 190 q10 6 0 12 q10 6 0 12 q10 6 0 12" class="cm"/>
+<text x="1076" y="210" class="tc" >C-EM B</text>
+<line x1="1060" y1="226" x2="1060" y2="230" class="cm"/>
+<line x1="1155" y1="130" x2="1155" y2="400" class="new"/>
+<line x1="1135" y1="400" x2="1175" y2="400" class="new"/>
+<line x1="1135" y1="412" x2="1175" y2="412" class="new"/>
+<line x1="1155" y1="412" x2="1155" y2="670" class="new"/>
+<circle cx="1155" cy="670" r="3.5" class="dot"/>
+<text x="1095" y="396" class="tn" >C_bus</text>
+<text x="870" y="168" class="m" >R_s 22 kΩ; snubber 10 MΩ</text>
+<text x="870" y="182" class="m" >across each C-EM string</text>
+<text x="20" y="730" class="m" >(a) design point k 20 (≈ 36920 turns per coil, string EMF 5.6 kV pk), flux extreme at plate alignment: 4.31 W to the shaft, 137 mN·m; belt 11.4 W, clamp 6.8 W, copper 0.29 W.</text>
+<text x="20" y="748" class="m" >     Stator: pump reaction 363 mN·m + drag 14.7 mN·m → net -241 mN·m (dragged along, as for every pump-fed motor). k 10: 2.1 W; k 40: copper and clamp take over.</text>
+<text x="20" y="766" class="m" >(b) bus, k 1: -0.24 mN·m (once C_bus is charged only the 2 µA bleed flows through D5 / D6); k 20: −99 mN·m, a brake (the PM EMF drives 3.1 W into the snubbers); at two phases the pump collapses.</text>
+<text x="20" y="784" class="m" >     Without switches a DC bus cannot turn the coils (constant current, periodic flux → zero average torque) [OC].</text>
+<text x="20" y="802" class="m" >Z1 / Z4: avalanche-diode strings (BV 20 kV, soft knee, ~100 kΩ): they set the operating voltage and take the surplus the coils don't.</text>
+<text x="20" y="820" class="m" >     Without them the pump runs away at every rewind (coil power ∝ V, pump surplus ∝ V²).</text>
+<text x="20" y="838" class="m" >Coil timing comes from the plates alone: each coil must see 6 flux periods per rev (one per pump cycle), so 6 PM utrons per side.</text>
+<text x="20" y="856" class="m" >     The present 3 utrons per side give ≈ 0 average torque. Each string floats at node potential: coil insulation ≥ 20 kV.</text>
+<text x="20" y="874" class="m" >ngspice, tube defaults at 300 rpm: near-ideal diodes, cosine varicaps, PM swing 0.27 mWb per coil [RH, gate G-SWING open].</text>
+<text x="20" y="892" class="m" >     Numbers: sim/switchless_cem_results.json · findings: sim/switchless-cem-findings.md · generator: docs/make_schematic_switchless.py.</text>
+</svg>

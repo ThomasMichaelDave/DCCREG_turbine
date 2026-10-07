@@ -14,6 +14,8 @@
     .dot{fill:#111}
   </style>
   <text x="20" y="28" class="h">Diode machine (de Queiroz core, no flying bucket) — DC bus and C-EM drive</text>
+  <rect x="640" y="8" width="545" height="28" fill="#fdecea" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="650" y="27" class="tn" font-weight="bold">SUPERSEDED: this drive needs switches. See schematic-diode-core-switchless.svg</text>
   <text x="20" y="48" class="m">black = existing core (solveDoubler4 topology) · red = NEW DC bus parts · blue = NEW C-EM drive (DC-tap ruling) · polarity as the engine's negative mode (all nodes ≤ 0)</text>
 
   <!-- rotor rail / reference -->

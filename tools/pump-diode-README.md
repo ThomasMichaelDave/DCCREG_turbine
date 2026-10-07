@@ -50,7 +50,11 @@ On Windows, use the `.js` MIME one-liner from `tools/pump-stack-README.md`. The 
 
 Reading:
 - **Series C-EMs get almost nothing.** The diode current is 0.02–0.2 mA, spread over about 4.6 ms per cycle.
-- **The DC tap gets η × the surplus.** That makes it the usable path for powering the C-EMs.
+- **The DC tap gets η × the surplus**, but only through a switched drive (per-coil switches, a position sensor and a
+  controller). A DC bus without switches gives zero average torque. The switchless alternative is the coils in series
+  with the varicaps (`sim/switchless-cem-findings.md`):
+  - tube, PM utrons (6 per side), rewound ×20: 4.3 W and 137 mN·m at 20 kV;
+  - this calculator does not model that placement yet.
 - **The stator is dragged along in every case.** A pump-fed motor gives at most η × the pump's own reaction torque, so it
   cannot counter-rotate the stator. That needs an outside source or a frame-reacted generator (`sim/spinup-findings.md`).
 

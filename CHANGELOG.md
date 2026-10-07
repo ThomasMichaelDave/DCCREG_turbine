@@ -4,6 +4,23 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Physics
+- **Switchless C-EMs on the diode core** (`sim/switchless_cem.py`, `sim/switchless-cem-findings.md`,
+  `docs/schematic-diode-core-switchless.svg`):
+  - **Why:** the earlier DC-bus drive needed per-coil switches, a sensor and a controller. That schematic is now marked
+    superseded.
+  - **Method:** two switchless placements, compared side by side in ngspice (tube defaults, 300 rpm, 20 kV avalanche
+    clamp). Every power term is integrated solver-side, and the ledger closes to ≤ 1e-4 W.
+  - **Cross-check:** bare core z 1.512, against the engine's 1.515.
+  - **LEG (strings in series with C1 / C2) works.**
+    - Needs PM utrons, 6 per side to match the 6 pump cycles per rev; 3 per side give ≈ 0.
+    - Flux extreme within 7.5° of plate alignment.
+    - Rewound ×10–20: 2.1–4.3 W and 67–137 mN·m to the shaft.
+    - The stator is still dragged along, and the clamp is still needed (no clamp → runaway).
+  - **BUS (strings in series with D5 / D6) does not.**
+    - With C_bus charged only the bleed flows (0.02 mA, −0.25 mN·m).
+    - Rewound ×20 the strings act as a brake through the needed snubbers; at two phases the pump collapses.
+
 ### Tools
 - **`tools/pump-diode.html` (new): the de Queiroz diode doubler on the disc or the tube, with the flying bucket
   removed**, and the C-EM power assessment against operating voltage (`sim/diode_machine.py`,
