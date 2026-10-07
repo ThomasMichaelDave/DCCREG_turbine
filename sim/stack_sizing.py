@@ -147,8 +147,8 @@ def tube_geometry(p, lad, rpm):
     n = int(p["n_plates"]); t, g = p["t_vaneMm"], p["g_vMm"]
     L_var = 2 * n * t + (2 * n - 1) * g                           # one varicap stack (C1 or C2)
     cpg = lad["per_gap_max_pF"]                                    # pF per working gap (same vanes for Cx)
-    n_cx = math.ceil(lad["cx_max"] / cpg) if cpg > 0 else 0       # Cx working gaps per side
-    L_cx = (n_cx + 1) * t + n_cx * g
+    n_cx = math.ceil(lad["cx_max"] / cpg) if cpg > 0 and p.get("bucket", True) else 0   # Cx working gaps per side
+    L_cx = (n_cx + 1) * t + n_cx * g if p.get("bucket", True) else 0.0
     A_full = math.pi * (p["r_outMm"] ** 2 - p["r_inMm"] ** 2)      # fixed plates: full annulus, air [IR]
     c_fixed_gap = EPS0_MM * PS.eps_r(p) * A_full / g * 1e12
     n_ca = math.ceil(lad["Ca"] / c_fixed_gap)
@@ -208,15 +208,21 @@ def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
                        z1=max(z, z + direction * FLANGE_T), r0=0.0, r1=FLANGE_R))
         z = bearing(z + direction * FLANGE_T, "hub face")
         z = stack(z, direction, 2 * n, "C1 vane" if lab == "A" else "C2 vane", nodes_v, lab) + direction * g
-        z = stack(z, direction, n_cx + 1, "Cx vane", nodes_x, lab) + direction * g
+        if p.get("bucket", True):                                  # the flying-bucket islands (Cx); none in the diode build
+            z = stack(z, direction, n_cx + 1, "Cx vane", nodes_x, lab) + direction * g
         z = stack(z, direction, n_ca + 1, "Ca plate" if lab == "A" else "Cb plate", nodes_c, lab, fixed=True)
         z += direction * g
-        z = bearing(z, "Ca|clocking") + direction * g
+        z = bearing(z, "Ca|clocking" if p.get("bucket", True) else "Ca|reluctance") + direction * g
+        if not p.get("bucket", True):                              # diode build: no spark gaps, so no clocking decks
+            z_clk0 = z
+            CLK = ()
+        else:
+            CLK = CLOCK_STATIONS[lab]
         # clocking: one sub-deck per station, outward from the hub: rotor disc | tip (rotor node) | gap | sphere
         # (stator node) | stator ring (the spheres half-embedded in their disc / ring) [IR]
         r_clk = ro - 25.0
         z_clk0 = z
-        for name, ang, n_st, n_rot, d_s, gap in CLOCK_STATIONS[lab]:
+        for name, ang, n_st, n_rot, d_s, gap in CLK:
             Rt, Rs = 0.5 * CLOCK_TIP_D, 0.5 * d_s
             # disc / ring at least a sphere radius thick, so the embedded half of each sphere stays inside its seat
             layers = [("clk rotor disc", "rotor", n_rot, max(CLOCK_DISC_T, Rt)), ("tip", "rotor", n_rot, Rt), ("gap", None, None, gap),
@@ -243,8 +249,9 @@ def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
                                    r0=r_clk - 20.0, r1=ro + 12.0))
                 zz = z1
             z = zz + direction * CLOCK_SPACER
-        z = z_clk0 + direction * max(abs(z - z_clk0), p["clock_mm"])
-        el.append(dict(kind="clocking", body="stator", node="gaps", side=lab, z0=min(z_clk0, z), z1=max(z_clk0, z), r0=ri, r1=ro,
+        z = z_clk0 + direction * max(abs(z - z_clk0), p["clock_mm"] if p.get("bucket", True) else 0.0)
+        if p.get("bucket", True):
+          el.append(dict(kind="clocking", body="stator", node="gaps", side=lab, z0=min(z_clk0, z), z1=max(z_clk0, z), r0=ri, r1=ro,
                        envelope=True))
         # reluctance: C-EMs (stator) and utrons (rotor) at the utron radius r_u, centred in the section
         r_u = SLEEVE_R + UTRON_CLEAR - REL_X_MIN + p.get("rel_shift_mm", 0.0)

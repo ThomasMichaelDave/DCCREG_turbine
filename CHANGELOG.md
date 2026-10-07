@@ -5,6 +5,16 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Tools
+- **`tools/pump-diode.html` (new): the de Queiroz diode doubler on the disc or the tube, with the flying bucket
+  removed**, and the C-EM power assessment against operating voltage (`sim/diode_machine.py`,
+  `tools/pump-diode.worker.js`, `tools/pump-diode-README.md`):
+  - C-EMs in series with D1 / D2 vs. a DC tap; iron or PM utrons; air or vacuum.
+  - Stator balance including the pump's own reaction torque.
+  - The tube layout without Cx vanes or clocking decks (`plates bucket=False`) is 736 mm.
+  - Tube 3 mm vacuum at 30 kV: 6.8 W surplus. DC-tap PM motor 5.4 W, series 0.016 W; the stator is dragged along in every
+    case.
+
+### Tools
 - **pump-stack: the bare de Queiroz diode doubler, a 20 kV power ledger, gap breakdown, and a vacuum default:**
   - **New topology** "de Queiroz diodes": the `solveDoubler4` 4-diode core with continuous varicaps (`stack_sizing.core_net`).
   - **New cards:** belt and surplus power with the highest node at 20 kV, η, the highest node, and the gap breakdown
