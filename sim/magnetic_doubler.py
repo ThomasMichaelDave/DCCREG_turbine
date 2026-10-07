@@ -53,19 +53,37 @@ SEED = 0.01                               # A
 CSNUB, RSNUB = 10e-9, 1e3                 # RC at each dual node [IR]
 
 
-def deck(kappa=6.0, tau=TAU, tau_fixed=None, sat=True, ah=None, n_cyc=60, steps=2000, seed=SEED, nd=0.05):
+def _coeffs(kw):
+    """L(theta)/L_max as a cosine series a_k cos(k w t) (aligned at t = 0); default: the plain cosine of ratio kappa."""
+    if kw.get("prof") is not None:
+        return list(kw["prof"])
+    k = kw.get("kappa", 6.0)
+    return [(1 + 1 / k) / 2, (1 - 1 / k) / 2]
+
+
+def _shape_expr(a, w, phase_k):
+    """ngspice text for sum a_k cos(k w t + k phase) and its time derivative."""
+    f = "+".join(f"({ak:.8e})*cos({k * w:.8e}*time+{k * phase_k:.8f})" for k, ak in enumerate(a))
+    df = "+".join(f"({-k * w * ak:.8e})*sin({k * w:.8e}*time+{k * phase_k:.8f})" for k, ak in enumerate(a) if k > 0)
+    return f"({f})", f"({df})"
+
+
+def deck(kappa=6.0, tau=TAU, tau_fixed=None, sat=True, ah=None, n_cyc=60, steps=2000, seed=SEED, nd=0.05,
+         F=F, prof=None, L_max=L_MAX, psi_s=PSI_S, la_ratio=R_CA, ah_custom=None):
     tau_fixed = tau if tau_fixed is None else tau_fixed
     w = 2 * math.pi * F
-    lmin = L_MAX / kappa
-    lp = R_PAR * L_MAX
-    la = R_CA * L_MAX
-    s1 = f"(0.5*(1+cos({w:.8e}*time)))"
-    s2 = f"(0.5*(1-cos({w:.8e}*time)))"
-    L1 = f"({lmin:.6e}+{L_MAX - lmin:.6e}*{s1}+{lp:.6e})"
-    L2 = f"({lmin:.6e}+{L_MAX - lmin:.6e}*{s2}+{lp:.6e})"
-    dinv1 = f"({(L_MAX - lmin) * 0.5 * w:.6e}*sin({w:.8e}*time)/({L1}*{L1}))"     # d(1/L1)/dt
-    dinv2 = f"(-{(L_MAX - lmin) * 0.5 * w:.6e}*sin({w:.8e}*time)/({L2}*{L2}))"
-    R1 = L_MAX / tau                       # copper of the utron group (from its aligned L)
+    a = _coeffs(dict(kappa=kappa, prof=prof))
+    lmin = L_max * sum(ak * (-1) ** k for k, ak in enumerate(a))      # at t = T/2
+    lp = R_PAR * L_max
+    la = la_ratio * L_max
+    sh1, dsh1 = _shape_expr(a, w, 0.0)
+    sh2, dsh2 = _shape_expr(a, w, math.pi)
+    L1 = f"({L_max:.6e}*{sh1}+{lp:.6e})"
+    L2 = f"({L_max:.6e}*{sh2}+{lp:.6e})"
+    dinv1 = f"(-{L_max:.6e}*{dsh1}/({L1}*{L1}))"                       # d(1/L1)/dt
+    dinv2 = f"(-{L_max:.6e}*{dsh2}/({L2}*{L2}))"
+    PSI_S_ = psi_s
+    R1 = L_max / tau                       # copper of the utron group (from its aligned L)
     t = ["* magnetic dual doubler", ".model ND D(is=1e-9 n=%g rs=1e-3 cjo=0)" % nd]
     P = {}
     ic = {}
@@ -77,20 +95,20 @@ def deck(kappa=6.0, tau=TAU, tau_fixed=None, sat=True, ah=None, n_cyc=60, steps=
         t.append(f"Bv_{name} 0 ps_{name} I='V({m},{q})'")
         t.append(f"Cv_{name} ps_{name} 0 1")
         t.append(f"Rv_{name} ps_{name} 0 1e15")
-        g = f"(1+pwr(abs(V(ps_{name}))/{PSI_S:.6e},6))" if (var and sat) else "1"      # ngspice pwr keeps the sign
+        g = f"(1+pwr(abs(V(ps_{name}))/{PSI_S_:.6e},6))" if (var and sat) else "1"      # ngspice pwr keeps the sign
         t.append(f"Bi_{name} {m} {q} I='V(ps_{name})/{Lexpr}*{g}'")
         ic[f"ps_{name}"] = psi0
         P[f"cu_{name}"] = f"{R:.6e}*(V(ps_{name})/{Lexpr}*{g})*(V(ps_{name})/{Lexpr}*{g})"
         if var:
-            G = f"(0.5*V(ps_{name})*V(ps_{name})" + (f"+pwr(abs(V(ps_{name})),8)/(8*pwr({PSI_S:.6e},6))" if sat else "") + ")"
+            G = f"(0.5*V(ps_{name})*V(ps_{name})" + (f"+pwr(abs(V(ps_{name})),8)/(8*pwr({PSI_S_:.6e},6))" if sat else "") + ")"
             P[f"mech_{name}"] = f"{G}*{dinv}"
 
     i0 = seed
-    l1_0 = L_MAX + lp                     # at t = 0: L1 at max, L2 at min
+    l1_0 = L_max * sum(a) + lp            # at t = 0: L1 at max, L2 at min
     l2_0 = lmin + lp
     # A branch a -> d (with AH top in series), B branch c -> b (with AH bottom)
     if ah:
-        h = AH[ah]
+        h = ah_custom if ah == "custom" else AH[ah]
         ind("L1", "a", "x1", L1, R1, -i0 * l1_0, var=True, dinv=dinv1)
         ind("AHt", "x1", "d", f"{h['L']:.6e}", h["R"], -i0 * h["L"])
         ind("L2", "c", "x2", L2, R1, -i0 * l2_0, var=True, dinv=dinv2)
@@ -134,22 +152,24 @@ def run(**kw):
     return analyse(t, c, info, kw)
 
 
-def _L(t, which, kappa):
-    lmin = L_MAX / kappa
-    s = 0.5 * (1 + np.cos(2 * math.pi * F * t))
-    s = s if which == 1 else 1 - s
-    return lmin + (L_MAX - lmin) * s + R_PAR * L_MAX
+def _L(t, which, kw):
+    a = _coeffs(kw)
+    w = 2 * math.pi * kw.get("F", F)
+    ph = 0.0 if which == 1 else math.pi
+    Lm = kw.get("L_max", L_MAX)
+    return Lm * sum(ak * np.cos(k * (w * t + ph)) for k, ak in enumerate(a)) + R_PAR * Lm
 
 
 def analyse(t, c, info, kw):
-    kappa, sat = kw.get("kappa", 6.0), kw.get("sat", True)
+    sat = kw.get("sat", True)
     n_cyc = kw.get("n_cyc", 60)
-    T = 1.0 / F
+    T = 1.0 / kw.get("F", F)
+    psi_s = kw.get("psi_s", PSI_S)
 
     def cur(which):
         psi = c[f"v(ps_L{which})"]
-        i = psi / _L(t, which, kappa)
-        return i * (1 + (psi / PSI_S) ** 6) if sat else i
+        i = psi / _L(t, which, kw)
+        return i * (1 + (psi / psi_s) ** 6) if sat else i
     i1, i2 = cur(1), cur(2)
     cyc = np.floor(t / T).astype(int)
     pk = [float(np.abs(np.r_[i1[cyc == n], i2[cyc == n]]).max()) for n in range(n_cyc) if np.any(cyc == n)]
@@ -176,9 +196,9 @@ def analyse(t, c, info, kw):
                P_cu_fixed_W=cu - P.get("cu_L1", 0) - P.get("cu_L2", 0), P_AH_W=ah,
                I1_pk=float(np.abs(i1[sel]).max()), I1_min=float(np.abs(i1[sel]).min()),
                I2_pk=float(np.abs(i2[sel]).max()), I1_rms=float(np.sqrt(np.mean(i1[sel] ** 2))),
-               B_core_pk_T=psi_pk / PSI_S * 1.5, T_belt_mNm=mech / W_REL * 1e3)
+               B_core_pk_T=psi_pk / psi_s * 1.5, psi_pk=psi_pk, T_belt_mNm=mech / W_REL * 1e3)
     if kw.get("ah"):
-        N = AH[kw["ah"]]["N"]
+        N = (kw["ah_custom"] if kw["ah"] == "custom" else AH[kw["ah"]])["N"]
         out.update(AH_AT_pk=N * out["I1_pk"], AH_AT_min=N * out["I1_min"], AH_rod_limit_AT=AT_ROD_LIMIT)
     # the A / B waveforms over the last cycle, for the plot
     s = t >= (n_cyc - 1) * T
