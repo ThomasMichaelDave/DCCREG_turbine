@@ -5,6 +5,20 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Physics
+- **Reluctance poles for the magnetic doubler** (`sim/pole_fd2d.py`, `sim/pole_design.py`, `sim/pole-design-findings.md`,
+  `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png`):
+  - **New topology:** a wound U-core utron on the rotor, 6 passive laminated stator bridges per side (the C-EMs without
+    coils), a radial gap, and the gap radius moved to 165 mm.
+  - **New tool:** a 2-D magnetostatic solver. It screened 104 candidates through the pump circuit with each one's real
+    L(θ) shape. Discrete bridges beat a toothed ring.
+  - **The chosen pair:** inductance ratio 11.6 at 0.5 mm, 6.7 at 1.0 mm; gain per cycle 1.30 and 1.19.
+  - **Optimised:** a saturable neck sized to the AH target (450 ampere-turns), 400 / 600 utron turns, and La/Lb at
+    0.6 × L_max.
+  - **Real silicon diodes:** the pump needs a ≥ 8–10 % start kick (about 35 mJ).
+  - **Design point at 0.5 mm:** 18.6 W belt, 1.9 W per utron coil, 42–49 °C in air or vacuum.
+  - **At 1.0 mm:** 38.3 W, so about 2.1× the power for the same AH.
+
+### Physics
 - **Design pivot: the central cavity is driven by two pumps.** Rotor and stator are geared 1 : −1; the bicone hangs on
   the electrostatic diode doubler; the AH pair hangs on a new magnetic pump.
   (`sim/magnetic_doubler.py`, `sim/bicone_drive.py`, `sim/hub-drive-findings.md`, `docs/schematic-hub-drive.svg`)
