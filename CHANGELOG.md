@@ -5,6 +5,24 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Physics
+- **Design pivot: the central cavity is driven by two pumps.** Rotor and stator are geared 1 : −1; the bicone hangs on
+  the electrostatic diode doubler; the AH pair hangs on a new magnetic pump.
+  (`sim/magnetic_doubler.py`, `sim/bicone_drive.py`, `sim/hub-drive-findings.md`, `docs/schematic-hub-drive.svg`)
+  - **The magnetic pump is the exact planar dual of the de Queiroz core:**
+    - the A/B wound-utron groups are the variable inductors, fixed La/Lb the coupling, and four diodes steer current
+      between A and B (one group generates while the other motors);
+    - AH top is in series with A, AH bottom with B;
+    - dual check: z 1.528 against the electrostatic 1.512.
+  - **It grows at 60 Hz when the inductance ratio is ≳ 3 and the coil time constant L/R ≳ 0.08 s**:
+    - it needs toothed, switched-reluctance-style poles; today's ratio of 1.15 is dead;
+    - saturation sets the level. At ratio 8 and τ 0.118 s: 1–2.7 A, AH 157–425 ampere-turns with a 160-turn rewind;
+      belt 144 W, of which 142 W is rotor copper heat.
+  - **Bicone, with each cone on the rotor side of C1/C2:**
+    - diodes only, 1.7 mA rms (0.12 ampere-turns, negligible);
+    - with a 20 kV spark gap plus quench diode, 19–21 A peak (610–680 ampere-turns) about once per pump cycle,
+      ~54 mJ per dump.
+
+### Physics
 - **Switchless C-EMs on the diode core** (`sim/switchless_cem.py`, `sim/switchless-cem-findings.md`,
   `docs/schematic-diode-core-switchless.svg`):
   - **Why:** the earlier DC-bus drive needed per-coil switches, a sensor and a controller. That schematic is now marked
