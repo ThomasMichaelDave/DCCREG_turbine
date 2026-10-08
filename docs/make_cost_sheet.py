@@ -2,7 +2,9 @@
 build. Every design of the vane matrix (sim/vane_matrix_results.json: 2700 stacks) carries its physics as values and its
 cost as live formulas on the Inputs sheet's targets and prices. The Optimum sheet picks the design that meets the
 targets at the lowest total cost (or cost per watt) and lists the next ten:
-  - the voltage the electric field on the core needs (E target x electrode spacing) against the stack's operating peak;
+  - the voltage the electric field on the core needs (E target x electrode spacing) against the core's voltage: the
+    operating peak with a steady field (a diode charges cone A), or the swing's peak with the swinging field on floating
+    cones (sim/core_swing_grid.json, which also gives each design's gain and power with the cones on its nodes);
   - the electrostatic pump's clamped power, its gain z, the vane-count cap, the radius cap, corona-safe rims;
   - the AH's steady ampere-turns (the 22 mF bypass delivers 300 at the pick: sim/ah_steady_cusp_results.json).
 The BOM sheet holds the parts that do not depend on the stack (magnetic pump, AH and its bypass, hub, mechanics).
@@ -86,8 +88,33 @@ def geometry(q):
     return dict(n_vanes=4 * n, n_plates=sides * nca, cut_m=cut, round_m=rnd, cage_kg=cage, sleeve_kg=sleeve)
 
 
+def swing_model():
+    """the swinging core's corrections from sim/core_swing_grid.json (sim/core_field.py --grid), bilinear in log C_max and
+    log kappa, clamped to the grid: the swing's peak / V_op, z with the cones / bare, power with the cones / bare."""
+    gr = json.load(open(os.path.join(SIM, "core_swing_grid.json")))
+    X, Y = [math.log(v) for v in gr["grid_C_max_pF"]], [math.log(v) for v in gr["grid_kappa"]]
+    cell = {(q["C_max_pF"], q["kappa"]): q for q in gr["rows"]}
+
+    def ratios(q):
+        if not q.get("ok"):
+            return 0.0, 1.0, 0.0
+        p = q["P_float_W"] / q["P_none_W"] if q["P_none_W"] > 1e-6 else 0.0
+        return q["swing_pk_kV"] / gr["V_op_kV"], q["z_float"] / q["z_none"], max(0.0, p)
+    T = [[ratios(cell[(cm, k)]) for k in gr["grid_kappa"]] for cm in gr["grid_C_max_pF"]]
+
+    def at(c_max, kappa):
+        x, y = min(max(math.log(c_max), X[0]), X[-1]), min(max(math.log(kappa), Y[0]), Y[-1])
+        i = min(max(0, sum(1 for v in X if v <= x) - 1), len(X) - 2)
+        j = min(max(0, sum(1 for v in Y if v <= y) - 1), len(Y) - 2)
+        u, w = (x - X[i]) / (X[i + 1] - X[i]), (y - Y[j]) / (Y[j + 1] - Y[j])
+        return tuple((1 - u) * (1 - w) * T[i][j][n] + u * (1 - w) * T[i + 1][j][n] + (1 - u) * w * T[i][j + 1][n]
+                     + u * w * T[i + 1][j + 1][n] for n in range(3))
+    return at, gr
+
+
 def build():
     m = json.load(open(os.path.join(SIM, "vane_matrix_results.json")))
+    swing_at, grid = swing_model()
     cusp = json.load(open(os.path.join(SIM, "ah_steady_cusp_results.json")))
     at22 = [r for r in cusp["rows"] if r["C_byp_mF"] == 22.0][0]["top"]["AT_mean"]
     rows = sorted(m["rows"], key=lambda q: (q["r_outMm"], q["gap_mm"], q["t_vaneMm"], q["ws_deg"], q["n_plates"]))
@@ -108,6 +135,9 @@ def build():
          "the next ten.", F_TXT),
         ("Targets: the voltage the electric field on the core needs, the electrostatic pump's power and gain, the vane and "
          "radius caps, corona-safe rims, and the AH's steady ampere-turns.", F_TXT),
+        ("Core field: swinging (the cones float on coupling capacitors; the default) or steady (a diode charges cone A). "
+         "The swinging field reaches about 0.55 of the operating peak and costs small stacks gain; see the Notes sheet.",
+         F_TXT),
         ("", F_TXT),
         ("How to use it", F_SEC),
         ("1. On Inputs, edit the yellow cells with blue text: the targets first, then the materials and the process prices.",
@@ -166,8 +196,12 @@ def build():
         "the voltage the electrostatic pump must hold on the core.", "E_CORE", key=True, fmt=NUM2)
     row("Core electrode spacing", 50.0, "mm", "Placeholder: the distance across which that field is applied (e.g. between "
         "the two cones at the centre).", "D_CORE", key=True, fmt=NUM1)
-    row("Voltage needed on the core", "=E_CORE*D_CORE/10", "kV", "Formula: E x spacing. A design qualifies when its "
-        "operating peak (air breakdown / 1.5) is at least this.", "V_NEED", fmt=NUM2, formula=True)
+    row("Core field (1 steady, 2 swinging)", 2, "", "1: a diode charges cone A to the operating peak, cone B on the shaft "
+        "(DC). 2: the cones float on coupling capacitors from nodes 1 / 4 and swing at the pump frequency; the cones' "
+        "strays then cost gain (sim/core-field-findings.md).", "CORE_MODE", key=True)
+    row("Voltage needed on the core", "=E_CORE*D_CORE/10", "kV", "Formula: E x spacing. A design qualifies when the "
+        "core's voltage reaches it: the operating peak (steady) or the swing's peak (swinging).", "V_NEED", fmt=NUM2,
+        formula=True)
     row("Minimum electrostatic pump power (clamped)", 2.0, "W", "Placeholder: what the core's leakage, corona and margin "
         "need. The pump only has to replace the charge that leaks away.", "P_MIN", key=True, fmt=NUM2)
     row("Minimum gain per cycle z", 1.3, "", "The searches' floor; real losses eat into a thin margin.", "Z_MIN", key=True,
@@ -286,9 +320,9 @@ def build():
         ("Hub", "Bicone electrodes (the cone windings or a slit foil) on their G10 shells", 2, 40.0,
          "Cone A on the core diode, cone B on the shaft (sim/core-field-findings.md). Placeholder."),
         ("Hub", "Vacuum sphere (glass vessel)", 1, 250.0, "Placeholder."),
-        ("Hub", "Core storage capacitor C_core, 1 nF / 30 kV (ceramic doorknob)", 1, 25.0,
-         "Holds cone A at the node's peak (0.1 % ripple at 10 GOhm of core leakage). Placeholder."),
-        ("Hub", "Cone A's HV lead and its clearance to the flange and to cone B", 1, 60.0,
+        ("Hub", "Core capacitors, 1 nF / 30 kV (ceramic doorknob): C_core, or Cca + Ccb", "=IF(CORE_MODE=1,1,2)", 25.0,
+         "Steady: C_core holds cone A at the peak. Swinging: Cca / Ccb couple the cones to nodes 1 / 4. Placeholder."),
+        ("Hub", "The cones' HV leads and their clearances to the flanges and each other", 1, 60.0,
          "Creepage along the G10 shells is open (the electrode geometry is not chosen). Placeholder."),
         ("Electrostatic (fixed)", "Rotor HV insulation: sleeve bore bonded or coated, potting of D1-D4, Z1 / Z4, Dk", 1,
          80.0, "The HV side is on the rotor now (sim/core-field-findings.md). Placeholder."),
@@ -307,7 +341,7 @@ def build():
     for i, (grp, item, qty, price, note) in enumerate(bom):
         rr = b0 + i
         put(bm, f"B{rr}", grp, F_TXT); put(bm, f"C{rr}", item, F_TXT)
-        put(bm, f"D{rr}", qty, F_IN, fmt="#,##0")
+        put(bm, f"D{rr}", qty, F_CALC if isinstance(qty, str) else F_IN, fmt="#,##0")
         if isinstance(price, str):
             put(bm, f"E{rr}", price, F_LINK, fmt=MONEY2)
         else:
@@ -352,24 +386,34 @@ def build():
         ("spacers + assembly", "=R{r}*SPACER_VANE+(R{r}+S{r})*ASM_H*LABOUR", MONEY, 10, "f"),
         ("G10 cage + sleeve", "=V{r}*G10_CAGE+W{r}*G10_SLEEVE", MONEY, 9, "f"),
         ("shaft", "=N{r}/1000*SHAFT_M+SHAFT_SET", MONEY, 8, "f"),
-        ("HV parts", "=2*ROUNDUP(G{r}*1000/V_ZENER,0)*PRICE_Z+5*ROUNDUP(G{r}*DIODE_SAFETY/V_STICK,0)*PRICE_STICK", MONEY, 9, "f"),
+        ("HV parts", "=2*ROUNDUP(G{r}*1000/V_ZENER,0)*PRICE_Z+(4+IF(CORE_MODE=1,1,0))*ROUNDUP(G{r}*DIODE_SAFETY/V_STICK,0)"
+                     "*PRICE_STICK", MONEY, 9, "f"),
         ("stack subtotal", "=SUM(X{r}:AF{r})", MONEY, 10, "f"),
         ("fixed BOM", "=FIXED_BOM", MONEY, 9, "link"),
         ("total incl. contingency", "=(AG{r}+AH{r})*(1+CONT)", MONEY, 11, "f"),
-        ("per watt", "=IF(L{r}>0,AI{r}/L{r},1E+12)", MONEY, 9, "f"),
-        ("meets targets", "=IF(AND(G{r}>=V_NEED,L{r}>=P_MIN,K{r}>=Z_MIN,F{r}<=N_CAP,D{r}<=R_MAX,"
-                          "OR(CORONA_REQ=0,O{r}>=G{r})),1,0)", "0", 8, "f"),
-        ("score", "=IF(AK{r}=1,IF(OBJECTIVE=1,AI{r},AJ{r}),1E+12)+ROW()*1E-9", "0.00", 10, "f"),
+        ("per watt", "=IF(AR{r}>0,AI{r}/AR{r},1E+12)", MONEY, 9, "f"),
+        ("meets targets", "=IF(AND(AP{r}>=V_NEED,AR{r}>=P_MIN,AQ{r}>=Z_MIN,F{r}<=N_CAP,D{r}<=R_MAX,"
+                          "OR(CORONA_REQ=0,O{r}>=G{r})),1,0)", "0", 8, "fv"),
+        ("score", "=IF(AK{r}=1,IF(OBJECTIVE=1,AI{r},AJ{r}),1E+12)+ROW()*1E-9", "0.00", 10, "fv"),
+        ("core swing, floating (kV)", None, NUM2, 9, "swing"),
+        ("z, swinging core", None, NUM3, 8, "zsw"),
+        ("P clamped, swinging core (W)", None, NUM2, 9, "psw"),
+        ("core voltage (kV)", "=IF(CORE_MODE=1,G{r},AM{r})", NUM2, 9, "fv"),
+        ("z with the core", "=IF(CORE_MODE=1,K{r},AN{r})", NUM3, 8, "fv"),
+        ("P with the core (W)", "=IF(CORE_MODE=1,L{r},AO{r})", NUM2, 9, "fv"),
     ]
+    assert [get_column_letter(i + 1) for i in range(len(cols))][38:44] == ["AM", "AN", "AO", "AP", "AQ", "AR"]
     assert [get_column_letter(i + 1) for i in range(len(cols))][23] == "X"     # the formulas' column letters
     put(ds, "A1", "Designs: the vane matrix with live costs", F_TITLE)
     put(ds, "A2", "Columns B-W: results of sim/vane_matrix.py (values, do not edit). Columns X-AL: formulas on Inputs. "
-                  "Al-equivalent masses assume 2700 kg/m³ and are rescaled by the chosen materials' densities.", F_NOTE)
+                  "AM-AO: the swinging core's swing, z and power (sim/core_swing_grid.json; values). AP-AR: the core "
+                  "mode's voltage, z and power (formulas). Al-equivalent masses assume 2700 kg/m³ and are rescaled by "
+                  "the chosen materials' densities.", F_NOTE)
     for i, (h, key, fmt, wd, kind) in enumerate(cols):
         col = get_column_letter(i + 1)
         ds.column_dimensions[col].width = wd
         c = put(ds, f"{col}4", h, F_HEAD, fill=FILL_HEAD, align=Alignment(wrap_text=True, vertical="top"))
-        if kind in ("f", "link") and h not in ("meets targets", "score"):
+        if kind in ("f", "link"):
             c.value = f'="{h} ("&CUR&")"'
     ds.row_dimensions[4].height = 42
     ds.freeze_panes = "B5"
@@ -377,6 +421,7 @@ def build():
     for k, q in enumerate(rows):
         rr = r0 + k
         gq = geometry(q)
+        sw = swing_at(q["C_max_pF"], q["kappa"])                    # swing / V_op, z ratio, power ratio
         for i, (h, key, fmt, wd, kind) in enumerate(cols):
             col = get_column_letter(i + 1)
             if kind == "id":
@@ -391,6 +436,12 @@ def build():
                 v, f = gq["n_plates"], F_TXT
             elif kind in ("cut", "rnd", "cage", "sleeve"):
                 v, f = gq[{"cut": "cut_m", "rnd": "round_m", "cage": "cage_kg", "sleeve": "sleeve_kg"}[kind]], F_TXT
+            elif kind == "swing":
+                v, f = sw[0] * q["V_op_kV"], F_TXT
+            elif kind == "zsw":
+                v, f = sw[1] * q["z"], F_TXT
+            elif kind == "psw":
+                v, f = sw[2] * q["P_clamped_est_W"], F_TXT
             else:
                 v, f = key.format(r=rr), (F_LINK if kind == "link" else F_CALC)
             cell = ds[f"{col}{rr}"]
@@ -420,8 +471,11 @@ def build():
     name(wb, "BEST", "Optimum!$C$6")
     fields = [("gap", "B", NUM1, "mm"), ("vane thickness (full round)", "C", NUM1, "mm"), ("outer radius", "D", "0", "mm"),
               ("sector width", "E", "0", "deg"), ("vanes per varicap per side", "F", "0", "stator = rotor"),
-              ("operating peak", "G", NUM2, "kV"), ("C_max", "I", "0", "pF"), ("kappa", "J", NUM2, ""), ("z", "K", NUM3, ""),
-              ("clamped power", "L", NUM2, "W"), ("stacks per side", "M", "0", "mm"), ("tube length", "N", "0", "mm"),
+              ("operating peak", "G", NUM2, "kV"), ("core voltage (peak, for the core field chosen)", "AP", NUM2, "kV"),
+              ("C_max", "I", "0", "pF"), ("kappa", "J", NUM2, ""), ("z, bare pump", "K", NUM3, ""),
+              ("z with the core", "AQ", NUM3, ""), ("clamped power, bare pump", "L", NUM2, "W"),
+              ("clamped power with the core", "AR", NUM2, "W"), ("stacks per side", "M", "0", "mm"),
+              ("tube length", "N", "0", "mm"),
               ("rim onset, handled", "O", NUM2, "kV"), ("vane metal", "X", MONEY, "cur"), ("plate metal", "Y", MONEY, "cur"),
               ("cutting", "Z", MONEY, "cur"), ("full rounds", "AA", MONEY, "cur"), ("deburr + polish", "AB", MONEY, "cur"),
               ("spacers + assembly", "AC", MONEY, "cur"), ("G10 cage + sleeve", "AD", MONEY, "cur"), ("shaft", "AE", MONEY, "cur"),
@@ -437,7 +491,7 @@ def build():
     rk = 10 + len(fields) + 2
     put(op, f"B{rk}", "The next best (rank by the objective on Inputs)", F_SEC)
     top_cols = [("rank", None, "0"), ("gap (mm)", "B", NUM1), ("t (mm)", "C", NUM1), ("r_out (mm)", "D", "0"),
-                ("sector", "E", "0"), ("N", "F", "0"), ("V_op (kV)", "G", NUM2), ("z", "K", NUM3), ("P (W)", "L", NUM2),
+                ("sector", "E", "0"), ("N", "F", "0"), ("core (kV)", "AP", NUM2), ("z", "AQ", NUM3), ("P (W)", "AR", NUM2),
                 ("stack/side (mm)", "M", "0"), ("stack subtotal", "AG", MONEY), ("total", "AI", MONEY),
                 ("per watt", "AJ", MONEY)]
     hr = rk + 1
@@ -489,12 +543,17 @@ def build():
         ("Re-sizing the AH or the magnetic pump for more than the delivered steady ampere-turns; the shaft and bearings "
          "for the heavier rotors at large radius (not checked); design, test equipment, the vacuum system, tooling.",
          F_TXT),
-        ("The electric field on the core: the electrostatic circuit's HV side is on the rotor (sim/core_field.py, "
-         "sim/core-field-findings.md). The core diode Dk charges cone A to the node's peak, about the operating peak, and "
-         "C_core holds it; cone B sits on the shaft. A design qualifies when its operating peak reaches E x spacing.",
+        ("The electric field on the core (Inputs: core field). The electrostatic circuit's HV side is on the rotor "
+         "(sim/core_field.py, sim/core-field-findings.md). A design qualifies when the core's voltage reaches E x "
+         "spacing.", F_TXT),
+        ("2, swinging (the default): the cones float, each coupled through 1 nF to node 1 / 4, and the core sees the AC "
+         "of V(1) - V(4) at the pump frequency. Its peak (AM on Designs) is about 0.55 of the operating peak. The cones' "
+         "strays (20 pF each, 10 pF between them [RH]) sit on the pumping nodes, so small stacks lose gain and power "
+         "(AN, AO). AM-AO come from ngspice over C_max x kappa (sim/core_swing_grid.json), interpolated per design.",
          F_TXT),
-        ("The pump's power is unchanged by the core. Its leakage must stay above about 1 GOhm (0.17 W at 13 kV); below "
-         "about 0.06 GOhm the pump does not start. HV parts on Designs count 5 diode stacks: D1-D4 and Dk.", F_TXT),
+        ("1, steady: the core diode Dk charges cone A to the operating peak and C_core holds it; cone B sits on the "
+         "shaft. The pump keeps its gain and power if the core's leakage stays above about 1 GOhm. HV parts then count a "
+         "fifth diode stack (Dk).", F_TXT),
     ]
     for i, (txt, f) in enumerate(notes, start=2):
         put(nt, f"B{i}", txt, f)

@@ -17,6 +17,15 @@
 
 Every price is a placeholder for a one-off prototype in EUR [RH]; replace each with a quote.
 
+## The core field: swinging (the default) or steady
+Pick it on Inputs (core field). The electrostatic circuit's HV side is on the rotor (`sim/core-field-findings.md`).
+- **2, swinging:** the cones float, each coupled through 1 nF to node 1 / 4.
+  - The core sees an AC field at the pump frequency, about 0.55 of the operating peak.
+  - The cones' strays cost gain on small stacks.
+  - Designs' AM–AO hold each design's swing, z and power, from ngspice (`sim/core_swing_grid.json`).
+- **1, steady:** a core diode charges cone A to the operating peak and a 1 nF capacitor holds it; cone B sits on the
+  shaft. The pump keeps its gain.
+
 ## The sweet spot at the placeholder prices
 
 **Targets:** the placeholders on Inputs.
@@ -25,7 +34,22 @@ Every price is a placeholder for a one-off prototype in EUR [RH]; replace each w
 - at most 6 + 6 vanes, corona-safe rims;
 - 300 steady A-turns at the AH.
 
-**177 designs meet them.**
+**With the swinging core (the default), no design meets them.**
+- **The largest swing** in the matrix is 9.4 kV (8 mm gaps, 4 mm vanes, r 300 mm, 6 + 6). 10 kV would need 10 mm gaps,
+  whose rims need more than 4 mm.
+- **The stack of record** (6 mm, 3 mm, r 150, 6 + 6) swings ±7.1 kV but falls to z 1.23 and 1.73 W.
+- **Either bring the cones closer or lower the target.** 2 kV/cm needs at most 46 mm at 9.2 kV. The cheapest designs per
+  swing:
+
+| swing wanted | cheapest design | its swing | z | power | total |
+|:--|:--|--:|--:|--:|--:|
+| ≥ 6 kV | 5 mm gaps, 2 mm vanes, r 200 mm, 18°, 4 + 4 | 6.2 kV | 1.362 | 2.06 W | 5,663 |
+| ≥ 7 kV | 6 mm gaps, 2.5 mm vanes, r 200 mm, 22°, 4 + 4 | 7.2 kV | 1.313 | 2.58 W | 5,858 |
+| ≥ 8 or 9 kV | 8 mm gaps, 4 mm vanes, r 250 mm, 22°, 4 + 4 | 9.2 kV | 1.301 | 5.04 W | 6,445 |
+
+The best per watt with a swinging core is 6 mm gaps, 2.5 mm vanes at r 300 mm, 26°, 6 + 6: 7.4 kV, 14.8 W, 503 per W.
+
+**With the steady core, 177 designs meet them:**
 
 | objective | design | operating peak | power | stack per side | stack cost | total |
 |:--|:--|--:|--:|--:|--:|--:|
@@ -33,24 +57,22 @@ Every price is a placeholder for a one-off prototype in EUR [RH]; replace each w
 | lowest cost per watt | 8 mm gaps, 4 mm vanes, r 300 mm, 26°, 6 + 6 | 16.9 kV | 16.4 W | 220 mm | 3,488 | 7,991 (487 per W) |
 | (within 0.1 %) | 6 mm gaps, 2.5 mm vanes, r 300 mm, 26°, 6 + 6 | 13.1 kV | 15.2 W | 156 mm | 2,969 | 7,394 (487 per W) |
 
+**Either way:**
 - **Material: aluminium.**
   - Metal is about 8 % of the stack's cost.
   - Stainless or copper would add 140–460 on the cheapest design and three times the mass, for no electrostatic gain.
   - Al 5083 or 6082 take a polished full round. Al 1050 is a little cheaper but soft.
 - **What drives the stack's cost is per-part work:** assembly 22 %, the full rounds 19 %, polishing 13 %, G10 and the
   shaft 12 % each. So the cheapest stack has the fewest, largest vanes.
-- **The fixed parts (3,461) are about 70 % of the cheapest build,** so extra watts are cheap at the margin. At 300 mm,
-  6 + 6 vanes give 6.5× the power for 31 % more (6 mm gaps), or 7× for 42 % more (8 mm).
+- **The fixed parts** (3,486 swinging, 3,461 steady) are about 70 % of the cheapest build, so extra watts are cheap at
+  the margin. At 300 mm, 6 + 6 vanes give 6.5× the power for 31 % more (6 mm gaps), or 7× for 42 % more (8 mm).
 - **The AH's steady cusp is met:** 300 A-turns per coil with the 22 mF bypass. Above that, the AH or the pump must be
   re-sized, which is not costed.
 
-## The field on the core
-The electrostatic circuit's HV side is on the rotor (`sim/core-field-findings.md`):
-- a core diode charges cone A to the node's peak (about the operating peak), and a 1 nF capacitor holds it;
-- cone B sits on the shaft;
-- BOM fixed carries the capacitor, cone A's lead and the rotor's HV insulation; the HV parts on Designs count the core
-  diode as a fifth stack.
-
 ## Open
-- **The electrode geometry and spacing:** 2 kV/cm over 50 mm on Inputs are placeholders.
-- **The core's leakage** must stay above about 1 GΩ (0.17 W at 13 kV). Below about 0.06 GΩ the pump does not start.
+- **The core's field target and the electrode spacing:** 2 kV/cm over 50 mm on Inputs are placeholders.
+- **The electrode geometry.**
+- **The cones' strays** (20 pF each, 10 pF between them) are guesses. They set the swinging core's gain cost.
+- **The core's leakage:**
+  - steady core: above about 1 GΩ (0.17 W at 13 kV); below about 0.06 GΩ the pump does not start;
+  - swinging core: it only sets the cones' DC.
