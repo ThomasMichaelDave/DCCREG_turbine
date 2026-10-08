@@ -38,6 +38,9 @@
      takes node 1's peak and electrode B one multiplier stage on node 4: 20.6 kV across 3.14 mm, 65.7 kV/cm and 191 Pa
      at the null.
    - See `sim/core-null-field-findings.md`. §2–§4 below are the cones' and rings' studies that led there.
+6. **The hub locked (designer, 2026-10-08):** a 50 mm borosilicate sphere with the rings around it, the AH cores with
+   their coils on the z axis, a retainer, the shaft coupler over it, and the shaft halves with their pumps
+   (`presets/hub-locked.json`, `sim/hub-locked-findings.md`). §4's rings sat on the 90 mm placeholder.
 
 **The design.** The air build's capped stack (`sim/air_stack_sizing.py` stage 4c): 3 mm full-round vanes, 6 + 6 per
 varicap per side, 6 × 22° / 22°, 6 mm gaps, r 150. That gives C 55–410 pF, Ca = Cb 451 pF and V_op 13.1 kV, at 1200 rpm

@@ -5,6 +5,9 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Fixed
+- **The cost sheet's BOM had one MnZn AH core**; the hub has two, one per coil (`docs/make_cost_sheet.py`). Every total
+  rises by 34.5 (30 + contingency), and the README follows: the DC null's cheapest build is 6,147.
+  - The vessel line is now the locked 50 mm borosilicate sphere.
 - **The dc runs' belt integrator read V(eb) instead of node 4** (`sim/core_field.py`). The Cockcroft-Walton loop reused
   the name of the rotor vanes' node variable, so the belt's power read half (1.07 instead of 2.14 W) with a multiplier
   fitted.
@@ -24,6 +27,25 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **The hub, locked by the designer** (`presets/hub-locked.json`, `sim/hub_locked.py`, `sim/hub-locked-findings.md`,
+  `docs/figures/hub-locked.png`).
+  - **The stack-up, inside out:**
+    - a 50 mm borosilicate sphere, with the rings around it;
+    - the AH cores with their coils on the z axis, top and bottom (the register's MnZn rods and the 160-turn coil);
+    - a retainer holding all of it, encapsulated by the shaft coupler;
+    - the shaft halves top and bottom, each with its side's pumps.
+  - **The field at the null in this hub:**
+    - the Rogowski pair inside the vacuum: 65.7 kV/cm (191 Pa). It fits with 12 mm to spare; its stems enter from the
+      side;
+    - two rings outside the glass: 4.2 kV/cm DC as connected (8 mm bands at 50°), about 6 kV/cm once the glass's
+      leakage settles (τ ≈ 7 min), ±1.5 kV/cm with the swing;
+    - the AH cores, next to the poles, take 13 % of the rings' field.
+  - **Open (designer):**
+    - which electrodes;
+    - the glass wall;
+    - the hub's length. The 160-turn coil reaches |z| 71.35, past the tube layout's 120 mm hub; the spec moves the
+      flanges out to 72–80.
+  - `sim/core_rings.py` now takes another hub's maps (`maps_fn`) and keeps its symmetric solution.
 - **The strongest steady field at the AH null** (designer's brief; `sim/core_null_field.py`,
   `sim/core-null-field-findings.md`, `docs/figures/core-null-field.png`). Now the core's design of record.
   - **Why inside the vacuum:** in charge-free vacuum the field at the null cannot exceed the electrodes' surface field
