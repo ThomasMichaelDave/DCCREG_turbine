@@ -5,6 +5,11 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Fixed
+- **The dc runs' belt integrator read V(eb) instead of node 4** (`sim/core_field.py`). The Cockcroft-Walton loop reused
+  the name of the rotor vanes' node variable, so the belt's power read half (1.07 instead of 2.14 W) with a multiplier
+  fitted.
+  - **Caught by** `P_belt_wave_W`, which recomputes the belt from the recorded waveforms.
+  - The circuit itself was right. The energy balance now closes to 1e-4 W in every dc run.
 - **The cost guide's sweet spot** (`docs/cost/README.md`):
   - the fixed parts are about 70 % of the cheapest build, not 60 %;
   - the best cost per watt is 8 mm gaps with 4 mm vanes at r 300 mm (487 per W). 6 mm gaps with 2.5 mm vanes trail
@@ -19,6 +24,36 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **The strongest steady field at the AH null** (designer's brief; `sim/core_null_field.py`,
+  `sim/core-null-field-findings.md`, `docs/figures/core-null-field.png`). Now the core's design of record.
+  - **Why inside the vacuum:** in charge-free vacuum the field at the null cannot exceed the electrodes' surface field
+    (each component of E is harmonic). So the best is a uniform gap on the null, held to the repo's vacuum rule
+    (6.67 kV/mm on any surface).
+  - **The electrodes:** two Rogowski discs (titanium [RH]) on the shaft's axis inside the vessel. The surface peaks
+    0.9 % above the null's field; with the common mode, 1.5 %.
+    - The comparison: a bare stem's tip runs 1.77×, spheres 1.16–1.35×, full-round discs 1.07–1.15×.
+    - Axisymmetric boundary elements; self-tests to 1e-4.
+  - **The supply** (`sim/core_field.py` `dc`, ngspice): electrode A peak-charged from node 1 through Dk (−13.2 kV);
+    electrode B on n Cockcroft-Walton stages on node 4's swing (+7.4 / +14.1 / +19.0 kV).
+    - 100 pF storage keeps the start-up gain at 1.18–1.24 (1 nF: 1.03–1.09).
+    - The clamped pump is unchanged (2.14 W belt; the electrodes take 23 mW of leakage).
+  - **Every option reaches 64.5–66.1 kV/cm (184–193 Pa) at the null.** The supply buys gap, not field:
+    2.04 / 3.14 / 4.14 / 4.90 mm for 0–3 stages.
+    - **The default, dc1:** 20.6 kV across 3.14 mm, 65.7 kV/cm and 191 Pa, within 1 % to r = 4.7 mm.
+    - **Outside the vessel** the best ring gives 2.6 kV/cm at the same voltage: 26× less.
+  - **Checked in the electromagnet register's hub** (AH on axial MnZn rods; the stems would enter from the side). The
+    null's field is unchanged and the surface peak moves 0.1 %.
+  - **Open (designer):**
+    - the free gap needed at the null;
+    - which AH layout is current;
+    - the electrodes' rating (the field follows it one for one).
+- **The schematic's panel (b)** now draws the vessel with the two electrodes on the null, Dk + C_A on node 1 and the CW
+  stage (Co, Dc, Dp, Cs) on node 4 (`docs/make_schematic_rotor.py`).
+- **The cost sheet's core field 3, DC on the null, is the default** (`docs/make_cost_sheet.py`, `docs/cost/README.md`).
+  - **Placeholders:** 65 kV/cm over 3.1 mm, one stage.
+  - **81 designs qualify.** The cheapest is 6 mm gaps, 2.5 mm vanes, r 175 mm, 4 + 4 at 6,113; the best per watt is
+    8 mm gaps, 4 mm vanes, r 300 mm, 6 + 6 at 512 per W.
+  - Modes 1 / 2 reproduce their earlier results at the earlier targets.
 - **Two electrode rings on the core's vessel** (designer's proposal; `sim/core_rings.py`, `docs/figures/core-rings.png`,
   `sim/core-field-findings.md` §4). Axisymmetric field solves of the placeholder hub [RH], in the designer's layer order,
   feed the rings' strays into the pump. The solver reproduces a sphere between planes to 0.6 %.

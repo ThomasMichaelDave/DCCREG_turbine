@@ -32,6 +32,12 @@
      - The field coils, at the shaft's potential, would also screen the core from a swing applied outside them.
    - Below, "cone A / B" stands for whatever conductor carries that side's swing.
 4. **Proposal (designer):** two electrode rings on the vessel, one on each hemisphere, as those conductors (§4).
+5. **Brief (designer), after the rings:** the strongest electrostatic field (pressure) at the core's centre, on the AH
+   null. The AH coils stay independent; the bicone may go; how is open; both pumps are the supplies.
+   - **Now the design of record:** two Rogowski electrodes in the vacuum on the null, on the pump's DC. Electrode A
+     takes node 1's peak and electrode B one multiplier stage on node 4: 20.6 kV across 3.14 mm, 65.7 kV/cm and 191 Pa
+     at the null.
+   - See `sim/core-null-field-findings.md`. §2–§4 below are the cones' and rings' studies that led there.
 
 **The design.** The air build's capped stack (`sim/air_stack_sizing.py` stage 4c): 3 mm full-round vanes, 6 + 6 per
 varicap per side, 6 × 22° / 22°, 6 mm gaps, r 150. That gives C 55–410 pF, Ca = Cb 451 pF and V_op 13.1 kV, at 1200 rpm
@@ -72,7 +78,9 @@ relative (120 Hz).
 
   10 nF is about 1.1 m² of electrode at a 1 mm air gap between the bodies, so the bearing stays.
 
-## 2. The design of record: a swinging field on floating cones
+## 2. A swinging field on floating cones (the design of record until the null-field brief)
+
+**Superseded** as the design of record by the DC field on the null (decision 5, `sim/core-null-field-findings.md`).
 
 **The wiring.**
 - Cca (1 nF) couples node 1 to cone A, and Ccb (1 nF) couples node 4 to cone B.
