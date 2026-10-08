@@ -23,12 +23,20 @@ A swinging field on floating cones (designer's choice, after the above):
           shaft but their leakage R_leak each: the core sees the AC of V(1) - V(4), each cone swings about the shaft;
   swing   the cones straight on nodes 1 / 4: the same swing, on the nodes' -9.5 kV common mode;
   swing23 the cones straight on nodes 2 / 3: V(2) - V(3).
+The strongest steady field at the AH null (designer's brief, after the above; electrodes: sim/core_null_field.py):
+  dc      two electrodes on the null: A peak-charged from node 1 through Dk and held by C_ea (c_core) to the shaft;
+          B on the shaft (n_cw 0) or charged positive by n_cw Cockcroft-Walton stages on node 4's swing (Co / Dc /
+          Dp / Cs, c_cw each); c_gap across the pair, c_e from each to the shaft side, R_leak from each to the shaft.
+          The DC across the pair is about 13.2 + 7.4 n_cw kV. 'dc<n> 0.1nF' runs it with 100 pF storage: less
+          loading at start-up (z 1.18 instead of 1.03), 0.5 % ripple at the 10 G placeholder leakage.
 Strays [RH]: 20 pF at each of nodes 1-4 (as before), 20 pF from each cone to the shaft side, 10 pF cone to cone.
 Side checks [IR]: the counter-rotor floating (no link; C_x from it to the shaft), down to a capacitive link of 10 nF.
 --grid: the swinging core's cost on any stack of the vane matrix -- z, the clamped power and the core's swing, bare and
 with the float wiring, over C_max x kappa (Ca = 1.1 C_max); writes sim/core_swing_grid.json for docs/make_cost_sheet.py.
 Runs: free (no clamp, from -1 kV): the gain z per cycle, fitted on the node-1 peaks; clamped: the steady state over the
-last 8 of 24 cycles; one start-up of the peak option from -1 kV with the clamp on.
+last 8 of 24 cycles (the dc runs: 80-360 cycles, to settle the multiplier); one start-up of the peak option from -1 kV
+with the clamp on. Power: integrator nodes per term (belt, clamps, leakage); P_belt_wave_W recomputes the belt from the
+recorded waveforms as a check on the integrator.
 Usage: python3 sim/core_field.py [--procs 4] [--only NAME ...]   (writes sim/core_field_results.json)
        python3 sim/core_field.py --grid                             (writes sim/core_swing_grid.json)
 """
@@ -69,9 +77,13 @@ V_OP = Q["V_op_kV"] * 1e3
 
 
 def deck(opt="none", clamp=True, link=True, n_cyc=24, steps=20000, c_core=1e-9, r_leak=10e9, cx=100e-12, v0=-1000.0,
-         vk0=None, reltol=1e-5, cmin=None, cmax=None, ca=None, cc=CC, ic=None):
+         vk0=None, reltol=1e-5, cmin=None, cmax=None, ca=None, cc=CC, ic=None, n_cw=1, c_cw=1e-9, c_gap=2e-12,
+         c_e=3e-12):
     """the rotor-side netlist. Nodes: 1-4 the pump (rotor), s the counter-rotor (stator vanes), 0 the shaft;
-    series: ra / rb the rotor vanes behind the cones; peak: k cone A; float: ka / kb the floating cones.
+    series: ra / rb the rotor vanes behind the cones; peak: k cone A; float: ka / kb the floating cones;
+    dc: ea / eb the two core electrodes -- ea peak-charged from node 1, eb charged positive by an n_cw-stage
+    Cockcroft-Walton on node 4's swing (m1.. the oscillating column, b1.. the smoothing column, eb = b_n; n_cw 0 puts
+    eb on the shaft), c_gap between the electrodes and c_e from each to the shaft side.
     cmin / cmax / ca default to the stack of record; ic overrides the initial node voltages."""
     CMIN_, CMAX_, CA_ = (CMIN if cmin is None else cmin), (CMAX if cmax is None else cmax), (CA if ca is None else ca)
     w = 2 * math.pi * F
@@ -102,6 +114,18 @@ def deck(opt="none", clamp=True, link=True, n_cyc=24, steps=20000, c_core=1e-9, 
               f"Cnn ka kb {C_CC:.3e}", f"Rla ka 0 {r_leak:.4e}", f"Rlb kb 0 {r_leak:.4e}"]
     elif opt == "peak":
         t += ["Dk k 1 ND", f"Ck k 0 {c_core + C_CONE + C_CC:.4e}", f"Rk k 0 {r_leak:.4e}"]
+    elif opt == "dc":
+        t += ["Dk ea 1 ND", f"Cea ea 0 {c_core + c_e:.4e}", f"Rea ea 0 {r_leak:.4e}", f"Cgap ea eb {c_gap:.4e}"]
+        if n_cw == 0:
+            t += ["Reb eb 0 1"]
+        else:
+            prev_m, prev_b = "4", "0"
+            for k in range(1, n_cw + 1):                                 # mk / bk: not a / b, the rotor vanes' nodes
+                mk, bk = f"m{k}", ("eb" if k == n_cw else f"b{k}")
+                t += [f"Co{k} {prev_m} {mk} {c_cw:.4e}", f"Dc{k} {prev_b} {mk} ND", f"Dp{k} {mk} {bk} ND",
+                      f"Cs{k} {bk} {prev_b} {c_cw:.4e}"]
+                prev_m, prev_b = mk, bk
+            t += [f"Ceb eb 0 {c_e:.4e}", f"Reb eb 0 {r_leak:.4e}"]
     P = {"belt": f"{dC * 0.5 * w:.6e}*sin({w:.8e}*time)*0.5*(V({a},s)*V({a},s)-V({b},s)*V({b},s))"}
     if clamp:
         t += [f".model DZ D(is=1e-14 n=1 bv={V_OP:.0f} ibv=1e-6 nbv=1 rs=1e5 cjo=0)",
@@ -111,6 +135,8 @@ def deck(opt="none", clamp=True, link=True, n_cyc=24, steps=20000, c_core=1e-9, 
         P["leak"] = f"V(k)*V(k)/{r_leak:.4e}"
     if opt == "float":
         P["leak"] = f"(V(ka)*V(ka)+V(kb)*V(kb))/{r_leak:.4e}"
+    if opt == "dc":
+        P["leak"] = f"(V(ea)*V(ea)+V(eb)*V(eb))/{r_leak:.4e}"
     if opt == "series":
         P["cone"] = f"{BD.R_CONE}*(i(Vma)*i(Vma)+i(Vmb)*i(Vmb))"
     for nd, ex in P.items():
@@ -122,12 +148,17 @@ def deck(opt="none", clamp=True, link=True, n_cyc=24, steps=20000, c_core=1e-9, 
         ics["k"] = v0 if vk0 is None else vk0
     if opt == "float":
         ics.update(ka=0.0, kb=0.0)
+    if opt == "dc":
+        ics.update(ea=v0, eb=0.0, **{f"m{k}": 0.0 for k in range(1, n_cw + 1)},
+                   **{f"b{k}": 0.0 for k in range(1, n_cw)})
     ics.update(ic or {})
     ics.update({f"e_{nd}": 0.0 for nd in P})
     vecs = ["v(1)", "v(2)", "v(3)", "v(4)", "v(s)"]
     vecs += ["v(ra)", "v(rb)", "i(Vma)", "i(Vmb)"] if opt == "series" else []
     vecs += ["v(k)"] if opt == "peak" else []
     vecs += ["v(ka)", "v(kb)"] if opt == "float" else []
+    vecs += (["v(ea)", "v(eb)"] + [f"v(m{k})" for k in range(1, n_cw + 1)] + [f"v(b{k})" for k in range(1, n_cw)]) \
+        if opt == "dc" else []
     vecs += ["i(Vz1)", "i(Vz4)"] if clamp else []
     vecs += [f"v(e_{nd})" for nd in P]
     ms = 1.0 / F / steps
@@ -167,6 +198,8 @@ def run(case):
     out["V1_peak_per_cycle_kV"] = [p / 1e3 for p in pk1]
     if kw.get("opt") == "peak":
         out["Vk_per_cycle_kV"] = [float(c["v(k)"][m].min() / 1e3) for m in cyc]
+    if kw.get("opt") == "dc":
+        out["Vk_per_cycle_kV"] = [float(-(c["v(eb)"][m] - c["v(ea)"][m]).max() / 1e3) for m in cyc]   # minus the gap
     if not kw.get("clamp", True):
         k = np.arange(3, n)                                            # the gain per cycle: skip the first cycles
         out["z"] = float(math.exp(np.polyfit(k, np.log(np.array(pk1[3:n])), 1)[0]))
@@ -191,6 +224,12 @@ def run(case):
         y = c[f"v(e_{nd})"]
         out[f"P_{nd}_W"] = float((np.interp(ts[-1], t, y) - np.interp(ts[0], t, y)) / dur)
     out["P_other_W"] = out["P_belt_W"] - sum(out[f"P_{nd}_W"] for nd in pk if nd != "belt")
+    # the belt's power again, from the recorded waveforms (a check on the integrator node)
+    w_ = 2 * math.pi * F
+    ra_, rb_ = ("v(ra)", "v(rb)") if kw.get("opt") == "series" else ("v(1)", "v(4)")
+    dC_ = (kw.get("cmax") or CMAX) - (kw.get("cmin") or CMIN)
+    va_, vb_ = c[ra_][s] - c["v(s)"][s], c[rb_][s] - c["v(s)"][s]
+    out["P_belt_wave_W"] = avg(dC_ * 0.5 * w_ * np.sin(w_ * ts) * 0.5 * (va_ * va_ - vb_ * vb_))
     v = {n_: c[f"v({n_})"][s] for n_ in "1234"}
     out["V"] = {n_: _stats(v[n_] / 1e3) for n_ in "1234"}
     out["V_Ca_kV"] = _stats((v["1"] - v["2"]) / 1e3)
@@ -204,6 +243,15 @@ def run(case):
         vr["Dk"] = v["1"] - c["v(k)"][s]
     if kw.get("opt") == "float":                                       # across the coupling capacitors, either sign
         vr["CC"] = np.maximum(np.abs(v["1"] - c["v(ka)"][s]), np.abs(v["4"] - c["v(kb)"][s]))
+    if kw.get("opt") == "dc":
+        vr["Dk"] = v["1"] - c["v(ea)"][s]
+        nc = kw.get("n_cw", 1)
+        for k in range(1, nc + 1):
+            vm = c[f"v(m{k})"][s]
+            vb_prev = 0.0 if k == 1 else c[f"v(b{k - 1})"][s]
+            vb = c["v(eb)"][s] if k == nc else c[f"v(b{k})"][s]
+            vr[f"Dc{k}"] = vm - vb_prev
+            vr[f"Dp{k}"] = vb - vm
     out["VR_pk_kV"] = {k: float(x.max() / 1e3) for k, x in vr.items()}
     if kw.get("link", True):
         il = c["v(s)"][s] / R_LINK                                     # counter-rotor -> shaft
@@ -234,6 +282,10 @@ def run(case):
         out["V_ka_kV"], out["V_kb_kV"] = _stats(ka / 1e3), _stats(kb / 1e3)
         out["V_cm_kV"] = _stats(0.5 * (ka + kb) / 1e3)
         out["cone_swing_kV"] = 0.5 * max(out["V_ka_kV"]["pp"], out["V_kb_kV"]["pp"])   # each cone about its mean
+    elif opt == "dc":
+        ea, eb = c["v(ea)"][s], c["v(eb)"][s]
+        vc = (eb - ea) / 1e3
+        out["V_ea_kV"], out["V_eb_kV"] = _stats(ea / 1e3), _stats(eb / 1e3)
     else:
         vc = v["1"] / 1e3                                              # cone A straight on node 1, cone B on the shaft
     out["V_core_kV"] = _stats(vc)
@@ -278,6 +330,22 @@ CASES = [
     ("float", dict(opt="float")),
     ("cr 100pF", dict(opt="none", link=False, cx=100e-12)),
     ("cr 10nF", dict(opt="none", link=False, cx=10e-9)),
+    # the core electrodes on a DC supply: ea from node 1's peak, eb on n_cw multiplier stages from node 4's swing
+    ("free dc0", dict(opt="dc", n_cw=0, clamp=False, n_cyc=12, v0=-10.0)),
+    ("free dc1", dict(opt="dc", n_cw=1, clamp=False, n_cyc=12, v0=-10.0)),
+    ("free dc2", dict(opt="dc", n_cw=2, clamp=False, n_cyc=12, v0=-10.0)),
+    ("dc0", dict(opt="dc", n_cw=0, n_cyc=120, steps=10000)),
+    ("dc1", dict(opt="dc", n_cw=1, n_cyc=200, steps=10000)),
+    ("dc2", dict(opt="dc", n_cw=2, n_cyc=360, steps=10000)),
+    # the same with 100 pF storage (C_ea and the multiplier's capacitors): the start-up gain against the ripple
+    ("free dc0 0.1nF", dict(opt="dc", n_cw=0, clamp=False, n_cyc=12, v0=-10.0, c_core=0.1e-9)),
+    ("free dc1 0.1nF", dict(opt="dc", n_cw=1, clamp=False, n_cyc=12, v0=-10.0, c_core=0.1e-9, c_cw=0.1e-9)),
+    ("free dc2 0.1nF", dict(opt="dc", n_cw=2, clamp=False, n_cyc=12, v0=-10.0, c_core=0.1e-9, c_cw=0.1e-9)),
+    ("free dc3 0.1nF", dict(opt="dc", n_cw=3, clamp=False, n_cyc=12, v0=-10.0, c_core=0.1e-9, c_cw=0.1e-9)),
+    ("dc0 0.1nF", dict(opt="dc", n_cw=0, n_cyc=80, steps=10000, c_core=0.1e-9)),
+    ("dc1 0.1nF", dict(opt="dc", n_cw=1, n_cyc=120, steps=10000, c_core=0.1e-9, c_cw=0.1e-9)),
+    ("dc2 0.1nF", dict(opt="dc", n_cw=2, n_cyc=160, steps=10000, c_core=0.1e-9, c_cw=0.1e-9)),
+    ("dc3 0.1nF", dict(opt="dc", n_cw=3, n_cyc=200, steps=10000, c_core=0.1e-9, c_cw=0.1e-9)),
     # the start-up of the peak option: from -1 kV, the clamp on
     ("start peak 1nF 10G", dict(opt="peak", c_core=1e-9, r_leak=10e9, n_cyc=150, steps=5000, start=True)),
 ]
