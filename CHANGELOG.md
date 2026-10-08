@@ -19,6 +19,19 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **A swinging field on floating cones** (`sim/core_field.py`, `sim/core-field-findings.md` §2–§3). This is the
+  designer's choice over a field referred to the shaft.
+  - **The wiring:** each cone couples to node 1 / 4 through 1 nF, and nothing else ties the cones to the shaft.
+  - **What the core sees:** ±7.1 kV at 120 Hz, ±1.4 kV/cm over the placeholder 50 mm. Each cone swings −4.4 to
+    +2.7 kV about the shaft.
+  - **The cost:** the cones' strays (20 / 10 pF [RH]) sit on the pumping nodes, so z falls from 1.31 to 1.23 and the
+    power from 2.14 to 1.78 W on the stack of record.
+  - **Across the matrix** (`--grid`, ngspice over C_max × κ, `sim/core_swing_grid.json`):
+    - the swing is 0.53–0.68 of the operating peak;
+    - the gain cost fades above about 1.5 nF;
+    - no air stack reaches the placeholder 10 kV (the most is 9.4 kV, 8 mm gaps at r 300).
+  - **A floating counter-rotor** would need about 10 nF to the shaft in place of the bearing (z 1.29); 100 pF stops the
+    pump.
 - **The electrostatic circuit's HV side moves onto the rotor, and the core gets a field** (`sim/core_field.py`,
   `sim/core-field-findings.md`). This is the designer's decision, run on the air build's capped stack (3 mm, 6 + 6,
   6 mm gaps, 13.1 kV, 1200 rpm relative).
@@ -133,6 +146,14 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - that is fine for diodes only, but not for the spark-gap dump: its 21 A pulses need a brush.
 
 ### Docs
+- **The rotor schematic's panel (b) shows the floating cones:** Cca / Ccb from nodes 1 / 4, no path from the core to
+  REF, and the swinging E.
+- **The cost sheet takes a core field mode** (Inputs: 2 swinging, the default, or 1 steady):
+  - **Designs:** each design's swing, z and power with the floating cones (from the grid), and the targets checked on
+    the mode's values;
+  - **BOM fixed and HV parts:** the parts follow the mode (two coupling capacitors, or C_core and Dk);
+  - **At the placeholder targets:** steady reproduces the earlier optimum (5,637); swinging meets none of them. The
+    guide lists the cheapest design for each swing.
 - **The rotor schematic's panel (b) shows the HV side on the rotor** (`docs/make_schematic_rotor.py`):
   - the counter-rotor holds only the stator vanes (REF);
   - the rotor holds nodes 1–4, Ca / Cb, D1–D4, Z1 / Z4, and the core: Dk, C_core, the core's leakage and the bicone as
