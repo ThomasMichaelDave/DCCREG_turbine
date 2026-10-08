@@ -243,7 +243,8 @@ def build():
     row("Clamp Zener price", 0.6, "/each", "Placeholder.", "PRICE_Z", fmt=NUM2)
     row("HV diode stick rating", 20.0, "kV", "e.g. a 2CL77-class stick.", "V_STICK", fmt=NUM1)
     row("HV diode stick price", 2.5, "/each", "Placeholder.", "PRICE_STICK", fmt=NUM2)
-    row("HV diode derating (stack rating / operating peak)", 1.5, "", "D1-D4 each a series stack.", "DIODE_SAFETY",
+    row("HV diode derating (stack rating / operating peak)", 1.5, "", "D1-D4 and the core diode Dk, each a series stack.",
+        "DIODE_SAFETY",
         fmt=NUM2)
     row("Contingency", 0.15, "fraction", "On the whole build.", "CONT", key=True, fmt=PCT)
 
@@ -282,12 +283,17 @@ def build():
         ("AH (hub)", "AH bypass capacitors, 10 mF / 6.3 V (2 per coil = 20 mF)", 4, 8.0,
          "The steady cusp (sim/ah-steady-cusp-findings.md). Bipolar parts if the kick polarity is free."),
         ("AH (hub)", "MnZn rod", 1, 30.0, "Placeholder."),
-        ("Hub", "Bicone coils (2 x 32 turns) and shells", 2, 40.0, "Placeholder."),
+        ("Hub", "Bicone electrodes (the cone windings or a slit foil) on their G10 shells", 2, 40.0,
+         "Cone A on the core diode, cone B on the shaft (sim/core-field-findings.md). Placeholder."),
         ("Hub", "Vacuum sphere (glass vessel)", 1, 250.0, "Placeholder."),
-        ("Hub", "HV feed to the core (electrodes + insulated lead)", 1, 120.0,
-         "Open item: how the field reaches the core (see the Read me). Placeholder for electrodes and a lead."),
+        ("Hub", "Core storage capacitor C_core, 1 nF / 30 kV (ceramic doorknob)", 1, 25.0,
+         "Holds cone A at the node's peak (0.1 % ripple at 10 GOhm of core leakage). Placeholder."),
+        ("Hub", "Cone A's HV lead and its clearance to the flange and to cone B", 1, 60.0,
+         "Creepage along the G10 shells is open (the electrode geometry is not chosen). Placeholder."),
+        ("Electrostatic (fixed)", "Rotor HV insulation: sleeve bore bonded or coated, potting of D1-D4, Z1 / Z4, Dk", 1,
+         80.0, "The HV side is on the rotor now (sim/core-field-findings.md). Placeholder."),
         ("Electrostatic (fixed)", "Surge resistors for D1-D4", 4, 5.0, "10-47 kOhm HV resistors. Placeholder."),
-        ("Electrostatic (fixed)", "HV wiring, insulation, standoffs", 1, 60.0, "Placeholder."),
+        ("Electrostatic (fixed)", "HV wiring, insulation, standoffs (on the rotor)", 1, 60.0, "Placeholder."),
         ("Electrostatic (fixed)", "Reference link (brush or bearing strap)", 1, 20.0, "Placeholder."),
         ("Mechanics", "Bearings, 6205-class", 6, 12.0, "4 inner + 2 end. Placeholder."),
         ("Mechanics", "G10 bearing spiders", 4, 30.0, "Placeholder."),
@@ -346,7 +352,7 @@ def build():
         ("spacers + assembly", "=R{r}*SPACER_VANE+(R{r}+S{r})*ASM_H*LABOUR", MONEY, 10, "f"),
         ("G10 cage + sleeve", "=V{r}*G10_CAGE+W{r}*G10_SLEEVE", MONEY, 9, "f"),
         ("shaft", "=N{r}/1000*SHAFT_M+SHAFT_SET", MONEY, 8, "f"),
-        ("HV parts", "=2*ROUNDUP(G{r}*1000/V_ZENER,0)*PRICE_Z+4*ROUNDUP(G{r}*DIODE_SAFETY/V_STICK,0)*PRICE_STICK", MONEY, 9, "f"),
+        ("HV parts", "=2*ROUNDUP(G{r}*1000/V_ZENER,0)*PRICE_Z+5*ROUNDUP(G{r}*DIODE_SAFETY/V_STICK,0)*PRICE_STICK", MONEY, 9, "f"),
         ("stack subtotal", "=SUM(X{r}:AF{r})", MONEY, 10, "f"),
         ("fixed BOM", "=FIXED_BOM", MONEY, 9, "link"),
         ("total incl. contingency", "=(AG{r}+AH{r})*(1+CONT)", MONEY, 11, "f"),
@@ -483,8 +489,12 @@ def build():
         ("Re-sizing the AH or the magnetic pump for more than the delivered steady ampere-turns; the shaft and bearings "
          "for the heavier rotors at large radius (not checked); design, test equipment, the vacuum system, tooling.",
          F_TXT),
-        ("The electric field on the core: today both cones sit at the shaft potential (they carry the varicaps' current), "
-         "so the core sees no field. The HV feed line on BOM fixed is a placeholder until that wiring is chosen.", F_TXT),
+        ("The electric field on the core: the electrostatic circuit's HV side is on the rotor (sim/core_field.py, "
+         "sim/core-field-findings.md). The core diode Dk charges cone A to the node's peak, about the operating peak, and "
+         "C_core holds it; cone B sits on the shaft. A design qualifies when its operating peak reaches E x spacing.",
+         F_TXT),
+        ("The pump's power is unchanged by the core. Its leakage must stay above about 1 GOhm (0.17 W at 13 kV); below "
+         "about 0.06 GOhm the pump does not start. HV parts on Designs count 5 diode stacks: D1-D4 and Dk.", F_TXT),
     ]
     for i, (txt, f) in enumerate(notes, start=2):
         put(nt, f"B{i}", txt, f)
