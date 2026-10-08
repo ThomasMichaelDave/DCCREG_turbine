@@ -69,7 +69,7 @@ def _shape_expr(a, w, phase_k):
 
 
 def deck(kappa=6.0, tau=TAU, tau_fixed=None, sat=True, ah=None, n_cyc=60, steps=2000, seed=SEED, nd=0.05,
-         F=F, prof=None, L_max=L_MAX, psi_s=PSI_S, la_ratio=R_CA, ah_custom=None):
+         F=F, prof=None, L_max=L_MAX, psi_s=PSI_S, la_ratio=R_CA, ah_custom=None, snub="fixed", snub_k=1.0):
     tau_fixed = tau if tau_fixed is None else tau_fixed
     w = 2 * math.pi * F
     a = _coeffs(dict(kappa=kappa, prof=prof))
@@ -124,9 +124,15 @@ def deck(kappa=6.0, tau=TAU, tau_fixed=None, sat=True, ah=None, n_cyc=60, steps=
     # winding / stray capacitance with a damping resistor at every dual node: a cut-set of inductors and a diode has
     # nothing to hold its voltage when the diode opens [IR]
     nodes = ["a", "b", "c", "d", "f2", "f3"] + (["x1", "x2"] if ah else [])
+    if snub == "scaled":
+        # keep the snubber the same small perturbation it was at 60 Hz with L_max 2 H: L C F^2 and R / sqrt(L/C) fixed
+        csn = CSNUB * (L_MAX / L_max) * (60.0 / F) ** 2 * snub_k
+        rsn = RSNUB * (L_max / L_MAX) * (F / 60.0) / math.sqrt(snub_k)
+    else:
+        csn, rsn = CSNUB, RSNUB
     for n in nodes:
-        t += [f"Cs_{n} {n} sn_{n} {CSNUB:g}", f"Rs_{n} sn_{n} 0 {RSNUB:g}"]
-    P["snub"] = "+".join(f"V(sn_{n})*V(sn_{n})/{RSNUB:g}" for n in nodes)
+        t += [f"Cs_{n} {n} sn_{n} {csn:g}", f"Rs_{n} sn_{n} 0 {rsn:g}"]
+    P["snub"] = "+".join(f"V(sn_{n})*V(sn_{n})/{rsn:g}" for n in nodes)
     for nd_, ex in P.items():
         t += [f"Bp_{nd_} 0 e_{nd_} I='{ex}'", f"Cp_{nd_} e_{nd_} 0 1", f"Rp_{nd_} e_{nd_} 0 1e18"]
         ic[f"e_{nd_}"] = 0.0
