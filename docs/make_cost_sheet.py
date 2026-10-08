@@ -3,8 +3,10 @@ build. Every design of the vane matrix (sim/vane_matrix_results.json: 2700 stack
 cost as live formulas on the Inputs sheet's targets and prices. The Optimum sheet picks the design that meets the
 targets at the lowest total cost (or cost per watt) and lists the next ten:
   - the voltage the electric field on the core needs (E target x electrode spacing) against the core's voltage: the
-    operating peak with a steady field (a diode charges cone A), or the swing's peak with the swinging field on floating
-    cones (sim/core_swing_grid.json, which also gives each design's gain and power with the cones on its nodes);
+    operating peak with a steady field (a diode charges cone A), the swing's peak with the swinging field on floating
+    cones (sim/core_swing_grid.json, which also gives each design's gain and power with the cones on its nodes), or
+    the DC across two electrodes on the AH null (the default: A on node 1's peak, B on Cockcroft-Walton stages on
+    node 4; sim/core-null-field-findings.md);
   - the electrostatic pump's clamped power, its gain z, the vane-count cap, the radius cap, corona-safe rims;
   - the AH's steady ampere-turns (the 22 mF bypass delivers 300 at the pick: sim/ah_steady_cusp_results.json).
 The BOM sheet holds the parts that do not depend on the stack (magnetic pump, AH and its bypass, hub, mechanics).
@@ -135,8 +137,9 @@ def build():
          "the next ten.", F_TXT),
         ("Targets: the voltage the electric field on the core needs, the electrostatic pump's power and gain, the vane and "
          "radius caps, corona-safe rims, and the AH's steady ampere-turns.", F_TXT),
-        ("Core field: swinging (the cones float on coupling capacitors; the default) or steady (a diode charges cone A). "
-         "The swinging field reaches about 0.55 of the operating peak and costs small stacks gain; see the Notes sheet.",
+        ("Core field: DC on the AH null (the default: two electrodes in the vacuum, A on node 1's peak, B on multiplier "
+         "stages on node 4), swinging (the cones float on coupling capacitors) or steady (a diode charges cone A). The "
+         "swinging field reaches about 0.55 of the operating peak and costs small stacks gain; see the Notes sheet.",
          F_TXT),
         ("", F_TXT),
         ("How to use it", F_SEC),
@@ -192,16 +195,33 @@ def build():
         return r
 
     r += 1; put(ws, f"B{r}", "Targets", F_SEC)
-    row("Electric field wanted on the core", 2.0, "kV/cm", "Placeholder: set your target. With the spacing below it sets "
-        "the voltage the electrostatic pump must hold on the core.", "E_CORE", key=True, fmt=NUM2)
-    row("Core electrode spacing", 50.0, "mm", "Placeholder: the distance across which that field is applied (e.g. between "
-        "the two cones at the centre).", "D_CORE", key=True, fmt=NUM1)
-    row("Core field (1 steady, 2 swinging)", 2, "", "1: a diode charges cone A to the operating peak, cone B on the shaft "
-        "(DC). 2: the cones float on coupling capacitors from nodes 1 / 4 and swing at the pump frequency; the cones' "
-        "strays then cost gain (sim/core-field-findings.md).", "CORE_MODE", key=True)
+    row("Electric field wanted on the core", 65.0, "kV/cm", "Placeholder: set your target. With the spacing below it sets "
+        "the voltage the electrostatic pump must hold on the core. Core field 3: at most the rule's field at the null "
+        "(below); 1 / 2 were costed at 2 kV/cm over 50 mm.", "E_CORE", key=True, fmt=NUM2)
+    row("Core electrode spacing", 3.1, "mm", "Placeholder: the distance across which that field is applied. Core field 3: "
+        "the free gap wanted at the null (open: the designer's call). 1 / 2: e.g. between the two cones.", "D_CORE",
+        key=True, fmt=NUM1)
+    row("Core field (1 steady, 2 swinging, 3 DC on the null)", 3, "", "1: a diode charges cone A to the operating peak, "
+        "cone B on the shaft (DC). 2: the cones float on coupling capacitors from nodes 1 / 4 and swing at the pump "
+        "frequency; the cones' strays then cost gain (sim/core-field-findings.md). 3 (the default): two Rogowski "
+        "electrodes in the vacuum on the AH null, A on node 1's peak (Dk), B on the multiplier stages below "
+        "(sim/core-null-field-findings.md).", "CORE_MODE", key=True)
+    row("Multiplier stages on node 4 (core field 3)", 1, "", "Cockcroft-Walton stages that charge electrode B positive; 0 "
+        "puts B on the shaft. The first adds about node 4's swing (7.4 kV on the stack of record); at 100 pF the second "
+        "and third add less (+6.7, +4.9 kV), which this sheet does not model (it adds a full stage each).", "N_CW",
+        key=True)
+    row("Multiplier stage over the floating swing (core field 3)", 1.055, "", "Each stage's DC over the floating swing's "
+        "peak (Designs AM): 7.44 / 7.05 kV on the stack of record (sim/core_field_results.json 'dc1 0.1nF', 'float ss'); "
+        "[RH] on other stacks.", "CW_PER_SWING", fmt=NUM3)
+    row("Field at the null the vacuum rule allows (core field 3)", 65.7, "kV/cm", "6.67 kV/mm on the electrodes' surface "
+        "over the Rogowski electrodes' peak-to-centre ratio, 1.015 (sim/core_null_field_results.json).", "E_NULL_MAX",
+        fmt=NUM1)
+    row("Field wanted within the rule?", '=IF(CORE_MODE<>3,"n/a (core field 1 or 2)",IF(E_CORE<=E_NULL_MAX,"yes",'
+        '"no: lower E, or rate the electrodes higher"))', "", "Core field 3 only; no design qualifies when it reads no.",
+        "E_NULL_OK", formula=True)
     row("Voltage needed on the core", "=E_CORE*D_CORE/10", "kV", "Formula: E x spacing. A design qualifies when the "
-        "core's voltage reaches it: the operating peak (steady) or the swing's peak (swinging).", "V_NEED", fmt=NUM2,
-        formula=True)
+        "core's voltage reaches it: the operating peak (steady), the swing's peak (swinging), or the DC across the null's "
+        "electrodes (3).", "V_NEED", fmt=NUM2, formula=True)
     row("Minimum electrostatic pump power (clamped)", 2.0, "W", "Placeholder: what the core's leakage, corona and margin "
         "need. The pump only has to replace the charge that leaks away.", "P_MIN", key=True, fmt=NUM2)
     row("Minimum gain per cycle z", 1.3, "", "The searches' floor; real losses eat into a thin margin.", "Z_MIN", key=True,
@@ -277,7 +297,8 @@ def build():
     row("Clamp Zener price", 0.6, "/each", "Placeholder.", "PRICE_Z", fmt=NUM2)
     row("HV diode stick rating", 20.0, "kV", "e.g. a 2CL77-class stick.", "V_STICK", fmt=NUM1)
     row("HV diode stick price", 2.5, "/each", "Placeholder.", "PRICE_STICK", fmt=NUM2)
-    row("HV diode derating (stack rating / operating peak)", 1.5, "", "D1-D4 and the core diode Dk, each a series stack.",
+    row("HV diode derating (stack rating / operating peak)", 1.5, "", "D1-D4, the core diode Dk and the multiplier's "
+        "Dc / Dp, each a series stack sized for the operating peak (Dk, Dc, Dp see about 0.57 of it).",
         "DIODE_SAFETY",
         fmt=NUM2)
     row("Contingency", 0.15, "fraction", "On the whole build.", "CONT", key=True, fmt=PCT)
@@ -320,11 +341,19 @@ def build():
         ("Hub", "Shaft-coupling cones, non-conducting non-magnetic composite (probably G10; material open)", 2, 40.0,
          "Over the field coils and their insulation; no electrodes on them (sim/core-field-findings.md). Placeholder."),
         ("Hub", "Vacuum sphere (glass vessel)", 1, 250.0, "Placeholder."),
-        ("Hub", "Core capacitors, 1 nF / 30 kV (ceramic doorknob): C_core, or Cca + Ccb", "=IF(CORE_MODE=1,1,2)", 25.0,
+        ("Hub", "Core capacitors, 1 nF / 30 kV (ceramic doorknob): C_core, or Cca + Ccb",
+         "=IF(CORE_MODE=1,1,IF(CORE_MODE=2,2,0))", 25.0,
          "Steady: C_core holds cone A at the peak. Swinging: Cca / Ccb couple the cones to nodes 1 / 4. Placeholder."),
-        ("Hub", "The core's HV feed: the conductors that carry the swing and their clearances (open)", 1, 60.0,
-         "Open: the designer plans no electrodes; which conductors carry the swing is not chosen. Placeholder."),
-        ("Electrostatic (fixed)", "Rotor HV insulation: sleeve bore bonded or coated, potting of D1-D4, Z1 / Z4, Dk", 1,
+        ("Hub", "The core's HV feed: the conductors that carry the swing and their clearances (open)",
+         "=IF(CORE_MODE=3,0,1)", 60.0,
+         "Core field 1 / 2: which conductors carry the cones' side is not chosen. Placeholder."),
+        ("Hub", "Null electrodes: two Rogowski discs on stems, titanium, polished and conditioned", "=IF(CORE_MODE=3,2,0)",
+         80.0, "About 20 mm across at a 3.1 mm gap (sim/core-null-field-findings.md); non-magnetic. Placeholder."),
+        ("Hub", "Vessel HV feedthroughs, non-magnetic seals (W in borosilicate, Mo in aluminosilicate; no Kovar)",
+         "=IF(CORE_MODE=3,2,0)", 120.0, "With a grading shield at each seal's triple junction. Placeholder."),
+        ("Hub", "Null storage capacitors, 100 pF / 30 kV: C_A and the multiplier's Co / Cs", "=IF(CORE_MODE=3,1+2*N_CW,0)",
+         12.0, "100 pF keeps the start-up gain (z 1.18 against 1.03 at 1 nF). Placeholder."),
+        ("Electrostatic (fixed)", "Rotor HV insulation: sleeve bore bonded or coated, potting of D1-D4, Z1 / Z4, Dk, Dc / Dp", 1,
          80.0, "The HV side is on the rotor now (sim/core-field-findings.md). Placeholder."),
         ("Electrostatic (fixed)", "Surge resistors for D1-D4", 4, 5.0, "10-47 kOhm HV resistors. Placeholder."),
         ("Electrostatic (fixed)", "HV wiring, insulation, standoffs (on the rotor)", 1, 60.0, "Placeholder."),
@@ -386,21 +415,21 @@ def build():
         ("spacers + assembly", "=R{r}*SPACER_VANE+(R{r}+S{r})*ASM_H*LABOUR", MONEY, 10, "f"),
         ("G10 cage + sleeve", "=V{r}*G10_CAGE+W{r}*G10_SLEEVE", MONEY, 9, "f"),
         ("shaft", "=N{r}/1000*SHAFT_M+SHAFT_SET", MONEY, 8, "f"),
-        ("HV parts", "=2*ROUNDUP(G{r}*1000/V_ZENER,0)*PRICE_Z+(4+IF(CORE_MODE=1,1,0))*ROUNDUP(G{r}*DIODE_SAFETY/V_STICK,0)"
-                     "*PRICE_STICK", MONEY, 9, "f"),
+        ("HV parts", "=2*ROUNDUP(G{r}*1000/V_ZENER,0)*PRICE_Z+(4+IF(CORE_MODE=1,1,0)+IF(CORE_MODE=3,1+2*N_CW,0))"
+                     "*ROUNDUP(G{r}*DIODE_SAFETY/V_STICK,0)*PRICE_STICK", MONEY, 9, "f"),
         ("stack subtotal", "=SUM(X{r}:AF{r})", MONEY, 10, "f"),
         ("fixed BOM", "=FIXED_BOM", MONEY, 9, "link"),
         ("total incl. contingency", "=(AG{r}+AH{r})*(1+CONT)", MONEY, 11, "f"),
         ("per watt", "=IF(AR{r}>0,AI{r}/AR{r},1E+12)", MONEY, 9, "f"),
         ("meets targets", "=IF(AND(AP{r}>=V_NEED,AR{r}>=P_MIN,AQ{r}>=Z_MIN,F{r}<=N_CAP,D{r}<=R_MAX,"
-                          "OR(CORONA_REQ=0,O{r}>=G{r})),1,0)", "0", 8, "fv"),
+                          "OR(CORONA_REQ=0,O{r}>=G{r}),OR(CORE_MODE<>3,E_CORE<=E_NULL_MAX)),1,0)", "0", 8, "fv"),
         ("score", "=IF(AK{r}=1,IF(OBJECTIVE=1,AI{r},AJ{r}),1E+12)+ROW()*1E-9", "0.00", 10, "fv"),
         ("core swing, floating (kV)", None, NUM2, 9, "swing"),
         ("z, swinging core", None, NUM3, 8, "zsw"),
         ("P clamped, swinging core (W)", None, NUM2, 9, "psw"),
-        ("core voltage (kV)", "=IF(CORE_MODE=1,G{r},AM{r})", NUM2, 9, "fv"),
-        ("z with the core", "=IF(CORE_MODE=1,K{r},AN{r})", NUM3, 8, "fv"),
-        ("P with the core (W)", "=IF(CORE_MODE=1,L{r},AO{r})", NUM2, 9, "fv"),
+        ("core voltage (kV)", "=IF(CORE_MODE=1,G{r},IF(CORE_MODE=3,G{r}+N_CW*CW_PER_SWING*AM{r},AM{r}))", NUM2, 9, "fv"),
+        ("z with the core", "=IF(CORE_MODE=2,AN{r},K{r})", NUM3, 8, "fv"),
+        ("P with the core (W)", "=IF(CORE_MODE=2,AO{r},L{r})", NUM2, 9, "fv"),
     ]
     assert [get_column_letter(i + 1) for i in range(len(cols))][38:44] == ["AM", "AN", "AO", "AP", "AQ", "AR"]
     assert [get_column_letter(i + 1) for i in range(len(cols))][23] == "X"     # the formulas' column letters
@@ -546,7 +575,15 @@ def build():
         ("The electric field on the core (Inputs: core field). The electrostatic circuit's HV side is on the rotor "
          "(sim/core_field.py, sim/core-field-findings.md). A design qualifies when the core's voltage reaches E x "
          "spacing.", F_TXT),
-        ("2, swinging (the default): the cones float, each coupled through 1 nF to node 1 / 4, and the core sees the AC "
+        ("3, DC on the null (the default): two Rogowski electrodes in the vacuum on the AH null. Electrode A is peak-"
+         "charged from node 1 through Dk (about -V_op); electrode B sits on N_CW Cockcroft-Walton stages on node 4, each "
+         "adding about node 4's swing, taken as CW_PER_SWING x the floating swing's peak (AM). The core's voltage is "
+         "V_op + N_CW x CW_PER_SWING x AM. The electrodes sit behind diodes, so the pump keeps its clamped gain and "
+         "power (K, L); its start-up gain with 100 pF storage is about 0.9 of K (1.184 against 1.310 on the stack of "
+         "record). Every option meets the same field, the vacuum rule's 65.7 kV/cm at the null; the voltage sets the "
+         "gap at that field (D_CORE). HV parts count Dk and the multiplier's Dc / Dp as stacks (sim/core-null-field-"
+         "findings.md).", F_TXT),
+        ("2, swinging: the cones float, each coupled through 1 nF to node 1 / 4, and the core sees the AC "
          "of V(1) - V(4) at the pump frequency. Its peak (AM on Designs) is about 0.55 of the operating peak. The cones' "
          "strays (20 pF each, 10 pF between them [RH]) sit on the pumping nodes, so small stacks lose gain and power "
          "(AN, AO). AM-AO come from ngspice over C_max x kappa (sim/core_swing_grid.json), interpolated per design.",

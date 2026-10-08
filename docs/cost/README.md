@@ -17,8 +17,17 @@
 
 Every price is a placeholder for a one-off prototype in EUR [RH]; replace each with a quote.
 
-## The core field: swinging (the default) or steady
+## The core field: DC on the null (the default), swinging or steady
 Pick it on Inputs (core field). The electrostatic circuit's HV side is on the rotor (`sim/core-field-findings.md`).
+- **3, DC on the null (the default):** two Rogowski electrodes in the vacuum on the AH null
+  (`sim/core-null-field-findings.md`).
+  - **The supply:** electrode A on node 1's peak through Dk; electrode B on N_CW Cockcroft-Walton stages on node 4.
+  - **The core's voltage:** V_op + N_CW × 1.055 × the floating swing's peak (AM). That is 20.5 kV on the stack of
+    record, against 20.6 kV simulated.
+  - **The second and third stages sag at 100 pF** (+6.7, +4.9 kV). The sheet adds full stages.
+  - **The pump keeps its clamped gain and power**, since the electrodes sit behind diodes.
+  - **The field is capped** at the vacuum rule's 65.7 kV/cm at the null. Inputs says whether the target is within it.
+  - **The spacing is the free gap** wanted at the null.
 - **2, swinging:** the cones float, each coupled through 1 nF to node 1 / 4.
   - The core sees an AC field at the pump frequency, about 0.55 of the operating peak.
   - The cones' strays cost gain on small stacks.
@@ -28,13 +37,26 @@ Pick it on Inputs (core field). The electrostatic circuit's HV side is on the ro
 
 ## The sweet spot at the placeholder prices
 
-**Targets:** the placeholders on Inputs.
-- 2 kV/cm over 50 mm on the core, i.e. 10 kV;
+**Targets, with the DC null (the default):** the placeholders on Inputs.
+- 65 kV/cm over a 3.1 mm gap at the null, i.e. 20.15 kV, with one multiplier stage;
 - at least 2 W from the electrostatic pump, z ≥ 1.3;
 - at most 6 + 6 vanes, corona-safe rims;
 - 300 steady A-turns at the AH.
 
-**With the swinging core (the default), no design meets them.**
+**81 designs meet them:**
+
+| objective | design | operating peak | across the null | power | stack per side | stack cost | total |
+|:--|:--|--:|--:|--:|--:|--:|--:|
+| lowest total cost | 6 mm gaps, 2.5 mm vanes, r 175 mm, 22°, 4 + 4 | 13.1 kV | 20.6 kV | 2.01 W | 105 mm | 1,503 | 6,113 |
+| lowest cost per watt | 8 mm gaps, 4 mm vanes, r 300 mm, 26°, 6 + 6 | 16.9 kV | 26.8 kV | 16.4 W | 220 mm | 3,498 | 8,406 (512 per W) |
+
+- **The gap is cheap.** The same stack wins with no stage over 2.0 mm (6,079) and with two stages over 4.1 mm (6,146).
+  A stage costs two diode stacks and two 100 pF capacitors.
+- **The stack of record** (6 mm, 3 mm, r 150, 6 + 6) also qualifies, at 6,530.
+
+**At the earlier placeholders** (2 kV/cm over 50 mm, i.e. 10 kV), for the cones' modes:
+
+**With the swinging core, no design meets them.**
 - **The largest swing** in the matrix is 9.4 kV (8 mm gaps, 4 mm vanes, r 300 mm, 6 + 6). 10 kV would need 10 mm gaps,
   whose rims need more than 4 mm.
 - **The stack of record** (6 mm, 3 mm, r 150, 6 + 6) swings ±7.1 kV but falls to z 1.23 and 1.73 W.
@@ -64,14 +86,20 @@ The best per watt with a swinging core is 6 mm gaps, 2.5 mm vanes at r 300 mm, 2
   - Al 5083 or 6082 take a polished full round. Al 1050 is a little cheaper but soft.
 - **What drives the stack's cost is per-part work:** assembly 22 %, the full rounds 19 %, polishing 13 %, G10 and the
   shaft 12 % each. So the cheapest stack has the fewest, largest vanes.
-- **The fixed parts** (3,486 swinging, 3,461 steady) are about 70 % of the cheapest build, so extra watts are cheap at
-  the margin. At 300 mm, 6 + 6 vanes give 6.5× the power for 31 % more (6 mm gaps), or 7× for 42 % more (8 mm).
+- **The fixed parts** (3,812 with the DC null and one stage, 3,486 swinging, 3,461 steady) are about 70 % of the
+  cheapest build, so extra watts are cheap at the margin.
+  - DC null: 8 mm gaps at r 300 mm, 6 + 6 give 8× the power for 38 % more.
+  - Steady core: at 300 mm, 6 + 6 vanes give 6.5× the power for 31 % more (6 mm gaps), or 7× for 42 % more (8 mm).
+  - The DC null's fixed parts add the electrodes (2 × 80), two non-magnetic feedthroughs (2 × 120) and three 100 pF
+    capacitors (placeholders).
 - **The AH's steady cusp is met:** 300 A-turns per coil with the 22 mF bypass. Above that, the AH or the pump must be
   re-sized, which is not costed.
 
 ## Open
-- **The core's field target and the electrode spacing:** 2 kV/cm over 50 mm on Inputs are placeholders.
-- **The electrode geometry.**
+- **The free gap at the null** and the field wanted there: 65 kV/cm over 3.1 mm on Inputs are placeholders. The
+  designer's call; the gap picks the stages.
+- **The electrodes' rating:** the sheet holds them to the repo's vacuum rule (6.67 kV/mm on the surface). A higher rating
+  after a test raises the cap one for one.
 - **The cones' strays** (20 pF each, 10 pF between them) are guesses. They set the swinging core's gain cost.
 - **The core's leakage:**
   - steady core: above about 1 GΩ (0.17 W at 13 kV); below about 0.06 GΩ the pump does not start;
