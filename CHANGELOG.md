@@ -5,6 +5,10 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Fixed
+- **The cost guide's sweet spot** (`docs/cost/README.md`):
+  - the fixed parts are about 70 % of the cheapest build, not 60 %;
+  - the best cost per watt is 8 mm gaps with 4 mm vanes at r 300 mm (487 per W). 6 mm gaps with 2.5 mm vanes trail
+    it by 0.1 %; the guide had named only those.
 - **The air stacks' lengths now come from `stack_sizing.layout`** (`sim/air_stack_sizing.py` `finish()`,
   `sim/air-stack-sizing-findings.md` §1–§5):
   - **Cause:** the length per side was taken as L_varicap + L_ca, and L_ca counts n_ca plate pitches. That left out
@@ -15,6 +19,26 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **The electrostatic circuit's HV side moves onto the rotor, and the core gets a field** (`sim/core_field.py`,
+  `sim/core-field-findings.md`). This is the designer's decision, run on the air build's capped stack (3 mm, 6 + 6,
+  6 mm gaps, 13.1 kV, 1200 rpm relative).
+  - **The move:**
+    - the rotor vanes are nodes 1 / 4, and the stator vanes C1 / C2's reference;
+    - Ca / Cb, D1–D4 and the clamps ride on the rotor.
+  - **The pump is unchanged:** z 1.3095 (the eigen-cycle gives 1.3090) and 2.142 W clamped, as before.
+  - **The bearing link stays.** It carries 0.41 mA rms of pure AC. A floating counter-rotor stops the pump (z 1.000
+    with 100 pF to the shaft).
+  - **The field:** an HV diode from node 1 charges cone A, a 1 nF capacitor holds it, and cone B sits on the shaft.
+    - The core then sees −13.2 kV DC with 11 V p-p, i.e. 2.6 kV/cm over the placeholder 50 mm.
+    - The pump keeps its power, and charges the core in 0.27 s.
+  - **The alternatives:**
+    - cones across Ca give −6.7 kV with 26 % ripple;
+    - cones kept as series coils give ±7.3 kV at 120 Hz.
+    - Both cost gain (z 1.27 / 1.23).
+  - **The core's leakage** must stay above about 1 GΩ (0.17 W). Below about 0.06 GΩ the pump does not start.
+  - **What the rotor now needs:**
+    - the G10 sleeve holds 13.2 kV off the shaft (2.1 kV/mm), so bond it or make its bore conductive;
+    - Ca / Cb add 6.1 kg and 0.076 kg m² to the rotor.
 - **The air vane stack as a full matrix** (`sim/vane_matrix.py`, `sim/vane-matrix-findings.md`). 2700 designs over:
   - gap 3–10 mm and thickness 1.5–4 mm (full rounds);
   - outer radius 150–300 mm;
@@ -109,6 +133,18 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - that is fine for diodes only, but not for the spark-gap dump: its 21 A pulses need a brush.
 
 ### Docs
+- **The rotor schematic's panel (b) shows the HV side on the rotor** (`docs/make_schematic_rotor.py`):
+  - the counter-rotor holds only the stator vanes (REF);
+  - the rotor holds nodes 1–4, Ca / Cb, D1–D4, Z1 / Z4, and the core: Dk, C_core, the core's leakage and the bicone as
+    electrodes;
+  - the values are now the air build's capped stack from `sim/core_field_results.json` (it showed the vacuum stack).
+- **The air vane-stack drawing's labels follow the move:**
+  - stator vane = REF, rotor vane = node 1 / 4, and the Ca plates on the rotor;
+  - the aluminium per body, and a row for the HV side.
+- **The cost sheet costs the core's field** (`docs/make_cost_sheet.py`):
+  - on BOM fixed, C_core, cone A's lead and the rotor's HV insulation replace the placeholder HV feed (3,461 in all);
+  - the HV parts count the core diode as a fifth stack;
+  - the cheapest design is unchanged, at 5,637.
 - **Cost sheet template for the air build** (`docs/cost/dccreg-air-build-cost-sheet.xlsx`, generator
   `docs/make_cost_sheet.py`, guide `docs/cost/README.md`):
   - **What it costs:** the 2700 matrix stacks, with live formulas on editable targets and placeholder prices. The
