@@ -16,7 +16,8 @@ The tube's other dimensions are unchanged: r 50..150 mm, 6 sectors (stator 30 de
 Stage 2 (geometry_search): at 6 / 8 / 10 mm, the sector count (3, 4, 6) and the stator / rotor widths, because at wide
 gaps the fringe field between a rotor vane and the next stator sector keeps C_min high and kappa collapses; ranked by
 the eigen-cycle power (stack_sizing ledger at V_op) per mm of stack.
-Usage: python3 sim/air_stack_sizing.py
+Usage: python3 sim/air_stack_sizing.py            (about 40 min: 11 ngspice runs, one at a time)
+       python3 sim/air_stack_sizing.py --finish   (the derived columns only, from the saved results)
 """
 import json
 import math
@@ -153,15 +154,35 @@ def main():
     for q in rows:
         q["P_clamped_W"] = clamped_power(_clamp_job(q, q["V_op_kV"]))
         print(f"clamped: {q.get('gap_mm', 3.0)} mm {q.get('sectors', 6)} sectors -> {q['P_clamped_W']:.2f} W", flush=True)
-    for q in gaps + best:
+    out = dict(rpm=RPM, margin=MARGIN, base_vacuum=base, gap_sweep=gaps, geometry_search=search, best_per_gap=best)
+    finish(out)
+
+
+P_REACHED = 0.05                   # W: below this the pump did not reach its clamp in the 24-cycle run (z too low)
+
+
+def finish(out):
+    """the derived columns: tube length, clamped power per metre of stack, and the vane count / stack length that would
+    give the vacuum design's clamped power (power scales with the working gaps at a fixed geometry and V_op)."""
+    base = out["base_vacuum"]
+    base_es_side = base["L_es_side_mm"]
+    base["P_clamped_per_m"] = base["P_clamped_W"] / (base_es_side * 1e-3)
+    for q in out["gap_sweep"] + out["best_per_gap"]:
         q["L_tube_mm"] = L_TUBE_WOUND + 2 * (q["L_es_side_mm"] - base_es_side)
-        # the vane count (and stack length) that would give the vacuum design's clamped power: P scales with the gaps
+        if q["P_clamped_W"] < P_REACHED:
+            q.update(reached_clamp=False, P_clamped_per_m=None, same_power=None)
+            continue
+        q["reached_clamp"] = True
+        q["P_clamped_per_m"] = q["P_clamped_W"] / (q["L_es_side_mm"] * 1e-3)
         k = base["P_clamped_W"] / q["P_clamped_W"]
         q["same_power"] = dict(n_plates=math.ceil(((2 * q["n_plates"] - 1) * k + 1) / 2), scale=k,
-                               L_es_side_mm=q["L_es_side_mm"] * k, L_tube_mm=L_TUBE_WOUND + 2 * (q["L_es_side_mm"] * k - base_es_side))
-    out = dict(rpm=RPM, margin=MARGIN, base_vacuum=base, gap_sweep=gaps, geometry_search=search, best_per_gap=best)
+                               L_es_side_mm=q["L_es_side_mm"] * k,
+                               L_tube_mm=L_TUBE_WOUND + 2 * (q["L_es_side_mm"] * k - base_es_side))
     json.dump(out, open(os.path.join(HERE, "air_stack_sizing_results.json"), "w"), indent=1, default=float)
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1:] == ["--finish"]:                       # recompute the derived columns of an existing results file
+        finish(json.load(open(os.path.join(HERE, "air_stack_sizing_results.json"))))
+    else:
+        main()
