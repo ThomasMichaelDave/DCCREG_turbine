@@ -264,10 +264,14 @@ by §7.*
 
 **Build:** `python3 sim/tube_geometry.py --rel wound`, for the §7 pick (0.5 mm, 6 bridges, 1200 rpm).
 - **Outputs** in `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br.*`:
-  - an instanced STEP: 146 solids from 29 prototypes, read back 146 / 146;
+  - an instanced STEP: 152 solids from 30 prototypes, read back 152 / 152 (each utron's two half-cores are separate
+    solids, 12.0 mm apart across the air break);
   - the parts list;
   - an arrangement section with a detail of reluctance A;
-  - plan cuts through both reluctance sections.
+  - plan cuts through both reluctance sections;
+  - 3-D stills rendered from the STEP itself (`-3d-{cutaway,half,reluctance,plan,exploded}.png`) and a GLB, from
+    `sim/step_to_glb.py` and `tools/step-viewer/` (three.js in headless Chromium; the same scene with orbit controls is
+    `tools/step-viewer/viewer.html`).
 - **Checks:** `sim/tube_geometry_wound_results.json`.
 - **Source of the dimensions:** every utron and bridge dimension comes from `sim/utron_profile.py`, the same numbers
   that draw `docs/figures/utron-core-detail.png`.
@@ -300,7 +304,7 @@ by §7.*
   - B's bridges are offset 30°, so at rotor angle 0 A is aligned and B is unaligned (the doubler's antiphase).
   - At r_g 130 the whole section (bridge ring OD 313 mm) fits inside the vane cage's diameter.
 - **Checks:**
-  - 404 solid pairs, 0 clashes; 0 rotor-sweep hits;
+  - 457 solid pairs, 0 clashes; 0 rotor-sweep hits;
   - air gap aligned 0.500 mm on both sides (B after turning 30°), unaligned 9.74 mm;
   - winding to iron 1.000 mm (core and neck strip); to the wedge 0.10, the cheeks 1.0, the carrier discs 2.7 and the
     bridge ring 2.7 mm;

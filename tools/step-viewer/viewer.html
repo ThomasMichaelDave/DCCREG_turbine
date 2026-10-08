@@ -1,0 +1,256 @@
+<title>DCCREG Wound Tube</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* layout: one screen; the model fills it, a drawing-office control card floats top-left (bottom sheet on phones) */
+:root {
+  --bg: #e9ecee; --canvas: #eef1f2; --panel: rgba(250, 251, 251, 0.93); --fg: #1a1e22; --muted: #59626b;
+  --line: #ccd3d9; --accent: #a4561f; --accent-soft: rgba(164, 86, 31, 0.12); --halo: #eef1f2;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121518; --canvas: #15191c; --panel: rgba(27, 32, 36, 0.93); --fg: #e4e8eb; --muted: #9aa5ae;
+    --line: #313a41; --accent: #e3925a; --accent-soft: rgba(227, 146, 90, 0.16); --halo: #15191c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121518; --canvas: #15191c; --panel: rgba(27, 32, 36, 0.93); --fg: #e4e8eb; --muted: #9aa5ae;
+  --line: #313a41; --accent: #e3925a; --accent-soft: rgba(227, 146, 90, 0.16); --halo: #15191c; color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font: 14px/1.45 var(--sans); overflow: hidden; }
+.app { position: relative; height: 100%; }
+#stage { position: absolute; inset: 0; background: var(--canvas); }
+#stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+#labels { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+#labels text { font: 12.5px var(--sans); fill: var(--fg); paint-order: stroke; stroke: var(--halo); stroke-width: 4px; stroke-linejoin: round; }
+#labels line, #labels circle { stroke: var(--muted); fill: var(--muted); }
+.card {
+  position: absolute; left: 16px; top: calc(16px + env(safe-area-inset-top, 0px)); width: 300px; max-height: calc(100% - 32px);
+  overflow: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px 14px 12px; display: flex; flex-direction: column; gap: 12px; backdrop-filter: blur(6px);
+}
+h1 { font: 600 16px/1.2 var(--sans); margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+.group { display: flex; flex-direction: column; gap: 6px; }
+.label { font: 500 11px/1 var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+button {
+  font: 500 12.5px/1 var(--sans); color: var(--fg); background: transparent; border: 1px solid var(--line);
+  border-radius: 6px; padding: 7px 9px; cursor: pointer;
+}
+button:hover { border-color: var(--muted); }
+button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--fg); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.checks { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.checks label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; }
+.info { border-top: 1px solid var(--line); padding-top: 10px; min-height: 58px; }
+.info .name { font: 500 13px/1.3 var(--mono); word-break: break-word; }
+.info .desc { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; font-size: 12px; color: var(--muted); }
+.legend span { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.legend i { width: 11px; height: 11px; border-radius: 2px; flex: none; border: 1px solid rgba(0, 0, 0, 0.18); }
+.foot { font: 11.5px/1.4 var(--mono); color: var(--muted); }
+#status { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--muted); font-size: 14px; }
+#viewTitle { position: absolute; right: 16px; top: calc(16px + env(safe-area-inset-top, 0px)); max-width: min(460px, calc(100% - 360px));
+  text-align: right; font-size: 13px; color: var(--muted); }
+@media (max-width: 760px) {
+  #stage, #labels { bottom: 46%; }
+  .card { left: 0; right: 0; top: auto; bottom: 0; width: auto; height: 46%; max-height: none; border-radius: 12px 12px 0 0;
+          padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); border-width: 1px 0 0; }
+  #viewTitle { left: 16px; right: 16px; max-width: none; text-align: left; }
+  .legend { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+<script type="importmap">
+{"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+             "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+
+<div class="app">
+  <div id="stage"></div>
+  <svg id="labels" aria-hidden="true"></svg>
+  <div id="status">Loading the model…</div>
+  <div id="viewTitle"></div>
+  <aside class="card" aria-label="Viewer controls">
+    <div>
+      <h1>DCCREG wound tube</h1>
+      <div class="sub">152 solids from the STEP: 802 mm long, 332 mm cage, wound utrons at r 130 with a 0.5 mm gap</div>
+    </div>
+    <div class="group">
+      <div class="label">View</div>
+      <div class="seg" id="views">
+        <button id="v-cutaway" data-view="cutaway">Cutaway</button>
+        <button id="v-half" data-view="half">Half section</button>
+        <button id="v-reluctance" data-view="reluctance">Reluctance A</button>
+        <button id="v-plan" data-view="plan">Plan A</button>
+        <button id="v-exploded" data-view="exploded">Utron exploded</button>
+        <button id="v-whole" data-view="whole">Whole</button>
+      </div>
+    </div>
+    <div class="group">
+      <div class="label">Cut</div>
+      <div class="seg" id="cuts">
+        <button id="c-none" data-cut="none">None</button>
+        <button id="c-quarter" data-cut="quarter">Quarter</button>
+        <button id="c-half" data-cut="half">Half</button>
+      </div>
+    </div>
+    <div class="group">
+      <div class="label">Show</div>
+      <div class="checks">
+        <label><input type="checkbox" id="b-rotor" checked> Rotor</label>
+        <label><input type="checkbox" id="b-counter" checked> Counter-rotor</label>
+        <label><input type="checkbox" id="b-frame" checked> Frame + bearings</label>
+      </div>
+      <div class="seg">
+        <button id="spin" aria-pressed="false">Spin 1 : −1</button>
+        <button id="explode" aria-pressed="false">Explode utron A1</button>
+      </div>
+    </div>
+    <div class="info" id="info" aria-live="polite">
+      <div class="name">Point at a part</div>
+      <div class="desc">Drag to orbit, scroll or pinch to zoom, right-drag to pan.</div>
+    </div>
+    <div class="legend" id="legend"></div>
+    <div class="foot">tube-r150-n8-wound-g0p5-6br.step · spin slowed to 6 rpm each way (design: 600)</div>
+  </aside>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { buildScene, views, applyView, labelPositions, setCut, setExplode, spin } from "./scene.js";
+
+const stage = document.getElementById("stage");
+const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.appendChild(renderer.domElement);
+const camera = new THREE.PerspectiveCamera(26, 1, 0.005, 20);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+const LEGEND = [["SiFe laminations", "#545966"], ["80 % NiFe neck", "#298f8f"], ["Cu windings", "#cc7838"],
+                ["Al stator vane", "#c792eb"], ["Al rotor vane", "#7dd1ff"], ["Al Ca / Cb plate", "#45c46b"],
+                ["G10", "#8c9980"], ["steel", "#6b737f"]];
+document.getElementById("legend").innerHTML = LEGEND.map(([t, c]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
+
+let S, V, current = "cutaway", cut = "quarter", spinning = false, angle = 0, exploded = false, zTop = null;
+const show = { rotor: true, counter: true, frame: true };
+
+function setPressed(sel, attr, val) {
+  document.querySelectorAll(sel).forEach((b) => b.setAttribute("aria-pressed", String(b.dataset[attr] === val)));
+}
+function visibleNow(p) {
+  const role = p.role === "bearing" ? "frame" : p.role;
+  return V[current].show(p) && show[role];
+}
+function refresh() {
+  for (const p of S.parts) p.mesh.visible = visibleNow(p);
+  setCut(S, cut);
+}
+function gotoView(name) {
+  current = name;
+  const v = V[name];
+  exploded = !!v.explode;
+  applyView(S, camera, v, renderer);
+  zTop = v.zTop || null;
+  cut = v.cut;
+  if (spinning) spin(S, angle);
+  refresh();
+  controls.target.copy(v.target);
+  controls.update();
+  document.getElementById("viewTitle").textContent = v.title;
+  setPressed("#views button", "view", name);
+  setPressed("#cuts button", "cut", cut);
+  document.getElementById("explode").setAttribute("aria-pressed", String(exploded));
+}
+
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / Math.max(h, 1);
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+
+function theme() { renderer.setClearColor(new THREE.Color(css("--canvas") || "#eef1f2")); }
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", theme);
+new MutationObserver(theme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+// pointing at a part: skip hits in the cut-away region
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function clippedAway(p) {
+  if (zTop !== null && p.z > zTop) return true;
+  if (cut === "quarter") return p.x > 0 && p.y < 0;
+  if (cut === "half") return p.y < 0;
+  return false;
+}
+function pick(ev) {
+  if (!S) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const hits = ray.intersectObjects(S.parts.filter((p) => p.mesh.visible).map((p) => p.mesh), false);
+  const h = hits.find((x) => !clippedAway(x.point));
+  const info = document.getElementById("info");
+  if (!h) return;
+  const p = S.parts.find((q) => q.mesh === h.object);
+  const desc = (p.label.split(" - ")[1] || "").replace(/\s*\[.*\]$/, "");
+  const role = { rotor: "rotor", counter: "counter-rotor", frame: "frame", bearing: "bearing" }[p.role];
+  info.innerHTML = `<div class="name">${p.part}</div><div class="desc">${desc}${desc ? " · " : ""}${p.material} · ${role}</div>`;
+}
+renderer.domElement.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" && e.buttons === 0) pick(e); });
+renderer.domElement.addEventListener("pointerup", (e) => { if (e.pointerType !== "mouse") pick(e); });
+
+document.getElementById("views").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) gotoView(b.dataset.view); });
+document.getElementById("cuts").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  cut = b.dataset.cut; setPressed("#cuts button", "cut", cut); setCut(S, cut);
+});
+for (const k of ["rotor", "counter", "frame"]) {
+  document.getElementById("b-" + k).addEventListener("change", (e) => { show[k] = e.target.checked; refresh(); });
+}
+document.getElementById("spin").addEventListener("click", (e) => {
+  spinning = !spinning; e.currentTarget.setAttribute("aria-pressed", String(spinning));
+  if (!spinning) { angle = 0; setExplode(S, exploded); }
+});
+document.getElementById("explode").addEventListener("click", (e) => {
+  exploded = !exploded; e.currentTarget.setAttribute("aria-pressed", String(exploded));
+  setExplode(S, exploded); if (spinning) spin(S, angle);
+});
+
+const svg = document.getElementById("labels");
+let last = performance.now();
+function frame(t) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.1, (t - last) / 1000); last = t;
+  if (spinning) { angle += dt * 2 * Math.PI * 6 / 60; spin(S, angle); }
+  controls.update();
+  renderer.render(S.scene, camera);
+  const w = stage.clientWidth, h = stage.clientHeight;
+  const L = spinning ? [] : labelPositions(S, camera, V[current], w, h);
+  svg.innerHTML = L.map(({ x, y, dx, dy, text }) => {
+    const tx = x + dx, ty = y + dy;
+    return `<line x1="${x}" y1="${y}" x2="${tx}" y2="${ty}" stroke-width="1"/><circle cx="${x}" cy="${y}" r="2.5"/>` +
+           `<text x="${tx + (dx < 0 ? -5 : 5)}" y="${ty + 4}" text-anchor="${dx < 0 ? "end" : "start"}">${text}</text>`;
+  }).join("");
+}
+
+try {
+  theme(); resize();
+  S = await buildScene(renderer, "./model.json");
+  V = views(S);
+  document.getElementById("status").hidden = true;
+  gotoView("cutaway");
+  requestAnimationFrame(frame);
+} catch (err) {
+  document.getElementById("status").textContent = "The model could not be loaded: " + (err && err.message ? err.message : err);
+}
+</script>

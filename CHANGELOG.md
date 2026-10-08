@@ -16,9 +16,14 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
     - an 80 % NiFe neck strip (2.97 × 100 mm) across a 12 mm G10 air break;
     - a 200-turn coil on a G10 former, with a G10 slot wedge, A4 studs, and G10 cheeks bolted to carrier discs.
   - **Checks:** 0 clashes over 404 pairs, 0 sweep hits, an aligned gap of exactly 0.500 mm, and 1.000 mm from the
-    winding to the iron. The STEP reads back 146 / 146.
+    winding to the iron. The STEP reads back 152 / 152 (each utron's half-cores are separate solids).
   - **The default C-EM build is unchanged:** a re-run gives the same layout, the same 307 parts and the same clash,
     sweep, clocking-gap and C-EM fit results.
+- **3-D render of the STEP** (`sim/step_to_glb.py`, `tools/step-viewer/`):
+  - the STEP read back and tessellated once per product into a GLB (152 instances of 30 products, 103 k triangles);
+  - three.js stills in headless Chromium: quarter cutaway, half section, reluctance A close-up, plan view at
+    mid-stack, and utron A1 exploded along its assembly directions (`docs/geometry/tube/*-3d-*.png`);
+  - the same scene as an interactive page (`viewer.html`: orbit, cuts, body toggles, part names, a 1 : −1 spin).
 - **Utron detail drawing** (`docs/make_utron_drawing.py`): front view, two side sections, the solved 2-D field and
   the data table, all from the same `utron_profile` numbers as the solids.
 

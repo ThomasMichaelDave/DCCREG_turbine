@@ -1,0 +1,38 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>render</title>
+<style>html,body{margin:0;background:#f4f4f2;overflow:hidden}canvas{display:block}
+#t{position:absolute;left:18px;top:14px;font:600 15px/1.35 system-ui,sans-serif;color:#1d1d1f}
+#src{position:absolute;left:18px;bottom:12px;font:12px/1.3 system-ui,sans-serif;color:#6e6e73}
+svg{position:absolute;left:0;top:0;pointer-events:none}
+svg text{font:13px system-ui,sans-serif;fill:#1d1d1f;paint-order:stroke;stroke:#f4f4f2;stroke-width:4px;stroke-linejoin:round}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head><body><div id="t"></div><div id="src">docs/geometry/tube/tube-r150-n8-wound-g0p5-6br.step, rendered from the STEP (sim/step_to_glb.py + three.js)</div>
+<svg id="o"></svg>
+<script type="module">
+import * as THREE from "three";
+import { buildScene, views, applyView, labelPositions } from "./scene.js";
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xf4f4f2);
+document.body.appendChild(renderer.domElement);
+const camera = new THREE.PerspectiveCamera(26, 1, 0.005, 20);
+const S = await buildScene(renderer, new URLSearchParams(location.search).get("model") || "./model.glb");
+const V = views(S);
+window.renderView = (name) => {
+  const v = V[name], [W, H] = [innerWidth, innerHeight];
+  renderer.setSize(W, H); camera.aspect = W / H;
+  applyView(S, camera, v, renderer);
+  document.getElementById("t").textContent = v.title;
+  renderer.render(S.scene, camera);
+  const svg = document.getElementById("o");
+  svg.setAttribute("width", W); svg.setAttribute("height", H);
+  svg.innerHTML = labelPositions(S, camera, v, W, H).map(({ x, y, dx, dy, text }) => {
+    const tx = x + dx, ty = y + dy, anchor = dx < 0 ? "end" : "start";
+    return `<line x1="${x}" y1="${y}" x2="${tx}" y2="${ty}" stroke="#3a3a3c" stroke-width="1"/>` +
+           `<circle cx="${x}" cy="${y}" r="2.5" fill="#3a3a3c"/>` +
+           `<text x="${tx + (dx < 0 ? -5 : 5)}" y="${ty + 4}" text-anchor="${anchor}">${text}</text>`;
+  }).join("");
+  return v.size;
+};
+window.viewSize = (name) => V[name].size;
+window.ready = true;
+</script></body></html>
