@@ -9,30 +9,33 @@ first-cut choices [IR/RH]:
     the gap arc r_g (cut or ground after stacking), the tips are parallel-sided so the slot keeps its width s [IR];
   * neck (sets Psi_s): a laminated 80 % NiFe strip under the back iron, full core width; the half-cores sit on it and are
     parted by a G10-filled air break, so the flux has to cross the strip. Strip thickness from the operating point's
-    saturation flux at B_NIFE [RH: B_sat 0.75 T at ~60 C; the two lap joints add ~3 % to the aligned reluctance; with a
+    saturation flux at B_NIFE, rounded to whole 0.1 mm NiFe laminations (the saturation flux follows the built strip)
+    [RH: B_sat 0.75 T at ~60 C; the two lap joints add ~3 % to the aligned reluctance; with a
     12 mm break the saturated incremental L is ~5 % of aligned and ~30 % of unaligned. The 2-D model has linear SiFe and
     the ^6 law at Psi_s instead, so this needs a nonlinear field check];
   * coil: one coil on the back iron between the tips (+ side in the slot, - side under the core) with rounded-rectangle
     turns (inner corner radius clr, outer clr + h_c) at 50 % fill, wound on a 1 mm G10 former (the clearance clr);
-  * slot wedge: G10 in 1 mm grooves cut into the tips' inner faces (up to 1 mm thick there, inside the gap arc), its top
-    over the slot following the gap arc 0.2 mm below it; it holds the slot side of the coil against the centrifugal
-    load [RH];
-  * cheeks: G10 plates on both stack ends over each tip, outside the coil, held by two A4 studs through each half-core and
-    bolted to the rotor's carrier disc, one disc per stack end [IR];
+  * slot cover: G10 between the tips' inner faces, its flat bottom 0.1 mm above the coil, its top on the gap arc less
+    0.2 mm; bonded in the vacuum impregnation, with no grooves (grooves at the slot edge would leave a 0.1-0.2 mm sliver
+    of lamination at the tip corner). The coil needs no wedge to stay put: it is a closed loop around the back iron, so its
+    slot side is carried by the loop (it bends ~0.001 mm under the 600 rpm load) [OC: beam estimate; RH: the
+    impregnated bundle's stiffness];
+  * cheeks: G10 plates on both stack ends over each tip, outside the coil, held by two A4 M6 studs (Ø 6.4 clearance
+    holes, ISO 273 fine) through each half-core and bolted to the rotor's carrier disc, one disc per stack end [IR];
   * bridge: an M235-35A annular sector from r_g + g to r_g + g + t_b, with arc length l_b at its face, standing 1 mm proud
     of the bore of a G10 bridge ring (the counter-rotor) [IR].
 Pure python (no numpy): numbers, rectangles (u0, u1, v0, v1) and polylines.
 """
 import math
 
-B_NIFE = 0.75                 # T, 80 % NiFe (laminated 0.1 mm) at ~60 C [RH]
+B_NIFE, NIFE_LAM = 0.75, 0.1  # T, 80 % NiFe at ~60 C [RH]; the strip is a stack of 0.1 mm laminations
 BRK = 12.0                    # mm, air break in the back iron (G10 spacer) [RH]
-T_WEDGE, WEDGE_LIFT, GROOVE = 1.0, 0.1, 1.0    # G10 wedge thickness, lift off the coil, groove depth into each tip
+WEDGE_LIFT, COVER_DROP = 0.1, 0.2   # G10 slot cover: lift off the coil, its top below the gap arc
 T_CHEEK, T_DISC = 10.0, 12.0  # G10 cheek plate and carrier disc thicknesses (axial)
 CHEEK_LAP = 14.0              # cheek root below the carrier disc's rim (bolted face to face)
 RING_T, PROUD = 12.0, 1.0     # G10 bridge ring outside the bridges; bridge face proud of the ring bore
 SP = 3.0                      # axial clearance from the end turns to the section ends
-STUD_D = 6.0                  # A4 stud holes through the half-cores and cheeks
+STUD_D = 6.4                  # holes for the A4 M6 studs through the half-cores and cheeks (ISO 273 fine)
 FILL, RHO_CU, RHO_FE, RHO_NIFE, RHO_G10, RHO_CU_KG = 0.50, 1.72e-8, 7650.0, 8700.0, 1850.0, 8900.0
 SLEEVE_R = 20.5
 
@@ -58,8 +61,8 @@ def spec(design, op=None, row=None, L_stk=None, n_u=3):
     depth = r_g - (u_m0 - clr)                         # pole_fd2d.Design.radial_depth
     over = clr + h_c                                   # end-turn overhang beyond the stack
     u_w0 = u_p1 + WEDGE_LIFT
-    v_w = s / 2 + GROOVE
-    u_w1 = min(u_w0 + T_WEDGE, math.sqrt(r_g ** 2 - v_w ** 2) - 0.1)    # the wedge's corners stay 0.1 mm inside the gap arc
+    v_w = s / 2
+    u_w1 = math.sqrt((r_g - COVER_DROP) ** 2 - v_w ** 2)              # the slot cover's height at the tips' inner faces
     u_arc_tip = math.sqrt(r_g ** 2 - (s / 2 + w_p) ** 2)     # the gap arc at the tip's outer edge
     r_disc = u_m0 - clr
     sp = dict(r_g=r_g, g=g, w_p=w_p, s=s, d=dd, b=b, L=L, clr=clr, n_br=n_br, t_b=t_b, W_u=W_u, l_b=l_b, n_u=n_u,
@@ -72,15 +75,19 @@ def spec(design, op=None, row=None, L_stk=None, n_u=3):
     # the neck: saturation flux per utron from the operating point (group Psi_s over 3 coils of N_u turns)
     if op:
         phi_s = op["psi_s"] / (n_u * op["N_u"])
-        t_n = phi_s / (B_NIFE * L * 1e-3) * 1e3
-        sp.update(phi_s_Wb=phi_s, t_n=t_n, neck_sife_mm=op.get("neck_mm"), N_u=op["N_u"])
+        t_exact = phi_s / (B_NIFE * L * 1e-3) * 1e3
+        t_n = max(NIFE_LAM, round(t_exact / NIFE_LAM) * NIFE_LAM)     # whole 0.1 mm laminations
+        sp.update(phi_s_Wb=phi_s, t_n_exact=t_exact, t_n=t_n, n_nife=int(round(t_n / NIFE_LAM)),
+                  phi_s_built_Wb=B_NIFE * t_n * L * 1e-6, neck_sife_mm=op.get("neck_mm"), N_u=op["N_u"])
     else:
         sp.update(phi_s_Wb=None, t_n=0.25 * b, N_u=None)
     sp["u_n1"] = u_y0 + sp["t_n"]                      # bottom of the half-cores (top of the strip)
     assert sp["t_n"] < 0.5 * b, "neck strip thicker than half the back iron"
-    # studs: one in the tip / back-iron corner, one in the tip, centred on the tip
+    # studs: one in the tip / back-iron corner, one in the tip, centred on the tip (positions on a 0.5 mm grid)
     v_st = s / 2 + w_p / 2
-    sp["studs"] = [(0.5 * (sp["u_n1"] + u_y1), v_st), (u_y1 + 0.45 * (u_arc_tip - u_y1), v_st)]
+    half = lambda x: round(2.0 * x) / 2.0
+    sp["studs"] = [(sp["u_n1"] + half(0.5 * (u_y1 - sp["u_n1"])), v_st),
+                   (sp["u_n1"] + half(u_y1 + 0.45 * (u_arc_tip - u_y1) - sp["u_n1"]), v_st)]
     sp.update(_derived(sp, op, row))
     return sp
 
@@ -126,11 +133,10 @@ def _derived(sp, op, row):
 
 
 def half_core(sp, side=+1, arc=True, n_arc=48):
-    """closed polyline (u, v) of one L-shaped half-core (side +1: v > 0), with the wedge groove. arc=False replaces the
-    tip face by a straight edge 2 mm beyond r_g (the solid builder then cuts it with the gap cylinder)."""
+    """closed polyline (u, v) of one L-shaped half-core (side +1: v > 0). arc=False replaces the tip face by a straight
+    edge 2 mm beyond r_g (the solid builder then cuts it with the gap cylinder)."""
     s2, wp, r_g = sp["s"] / 2, sp["w_p"], sp["r_g"]
-    pts = [(sp["u_n1"], sp["brk"] / 2), (sp["u_y1"], sp["brk"] / 2), (sp["u_y1"], s2), (sp["u_w0"], s2),
-           (sp["u_w0"], sp["v_w"]), (sp["u_w1"], sp["v_w"]), (sp["u_w1"], s2)]
+    pts = [(sp["u_n1"], sp["brk"] / 2), (sp["u_y1"], sp["brk"] / 2), (sp["u_y1"], s2)]
     if arc:
         for k in range(n_arc + 1):
             v = s2 + wp * k / n_arc
@@ -142,12 +148,11 @@ def half_core(sp, side=+1, arc=True, n_arc=48):
 
 
 def wedge(sp, n_arc=32):
-    """closed polyline (u, v) of the slot wedge: flat bottom on the coil, ends in the grooves (|v| s/2 .. s/2 + 1), the top
-    over the slot on the arc r_g - 0.2."""
-    s2, vw, r = sp["s"] / 2, sp["v_w"], sp["r_g"] - 0.2
+    """closed polyline (u, v) of the G10 slot cover: flat bottom just above the coil, sides on the tips' inner faces,
+    the top on the arc r_g - COVER_DROP."""
+    s2, r = sp["s"] / 2, sp["r_g"] - COVER_DROP
     top = [(math.sqrt(r ** 2 - v ** 2), v) for v in (s2 - 2 * s2 * k / n_arc for k in range(n_arc + 1))]
-    return ([(sp["u_w0"], -vw), (sp["u_w0"], vw), (sp["u_w1"], vw), (sp["u_w1"], s2)] + top
-            + [(sp["u_w1"], -s2), (sp["u_w1"], -vw)])
+    return [(sp["u_w0"], -s2), (sp["u_w0"], s2)] + top
 
 
 def rects(sp):

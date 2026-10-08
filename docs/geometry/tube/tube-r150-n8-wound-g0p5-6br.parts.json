@@ -726,7 +726,7 @@
 "dz": 51.0,
 "rot": 0.0
 },
-"label": "rel-A / A_U1_wedge - utron A1 slot wedge (G10) [G10 slot wedge, rotor]"
+"label": "rel-A / A_U1_wedge - utron A1 slot cover (G10, bonded) [G10 slot cover, rotor]"
 },
 {
 "name": "A_U1_winding",
@@ -866,7 +866,7 @@
 "dz": 51.0,
 "rot": 120.0
 },
-"label": "rel-A / A_U2_wedge - utron A2 slot wedge (G10) [G10 slot wedge, rotor]"
+"label": "rel-A / A_U2_wedge - utron A2 slot cover (G10, bonded) [G10 slot cover, rotor]"
 },
 {
 "name": "A_U2_winding",
@@ -1006,7 +1006,7 @@
 "dz": 51.0,
 "rot": 240.0
 },
-"label": "rel-A / A_U3_wedge - utron A3 slot wedge (G10) [G10 slot wedge, rotor]"
+"label": "rel-A / A_U3_wedge - utron A3 slot cover (G10, bonded) [G10 slot cover, rotor]"
 },
 {
 "name": "A_U3_winding",
@@ -1608,7 +1608,7 @@
 "dz": 651.0,
 "rot": 0.0
 },
-"label": "rel-B / B_U1_wedge - utron B1 slot wedge (G10) [G10 slot wedge, rotor]"
+"label": "rel-B / B_U1_wedge - utron B1 slot cover (G10, bonded) [G10 slot cover, rotor]"
 },
 {
 "name": "B_U1_winding",
@@ -1748,7 +1748,7 @@
 "dz": 651.0,
 "rot": 120.0
 },
-"label": "rel-B / B_U2_wedge - utron B2 slot wedge (G10) [G10 slot wedge, rotor]"
+"label": "rel-B / B_U2_wedge - utron B2 slot cover (G10, bonded) [G10 slot cover, rotor]"
 },
 {
 "name": "B_U2_winding",
@@ -1888,7 +1888,7 @@
 "dz": 651.0,
 "rot": 240.0
 },
-"label": "rel-B / B_U3_wedge - utron B3 slot wedge (G10) [G10 slot wedge, rotor]"
+"label": "rel-B / B_U3_wedge - utron B3 slot cover (G10, bonded) [G10 slot cover, rotor]"
 },
 {
 "name": "B_U3_winding",

@@ -131,8 +131,8 @@ def front(ax, sp):
     column(ax, left, -W2 - 34, "right", sp["u_m0"] + 2, r_g + 10)
     right = [((W2 * 0.6, sp["r_ring1"] - 2.5), f"bridge ring, G10, r {sp['r_ring0']:g}..{sp['r_ring1']:g}"),
              ((W2 * 0.45, sp["r_br0"] + 7), f"bridge, SiFe, t_b {sp['t_b']:.0f} (r {sp['r_br0']:g}..{sp['r_br1']:g})"),
-             ((0.6 * s2, 0.5 * (sp["u_w0"] + r_g - 0.2)), f"slot wedge, G10 ({sp['t_wedge']:.2f} in the 1 mm grooves)"),
-             ((sp["studs"][1][1], sp["studs"][1][0]), f"A4 M6 studs, Ø{sp['stud_d']:.0f} holes, 2 per half-core"),
+             ((0.6 * s2, 0.5 * (sp["u_w0"] + r_g - 0.2)), f"slot cover, G10, bonded (no grooves; {sp['t_wedge']:.2f} at the tips)"),
+             ((sp["studs"][1][1], sp["studs"][1][0]), f"A4 M6 studs, Ø{sp['stud_d']:.1f} holes, 2 per half-core"),
              ((s2 + wp - 1.5, sp["u_ch0"] + 6), "cheek, G10 (behind; one per tip and stack end)"),
              ((sp["r_disc"] * math.sin(math.radians(20)), sp["r_disc"] * math.cos(math.radians(20))),
               f"carrier disc rim, r {sp['r_disc']:.0f} (behind)")]
@@ -176,7 +176,7 @@ def side_coil(ax, sp):
     note(ax, (50, 0.5 * (sp["u_n1"] + sp["u_y1"])), (-o - 34, sp["u_y1"] + 4), "air-break spacer (G10)")
     note(ax, (70, sp["r_ring1"] - 4), (L + o + 12, sp["r_ring1"] + 2), "bridge ring (counter-rotor)")
     note(ax, (80, 0.5 * (sp["r_br0"] + sp["r_br1"])), (L + o + 12, sp["r_br0"] + 1), "bridge (SiFe)")
-    note(ax, (30, sp["r_g"] - 0.6), (-o - 34, sp["r_g"] + 2), "slot wedge")
+    note(ax, (30, sp["r_g"] - 0.6), (-o - 34, sp["r_g"] + 2), "slot cover")
     ax.set_xlim(-o - 38, L + o + 62)
     ax.set_ylim(U.SLEEVE_R - 6, sp["r_ring1"] + 20)
     ax.set_aspect("equal"); ax.set_anchor("N")
@@ -263,7 +263,8 @@ def table(ax, sp, op, pick):
         ("ratio, time constant", f"κ {sp['kappa']:.1f}, τ = L/R {sp['tau_s']:.3f} s; f {f_u:.0f} Hz, f·τ {f_u * sp['tau_s']:.1f}"),
         ("group (3 in series)", f"L {b['L_group_H']:.3f} H, I {b['I_pk']:.2f} A pk / {b['I_rms']:.2f} A rms, V {b['V_pk']:.0f} V pk"),
         ("saturation", f"Ψs {b['psi_s']:.4f} Wb-t (group) = {1e3 * sp['phi_s_Wb']:.3f} mWb per utron"),
-        ("neck", f"NiFe {sp['t_n']:.2f} x {sp['L']:g} mm at {U.B_NIFE:g} T (= {sp['neck_sife_mm']:.2f} mm of SiFe at 1.5 T); body {b['B_body_T']:.2f} T"),
+        ("neck", f"NiFe {sp['t_n']:.1f} x {sp['L']:g} mm ({sp['n_nife']} x {U.NIFE_LAM:g}) at {U.B_NIFE:g} T: Φs "
+                 f"{100 * (sp['phi_s_built_Wb'] / sp['phi_s_Wb'] - 1):+.1f} % (op: {sp['neck_sife_mm']:.2f} mm SiFe at 1.5 T); body {b['B_body_T']:.2f} T"),
         ("losses", f"Cu {b['P_utron_coil_W']:.2f} W per coil; machine {b['P_total_W']:.1f} W (iron {2 * b['P_fe_side_W']:.2f} W)"),
         ("coil temperature", f"{b['T_coil_air_C']:.0f} °C in air (forced), {b['T_coil_vac_C']:.0f} °C in vacuum (radiation)"),
         ("start", f"kick ≥ {100 * b['kick_frac']:.0f} % of I_pk ({b['kick_mJ']:.0f} mJ) with Si diodes"),
@@ -282,12 +283,12 @@ def table(ax, sp, op, pick):
         k += 15.5
     put(0.0, k + 8,
         "Assembly: wind the coil on its 1 mm G10 former; slide the NiFe strip and the G10 spacer through the window;\n"
-        "insert the two half-cores from each side (they sit on the strip); fit the slot wedge; studs + cheeks; bolt the\n"
+        "insert the two half-cores from each side (they sit on the strip); lay in the slot cover; studs + cheeks; bolt the\n"
         "cheeks to the carrier discs; vacuum-impregnate. Grind the tip faces to r_g and bore the bridge faces in their\n"
         f"ring after assembly: the {sp['g']:g} mm gap needs the rotor and counter-rotor runout well below it.",
         fontsize=7.4, color=INK2)
     put(0.0, k + 70, "[OC] the section and its L(θ) are the solved 2-D model; [IR] the build details; [RH] the neck (B_sat, lap\n"
-        "joints, the break's knee), the wedge and the stud sizes are first-cut estimates: a nonlinear field check of the\n"
+        "joints, the break's knee), the slot cover and the stud sizes are first-cut estimates: a nonlinear field check of the\n"
         "neck is the next step.", fontsize=7.4, color=INK2)
 
 

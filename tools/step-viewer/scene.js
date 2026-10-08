@@ -90,7 +90,7 @@ export function setCut(S, cut) {
 
 // exploded utron A1 (at 0 deg its local u, v, w are the world x, y, z), offsets in mm
 // along the assembly directions: the half-cores, strip and spacer slide tangentially (v = y) through the coil's
-// window, the cheeks come off the stack ends, the wedge and the bridge lift radially
+// window, the cheeks come off the stack ends, the slot cover and the bridge lift radially
 const EXPLODE = { A_U1_core_pos: [0, 62, 0], A_U1_core_neg: [0, -62, 0], A_U1_strip: [0, -128, 0], A_U1_spacer: [0, 112, 0],
                   A_U1_wedge: [24, 0, 0], A_bridge_1: [62, 0, 0],
                   A_U1_cheek_pos_hi: [0, 62, 34], A_U1_cheek_pos_lo: [0, 62, -34],
@@ -158,9 +158,9 @@ export function views(S) {
                 target: new THREE.Vector3(0.112, 0, zc.z), dir: [1.0, -0.62, 0.75], dist: 0.82,
                 labels: [["A_U1_core_pos", "half-core (+v), M235-35A, tip face on the gap arc", 40, -150],
                          ["A_U1_core_neg", "half-core (−v)", -60, -150],
-                         ["A_U1_strip", "neck: 80 % NiFe strip, 2.97 × 100 mm", -40, 110],
+                         ["A_U1_strip", "neck: 80 % NiFe strip, 3.0 × 100 mm (30 × 0.1)", -40, 110],
                          ["A_U1_spacer", "air-break spacer, G10, 12 mm", 40, 110],
-                         ["A_U1_wedge", "slot wedge, G10", 60, -110],
+                         ["A_U1_wedge", "slot cover, G10 (bonded)", 60, -110],
                          ["A_bridge_1", "bridge, SiFe (counter-rotor)", 90, 70],
                          ["A_U1_cheek_pos_hi", "cheeks, G10, studded to the half-cores", 50, -60],
                          ["A_U1_winding", "yoke coil: 200 turns of Ø1.55 mm on a G10 former", -150, 330]] },

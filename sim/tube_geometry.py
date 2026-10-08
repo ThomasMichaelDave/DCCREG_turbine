@@ -12,7 +12,7 @@ section). Every element becomes solids here:
   * reluctance (default): the designer's squared C-EM pieces (core, 2 spool halves, coil; sim/motor_geometry src) x 6
     per side and the utron (core, 2 open coil halves) x 3 per side on a rotor hub, placed at the utron radius;
   * reluctance, --rel wound (the diode build, geared 1 : -1): per side 3 wound utrons (split M235-35A U-core, NiFe neck
-    strip, air-break spacer, slot wedge, yoke coil with rounded end turns, cheeks) on two G10 carrier discs, and n_br
+    strip, air-break spacer, slot cover, yoke coil with rounded end turns, cheeks) on two G10 carrier discs, and n_br
     passive bridges in a G10 ring on the counter-rotor (the stator body: its cage joined across the hub), every dimension
     from sim/utron_profile.py for an operating point of sim/pole_design_variants_op.json;
   * shaft (rotor), rotor sleeve, insulating stator cage per side, hub placeholder (vacuum sphere + bicone shell).
@@ -20,7 +20,7 @@ Repeated parts are stored once in the STEP and instanced.
 Checks: G-TUBE-CLASH (no two solids share volume, except the intended joins), G-TUBE-SWEEP (no stator solid in the
 volume a rotor solid sweeps; the utron ring against the C-EM pieces exactly), G-TUBE-GAP (tip to sphere at
 alignment = the set gap), G-TUBE-REL (C-EM to C-EM, utron to sleeve), the envelope diameters; with --rel wound
-G-TUBE-WOUND (the air gap aligned / unaligned, the coil's clearances to the iron, wedge, cheeks, discs and ring, the tip
+G-TUBE-WOUND (the air gap aligned / unaligned, the coil's clearances to the iron, slot cover, cheeks, discs and ring, the tip
 arc) and filled exact-section renders.
 Usage: python3 sim/tube_geometry.py [--n-plates 8] [--r-out 150] [--no-step] [--rel wound [--pick "g 0.5 / 6 bridges / 1200 rpm"]]
 """
@@ -283,7 +283,7 @@ class Machine:
                     u = f"{side}_U{j + 1}"
                     for piece, desc in (("wu_core_pos", "half-core +v (M235-35A)"), ("wu_core_neg", "half-core -v (M235-35A)"),
                                         ("wu_strip", "neck strip (80 % NiFe)"),
-                                        ("wu_spacer", "air-break spacer (G10)"), ("wu_wedge", "slot wedge (G10)"),
+                                        ("wu_spacer", "air-break spacer (G10)"), ("wu_wedge", "slot cover (G10, bonded)"),
                                         ("wu_winding", f"yoke coil, {sp['N_u']} turns, {e['node']}")):
                         self.add(f"{u}_{piece[3:]}", piece, "rotor", e["node"] if piece == "wu_winding" else "", f"rel-{side}",
                                  dz=e["zs0"], rot=a, desc=f"utron {side}{j + 1} {desc}")
@@ -380,7 +380,7 @@ class Machine:
         self.proto("wu_core_neg", lambda: core(-1), COL["sife"], "utron half-core, M235-35A laminated (studded)")
         self.proto("wu_strip", lambda: bx(R["strip"]), COL["nife"], "neck strip, 80 % NiFe laminated 0.1 mm")
         self.proto("wu_spacer", lambda: bx(R["spacer"]), COL["g10"], "G10 air-break spacer")
-        self.proto("wu_wedge", lambda: prism(U.wedge(sp), 0.0, L), COL["g10"], "G10 slot wedge")
+        self.proto("wu_wedge", lambda: prism(U.wedge(sp), 0.0, L), COL["g10"], "G10 slot cover")
         self.proto("wu_winding", winding, COL["cu"], f"Cu yoke coil, {sp['N_u']} turns of {sp.get('wire_d_mm', 0):.2f} mm")
         self.proto("wu_cheek_pos", lambda: cheek(+1), COL["g10"], "G10 cheek")
         self.proto("wu_cheek_neg", lambda: cheek(-1), COL["g10"], "G10 cheek")
@@ -819,7 +819,7 @@ def renders_wound(m, out_dir, tag):
             f"rounded end turns (R {sp['over']:.0f}), on a 1 mm G10 former"),
            ((0.5 * (sp["u_y0"] + sp["u_n1"]), zc - 4), f"neck strip: 80 % NiFe {sp['t_n']:.2f} x {sp['L']:.0f} mm\n(sets Psi_s)"),
            ((0.5 * (sp["u_n1"] + sp["u_y1"]), zc - 32), f"air break {sp['brk']:.0f} mm, G10 spacer"),
-           ((0.5 * (sp["u_w0"] + sp["r_g"]), zc + 40), "slot wedge, G10"),
+           ((0.5 * (sp["u_w0"] + sp["r_g"]), zc + 40), "slot cover, G10 (bonded)"),
            ((0.5 * (sp["r_br0"] + sp["r_br1"]), zc - 20), f"bridge A1 (SiFe), gap {sp['g']:g} mm"),
            ((sp["r_ring1"] - 3, zs1 + 18), "bridge ring, G10 (counter-rotor)"),
            ((0.5 * (24 + sp["r_disc"]), zs0 - sp["t_cheek"] - 0.5 * sp["t_disc"]), "carrier discs, G10, on the rotor sleeve"),
@@ -844,8 +844,8 @@ def renders_wound(m, out_dir, tag):
             "stator vanes, Ca / Cb plates, the hub-face and Ca|reluctance spiders, bridges + bridge rings.\n"
             "Frame: the two end bearings and their spiders. The inner bearings run at the relative speed.\n"
             f"At rotor angle 0: utron A1 is aligned (gap {sp['g']:g} mm), utron B1 sits between two B bridges (antiphase).\n"
-            "This plane (v = 0) cuts the coil, the neck strip and the air-break spacer; the SiFe half-cores, the slot\n"
-            "wedge's grooves and the cheeks lie at |v| >= s / 2 (see the plan cuts and the utron detail drawing).",
+            "This plane (v = 0) cuts the coil, the neck strip and the air-break spacer; the SiFe half-cores and the\n"
+            "cheeks lie at |v| >= s / 2 (see the plan cuts and the utron detail drawing).",
             fontsize=8.5, va="top", transform=an.transAxes)
     fig.suptitle(f"{tag}: arrangement ({sp.get('pick', '')}), {L:.0f} mm long", fontsize=12, x=0.01, ha="left")
     f = os.path.join(out_dir, f"{tag}-section.png"); fig.savefig(f, dpi=105, bbox_inches="tight"); plt.close(fig)
