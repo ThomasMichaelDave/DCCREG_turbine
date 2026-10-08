@@ -4,12 +4,18 @@
 - `sim/core_field.py` → `sim/core_field_results.json` (ngspice), and `--grid` → `sim/core_swing_grid.json`;
 - the schematic's panel (b), `docs/schematic-rotor-circuits.svg` / `.png` (`docs/make_schematic_rotor.py`);
 - the stack drawing's labels, `docs/figures/air-vane-stack-6mm.png`;
-- the cost sheet, `docs/cost/` (`docs/make_cost_sheet.py`).
+- the cost sheet, `docs/cost/` (`docs/make_cost_sheet.py`);
+- the waveforms, `docs/figures/core-swing-waveforms.png` (`docs/make_core_swing_figure.py` →
+  `sim/core_swing_waveforms.json`).
 
 **Designer's decisions:**
 1. Move the electrostatic circuit's high-voltage side onto the rotor, so the core can get an electric field with the AH's
    steady cusp at its centre.
 2. Then: a swinging field instead of one referred to the shaft, on floating cones (§2).
+3. **The cones are non-metallic, probably G10** (designer's note).
+   - They cannot carry a potential themselves, so each needs an electrode, e.g. a conductive layer on the shell. Its
+     form is not chosen.
+   - Below, "cone A / B" means the electrode on that cone. The circuit holds for any electrode with the assumed strays.
 
 **The design.** The air build's capped stack (`sim/air_stack_sizing.py` stage 4c): 3 mm full-round vanes, 6 + 6 per
 varicap per side, 6 × 22° / 22°, 6 mm gaps, r 150. That gives C 55–410 pF, Ca = Cb 451 pF and V_op 13.1 kV, at 1200 rpm
@@ -24,7 +30,7 @@ relative (120 Hz).
 | rotor vanes R-A / R-B | near the shaft, through the cones | **nodes 1 / 4** (HV) |
 | stator vanes | nodes 1 / 4 (HV) | **REF of C1 / C2**, on the counter-rotor |
 | Ca / Cb, D1–D4, Z1 / Z4 | counter-rotor | **rotor**, with the hub |
-| cones | coils in series, at the shaft's potential | **the core's electrodes**, floating (§2) |
+| cones (G10 shells) | 32-turn coils in series, at the shaft's potential | **carry the core's electrodes**, floating (§2) |
 | reference link | one inner bearing | the same bearing: it joins the stator vanes to the shaft |
 
 **The pump does not change.** The circuit is the same; only the bodies under its parts move.
@@ -81,6 +87,21 @@ nodes.
 
 **Floating costs 4 % of the swing**, through the coupling capacitors' divider, and takes the nodes' 8.6 kV DC off the
 cones. That 8.6 kV would otherwise stand between the cones and the flanges and the AH.
+
+**Why each cone swings −4.4 / +2.7 kV, while the core sees ±7.1 kV** (`docs/figures/core-swing-waveforms.png`):
+- **Node 1 is not a sine.** It rests near its top (−5.8 kV) for most of the cycle and dips to the clamp (−13.2 kV)
+  around minimum C1. It spends 60 % of the cycle above its average (−8.6 kV), which sits 0.9 kV above the midpoint of
+  its swing (−9.5 kV).
+- **The coupling capacitor removes only that average.** Each cone therefore swings +2.8 / −4.6 kV about it (×0.96 for
+  the divider: +2.7 / −4.4 kV). In harmonics, node 1 carries 3.84 kV at 120 Hz and 1.19 kV at 240 Hz; the 240 Hz part
+  makes the asymmetry.
+- **Node 4 is node 1 half a cycle later.** Half a cycle reverses the odd harmonics and keeps the even ones.
+  - Across the core (A − B), the even harmonics cancel: 7.39 kV at 120 Hz, 0.19 kV at 360 Hz, and nothing at 240 Hz.
+    The field is symmetric.
+  - In the common mode, (A + B) / 2, the odd harmonics cancel: both cones move together, 1.17 kV at 240 Hz, against the
+    shaft. That moves the core's potential, not its field.
+- **What it would take to centre each cone on the shaft** (±3.6 kV): a +0.9 kV bias on its DC. It would not change the
+  field across the core, only the peak to the flanges (4.4 → 3.6 kV).
 
 ## 3. The swinging core across the matrix
 
