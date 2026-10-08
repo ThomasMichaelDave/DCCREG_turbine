@@ -4,6 +4,22 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Physics
+- **What the parts around the two pumps must carry** (`sim/rotor_parts_duty.py`, `sim/rotor-parts-duty-findings.md`):
+  both netlists of record at the pick (g 0.5 / 6 bridges / 1200 rpm relative).
+  - **La / Lb are DC chokes:** 0.146 H at 0.87–1.15 A (±13 % ripple), at most 110 V, 96 mJ peak.
+    - The τ of 0.5 s is [RH]. At 0.2 s the pump keeps 95 % of the AH field; below about 0.1 s it loses its gain margin.
+    - A first-cut gapped EI choke [RH] has a 28 mm leg and weighs 1.0 kg of iron + 0.4 kg of copper (0.6 + 0.2 kg at
+      τ 0.2 s).
+  - **D1*–D4*:** peak reverse voltages 112 / 101 / 43 / 45 V.
+  - **The 20 kV clamps Z1 / Z4:** 9.25 W each at 1200 rpm (4.4 mA peak, 0.45 mA mean, 16 % conduction). Together they
+    take the electrostatic pump's whole 18.5 W. A first-cut string is 100 × 200 V Zeners at 0.09 W each [RH].
+  - **The counter-rotor-to-shaft current:** 2.25 mA rms of pure AC (C1 / C2 displacement current), with no DC.
+- **The electrostatic reference link runs through an inner bearing for now** (designer's decision; the schematic shows
+  it):
+  - the rail is wired to one bearing's outer ring, since the G10 spiders insulate the rest;
+  - that is fine for diodes only, but not for the spark-gap dump: its 21 A pulses need a brush.
+
 ### Docs
 - **Schematic of the rotor's two circuits as built** (`docs/schematic-rotor-circuits.svg` / `.png`, generator
   `docs/make_schematic_rotor.py`):

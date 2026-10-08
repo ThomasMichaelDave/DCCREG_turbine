@@ -275,7 +275,8 @@ by §7.*
 - **Checks:** `sim/tube_geometry_wound_results.json`.
 - **Circuits:** `docs/schematic-rotor-circuits.svg` (generator `docs/make_schematic_rotor.py`). It draws both pumps as
   built, with the body of each part: the reluctance circuit entirely on the rotor, and the electrostatic one across the
-  rotor and the counter-rotor through one brush.
+  rotor and the counter-rotor through one reference link (for now an inner bearing, `sim/rotor-parts-duty-findings.md`
+  §4).
 - **Source of the dimensions:** every utron and bridge dimension comes from `sim/utron_profile.py`, the same numbers
   that draw `docs/figures/utron-core-detail.png`.
 - **The default build is unchanged:** a re-run of the C-EM tube gives the same layout, the same 307 parts and the
@@ -398,7 +399,7 @@ by §7.*
 - **Next:**
   - a 3-D check of the chosen pair;
   - the start-kick source;
-  - the La/Lb core design;
+  - the La/Lb core design (their duty, the τ sensitivity and a first-cut gapped choke: `sim/rotor-parts-duty-findings.md`);
   - ~~the tube STEP update~~ (done, §8: r_g 130 mm after the §7 correction, a 162 mm reluctance section);
   - a nonlinear field check of the neck (§8);
   - mechanical concentricity for 0.5 mm with counter-rotating bearings.
