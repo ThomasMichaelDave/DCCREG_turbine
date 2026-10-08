@@ -109,6 +109,16 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - that is fine for diodes only, but not for the spark-gap dump: its 21 A pulses need a brush.
 
 ### Docs
+- **Cost sheet template for the air build** (`docs/cost/dccreg-air-build-cost-sheet.xlsx`, generator
+  `docs/make_cost_sheet.py`, guide `docs/cost/README.md`):
+  - **What it costs:** the 2700 matrix stacks, with live formulas on editable targets and placeholder prices. The
+    targets include the voltage the field on the core needs, the pump's power and gain, the vane and radius caps,
+    corona-safe rims and the AH's steady ampere-turns.
+  - **The Optimum sheet** picks the cheapest qualifying design (or the lowest cost per watt).
+  - **At the placeholder prices:**
+    - the cheapest is 4 + 4 vanes at r 200 mm (2.35 W at 11.2 kV, 5.6 k);
+    - the best per watt is 6 + 6 at r 300 mm (15 W at 13 kV, 484 per W);
+    - aluminium is the material, and per-part work, not metal, drives the stack's cost.
 - **Figures of the vane matrix** (`docs/make_vane_matrix_figures.py`):
   - `docs/figures/vane-matrix-radius.png`: what the radius buys at the 6 + 6 cap (power, z, the stack for 7.4 W, the
     aluminium);
