@@ -5,8 +5,9 @@
     counter-rotor's passive bridges make L(theta); no wire crosses between the bodies.
 (b) ELECTROSTATIC: the de Queiroz diode doubler (sim/bicone_drive.py netlist) -- C1 / C2 between the counter-rotor's
     stator vanes and the rotor vanes, Ca / Cb, D1-D4, the 20 kV clamps, the bicone cones from the rotor vanes to the
-    shaft; one brush from the counter-rotor's reference rail to the shaft.
+    shaft; the counter-rotor's reference rail joined to the shaft through one inner bearing for now (a brush later).
 Values: sim/pole_design_variants_op.json (the pick), sim/utron_profile.py, sim/bicone_drive.py and its results,
+sim/rotor_parts_duty_results.json (La / Lb, D1*-D4*, the clamps and the bearing current at the pick),
 sim/tube_geometry_wound_results.json.
 Usage: python3 docs/make_schematic_rotor.py   (the PNG needs playwright + chromium)
 """
@@ -127,7 +128,8 @@ def numbers():
     rsn = MDm.RSNUB * (Lg / MDm.L_MAX) * (F / 60.0)
     bd = json.load(open(os.path.join(ROOT, "sim", "bicone_drive_results.json")))
     tube = json.load(open(os.path.join(ROOT, "sim", "tube_geometry_wound_results.json")))
-    return dict(op=op, b=b, sp=sp, Lg=Lg, ah=ah, F=F, csn=csn, rsn=rsn, la=LA_RATIO * Lg, lp=MDm.R_PAR * Lg,
+    duty = json.load(open(os.path.join(ROOT, "sim", "rotor_parts_duty_results.json")))
+    return dict(op=op, b=b, sp=sp, Lg=Lg, ah=ah, F=F, csn=csn, rsn=rsn, la=LA_RATIO * Lg, lp=MDm.R_PAR * Lg, duty=duty,
                 bd_d=[r for r in bd["rows"] if r["mode"] == "diodes"][0],
                 bd_g=[r for r in bd["rows"] if r["mode"] == "dump" and "steps" not in r and "reltol" not in r][0],
                 bd_F=bd["F"], tube=tube)
@@ -214,6 +216,7 @@ def panel_a(ox, N):
 
 def panel_a_table(ox, y, N):
     b, sp, ah = N["b"], N["sp"], N["ah"]
+    la, ch = N["duty"]["la_lb"]["La"], N["duty"]["la_core"][0]
     rows = [
         ("A1–A3, B1–B3", f"wound utrons at 0 / 120 / 240°, {sp['N_u']} t of Ø{sp['wire_d_mm']:.2f} mm Cu: "
                          f"{1e3 * sp['L_al_coil_H']:.1f} / {1e3 * sp['L_un_coil_H']:.1f} mH (aligned / unaligned), "
@@ -223,9 +226,13 @@ def panel_a_table(ox, y, N):
         ("bridges", f"a passing bridge closes the utron's flux path: L(θ) {sp['n_br']} × per rev; B row half a pitch on"),
         ("AH", f"anti-Helmholtz pair at the hub, one coil per branch: {ah['N']} t, {ah['L'] * 1e3:.2f} mH, "
                f"{ah['R']:.2f} Ω each [RH]"),
-        ("La, Lb", f"{N['la']:.3f} H ({LA_RATIO:g} L̂), {N['la'] / TAU_FIXED:.2f} Ω (τ {TAU_FIXED:g} s) [RH]: gapped cores, not designed"),
+        ("La, Lb", f"{N['la']:.3f} H DC chokes: {la['I_min_A']:.2f}–{la['I_max_A']:.2f} A, ≤ {la['V_pk_V']:.0f} V, "
+                   f"{N['la'] / TAU_FIXED:.2f} Ω (τ {TAU_FIXED:g} s [RH]); not designed"),
+        ("", f"first cut [RH]: gapped EI of M235-35A, {ch['a_mm']:.0f} mm leg, {ch['turns']} t, {ch['gap_mm']:.2f} mm gap, "
+             f"{ch['m_core_kg']:.1f} kg Fe + {ch['m_cu_kg']:.1f} kg Cu each"),
         ("Lp2, Lp3", f"{N['lp'] * 1e3:.1f} mH wiring stray, as modelled (dual of Cpar) [IR]"),
-        ("D1*–D4*", f"Si, 0.55 V at 1 A; {b['I_pk']:.1f} A peak; reverse voltage not yet checked"),
+        ("D1*–D4*", f"Si, 0.55 V at 1 A; {b['I_pk']:.1f} A peak; reverse "
+                    + " / ".join(f"{v:.0f}" for v in N['duty']['la_lb']['diode_VR_pk_V'].values()) + " V peak"),
     ]
     y = table(ox + 42, y, rows)
     I_min = b["AT_min"] / ah["N"]
@@ -283,14 +290,17 @@ def panel_b(ox, N):
         o.append(f'<circle cx="{x - 8:.1f}" cy="{y_bd + 52:.1f}" r="2.6" fill="#c0392b"/>')    # dot convention: aiding
         tx(x - 34 if side < 0 else x + 34, y_bd + 2, nm, "t", "end" if side < 0 else "start", 'font-weight="bold"')
     tx(x1 + 30, y_bd - 16, "8 stator vanes (node 1)", "ms"); tx(x1 + 30, y_bd + 22, "8 rotor vanes (R-A)", "ms")
-    # the brush: the one rotating contact
+    # the one rotating contact: for now an inner bearing (outer ring on the counter-rotor, inner ring on the shaft)
     xm = (x2 + x3) / 2
-    ln(xm, y_cr, xm, y_bd - 14)
-    o.append(f'<rect x="{xm - 6:.1f}" y="{y_bd - 14:.1f}" width="12" height="13" class="brush"/>')
-    ln(xm - 26, y_bd + 1, xm + 26, y_bd + 1, "ring")
-    ln(xm, y_bd + 1, xm, y_sh)
-    tx(xm + 14, y_bd - 4, "brush", "t", "start", 'font-weight="bold"')
-    tx(xm + 14, y_bd + 20, "the only rotating contact", "ms")
+    ln(xm, y_cr, xm, y_bd - 10)
+    ln(xm - 24, y_bd - 10, xm + 24, y_bd - 10, "ring"); ln(xm - 24, y_bd + 10, xm + 24, y_bd + 10, "ring")
+    for dx in (-14, 0, 14):
+        o.append(f'<circle cx="{xm + dx:.1f}" cy="{y_bd:.1f}" r="4.6" class="ball"/>')
+    ln(xm, y_bd + 10, xm, y_sh)
+    tx(xm + 12, y_bd + 44, "inner bearing (6205)", "t", "start", 'font-weight="bold"')
+    tx(xm + 12, y_bd + 60, "for now: rail → its outer ring,", "ms")
+    tx(xm + 12, y_bd + 74, "inner ring on the shaft;", "ms")
+    tx(xm + 12, y_bd + 88, "a brush later", "ms")
     # shaft
     ln(x1 - 20, y_sh, x4 + 20, y_sh, "rail")
     for x in (x1, xm, x4):
@@ -301,30 +311,34 @@ def panel_b(ox, N):
 def panel_b_table(ox, y, N):
     t = N["tube"]
     d, g = N["bd_d"], N["bd_g"]
+    es = [q for q in N["duty"]["clamps"] if q["F_Hz"] == 120.0][0]
+    zc, zs, lk = es["Z1"], N["duty"]["clamp_string"], es["link"]
     rows = [
         ("C1, C2", f"8 + 8 vanes, 6 sectors, 3 mm vacuum gaps: {BDm.CMIN * 1e12:.1f}–{t['C_max_pF']:.0f} pF "
                    f"(κ {t['kappa']:.1f}); C2 in antiphase"),
         ("Ca, Cb", f"8 fixed plates each (4 at each node): {BDm.CA * 1e12:.0f} pF ({BDm.CA / BDm.CMAX:.1f} C_max)"),
-        ("D1–D4", "HV diode stacks for the 20 kV swing (part not chosen)"),
-        ("Z1, Z4", "avalanche clamps, BV 20 kV; option: a 20 kV spark gap + quench diode (the dump)"),
+        ("D1–D4", "HV stacks rated ≥ 20 kV (D1, D2), ≥ 40 kV (D3, D4); parts not chosen"),
+        ("Z1, Z4", f"avalanche (Zener) strings, BV 20 kV, e.g. {zs['N']} × {zs['V_Z']:.0f} V; on the counter-rotor"),
+        ("", f"each: {zc['P_W']:.2f} W, {zc['I_pk_mA']:.1f} mA peak, {zc['I_avg_mA']:.2f} mA mean, "
+             f"{100 * zc['conduction']:.0f} % conduction ({zc['E_per_cycle_mJ']:.0f} mJ per cycle)"),
         ("cones A, B", f"the bicone halves, {BDm.N_CONE} t, {BDm.L_CONE * 1e6:.1f} µH, {BDm.R_CONE:.2f} Ω each; "
                        f"M {BDm.M_CONE * 1e6:.1f} µH (k {BDm.M_CONE / BDm.L_CONE:.3f}, aiding) [RH]"),
         ("strays", f"≈ {BDm.CPAR * 1e12:.0f} pF at every node [RH]"),
-        ("brush", "rail to shaft: carries the cone current (mA); with the dump, the 21 A pulses"),
+        ("bearing", f"one inner bearing, for now: {lk['I_rms_mA']:.2f} mA rms AC ({lk['I_pk_mA']:.1f} mA pk), no DC"),
+        ("dump", f"option for Z1 / Z4: 20 kV gap + quench diode; {g['I_cone_pk_A']:.0f} A pulses: needs a brush"),
     ]
     y = table(ox + 42, y, rows, w_key=76)
-    tx(ox + 42, y + 6, f"At {60 * N['bd_F'] / 6:.0f} rpm relative ({N['bd_F']:.0f} Hz; the pick runs 1200 rpm, 120 Hz, "
-                       "about twice the power: not re-run):", "op")
-    tx(ox + 42, y + 24, f"diodes only: belt {d['P_belt_W']:.1f} W into the clamps; cones {d['I_cone_rms_mA']:.1f} mA rms "
-                        f"({d['AT_pk']:.2f} A-turns): the bicone is decorative.", "op")
-    tx(ox + 42, y + 42, f"dump: {g['I_cone_pk_A']:.0f} A peak, {g['AT_pk']:.0f} A-turns, {g['E_per_dump_mJ']:.0f} mJ per dump, "
-                        f"{g['dumps_per_s_A']:.0f} per s per side, ring {g['f_ring_analytic_MHz']:.1f} MHz.", "op")
+    tx(ox + 42, y + 6, f"At {es['rpm_rel']:.0f} rpm relative ({es['F_Hz']:.0f} Hz), diodes only: belt {es['P_belt_W']:.1f} W, "
+                       f"all into Z1 + Z4; node peak {zc['V_node_pk_kV']:.2f} kV.", "op")
+    tx(ox + 42, y + 24, f"Cones {es['cone_rms_mA']:.1f} mA rms: the bicone is decorative.", "op")
+    tx(ox + 42, y + 42, f"Dump ({60 * N['bd_F'] / 6:.0f} rpm run): {g['I_cone_pk_A']:.0f} A peak, {g['AT_pk']:.0f} A-turns, "
+                        f"{g['E_per_dump_mJ']:.0f} mJ per dump, ring {g['f_ring_analytic_MHz']:.1f} MHz.", "op")
 
 
 # ------------------------------------------------------------------------------------------------ sheet
 def main():
     N = numbers()
-    W, H = 1440, 1150
+    W, H = 1440, 1190
     o.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
              'font-family="DejaVu Sans, Arial, sans-serif" font-size="13">')
     o.append("<title>Rotor circuits</title>")
@@ -335,7 +349,7 @@ def main():
     .zl{stroke:#7d3c98;stroke-width:2;fill:none} .va{stroke:#111;stroke-width:1.6}
     .pl{stroke:#111;stroke-width:2.6} .rail{stroke:#111;stroke-width:3} .mag{stroke:#7f8c8d;stroke-width:1.4;stroke-dasharray:3 4}
     .br{fill:#9aa3ad;stroke:#5d6670;stroke-width:1} .brush{fill:#444;stroke:#111;stroke-width:1}
-    .ring{stroke:#111;stroke-width:5} .dot{fill:#111}
+    .ring{stroke:#111;stroke-width:4} .ball{fill:#fff;stroke:#111;stroke-width:1.6} .dot{fill:#111}
     .zone_cr{fill:#f3f0e6;stroke:#b9ad8a;stroke-width:1;stroke-dasharray:6 4} .zone_r{fill:#eef3f8;stroke:#9fb3c8;stroke-width:1;stroke-dasharray:6 4}
     .kick{fill:#fff7ec;stroke:#d68910;stroke-width:1.4;stroke-dasharray:5 4} .frame{fill:none;stroke:#999;stroke-width:1}
     .t{fill:#111} .tu{fill:#1f6fb2} .ta{fill:#c0392b} .tl{fill:#7d3c98} .nd{fill:#111;font-size:12.5px}
@@ -350,7 +364,7 @@ def main():
                f"across both bodies · operating point {PICK} relative · only diodes switch", "m")
     for ox, w, title in ((20, 760, "(a) RELUCTANCE: magnetic dual doubler → AH pair"),
                          (800, 620, "(b) ELECTROSTATIC: de Queiroz diode doubler → bicone")):
-        box(ox, 70, w, 900, "frame")
+        box(ox, 70, w, 940, "frame")
         tx(ox + 12, 94, title, "h2")
     panel_a(20, N)
     panel_b(780, N)
@@ -365,11 +379,12 @@ def main():
         "the 20 kV clamp → the NiFe neck's saturation.",
         "A and B swap every half cycle: one group generates (L falling) while the other motors. The AH coils are named by branch; "
         "sim/magnetic_doubler.py calls them AH top / bottom (A was then the upper side).",
-        f"Numbers: sim/pole_design_variants_op.json ({PICK}), sim/utron_profile.py, sim/bicone_drive_results.json, "
-        "sim/tube_geometry_wound_results.json · netlists: sim/magnetic_doubler.py, sim/bicone_drive.py",
-        "Findings: sim/pole-design-findings.md, sim/hub-drive-findings.md · generator: docs/make_schematic_rotor.py",
+        f"Numbers: sim/pole_design_variants_op.json ({PICK}), sim/utron_profile.py, sim/rotor_parts_duty_results.json, "
+        "sim/bicone_drive_results.json, sim/tube_geometry_wound_results.json",
+        "Netlists: sim/magnetic_doubler.py, sim/bicone_drive.py · findings: sim/pole-design-findings.md, sim/hub-drive-findings.md "
+        "· generator: docs/make_schematic_rotor.py",
     ]
-    y = 994
+    y = 1034
     for s in notes:
         tx(20, y, s, "n"); y += 19
     o.append("</svg>")
