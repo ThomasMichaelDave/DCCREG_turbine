@@ -659,18 +659,32 @@
 "label": "side-A / A_Ca_08 - Ca plate, node 2 (connection not drawn) [Al plate, stator]"
 },
 {
-"name": "A_U1_core",
-"proto": "wu_core",
+"name": "A_U1_core_pos",
+"proto": "wu_core_pos",
 "body": "rotor",
 "node": "",
 "group": "rel-A",
-"join": "A_U1_core",
+"join": "A_U1_core_pos",
 "place": {
 "dx": 0.0,
 "dz": 51.0,
 "rot": 0.0
 },
-"label": "rel-A / A_U1_core - utron A1 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+"label": "rel-A / A_U1_core_pos - utron A1 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U1_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_core_neg - utron A1 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
 },
 {
 "name": "A_U1_strip",
@@ -785,18 +799,32 @@
 "label": "rel-A / A_U1_cheek_neg_hi - utron A1 cheek (G10), hi end [G10 cheek, rotor]"
 },
 {
-"name": "A_U2_core",
-"proto": "wu_core",
+"name": "A_U2_core_pos",
+"proto": "wu_core_pos",
 "body": "rotor",
 "node": "",
 "group": "rel-A",
-"join": "A_U2_core",
+"join": "A_U2_core_pos",
 "place": {
 "dx": 0.0,
 "dz": 51.0,
 "rot": 120.0
 },
-"label": "rel-A / A_U2_core - utron A2 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+"label": "rel-A / A_U2_core_pos - utron A2 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U2_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_core_neg - utron A2 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
 },
 {
 "name": "A_U2_strip",
@@ -911,18 +939,32 @@
 "label": "rel-A / A_U2_cheek_neg_hi - utron A2 cheek (G10), hi end [G10 cheek, rotor]"
 },
 {
-"name": "A_U3_core",
-"proto": "wu_core",
+"name": "A_U3_core_pos",
+"proto": "wu_core_pos",
 "body": "rotor",
 "node": "",
 "group": "rel-A",
-"join": "A_U3_core",
+"join": "A_U3_core_pos",
 "place": {
 "dx": 0.0,
 "dz": 51.0,
 "rot": 240.0
 },
-"label": "rel-A / A_U3_core - utron A3 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+"label": "rel-A / A_U3_core_pos - utron A3 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U3_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_core_neg - utron A3 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
 },
 {
 "name": "A_U3_strip",
@@ -1499,18 +1541,32 @@
 "label": "side-B / B_Cb_08 - Cb plate, node 3 (connection not drawn) [Al plate, stator]"
 },
 {
-"name": "B_U1_core",
-"proto": "wu_core",
+"name": "B_U1_core_pos",
+"proto": "wu_core_pos",
 "body": "rotor",
 "node": "",
 "group": "rel-B",
-"join": "B_U1_core",
+"join": "B_U1_core_pos",
 "place": {
 "dx": 0.0,
 "dz": 651.0,
 "rot": 0.0
 },
-"label": "rel-B / B_U1_core - utron B1 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+"label": "rel-B / B_U1_core_pos - utron B1 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U1_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_core_neg - utron B1 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
 },
 {
 "name": "B_U1_strip",
@@ -1625,18 +1681,32 @@
 "label": "rel-B / B_U1_cheek_neg_hi - utron B1 cheek (G10), hi end [G10 cheek, rotor]"
 },
 {
-"name": "B_U2_core",
-"proto": "wu_core",
+"name": "B_U2_core_pos",
+"proto": "wu_core_pos",
 "body": "rotor",
 "node": "",
 "group": "rel-B",
-"join": "B_U2_core",
+"join": "B_U2_core_pos",
 "place": {
 "dx": 0.0,
 "dz": 651.0,
 "rot": 120.0
 },
-"label": "rel-B / B_U2_core - utron B2 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+"label": "rel-B / B_U2_core_pos - utron B2 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U2_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_core_neg - utron B2 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
 },
 {
 "name": "B_U2_strip",
@@ -1751,18 +1821,32 @@
 "label": "rel-B / B_U2_cheek_neg_hi - utron B2 cheek (G10), hi end [G10 cheek, rotor]"
 },
 {
-"name": "B_U3_core",
-"proto": "wu_core",
+"name": "B_U3_core_pos",
+"proto": "wu_core_pos",
 "body": "rotor",
 "node": "",
 "group": "rel-B",
-"join": "B_U3_core",
+"join": "B_U3_core_pos",
 "place": {
 "dx": 0.0,
 "dz": 651.0,
 "rot": 240.0
 },
-"label": "rel-B / B_U3_core - utron B3 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+"label": "rel-B / B_U3_core_pos - utron B3 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U3_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_core_neg - utron B3 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
 },
 {
 "name": "B_U3_strip",

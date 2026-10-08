@@ -281,7 +281,8 @@ class Machine:
                 self.wound_protos(sp)
                 for j, a in enumerate(e["angles"]):
                     u = f"{side}_U{j + 1}"
-                    for piece, desc in (("wu_core", "half-cores (M235-35A)"), ("wu_strip", "neck strip (80 % NiFe)"),
+                    for piece, desc in (("wu_core_pos", "half-core +v (M235-35A)"), ("wu_core_neg", "half-core -v (M235-35A)"),
+                                        ("wu_strip", "neck strip (80 % NiFe)"),
                                         ("wu_spacer", "air-break spacer (G10)"), ("wu_wedge", "slot wedge (G10)"),
                                         ("wu_winding", f"yoke coil, {sp['N_u']} turns, {e['node']}")):
                         self.add(f"{u}_{piece[3:]}", piece, "rotor", e["node"] if piece == "wu_winding" else "", f"rel-{side}",
@@ -350,16 +351,16 @@ class Machine:
         """the wound utron's parts (sim/utron_profile.py), local u = x (radius along the centre line), v = y, w = z from
         the stack's lower end; built once, placed per utron."""
         import utron_profile as U
-        from OCP.BRepAlgoAPI import BRepAlgoAPI_Common, BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
+        from OCP.BRepAlgoAPI import BRepAlgoAPI_Common, BRepAlgoAPI_Cut
         L = sp["L"]
         R = U.rects(sp)
 
-        def core():
-            c = BRepAlgoAPI_Fuse(prism(U.half_core(sp, +1, arc=False), 0.0, L), prism(U.half_core(sp, -1, arc=False), 0.0, L)).Shape()
-            c = BRepAlgoAPI_Common(c, cyl_z(0.0, 0.0, sp["r_g"], -1.0, L + 1.0)).Shape()      # tip faces on the gap arc
+        def core(sd):
+            """one L-shaped half-core (sd +1: v > 0), a laminated stack of its own."""
+            c = BRepAlgoAPI_Common(prism(U.half_core(sp, sd, arc=False), 0.0, L),
+                                   cyl_z(0.0, 0.0, sp["r_g"], -1.0, L + 1.0)).Shape()      # tip face on the gap arc
             for (u, v) in sp["studs"]:
-                for sd in (+1, -1):
-                    c = BRepAlgoAPI_Cut(c, cyl_z(u, sd * v, 0.5 * sp["stud_d"], -1.0, L + 1.0)).Shape()
+                c = BRepAlgoAPI_Cut(c, cyl_z(u, sd * v, 0.5 * sp["stud_d"], -1.0, L + 1.0)).Shape()
             return c
 
         def winding():
@@ -375,7 +376,8 @@ class Machine:
                 c = BRepAlgoAPI_Cut(c, cyl_z(u, sd * v, 0.5 * sp["stud_d"], -sp["t_cheek"] - 1.0, 1.0)).Shape()
             return c
         bx = lambda r: box(r[0], r[1], r[2], r[3], 0.0, L)
-        self.proto("wu_core", core, COL["sife"], "utron half-cores, M235-35A laminated (studded)")
+        self.proto("wu_core_pos", lambda: core(+1), COL["sife"], "utron half-core, M235-35A laminated (studded)")
+        self.proto("wu_core_neg", lambda: core(-1), COL["sife"], "utron half-core, M235-35A laminated (studded)")
         self.proto("wu_strip", lambda: bx(R["strip"]), COL["nife"], "neck strip, 80 % NiFe laminated 0.1 mm")
         self.proto("wu_spacer", lambda: bx(R["spacer"]), COL["g10"], "G10 air-break spacer")
         self.proto("wu_wedge", lambda: prism(U.wedge(sp), 0.0, L), COL["g10"], "G10 slot wedge")
@@ -472,7 +474,7 @@ def checks(m, log=print):
         d = BRepExtrema_DistShapeShape(s_sph, s_tip); d.Perform()
         gaps.append(dict(station=e["station"], side=e["side"], set_mm=e["gap"], got_mm=round(d.Value(), 4)))
     res["G-TUBE-GAP"] = dict(rows=gaps, pass_=all(abs(g["got_mm"] - g["set_mm"]) < 1e-3 for g in gaps))
-    if any(pt["proto"] == "wu_core" for pt in m.parts):
+    if any(pt["proto"].startswith("wu_core") for pt in m.parts):
         res["G-TUBE-WOUND"] = wound_checks(m, shapes, log)
     if not any(pt["proto"] == "cem_core" for pt in m.parts):
         return res
@@ -507,21 +509,23 @@ def wound_checks(m, shapes, log=print):
     out, ok = dict(gap_set_mm=sp["g"], clr_set_mm=sp["clr"]), True
     half = 180.0 / sp["n_br"]
     for side in ("A", "B"):
-        core = f"{side}_U1_core"
+        cores = [f"{side}_U1_core_pos", f"{side}_U1_core_neg"]       # the two half-cores
         bridges = [n for n in by if n.startswith(f"{side}_bridge_") and pts[n]["proto"] == "w_bridge"]
-        at0 = min(dist(by[core], by[b]) for b in bridges)
+        cd = lambda shape_of, other: min(dist(shape_of(c), other) for c in cores)
+        at0 = min(cd(lambda c: by[c], by[b]) for b in bridges)
         turn = half if side == "B" else 0.0              # B is unaligned at rotor angle 0: turn it onto a bridge
-        al = min(dist(turned(core, turn), by[b]) for b in bridges)
-        un = min(dist(turned(core, half if side == "A" else 0.0), by[b]) for b in bridges)
+        al = min(cd(lambda c: turned(c, turn), by[b]) for b in bridges)
+        un = min(cd(lambda c: turned(c, half if side == "A" else 0.0), by[b]) for b in bridges)
         w = f"{side}_U1_winding"
         row = dict(gap_at_rotor_0_mm=at0, gap_aligned_mm=al, gap_unaligned_mm=un,
-                   winding_to_core_mm=dist(by[w], by[core]), winding_to_strip_mm=dist(by[w], by[f"{side}_U1_strip"]),
+                   winding_to_core_mm=cd(lambda c: by[c], by[w]), winding_to_strip_mm=dist(by[w], by[f"{side}_U1_strip"]),
                    winding_to_wedge_mm=dist(by[w], by[f"{side}_U1_wedge"]),
                    winding_to_cheek_mm=min(dist(by[w], by[n]) for n in by if n.startswith(f"{side}_U1_cheek")),
                    winding_to_disc_mm=min(dist(by[w], by[n]) for n in by if n.startswith(f"{side}_carrier_disc")),
                    winding_to_ring_mm=dist(by[w], by[f"{side}_bridge_ring"]),
-                   core_to_ring_mm=dist(by[core], by[f"{side}_bridge_ring"]))
-        P = MG.mesh_points(by[core], 0.02)
+                   core_to_ring_mm=cd(lambda c: by[c], by[f"{side}_bridge_ring"]),
+                   half_core_to_half_core_mm=dist(by[cores[0]], by[cores[1]]))
+        P = np.vstack([MG.mesh_points(by[c], 0.02) for c in cores])
         row["core_r_max_mm"] = round(float(np.hypot(P[:, 0], P[:, 1]).max()), 3)
         P = MG.mesh_points(by[w], 0.05)
         row["winding_r_max_mm"] = round(float(np.hypot(P[:, 0], P[:, 1]).max()), 2)

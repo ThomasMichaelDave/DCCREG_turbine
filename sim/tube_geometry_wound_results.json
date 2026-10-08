@@ -1,13 +1,13 @@
 {
  "tag": "tube-r150-n8-wound-g0p5-6br",
- "n_parts": 146,
- "n_protos": 29,
+ "n_parts": 152,
+ "n_protos": 30,
  "L_total_mm": 802.0,
  "vane_dia_mm": 300.0,
  "C_max_pF": 1113.3579434950714,
  "kappa": 15.655626080301564,
  "G-TUBE-CLASH": {
-  "pairs_tested": 404,
+  "pairs_tested": 457,
   "clashes": [],
   "n_clash": 0,
   "pass_": true
@@ -36,6 +36,7 @@
    "winding_to_disc_mm": 2.6757,
    "winding_to_ring_mm": 2.7367,
    "core_to_ring_mm": 1.5,
+   "half_core_to_half_core_mm": 12.0,
    "core_r_max_mm": 130.0,
    "winding_r_max_mm": 128.76,
    "winding_r_min_mm": 59.67
@@ -51,6 +52,7 @@
    "winding_to_disc_mm": 2.6757,
    "winding_to_ring_mm": 2.7367,
    "core_to_ring_mm": 1.5,
+   "half_core_to_half_core_mm": 12.0,
    "core_r_max_mm": 130.0,
    "winding_r_max_mm": 128.76,
    "winding_r_min_mm": 59.67
@@ -141,11 +143,11 @@
   "pick": "g 0.5 / 6 bridges / 1200 rpm"
  },
  "step": "docs/geometry/tube/tube-r150-n8-wound-g0p5-6br.step",
- "step_bytes": 1090367,
+ "step_bytes": 1096009,
  "step_read_back": {
-  "instances": 146,
+  "instances": 152,
   "assemblies": 8,
-  "products": 29,
+  "products": 30,
   "pass_": true
  }
 }

@@ -12,3 +12,7 @@ sim/.ia_campaign.json
 spice/asd_*.dat
 sim/.ia2_*.json
 spice/ia2_*.dat
+
+# three.js for tools/step-viewer (npm install there)
+tools/step-viewer/node_modules
+tools/step-viewer/package-lock.json
