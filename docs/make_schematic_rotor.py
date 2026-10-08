@@ -338,7 +338,7 @@ def panel_b_table(ox, y, N):
 # ------------------------------------------------------------------------------------------------ sheet
 def main():
     N = numbers()
-    W, H = 1440, 1190
+    W, H = 1440, 1210
     o.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
              'font-family="DejaVu Sans, Arial, sans-serif" font-size="13">')
     o.append("<title>Rotor circuits</title>")
@@ -379,6 +379,8 @@ def main():
         "the 20 kV clamp → the NiFe neck's saturation.",
         "A and B swap every half cycle: one group generates (L falling) while the other motors. The AH coils are named by branch; "
         "sim/magnetic_doubler.py calls them AH top / bottom (A was then the upper side).",
+        "Polarity: (b) runs negative. de Queiroz's Fig. 1 draws the same core positive, with all four diodes the other way "
+        "(sim/queiroz_fig1_check.py: z 1.372 per cycle both ways, his 1.17138 per half cycle).",
         f"Numbers: sim/pole_design_variants_op.json ({PICK}), sim/utron_profile.py, sim/rotor_parts_duty_results.json, "
         "sim/bicone_drive_results.json, sim/tube_geometry_wound_results.json",
         "Netlists: sim/magnetic_doubler.py, sim/bicone_drive.py · findings: sim/pole-design-findings.md, sim/hub-drive-findings.md "

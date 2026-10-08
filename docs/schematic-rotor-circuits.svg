@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1190" width="1440" height="1190" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1210" width="1440" height="1210" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">
 <title>Rotor circuits</title>
-<rect width="1440" height="1190" fill="#ffffff"/>
+<rect width="1440" height="1210" fill="#ffffff"/>
 <style>
     .w{stroke:#111;stroke-width:2;fill:none} .ut{stroke:#1f6fb2;stroke-width:2.4;fill:none} .ah{stroke:#c0392b;stroke-width:2.6;fill:none}
     .st{stroke:#8a8a8a;stroke-width:2;fill:none} .lim{stroke:#7d3c98;stroke-width:2.2;fill:none}
@@ -329,6 +329,7 @@
 <text x="20.0" y="1053.0" class="n" text-anchor="start" >Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers and the kick source (rotor); D1–D4 and Z1 / Z4 (counter-rotor). The two pumps share only the shaft; each one's reaction torque goes into the gear.</text>
 <text x="20.0" y="1072.0" class="n" text-anchor="start" >(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, the 20 kV clamp → the NiFe neck's saturation.</text>
 <text x="20.0" y="1091.0" class="n" text-anchor="start" >A and B swap every half cycle: one group generates (L falling) while the other motors. The AH coils are named by branch; sim/magnetic_doubler.py calls them AH top / bottom (A was then the upper side).</text>
-<text x="20.0" y="1110.0" class="n" text-anchor="start" >Numbers: sim/pole_design_variants_op.json (g 0.5 / 6 bridges / 1200 rpm), sim/utron_profile.py, sim/rotor_parts_duty_results.json, sim/bicone_drive_results.json, sim/tube_geometry_wound_results.json</text>
-<text x="20.0" y="1129.0" class="n" text-anchor="start" >Netlists: sim/magnetic_doubler.py, sim/bicone_drive.py · findings: sim/pole-design-findings.md, sim/hub-drive-findings.md · generator: docs/make_schematic_rotor.py</text>
+<text x="20.0" y="1110.0" class="n" text-anchor="start" >Polarity: (b) runs negative. de Queiroz's Fig. 1 draws the same core positive, with all four diodes the other way (sim/queiroz_fig1_check.py: z 1.372 per cycle both ways, his 1.17138 per half cycle).</text>
+<text x="20.0" y="1129.0" class="n" text-anchor="start" >Numbers: sim/pole_design_variants_op.json (g 0.5 / 6 bridges / 1200 rpm), sim/utron_profile.py, sim/rotor_parts_duty_results.json, sim/bicone_drive_results.json, sim/tube_geometry_wound_results.json</text>
+<text x="20.0" y="1148.0" class="n" text-anchor="start" >Netlists: sim/magnetic_doubler.py, sim/bicone_drive.py · findings: sim/pole-design-findings.md, sim/hub-drive-findings.md · generator: docs/make_schematic_rotor.py</text>
 </svg>

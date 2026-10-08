@@ -5,6 +5,24 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Physics
+- **The electrostatic core's diode directions, checked against de Queiroz's Fig. 1** (`sim/queiroz_fig1_check.py`,
+  `sim/electrostatic-no-clamp-findings.md` §1):
+  - **Directions:** every one of the repo's four diodes is reversed relative to the paper's symmetrical unipolar
+    generator, and consistently so. It is the same circuit at negative polarity.
+  - **Check:** the paper's own example (60–360 pF, Ca = Cb = 330 pF) gives z 1.37205 per cycle with its diodes
+    (positive) and 1.37200 with the repo's (negative). That is the paper's 1.17138 per half cycle, squared. Flipping
+    D1 alone breaks it (z 1.065).
+- **Running without the 20 kV clamps, and in air** (`sim/no_clamp_breakdown.py`,
+  `sim/electrostatic-no-clamp-findings.md` §2–3):
+  - **No collapse:** the pump rises to breakdown, the vane gap strikes, the pump empties to about 0.3 kV and is back
+    about 4 cycles later. That is about 30 strikes per second per side at 1200 rpm.
+  - **Per strike:** 43 mJ in air at 10.9 kV, 300 mJ in vacuum at 30 kV.
+  - **Surges through D1–D4:** 25–47 A in air, 70–105 A in vacuum, against their mA rating.
+  - **Surges through the reference link:** in air 38 A peak and 2 mC per strike (1.8 A rms), so the
+    bearing-as-reference and "no clamps" do not go together.
+  - **Pull-in:** the vanes' electrostatic pull-in (≈ 75 kV [RH]) lies above either breakdown.
+  - **Air tests:** the 3 mm gaps break near 10.9 kV, so the 20 kV clamps never act there. The options are a ~7 kV
+    clamp (≈ 2.3 W of pump), or sparks with surge resistors and a brush.
 - **What the parts around the two pumps must carry** (`sim/rotor_parts_duty.py`, `sim/rotor-parts-duty-findings.md`):
   both netlists of record at the pick (g 0.5 / 6 bridges / 1200 rpm relative).
   - **La / Lb are DC chokes:** 0.146 H at 0.87–1.15 A (±13 % ripple), at most 110 V, 96 mJ peak.
