@@ -109,6 +109,11 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - that is fine for diodes only, but not for the spark-gap dump: its 21 A pulses need a brush.
 
 ### Docs
+- **Figures of the vane matrix** (`docs/make_vane_matrix_figures.py`):
+  - `docs/figures/vane-matrix-radius.png`: what the radius buys at the 6 + 6 cap (power, z, the stack for 7.4 W, the
+    aluminium);
+  - `docs/figures/vane-matrix-corona.png`: the rims' corona margin over gap and thickness;
+  - `sim/vane_matrix_summary.json`: the findings' tables.
 - **The air vane-stack drawing now shows the capped stack** (`docs/make_air_vane_drawing.py --t 3 --n 6`, the default):
   3 mm full-round vanes and plates, 6 + 6 vanes per varicap per side.
   - **Any sized design:** `--t` / `--n` pick any stage 4b / 4c row, e.g. `--t 4 --n 16` for the earlier sheet.
