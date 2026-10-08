@@ -17,8 +17,8 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
     - a 200-turn coil on a G10 former, with a G10 slot wedge, A4 studs, and G10 cheeks bolted to carrier discs.
   - **Checks:** 0 clashes over 404 pairs, 0 sweep hits, an aligned gap of exactly 0.500 mm, and 1.000 mm from the
     winding to the iron. The STEP reads back 146 / 146.
-  - **The default C-EM build is unchanged:** a re-run gives the same layout, the same 307 parts and the same clash and
-    sweep results.
+  - **The default C-EM build is unchanged:** a re-run gives the same layout, the same 307 parts and the same clash,
+    sweep, clocking-gap and C-EM fit results.
 - **Utron detail drawing** (`docs/make_utron_drawing.py`): front view, two side sections, the solved 2-D field and
   the data table, all from the same `utron_profile` numbers as the solids.
 

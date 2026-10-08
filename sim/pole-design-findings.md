@@ -272,7 +272,8 @@ by §7.*
 - **Source of the dimensions:** every utron and bridge dimension comes from `sim/utron_profile.py`, the same numbers
   that draw `docs/figures/utron-core-detail.png`.
 - **The default build is unchanged:** a re-run of the C-EM tube gives the same layout, the same 307 parts and the
-  same clash and sweep results.
+  same clash, sweep, clocking-gap and C-EM fit results. (Its committed C_max is 1.00064 × today's, which is air's
+  ε_r: that results file predates the tube's vacuum default.)
 
 **Arrangement** (the diode build: no Cx islands, no clocking decks):
 - **Size:** 802 mm long, vane OD 300 mm, cage OD 332 mm.
