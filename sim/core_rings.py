@@ -75,8 +75,10 @@ def maps(ring, theta, coils, h, hub=HUB):
     return r, z, eps, cond
 
 
-def solve(ring, theta, coils, h=0.25, hub=HUB, keep=False):
-    r, z, eps, cond = maps(ring, theta, coils, h, hub)
+def solve(ring, theta, coils, h=0.25, hub=HUB, keep=False, maps_fn=None):
+    """the field solve; maps_fn(ring, theta, coils, h, hub) -> r, z, eps, cond replaces this hub's maps (the locked hub of
+    sim/hub_locked.py uses it). REF: cond 1, the cage at r = R_box and the vane at z = Z_box."""
+    r, z, eps, cond = (maps_fn or maps)(ring, theta, coils, h, hub)
     nr, nz = eps.shape
     hm = h * 1e-3
     rc, zc = r * 1e-3, z * 1e-3                                         # m
@@ -151,6 +153,7 @@ def solve(ring, theta, coils, h=0.25, hub=HUB, keep=False):
     res["Ez_mid_kV_cm_per_kV"] = [v * 1e-2 for v in out["Ez_mid_per_Vdiff"]]
     if keep:
         res["V_anti"] = out["anti"]["V"]
+        res["V_sym"] = out["sym"]["V"]
         res["cond"] = cond
         res["eps"] = eps
     return res
