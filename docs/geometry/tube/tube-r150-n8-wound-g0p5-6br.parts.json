@@ -1,0 +1,2820 @@
+{
+"parts": [
+{
+"name": "shaft_A",
+"proto": "shaft_A",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / shaft_A - shaft half A [steel shaft half, rotor]"
+},
+{
+"name": "shaft_B",
+"proto": "shaft_B",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / shaft_B - shaft half B [steel shaft half, rotor]"
+},
+{
+"name": "A_flange",
+"proto": "flange",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 333.0,
+"rot": 0.0
+},
+"label": "hub / A_flange - shaft-half flange A, bolted to the bicone apex [steel flange, rotor]"
+},
+{
+"name": "B_flange",
+"proto": "flange",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 461.0,
+"rot": 0.0
+},
+"label": "hub / B_flange - shaft-half flange B, bolted to the bicone apex [steel flange, rotor]"
+},
+{
+"name": "rotor_sleeve_1",
+"proto": "sleeve_0",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / rotor_sleeve_1 - rotor sleeve segment [G10 rotor sleeve, rotor]"
+},
+{
+"name": "rotor_sleeve_2",
+"proto": "sleeve_1",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / rotor_sleeve_2 - rotor sleeve segment [G10 rotor sleeve, rotor]"
+},
+{
+"name": "rotor_sleeve_3",
+"proto": "sleeve_2",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / rotor_sleeve_3 - rotor sleeve segment [G10 rotor sleeve, rotor]"
+},
+{
+"name": "rotor_sleeve_4",
+"proto": "sleeve_3",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / rotor_sleeve_4 - rotor sleeve segment [G10 rotor sleeve, rotor]"
+},
+{
+"name": "A_bearing_end",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-0",
+"place": {
+"dx": 0.0,
+"dz": 2.5,
+"rot": 0.0
+},
+"label": "bearings / A_bearing_end - bearing, end [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "A_spider_end",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "brg-0",
+"place": {
+"dx": 0.0,
+"dz": 6.0,
+"rot": 0.0
+},
+"label": "bearings / A_spider_end - frame bearing hub [G10 bearing spider, stator]"
+},
+{
+"name": "A_bearing_Ca-reluctance",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-1",
+"place": {
+"dx": 0.0,
+"dz": 187.5,
+"rot": 0.0
+},
+"label": "bearings / A_bearing_Ca-reluctance - bearing, Ca|reluctance [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "A_spider_Ca-reluctance",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 191.0,
+"rot": 0.0
+},
+"label": "bearings / A_spider_Ca-reluctance - bearing hub, tied into the stator cage [G10 bearing spider, stator]"
+},
+{
+"name": "A_bearing_hub_face",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-2",
+"place": {
+"dx": 0.0,
+"dz": 315.5,
+"rot": 0.0
+},
+"label": "bearings / A_bearing_hub_face - bearing, hub face [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "A_spider_hub_face",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 319.0,
+"rot": 0.0
+},
+"label": "bearings / A_spider_hub_face - bearing hub, tied into the stator cage [G10 bearing spider, stator]"
+},
+{
+"name": "B_bearing_hub_face",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-3",
+"place": {
+"dx": 0.0,
+"dz": 471.5,
+"rot": 0.0
+},
+"label": "bearings / B_bearing_hub_face - bearing, hub face [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "B_spider_hub_face",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 475.0,
+"rot": 0.0
+},
+"label": "bearings / B_spider_hub_face - bearing hub, tied into the stator cage [G10 bearing spider, stator]"
+},
+{
+"name": "B_bearing_Ca-reluctance",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-4",
+"place": {
+"dx": 0.0,
+"dz": 599.5,
+"rot": 0.0
+},
+"label": "bearings / B_bearing_Ca-reluctance - bearing, Ca|reluctance [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "B_spider_Ca-reluctance",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 603.0,
+"rot": 0.0
+},
+"label": "bearings / B_spider_Ca-reluctance - bearing hub, tied into the stator cage [G10 bearing spider, stator]"
+},
+{
+"name": "B_bearing_end",
+"proto": "bearing",
+"body": "bearing",
+"node": "",
+"group": "bearings",
+"join": "brg-5",
+"place": {
+"dx": 0.0,
+"dz": 784.5,
+"rot": 0.0
+},
+"label": "bearings / B_bearing_end - bearing, end [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "B_spider_end",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "brg-5",
+"place": {
+"dx": 0.0,
+"dz": 788.0,
+"rot": 0.0
+},
+"label": "bearings / B_spider_end - frame bearing hub [G10 bearing spider, stator]"
+},
+{
+"name": "hub_vacuum_sphere",
+"proto": "vac_sphere",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 401.0,
+"rot": 0.0
+},
+"label": "hub / hub_vacuum_sphere - vacuum sphere, AH / C_R hub (placeholder) [glass vacuum vessel (placeholder), rotor]"
+},
+{
+"name": "hub_bicone_lower",
+"proto": "bicone_lo",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 401.0,
+"rot": 0.0
+},
+"label": "hub / hub_bicone_lower - bicone shell, lower [G10 bicone (placeholder), rotor]"
+},
+{
+"name": "hub_bicone_upper",
+"proto": "bicone_hi",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 401.0,
+"rot": 0.0
+},
+"label": "hub / hub_bicone_upper - bicone shell, upper [G10 bicone (placeholder), rotor]"
+},
+{
+"name": "A_C1_s01",
+"proto": "stator_vane",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 311.5,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s01 - C1 vane, node 1 [Al vane, stator]"
+},
+{
+"name": "A_C1_r02",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-A",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 307.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r02 - C1 vane, node R-A [Al vane, rotor]"
+},
+{
+"name": "A_C1_s03",
+"proto": "stator_vane",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 302.5,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s03 - C1 vane, node 1 [Al vane, stator]"
+},
+{
+"name": "A_C1_r04",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-A",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 298.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r04 - C1 vane, node R-A [Al vane, rotor]"
+},
+{
+"name": "A_C1_s05",
+"proto": "stator_vane",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 293.5,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s05 - C1 vane, node 1 [Al vane, stator]"
+},
+{
+"name": "A_C1_r06",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-A",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 289.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r06 - C1 vane, node R-A [Al vane, rotor]"
+},
+{
+"name": "A_C1_s07",
+"proto": "stator_vane",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 284.5,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s07 - C1 vane, node 1 [Al vane, stator]"
+},
+{
+"name": "A_C1_r08",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-A",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 280.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r08 - C1 vane, node R-A [Al vane, rotor]"
+},
+{
+"name": "A_C1_s09",
+"proto": "stator_vane",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 275.5,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s09 - C1 vane, node 1 [Al vane, stator]"
+},
+{
+"name": "A_C1_r10",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-A",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 271.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r10 - C1 vane, node R-A [Al vane, rotor]"
+},
+{
+"name": "A_C1_s11",
+"proto": "stator_vane",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 266.5,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s11 - C1 vane, node 1 [Al vane, stator]"
+},
+{
+"name": "A_C1_r12",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-A",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 262.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r12 - C1 vane, node R-A [Al vane, rotor]"
+},
+{
+"name": "A_C1_s13",
+"proto": "stator_vane",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 257.5,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s13 - C1 vane, node 1 [Al vane, stator]"
+},
+{
+"name": "A_C1_r14",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-A",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 253.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r14 - C1 vane, node R-A [Al vane, rotor]"
+},
+{
+"name": "A_C1_s15",
+"proto": "stator_vane",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 248.5,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s15 - C1 vane, node 1 [Al vane, stator]"
+},
+{
+"name": "A_C1_r16",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-A",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 244.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r16 - C1 vane, node R-A [Al vane, rotor]"
+},
+{
+"name": "A_Ca_01",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "A_Ca_01",
+"place": {
+"dx": 0.0,
+"dz": 239.5,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_01 - Ca plate, node 1 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "A_Ca_02",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "2",
+"group": "side-A",
+"join": "A_Ca_02",
+"place": {
+"dx": 0.0,
+"dz": 235.0,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_02 - Ca plate, node 2 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "A_Ca_03",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "A_Ca_03",
+"place": {
+"dx": 0.0,
+"dz": 230.5,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_03 - Ca plate, node 1 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "A_Ca_04",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "2",
+"group": "side-A",
+"join": "A_Ca_04",
+"place": {
+"dx": 0.0,
+"dz": 226.0,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_04 - Ca plate, node 2 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "A_Ca_05",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "A_Ca_05",
+"place": {
+"dx": 0.0,
+"dz": 221.5,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_05 - Ca plate, node 1 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "A_Ca_06",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "2",
+"group": "side-A",
+"join": "A_Ca_06",
+"place": {
+"dx": 0.0,
+"dz": 217.0,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_06 - Ca plate, node 2 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "A_Ca_07",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "1",
+"group": "side-A",
+"join": "A_Ca_07",
+"place": {
+"dx": 0.0,
+"dz": 212.5,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_07 - Ca plate, node 1 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "A_Ca_08",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "2",
+"group": "side-A",
+"join": "A_Ca_08",
+"place": {
+"dx": 0.0,
+"dz": 208.0,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_08 - Ca plate, node 2 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "A_U1_core",
+"proto": "wu_core",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_core",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_core - utron A1 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U1_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_strip",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_strip - utron A1 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "A_U1_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_spacer",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_spacer - utron A1 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "A_U1_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_wedge",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_wedge - utron A1 slot wedge (G10) [G10 slot wedge, rotor]"
+},
+{
+"name": "A_U1_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L1 group",
+"group": "rel-A",
+"join": "A_U1_winding",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_winding - utron A1 yoke coil, 200 turns, L1 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "A_U1_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_cheek_pos_lo - utron A1 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U1_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_cheek_pos_hi - utron A1 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_U1_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_cheek_neg_lo - utron A1 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U1_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_cheek_neg_hi - utron A1 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_U2_core",
+"proto": "wu_core",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_core",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_core - utron A2 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U2_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_strip",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_strip - utron A2 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "A_U2_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_spacer",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_spacer - utron A2 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "A_U2_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_wedge",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_wedge - utron A2 slot wedge (G10) [G10 slot wedge, rotor]"
+},
+{
+"name": "A_U2_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L1 group",
+"group": "rel-A",
+"join": "A_U2_winding",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_winding - utron A2 yoke coil, 200 turns, L1 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "A_U2_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_cheek_pos_lo - utron A2 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U2_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_cheek_pos_hi - utron A2 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_U2_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_cheek_neg_lo - utron A2 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U2_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_cheek_neg_hi - utron A2 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_U3_core",
+"proto": "wu_core",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_core",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_core - utron A3 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U3_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_strip",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_strip - utron A3 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "A_U3_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_spacer",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_spacer - utron A3 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "A_U3_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_wedge",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_wedge - utron A3 slot wedge (G10) [G10 slot wedge, rotor]"
+},
+{
+"name": "A_U3_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L1 group",
+"group": "rel-A",
+"join": "A_U3_winding",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_winding - utron A3 yoke coil, 200 turns, L1 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "A_U3_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_cheek_pos_lo - utron A3 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U3_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_cheek_pos_hi - utron A3 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_U3_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_cheek_neg_lo - utron A3 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U3_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_cheek_neg_hi - utron A3 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_carrier_disc_1",
+"proto": "w_disc_57.0",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_carrier_disc_1",
+"place": {
+"dx": 0.0,
+"dz": 29.0,
+"rot": 0.0
+},
+"label": "rel-A / A_carrier_disc_1 - utron carrier disc [G10 utron carrier disc, rotor]"
+},
+{
+"name": "A_carrier_disc_2",
+"proto": "w_disc_57.0",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_carrier_disc_2",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 0.0
+},
+"label": "rel-A / A_carrier_disc_2 - utron carrier disc [G10 utron carrier disc, rotor]"
+},
+{
+"name": "A_bridge_1",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_1",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_bridge_1 - passive bridge A1 at 0 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_2",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_2",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 60.0
+},
+"label": "rel-A / A_bridge_2 - passive bridge A2 at 60 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_3",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_3",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_bridge_3 - passive bridge A3 at 120 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_4",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_4",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 180.0
+},
+"label": "rel-A / A_bridge_4 - passive bridge A4 at 180 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_5",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_5",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_bridge_5 - passive bridge A5 at 240 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_6",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_6",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 300.0
+},
+"label": "rel-A / A_bridge_6 - passive bridge A6 at 300 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_ring",
+"proto": "w_ring_A",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_ring",
+"place": {
+"dx": 0.0,
+"dz": 20.0,
+"rot": 0.0
+},
+"label": "rel-A / A_bridge_ring - bridge ring (counter-rotor), bridges set 1 mm proud of its bore [G10 bridge ring, stator]"
+},
+{
+"name": "B_C2_s01",
+"proto": "stator_vane",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 489.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s01 - C2 vane, node 4 [Al vane, stator]"
+},
+{
+"name": "B_C2_r02",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-B",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 493.5,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r02 - C2 vane, node R-B [Al vane, rotor]"
+},
+{
+"name": "B_C2_s03",
+"proto": "stator_vane",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 498.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s03 - C2 vane, node 4 [Al vane, stator]"
+},
+{
+"name": "B_C2_r04",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-B",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 502.5,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r04 - C2 vane, node R-B [Al vane, rotor]"
+},
+{
+"name": "B_C2_s05",
+"proto": "stator_vane",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 507.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s05 - C2 vane, node 4 [Al vane, stator]"
+},
+{
+"name": "B_C2_r06",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-B",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 511.5,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r06 - C2 vane, node R-B [Al vane, rotor]"
+},
+{
+"name": "B_C2_s07",
+"proto": "stator_vane",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 516.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s07 - C2 vane, node 4 [Al vane, stator]"
+},
+{
+"name": "B_C2_r08",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-B",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 520.5,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r08 - C2 vane, node R-B [Al vane, rotor]"
+},
+{
+"name": "B_C2_s09",
+"proto": "stator_vane",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 525.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s09 - C2 vane, node 4 [Al vane, stator]"
+},
+{
+"name": "B_C2_r10",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-B",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 529.5,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r10 - C2 vane, node R-B [Al vane, rotor]"
+},
+{
+"name": "B_C2_s11",
+"proto": "stator_vane",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 534.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s11 - C2 vane, node 4 [Al vane, stator]"
+},
+{
+"name": "B_C2_r12",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-B",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 538.5,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r12 - C2 vane, node R-B [Al vane, rotor]"
+},
+{
+"name": "B_C2_s13",
+"proto": "stator_vane",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 543.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s13 - C2 vane, node 4 [Al vane, stator]"
+},
+{
+"name": "B_C2_r14",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-B",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 547.5,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r14 - C2 vane, node R-B [Al vane, rotor]"
+},
+{
+"name": "B_C2_s15",
+"proto": "stator_vane",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 552.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s15 - C2 vane, node 4 [Al vane, stator]"
+},
+{
+"name": "B_C2_r16",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "R-B",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 556.5,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r16 - C2 vane, node R-B [Al vane, rotor]"
+},
+{
+"name": "B_Cb_01",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "B_Cb_01",
+"place": {
+"dx": 0.0,
+"dz": 561.0,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_01 - Cb plate, node 4 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "B_Cb_02",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "3",
+"group": "side-B",
+"join": "B_Cb_02",
+"place": {
+"dx": 0.0,
+"dz": 565.5,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_02 - Cb plate, node 3 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "B_Cb_03",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "B_Cb_03",
+"place": {
+"dx": 0.0,
+"dz": 570.0,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_03 - Cb plate, node 4 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "B_Cb_04",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "3",
+"group": "side-B",
+"join": "B_Cb_04",
+"place": {
+"dx": 0.0,
+"dz": 574.5,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_04 - Cb plate, node 3 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "B_Cb_05",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "B_Cb_05",
+"place": {
+"dx": 0.0,
+"dz": 579.0,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_05 - Cb plate, node 4 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "B_Cb_06",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "3",
+"group": "side-B",
+"join": "B_Cb_06",
+"place": {
+"dx": 0.0,
+"dz": 583.5,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_06 - Cb plate, node 3 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "B_Cb_07",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "4",
+"group": "side-B",
+"join": "B_Cb_07",
+"place": {
+"dx": 0.0,
+"dz": 588.0,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_07 - Cb plate, node 4 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "B_Cb_08",
+"proto": "fixed_plate",
+"body": "stator",
+"node": "3",
+"group": "side-B",
+"join": "B_Cb_08",
+"place": {
+"dx": 0.0,
+"dz": 592.5,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_08 - Cb plate, node 3 (connection not drawn) [Al plate, stator]"
+},
+{
+"name": "B_U1_core",
+"proto": "wu_core",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_core",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_core - utron B1 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U1_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_strip",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_strip - utron B1 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "B_U1_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_spacer",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_spacer - utron B1 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "B_U1_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_wedge",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_wedge - utron B1 slot wedge (G10) [G10 slot wedge, rotor]"
+},
+{
+"name": "B_U1_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L2 group",
+"group": "rel-B",
+"join": "B_U1_winding",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_winding - utron B1 yoke coil, 200 turns, L2 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "B_U1_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_cheek_pos_lo - utron B1 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U1_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 761.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_cheek_pos_hi - utron B1 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_U1_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_cheek_neg_lo - utron B1 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U1_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 761.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_cheek_neg_hi - utron B1 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_U2_core",
+"proto": "wu_core",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_core",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_core - utron B2 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U2_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_strip",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_strip - utron B2 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "B_U2_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_spacer",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_spacer - utron B2 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "B_U2_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_wedge",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_wedge - utron B2 slot wedge (G10) [G10 slot wedge, rotor]"
+},
+{
+"name": "B_U2_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L2 group",
+"group": "rel-B",
+"join": "B_U2_winding",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_winding - utron B2 yoke coil, 200 turns, L2 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "B_U2_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_cheek_pos_lo - utron B2 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U2_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 761.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_cheek_pos_hi - utron B2 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_U2_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_cheek_neg_lo - utron B2 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U2_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 761.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_cheek_neg_hi - utron B2 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_U3_core",
+"proto": "wu_core",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_core",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_core - utron B3 half-cores (M235-35A) [utron half-cores, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U3_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_strip",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_strip - utron B3 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "B_U3_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_spacer",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_spacer - utron B3 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "B_U3_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_wedge",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_wedge - utron B3 slot wedge (G10) [G10 slot wedge, rotor]"
+},
+{
+"name": "B_U3_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L2 group",
+"group": "rel-B",
+"join": "B_U3_winding",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_winding - utron B3 yoke coil, 200 turns, L2 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "B_U3_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_cheek_pos_lo - utron B3 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U3_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 761.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_cheek_pos_hi - utron B3 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_U3_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_cheek_neg_lo - utron B3 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U3_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 761.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_cheek_neg_hi - utron B3 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_carrier_disc_1",
+"proto": "w_disc_57.0",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_carrier_disc_1",
+"place": {
+"dx": 0.0,
+"dz": 629.0,
+"rot": 0.0
+},
+"label": "rel-B / B_carrier_disc_1 - utron carrier disc [G10 utron carrier disc, rotor]"
+},
+{
+"name": "B_carrier_disc_2",
+"proto": "w_disc_57.0",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_carrier_disc_2",
+"place": {
+"dx": 0.0,
+"dz": 761.0,
+"rot": 0.0
+},
+"label": "rel-B / B_carrier_disc_2 - utron carrier disc [G10 utron carrier disc, rotor]"
+},
+{
+"name": "B_bridge_1",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_1",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 30.0
+},
+"label": "rel-B / B_bridge_1 - passive bridge B1 at 30 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_2",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_2",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 90.0
+},
+"label": "rel-B / B_bridge_2 - passive bridge B2 at 90 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_3",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_3",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 150.0
+},
+"label": "rel-B / B_bridge_3 - passive bridge B3 at 150 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_4",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_4",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 210.0
+},
+"label": "rel-B / B_bridge_4 - passive bridge B4 at 210 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_5",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_5",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 270.0
+},
+"label": "rel-B / B_bridge_5 - passive bridge B5 at 270 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_6",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_6",
+"place": {
+"dx": 0.0,
+"dz": 651.0,
+"rot": 330.0
+},
+"label": "rel-B / B_bridge_6 - passive bridge B6 at 330 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_ring",
+"proto": "w_ring_B",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_ring",
+"place": {
+"dx": 0.0,
+"dz": 611.0,
+"rot": 0.0
+},
+"label": "rel-B / B_bridge_ring - bridge ring (counter-rotor), bridges set 1 mm proud of its bore [G10 bridge ring, stator]"
+},
+{
+"name": "A_stator_cage",
+"proto": "cage_A",
+"body": "stator",
+"node": "",
+"group": "side-A",
+"join": "cage-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_stator_cage - insulating stator cage [G10 stator cage, stator]"
+},
+{
+"name": "B_stator_cage",
+"proto": "cage_B",
+"body": "stator",
+"node": "",
+"group": "side-B",
+"join": "cage-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_stator_cage - insulating stator cage [G10 stator cage, stator]"
+},
+{
+"name": "hub_stator_cage",
+"proto": "cage_hub",
+"body": "stator",
+"node": "",
+"group": "hub",
+"join": "cage-hub",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "hub / hub_stator_cage - cage across the hub: A and B stator bodies are one counter-rotor [G10 stator cage, hub span, stator]"
+}
+],
+"elements": [
+{
+"kind": "hub",
+"body": "hub",
+"node": "R-A/R-B",
+"side": "hub",
+"z0": 341.0,
+"z1": 461.0,
+"r0": 0.0,
+"r1": 150.0
+},
+{
+"kind": "flange",
+"body": "rotor",
+"node": "",
+"side": "A",
+"z0": 333.0,
+"z1": 341.0,
+"r0": 0.0,
+"r1": 32.0
+},
+{
+"kind": "bearing",
+"body": "stator",
+"node": "",
+"side": "A",
+"where": "hub face",
+"z0": 313.0,
+"z1": 333.0,
+"zc": 323.0,
+"r0": 12.5,
+"r1": 162.0
+},
+{
+"kind": "C1 vane",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 311.5,
+"z1": 313.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "rotor",
+"node": "R-A",
+"side": "A",
+"z0": 307.0,
+"z1": 308.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 302.5,
+"z1": 304.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "rotor",
+"node": "R-A",
+"side": "A",
+"z0": 298.0,
+"z1": 299.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 293.5,
+"z1": 295.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "rotor",
+"node": "R-A",
+"side": "A",
+"z0": 289.0,
+"z1": 290.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 284.5,
+"z1": 286.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "rotor",
+"node": "R-A",
+"side": "A",
+"z0": 280.0,
+"z1": 281.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 275.5,
+"z1": 277.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "rotor",
+"node": "R-A",
+"side": "A",
+"z0": 271.0,
+"z1": 272.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 266.5,
+"z1": 268.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "rotor",
+"node": "R-A",
+"side": "A",
+"z0": 262.0,
+"z1": 263.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 257.5,
+"z1": 259.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "rotor",
+"node": "R-A",
+"side": "A",
+"z0": 253.0,
+"z1": 254.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 248.5,
+"z1": 250.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C1 vane",
+"body": "rotor",
+"node": "R-A",
+"side": "A",
+"z0": 244.0,
+"z1": 245.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 239.5,
+"z1": 241.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "2",
+"side": "A",
+"z0": 235.0,
+"z1": 236.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 230.5,
+"z1": 232.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "2",
+"side": "A",
+"z0": 226.0,
+"z1": 227.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 221.5,
+"z1": 223.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "2",
+"side": "A",
+"z0": 217.0,
+"z1": 218.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "1",
+"side": "A",
+"z0": 212.5,
+"z1": 214.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Ca plate",
+"body": "stator",
+"node": "2",
+"side": "A",
+"z0": 208.0,
+"z1": 209.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "bearing",
+"body": "stator",
+"node": "",
+"side": "A",
+"where": "Ca|reluctance",
+"z0": 185.0,
+"z1": 205.0,
+"zc": 195.0,
+"r0": 12.5,
+"r1": 162.0
+},
+{
+"kind": "w utron",
+"body": "rotor",
+"node": "L1 group",
+"side": "A",
+"r_g": 130.0,
+"angles": [
+0.0,
+120.0,
+240.0
+],
+"zs0": 51.0,
+"zs1": 151.0,
+"zc": 101.0,
+"z0": 23.0,
+"z1": 179.0,
+"r0": 57.0,
+"r1": 130.0
+},
+{
+"kind": "w disc",
+"body": "rotor",
+"node": "",
+"side": "A",
+"z0": 29.0,
+"z1": 41.0,
+"r0": 20.5,
+"r1": 57.0
+},
+{
+"kind": "w disc",
+"body": "rotor",
+"node": "",
+"side": "A",
+"z0": 161.0,
+"z1": 173.0,
+"r0": 20.5,
+"r1": 57.0
+},
+{
+"kind": "w bridge",
+"body": "stator",
+"node": "",
+"side": "A",
+"angles": [
+0.0,
+60.0,
+120.0,
+180.0,
+240.0,
+300.0
+],
+"width_deg": 25.464790894703253,
+"z0": 51.0,
+"z1": 151.0,
+"zc": 101.0,
+"r0": 130.5,
+"r1": 144.5
+},
+{
+"kind": "w ring",
+"body": "stator",
+"node": "",
+"side": "A",
+"z0": 20.0,
+"z1": 191.0,
+"r0": 131.5,
+"r1": 156.5,
+"pockets": {
+"angles": [
+0.0,
+60.0,
+120.0,
+180.0,
+240.0,
+300.0
+],
+"width_deg": 25.464790894703253,
+"z0": 51.0,
+"z1": 151.0,
+"r1": 144.5
+}
+},
+{
+"kind": "reluctance",
+"body": "stator",
+"node": "wound utrons",
+"side": "A",
+"z0": 20.0,
+"z1": 182.0,
+"r0": 20.5,
+"r1": 156.5,
+"envelope": true
+},
+{
+"kind": "bearing",
+"body": "stator",
+"node": "",
+"side": "A",
+"where": "end",
+"z0": 0.0,
+"z1": 20.0,
+"zc": 10.0,
+"r0": 12.5,
+"r1": 162.0
+},
+{
+"kind": "flange",
+"body": "rotor",
+"node": "",
+"side": "B",
+"z0": 461.0,
+"z1": 469.0,
+"r0": 0.0,
+"r1": 32.0
+},
+{
+"kind": "bearing",
+"body": "stator",
+"node": "",
+"side": "B",
+"where": "hub face",
+"z0": 469.0,
+"z1": 489.0,
+"zc": 479.0,
+"r0": 12.5,
+"r1": 162.0
+},
+{
+"kind": "C2 vane",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 489.0,
+"z1": 490.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "rotor",
+"node": "R-B",
+"side": "B",
+"z0": 493.5,
+"z1": 495.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 498.0,
+"z1": 499.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "rotor",
+"node": "R-B",
+"side": "B",
+"z0": 502.5,
+"z1": 504.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 507.0,
+"z1": 508.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "rotor",
+"node": "R-B",
+"side": "B",
+"z0": 511.5,
+"z1": 513.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 516.0,
+"z1": 517.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "rotor",
+"node": "R-B",
+"side": "B",
+"z0": 520.5,
+"z1": 522.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 525.0,
+"z1": 526.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "rotor",
+"node": "R-B",
+"side": "B",
+"z0": 529.5,
+"z1": 531.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 534.0,
+"z1": 535.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "rotor",
+"node": "R-B",
+"side": "B",
+"z0": 538.5,
+"z1": 540.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 543.0,
+"z1": 544.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "rotor",
+"node": "R-B",
+"side": "B",
+"z0": 547.5,
+"z1": 549.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 552.0,
+"z1": 553.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "C2 vane",
+"body": "rotor",
+"node": "R-B",
+"side": "B",
+"z0": 556.5,
+"z1": 558.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 561.0,
+"z1": 562.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "3",
+"side": "B",
+"z0": 565.5,
+"z1": 567.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 570.0,
+"z1": 571.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "3",
+"side": "B",
+"z0": 574.5,
+"z1": 576.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 579.0,
+"z1": 580.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "3",
+"side": "B",
+"z0": 583.5,
+"z1": 585.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "4",
+"side": "B",
+"z0": 588.0,
+"z1": 589.5,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "Cb plate",
+"body": "stator",
+"node": "3",
+"side": "B",
+"z0": 592.5,
+"z1": 594.0,
+"r0": 50.0,
+"r1": 150.0
+},
+{
+"kind": "bearing",
+"body": "stator",
+"node": "",
+"side": "B",
+"where": "Ca|reluctance",
+"z0": 597.0,
+"z1": 617.0,
+"zc": 607.0,
+"r0": 12.5,
+"r1": 162.0
+},
+{
+"kind": "w utron",
+"body": "rotor",
+"node": "L2 group",
+"side": "B",
+"r_g": 130.0,
+"angles": [
+0.0,
+120.0,
+240.0
+],
+"zs0": 651.0,
+"zs1": 751.0,
+"zc": 701.0,
+"z0": 623.0,
+"z1": 779.0,
+"r0": 57.0,
+"r1": 130.0
+},
+{
+"kind": "w disc",
+"body": "rotor",
+"node": "",
+"side": "B",
+"z0": 629.0,
+"z1": 641.0,
+"r0": 20.5,
+"r1": 57.0
+},
+{
+"kind": "w disc",
+"body": "rotor",
+"node": "",
+"side": "B",
+"z0": 761.0,
+"z1": 773.0,
+"r0": 20.5,
+"r1": 57.0
+},
+{
+"kind": "w bridge",
+"body": "stator",
+"node": "",
+"side": "B",
+"angles": [
+30.0,
+90.0,
+150.0,
+210.0,
+270.0,
+330.0
+],
+"width_deg": 25.464790894703253,
+"z0": 651.0,
+"z1": 751.0,
+"zc": 701.0,
+"r0": 130.5,
+"r1": 144.5
+},
+{
+"kind": "w ring",
+"body": "stator",
+"node": "",
+"side": "B",
+"z0": 611.0,
+"z1": 782.0,
+"r0": 131.5,
+"r1": 156.5,
+"pockets": {
+"angles": [
+30.0,
+90.0,
+150.0,
+210.0,
+270.0,
+330.0
+],
+"width_deg": 25.464790894703253,
+"z0": 651.0,
+"z1": 751.0,
+"r1": 144.5
+}
+},
+{
+"kind": "reluctance",
+"body": "stator",
+"node": "wound utrons",
+"side": "B",
+"z0": 620.0,
+"z1": 782.0,
+"r0": 20.5,
+"r1": 156.5,
+"envelope": true
+},
+{
+"kind": "bearing",
+"body": "stator",
+"node": "",
+"side": "B",
+"where": "end",
+"z0": 782.0,
+"z1": 802.0,
+"zc": 792.0,
+"r0": 12.5,
+"r1": 162.0
+}
+]
+}

@@ -253,6 +253,9 @@ def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
         if p.get("bucket", True):
           el.append(dict(kind="clocking", body="stator", node="gaps", side=lab, z0=min(z_clk0, z), z1=max(z_clk0, z), r0=ri, r1=ro,
                        envelope=True))
+        if (p.get("rel") or {}).get("kind") == "wound":
+            bearing(_wound_section(el, p, lab, direction, z), "end")
+            continue
         # reluctance: C-EMs (stator) and utrons (rotor) at the utron radius r_u, centred in the section
         r_u = SLEEVE_R + UTRON_CLEAR - REL_X_MIN + p.get("rel_shift_mm", 0.0)
         L_rel = max(2 * REL_Z_HALF + 10.0, p["rel_mm"])
@@ -273,9 +276,46 @@ def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
     zmin = min(e["z0"] for e in el)
     for e in el:                                                   # shift so the bottom end is z = 0 (centres too)
         e["z0"] -= zmin; e["z1"] -= zmin
-        if "zc" in e:
-            e["zc"] -= zmin
+        for k in ("zc", "zs0", "zs1"):
+            if k in e:
+                e[k] -= zmin
+        if "pockets" in e:
+            e["pockets"]["z0"] -= zmin; e["pockets"]["z1"] -= zmin
     return el
+
+def _wound_section(el, p, lab, direction, z):
+    """the wound-utron reluctance section (p["rel"] from sim/utron_profile.spec, kind "wound"), outward from z:
+    rotor: n_u U-core utrons (yoke coil, end turns) on two G10 carrier discs; counter-rotor (the stator body, geared 1 : -1):
+    n_br passive bridges in a G10 ring, on the Ca|reluctance bearing spider (flanged to the cage's OD if it is larger). A and B utrons at
+    0 + 360 k / n_u; A bridges at 0 + 360 k / n_br, B bridges offset half a bridge pitch (A aligned while B is unaligned:
+    the doubler's antiphase). Returns the section's outer end. [IR]"""
+    rel = p["rel"]
+    L, over, sp_ = rel["L"], rel["over"], rel["sp"]
+    z_end = z + direction * rel["L_rel"]
+    zs = z + direction * (sp_ + over)                              # the stack's hub-side end
+    s0, s1 = min(zs, zs + direction * L), max(zs, zs + direction * L)
+    n_u, n_br = int(rel["n_u"]), int(rel["n_br"])
+    b0 = 0.0 if lab == "A" else 180.0 / n_br
+    el.append(dict(kind="w utron", body="rotor", node="L1 group" if lab == "A" else "L2 group", side=lab, r_g=rel["r_g"],
+                   angles=[360.0 * k / n_u for k in range(n_u)], zs0=s0, zs1=s1, zc=0.5 * (s0 + s1),
+                   z0=s0 - over, z1=s1 + over, r0=rel["r_g"] - rel["depth"], r1=rel["r_g"]))
+    for e0, e1 in ((s0 - rel["t_cheek"] - rel["t_disc"], s0 - rel["t_cheek"]), (s1 + rel["t_cheek"], s1 + rel["t_cheek"] + rel["t_disc"])):
+        el.append(dict(kind="w disc", body="rotor", node="", side=lab, z0=e0, z1=e1, r0=SLEEVE_R, r1=rel["r_disc"]))
+    el.append(dict(kind="w bridge", body="stator", node="", side=lab, angles=[b0 + 360.0 * k / n_br for k in range(n_br)],
+                   width_deg=rel["br_deg"], z0=s0, z1=s1, zc=0.5 * (s0 + s1), r0=rel["r_br0"], r1=rel["r_br1"]))
+    brg = [e for e in el if e["kind"] == "bearing" and e["side"] == lab and e["where"] == "Ca|reluctance"][-1]
+    f_near, f_far = brg["zc"] - direction * 0.5 * BEARING["spider_t"], brg["zc"] + direction * 0.5 * BEARING["spider_t"]
+    r_cage = p["r_outMm"] + 16.0
+    if rel["r_ring1"] > r_cage:                                    # ring outside the cage: a flange to the cage's OD
+        el.append(dict(kind="w flange", body="stator", node="", side=lab, z0=min(f_near, f_far), z1=max(f_near, f_far),
+                       r0=r_cage, r1=rel["r_ring1"]))              # (otherwise the ring is bolted to the spider's face)
+    el.append(dict(kind="w ring", body="stator", node="", side=lab, z0=min(f_far, z_end), z1=max(f_far, z_end),
+                   r0=rel["r_ring0"], r1=rel["r_ring1"], pockets=dict(angles=[b0 + 360.0 * k / n_br for k in range(n_br)],
+                                                                    width_deg=rel["br_deg"], z0=s0, z1=s1, r1=rel["r_br1"])))
+    el.append(dict(kind="reluctance", body="stator", node="wound utrons", side=lab, z0=min(z, z_end), z1=max(z, z_end),
+                   r0=SLEEVE_R, r1=rel["r_ring1"], envelope=True))
+    return z_end
+
 
 # ---------------------------------------------------------------------------------------------------------
 # the ladder for either geometry (same dict shape as pump_sizing.size, so pump_synth.engine_cfg takes it)

@@ -9,14 +9,20 @@ section). Every element becomes solids here:
   * Ca / Cb fixed plates: full annuli, stator, two nodes alternating (their connections are not drawn) [IR];
   * clocking: per station a rotor disc with 6 tip spheres (0 + 60k) and a stator ring with 6 spheres at the station
     angle (+ 60k), spheres half-embedded, gap and sphere sizes from the CAD build;
-  * reluctance: the designer's squared C-EM pieces (core, 2 spool halves, coil; sim/motor_geometry src) x 6 per side
-    and the utron (core, 2 open coil halves) x 3 per side on a rotor hub, placed at the utron radius;
+  * reluctance (default): the designer's squared C-EM pieces (core, 2 spool halves, coil; sim/motor_geometry src) x 6
+    per side and the utron (core, 2 open coil halves) x 3 per side on a rotor hub, placed at the utron radius;
+  * reluctance, --rel wound (the diode build, geared 1 : -1): per side 3 wound utrons (split M235-35A U-core, NiFe neck
+    strip, air-break spacer, slot wedge, yoke coil with rounded end turns, cheeks) on two G10 carrier discs, and n_br
+    passive bridges in a G10 ring on the counter-rotor (the stator body: its cage joined across the hub), every dimension
+    from sim/utron_profile.py for an operating point of sim/pole_design_variants_op.json;
   * shaft (rotor), rotor sleeve, insulating stator cage per side, hub placeholder (vacuum sphere + bicone shell).
 Repeated parts are stored once in the STEP and instanced.
 Checks: G-TUBE-CLASH (no two solids share volume, except the intended joins), G-TUBE-SWEEP (no stator solid in the
 volume a rotor solid sweeps; the utron ring against the C-EM pieces exactly), G-TUBE-GAP (tip to sphere at
-alignment = the set gap), G-TUBE-REL (C-EM to C-EM, utron to sleeve), the envelope diameters.
-Usage: python3 sim/tube_geometry.py [--n-plates 8] [--r-out 150] [--no-step]
+alignment = the set gap), G-TUBE-REL (C-EM to C-EM, utron to sleeve), the envelope diameters; with --rel wound
+G-TUBE-WOUND (the air gap aligned / unaligned, the coil's clearances to the iron, wedge, cheeks, discs and ring, the tip
+arc) and filled exact-section renders.
+Usage: python3 sim/tube_geometry.py [--n-plates 8] [--r-out 150] [--no-step] [--rel wound [--pick "g 0.5 / 6 bridges / 1200 rpm"]]
 """
 import argparse
 import json
@@ -37,7 +43,8 @@ SRC = os.path.join(ROOT, "docs", "geometry", "motor", "src")
 RESULTS = os.path.join(HERE, "tube_geometry_results.json")
 COL = {"stator vane": (0.78, 0.57, 0.92), "rotor vane": (0.49, 0.82, 1.0), "fixed plate": (0.27, 0.77, 0.42),
        "fixed plate 2": (0.18, 0.54, 0.29), "g10": (0.55, 0.6, 0.5), "sphere": (1.0, 0.71, 0.33), "tip": (0.9, 0.3, 0.3),
-       "steel": (0.42, 0.45, 0.5), "glass": (0.75, 0.85, 0.9), "hub": (0.5, 0.52, 0.55)}
+       "steel": (0.42, 0.45, 0.5), "glass": (0.75, 0.85, 0.9), "hub": (0.5, 0.52, 0.55),
+       "sife": (0.33, 0.35, 0.4), "nife": (0.16, 0.56, 0.56), "cu": (0.8, 0.47, 0.22)}
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -89,6 +96,53 @@ def cone_shell(r_small, r_big, z0, z1, wall):
     o = BRepPrimAPI_MakeCone(ax, ra, rb, h).Shape()
     i = BRepPrimAPI_MakeCone(ax, max(0.1, ra - wall), max(0.1, rb - wall), h).Shape()
     return BRepAlgoAPI_Cut(o, i).Shape()
+
+
+def box(x0, x1, y0, y1, z0, z1):
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeBox
+    from OCP.gp import gp_Pnt
+    return BRepPrimAPI_MakeBox(gp_Pnt(x0, y0, z0), gp_Pnt(x1, y1, z1)).Shape()
+
+
+def cyl_z(x, y, r, z0, z1):
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeCylinder
+    from OCP.gp import gp_Ax2, gp_Pnt, gp_Dir
+    return BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(x, y, z0), gp_Dir(0, 0, 1)), r, z1 - z0).Shape()
+
+
+def prism(poly, z0, z1):
+    """a closed polyline [(x, y), ...] extruded from z0 to z1."""
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakePolygon, BRepBuilderAPI_MakeFace
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakePrism
+    from OCP.gp import gp_Pnt, gp_Vec
+    mp = BRepBuilderAPI_MakePolygon()
+    for x, y in poly:
+        mp.Add(gp_Pnt(x, y, z0))
+    mp.Close()
+    return BRepPrimAPI_MakePrism(BRepBuilderAPI_MakeFace(mp.Wire()).Face(), gp_Vec(0, 0, z1 - z0)).Shape()
+
+
+def rounded_box_y(x0, x1, y0, y1, z0, z1, R):
+    """a box with its four edges parallel to y rounded to radius R (a coil's turns in the x-z plane)."""
+    from OCP.BRepFilletAPI import BRepFilletAPI_MakeFillet
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_EDGE
+    from OCP.TopoDS import TopoDS
+    from OCP.BRepAdaptor import BRepAdaptor_Curve
+    b = box(x0, x1, y0, y1, z0, z1)
+    mk = BRepFilletAPI_MakeFillet(b)
+    seen = set()
+    e = TopExp_Explorer(b, TopAbs_EDGE)
+    while e.More():
+        ed = TopoDS.Edge(e.Current())
+        c = BRepAdaptor_Curve(ed)
+        p0, p1 = c.Value(c.FirstParameter()), c.Value(c.LastParameter())
+        key = (round(p0.X(), 6), round(p0.Z(), 6))
+        if abs(p0.X() - p1.X()) < 1e-9 and abs(p0.Z() - p1.Z()) < 1e-9 and key not in seen:
+            seen.add(key)
+            mk.Add(R, ed)
+        e.Next()
+    return mk.Shape()
 
 
 def read_step(path):
@@ -222,6 +276,47 @@ class Machine:
                 key = f"utron_hub_{e['r1']:.2f}"
                 self.proto(key, lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"]), COL["g10"], "G10 rotor hub")
                 self.add(f"{side}_utron_hub", key, "rotor", "", f"rel-{side}", join="rotor-core", dz=e["z0"], desc="utron hub ring")
+            elif k == "w utron":
+                sp = p["rel"]
+                self.wound_protos(sp)
+                for j, a in enumerate(e["angles"]):
+                    u = f"{side}_U{j + 1}"
+                    for piece, desc in (("wu_core", "half-cores (M235-35A)"), ("wu_strip", "neck strip (80 % NiFe)"),
+                                        ("wu_spacer", "air-break spacer (G10)"), ("wu_wedge", "slot wedge (G10)"),
+                                        ("wu_winding", f"yoke coil, {sp['N_u']} turns, {e['node']}")):
+                        self.add(f"{u}_{piece[3:]}", piece, "rotor", e["node"] if piece == "wu_winding" else "", f"rel-{side}",
+                                 dz=e["zs0"], rot=a, desc=f"utron {side}{j + 1} {desc}")
+                    for piece in ("wu_cheek_pos", "wu_cheek_neg"):
+                        for end, dz in (("lo", e["zs0"]), ("hi", e["zs1"] + sp["t_cheek"])):
+                            self.add(f"{u}_{piece[3:]}_{end}", piece, "rotor", "", f"rel-{side}", dz=dz, rot=a,
+                                     desc=f"utron {side}{j + 1} cheek (G10), {end} end")
+            elif k == "w disc":
+                key = f"w_disc_{e['r1']:.1f}"
+                self.proto(key, lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"]), COL["g10"], "G10 utron carrier disc")
+                self.add(f"{side}_carrier_disc_{i}", key, "rotor", "", f"rel-{side}", dz=e["z0"], desc="utron carrier disc")
+            elif k == "w bridge":
+                self.proto("w_bridge", lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"], -0.5 * e["width_deg"], e["width_deg"]),
+                           COL["sife"], "bridge, M235-35A laminated")
+                for j, a in enumerate(e["angles"]):
+                    self.add(f"{side}_bridge_{j + 1}", "w_bridge", "stator", "", f"rel-{side}", dz=e["z0"], rot=a,
+                             desc=f"passive bridge {side}{j + 1} at {a:g} deg")
+            elif k == "w ring":
+                def ring(e=e):
+                    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+                    pk, h = e["pockets"], e["z1"] - e["z0"]
+                    o = sector(e["r0"], e["r1"], 0.0, h)
+                    for a in pk["angles"]:
+                        o = BRepAlgoAPI_Cut(o, sector(e["r0"] - 1.0, pk["r1"], pk["z0"] - e["z0"], pk["z1"] - e["z0"],
+                                                      a - 0.5 * pk["width_deg"], pk["width_deg"])).Shape()
+                    return o
+                self.proto(f"w_ring_{side}", ring, COL["g10"], "G10 bridge ring")
+                self.add(f"{side}_bridge_ring", f"w_ring_{side}", "stator", "", f"rel-{side}", dz=e["z0"],
+                         desc="bridge ring (counter-rotor), bridges set 1 mm proud of its bore")
+            elif k == "w flange":
+                key = f"w_flange_{e['r0']:.1f}_{e['r1']:.1f}"
+                self.proto(key, lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"]), COL["g10"], "G10 ring flange")
+                self.add(f"{side}_ring_flange", key, "stator", "", f"rel-{side}", dz=e["z0"],
+                         desc="flange: bridge ring to the stator cage at the Ca|reluctance spider")
             elif k == "hub":
                 zc, hh = 0.5 * (e["z0"] + e["z1"]), 0.5 * (e["z1"] - e["z0"])
                 rs = min(45.0, hh - 8.0)
@@ -233,6 +328,7 @@ class Machine:
                 self.add("hub_bicone_lower", "bicone_lo", "rotor", "", "hub", join="rotor-core", dz=zc, desc="bicone shell, lower")
                 self.add("hub_bicone_upper", "bicone_hi", "rotor", "", "hub", join="rotor-core", dz=zc, desc="bicone shell, upper")
         # insulating stator cage per side (holds the stator vanes' outer rings and the clocking stator rings)
+        cz = {}
         for side in ("A", "B"):
             zs = [e for e in el if e["side"] == side and e["body"] == "stator" and e["kind"] in
                   ("C1 vane", "C2 vane", "Cx vane", "Ca plate", "Cb plate", "clk stator ring")] + \
@@ -241,7 +337,51 @@ class Machine:
             key = f"cage_{side}"
             self.proto(key, lambda z0=z0, z1=z1: sector(ro + 12.0, ro + 16.0, z0, z1), COL["g10"], "G10 stator cage")
             self.add(f"{side}_stator_cage", key, "stator", "", f"side-{side}", join=f"cage-{side}", desc="insulating stator cage")
+            cz[side] = (z0, z1)
+        if (p.get("rel") or {}).get("kind") == "wound":
+            # geared 1 : -1: the two cages are one counter-rotating body, joined across the hub [IR]
+            a1, b0 = cz["A"][1], cz["B"][0]
+            self.proto("cage_hub", lambda: sector(ro + 12.0, ro + 16.0, a1, b0), COL["g10"], "G10 stator cage, hub span")
+            self.add("hub_stator_cage", "cage_hub", "stator", "", "hub", join="cage-hub",
+                     desc="cage across the hub: A and B stator bodies are one counter-rotor")
         return self
+
+    def wound_protos(self, sp):
+        """the wound utron's parts (sim/utron_profile.py), local u = x (radius along the centre line), v = y, w = z from
+        the stack's lower end; built once, placed per utron."""
+        import utron_profile as U
+        from OCP.BRepAlgoAPI import BRepAlgoAPI_Common, BRepAlgoAPI_Cut, BRepAlgoAPI_Fuse
+        L = sp["L"]
+        R = U.rects(sp)
+
+        def core():
+            c = BRepAlgoAPI_Fuse(prism(U.half_core(sp, +1, arc=False), 0.0, L), prism(U.half_core(sp, -1, arc=False), 0.0, L)).Shape()
+            c = BRepAlgoAPI_Common(c, cyl_z(0.0, 0.0, sp["r_g"], -1.0, L + 1.0)).Shape()      # tip faces on the gap arc
+            for (u, v) in sp["studs"]:
+                for sd in (+1, -1):
+                    c = BRepAlgoAPI_Cut(c, cyl_z(u, sd * v, 0.5 * sp["stud_d"], -1.0, L + 1.0)).Shape()
+            return c
+
+        def winding():
+            cr = U.coil_ring(sp)
+            (u0, u1, w0, w1, Ro), (i0, i1, j0, j1, Ri) = cr["outer"], cr["inner"]
+            return BRepAlgoAPI_Cut(rounded_box_y(u0, u1, -sp["cv"], sp["cv"], w0, w1, Ro),
+                                   rounded_box_y(i0, i1, -sp["cv"] - 1.0, sp["cv"] + 1.0, j0, j1, Ri)).Shape()
+
+        def cheek(sd):
+            r = R["cheek_pos" if sd > 0 else "cheek_neg"]
+            c = box(r[0], r[1], r[2], r[3], -sp["t_cheek"], 0.0)
+            for (u, v) in sp["studs"]:
+                c = BRepAlgoAPI_Cut(c, cyl_z(u, sd * v, 0.5 * sp["stud_d"], -sp["t_cheek"] - 1.0, 1.0)).Shape()
+            return c
+        bx = lambda r: box(r[0], r[1], r[2], r[3], 0.0, L)
+        self.proto("wu_core", core, COL["sife"], "utron half-cores, M235-35A laminated (studded)")
+        self.proto("wu_strip", lambda: bx(R["strip"]), COL["nife"], "neck strip, 80 % NiFe laminated 0.1 mm")
+        self.proto("wu_spacer", lambda: bx(R["spacer"]), COL["g10"], "G10 air-break spacer")
+        self.proto("wu_wedge", lambda: prism(U.wedge(sp), 0.0, L), COL["g10"], "G10 slot wedge")
+        self.proto("wu_winding", winding, COL["cu"], f"Cu yoke coil, {sp['N_u']} turns of {sp.get('wire_d_mm', 0):.2f} mm")
+        self.proto("wu_cheek_pos", lambda: cheek(+1), COL["g10"], "G10 cheek")
+        self.proto("wu_cheek_neg", lambda: cheek(-1), COL["g10"], "G10 cheek")
 
     def placed(self, part):
         pl = part["place"]
@@ -299,7 +439,7 @@ def checks(m, log=print):
         else:
             revs[pt["name"]] = None
     sweep_hits = []
-    rotor = [(pt, s) for pt, s in shapes if pt["body"] == "rotor" and pt["join"] == "rotor-core" and pt["name"] not in ("shaft",)]
+    rotor = [(pt, s) for pt, s in shapes if pt["body"] == "rotor" and pt["name"] not in ("shaft",)]
     stator = [(pt, s) for pt, s in shapes if pt["body"] == "stator"]
     from OCP.BRepPrimAPI import BRepPrimAPI_MakeRevol
     for pr, sr in rotor:
@@ -332,6 +472,10 @@ def checks(m, log=print):
         d = BRepExtrema_DistShapeShape(s_sph, s_tip); d.Perform()
         gaps.append(dict(station=e["station"], side=e["side"], set_mm=e["gap"], got_mm=round(d.Value(), 4)))
     res["G-TUBE-GAP"] = dict(rows=gaps, pass_=all(abs(g["got_mm"] - g["set_mm"]) < 1e-3 for g in gaps))
+    if any(pt["proto"] == "wu_core" for pt in m.parts):
+        res["G-TUBE-WOUND"] = wound_checks(m, shapes, log)
+    if not any(pt["proto"] == "cem_core" for pt in m.parts):
+        return res
     # reluctance fit: adjacent C-EM cores, utron to sleeve, envelope
     rel = {}
     for side in ("A", "B"):
@@ -344,6 +488,54 @@ def checks(m, log=print):
     rel.update(r_utron_centre=e_cem["r_u"], reluctance_envelope_dia_mm=2 * (e_cem["r_u"] + S.REL_X_MAX), sleeve_r=S.SLEEVE_R)
     res["G-TUBE-REL"] = rel
     return res
+
+
+def wound_checks(m, shapes, log=print):
+    """the wound section: the air gap aligned / unaligned, the coil's clearances, the tip arc, the envelope."""
+    from OCP.BRepExtrema import BRepExtrema_DistShapeShape
+    sp = m.p["rel"]
+    by = {pt["name"]: s for pt, s in shapes}
+    pts = {pt["name"]: pt for pt, _ in shapes}
+
+    def dist(a, b):
+        d = BRepExtrema_DistShapeShape(a, b); d.Perform()
+        return round(d.Value(), 4)
+
+    def turned(name, rot):
+        pl = dict(pts[name]["place"]); pl["rot"] = pl["rot"] + rot
+        return MG.moved(m.protos[pts[name]["proto"]][0], Machine.trsf(pl))
+    out, ok = dict(gap_set_mm=sp["g"], clr_set_mm=sp["clr"]), True
+    half = 180.0 / sp["n_br"]
+    for side in ("A", "B"):
+        core = f"{side}_U1_core"
+        bridges = [n for n in by if n.startswith(f"{side}_bridge_") and pts[n]["proto"] == "w_bridge"]
+        at0 = min(dist(by[core], by[b]) for b in bridges)
+        turn = half if side == "B" else 0.0              # B is unaligned at rotor angle 0: turn it onto a bridge
+        al = min(dist(turned(core, turn), by[b]) for b in bridges)
+        un = min(dist(turned(core, half if side == "A" else 0.0), by[b]) for b in bridges)
+        w = f"{side}_U1_winding"
+        row = dict(gap_at_rotor_0_mm=at0, gap_aligned_mm=al, gap_unaligned_mm=un,
+                   winding_to_core_mm=dist(by[w], by[core]), winding_to_strip_mm=dist(by[w], by[f"{side}_U1_strip"]),
+                   winding_to_wedge_mm=dist(by[w], by[f"{side}_U1_wedge"]),
+                   winding_to_cheek_mm=min(dist(by[w], by[n]) for n in by if n.startswith(f"{side}_U1_cheek")),
+                   winding_to_disc_mm=min(dist(by[w], by[n]) for n in by if n.startswith(f"{side}_carrier_disc")),
+                   winding_to_ring_mm=dist(by[w], by[f"{side}_bridge_ring"]),
+                   core_to_ring_mm=dist(by[core], by[f"{side}_bridge_ring"]))
+        P = MG.mesh_points(by[core], 0.02)
+        row["core_r_max_mm"] = round(float(np.hypot(P[:, 0], P[:, 1]).max()), 3)
+        P = MG.mesh_points(by[w], 0.05)
+        row["winding_r_max_mm"] = round(float(np.hypot(P[:, 0], P[:, 1]).max()), 2)
+        row["winding_r_min_mm"] = round(float(np.hypot(P[:, 0], P[:, 1]).min()), 2)
+        ok &= abs(al - sp["g"]) < 2e-3 and un > 5 * sp["g"] and abs(row["winding_to_core_mm"] - sp["clr"]) < 2e-3
+        ok &= abs(row["winding_to_strip_mm"] - sp["clr"]) < 2e-3 and row["winding_to_cheek_mm"] >= sp["clr"] - 1e-3
+        ok &= row["winding_to_disc_mm"] >= sp["clr"] - 1e-3 and row["winding_to_ring_mm"] > sp["g"]
+        ok &= row["core_r_max_mm"] <= sp["r_g"] + 1e-3
+        out[side] = row
+        log(f"G-TUBE-WOUND {side}: gap aligned {al} mm, unaligned {un} mm; winding to core {row['winding_to_core_mm']} mm")
+    env = [e for e in m.el if e["kind"] == "reluctance"]
+    out.update(envelope_dia_mm=2 * max(e["r1"] for e in env), section_len_mm=env[0]["z1"] - env[0]["z0"],
+               utron_radial_mm=(round(sp["r_g"] - sp["depth"], 2), sp["r_g"]), utron_axial_mm=sp["axial_mm"], pass_=bool(ok))
+    return out
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -423,13 +615,29 @@ def main():
     ap.add_argument("--n-plates", type=int, default=None)
     ap.add_argument("--r-out", type=float, default=None)
     ap.add_argument("--no-step", action="store_true")
+    ap.add_argument("--rel", choices=("cem", "wound"), default="cem",
+                    help="reluctance section: the designer's C-EMs (default) or the wound utrons + bridges (diode build, geared 1 : -1)")
+    ap.add_argument("--pick", default="g 0.5 / 6 bridges / 1200 rpm", help="operating point in sim/pole_design_variants_op.json")
     a = ap.parse_args()
     plates = {}
     if a.n_plates: plates["n_plates"] = a.n_plates
     if a.r_out: plates["r_outMm"] = a.r_out
+    results = RESULTS
+    if a.rel == "wound":
+        import utron_profile as U
+        op = json.load(open(os.path.join(HERE, "pole_design_variants_op.json")))["designs"][a.pick]
+        rows = json.load(open(os.path.join(HERE, "pole_design_variants.json")))["rows"]
+        row = [r for r in rows if r["design"] == op["design"]]
+        rel = U.spec(op["design"], op["best"], row[0] if row else None)
+        rel.update(kind="wound", pick=a.pick)
+        plates.update(bucket=False, rel=rel)
+        results = os.path.join(HERE, "tube_geometry_wound_results.json")
     lad = S.size_stack("tube", plates)
     g = lad["tube_geometry"]
     tag = f"tube-r{lad['tube']['r_outMm']:g}-n{lad['tube']['n_plates']}"
+    if a.rel == "wound":
+        d = rel
+        tag += f"-wound-g{str(d['g']).replace('.', 'p')}-{d['n_br']}br"
     g["tag"] = tag
     m = Machine(lad).build()
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -439,14 +647,16 @@ def main():
     res.update(checks(m))
     json.dump(dict(parts=[{k: v for k, v in pt.items()} for pt in m.parts], elements=g["elements"]),
               open(os.path.join(OUT_DIR, f"{tag}.parts.json"), "w"), indent=0, default=float)
-    res["renders"] = renders(m, OUT_DIR, tag)
+    res["renders"] = renders_wound(m, OUT_DIR, tag) if a.rel == "wound" else renders(m, OUT_DIR, tag)
+    if a.rel == "wound":
+        res["rel"] = {k: v for k, v in rel.items() if not isinstance(v, (list, dict))}
     if not a.no_step:
         path = write_step(m, os.path.join(OUT_DIR, f"{tag}.step"))
         res["step"] = os.path.relpath(path, ROOT)
         res["step_bytes"] = os.path.getsize(path)
         res["step_read_back"] = rb = read_back(path)
         res["step_read_back"]["pass_"] = rb["instances"] == len(m.parts)
-    json.dump(res, open(RESULTS, "w"), indent=1, default=float)
+    json.dump(res, open(results, "w"), indent=1, default=float)
     for k, v in res.items():
         print(k, ":", json.dumps(v, default=float)[:500], flush=True)
 
@@ -477,6 +687,200 @@ def cut_polylines(shape, plane):
             out.append(pts[:, [0, 2]] if ax == "y" else pts[:, [0, 1]])
         e.Next()
     return out
+
+
+def section_faces(shape, plane):
+    """the exact planar section of a solid as filled triangles: plane ('y', 0) -> (x, z), ('z', z0) -> (x, y)."""
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Common
+    from OCP.BRepBuilderAPI import BRepBuilderAPI_MakeFace
+    from OCP.BRepMesh import BRepMesh_IncrementalMesh
+    from OCP.BRep import BRep_Tool
+    from OCP.TopoDS import TopoDS
+    from OCP.TopExp import TopExp_Explorer
+    from OCP.TopAbs import TopAbs_FACE
+    from OCP.TopLoc import TopLoc_Location
+    from OCP.gp import gp_Pln, gp_Pnt, gp_Dir
+    ax, v = plane
+    pln = gp_Pln(gp_Pnt(0, 0, v if ax == "z" else 0), gp_Dir(0, 0, 1) if ax == "z" else gp_Dir(0, 1, 0))
+    c = BRepAlgoAPI_Common(shape, BRepBuilderAPI_MakeFace(pln, -5000, 5000, -5000, 5000).Face()).Shape()
+    BRepMesh_IncrementalMesh(c, 0.1, False, 0.2, True)
+    tris = []
+    e = TopExp_Explorer(c, TopAbs_FACE)
+    while e.More():
+        f = TopoDS.Face(e.Current()); loc = TopLoc_Location()
+        tri = BRep_Tool.Triangulation_s(f, loc)
+        if tri is not None:
+            tr = loc.Transformation()
+            P = [tri.Node(i).Transformed(tr) for i in range(1, tri.NbNodes() + 1)]
+            P = [(q.X(), q.Z()) if ax == "y" else (q.X(), q.Y()) for q in P]
+            for k in range(1, tri.NbTriangles() + 1):
+                a, b, d = tri.Triangle(k).Get()
+                tris.append((P[a - 1], P[b - 1], P[d - 1]))
+        e.Next()
+    return tris
+
+
+MAT_LEGEND = [("sife", "SiFe laminations (utron cores, bridges)"), ("nife", "80 % NiFe neck strip"), ("cu", "Cu windings"),
+              ("stator vane", "Al stator vane"), ("rotor vane", "Al rotor vane"), ("fixed plate", "Al Ca / Cb plate"),
+              ("g10", "G10 (sleeve, cage, spiders, carriers, ring)"), ("steel", "steel (shaft, flanges, bearings)"),
+              ("hub", "bicone (placeholder)"), ("glass", "vacuum sphere (placeholder)")]
+
+
+def _sections(m, parts_shapes, plane):
+    """exact filled section + outline of each part in a plane: {name: (colour, triangles, polylines)}."""
+    out = {}
+    for pt, s in parts_shapes:
+        tris = section_faces(s, plane)
+        polys = cut_polylines(s, plane)
+        if tris or polys:
+            out[pt["name"]] = (m.protos[pt["proto"]][1], tris, polys)
+    return out
+
+
+def _draw(ax, sec, lw=0.35, edge="#222", keep=None):
+    from matplotlib.collections import PolyCollection
+    for name, (c, tris, polys) in sec.items():
+        if keep and not keep(name):
+            continue
+        if tris:
+            ax.add_collection(PolyCollection(tris, facecolors=[c], edgecolors=[c], linewidths=0.3, antialiaseds=False))
+        for P in polys:
+            ax.plot(P[:, 0], P[:, 1], color=edge, lw=lw)
+
+
+def renders_wound(m, out_dir, tag):
+    """arrangement section (y = 0) with an enlarged detail of reluctance A, and plan cuts through both reluctance
+    sections: exact sections of the solids, filled."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch, Rectangle
+    sp, el, ro = m.p["rel"], m.el, m.p["r_outMm"]
+    shapes = [(pt, m.placed(pt)) for pt in m.parts]
+    files = []
+    in_plane = [(pt, s) for pt, s in shapes if bbox(s)[0][1] <= 0.01 and bbox(s)[1][1] >= -0.01]
+    sec = _sections(m, in_plane, ("y", 0.0))
+    L = max(e["z1"] for e in el)
+    R_out = max(sp["r_ring1"], ro + 16.0)
+    hub = [e for e in el if e["kind"] == "hub"][0]
+    uA = [e for e in el if e["kind"] == "w utron" and e["side"] == "A"][0]
+    rA = [e for e in el if e["kind"] == "reluctance" and e["side"] == "A"][0]
+    fig = plt.figure(figsize=(19, 14))
+    ax = fig.add_axes((0.02, 0.03, 0.50, 0.90)); ax.set_anchor("N")
+    _draw(ax, sec)
+    ax.axvline(0, color="#888", lw=0.5, ls="--")
+    xr = R_out + 14
+
+    def span(z0, z1, text, x=xr, col="#333"):
+        ax.annotate("", (x, z0), (x, z1), arrowprops=dict(arrowstyle="|-|", color=col, lw=0.6, shrinkA=0, shrinkB=0,
+                                                         mutation_scale=3))
+        ax.text(x + 6, 0.5 * (z0 + z1), text, va="center", ha="left", fontsize=8, color=col)
+    for side in ("A", "B"):
+        se = [e for e in el if e["side"] == side]
+        v = [e for e in se if e["kind"].endswith("vane")]
+        c = [e for e in se if e["kind"].endswith("plate")]
+        r = [e for e in se if e["kind"] == "reluctance"][0]
+        vn, cn = ("C1", "Ca") if side == "A" else ("C2", "Cb")
+        span(min(e["z0"] for e in v), max(e["z1"] for e in v),
+             f"{vn} varicap {side}: {len(v) // 2} stator + {len(v) // 2}\nrotor vanes, {m.p['g_vMm']:g} mm vacuum gaps")
+        span(min(e["z0"] for e in c), max(e["z1"] for e in c), f"{cn} fixed plates {side}: {len(c)}")
+        span(r["z0"], r["z1"], f"reluctance {side}: 3 wound utrons\n(rotor), {sp['n_br']} passive bridges\n(counter-rotor)"
+             + (f", offset {180 / sp['n_br']:g} deg" if side == "B" else "") + ("\n(detail at right)" if side == "A" else ""))
+    span(hub["z0"], hub["z1"], "hub: bicone + AH / C_R\n(placeholder)")
+    for b in [e for e in el if e["kind"] == "bearing"]:
+        ax.text(-R_out - 10, b["zc"], f"bearing, {b['where']}" + (" (frame)" if b["where"] == "end" else ""),
+                ha="right", va="center", fontsize=7.5, color="#555")
+    ax.annotate("", (-ro - 16, -24), (ro + 16, -24), arrowprops=dict(arrowstyle="<->", lw=0.6, color="#333"))
+    ax.text(0, -31, f"cage OD {2 * (ro + 16):.0f} mm, vane OD {2 * ro:.0f} mm, bridge ring OD {2 * sp['r_ring1']:.0f} mm",
+            ha="center", va="top", fontsize=8.5)
+    ax.annotate("", (-R_out - 128, 0), (-R_out - 128, L), arrowprops=dict(arrowstyle="<->", lw=0.6, color="#333"))
+    ax.text(-R_out - 132, 0.5 * L, f"overall {L:.0f} mm", rotation=90, ha="right", va="center", fontsize=8.5)
+    ax.text(-R_out - 120, L + 40, "B side (top)", fontsize=10, ha="left")
+    ax.text(-R_out - 120, -55, "A side (bottom)", fontsize=10, ha="left")
+    ax.set_aspect("equal")
+    ax.set_xlim(-R_out - 150, R_out + 205)
+    ax.set_ylim(-70, L + 60)
+    ax.set_xlabel("x [mm] (0 deg right, 180 deg left)", fontsize=8.5); ax.set_ylabel("z [mm] (shaft vertical)", fontsize=8.5)
+    ax.tick_params(labelsize=7.5)
+    ax.set_title("section through the shaft (plane y = 0), exact cut of the solids, rotor angle 0", fontsize=10, loc="left")
+    # detail: reluctance A enlarged, right half, with labels
+    ad = fig.add_axes((0.535, 0.40, 0.455, 0.53)); ad.set_anchor("N")
+    zlo, zhi = rA["z0"] - 24, rA["z1"] + 30
+    near = lambda n: n.startswith("A_") or n.startswith(("shaft_A", "rotor_sleeve"))
+    _draw(ad, sec, lw=0.5, keep=near)
+    ad.set_xlim(-8, R_out + 150); ad.set_ylim(zlo, zhi); ad.set_aspect("equal")
+    zc, zs0, zs1 = uA["zc"], uA["zs0"], uA["zs1"]
+    xl = R_out + 12
+    lab = [((0.5 * (sp["u_p0"] + sp["u_p1"]), zc + 22), f"coil U A1: {sp['N_u']} turns, Ø{sp.get('wire_d_mm', 0):.2f} mm Cu,\n"
+            f"rounded end turns (R {sp['over']:.0f}), on a 1 mm G10 former"),
+           ((0.5 * (sp["u_y0"] + sp["u_n1"]), zc - 4), f"neck strip: 80 % NiFe {sp['t_n']:.2f} x {sp['L']:.0f} mm\n(sets Psi_s)"),
+           ((0.5 * (sp["u_n1"] + sp["u_y1"]), zc - 32), f"air break {sp['brk']:.0f} mm, G10 spacer"),
+           ((0.5 * (sp["u_w0"] + sp["r_g"]), zc + 40), "slot wedge, G10"),
+           ((0.5 * (sp["r_br0"] + sp["r_br1"]), zc - 20), f"bridge A1 (SiFe), gap {sp['g']:g} mm"),
+           ((sp["r_ring1"] - 3, zs1 + 18), "bridge ring, G10 (counter-rotor)"),
+           ((0.5 * (24 + sp["r_disc"]), zs0 - sp["t_cheek"] - 0.5 * sp["t_disc"]), "carrier discs, G10, on the rotor sleeve"),
+           ((0.5 * (24 + sp["r_disc"]), zs1 + sp["t_cheek"] + 0.5 * sp["t_disc"]), "carrier discs, G10, on the rotor sleeve"),
+           ((16.5, zc), "rotor sleeve, G10, on the shaft"),
+           ((60.0, [b for b in el if b["kind"] == "bearing" and b["side"] == "A" and b["where"] != "end"
+                    and b["zc"] < hub["z0"]][-1]["zc"]), "Ca|reluctance bearing + spider (counter-rotor)"),
+           ((60.0, [b for b in el if b["kind"] == "bearing" and b["side"] == "A" and b["where"] == "end"][0]["zc"]),
+            "end bearing + spider (frame)")]
+    ys = np.linspace(zhi - 18, zlo + 18, len(lab) + 2)[1:-1]
+    for (pt_, text), yy in zip(sorted(lab, key=lambda q: -q[0][1]), ys):
+        ad.annotate(text, pt_, (xl, yy), fontsize=8, va="center", ha="left",
+                    arrowprops=dict(arrowstyle="-", lw=0.5, color="#444", shrinkA=0, shrinkB=0))
+    ad.set_title("detail: reluctance A, right half (0 deg): utron A1 aligned under bridge A1", fontsize=10, loc="left")
+    ad.tick_params(labelsize=7.5)
+    # legend + notes
+    an = fig.add_axes((0.535, 0.03, 0.455, 0.42)); an.axis("off")
+    an.legend(handles=[Patch(facecolor=COL[k], label=t) for k, t in MAT_LEGEND], loc="upper left", fontsize=8.5,
+              frameon=False, ncol=2)
+    an.text(0.0, 0.32, "Bodies. Rotor: shaft halves, flanges, bicone, rotor sleeve, rotor vanes, utrons + carrier discs.\n"
+            "Counter-rotor, geared 1 : -1 (gear or reversing belt, not drawn): stator cage (one tube across the hub),\n"
+            "stator vanes, Ca / Cb plates, the hub-face and Ca|reluctance spiders, bridges + bridge rings.\n"
+            "Frame: the two end bearings and their spiders. The inner bearings run at the relative speed.\n"
+            f"At rotor angle 0: utron A1 is aligned (gap {sp['g']:g} mm), utron B1 sits between two B bridges (antiphase).\n"
+            "This plane (v = 0) cuts the coil, the neck strip and the air-break spacer; the SiFe half-cores, the slot\n"
+            "wedge's grooves and the cheeks lie at |v| >= s / 2 (see the plan cuts and the utron detail drawing).",
+            fontsize=8.5, va="top", transform=an.transAxes)
+    fig.suptitle(f"{tag}: arrangement ({sp.get('pick', '')}), {L:.0f} mm long", fontsize=12, x=0.01, ha="left")
+    f = os.path.join(out_dir, f"{tag}-section.png"); fig.savefig(f, dpi=105, bbox_inches="tight"); plt.close(fig)
+    files.append(f)
+    # 2. plan cuts: A and B at the stack mid-plane, A through the end turns and cheeks
+    uB = [e for e in el if e["kind"] == "w utron" and e["side"] == "B"][0]
+    cuts = ((uA["zc"], "A", f"A, stack mid-plane (z {uA['zc']:.0f}): utrons aligned"),
+            (uB["zc"], "B", f"B, stack mid-plane (z {uB['zc']:.0f}): bridges offset {180 / sp['n_br']:g} deg, unaligned"),
+            (uA["zs0"] - 0.5 * sp["t_cheek"], "A", f"A, through the end turns and cheeks (z {uA['zs0'] - 0.5 * sp['t_cheek']:.0f})"))
+    fig, axs = plt.subplots(1, 3, figsize=(21, 7.6))
+    lim = sp["r_ring1"] + 14
+    for a, (zz, side, title) in zip(axs, cuts):
+        sel = []
+        for pt, s in shapes:
+            lo, hi = bbox(s)
+            if lo[2] <= zz <= hi[2] and (pt["group"] in (f"rel-{side}", "rotor") or pt["name"].startswith(side)):
+                sel.append((pt, s))
+        _draw(a, _sections(m, sel, ("z", zz)), lw=0.3)
+        t = np.linspace(0, 2 * np.pi, 361)
+        a.plot(sp["r_g"] * np.cos(t), sp["r_g"] * np.sin(t), color="#999", lw=0.4, ls="--")
+        for e in [e for e in el if e["kind"] == "w bridge" and e["side"] == side]:
+            for j, ang in enumerate(e["angles"]):
+                q = math.radians(ang)
+                a.text((lim - 3) * math.cos(q), (lim - 3) * math.sin(q), f"{side}b{j + 1}\n{ang:g}°", ha="center",
+                       va="center", fontsize=6.5, color="#333")
+        for j, ang in enumerate(uA["angles"]):
+            q = math.radians(ang)
+            rr = max(0.5 * (sp["r_disc"] + 20.5), sp["r_disc"] - 12)
+            a.text(rr * math.cos(q), rr * math.sin(q), f"U{side}{j + 1}", ha="center", va="center", fontsize=7.5, color="#222")
+        a.set_aspect("equal"); a.set_xlim(-lim - 6, lim + 6); a.set_ylim(-lim - 6, lim + 6)
+        a.set_title(title, fontsize=9, loc="left"); a.tick_params(labelsize=7)
+    fig.suptitle(f"{tag}: plan cuts through the reluctance sections, rotor angle 0 (dashed: the gap radius r_g {sp['r_g']:g} mm, "
+                 f"gap {sp['g']:g} mm). 3 utrons per side at 120 deg on the rotor, {sp['n_br']} bridges per side at "
+                 f"{360 / sp['n_br']:g} deg on the counter-rotor.", fontsize=10, x=0.01, ha="left")
+    fig.legend(handles=[Patch(facecolor=COL[k], label=t) for k, t in MAT_LEGEND[:3] + MAT_LEGEND[6:7]], loc="lower left",
+               fontsize=8, frameon=False, ncol=4)
+    f = os.path.join(out_dir, f"{tag}-reluctance-plan.png"); fig.tight_layout(rect=(0, 0.04, 1, 0.95)); fig.savefig(f, dpi=100)
+    plt.close(fig); files.append(f)
+    return [os.path.relpath(x, ROOT) for x in files]
 
 
 def renders(m, out_dir, tag):
