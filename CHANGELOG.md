@@ -15,6 +15,18 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **The designer's vanes for air: 4 mm with full-round edges** (`sim/air_stack_sizing.py` stages 4 / 4b,
+  `sim/vane_cell.py`, `sim/air-stack-sizing-findings.md` §6). The Ca / Cb plates get the same, as asked.
+  - **Thickness costs κ.** On 6 × 24° / 22° at 6 mm, κ goes 8.38 → 6.51 and z 1.402 → 1.339 (C_min per gap
+    4.51 → 5.88 pF). The full round wins a little back: 4 mm square-cut gives 6.32.
+  - **The width search is flat** on 6 sectors: 9.2–10.4 W/m from 18° to 26°.
+  - **Chosen [IR]:** the most z within 3 % of the top. That is 22° / 22° with 16 + 16 vanes: κ 6.86, z 1.353,
+    6.69 W clamped at 13.1 kV (the 1.5 mm stack: 7.43 W). The stacks are 464 mm per side and the tube 1532 mm.
+  - **What it buys:** the rims' peak field at 13.1 kV falls from 63.9 to 38.7 kV/cm, i.e. from the corona onset
+    (0.97 of it) to 0.74.
+  - **Mass:** the rotor vanes weigh 10.2 kg (from 3.8). The counter-rotor's stator vanes and Ca / Cb plates weigh
+    32 kg (from 13).
+  - **Caveat:** the cell's 0.25 mm grid reads κ a few % high, more for thin vanes. The ranking holds at 0.0625 mm.
 - **The electrostatic stacks sized for air** (`sim/air_stack_sizing.py`, `sim/air-stack-sizing-findings.md`). The method
   takes the hold-off at the vacuum design's 1.5 margin, κ from the 2-D vane cell, and the clamped power at 1200 rpm
   relative.

@@ -17,8 +17,13 @@ The tube's other dimensions are unchanged: r 50..150 mm, 6 sectors (stator 30 de
 Stage 2 (geometry_search): at 6 / 8 / 10 mm, the sector count (3, 4, 6) and the stator / rotor widths, because at wide
 gaps the fringe field between a rotor vane and the next stator sector keeps C_min high and kappa collapses; ranked by
 the eigen-cycle power (stack_sizing ledger at V_op) per mm of stack.
+Stage 4 (thick_vanes, --thick): the designer's vanes on the best 6 mm geometry, at least 4 mm thick with full-round
+edges (sim/vane_cell.py), against the 1.5 mm square-cut vanes the search used; the rims' peak field against corona.
+Stage 4b (thick_search, --thick-search): the sector count and widths searched again for those vanes.
 Usage: python3 sim/air_stack_sizing.py            (about 40 min: 11 ngspice runs, one at a time)
        python3 sim/air_stack_sizing.py --finish   (the derived columns only, from the saved results)
+       python3 sim/air_stack_sizing.py --thick    (stage 4 only, into the saved results: about 10 min)
+       python3 sim/air_stack_sizing.py --thick-search   (stage 4b, after --thick: 4 processes, about 15 min)
 """
 import json
 import math
@@ -33,6 +38,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import bicone_drive as BD          # noqa: E402
 import stack_sizing as SS          # noqa: E402
+import vane_cell as VC             # noqa: E402
 
 GAPS = (3.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0)
 MARGIN = 30.0 / 20.0               # the vacuum design's breakdown / operating ratio
@@ -50,11 +56,13 @@ _tube_caps = SS.tube_caps
 
 
 def _cached_tube_caps(p):
-    """stack_sizing.tube_caps with the per-gap cell solutions cached by geometry (N only multiplies them)."""
+    """stack_sizing.tube_caps (sim/vane_cell's for rounded vane edges) with the per-gap cell solutions cached by
+    geometry (N only multiplies them)."""
+    edge = p.get("edge", "square")
     key = tuple(p[k] for k in ("g_vMm", "t_vaneMm", "N_sec", "ws_deg", "wr_deg", "r_inMm", "r_outMm", "h_mm", "n_r",
-                               "dielectric"))
+                               "dielectric")) + (edge,)
     if key not in _CAPS:
-        _CAPS[key] = _tube_caps(dict(p, n_plates=1))
+        _CAPS[key] = (_tube_caps if edge == "square" else VC.tube_caps)(dict(p, n_plates=1))
     one = _CAPS[key]
     n_gap = 2 * int(p["n_plates"]) - 1
     return dict(one, n_gap=n_gap, C_max=n_gap * one["per_gap_max_pF"],
@@ -206,8 +214,136 @@ def finish(out):
     json.dump(out, open(os.path.join(HERE, "air_stack_sizing_results.json"), "w"), indent=1, default=float)
 
 
+T_THICK = 4.0                      # the designer's minimum vane thickness, with full-round edges (radius t / 2)
+RHO_AL = SS.TUBE_DEFAULTS["rho_vane"]
+
+
+def masses(q, t_plate):
+    """kg of aluminium, both sides: rotor vanes (sectors + inner ring), and on the counter-rotor the stator vanes (sectors
+    + outer ring) and the Ca / Cb plates (full annuli). The rounds take < 1 % off and are ignored."""
+    ri, ro, rs, ring = SS.TUBE_DEFAULTS["r_inMm"], SS.TUBE_DEFAULTS["r_outMm"], SS.SLEEVE_R, 12.0
+    ann = math.pi * (ro * ro - ri * ri)
+    a_rot = q["sectors"] * q["wr_deg"] / 360.0 * ann + math.pi * (ri * ri - rs * rs)
+    a_sta = q["sectors"] * q["ws_deg"] / 360.0 * ann + math.pi * ((ro + ring) ** 2 - ro * ro)
+    kg = lambda area, t, n: 2 * n * area * t * 1e-9 * RHO_AL
+    t, n = q["t_vaneMm"], q["n_plates"]
+    return dict(rotor_vanes_kg=kg(a_rot, t, n), stator_vanes_kg=kg(a_sta, t, n),
+                ca_plates_kg=kg(ann, t_plate, q["n_gap_ca"] + 1), t_plate_mm=t_plate)
+
+
+def thick_vanes(out, t_plate=None, clamp=True):
+    """stage 4: the designer's vanes on the best 6 mm geometry (6 sectors of 24 / 22 deg), T_THICK with full-round
+    edges, against the 1.5 mm square-cut vanes the search used and 4 mm square-cut (thickness and rounding apart).
+    Each: N for the vacuum design's C_max, kappa, z and the eigen-cycle power at V_op. The 4 mm round one also: the
+    clamped power (ngspice), stack and tube lengths (stack_sizing.layout) and masses, with the Ca / Cb plates t_plate
+    thick (default: as thick as the vanes; the layout gives the fixed plates the vanes' thickness). Then the rims' peak
+    field at V_op (sim/vane_cell.edge_field) against Peek's onset."""
+    b = out["best_per_gap"][0]
+    g, v_op = b["gap_mm"], b["V_op_kV"] * 1e3
+    base = out["base_vacuum"]
+    res = dict(geometry=dict(gap_mm=g, sectors=b["sectors"], ws_deg=b["ws_deg"], wr_deg=b["wr_deg"], V_op_kV=b["V_op_kV"]),
+               rows=[])
+    for t, edge in ((T_VANE, "square"), (T_THICK, "square"), (T_THICK, "round")):
+        tp = t if t_plate is None or t == T_VANE else t_plate
+        geo = dict(_geo(b), t_vaneMm=t, edge=edge, pitch_fixed_mm=g + tp)
+        one = stack(g, 1, "air", geo)
+        n = max(1, math.ceil((base["C_max_pF"] / one["per_gap_max_pF"] + 1) / 2))
+        q = stack(g, n, "air", geo, v_op=v_op)
+        q.update(gap_mm=g, V_op_kV=b["V_op_kV"], sectors=b["sectors"], ws_deg=b["ws_deg"], wr_deg=b["wr_deg"],
+                 t_vaneMm=t, edge=edge, t_plate_mm=tp, L_tube_mm=L_TUBE_WOUND + q["L_layout_mm"] - base["L_layout_mm"])
+        q.update(masses(q, tp))
+        if t == T_THICK and edge == "round" and clamp:
+            q["P_clamped_W"] = clamped_power(_clamp_job(q, q["V_op_kV"]))
+            q["P_clamped_per_m"] = q["P_clamped_W"] / (q["L_es_side_mm"] * 1e-3)
+        res["rows"].append(q)
+        print(f"t {t:g} {edge}: N {n} per gap {q['per_gap_min_pF']:.3f} / {q['per_gap_max_pF']:.3f} pF, C {q['C_min_pF']:.1f}"
+              f" / {q['C_max_pF']:.1f}, kappa {q['kappa']:.2f}, z {q['z']:.4f}, P_eig {q['P_eigen_W']:.2f} W"
+              + (f", clamped {q['P_clamped_W']:.2f} W" if "P_clamped_W" in q else "")
+              + f"; ES {q['L_es_side_mm']:.1f} mm/side, tube {q['L_tube_mm']:.0f} mm", flush=True)
+    edges = []
+    for t in (T_VANE, T_THICK):
+        e = VC.edge_field(t, g, "round")
+        E = e["E_peak_per_V"] * b["V_op_kV"] * 10.0                      # kV/cm at V_op
+        edges.append(dict(t_mm=t, r_edge_mm=0.5 * t, E_peak_kV_cm=E, enhancement=e["enhancement"], angle_deg=e["angle_deg"],
+                          E_face_kV_cm=b["V_op_kV"] / g * 10.0, peek_kV_cm=VC.peek_kV_per_cm(0.5 * t),
+                          ratio_to_onset=E / VC.peek_kV_per_cm(0.5 * t)))
+        print(f"rim, {t:g} mm full round: {E:.1f} kV/cm at {b['V_op_kV']:.1f} kV (x{e['enhancement']:.2f} the face field), "
+              f"Peek {VC.peek_kV_per_cm(0.5 * t):.1f} kV/cm", flush=True)
+    res["rim_field"] = edges
+    out["thick_vanes"] = res
+    return res
+
+
+THICK_SEARCH = {6: ((16.0, 18.0, 20.0, 22.0, 24.0, 26.0), (14.0, 16.0, 18.0, 20.0, 22.0, 24.0, 26.0)),   # stator / rotor
+                4: ((27.0, 31.5, 36.0), (22.5, 27.0, 33.0)),
+                3: ((36.0, 42.0, 48.0), (30.0, 36.0, 44.0))}
+
+
+def _thick_design(args):
+    """one design of the thick-vane search (a worker process): N for the vacuum design's C_max, then the stack at V_op."""
+    g, ns, ws, wr, t, c_max, v_op = args
+    geo = dict(N_sec=2 * ns, ws_deg=ws, wr_deg=wr, t_vaneMm=t, edge="round", pitch_fixed_mm=g + t)
+    one = stack(g, 1, "air", geo)
+    n = max(1, math.ceil((c_max / one["per_gap_max_pF"] + 1) / 2))
+    q = stack(g, n, "air", geo, v_op=v_op)
+    q.update(gap_mm=g, V_op_kV=v_op / 1e3, sectors=ns, ws_deg=ws, wr_deg=wr, t_vaneMm=t, edge="round", t_plate_mm=t)
+    q["P_eigen_per_m"] = q["P_eigen_W"] / (q["L_es_side_mm"] * 1e-3)
+    return q
+
+
+KNEE = 0.03                        # the choice: the most gain within this fraction of the best power per metre [IR]
+
+
+def thick_search(out, procs=4):
+    """stage 4b: the sector count and widths again, for T_THICK vanes and Ca / Cb plates with full-round edges at the
+    best gap (6 mm): the thicker edges fringe more at minimum C, so narrower sectors may win kappa back. Ranked as
+    stage 2 (eigen-cycle power per mm of stack, z >= 1.3). That ranking is nearly flat here, so the design carried on
+    ('chosen') is the one with the most z within KNEE of the best; both get the clamped power, lengths and masses.
+    Designs already in the results are not run again."""
+    from multiprocessing import Pool
+    tv = out["thick_vanes"]
+    g, v_op = tv["geometry"]["gap_mm"], tv["geometry"]["V_op_kV"] * 1e3
+    base = out["base_vacuum"]
+    key = lambda q: (q["sectors"], q["ws_deg"], q["wr_deg"])
+    done = {key(q): q for q in tv.get("search", [])}
+    jobs = [(g, ns, ws, wr, T_THICK, base["C_max_pF"], v_op) for ns, (wss, wrs) in THICK_SEARCH.items()
+            for ws in wss for wr in wrs if ws >= wr and (ns, ws, wr) not in done]
+    with Pool(procs) as pool:
+        rows = list(done.values()) + pool.map(_thick_design, jobs, chunksize=1)
+    rows.sort(key=lambda q: (-q["sectors"], q["ws_deg"], q["wr_deg"]))
+    for q in rows:
+        q["L_tube_mm"] = L_TUBE_WOUND + q["L_layout_mm"] - base["L_layout_mm"]
+        print(f"t {T_THICK:g} round, {q['sectors']} sectors {q['ws_deg']:4.1f} / {q['wr_deg']:4.1f}: N {q['n_plates']:3d} "
+              f"k {q['kappa']:5.2f} z {q['z']:.3f} P_eig {q['P_eigen_W']:5.2f} W  {q['L_es_side_mm']:.0f} mm/side "
+              f"-> {q['P_eigen_per_m']:.2f} W/m", flush=True)
+    ok = [q for q in rows if q["z"] >= 1.3]
+    best = max(ok, key=lambda q: q["P_eigen_per_m"])
+    chosen = max([q for q in ok if q["P_eigen_per_m"] >= (1 - KNEE) * best["P_eigen_per_m"]], key=lambda q: q["z"])
+    before = {key(tv[k]): tv[k] for k in ("best", "chosen") if k in tv}
+    for q in (best, chosen) if chosen is not best else (best,):
+        if "P_clamped_W" in before.get(key(q), {}):
+            q["P_clamped_W"] = before[key(q)]["P_clamped_W"]
+        else:
+            q["P_clamped_W"] = clamped_power(_clamp_job(q, q["V_op_kV"]))
+        q["P_clamped_per_m"] = q["P_clamped_W"] / (q["L_es_side_mm"] * 1e-3)
+        q.update(masses(q, T_THICK))
+        print(f"clamped: {q['sectors']} sectors {q['ws_deg']:.1f} / {q['wr_deg']:.1f} -> {q['P_clamped_W']:.2f} W", flush=True)
+    tv.pop("best_6_sectors", None)
+    tv.update(search=rows, best=dict(best), chosen=dict(chosen), knee=KNEE)
+    return tv
+
+
 if __name__ == "__main__":
+    RES = os.path.join(HERE, "air_stack_sizing_results.json")
     if sys.argv[1:] == ["--finish"]:                       # recompute the derived columns of an existing results file
-        finish(json.load(open(os.path.join(HERE, "air_stack_sizing_results.json"))))
+        finish(json.load(open(RES)))
+    elif sys.argv[1:] == ["--thick-search"]:               # stage 4b into the existing results file
+        o = json.load(open(RES))
+        thick_search(o)
+        json.dump(o, open(RES, "w"), indent=1, default=float)
+    elif sys.argv[1:2] == ["--thick"]:                     # stage 4 into the existing results file
+        o = json.load(open(RES))
+        thick_vanes(o, t_plate=float(sys.argv[2]) if len(sys.argv) > 2 else None)
+        json.dump(o, open(RES, "w"), indent=1, default=float)
     else:
         main()

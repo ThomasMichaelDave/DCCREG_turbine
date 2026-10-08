@@ -1,6 +1,7 @@
 # The electrostatic stacks in air: vane gap and vane count — findings
 
-**Source:** `sim/air_stack_sizing.py` → `sim/air_stack_sizing_results.json`.
+**Source:** `sim/air_stack_sizing.py` → `sim/air_stack_sizing_results.json`; the vane edge profile and the rim field in
+`sim/vane_cell.py`; the drawing `docs/figures/air-vane-stack-6mm.png` (`docs/make_air_vane_drawing.py`).
 
 **Designer's question.** The first tests run in air. Space the vanes further apart, which lowers C but raises the
 breakdown voltage, and choose the number of vanes N to compensate.
@@ -105,12 +106,90 @@ the best per gap: z ≥ 1.3, most power per millimetre.
 | **A. today's stack** | 3 mm / 8 | ≈ 7 kV | 2.4 W | 0.80 m |
 | B. more vanes at 3 mm (the densest) | 3 mm / 16 | ≈ 7 kV | ≈ 5.0 W | ≈ 1.0 m |
 | C. reshaped 6 mm | 6 mm / 16, 24° / 22° | ≈ 13 kV | 7.4 W | 1.31 m |
+| C′. reshaped 6 mm, 4 mm full-round vanes (§6) | 6 mm / 16, 22° / 22° | ≈ 13 kV | 6.7 W | 1.53 m |
 | D. vacuum-equivalent power in air | 3–6 mm / 40–58 | 7–13 kV | 18.5 W | 2.2–2.4 m |
 
 - **What the gap is for.** The choice between gap and vane count turns on what the air phase must show. The gap only
   pays if the test needs the *voltage*: e.g. dump energy ∝ V², or the stress on the 20 kV-class diodes and insulation.
 - **If it needs the pump working, or its power,** more vanes at 3 mm is cheaper per watt and has no edge-corona issue.
 - **Option B is scaled, not run:** twice the working gaps of A at the same geometry and V_op.
+
+## 6. The designer's vanes: 4 mm with full-round edges
+
+**Designer's input.** The vanes at least 4 mm thick with a rounded profile, to reduce the edge fields; asked, the
+Ca / Cb plates too. Taken as 4 mm with a full round (R 2 mm) on every exposed edge, and the sector widths searched again
+for those vanes.
+
+**Method:**
+- **The cell:** `sim/vane_cell.py` is `stack_sizing`'s 2-D vane cell with the edge profile as a choice. Square-cut, it
+  reproduces `stack_sizing._cell` exactly. The full round keeps each sector's width at its mid-plane [IR].
+- **The rim:** a plate's edge between two faces of the other node, 6 mm from its faces. That is a stator vane's inner
+  rim over the rotor vanes' rings, a rotor vane's outer rim under the stator vanes' rings, and the Ca / Cb rims. It is
+  solved on a 0.05 mm grid. The surface field is read with a log-law fit, which matches the exact cylinder over a plane
+  within 0.3 %.
+- **Stage 4:** N for C_max ≥ 1113 pF, then κ, z, the eigen and clamped power, the layout's lengths and the masses.
+  **Stage 4b** repeats the width search for these vanes (41 designs).
+
+### 6.1 Thickness costs κ; the round wins a little back
+
+On the stage-2 winner (6 × 24° / 22° at 6 mm):
+
+| vanes | N | C per gap, min / max | κ | z | clamped | stacks, side A | tube |
+|:--|--:|--:|--:|--:|--:|--:|--:|
+| 1.5 mm, square-cut | 16 | 4.51 / 38.4 pF | 8.38 | 1.402 | 7.43 W | 354 mm | 1312 mm |
+| 4 mm, square-cut | 15 | 6.23 / 39.8 pF | 6.32 | 1.332 | | 444 mm | 1492 mm |
+| 4 mm, full round | 15 | 5.88 / 38.7 pF | 6.51 | 1.339 | 6.30 W | 444 mm | 1492 mm |
+
+- **Why:** at minimum C a rotor vane's capacitance is the fringe field from its edges to the next stator sectors, and a
+  4 mm edge carries more of it.
+- **The round** takes 6 % off C_min against a square-cut 4 mm edge, and 3 % off the aligned C.
+
+### 6.2 The width search finds a flat optimum
+
+On 6 sectors the eigen-cycle power per metre of stack stays within 9.2–10.4 W/m from 18° to 26°. Narrower sectors raise
+κ but need more vanes for the same C_max.
+
+| 6 sectors, stator / rotor | N | κ | z | W/m (eigen) | stacks, side A |
+|:--|--:|--:|--:|--:|--:|
+| 24° / 24° (the top) | 15 | 6.21 | 1.329 | 10.42 | 444 mm |
+| **22° / 22° (chosen)** | **16** | **6.86** | **1.353** | **10.17** | **464 mm** |
+| 24° / 22° | 15 | 6.51 | 1.339 | 10.09 | 444 mm |
+| 20° / 20° | 17 | 7.33 | 1.368 | 9.69 | 484 mm |
+| 18° / 18° | 19 | 7.63 | 1.379 | 9.23 | 524 mm |
+
+- **3 or 4 sectors:** κ 12–24 and z 1.48–1.57, but fewer pump cycles per turn: at best 5.8 and 7.6 W/m.
+- **The choice [IR]:** the most z within 3 % of the top, which is 22° / 22° with 16 + 16 vanes. Clamped, it gives
+  6.69 W against the top's 6.47 W: its higher z more than pays for the 20 mm of extra stack.
+
+### 6.3 The chosen stack
+
+| | 4 mm, full round, 22° / 22° | the 1.5 mm stack (24° / 22°) |
+|:--|:--|:--|
+| clearance at minimum C | 8° each side, 14.0 mm at r 100 | 7°, 12.2 mm |
+| vanes per varicap per side | 16 + 16, Al 4 mm, every exposed edge R2 | 16 + 16, Al 1.5 mm |
+| C1 = C2 | 169–1160 pF, κ 6.86 | 142–1190 pF, κ 8.38 |
+| Ca = Cb | 1276 pF: 15 plates, Al 4 mm, rims R2, 14 gaps | 1309 pF: 16 plates, 15 gaps |
+| gain z | 1.353 | 1.402 |
+| clamped pump at 13.1 kV, 1200 rpm | 6.69 W | 7.43 W |
+| stacks, side A | 314 + 6 + 144 = 464 mm | 354 mm |
+| tube (`stack_sizing.layout`) | 1532 mm | 1312 mm |
+| aluminium, rotor vanes (with rings) | 10.2 kg | 3.8 kg |
+| aluminium, counter-rotor | stator vanes 12.0 + Ca / Cb 20.4 kg | 4.8 + 8.1 kg |
+
+### 6.4 What 4 mm buys: the rims clear corona
+
+| rim | peak field at 13.1 kV | × the faces' 21.9 kV/cm | Peek onset | share of onset |
+|:--|--:|--:|--:|--:|
+| 1.5 mm, full round R0.75 | 63.9 kV/cm | 2.92 | 65.9 kV/cm | 0.97 |
+| **4 mm, full round R2** | **38.7 kV/cm** | **1.77** | **52.3 kV/cm** | **0.74** |
+| 1.5 mm, square-cut | singular | | | |
+
+- **The worst place:** a rim between two full faces. A sector's side edge faces only part of a face.
+- **§4's estimate holds:** the solved 1.5 mm rim agrees with its 63 kV/cm.
+- **Stiffness [RH]:** 4 mm vanes are much stiffer, which helps flatness and pull-in at the 6 mm gap.
+- **Mass [RH]:** the rotor carries 2.7× the vane mass over a 464 mm stack. Scaling §4's 250 Hz with that mass and the
+  longer span (f ∝ √(1 / m L³)) puts the shaft's first bending mode near 100 Hz. That is still above the 30 Hz
+  criterion, but it needs a check with `sim/shaft_bearings.py`. The counter-rotor carries 32 kg of aluminium.
 
 ## Caveats
 - **[RH]:** the 1.5 margin on uniform-field air breakdown (humidity, temperature and the vane edges all move it).
@@ -119,3 +198,12 @@ the best per gap: z ≥ 1.3, most power per millimetre.
 - **κ at the inner and outer rims:** these edges are a fixed 2 pF floor, not part of the 2-D cell.
 - **12 and 15 mm:** with today's sectors the pump didn't reach the clamp within the 24-cycle run (z 1.09 / 1.02). That
   is too little gain to count on with real losses.
+- **The cell's grid (h 0.25 mm)** makes each vane two cells thinner than drawn: 0.96 mm for 1.5 mm, 3.6 mm for 4 mm.
+  - At r 100, refining to h 0.0625 raises C_min per mm by 7.4 % (1.5 mm, square-cut) and 3.8 % (4 mm, round). C_max
+    rises 1.5 % and 0.6 %.
+  - So every κ here reads a few % high, and the 4 mm penalty of §6.1 is about 2.5 % smaller than shown.
+  - The §6.2 ranking holds: 22° / 22° against 24° / 22° is 7.05 against 6.64 at h 0.0625.
+- **The full round on the grid** is a staircase: at h 0.25 mm, R 1.8 mm spans about 7 cells.
+- **The rim field** is 2-D, a straight rim. The arcs at r 50 and r 150 curve it slightly [RH]. Peek's law assumes
+  1 atm, 20 °C and smooth surfaces [RH].
+- **The masses** ignore the rounds (< 1 %).
