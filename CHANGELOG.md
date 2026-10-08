@@ -72,6 +72,15 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - that is fine for diodes only, but not for the spark-gap dump: its 21 A pulses need a brush.
 
 ### Docs
+- **Drawing of the air vane stack** (`docs/figures/air-vane-stack-6mm.png`, generator `docs/make_air_vane_drawing.py`).
+  It shows the chosen 6 mm design: 6 × 22° / 22°, 16 + 16 vanes, 4 mm Al vanes and Ca / Cb plates with full-round edges.
+  - **Plans:** the stator vane and the rotor vane, with the rounds' tangent lines; both at minimum C, against
+    today's 30° stator.
+  - **Section:** side A from `stack_sizing.layout` (bearings and spiders, C1, Ca, cage, sleeve), with detail B of the
+    rims at r 50.
+  - **Fields:** the vane cell at minimum C (1.5 mm square-cut against 4 mm round) and the rim's field against Peek's
+    onset, both from `sim/vane_cell.py`.
+  - **Data:** the table from `sim/air_stack_sizing_results.json`.
 - **Schematic of the rotor's two circuits as built** (`docs/schematic-rotor-circuits.svg` / `.png`, generator
   `docs/make_schematic_rotor.py`):
   - **(a) Reluctance:** the magnetic dual doubler that drives the AH pair. It shows:
