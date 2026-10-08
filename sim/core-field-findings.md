@@ -31,6 +31,7 @@
      - With nothing at the swing, the core sees no field from the pump.
      - The field coils, at the shaft's potential, would also screen the core from a swing applied outside them.
    - Below, "cone A / B" stands for whatever conductor carries that side's swing.
+4. **Proposal (designer):** two electrode rings on the vessel, one on each hemisphere, as those conductors (§4).
 
 **The design.** The air build's capped stack (`sim/air_stack_sizing.py` stage 4c): 3 mm full-round vanes, 6 + 6 per
 varicap per side, 6 × 22° / 22°, 6 mm gaps, r 150. That gives C 55–410 pF, Ca = Cb 451 pF and V_op 13.1 kV, at 1200 rpm
@@ -151,7 +152,75 @@ with the floating cones and bare. The cost sheet interpolates it for each of the
   the cones must be at most 46 mm apart (9.2 kV), or 35 mm at the stack of record's 7.1 kV.
 - **The 10 mm gaps** would reach it (20.6 kV peak), but need rims thicker than the matrix's 4 mm.
 
-## 4. The steady alternatives
+## 4. Electrode rings on the vessel (designer's proposal)
+
+**Source:** `sim/core_rings.py` → `sim/core_rings_results.json`; the figure `docs/figures/core-rings.png`
+(`docs/make_core_rings_figure.py`).
+
+**The model.**
+- **The hub [RH]:** the tube's placeholder, in the designer's layer order:
+  - the glass vessel, r 42–45 mm;
+  - the composite retainer, 45–48 mm;
+  - the field coils as two loops at the shaft's potential, 6 × 6 mm at r 47–53, |z| 18–24, where they fit inside
+    the cones;
+  - the G10 cones;
+  - the flanges, shaft and bearing, the cage and the first stator vanes as REF.
+- **The rings** sit on the vessel under the retainer, A on the upper hemisphere and B its mirror. Each is coupled
+  through 1 nF to node 1 / 4.
+- **The solve:** axisymmetric field solves give the field at the centre and each ring's strays [OC]. The solver
+  reproduces a sphere between planes to 0.6 %, and halving the grid moves the results 2–3 %.
+- **The pump:** the float wiring with those strays.
+
+**The rings work.**
+- **They sit inside the field coils,** so the coils do not screen them.
+- **They add little capacitance** (that is far less than the 20 / 10 pF guessed for electrodes on the cones):
+  - at 20–50° from the axis, 3–8 pF each to the shaft side (the coils, the flanges) and at most 1.6 pF between them;
+  - nearer the coils, at 60–70°, up to 19 pF and 4.3 pF.
+- **The pump keeps z 1.28–1.30 at 20–50°** (1.25 at worst; bare 1.31), 1.9–2.1 W, and a ±7.2–7.4 kV swing between
+  the rings.
+
+| ring | polar angle | to the shaft side | ring to ring | field at the centre, peak | z | power |
+|:--|--:|--:|--:|--:|--:|--:|
+| wire Ø 2 mm | 40° | 5.4 pF | 0.2 pF | 0.68 kV/cm | 1.291 | 2.09 W |
+| wire Ø 2 mm | 50° | 6.8 pF | 0.3 pF | 0.71 kV/cm | 1.287 | 2.07 W |
+| wire Ø 6 mm | 50° | 8.3 pF | 0.5 pF | 0.80 kV/cm | 1.283 | 2.05 W |
+| band 10 mm | 40° | 6.6 pF | 0.3 pF | 0.83 kV/cm | 1.288 | 2.07 W |
+| band 10 mm | 50° | 8.4 pF | 0.6 pF | 0.87 kV/cm | 1.282 | 2.05 W |
+
+**The field at the centre is modest:** 0.5–0.9 kV/cm peak, alternating at 120 Hz, axial and fairly uniform inside the
+vessel.
+- That is about half of the swing over the rings' spacing, because thin rings hold little charge.
+- Per kV of swing it is 0.06–0.12 kV/cm, a property of the geometry. A larger swing scales it: the 8 mm-gap stacks'
+  9.2 kV would give about 1.1 kV/cm.
+- 2 kV/cm at the centre would need about 20 kV of swing with these rings.
+
+**Where to put them:**
+- **About 40–50° from the axis** gives the most field.
+- **Towards the poles** the rings shrink and feel the flanges.
+- **Towards the equator** they couple to each other and, here, to the field coils.
+- **A wider ring** (the band) gives more field for more capacitance.
+- **The field coils** cost 5–9 % of the field at 20–60° (11–19 % at 70°) and add capacitance as the rings approach
+  them. With them left out, the rings' stray to the shaft side stays about 3–5 pF at any angle.
+
+**The pump's budget for strays, for any electrodes** (geometry-free; the stack of record):
+
+| to the shaft side \ ring to ring | 0 pF | 2 pF | 5 pF | 10 pF |
+|--:|--:|--:|--:|--:|
+| 0 pF | 1.307 | 1.301 | 1.292 | 1.277 |
+| 2 pF | 1.301 | 1.295 | 1.286 | 1.272 |
+| 5 pF | 1.293 | 1.287 | 1.278 | 1.264 |
+| 10 pF | 1.280 | 1.274 | 1.266 | 1.253 |
+| 20 pF | 1.256 | 1.251 | 1.243 | 1.231 |
+
+Each pF costs about 0.003 of z either way. z ≥ 1.30 allows about 2 pF each.
+
+**Not covered:**
+- the real hub's dimensions;
+- the field coils' real size and place (160 turns of Ø 1.5 mm need about 20 × 20 mm, which the placeholder hub cannot
+  hold);
+- the rings' surface field. Under the retainer it sits in the composite, so voids there would discharge.
+
+## 5. The steady alternatives
 
 **The earlier options** for comparison. These were the recommendation before the designer chose a swinging field.
 
@@ -167,7 +236,7 @@ with the floating cones and bare. The cost sheet interpolates it for each of the
 - **The series option** keeps the cones as coils, but with diodes only they carry 0.46 mA rms (0.05 A-turns): still
   decorative.
 
-## 5. The steady (peak) option in detail
+## 6. The steady (peak) option in detail
 
 **The core's leakage sets the load.** With C_core at 1 nF:
 
@@ -191,7 +260,7 @@ with the floating cones and bare. The cost sheet interpolates it for each of the
 - **The field's direction:** from cone B (on the shaft) down to cone A. Running the core positive (every diode flipped)
   reverses it.
 
-## 6. What the HV on the rotor asks of the build
+## 7. What the HV on the rotor asks of the build
 
 **The G10 sleeve now holds node 1 off the shaft.**
 - The rotor vanes' rings sit on the 8 mm sleeve over the d 25 shaft. At 13.2 kV the field is 2.1 kV/mm at the shaft and
@@ -221,7 +290,7 @@ with the floating cones and bare. The cost sheet interpolates it for each of the
 - at 600 rpm they see 40 g at r 100 mm and 60 g at r 150 mm, so pot them and balance the rotor with them;
 - the clamps' 1.8 W is shed on the rotor.
 
-## 7. What was updated
+## 8. What was updated
 - **The schematic's panel (b):** the new bodies, the floating cones on Cca / Ccb with the swinging E, and this stack's
   numbers (it showed the vacuum stack before).
 - **The stack drawing's labels:**
@@ -264,4 +333,4 @@ with the floating cones and bare. The cost sheet interpolates it for each of the
 - **Not re-run with the HV on the rotor:**
   - the vacuum stack (`sim/bicone_drive.py`, `sim/rotor_parts_duty.py`) and its spark-gap dump. Its topology is the
     same, so its pump numbers carry over;
-  - the solids and the shaft check (§6).
+  - the solids and the shaft check (§7).

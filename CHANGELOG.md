@@ -19,6 +19,16 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **Two electrode rings on the core's vessel** (designer's proposal; `sim/core_rings.py`, `docs/figures/core-rings.png`,
+  `sim/core-field-findings.md` §4). Axisymmetric field solves of the placeholder hub [RH], in the designer's layer order,
+  feed the rings' strays into the pump. The solver reproduces a sphere between planes to 0.6 %.
+  - **The rings work.** They sit inside the field coils, so nothing screens them.
+    - At 20–50° from the axis they add 3–8 pF each to the shaft side and at most 1.6 pF between them.
+    - So the pump keeps z 1.28–1.30 (bare 1.31) and about 2.1 W.
+  - **The field at the centre is modest:** 0.5–0.9 kV/cm peak at the ±7.4 kV swing, alternating and fairly uniform.
+    That is 0.06–0.12 kV/cm per kV; 2 kV/cm would take about 20 kV of swing.
+  - **Placement:** best near 40–50°; a 10 mm band gives the most field.
+  - **The pump's stray budget** for any electrodes: about 0.003 of z per pF; z ≥ 1.30 allows about 2 pF each way.
 - **Why each core electrode swings −4.4 / +2.7 kV against the shaft while the core sees a symmetric ±7.1 kV**
   (`docs/make_core_swing_figure.py` → `docs/figures/core-swing-waveforms.png`, `sim/core_swing_waveforms.json`;
   `sim/core-field-findings.md` §2).
