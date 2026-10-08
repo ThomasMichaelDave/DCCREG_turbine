@@ -5,6 +5,26 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Physics
+- **Smaller utrons: 12 stator bridges per side and 1200 rpm relative** (`sim/pole_design.py variants / variants_ext /
+  variants_op`, `sim/pole-design-findings.md` §6, `docs/figures/utron-size-vs-gain.png`):
+  - **What was run:** the four combinations of 6 / 12 bridges × 600 / 1200 rpm, at both gaps, over 330 pole designs.
+    Each design's gain is computed at its own pump frequency, with frequency-scaled node snubbers (a fixed 10 nF would
+    have inflated z at 240 Hz).
+  - **Frequency is the lever.** At z ≥ 1.20 and 0.5 mm, the lightest utron drops from 3.40 kg (60 Hz) to 1.97 kg
+    (6 bridges, 1200 rpm, 120 Hz) and 1.55 kg (12 bridges, 1200 rpm, 240 Hz). At 1.0 mm it drops from 7.31 to
+    4.03 kg (6 bridges, 1200 rpm).
+  - **Bridges vs speed:** for the same utron the two are interchangeable at equal frequency. But 12 bridges cap the
+    utron width, and no 12-bridge design reaches z 1.10 at 1.0 mm.
+  - **Power doesn't grow:** all winners hold AH 450 ampere-turns for 15–19 W, with 1.5–2.2 W per coil and a
+    15–20 % start kick.
+  - **What 1200 rpm costs:** about 52 g on the rotor coils (banding needed); the electrostatic pump's power doubles;
+    windage is not modelled.
+- **Correction to the 1.0 mm penalty** (`sim/pole_design_recheck.json`, findings §5):
+  - With a systematic turn rule (utron group resistance = 4.5–9 × the AH coil's), the design points need 14.5 W at
+    0.5 mm (340 turns) and 20.3 W at 1.0 mm (410 turns).
+  - That is about 1.4× the power, not 2.1×. The earlier 1.0 mm turn search started too high (600 turns).
+
+### Physics
 - **Reluctance poles for the magnetic doubler** (`sim/pole_fd2d.py`, `sim/pole_design.py`, `sim/pole-design-findings.md`,
   `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png`):
   - **New topology:** a wound U-core utron on the rotor, 6 passive laminated stator bridges per side (the C-EMs without
@@ -16,7 +36,8 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
     0.6 × L_max.
   - **Real silicon diodes:** the pump needs a ≥ 8–10 % start kick (about 35 mJ).
   - **Design point at 0.5 mm:** 18.6 W belt, 1.9 W per utron coil, 42–49 °C in air or vacuum.
-  - **At 1.0 mm:** 38.3 W, so about 2.1× the power for the same AH.
+  - **At 1.0 mm:** 38.3 W, so about 2.1× the power for the same AH. *(Superseded: 20.3 W, about 1.4×; see the next
+    entry.)*
 
 ### Physics
 - **Design pivot: the central cavity is driven by two pumps.** Rotor and stator are geared 1 : −1; the bicone hangs on
