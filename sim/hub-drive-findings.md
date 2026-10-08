@@ -72,6 +72,8 @@ elements one for one [OC]:
 - **The AH current is pulsed and unipolar.** The A and B currents are in antiphase (schematic inset), so the top and
   bottom AH coils take turns being the stronger one. The cusp null moves axially once per cycle.
   - For true AC, couple the AH through a transformer, which removes the DC part.
+  - **For a steady cusp**, put a bypass capacitor across each AH coil. At the pick, 22 mF per coil holds both coils at
+    300 A-turns ±3 % with the pump unchanged (`sim/ah-steady-cusp-findings.md`).
 - **AH rod limit.** The MnZn rod's 0.30 T limit corresponds to about 600 ampere-turns.
   - The 160-turn rewind fits at the design point.
   - The 600-turn rewind saturates the rod.

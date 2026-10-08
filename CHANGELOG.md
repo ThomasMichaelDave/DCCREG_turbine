@@ -15,6 +15,14 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **A steady cusp from the magnetic pump** (`sim/ah_steady_cusp.py`, `sim/ah-steady-cusp-findings.md`):
+  - **Today:** each AH coil carries its utron branch's 139–449 A-turns, and top and bottom peak in turn, so the cusp's
+    null moves every cycle.
+  - **The fix:** a bypass capacitor across each coil carries the 120 Hz ripple. 22 mF holds both coils at
+    300 A-turns ±3 %, matched within 17 A-turns. The pump is unchanged (z 1.147, belt 18.1 W).
+  - **Resonance:** keep the LC well below 120 Hz. 2.2 mF resonates at 107 Hz and makes the ripple worse.
+  - **The cost:** the steady field is the mean, 300 A-turns against the 449 peak. A steady 450 needs the AH or the
+    pump re-sized.
 - **Thinner full rounds, and a 6 + 6 vane cap, for the air stack** (`sim/air_stack_sizing.py` stage 4c,
   `sim/air-stack-sizing-findings.md` §6.5). All on 6 × 22° / 22° at 6 mm.
   - **The C_max rule (16 + 16):**
