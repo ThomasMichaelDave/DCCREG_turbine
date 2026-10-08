@@ -9,8 +9,11 @@ P1 screen: 2-D field solve of each candidate (sim/pole_fd2d.py) -> L(theta), rat
 P2 size: stack length, winding window, the saturable neck (Psi_s), the utron turns vs the AH winding, heat per coil
    in air and in vacuum, iron loss.
 P3 the chosen pole pair in the saturating doubler with the AH pair, against the AH target; the 0.5 mm vs 1.0 mm gap.
+variants / variants_ext / variants_op: 6 or 12 bridges per side x 600 or 1200 rpm relative, and the winners' operating
+   points; turnfix: the variant screen redone with the corrected mean turn (pole_fd2d.mean_turn_mm).
 
-Usage: python3 sim/pole_design.py p1 | p2 | p3      (writes sim/pole_design_<stage>.json)
+Usage: python3 sim/pole_design.py p1 | p1b | p3 | final | real | kick | variants | variants_ext | turnfix | variants_op
+       (writes sim/pole_design_<stage>.json)
 """
 import json
 import math
@@ -130,7 +133,7 @@ def with_stack(r, L_stk):
     D = P.Design(**dict(d, L_stk=L_stk))
     plus, minus, a_coil = D.coil_rects()
     h_c = plus[3] - plus[2]
-    l_turn = 2 * (D.L_stk + D.b) + math.pi * (h_c / 2 + D.clr) + 4 * D.clr
+    l_turn = P.mean_turn_mm(D)
     rp = P.RHO_CU * l_turn * 1e-3 / (P.FILL * a_coil * 1e-6)
     out = dict(r, L_al=r["L_al"] * k, L_un=r["L_un"] * k, R_per_n2=rp, l_turn_mm=l_turn, tau=r["L_al"] * k / rp,
                L_stk=L_stk, h_c=h_c, axial_mm=L_stk + 2 * h_c, design=dict(d, L_stk=L_stk))
@@ -457,12 +460,40 @@ def variants_ext():
     report_variants(data["rows"])
 
 
+def turnfix():
+    """the variant screen with the corrected mean turn (pole_fd2d.mean_turn_mm): L(theta) does not depend on the
+    copper, so only R, tau, the copper mass and the circuit z (both speeds) are redone; the short-turn values are kept
+    per row under 'short_turn'."""
+    path = os.path.join(HERE, "pole_design_variants.json")
+    data = json.load(open(path))
+    rows = data["rows"]
+    if data.get("turn") != "corrected":
+        for r in rows:
+            D = P.Design(**r["design"])
+            r["short_turn"] = dict(l_turn_mm=r["l_turn_mm"], R_per_n2=r["R_per_n2"], tau=r["tau"], z_rpm=dict(r["z_rpm"]),
+                                   m_cu_kg=r["m_cu_kg"], m_utron_kg=r["m_utron_kg"])
+            r["l_turn_mm"] = P.mean_turn_mm(D)
+            r["R_per_n2"] = P.RHO_CU * r["l_turn_mm"] * 1e-3 / (P.FILL * r["a_coil_mm2"] * 1e-6)
+            r["tau"] = r["L_al"] / r["R_per_n2"]
+            r.update(mass(r))
+    print(f"turnfix: {len(rows)} designs x {len(RPMS)} speeds", flush=True)
+    jobs = [(r, rpm) for r in rows for rpm in RPMS]
+    with Pool(4) as pool:
+        zs = pool.map(_z_at, jobs)
+    for (r, rpm), z in zip(jobs, zs):
+        r["z_rpm"][str(int(rpm))] = z["z"]
+    for r in rows:
+        r["z"] = r["z_rpm"].get("600")
+    data["turn"] = "corrected"
+    json.dump(data, open(path, "w"), indent=1, default=float)
+    report_variants(rows)
+
+
 def mass(r):
     """per utron: copper + iron; per side: the stator bridges (kg), at the screened stack length."""
     D = P.Design(**r["design"])
     plus, minus, a = D.coil_rects()
-    h = plus[3] - plus[2]
-    lt = 2 * (D.L_stk + D.b) + math.pi * (h / 2 + D.clr) + 4 * D.clr
+    lt = P.mean_turn_mm(D)
     cu = a * 1e-6 * P.FILL * lt * 1e-3 * 8900.0
     fe = (2 * D.w_p * D.d + D.W_u * D.b) * D.L_stk * 1e-9 * RHO_FE
     st = D.n_br * D.l_b * D.t_b * D.L_stk * 1e-9 * RHO_FE
@@ -670,4 +701,4 @@ def _z(r):
 if __name__ == "__main__":
     {"p1": p1, "p1b": p1b, "p3": p3, "final": final, "real": real, "kick": kick,
      "variants": variants, "report_variants": report_variants, "variants_op": variants_op,
-     "variants_ext": variants_ext}[sys.argv[1]]()
+     "variants_ext": variants_ext, "turnfix": turnfix}[sys.argv[1]]()

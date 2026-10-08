@@ -220,6 +220,15 @@ def solve(design, theta_deg, hx=0.5, fine=None, return_field=False):
     return out
 
 
+def mean_turn_mm(D):
+    """mean turn of the yoke coil: a rounded rectangle around the back iron (b radial x L_stk axial) at the coil's
+    mid-build, 2 (L_stk + b) + 2 pi (clr + h_c / 2) [OC: geometry]. (Before 2026-10 the four corners were counted as
+    pi (h_c / 2 + clr) + 4 clr, ~15 % short: R, tau and the copper mass in the p1 .. recheck JSONs carry that.)"""
+    plus, _, _ = D.coil_rects()
+    h_c = plus[3] - plus[2]
+    return 2 * (D.L_stk + D.b) + 2 * math.pi * (D.clr + h_c / 2)
+
+
 def characterise(D, n_theta=9, hx=0.5):
     """L(theta) over one half cycle (aligned -> unaligned), the ratio, tau, and the field in the tip at alignment."""
     period = 360.0 / D.cyc_per_rev
@@ -227,9 +236,7 @@ def characterise(D, n_theta=9, hx=0.5):
     L = np.array([solve(D, t, hx=hx)["L2d"] for t in th])
     La, Lu = L[0] * (1 + K_END_A), L[-1] * (1 + K_END_U)
     plus, minus, a_coil = D.coil_rects()
-    # mean turn: around the back iron (b x L_stk) at the coil's mid-depth
-    h_c = plus[3] - plus[2]
-    l_turn = 2 * (D.L_stk + D.b) + math.pi * (h_c / 2 + D.clr) * 1.0 + 4 * D.clr
+    l_turn = mean_turn_mm(D)
     r_per_n2 = RHO_CU * l_turn * 1e-3 / (FILL * a_coil * 1e-6)
     tau = La / r_per_n2
     Lcorr = L * (1 + K_END_A + (K_END_U - K_END_A) * (1 - (L - L[-1]) / max(L[0] - L[-1], 1e-30)))
