@@ -3,12 +3,12 @@
 (a) RELUCTANCE: the magnetic dual doubler (sim/magnetic_doubler.py netlist) -- the A / B groups of 3 wound utrons each,
     the AH coil of its branch in series, La / Lb, the wiring strays Lp2 / Lp3, D1*-D4*; everything on the rotor. The
     counter-rotor's passive bridges make L(theta); no wire crosses between the bodies.
-(b) ELECTROSTATIC: the de Queiroz diode doubler (sim/bicone_drive.py netlist) -- C1 / C2 between the counter-rotor's
-    stator vanes and the rotor vanes, Ca / Cb, D1-D4, the 20 kV clamps, the bicone cones from the rotor vanes to the
-    shaft; the counter-rotor's reference rail joined to the shaft through one inner bearing for now (a brush later).
-Values: sim/pole_design_variants_op.json (the pick), sim/utron_profile.py, sim/bicone_drive.py and its results,
-sim/rotor_parts_duty_results.json (La / Lb, D1*-D4*, the clamps and the bearing current at the pick),
-sim/tube_geometry_wound_results.json.
+(b) ELECTROSTATIC: the de Queiroz diode doubler with its HV side on the rotor (sim/core_field.py netlist; the air
+    build's capped stack) -- C1 / C2 between the rotor vanes (nodes 1 / 4) and the counter-rotor's stator vanes, which
+    are the reference; Ca / Cb, D1-D4 and the clamps Z1 / Z4 on the rotor; the core diode Dk charging cone A, held by
+    C_core, cone B on the shaft; the stator vanes joined to the shaft through one inner bearing for now (a brush later).
+Values: sim/pole_design_variants_op.json (the pick), sim/utron_profile.py, sim/rotor_parts_duty_results.json (La / Lb,
+D1*-D4* at the pick), sim/core_field_results.json (the electrostatic pump, the core and the link).
 Usage: python3 docs/make_schematic_rotor.py   (the PNG needs playwright + chromium)
 """
 import json
@@ -19,7 +19,6 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(ROOT, "sim"))
-import bicone_drive as BDm         # noqa: E402  (the ES netlist's constants)
 import magnetic_doubler as MDm     # noqa: E402  (the dual's constants: AH rewinds, strays, snubbers)
 import utron_profile as U          # noqa: E402
 
@@ -108,6 +107,11 @@ def box(x, y, w, h, cl):
     o.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{w:.1f}" height="{h:.1f}" class="{cl}"/>')
 
 
+def kv(v, f="{:.1f}"):
+    """a voltage with a real minus sign."""
+    return f.format(v).replace("-", "−")
+
+
 def table(x, y, rows, w_key=92, dy=19.5):
     for i, (k, v) in enumerate(rows):
         tx(x, y + i * dy, k, "tk")
@@ -126,13 +130,11 @@ def numbers():
     F = b["f_utron_Hz"]
     csn = MDm.CSNUB * (MDm.L_MAX / Lg) * (60.0 / F) ** 2          # magnetic_doubler.deck(snub="scaled")
     rsn = MDm.RSNUB * (Lg / MDm.L_MAX) * (F / 60.0)
-    bd = json.load(open(os.path.join(ROOT, "sim", "bicone_drive_results.json")))
-    tube = json.load(open(os.path.join(ROOT, "sim", "tube_geometry_wound_results.json")))
     duty = json.load(open(os.path.join(ROOT, "sim", "rotor_parts_duty_results.json")))
+    cf = json.load(open(os.path.join(ROOT, "sim", "core_field_results.json")))
+    cfr = {r["name"]: r for r in cf["rows"]}
     return dict(op=op, b=b, sp=sp, Lg=Lg, ah=ah, F=F, csn=csn, rsn=rsn, la=LA_RATIO * Lg, lp=MDm.R_PAR * Lg, duty=duty,
-                bd_d=[r for r in bd["rows"] if r["mode"] == "diodes"][0],
-                bd_g=[r for r in bd["rows"] if r["mode"] == "dump" and "steps" not in r and "reltol" not in r][0],
-                bd_F=bd["F"], tube=tube)
+                cf=cf, cfr=cfr)
 
 
 # ------------------------------------------------------------------------------------------------ (a) reluctance
@@ -244,95 +246,136 @@ def panel_a_table(ox, y, N):
 
 
 # ------------------------------------------------------------------------------------------------ (b) electrostatic
+def bicone(xc, yc, hw=50, hh=62, gap=3):
+    """the hub's bicone as electrodes around the vacuum sphere: cone A (lower, HV) and cone B (upper, on the shaft)."""
+    o.append(f'<polygon points="{xc - hw:.1f},{yc + gap:.1f} {xc + hw:.1f},{yc + gap:.1f} {xc:.1f},{yc + hh:.1f}" '
+             'class="cone_a"/>')
+    o.append(f'<polygon points="{xc - hw:.1f},{yc - gap:.1f} {xc + hw:.1f},{yc - gap:.1f} {xc:.1f},{yc - hh:.1f}" '
+             'class="cone_b"/>')
+    o.append(f'<circle cx="{xc:.1f}" cy="{yc:.1f}" r="{0.48 * hw:.1f}" class="glass"/>')
+    ln(xc, yc - 15, xc, yc + 13, "ef")                                   # E: from cone B (0 V) to cone A (negative)
+    o.append(f'<polygon points="{xc:.1f},{yc + 17:.1f} {xc - 4.5:.1f},{yc + 8:.1f} {xc + 4.5:.1f},{yc + 8:.1f}" '
+             'fill="#1d3f5e"/>')
+    tx(xc - 7, yc + 4, "E", "te", "end")
+    return yc - hh, yc + hh
+
+
 def panel_b(ox, N):
-    x1, x2, x3, x4 = ox + 120, ox + 240, ox + 380, ox + 500
-    x1z, x4z = x1 + 56, x4 - 56
-    top, y_d3, y_d4, y_z, y_cr, y_bd, y_sh = 236, 278, 314, 350, 432, 488, 690
+    x1, x2, x3, x4, xb = ox + 250, ox + 345, ox + 440, ox + 535, ox + 605
+    x1z, x4z = x1 + 48, x4 - 48
+    y_s, y_bd, y_n, y_d3, y_d4, y_z, y_k, y_sh = 176, 199, 262, 300, 336, 372, 448, 700
     box(ox + 30, 110, 600, y_bd - 112, "zone_cr")
     tx(ox + 42, 128, "COUNTER-ROTOR", "zh")
-    tx(ox + 42, 145, "stator vanes, the Ca / Cb plates, the diodes and clamps", "m")
-    tx(ox + 42, 162, "nodes 1–4 run negative, clamped at −20 kV", "m")
-    box(ox + 30, y_bd + 2, 600, 256, "zone_r")
-    tx(ox + 620, y_bd + 250, "ROTOR · rotor vanes, cones, shaft", "zh", "end")
-    for x, nm in ((x1, "node 1"), (x2, "node 2"), (x3, "node 3"), (x4, "node 4")):
-        dot(x, top); tx(x, top - 14, nm, "nd", "middle")
+    tx(ox + 42, 145, "stator vanes only: the reference plates of C1 / C2, no HV", "m")
+    tx(ox + 42, 161, "joined to the shaft through one inner bearing (right)", "m")
+    box(ox + 30, y_bd + 3, 600, 756 - y_bd - 3, "zone_r")
+    tx(ox + 620, 748, "ROTOR · the HV circuit and the core, no rotating contact", "zh", "end")
+    # the stator vanes' rail (the counter-rotor's reference) and C1 / C2 across the bodies
+    ln(x1 - 20, y_s, xb, y_s, "rail")
+    for x, nm, nd in ((x1, "C1(θ)", "node 1"), (x4, "C2(θ)", "node 4")):
+        dot(x, y_s)
+        ln(x, y_s, x, y_bd - 5)
+        cap_v(x, y_bd - 5, 20); var_arrow(x, y_bd, 50, 40)
+        ln(x, y_bd + 5, x, y_n)
+        tx(x - 38, y_bd + 2, nm, "t", "end", 'font-weight="bold"')
+    tx(x1 + 30, y_bd - 9, "6 stator vanes (REF)", "ms")
+    tx(x1 + 12, y_bd + 24, "6 rotor vanes (R-A)", "ms")
+    for x, nm, anc, dx in ((x1, "node 1", "end", -10), (x2, "node 2", "middle", 0), (x3, "node 3", "middle", 0),
+                           (x4, "node 4", "start", 10)):
+        dot(x, y_n); tx(x + dx, y_n - 12 if anc == "middle" else y_n - 6, nm, "nd", anc)
     # Ca (1-2), Cb (3-4)
-    xm = (x1 + x2) / 2 - 5
-    ln(x1, top, xm, top); cap_h(xm, top); ln(xm + 10, top, x2, top); tx(xm + 5, top - 22, "Ca", "t", "middle", 'font-weight="bold"')
-    xm = (x3 + x4) / 2 - 5
-    ln(x3, top, xm, top); cap_h(xm, top); ln(xm + 10, top, x4, top); tx(xm + 5, top - 22, "Cb", "t", "middle", 'font-weight="bold"')
+    for xa, xb_, nm in ((x1, x2, "Ca"), (x3, x4, "Cb")):
+        xm = (xa + xb_) / 2 - 5
+        ln(xa, y_n, xm, y_n); cap_h(xm, y_n); ln(xm + 10, y_n, xb_, y_n)
+        tx(xm + 5, y_n - 22, nm, "t", "middle", 'font-weight="bold"')
     # D3: 1 -> 3 ; D4: 4 -> 2
     dot(x1, y_d3); ln(x1, y_d3, x3 - 34, y_d3); diode(x3 - 34, y_d3, "right"); ln(x3 - 16, y_d3, x3, y_d3); dot(x3, y_d3)
     tx(x3 - 25, y_d3 - 15, "D3", "t", "middle")
+    ln(x4, y_n, x4, y_z)
     dot(x4, y_d4); ln(x4, y_d4, x2 + 34, y_d4); diode(x2 + 34, y_d4, "left"); ln(x2 + 16, y_d4, x2, y_d4); dot(x2, y_d4)
     tx(x2 + 25, y_d4 - 15, "D4", "t", "middle")
-    # D1: 2 -> ref ; D2: 3 -> ref (the counter-rotor rail)
+    # D1: 2 -> shaft ; D2: 3 -> shaft
     for x, nm in ((x2, "D1"), (x3, "D2")):
-        ln(x, top, x, 372); diode(x, 372, "down"); ln(x, 390, x, y_cr)
-        tx(x + 16 if nm == "D1" else x - 16, 386, nm, "t", "start" if nm == "D1" else "end")
-    # clamps Z1 (1 -> rail), Z4 (4 -> rail)
+        ln(x, y_n, x, 392); diode(x, 392, "down"); ln(x, 410, x, y_sh)
+        tx(x + 16 if nm == "D1" else x - 16, 406, nm, "t", "start" if nm == "D1" else "end")
+    # clamps Z1 (1 -> shaft), Z4 (4 -> shaft)
     for x, xz, nm in ((x1, x1z, "Z1"), (x4, x4z, "Z4")):
-        dot(x, y_z); pl([(x, y_z), (xz, y_z), (xz, 372)], "lim"); diode(xz, 372, "down", "#7d3c98", zener=True)
-        ln(xz, 390, xz, y_cr, "lim"); tx(xz + (14 if x == x1 else -14), 386, nm, "tl", "start" if x == x1 else "end")
-    ln(x1z, y_cr, x4z, y_cr, "rail")
-    for x in (x1z, x2, x3, x4z):
-        dot(x, y_cr)
-    tx((x2 + x3) / 2, y_cr + 18, "counter-rotor reference rail", "ms", "middle")
-    # C1 / C2 straddle the bodies: stator vanes above, rotor vanes below
-    for x, nm, rail, cone, side in ((x1, "C1(θ)", "R-A", "cone A", -1), (x4, "C2(θ)", "R-B", "cone B", +1)):
-        ln(x, top, x, y_bd - 8)
-        cap_v(x, y_bd - 8, 20); var_arrow(x, y_bd - 3, 50, 40)
-        ln(x, y_bd + 2, x, y_bd + 34); dot(x, y_bd + 34)
-        tx(x - 14 if side < 0 else x + 14, y_bd + 38, rail, "nd", "end" if side < 0 else "start")
-        ye = coil_v(x, y_bd + 50, 5, "ah"); ln(x, y_bd + 34, x, y_bd + 50); ln(x, ye, x, y_sh)
-        tx(x + 18, y_bd + 78, cone, "ta", "start", 'font-weight="bold"')
-        tx(x + 18, y_bd + 94, "lower cone" if side < 0 else "upper cone", "ms")
-        o.append(f'<circle cx="{x - 8:.1f}" cy="{y_bd + 52:.1f}" r="2.6" fill="#c0392b"/>')    # dot convention: aiding
-        tx(x - 34 if side < 0 else x + 34, y_bd + 2, nm, "t", "end" if side < 0 else "start", 'font-weight="bold"')
-    tx(x1 + 30, y_bd - 16, "8 stator vanes (node 1)", "ms"); tx(x1 + 30, y_bd + 22, "8 rotor vanes (R-A)", "ms")
-    # the one rotating contact: for now an inner bearing (outer ring on the counter-rotor, inner ring on the shaft)
-    xm = (x2 + x3) / 2
-    ln(xm, y_cr, xm, y_bd - 10)
-    ln(xm - 24, y_bd - 10, xm + 24, y_bd - 10, "ring"); ln(xm - 24, y_bd + 10, xm + 24, y_bd + 10, "ring")
-    for dx in (-14, 0, 14):
-        o.append(f'<circle cx="{xm + dx:.1f}" cy="{y_bd:.1f}" r="4.6" class="ball"/>')
-    ln(xm, y_bd + 10, xm, y_sh)
-    tx(xm + 12, y_bd + 44, "inner bearing (6205)", "t", "start", 'font-weight="bold"')
-    tx(xm + 12, y_bd + 60, "for now: rail → its outer ring,", "ms")
-    tx(xm + 12, y_bd + 74, "inner ring on the shaft;", "ms")
-    tx(xm + 12, y_bd + 88, "a brush later", "ms")
+        dot(x, y_z); pl([(x, y_z), (xz, y_z), (xz, 392)], "lim"); diode(xz, 392, "down", "#7d3c98", zener=True)
+        ln(xz, 410, xz, y_sh, "lim"); tx(xz + (14 if x == x1 else -14), 406, nm, "tl", "start" if x == x1 else "end")
+    # the core: cone A charged from node 1 through Dk, held by C_core; R_leak is the core's insulation [RH]
+    xk = ox + 108
+    ln(x1, y_n, x1, y_k); dot(x1, y_k)
+    yt, ybm = bicone(xk, 334, hw=46, hh=58)
+    ln(xk, ybm, xk, y_k); dot(xk, y_k)
+    ln(xk, y_k, xk + 46, y_k); diode(xk + 46, y_k, "right"); ln(xk + 64, y_k, x1, y_k)
+    tx(xk + 55, y_k - 15, "Dk", "t", "middle", 'font-weight="bold"')
+    ln(xk, yt, xk, yt - 12)
+    for k_, w_ in enumerate((12, 7, 3)):                                 # REF at cone B's apex (the upper flange)
+        ln(xk - w_, yt - 12 - 5 * k_, xk + w_, yt - 12 - 5 * k_)
+    tx(xk + 16, yt - 14, "REF", "ms")
+    tx(xk + 52, 306, "cone B", "t", "start", 'font-weight="bold"')
+    tx(xk + 52, 321, "on the shaft", "ms")
+    tx(xk + 52, 366, "cone A", "ta", "start", 'font-weight="bold"')
+    tx(xk + 52, 381, kv(N['cfr']['peak 1nF 10G']['V_core_kV']['mean']) + " kV DC", "ms")
+    tx(ox + 42, 226, "THE CORE (hub)", "zh")
+    tx(ox + 42, 410, "vacuum", "ms"); tx(ox + 42, 424, "sphere in", "ms"); tx(ox + 42, 438, "the bicone", "ms")
+    yb = y_k + 24
+    ln(xk, y_k, xk, yb); dot(xk, yb)
+    xc, xr = xk - 35, xk + 40
+    ln(xc, yb, xr, yb)
+    ln(xc, yb, xc, yb + 26); cap_v(xc, yb + 26, 15); ln(xc, yb + 36, xc, y_sh)
+    tx(xc + 21, yb + 30, "C_core", "t", "start"); tx(xc + 21, yb + 45, "1 nF", "ms")
+    ln(xr, yb, xr, yb + 52); res_v(xr, yb + 52, 34, "st"); ln(xr, yb + 86, xr, y_sh, "st")
+    tx(xr + 12, yb + 64, "R_leak", "ms"); tx(xr + 12, yb + 78, "≥ 1 GΩ [RH]", "ms")
+    # the one rotating contact: an inner bearing (outer ring on the counter-rotor, inner ring on the shaft)
+    ln(xb, y_s, xb, y_bd - 10)
+    ln(xb - 17, y_bd - 10, xb + 17, y_bd - 10, "ring"); ln(xb - 17, y_bd + 10, xb + 17, y_bd + 10, "ring")
+    for dx in (-10, 0, 10):
+        o.append(f'<circle cx="{xb + dx:.1f}" cy="{y_bd:.1f}" r="3.8" class="ball"/>')
+    ln(xb, y_bd + 10, xb, y_sh)
+    lk = N["cfr"]["none"]["link"]
+    for i, t_ in enumerate(("inner bearing", "(6205), for now;", "a brush later", f"{lk['I_rms_mA']:.2f} mA rms AC",
+                            "no DC")):
+        tx(xb - 8, 560 + 15 * i, t_, "t" if i == 0 else "ms", "end", 'font-weight="bold"' if i == 0 else "")
     # shaft
-    ln(x1 - 20, y_sh, x4 + 20, y_sh, "rail")
-    for x in (x1, xm, x4):
+    ln(xc - 20, y_sh, xb + 12, y_sh, "rail")
+    for x in (xc, xr, x1z, x2, x3, x4z, xb):
         dot(x, y_sh)
-    tx(x1 - 20, y_sh + 20, "shaft (rotor) = REF, shared with (a)", "m")
+    tx(xc - 20, y_sh + 20, "shaft (rotor) = REF, shared with (a)", "m")
 
 
 def panel_b_table(ox, y, N):
-    t = N["tube"]
-    d, g = N["bd_d"], N["bd_g"]
-    es = [q for q in N["duty"]["clamps"] if q["F_Hz"] == 120.0][0]
-    zc, zs, lk = es["Z1"], N["duty"]["clamp_string"], es["link"]
+    d, cf, R = N["cf"]["design"], N["cf"], N["cfr"]
+    nn, pk, pk1, st = R["none"], R["peak 1nF 10G"], R["peak 1nF 1G"], R["start peak 1nF 10G"]
+    vr = pk["VR_pk_kV"]
+    zs = N["duty"]["clamp_string"]
+    n_z = math.ceil(d["V_op_kV"] * 1e3 / zs["V_Z"])
     rows = [
-        ("C1, C2", f"8 + 8 vanes, 6 sectors, 3 mm vacuum gaps: {BDm.CMIN * 1e12:.1f}–{t['C_max_pF']:.0f} pF "
-                   f"(κ {t['kappa']:.1f}); C2 in antiphase"),
-        ("Ca, Cb", f"8 fixed plates each (4 at each node): {BDm.CA * 1e12:.0f} pF ({BDm.CA / BDm.CMAX:.1f} C_max)"),
-        ("D1–D4", "HV stacks rated ≥ 20 kV (D1, D2), ≥ 40 kV (D3, D4); parts not chosen"),
-        ("Z1, Z4", f"avalanche (Zener) strings, BV 20 kV, e.g. {zs['N']} × {zs['V_Z']:.0f} V; on the counter-rotor"),
-        ("", f"each: {zc['P_W']:.2f} W, {zc['I_pk_mA']:.1f} mA peak, {zc['I_avg_mA']:.2f} mA mean, "
-             f"{100 * zc['conduction']:.0f} % conduction ({zc['E_per_cycle_mJ']:.0f} mJ per cycle)"),
-        ("cones A, B", f"the bicone halves, {BDm.N_CONE} t, {BDm.L_CONE * 1e6:.1f} µH, {BDm.R_CONE:.2f} Ω each; "
-                       f"M {BDm.M_CONE * 1e6:.1f} µH (k {BDm.M_CONE / BDm.L_CONE:.3f}, aiding) [RH]"),
-        ("strays", f"≈ {BDm.CPAR * 1e12:.0f} pF at every node [RH]"),
-        ("bearing", f"one inner bearing, for now: {lk['I_rms_mA']:.2f} mA rms AC ({lk['I_pk_mA']:.1f} mA pk), no DC"),
-        ("dump", f"option for Z1 / Z4: 20 kV gap + quench diode; {g['I_cone_pk_A']:.0f} A pulses: needs a brush"),
+        ("C1, C2", f"{d['n_plates']} + {d['n_plates']} vanes, 6 × {d['ws_deg']:g}° / {d['wr_deg']:g}°, {d['gap_mm']:g} mm "
+                   f"air gaps, {d['t_vaneMm']:g} mm full rounds: {d['C_min_pF']:.0f}–{d['C_max_pF']:.0f} pF, "
+                   f"κ {d['kappa']:.1f}"),
+        ("Ca, Cb", f"{d['Ca_pF']:.0f} pF (1.1 C_max): full-annulus plates, now on the rotor"),
+        ("D1–D4", f"HV stacks, reverse peaks {vr['D1']:.1f} / {vr['D2']:.1f} / {vr['D3']:.1f} / {vr['D4']:.1f} kV; "
+                  "parts not chosen"),
+        ("Z1, Z4", f"avalanche strings, BV {d['V_op_kV']:.1f} kV (e.g. {n_z} × {zs['V_Z']:.0f} V), on the rotor: "
+                   f"{nn['Z1']['P_W']:.2f} W, {nn['Z1']['I_pk_mA']:.2f} mA peak each"),
+        ("core", f"Dk: HV diode, {vr['Dk']:.1f} kV reverse; C_core 1 nF to the shaft; cone A "
+                 f"{kv(pk['V_core_kV']['mean'])} kV DC, {1e3 * pk['V_core_kV']['pp']:.0f} V p-p"),
+        ("", f"at R_leak 10 GΩ (1 GΩ: {1e3 * pk1['V_core_kV']['pp']:.0f} V p-p, {pk1['P_leak_W']:.2f} W); "
+             f"{pk['E_mean_kV_cm']:.1f} kV/cm over {cf['D_CORE_mm']:.0f} mm [RH]"),
+        ("strays", f"≈ {cf['CPAR_pF']:.0f} pF at every node, {cf['C_CONE_pF']:.0f} pF per cone, {cf['C_CC_pF']:.0f} pF "
+                   "cone to cone [RH]"),
+        ("bearing", f"one inner bearing, for now: {nn['link']['I_rms_mA']:.2f} mA rms AC "
+                    f"({nn['link']['I_pk_mA']:.2f} mA pk), no DC"),
     ]
     y = table(ox + 42, y, rows, w_key=76)
-    tx(ox + 42, y + 6, f"At {es['rpm_rel']:.0f} rpm relative ({es['F_Hz']:.0f} Hz), diodes only: belt {es['P_belt_W']:.1f} W, "
-                       f"all into Z1 + Z4; node peak {zc['V_node_pk_kV']:.2f} kV.", "op")
-    tx(ox + 42, y + 24, f"Cones {es['cone_rms_mA']:.1f} mA rms: the bicone is decorative.", "op")
-    tx(ox + 42, y + 42, f"Dump ({60 * N['bd_F'] / 6:.0f} rpm run): {g['I_cone_pk_A']:.0f} A peak, {g['AT_pk']:.0f} A-turns, "
-                        f"{g['E_per_dump_mJ']:.0f} mJ per dump, ring {g['f_ring_analytic_MHz']:.1f} MHz.", "op")
+    z0 = R["free none"]["z"]
+    tx(ox + 42, y + 6, f"At {cf['rpm_rel']:.0f} rpm relative ({cf['F_Hz']:.0f} Hz): belt {pk['P_belt_W']:.2f} W, into "
+                       f"Z1 + Z4 and {1e3 * pk['P_leak_W']:.0f} mW of core leakage; z {z0:.3f}.", "op")
+    tx(ox + 42, y + 24, f"Start-up: the core charges with the pump (z {R['free peak 1nF 10G']['z']:.3f} while it charges), "
+                        f"95 % in {st['cycles_to_95pc']} cycles ({st['t_to_95pc_s']:.2f} s).", "op")
+    tx(ox + 42, y + 42, f"Below about 0.06 GΩ of core leakage the pump does not start; at 0.1 GΩ cone A sags to "
+                        f"{kv(R['peak 1nF 0.1G']['V_core_kV']['mean'], '{:.0f}')} kV.", "op")
 
 
 # ------------------------------------------------------------------------------------------------ sheet
@@ -356,14 +399,16 @@ def main():
     .m{fill:#444;font-size:12px} .ms{fill:#555;font-size:11px} .zh{fill:#333;font-size:12.5px;font-weight:bold;letter-spacing:0.06em}
     .tk{fill:#111;font-size:11.5px;font-weight:bold} .tk2{fill:#9c640c;font-size:11.5px;font-weight:bold} .tv{fill:#333;font-size:11.5px}
     .op{fill:#1d3f5e;font-size:11.5px} .h{font-size:17px;font-weight:bold;fill:#111} .h2{font-size:14px;font-weight:bold;fill:#111}
-    .n{fill:#444;font-size:11.5px}
+    .n{fill:#444;font-size:11.5px} .te{fill:#1d3f5e;font-size:12px;font-weight:bold} .ef{stroke:#1d3f5e;stroke-width:1.8}
+    .cone_a{fill:#f6d5d1;stroke:#c0392b;stroke-width:2.6} .cone_b{fill:#e4e4e4;stroke:#111;stroke-width:2.6}
+    .glass{fill:#eaf3f8;fill-opacity:0.92;stroke:#6f8ea6;stroke-width:1.3}
   </style>""")
     b = N["b"]
     tx(20, 30, "DCCREG turbine: the rotor's two circuits as built (tube, wound utrons; rotor and counter-rotor geared 1 : −1)", "h")
-    tx(20, 52, f"(a) the reluctance pump drives the AH pair, all on the rotor · (b) the electrostatic pump drives the bicone, "
-               f"across both bodies · operating point {PICK} relative · only diodes switch", "m")
+    tx(20, 52, f"(a) the reluctance pump drives the AH pair · (b) the electrostatic pump holds the core's field; only C1 / C2 "
+               f"straddle the bodies · operating point {PICK} relative · only diodes switch", "m")
     for ox, w, title in ((20, 760, "(a) RELUCTANCE: magnetic dual doubler → AH pair"),
-                         (800, 620, "(b) ELECTROSTATIC: de Queiroz diode doubler → bicone")):
+                         (800, 620, "(b) ELECTROSTATIC: de Queiroz diode doubler → field on the core")):
         box(ox, 70, w, 940, "frame")
         tx(ox + 12, 94, title, "h2")
     panel_a(20, N)
@@ -371,19 +416,19 @@ def main():
     panel_a_table(20, 778, N)
     panel_b_table(780, 778, N)
     notes = [
-        "Bodies. Rotor: shaft, sleeve, rotor vanes (R-A, R-B), the 6 utrons on their carrier discs, the hub (bicone, AH pair). "
-        "Counter-rotor: stator cage, stator vanes, Ca / Cb plates, bridges. Frame: end bearings, the gear.",
-        "Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers and the kick source (rotor); D1–D4 and Z1 / Z4 (counter-rotor). "
-        "The two pumps share only the shaft; each one's reaction torque goes into the gear.",
+        "Bodies. Rotor: shaft, sleeve, rotor vanes (nodes 1 / 4), Ca / Cb plates, the 6 utrons on their carrier discs, the hub "
+        "(bicone, AH pair). Counter-rotor: stator cage, stator vanes (REF), bridges. Frame: end bearings, the gear.",
+        "Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, Dk, C_core (all rotor); "
+        "sim/tube_geometry.py still puts Ca / Cb on the counter-rotor. Each pump's reaction torque goes into the gear.",
         "(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, "
-        "the 20 kV clamp → the NiFe neck's saturation.",
+        "the clamps Z1 / Z4 → the NiFe neck's saturation.",
         "A and B swap every half cycle: one group generates (L falling) while the other motors. The AH coils are named by branch; "
         "sim/magnetic_doubler.py calls them AH top / bottom (A was then the upper side).",
-        "Polarity: (b) runs negative. de Queiroz's Fig. 1 draws the same core positive, with all four diodes the other way "
-        "(sim/queiroz_fig1_check.py: z 1.372 per cycle both ways, his 1.17138 per half cycle).",
+        "Polarity: (b) runs negative, so E points from cone B down to cone A. de Queiroz's Fig. 1 draws the core positive, all "
+        "four diodes the other way (sim/queiroz_fig1_check.py); that flips the field.",
         f"Numbers: sim/pole_design_variants_op.json ({PICK}), sim/utron_profile.py, sim/rotor_parts_duty_results.json, "
-        "sim/bicone_drive_results.json, sim/tube_geometry_wound_results.json",
-        "Netlists: sim/magnetic_doubler.py, sim/bicone_drive.py · findings: sim/pole-design-findings.md, sim/hub-drive-findings.md "
+        "sim/core_field_results.json (b: the air build's capped stack)",
+        "Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/core-field-findings.md "
         "· generator: docs/make_schematic_rotor.py",
     ]
     y = 1034

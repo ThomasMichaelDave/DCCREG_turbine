@@ -14,14 +14,16 @@
     .m{fill:#444;font-size:12px} .ms{fill:#555;font-size:11px} .zh{fill:#333;font-size:12.5px;font-weight:bold;letter-spacing:0.06em}
     .tk{fill:#111;font-size:11.5px;font-weight:bold} .tk2{fill:#9c640c;font-size:11.5px;font-weight:bold} .tv{fill:#333;font-size:11.5px}
     .op{fill:#1d3f5e;font-size:11.5px} .h{font-size:17px;font-weight:bold;fill:#111} .h2{font-size:14px;font-weight:bold;fill:#111}
-    .n{fill:#444;font-size:11.5px}
+    .n{fill:#444;font-size:11.5px} .te{fill:#1d3f5e;font-size:12px;font-weight:bold} .ef{stroke:#1d3f5e;stroke-width:1.8}
+    .cone_a{fill:#f6d5d1;stroke:#c0392b;stroke-width:2.6} .cone_b{fill:#e4e4e4;stroke:#111;stroke-width:2.6}
+    .glass{fill:#eaf3f8;fill-opacity:0.92;stroke:#6f8ea6;stroke-width:1.3}
   </style>
 <text x="20.0" y="30.0" class="h" text-anchor="start" >DCCREG turbine: the rotor's two circuits as built (tube, wound utrons; rotor and counter-rotor geared 1 : −1)</text>
-<text x="20.0" y="52.0" class="m" text-anchor="start" >(a) the reluctance pump drives the AH pair, all on the rotor · (b) the electrostatic pump drives the bicone, across both bodies · operating point g 0.5 / 6 bridges / 1200 rpm relative · only diodes switch</text>
+<text x="20.0" y="52.0" class="m" text-anchor="start" >(a) the reluctance pump drives the AH pair · (b) the electrostatic pump holds the core's field; only C1 / C2 straddle the bodies · operating point g 0.5 / 6 bridges / 1200 rpm relative · only diodes switch</text>
 <rect x="20.0" y="70.0" width="760.0" height="940.0" class="frame"/>
 <text x="32.0" y="94.0" class="h2" text-anchor="start" >(a) RELUCTANCE: magnetic dual doubler → AH pair</text>
 <rect x="800.0" y="70.0" width="620.0" height="940.0" class="frame"/>
-<text x="812.0" y="94.0" class="h2" text-anchor="start" >(b) ELECTROSTATIC: de Queiroz diode doubler → bicone</text>
+<text x="812.0" y="94.0" class="h2" text-anchor="start" >(b) ELECTROSTATIC: de Queiroz diode doubler → field on the core</text>
 <rect x="50.0" y="110.0" width="700.0" height="64.0" class="zone_cr"/>
 <text x="62.0" y="128.0" class="zh" text-anchor="start" >COUNTER-ROTOR</text>
 <text x="62.0" y="145.0" class="m" text-anchor="start" >6 SiFe bridges per side: passive iron, no wires</text>
@@ -172,120 +174,149 @@
 <text x="572.0" y="558.0" class="ms" text-anchor="start" >RC to REF at each</text>
 <text x="572.0" y="573.0" class="ms" text-anchor="start" >of the 8 nodes [IR]</text>
 <text x="572.0" y="588.0" class="ms" text-anchor="start" >21 nF + 243 Ω</text>
-<rect x="810.0" y="110.0" width="600.0" height="376.0" class="zone_cr"/>
+<rect x="810.0" y="110.0" width="600.0" height="87.0" class="zone_cr"/>
 <text x="822.0" y="128.0" class="zh" text-anchor="start" >COUNTER-ROTOR</text>
-<text x="822.0" y="145.0" class="m" text-anchor="start" >stator vanes, the Ca / Cb plates, the diodes and clamps</text>
-<text x="822.0" y="162.0" class="m" text-anchor="start" >nodes 1–4 run negative, clamped at −20 kV</text>
-<rect x="810.0" y="490.0" width="600.0" height="256.0" class="zone_r"/>
-<text x="1400.0" y="738.0" class="zh" text-anchor="end" >ROTOR · rotor vanes, cones, shaft</text>
-<circle cx="900.0" cy="236.0" r="3.6" class="dot"/>
-<text x="900.0" y="222.0" class="nd" text-anchor="middle" >node 1</text>
-<circle cx="1020.0" cy="236.0" r="3.6" class="dot"/>
-<text x="1020.0" y="222.0" class="nd" text-anchor="middle" >node 2</text>
-<circle cx="1160.0" cy="236.0" r="3.6" class="dot"/>
-<text x="1160.0" y="222.0" class="nd" text-anchor="middle" >node 3</text>
-<circle cx="1280.0" cy="236.0" r="3.6" class="dot"/>
-<text x="1280.0" y="222.0" class="nd" text-anchor="middle" >node 4</text>
-<line x1="900.0" y1="236.0" x2="955.0" y2="236.0" class="w"/>
-<line x1="955.0" y1="222.0" x2="955.0" y2="250.0" class="pl"/>
-<line x1="965.0" y1="222.0" x2="965.0" y2="250.0" class="pl"/>
-<line x1="965.0" y1="236.0" x2="1020.0" y2="236.0" class="w"/>
-<text x="960.0" y="214.0" class="t" text-anchor="middle" font-weight="bold">Ca</text>
-<line x1="1160.0" y1="236.0" x2="1215.0" y2="236.0" class="w"/>
-<line x1="1215.0" y1="222.0" x2="1215.0" y2="250.0" class="pl"/>
-<line x1="1225.0" y1="222.0" x2="1225.0" y2="250.0" class="pl"/>
-<line x1="1225.0" y1="236.0" x2="1280.0" y2="236.0" class="w"/>
-<text x="1220.0" y="214.0" class="t" text-anchor="middle" font-weight="bold">Cb</text>
-<circle cx="900.0" cy="278.0" r="3.6" class="dot"/>
-<line x1="900.0" y1="278.0" x2="1126.0" y2="278.0" class="w"/>
-<polygon points="1126.0,289.0 1126.0,267.0 1144.0,278.0" fill="none" stroke="#111" stroke-width="2"/>
-<line x1="1144.0" y1="289.0" x2="1144.0" y2="267.0" stroke="#111" stroke-width="2"/>
-<line x1="1144.0" y1="278.0" x2="1160.0" y2="278.0" class="w"/>
-<circle cx="1160.0" cy="278.0" r="3.6" class="dot"/>
-<text x="1135.0" y="263.0" class="t" text-anchor="middle" >D3</text>
-<circle cx="1280.0" cy="314.0" r="3.6" class="dot"/>
-<line x1="1280.0" y1="314.0" x2="1054.0" y2="314.0" class="w"/>
-<polygon points="1054.0,303.0 1054.0,325.0 1036.0,314.0" fill="none" stroke="#111" stroke-width="2"/>
-<line x1="1036.0" y1="303.0" x2="1036.0" y2="325.0" stroke="#111" stroke-width="2"/>
-<line x1="1036.0" y1="314.0" x2="1020.0" y2="314.0" class="w"/>
-<circle cx="1020.0" cy="314.0" r="3.6" class="dot"/>
-<text x="1045.0" y="299.0" class="t" text-anchor="middle" >D4</text>
-<line x1="1020.0" y1="236.0" x2="1020.0" y2="372.0" class="w"/>
-<polygon points="1009.0,372.0 1031.0,372.0 1020.0,390.0" fill="none" stroke="#111" stroke-width="2"/>
-<line x1="1009.0" y1="390.0" x2="1031.0" y2="390.0" stroke="#111" stroke-width="2"/>
-<line x1="1020.0" y1="390.0" x2="1020.0" y2="432.0" class="w"/>
-<text x="1036.0" y="386.0" class="t" text-anchor="start" >D1</text>
-<line x1="1160.0" y1="236.0" x2="1160.0" y2="372.0" class="w"/>
-<polygon points="1149.0,372.0 1171.0,372.0 1160.0,390.0" fill="none" stroke="#111" stroke-width="2"/>
-<line x1="1149.0" y1="390.0" x2="1171.0" y2="390.0" stroke="#111" stroke-width="2"/>
-<line x1="1160.0" y1="390.0" x2="1160.0" y2="432.0" class="w"/>
-<text x="1144.0" y="386.0" class="t" text-anchor="end" >D2</text>
-<circle cx="900.0" cy="350.0" r="3.6" class="dot"/>
-<polyline points="900.0,350.0 956.0,350.0 956.0,372.0" class="lim"/>
-<polygon points="945.0,372.0 967.0,372.0 956.0,390.0" fill="none" stroke="#7d3c98" stroke-width="2"/>
-<polyline points="945.0,385.0 945.0,390.0 967.0,390.0 967.0,395.0" class="zl"/>
-<line x1="956.0" y1="390.0" x2="956.0" y2="432.0" class="lim"/>
-<text x="970.0" y="386.0" class="tl" text-anchor="start" >Z1</text>
-<circle cx="1280.0" cy="350.0" r="3.6" class="dot"/>
-<polyline points="1280.0,350.0 1224.0,350.0 1224.0,372.0" class="lim"/>
-<polygon points="1213.0,372.0 1235.0,372.0 1224.0,390.0" fill="none" stroke="#7d3c98" stroke-width="2"/>
-<polyline points="1213.0,385.0 1213.0,390.0 1235.0,390.0 1235.0,395.0" class="zl"/>
-<line x1="1224.0" y1="390.0" x2="1224.0" y2="432.0" class="lim"/>
-<text x="1210.0" y="386.0" class="tl" text-anchor="end" >Z4</text>
-<line x1="956.0" y1="432.0" x2="1224.0" y2="432.0" class="rail"/>
-<circle cx="956.0" cy="432.0" r="3.6" class="dot"/>
-<circle cx="1020.0" cy="432.0" r="3.6" class="dot"/>
-<circle cx="1160.0" cy="432.0" r="3.6" class="dot"/>
-<circle cx="1224.0" cy="432.0" r="3.6" class="dot"/>
-<text x="1090.0" y="450.0" class="ms" text-anchor="middle" >counter-rotor reference rail</text>
-<line x1="900.0" y1="236.0" x2="900.0" y2="480.0" class="w"/>
-<line x1="880.0" y1="480.0" x2="920.0" y2="480.0" class="pl"/>
-<line x1="880.0" y1="490.0" x2="920.0" y2="490.0" class="pl"/>
-<line x1="875.0" y1="505.0" x2="925.0" y2="465.0" class="va"/>
-<polygon points="925.0,465.0 920.6,472.8 916.4,467.6" fill="#111"/>
-<line x1="900.0" y1="490.0" x2="900.0" y2="522.0" class="w"/>
-<circle cx="900.0" cy="522.0" r="3.6" class="dot"/>
-<text x="886.0" y="526.0" class="nd" text-anchor="end" >R-A</text>
-<path d="M900.0 538.0 q10 6 0 12 q10 6 0 12 q10 6 0 12 q10 6 0 12 q10 6 0 12" class="ah"/>
-<line x1="900.0" y1="522.0" x2="900.0" y2="538.0" class="w"/>
-<line x1="900.0" y1="598.0" x2="900.0" y2="690.0" class="w"/>
-<text x="918.0" y="566.0" class="ta" text-anchor="start" font-weight="bold">cone A</text>
-<text x="918.0" y="582.0" class="ms" text-anchor="start" >lower cone</text>
-<circle cx="892.0" cy="540.0" r="2.6" fill="#c0392b"/>
-<text x="866.0" y="490.0" class="t" text-anchor="end" font-weight="bold">C1(θ)</text>
-<line x1="1280.0" y1="236.0" x2="1280.0" y2="480.0" class="w"/>
-<line x1="1260.0" y1="480.0" x2="1300.0" y2="480.0" class="pl"/>
-<line x1="1260.0" y1="490.0" x2="1300.0" y2="490.0" class="pl"/>
-<line x1="1255.0" y1="505.0" x2="1305.0" y2="465.0" class="va"/>
-<polygon points="1305.0,465.0 1300.6,472.8 1296.4,467.6" fill="#111"/>
-<line x1="1280.0" y1="490.0" x2="1280.0" y2="522.0" class="w"/>
-<circle cx="1280.0" cy="522.0" r="3.6" class="dot"/>
-<text x="1294.0" y="526.0" class="nd" text-anchor="start" >R-B</text>
-<path d="M1280.0 538.0 q10 6 0 12 q10 6 0 12 q10 6 0 12 q10 6 0 12 q10 6 0 12" class="ah"/>
-<line x1="1280.0" y1="522.0" x2="1280.0" y2="538.0" class="w"/>
-<line x1="1280.0" y1="598.0" x2="1280.0" y2="690.0" class="w"/>
-<text x="1298.0" y="566.0" class="ta" text-anchor="start" font-weight="bold">cone B</text>
-<text x="1298.0" y="582.0" class="ms" text-anchor="start" >upper cone</text>
-<circle cx="1272.0" cy="540.0" r="2.6" fill="#c0392b"/>
-<text x="1314.0" y="490.0" class="t" text-anchor="start" font-weight="bold">C2(θ)</text>
-<text x="930.0" y="472.0" class="ms" text-anchor="start" >8 stator vanes (node 1)</text>
-<text x="930.0" y="510.0" class="ms" text-anchor="start" >8 rotor vanes (R-A)</text>
-<line x1="1090.0" y1="432.0" x2="1090.0" y2="478.0" class="w"/>
-<line x1="1066.0" y1="478.0" x2="1114.0" y2="478.0" class="ring"/>
-<line x1="1066.0" y1="498.0" x2="1114.0" y2="498.0" class="ring"/>
-<circle cx="1076.0" cy="488.0" r="4.6" class="ball"/>
-<circle cx="1090.0" cy="488.0" r="4.6" class="ball"/>
-<circle cx="1104.0" cy="488.0" r="4.6" class="ball"/>
-<line x1="1090.0" y1="498.0" x2="1090.0" y2="690.0" class="w"/>
-<text x="1102.0" y="532.0" class="t" text-anchor="start" font-weight="bold">inner bearing (6205)</text>
-<text x="1102.0" y="548.0" class="ms" text-anchor="start" >for now: rail → its outer ring,</text>
-<text x="1102.0" y="562.0" class="ms" text-anchor="start" >inner ring on the shaft;</text>
-<text x="1102.0" y="576.0" class="ms" text-anchor="start" >a brush later</text>
-<line x1="880.0" y1="690.0" x2="1300.0" y2="690.0" class="rail"/>
-<circle cx="900.0" cy="690.0" r="3.6" class="dot"/>
-<circle cx="1090.0" cy="690.0" r="3.6" class="dot"/>
-<circle cx="1280.0" cy="690.0" r="3.6" class="dot"/>
-<text x="880.0" y="710.0" class="m" text-anchor="start" >shaft (rotor) = REF, shared with (a)</text>
+<text x="822.0" y="145.0" class="m" text-anchor="start" >stator vanes only: the reference plates of C1 / C2, no HV</text>
+<text x="822.0" y="161.0" class="m" text-anchor="start" >joined to the shaft through one inner bearing (right)</text>
+<rect x="810.0" y="202.0" width="600.0" height="554.0" class="zone_r"/>
+<text x="1400.0" y="748.0" class="zh" text-anchor="end" >ROTOR · the HV circuit and the core, no rotating contact</text>
+<line x1="1010.0" y1="176.0" x2="1385.0" y2="176.0" class="rail"/>
+<circle cx="1030.0" cy="176.0" r="3.6" class="dot"/>
+<line x1="1030.0" y1="176.0" x2="1030.0" y2="194.0" class="w"/>
+<line x1="1010.0" y1="194.0" x2="1050.0" y2="194.0" class="pl"/>
+<line x1="1010.0" y1="204.0" x2="1050.0" y2="204.0" class="pl"/>
+<line x1="1005.0" y1="219.0" x2="1055.0" y2="179.0" class="va"/>
+<polygon points="1055.0,179.0 1050.6,186.8 1046.4,181.6" fill="#111"/>
+<line x1="1030.0" y1="204.0" x2="1030.0" y2="262.0" class="w"/>
+<text x="992.0" y="201.0" class="t" text-anchor="end" font-weight="bold">C1(θ)</text>
+<circle cx="1315.0" cy="176.0" r="3.6" class="dot"/>
+<line x1="1315.0" y1="176.0" x2="1315.0" y2="194.0" class="w"/>
+<line x1="1295.0" y1="194.0" x2="1335.0" y2="194.0" class="pl"/>
+<line x1="1295.0" y1="204.0" x2="1335.0" y2="204.0" class="pl"/>
+<line x1="1290.0" y1="219.0" x2="1340.0" y2="179.0" class="va"/>
+<polygon points="1340.0,179.0 1335.6,186.8 1331.4,181.6" fill="#111"/>
+<line x1="1315.0" y1="204.0" x2="1315.0" y2="262.0" class="w"/>
+<text x="1277.0" y="201.0" class="t" text-anchor="end" font-weight="bold">C2(θ)</text>
+<text x="1060.0" y="190.0" class="ms" text-anchor="start" >6 stator vanes (REF)</text>
+<text x="1042.0" y="223.0" class="ms" text-anchor="start" >6 rotor vanes (R-A)</text>
+<circle cx="1030.0" cy="262.0" r="3.6" class="dot"/>
+<text x="1020.0" y="256.0" class="nd" text-anchor="end" >node 1</text>
+<circle cx="1125.0" cy="262.0" r="3.6" class="dot"/>
+<text x="1125.0" y="250.0" class="nd" text-anchor="middle" >node 2</text>
+<circle cx="1220.0" cy="262.0" r="3.6" class="dot"/>
+<text x="1220.0" y="250.0" class="nd" text-anchor="middle" >node 3</text>
+<circle cx="1315.0" cy="262.0" r="3.6" class="dot"/>
+<text x="1325.0" y="256.0" class="nd" text-anchor="start" >node 4</text>
+<line x1="1030.0" y1="262.0" x2="1072.5" y2="262.0" class="w"/>
+<line x1="1072.5" y1="248.0" x2="1072.5" y2="276.0" class="pl"/>
+<line x1="1082.5" y1="248.0" x2="1082.5" y2="276.0" class="pl"/>
+<line x1="1082.5" y1="262.0" x2="1125.0" y2="262.0" class="w"/>
+<text x="1077.5" y="240.0" class="t" text-anchor="middle" font-weight="bold">Ca</text>
+<line x1="1220.0" y1="262.0" x2="1262.5" y2="262.0" class="w"/>
+<line x1="1262.5" y1="248.0" x2="1262.5" y2="276.0" class="pl"/>
+<line x1="1272.5" y1="248.0" x2="1272.5" y2="276.0" class="pl"/>
+<line x1="1272.5" y1="262.0" x2="1315.0" y2="262.0" class="w"/>
+<text x="1267.5" y="240.0" class="t" text-anchor="middle" font-weight="bold">Cb</text>
+<circle cx="1030.0" cy="300.0" r="3.6" class="dot"/>
+<line x1="1030.0" y1="300.0" x2="1186.0" y2="300.0" class="w"/>
+<polygon points="1186.0,311.0 1186.0,289.0 1204.0,300.0" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="1204.0" y1="311.0" x2="1204.0" y2="289.0" stroke="#111" stroke-width="2"/>
+<line x1="1204.0" y1="300.0" x2="1220.0" y2="300.0" class="w"/>
+<circle cx="1220.0" cy="300.0" r="3.6" class="dot"/>
+<text x="1195.0" y="285.0" class="t" text-anchor="middle" >D3</text>
+<line x1="1315.0" y1="262.0" x2="1315.0" y2="372.0" class="w"/>
+<circle cx="1315.0" cy="336.0" r="3.6" class="dot"/>
+<line x1="1315.0" y1="336.0" x2="1159.0" y2="336.0" class="w"/>
+<polygon points="1159.0,325.0 1159.0,347.0 1141.0,336.0" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="1141.0" y1="325.0" x2="1141.0" y2="347.0" stroke="#111" stroke-width="2"/>
+<line x1="1141.0" y1="336.0" x2="1125.0" y2="336.0" class="w"/>
+<circle cx="1125.0" cy="336.0" r="3.6" class="dot"/>
+<text x="1150.0" y="321.0" class="t" text-anchor="middle" >D4</text>
+<line x1="1125.0" y1="262.0" x2="1125.0" y2="392.0" class="w"/>
+<polygon points="1114.0,392.0 1136.0,392.0 1125.0,410.0" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="1114.0" y1="410.0" x2="1136.0" y2="410.0" stroke="#111" stroke-width="2"/>
+<line x1="1125.0" y1="410.0" x2="1125.0" y2="700.0" class="w"/>
+<text x="1141.0" y="406.0" class="t" text-anchor="start" >D1</text>
+<line x1="1220.0" y1="262.0" x2="1220.0" y2="392.0" class="w"/>
+<polygon points="1209.0,392.0 1231.0,392.0 1220.0,410.0" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="1209.0" y1="410.0" x2="1231.0" y2="410.0" stroke="#111" stroke-width="2"/>
+<line x1="1220.0" y1="410.0" x2="1220.0" y2="700.0" class="w"/>
+<text x="1204.0" y="406.0" class="t" text-anchor="end" >D2</text>
+<circle cx="1030.0" cy="372.0" r="3.6" class="dot"/>
+<polyline points="1030.0,372.0 1078.0,372.0 1078.0,392.0" class="lim"/>
+<polygon points="1067.0,392.0 1089.0,392.0 1078.0,410.0" fill="none" stroke="#7d3c98" stroke-width="2"/>
+<polyline points="1067.0,405.0 1067.0,410.0 1089.0,410.0 1089.0,415.0" class="zl"/>
+<line x1="1078.0" y1="410.0" x2="1078.0" y2="700.0" class="lim"/>
+<text x="1092.0" y="406.0" class="tl" text-anchor="start" >Z1</text>
+<circle cx="1315.0" cy="372.0" r="3.6" class="dot"/>
+<polyline points="1315.0,372.0 1267.0,372.0 1267.0,392.0" class="lim"/>
+<polygon points="1256.0,392.0 1278.0,392.0 1267.0,410.0" fill="none" stroke="#7d3c98" stroke-width="2"/>
+<polyline points="1256.0,405.0 1256.0,410.0 1278.0,410.0 1278.0,415.0" class="zl"/>
+<line x1="1267.0" y1="410.0" x2="1267.0" y2="700.0" class="lim"/>
+<text x="1253.0" y="406.0" class="tl" text-anchor="end" >Z4</text>
+<line x1="1030.0" y1="262.0" x2="1030.0" y2="448.0" class="w"/>
+<circle cx="1030.0" cy="448.0" r="3.6" class="dot"/>
+<polygon points="842.0,337.0 934.0,337.0 888.0,392.0" class="cone_a"/>
+<polygon points="842.0,331.0 934.0,331.0 888.0,276.0" class="cone_b"/>
+<circle cx="888.0" cy="334.0" r="22.1" class="glass"/>
+<line x1="888.0" y1="319.0" x2="888.0" y2="347.0" class="ef"/>
+<polygon points="888.0,351.0 883.5,342.0 892.5,342.0" fill="#1d3f5e"/>
+<text x="881.0" y="338.0" class="te" text-anchor="end" >E</text>
+<line x1="888.0" y1="392.0" x2="888.0" y2="448.0" class="w"/>
+<circle cx="888.0" cy="448.0" r="3.6" class="dot"/>
+<line x1="888.0" y1="448.0" x2="934.0" y2="448.0" class="w"/>
+<polygon points="934.0,459.0 934.0,437.0 952.0,448.0" fill="none" stroke="#111" stroke-width="2"/>
+<line x1="952.0" y1="459.0" x2="952.0" y2="437.0" stroke="#111" stroke-width="2"/>
+<line x1="952.0" y1="448.0" x2="1030.0" y2="448.0" class="w"/>
+<text x="943.0" y="433.0" class="t" text-anchor="middle" font-weight="bold">Dk</text>
+<line x1="888.0" y1="276.0" x2="888.0" y2="264.0" class="w"/>
+<line x1="876.0" y1="264.0" x2="900.0" y2="264.0" class="w"/>
+<line x1="881.0" y1="259.0" x2="895.0" y2="259.0" class="w"/>
+<line x1="885.0" y1="254.0" x2="891.0" y2="254.0" class="w"/>
+<text x="904.0" y="262.0" class="ms" text-anchor="start" >REF</text>
+<text x="940.0" y="306.0" class="t" text-anchor="start" font-weight="bold">cone B</text>
+<text x="940.0" y="321.0" class="ms" text-anchor="start" >on the shaft</text>
+<text x="940.0" y="366.0" class="ta" text-anchor="start" font-weight="bold">cone A</text>
+<text x="940.0" y="381.0" class="ms" text-anchor="start" >−13.2 kV DC</text>
+<text x="822.0" y="226.0" class="zh" text-anchor="start" >THE CORE (hub)</text>
+<text x="822.0" y="410.0" class="ms" text-anchor="start" >vacuum</text>
+<text x="822.0" y="424.0" class="ms" text-anchor="start" >sphere in</text>
+<text x="822.0" y="438.0" class="ms" text-anchor="start" >the bicone</text>
+<line x1="888.0" y1="448.0" x2="888.0" y2="472.0" class="w"/>
+<circle cx="888.0" cy="472.0" r="3.6" class="dot"/>
+<line x1="853.0" y1="472.0" x2="928.0" y2="472.0" class="w"/>
+<line x1="853.0" y1="472.0" x2="853.0" y2="498.0" class="w"/>
+<line x1="838.0" y1="498.0" x2="868.0" y2="498.0" class="pl"/>
+<line x1="838.0" y1="508.0" x2="868.0" y2="508.0" class="pl"/>
+<line x1="853.0" y1="508.0" x2="853.0" y2="700.0" class="w"/>
+<text x="874.0" y="502.0" class="t" text-anchor="start" >C_core</text>
+<text x="874.0" y="517.0" class="ms" text-anchor="start" >1 nF</text>
+<line x1="928.0" y1="472.0" x2="928.0" y2="524.0" class="w"/>
+<polyline points="928.0,524.0 935.0,526.8 921.0,532.5 935.0,538.2 921.0,543.8 935.0,549.5 921.0,555.2 928.0,558.0" class="st"/>
+<line x1="928.0" y1="558.0" x2="928.0" y2="700.0" class="st"/>
+<text x="940.0" y="536.0" class="ms" text-anchor="start" >R_leak</text>
+<text x="940.0" y="550.0" class="ms" text-anchor="start" >≥ 1 GΩ [RH]</text>
+<line x1="1385.0" y1="176.0" x2="1385.0" y2="189.0" class="w"/>
+<line x1="1368.0" y1="189.0" x2="1402.0" y2="189.0" class="ring"/>
+<line x1="1368.0" y1="209.0" x2="1402.0" y2="209.0" class="ring"/>
+<circle cx="1375.0" cy="199.0" r="3.8" class="ball"/>
+<circle cx="1385.0" cy="199.0" r="3.8" class="ball"/>
+<circle cx="1395.0" cy="199.0" r="3.8" class="ball"/>
+<line x1="1385.0" y1="209.0" x2="1385.0" y2="700.0" class="w"/>
+<text x="1377.0" y="560.0" class="t" text-anchor="end" font-weight="bold">inner bearing</text>
+<text x="1377.0" y="575.0" class="ms" text-anchor="end" >(6205), for now;</text>
+<text x="1377.0" y="590.0" class="ms" text-anchor="end" >a brush later</text>
+<text x="1377.0" y="605.0" class="ms" text-anchor="end" >0.41 mA rms AC</text>
+<text x="1377.0" y="620.0" class="ms" text-anchor="end" >no DC</text>
+<line x1="833.0" y1="700.0" x2="1397.0" y2="700.0" class="rail"/>
+<circle cx="853.0" cy="700.0" r="3.6" class="dot"/>
+<circle cx="928.0" cy="700.0" r="3.6" class="dot"/>
+<circle cx="1078.0" cy="700.0" r="3.6" class="dot"/>
+<circle cx="1125.0" cy="700.0" r="3.6" class="dot"/>
+<circle cx="1220.0" cy="700.0" r="3.6" class="dot"/>
+<circle cx="1267.0" cy="700.0" r="3.6" class="dot"/>
+<circle cx="1385.0" cy="700.0" r="3.6" class="dot"/>
+<text x="833.0" y="720.0" class="m" text-anchor="start" >shaft (rotor) = REF, shared with (a)</text>
 <text x="62.0" y="778.0" class="tk" text-anchor="start" >A1–A3, B1–B3</text>
 <text x="154.0" y="778.0" class="tv" text-anchor="start" >wound utrons at 0 / 120 / 240°, 200 t of Ø1.55 mm Cu: 81.0 / 9.4 mH (aligned / unaligned), 0.58 Ω each</text>
 <text x="62.0" y="797.5" class="tk" text-anchor="start" >group</text>
@@ -305,31 +336,29 @@
 <text x="62.0" y="940.0" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): 0.87–2.81 A in each branch, 101 V peak per group; AH 139–449 A-turns.</text>
 <text x="62.0" y="958.0" class="op" text-anchor="start" >Belt 17.6 W = utron Cu 6 × 2.15 + La / Lb 0.66 + AH 2.00 + diodes 2.01 W; + iron 1.25 W = 18.8 W.</text>
 <text x="822.0" y="778.0" class="tk" text-anchor="start" >C1, C2</text>
-<text x="898.0" y="778.0" class="tv" text-anchor="start" >8 + 8 vanes, 6 sectors, 3 mm vacuum gaps: 71.1–1113 pF (κ 15.7); C2 in antiphase</text>
+<text x="898.0" y="778.0" class="tv" text-anchor="start" >6 + 6 vanes, 6 × 22° / 22°, 6 mm air gaps, 3 mm full rounds: 55–410 pF, κ 7.5</text>
 <text x="822.0" y="797.5" class="tk" text-anchor="start" >Ca, Cb</text>
-<text x="898.0" y="797.5" class="tv" text-anchor="start" >8 fixed plates each (4 at each node): 1225 pF (1.1 C_max)</text>
+<text x="898.0" y="797.5" class="tv" text-anchor="start" >451 pF (1.1 C_max): full-annulus plates, now on the rotor</text>
 <text x="822.0" y="817.0" class="tk" text-anchor="start" >D1–D4</text>
-<text x="898.0" y="817.0" class="tv" text-anchor="start" >HV stacks rated ≥ 20 kV (D1, D2), ≥ 40 kV (D3, D4); parts not chosen</text>
+<text x="898.0" y="817.0" class="tv" text-anchor="start" >HV stacks, reverse peaks 6.1 / 6.1 / 13.2 / 13.2 kV; parts not chosen</text>
 <text x="822.0" y="836.5" class="tk" text-anchor="start" >Z1, Z4</text>
-<text x="898.0" y="836.5" class="tv" text-anchor="start" >avalanche (Zener) strings, BV 20 kV, e.g. 100 × 200 V; on the counter-rotor</text>
-<text x="822.0" y="856.0" class="tk" text-anchor="start" ></text>
-<text x="898.0" y="856.0" class="tv" text-anchor="start" >each: 9.25 W, 4.4 mA peak, 0.45 mA mean, 16 % conduction (77 mJ per cycle)</text>
-<text x="822.0" y="875.5" class="tk" text-anchor="start" >cones A, B</text>
-<text x="898.0" y="875.5" class="tv" text-anchor="start" >the bicone halves, 32 t, 89.5 µH, 0.05 Ω each; M 25.8 µH (k 0.288, aiding) [RH]</text>
+<text x="898.0" y="836.5" class="tv" text-anchor="start" >avalanche strings, BV 13.1 kV (e.g. 66 × 200 V), on the rotor: 1.07 W, 0.96 mA peak each</text>
+<text x="822.0" y="856.0" class="tk" text-anchor="start" >core</text>
+<text x="898.0" y="856.0" class="tv" text-anchor="start" >Dk: HV diode, 7.5 kV reverse; C_core 1 nF to the shaft; cone A −13.2 kV DC, 11 V p-p</text>
+<text x="822.0" y="875.5" class="tk" text-anchor="start" ></text>
+<text x="898.0" y="875.5" class="tv" text-anchor="start" >at R_leak 10 GΩ (1 GΩ: 102 V p-p, 0.17 W); 2.6 kV/cm over 50 mm [RH]</text>
 <text x="822.0" y="895.0" class="tk" text-anchor="start" >strays</text>
-<text x="898.0" y="895.0" class="tv" text-anchor="start" >≈ 20 pF at every node [RH]</text>
+<text x="898.0" y="895.0" class="tv" text-anchor="start" >≈ 20 pF at every node, 20 pF per cone, 10 pF cone to cone [RH]</text>
 <text x="822.0" y="914.5" class="tk" text-anchor="start" >bearing</text>
-<text x="898.0" y="914.5" class="tv" text-anchor="start" >one inner bearing, for now: 2.25 mA rms AC (4.4 mA pk), no DC</text>
-<text x="822.0" y="934.0" class="tk" text-anchor="start" >dump</text>
-<text x="898.0" y="934.0" class="tv" text-anchor="start" >option for Z1 / Z4: 20 kV gap + quench diode; 21 A pulses: needs a brush</text>
-<text x="822.0" y="959.5" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz), diodes only: belt 18.5 W, all into Z1 + Z4; node peak 20.44 kV.</text>
-<text x="822.0" y="977.5" class="op" text-anchor="start" >Cones 2.7 mA rms: the bicone is decorative.</text>
-<text x="822.0" y="995.5" class="op" text-anchor="start" >Dump (600 rpm run): 21 A peak, 683 A-turns, 54 mJ per dump, ring 1.8 MHz.</text>
-<text x="20.0" y="1034.0" class="n" text-anchor="start" >Bodies. Rotor: shaft, sleeve, rotor vanes (R-A, R-B), the 6 utrons on their carrier discs, the hub (bicone, AH pair). Counter-rotor: stator cage, stator vanes, Ca / Cb plates, bridges. Frame: end bearings, the gear.</text>
-<text x="20.0" y="1053.0" class="n" text-anchor="start" >Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers and the kick source (rotor); D1–D4 and Z1 / Z4 (counter-rotor). The two pumps share only the shaft; each one's reaction torque goes into the gear.</text>
-<text x="20.0" y="1072.0" class="n" text-anchor="start" >(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, the 20 kV clamp → the NiFe neck's saturation.</text>
+<text x="898.0" y="914.5" class="tv" text-anchor="start" >one inner bearing, for now: 0.41 mA rms AC (0.92 mA pk), no DC</text>
+<text x="822.0" y="940.0" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): belt 2.14 W, into Z1 + Z4 and 17 mW of core leakage; z 1.310.</text>
+<text x="822.0" y="958.0" class="op" text-anchor="start" >Start-up: the core charges with the pump (z 1.087 while it charges), 95 % in 32 cycles (0.27 s).</text>
+<text x="822.0" y="976.0" class="op" text-anchor="start" >Below about 0.06 GΩ of core leakage the pump does not start; at 0.1 GΩ cone A sags to −11 kV.</text>
+<text x="20.0" y="1034.0" class="n" text-anchor="start" >Bodies. Rotor: shaft, sleeve, rotor vanes (nodes 1 / 4), Ca / Cb plates, the 6 utrons on their carrier discs, the hub (bicone, AH pair). Counter-rotor: stator cage, stator vanes (REF), bridges. Frame: end bearings, the gear.</text>
+<text x="20.0" y="1053.0" class="n" text-anchor="start" >Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, Dk, C_core (all rotor); sim/tube_geometry.py still puts Ca / Cb on the counter-rotor. Each pump's reaction torque goes into the gear.</text>
+<text x="20.0" y="1072.0" class="n" text-anchor="start" >(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, the clamps Z1 / Z4 → the NiFe neck's saturation.</text>
 <text x="20.0" y="1091.0" class="n" text-anchor="start" >A and B swap every half cycle: one group generates (L falling) while the other motors. The AH coils are named by branch; sim/magnetic_doubler.py calls them AH top / bottom (A was then the upper side).</text>
-<text x="20.0" y="1110.0" class="n" text-anchor="start" >Polarity: (b) runs negative. de Queiroz's Fig. 1 draws the same core positive, with all four diodes the other way (sim/queiroz_fig1_check.py: z 1.372 per cycle both ways, his 1.17138 per half cycle).</text>
-<text x="20.0" y="1129.0" class="n" text-anchor="start" >Numbers: sim/pole_design_variants_op.json (g 0.5 / 6 bridges / 1200 rpm), sim/utron_profile.py, sim/rotor_parts_duty_results.json, sim/bicone_drive_results.json, sim/tube_geometry_wound_results.json</text>
-<text x="20.0" y="1148.0" class="n" text-anchor="start" >Netlists: sim/magnetic_doubler.py, sim/bicone_drive.py · findings: sim/pole-design-findings.md, sim/hub-drive-findings.md · generator: docs/make_schematic_rotor.py</text>
+<text x="20.0" y="1110.0" class="n" text-anchor="start" >Polarity: (b) runs negative, so E points from cone B down to cone A. de Queiroz's Fig. 1 draws the core positive, all four diodes the other way (sim/queiroz_fig1_check.py); that flips the field.</text>
+<text x="20.0" y="1129.0" class="n" text-anchor="start" >Numbers: sim/pole_design_variants_op.json (g 0.5 / 6 bridges / 1200 rpm), sim/utron_profile.py, sim/rotor_parts_duty_results.json, sim/core_field_results.json (b: the air build's capped stack)</text>
+<text x="20.0" y="1148.0" class="n" text-anchor="start" >Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/core-field-findings.md · generator: docs/make_schematic_rotor.py</text>
 </svg>
