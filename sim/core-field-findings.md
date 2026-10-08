@@ -12,10 +12,25 @@
 1. Move the electrostatic circuit's high-voltage side onto the rotor, so the core can get an electric field with the AH's
    steady cusp at its centre.
 2. Then: a swinging field instead of one referred to the shaft, on floating cones (§2).
-3. **The cones are non-metallic, probably G10** (designer's note).
-   - They cannot carry a potential themselves, so each needs an electrode, e.g. a conductive layer on the shell. Its
-     form is not chosen.
-   - Below, "cone A / B" means the electrode on that cone. The circuit holds for any electrode with the assumed strays.
+3. **The hub, from the inside out** (designer's description):
+   - the core, encapsulated in a non-magnetic composite retainer;
+   - the field (AH) coils around it;
+   - probably some insulation;
+   - and over that the shaft-coupling cones, non-metallic and non-magnetic (probably G10).
+
+   The materials are open; they are to keep the field as high as possible without adding parasitic capacitance. There
+   are no electrodes per se.
+   - **A dielectric adds no capacitance of its own.** It only scales the capacitance between conductors whose field runs
+     through it, by up to its εr: G10 4.7, PTFE 2.1.
+     - The 20 pF / 10 pF strays in §2–§3 belong to the conductors that would carry the swing, not to the cones.
+     - Where a shell sits between those conductors and the core, a higher εr leaves more of the voltage across the core
+       but raises their capacitance.
+   - **Open: which conductors carry the pump's swing to the core.**
+     - As described, the conductors around the core are the field coils and the shaft flanges at the cones' apexes. All
+       of them sit within about 100 V of the shaft.
+     - With nothing at the swing, the core sees no field from the pump.
+     - The field coils, at the shaft's potential, would also screen the core from a swing applied outside them.
+   - Below, "cone A / B" stands for whatever conductor carries that side's swing.
 
 **The design.** The air build's capped stack (`sim/air_stack_sizing.py` stage 4c): 3 mm full-round vanes, 6 + 6 per
 varicap per side, 6 × 22° / 22°, 6 mm gaps, r 150. That gives C 55–410 pF, Ca = Cb 451 pF and V_op 13.1 kV, at 1200 rpm
@@ -30,7 +45,7 @@ relative (120 Hz).
 | rotor vanes R-A / R-B | near the shaft, through the cones | **nodes 1 / 4** (HV) |
 | stator vanes | nodes 1 / 4 (HV) | **REF of C1 / C2**, on the counter-rotor |
 | Ca / Cb, D1–D4, Z1 / Z4 | counter-rotor | **rotor**, with the hub |
-| cones (G10 shells) | 32-turn coils in series, at the shaft's potential | **carry the core's electrodes**, floating (§2) |
+| cones | 32-turn coils in series, at the shaft's potential | **non-conducting shaft-coupling cones**; the conductors for the core's swing are open (§2) |
 | reference link | one inner bearing | the same bearing: it joins the stator vanes to the shaft |
 
 **The pump does not change.** The circuit is the same; only the bodies under its parts move.

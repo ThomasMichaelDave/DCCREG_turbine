@@ -10,8 +10,9 @@ The move (designer's decision):
 The core is sim/bicone_drive.py's diodes-only netlist with C1 / C2 returned to the counter-rotor's node s. Nothing else
 changes, so the pump is the stack's own (checked: `none` against the stack's eigen-cycle z and clamped power).
 
-The cones (the bicone halves, G10 shells: "cone A / B" is the electrode on each) can now reach the HV nodes without a
-rotating contact. Ways to put a field on the core [IR]:
+The cones can now reach the HV nodes without a rotating contact. (The designer's cones are non-conducting shaft-coupling
+cones over the field coils; "cone A / B" stands for whatever conductor carries that side's swing, which is open.)
+Ways to put a field on the core [IR]:
   series  the cones stay coils in series with C1 / C2, now between node 1 / 4 and the rotor vanes: the core sees the
           cones' difference, about V(1) - V(4);
   ca      no series coil; cone A on node 1, cone B on node 2: the core sees V_Ca = V(1) - V(2);

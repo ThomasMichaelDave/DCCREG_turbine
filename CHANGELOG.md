@@ -26,10 +26,16 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
     its swing, and the coupling capacitor removes only the average.
   - **Node 4 is node 1 half a cycle later,** so the 240 Hz part cancels across the core and moves both electrodes
     together against the shaft.
-- **The cones are non-metallic, probably G10** (designer's note).
-  - Each needs an electrode on it, whose form is not chosen.
-  - The findings, the schematic and BOM fixed say so; the circuit numbers stand for any electrode with the assumed
-    strays.
+- **The hub as the designer describes it** (`sim/core-field-findings.md`, decisions):
+  - core, composite retainer, field coils, insulation, then the shaft-coupling cones;
+  - all non-conducting and non-magnetic except the coils, with no electrodes per se.
+  - **Corrected:**
+    - the cones add no capacitance of their own;
+    - the 20 / 10 pF strays belong to whatever conductors carry the swing;
+    - the earlier note that put electrodes on the cones is withdrawn.
+  - **Open:** which conductors carry the pump's swing to the core. As described, the core is surrounded by conductors
+    near the shaft's potential (the field coils, the flanges), so it sees no field from the pump.
+  - The schematic and BOM fixed now say the swing's conductors are open.
 - **A swinging field on floating cones** (`sim/core_field.py`, `sim/core-field-findings.md` §2–§3). This is the
   designer's choice over a field referred to the shaft.
   - **The wiring:** each cone couples to node 1 / 4 through 1 nF, and nothing else ties the cones to the shaft.

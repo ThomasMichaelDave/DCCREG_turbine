@@ -318,12 +318,12 @@ def panel_b(ox, N):
     tx(ox + 205, y_kb + 26, "Ccb", "t", "middle", 'font-weight="bold"')
     tx(ox + 235, y_kb + 26, "1 nF each", "ms", "start")
     ca, cb = fs["V_ka_kV"], fs["V_kb_kV"]
-    tx(xk + 46, 312, "cone B", "tu", "start", 'font-weight="bold"')
+    tx(xk + 46, 312, "side B", "tu", "start", 'font-weight="bold"')
     tx(xk + 46, 327, f"{kv(cb['min'])} … +{cb['max']:.1f} kV", "ms")
-    tx(xk + 46, 372, "cone A", "ta", "start", 'font-weight="bold"')
+    tx(xk + 46, 372, "side A", "ta", "start", 'font-weight="bold"')
     tx(xk + 46, 387, f"{kv(ca['min'])} … +{ca['max']:.1f} kV", "ms")
     tx(ox + 42, 226, "THE CORE (hub)", "zh")
-    tx(ox + 42, 242, "electrodes on G10 cones, floating", "ms")
+    tx(ox + 42, 242, "conductors for the swing: open", "ms")
     # the one rotating contact: an inner bearing (outer ring on the counter-rotor, inner ring on the shaft)
     ln(xb, y_s, xb, y_bd - 10)
     ln(xb - 17, y_bd - 10, xb + 17, y_bd - 10, "ring"); ln(xb - 17, y_bd + 10, xb + 17, y_bd + 10, "ring")
@@ -356,8 +356,7 @@ def panel_b_table(ox, y, N):
                   "parts not chosen"),
         ("Z1, Z4", f"avalanche strings, BV {d['V_op_kV']:.1f} kV (e.g. {n_z} × {zs['V_Z']:.0f} V), on the rotor: "
                    f"{fs['Z1']['P_W']:.2f} W, {fs['Z1']['I_pk_mA']:.2f} mA peak each"),
-        ("core", f"Cca, Ccb: 1 nF, up to {vr['CC']:.1f} kV, node 1 / 4 to the electrodes on G10 cones A / B; they "
-                 "float"),
+        ("core", f"Cca, Ccb: 1 nF, up to {vr['CC']:.1f} kV, node 1 / 4 to side A / B; the conductors are open"),
         ("", f"the core sees ±{fs['swing_pk_kV']:.1f} kV at 120 Hz: ±{fs['E_pk_kV_cm']:.1f} kV/cm over "
              f"{cf['D_CORE_mm']:.0f} mm [RH]"),
         ("strays", f"≈ {cf['CPAR_pF']:.0f} pF at every node, {cf['C_CONE_pF']:.0f} pF per cone, {cf['C_CC_pF']:.0f} pF "
