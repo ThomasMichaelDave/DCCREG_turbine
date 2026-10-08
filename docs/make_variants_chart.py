@@ -61,8 +61,8 @@ def main():
                  color=INK, fontsize=12, x=0.01, ha="left")
     fig.text(0.01, 0.035, "Each line is a Pareto front: every point is the lightest screened utron reaching that gain. "
              "Hue = bridges per side, line style = speed (solid 600 rpm, dashed 1200 rpm relative).", color=MUTED, fontsize=8.5)
-    fig.text(0.01, 0.008, "Dotted: z = 1 (growth threshold) and z = 1.20 (healthy margin). Designs below z 0.6 are off the axis. Source: sim/pole_design_variants.json "
-             "(python3 sim/pole_design.py variants / variants_ext).", color=MUTED, fontsize=8.5)
+    fig.text(0.01, 0.008, "Dotted: z = 1 (growth threshold) and z = 1.20 (healthy margin). Below z 0.6: off the axis. Copper with the corrected mean turn. Source: sim/pole_design_variants.json "
+             "(pole_design.py variants / variants_ext / turnfix).", color=MUTED, fontsize=8.5)
     fig.tight_layout(rect=(0, 0.07, 1, 0.94))
     out = os.path.join(HERE, "figures", "utron-size-vs-gain.png")
     fig.savefig(out, dpi=130, facecolor=SURFACE)

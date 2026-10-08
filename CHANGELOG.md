@@ -4,6 +4,37 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Geometry
+- **The setup with wound utrons, as solids** (`sim/tube_geometry.py --rel wound`, `sim/utron_profile.py`,
+  `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br.*`, `docs/figures/utron-core-detail.png`, findings §8):
+  - **The tube's diode build:** 802 mm long. Each reluctance section is 162 mm: 3 wound utrons on the rotor and
+    6 passive bridges on the counter-rotor, the B bridges offset 30°.
+  - **The stator cage is now one counter-rotating body**, joined across the hub (geared 1 : −1; the gear is not
+    drawn).
+  - **The utron as built:**
+    - a split U-core of M235-35A with its tip faces on the gap arc;
+    - an 80 % NiFe neck strip (2.97 × 100 mm) across a 12 mm G10 air break;
+    - a 200-turn coil on a G10 former, with a G10 slot wedge, A4 studs, and G10 cheeks bolted to carrier discs.
+  - **Checks:** 0 clashes over 404 pairs, 0 sweep hits, an aligned gap of exactly 0.500 mm, and 1.000 mm from the
+    winding to the iron. The STEP reads back 146 / 146.
+  - **The default C-EM build is unchanged:** a re-run gives the same layout, the same 307 parts and the same clash and
+    sweep results.
+- **Utron detail drawing** (`docs/make_utron_drawing.py`): front view, two side sections, the solved 2-D field and
+  the data table, all from the same `utron_profile` numbers as the solids.
+
+### Fixed
+- **The utron coil's mean turn was 13–26 % short** (`sim/pole_fd2d.mean_turn_mm`, `python3 sim/pole_design.py
+  turnfix`, findings §7):
+  - **Cause:** the corners of the rounded-rectangle turn were counted as π·(clr + h_c/2) + 4·clr instead of
+    2π·(clr + h_c/2). So R, the copper mass and the copper loss were low, and τ was high.
+  - **Re-run:** the 330-design variant screen (R, τ, mass and z at both speeds) and the operating points. L(θ) is
+    unchanged.
+  - **The pick moves.** At 0.5 mm, 6 bridges and 1200 rpm the lightest utron with z ≥ 1.20 is now 2.34 kg (r_g 130,
+    tip 14, slot 30 × 30, 200 turns, 18.8 W total), not 1.97 kg.
+  - **No longer reaching z 1.20:** 12 bridges (best 1.196), and 1.0 mm at 600 rpm (best 1.18).
+  - **1.0 mm at 1200 rpm:** 4.72 kg for 14.5 W. The wider gap costs mass, not power.
+  - **Not re-run:** the earlier stages' JSONs (p1 .. recheck) still carry the short turn. Findings §2–§6 are marked.
+
 ### Physics
 - **Smaller utrons: 12 stator bridges per side and 1200 rpm relative** (`sim/pole_design.py variants / variants_ext /
   variants_op`, `sim/pole-design-findings.md` §6, `docs/figures/utron-size-vs-gain.png`):
@@ -12,7 +43,8 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
     have inflated z at 240 Hz).
   - **Frequency is the lever.** At z ≥ 1.20 and 0.5 mm, the lightest utron drops from 3.40 kg (60 Hz) to 1.97 kg
     (6 bridges, 1200 rpm, 120 Hz) and 1.55 kg (12 bridges, 1200 rpm, 240 Hz). At 1.0 mm it drops from 7.31 to
-    4.03 kg (6 bridges, 1200 rpm).
+    4.03 kg (6 bridges, 1200 rpm). *(Short mean turn. Corrected: 4.08 → 2.34 kg, 12 bridges below z 1.20, and 1.0 mm
+    at 4.72 kg; see Fixed above.)*
   - **Bridges vs speed:** for the same utron the two are interchangeable at equal frequency. But 12 bridges cap the
     utron width, and no 12-bridge design reaches z 1.10 at 1.0 mm.
   - **Power doesn't grow:** all winners hold AH 450 ampere-turns for 15–19 W, with 1.5–2.2 W per coil and a

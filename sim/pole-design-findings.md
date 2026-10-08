@@ -16,10 +16,17 @@
   frequency-scaled node snubbers.
 - Drawings: `docs/figures/pole-pair-flux-g0p5.png` and `docs/figures/pole-pair-flux-g1p0.png`, from
   `docs/make_pole_drawing.py`.
-- Chart: `docs/figures/utron-size-vs-gain.png`, from `docs/make_variants_chart.py` (§6).
+- Chart: `docs/figures/utron-size-vs-gain.png`, from `docs/make_variants_chart.py` (§6, §7).
+- Geometry (§8): `sim/utron_profile.py` (every dimension of the built utron and bridge), the solids in
+  `sim/tube_geometry.py --rel wound`, and the detail drawing `docs/figures/utron-core-detail.png` from
+  `docs/make_utron_drawing.py`.
 
 Results: `sim/pole_design_{p1,p1b,p3,final,real,kick,recheck,variants,variants_op}.json`. The p1 T-family rows are
 superseded by p1b, after a tooth-parity fix.
+
+**Copper correction (§7).** Up to §6 the coil's mean turn was 13–26 % short. The variant screen and its operating
+points (`pole_design_variants*.json`) were re-run with the corrected turn, and §7 holds those numbers. The earlier
+stages' JSONs (p1 .. recheck) and the copper numbers in §2–§6 still carry the short turn.
 
 ## 1. Topology (what changed)
 
@@ -82,6 +89,9 @@ converged to 0.5 %.
 
 ## 5. Design points and the 1.0 mm penalty
 
+*Short mean turn (§7): copper loss and mass here are 13–26 % low and τ is high. The corrected 0.5 vs 1.0 mm comparison
+is in §7.*
+
 Si diodes, kicked start, AH 450 ampere-turns, 600 rpm relative, stack 70 mm. Turn counts come from the systematic rule
 of §6: the utron group's resistance set to m × the AH coil's, with m 4.5 / 6.5 / 9. The table shows the lowest-power
 one that holds the target (`sim/pole_design_recheck.json`).
@@ -133,7 +143,8 @@ one that holds the target (`sim/pole_design_recheck.json`).
   values). That keeps z to ±0.002 when their capacitance is halved or quartered. The old fixed 10 nF would have inflated
   z to 1.47 at 240 Hz, with an artificial 213 W in the snubbers.
 
-**Lightest utron (copper + iron, kg) reaching each gain** (chart: `docs/figures/utron-size-vs-gain.png`):
+**Lightest utron (copper + iron, kg) reaching each gain.** *These two tables use the short mean turn and are superseded
+by §7.*
 
 | gap | bridges / rpm | f | z ≥ 1.10 | z ≥ 1.15 | **z ≥ 1.20** | z ≥ 1.25 | best z |
 |:--|:--|--:|--:|--:|--:|--:|--:|
@@ -194,6 +205,141 @@ one that holds the target (`sim/pole_design_recheck.json`).
 - the start kick is 15–20 % of Ψ_s (10–70 mJ);
 - everything else carries the caveats below.
 
+## 7. Correction: the coil's mean turn was 13–26 % short
+
+**Found while drawing the coil (§8).**
+- The copper model counted the four corners of each turn as π·(clr + h_c/2) + 4·clr.
+- A turn at mid-build, around the back iron, has 2π·(clr + h_c/2) in its corners [OC].
+- So the mean turn, R, the copper mass and the copper loss were low, and τ = L/R was high:
+  - the drawn utron (tip 14, slot 30 × 30, back iron 14): 277.6 → 319.1 mm (+15 %);
+  - deeper slots more (slot depth 60: +26 %).
+- **Cross-check:** the winding solid's volume divided by its section gives 315.106 mm for the tip-12 / back-iron-12
+  coil. That is exactly the corrected formula.
+
+**Fix:**
+- One helper, `pole_fd2d.mean_turn_mm`, is used by the characterisation, the stack rescale and the masses.
+- L(θ) doesn't depend on the copper. So `python3 sim/pole_design.py turnfix` only redoes R, τ, the copper mass and
+  the circuit z, for all 330 variant designs at both speeds. The short-turn values are kept in each row under
+  `short_turn`.
+- `variants_op` then re-sizes the winners.
+
+**Lightest utron (kg, 100 mm stack) at each gain, corrected:**
+
+| gap | bridges / rpm | f | z ≥ 1.10 | z ≥ 1.15 | **z ≥ 1.20** | z ≥ 1.25 | best z | was (z ≥ 1.20) |
+|:--|:--|--:|--:|--:|--:|--:|--:|--:|
+| 0.5 mm | 6 / 600 | 60 Hz | 3.09 | 3.37 | **4.08** | 5.12 | 1.30 | 3.40 |
+| 0.5 mm | 6 / 1200 | 120 Hz | 1.66 | 2.09 | **2.34** | 3.37 | 1.35 | 1.97 |
+| 0.5 mm | 12 / 600 | 120 Hz | 1.66 | — | — | — | 1.14 | — |
+| 0.5 mm | 12 / 1200 | 240 Hz | 1.21 | 1.44 | — | — | 1.196 | 1.55 |
+| 1.0 mm | 6 / 600 | 60 Hz | 4.72 | 5.47 | — | — | 1.18 | 7.31 |
+| 1.0 mm | 6 / 1200 | 120 Hz | 3.37 | 3.97 | **4.72** | — | 1.24 | 4.03 |
+| 1.0 mm | 12 / 600, 12 / 1200 | | — | — | — | — | 0.99 / 1.05 | — |
+
+**What the correction changes:**
+- **The pick moves.** At 0.5 mm, 6 bridges and 1200 rpm, the lightest utron with z ≥ 1.20 is now 2.34 kg: r_g 130,
+  tip 14, slot 30 × 30.
+  - §6's pick (r_g 165, tip 12, slot 30 × 30) falls to z 1.187 at 2.11 kg.
+- **12 bridges no longer reach the 1.20 margin.** The best is z 1.196, and §6's 1.55 kg pick is at 1.192.
+- **At 1.0 mm and 600 rpm, nothing reaches 1.20** (best 1.18).
+- **Frequency is still the lever:** at 0.5 mm, 4.08 kg (60 Hz) against 2.34 kg (120 Hz).
+
+**Operating points, corrected** (AH 450 ampere-turns, Si diodes, kicked start, best of the three turn counts;
+`sim/pole_design_variants_op.json`):
+
+| | utron (geometry) | turns | total power | heat per coil | coil °C air / vac | iron | kick | V_pk |
+|:--|:--|--:|--:|--:|:--|--:|--:|--:|
+| 0.5 mm, 6 / 600 | 4.08 kg (r 130, tip 16, slot 40 × 40) | 260 | 18.9 W | 2.1 W | 44 / 55 | 1.0 W | 20 % | 95 V |
+| **0.5 mm, 6 / 1200** | **2.34 kg** (r 130, tip 14, slot 30 × 30) | **200** | **18.8 W** | 2.15 W | 46 / 63 | 1.25 W | 20 % (38 mJ) | 101 V |
+| 1.0 mm, 6 / 1200 | 4.72 kg (r 165, tip 20, slot 40 × 40) | 210 | 14.5 W | 1.5 W | 42 / 50 | 1.0 W | 20 % | 94 V |
+
+- **Power stays at 15–19 W.** The AH coil's resistance and current still set the heat.
+- **1.0 mm vs 0.5 mm at 1200 rpm:** the cost of the wider gap is mass, not power. It needs twice the utron
+  (4.72 against 2.34 kg). Its bigger slot carries more copper (τ 0.17 s), so it holds the AH for 14.5 W against
+  18.8 W.
+  - At 600 rpm the 1.0 mm gap doesn't reach the 1.20 margin at all.
+  - §5's "1.4× the power" compared one fixed geometry at 600 rpm with the short turn. It no longer describes the
+    choice.
+
+## 8. The setup as built in the solids
+
+**Build:** `python3 sim/tube_geometry.py --rel wound`, for the §7 pick (0.5 mm, 6 bridges, 1200 rpm).
+- **Outputs** in `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br.*`:
+  - an instanced STEP: 146 solids from 29 prototypes, read back 146 / 146;
+  - the parts list;
+  - an arrangement section with a detail of reluctance A;
+  - plan cuts through both reluctance sections.
+- **Checks:** `sim/tube_geometry_wound_results.json`.
+- **Source of the dimensions:** every utron and bridge dimension comes from `sim/utron_profile.py`, the same numbers
+  that draw `docs/figures/utron-core-detail.png`.
+- **The default build is unchanged:** a re-run of the C-EM tube gives the same layout, the same 307 parts and the
+  same clash and sweep results.
+
+**Arrangement** (the diode build: no Cx islands, no clocking decks):
+- **Size:** 802 mm long, vane OD 300 mm, cage OD 332 mm.
+- **From the bottom (A):**
+  1. end bearing (frame);
+  2. reluctance A (162 mm);
+  3. Ca|reluctance bearing;
+  4. 8 Ca plates;
+  5. C1 (8 stator + 8 rotor vanes, 3 mm vacuum gaps);
+  6. hub-face bearing;
+  7. hub (bicone + AH / C_R placeholder, 120 mm);
+  8. B, mirrored.
+- **Three bodies:**
+  - **Rotor:** shaft halves and flanges, bicone, sleeve, rotor vanes, and the utrons on two G10 carrier discs per side.
+  - **Counter-rotor, geared 1 : −1:**
+    - the stator cage, now one tube across the hub;
+    - stator vanes, Ca / Cb plates;
+    - the hub-face and Ca|reluctance spiders;
+    - the bridges in their G10 rings.
+  - **Frame:** the two end bearings.
+  - The four inner bearings run at the relative 1200 rpm. The gear or belt is not drawn.
+- **Reluctance section, per side:**
+  - 3 utrons at 0 / 120 / 240° on the rotor; 6 bridges at a 60° pitch on the counter-rotor.
+  - B's bridges are offset 30°, so at rotor angle 0 A is aligned and B is unaligned (the doubler's antiphase).
+  - At r_g 130 the whole section (bridge ring OD 313 mm) fits inside the vane cage's diameter.
+- **Checks:**
+  - 404 solid pairs, 0 clashes; 0 rotor-sweep hits;
+  - air gap aligned 0.500 mm on both sides (B after turning 30°), unaligned 9.74 mm;
+  - winding to iron 1.000 mm (core and neck strip); to the wedge 0.10, the cheeks 1.0, the carrier discs 2.7 and the
+    bridge ring 2.7 mm;
+  - tip faces at r 130.000.
+
+**The utron (detail drawing):**
+- **Core:** a split U-core. Two L-shaped M235-35A half-cores (tip 14 + half the back iron), stacked 100 mm. The tip
+  faces are on the gap arc r 130 (parallel-sided tips, so the slot keeps its 30 mm for the coil).
+- **Neck** (sets Ψ_s):
+  - an 80 % NiFe strip, 2.97 × 100 mm, under the back iron: 0.223 mWb at 0.75 T [RH], equal to the operating
+    point's 1.48 mm of SiFe at 1.5 T;
+  - the half-cores sit on the strip, parted by a 12 mm G10-filled air break, so the flux crosses the strip edge-on,
+    in the plane of the laminations;
+  - it replaces §3's necked laminations over part of the stack: there the flux would cross between laminations,
+    normal to the sheets (low permeability, eddy loss) [RH].
+- **Coil:**
+  - 200 turns of 1.89 mm² (Ø 1.55 bare), 50 % fill, 28 × 27 mm per side, mean turn 319 mm;
+  - rounded end turns (R 28 outside, R 1 inside), 156 mm long over them;
+  - wound on a 1 mm G10 former. The strip, the spacer and the half-cores slide into it from both sides.
+  - R 0.58 Ω, L 81 / 9.4 mH per coil (κ 8.6, τ 0.140 s); group L 0.243 H, 2.81 A peak, 101 V peak.
+- **Retention:**
+  - a G10 slot wedge (0.81 mm in 1 mm grooves of the tips, arc-topped up to 1.7 mm over the slot);
+  - 4 A4 M6 studs per utron through the half-cores and the G10 cheeks;
+  - the cheeks bolted to 12 mm G10 carrier discs on the rotor sleeve.
+  - The centrifugal load at 600 rpm (each body) is about 0.86 kN per utron.
+- **Mass:** 2.24 kg per utron (SiFe 0.90, NiFe 0.15, Cu 1.07, G10 0.12). Bridges 0.65 kg each, 3.9 kg per side.
+
+**Not settled by the drawing:**
+- **The neck needs a nonlinear field check.** The knee (saturated incremental L ≈ 5 % of aligned, ≈ 30 % of unaligned
+  with the 12 mm break) and the lap joints (≈ 3 % on the aligned reluctance) are estimates [RH]. The 2-D model is
+  linear SiFe without the neck.
+- **The 0.5 mm gap** needs runout of about 0.05 mm or better between two counter-rotating bodies on four inner
+  bearings [RH]. The bearing arrangement for that is not designed.
+- **Not in the solids:**
+  - the 1 : −1 gear or belt;
+  - La / Lb, the diodes, the snubbers, the start-kick source;
+  - the AH (the hub is still the placeholder).
+- **Vacuum:** if the reluctance sections share the vanes' vacuum, the impregnation and lamination coatings must be
+  low-outgassing.
+
 ## Caveats
 - **2-D model [IR].** Curvature is neglected and the end/axial-fringe corrections (+30 % unaligned, +3 % aligned) are
   [RH], so a 3-D check of κ_L is still due. The iron is linear μ_r 3000, and saturation enters the circuit through the
@@ -205,5 +351,6 @@ one that holds the target (`sim/pole_design_recheck.json`).
   - a 3-D check of the chosen pair;
   - the start-kick source;
   - the La/Lb core design;
-  - the tube STEP update (r_g 165 mm, the new utron and bridges, the 184 mm reluctance section);
+  - ~~the tube STEP update~~ (done, §8: r_g 130 mm after the §7 correction, a 162 mm reluctance section);
+  - a nonlinear field check of the neck (§8);
   - mechanical concentricity for 0.5 mm with counter-rotating bearings.
