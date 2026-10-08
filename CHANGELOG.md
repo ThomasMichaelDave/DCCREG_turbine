@@ -15,6 +15,22 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **The air vane stack as a full matrix** (`sim/vane_matrix.py`, `sim/vane-matrix-findings.md`). 2700 designs over:
+  - gap 3–10 mm and thickness 1.5–4 mm (full rounds);
+  - outer radius 150–300 mm;
+  - 4–16 vanes per varicap per side;
+  - sector width 18–26°.
+
+  Results:
+  - **The radius is the lever.** At the 6 + 6 cap (6 mm gaps, 3 mm vanes, 22°), going from 150 to 300 mm takes the
+    clamped power 2.1 → 13.5 W, κ 7.5 → 17.7 and z 1.31 → 1.55, from the same 156 mm per side. The aluminium grows
+    about with r², and the rotor vanes' inertia 16×.
+  - **The rims set a thickness per gap:** 1.5 mm up to 4 mm gaps; 2, 2.5 and 4 mm at 5, 6 and 8 mm; over 4 mm at
+    10 mm.
+  - **Best under the cap:** wider gaps as the radius grows. That is 5.4 W at 13 kV at 200 mm (6 mm gaps, 2.5 mm
+    vanes) and 16 W at 17 kV at 300 mm (8 mm, 4 mm).
+  - **Calibration:** the clamped / eigen-cycle ratio is fitted as 1.02 + 1.13 (z − 1) over 12 ngspice runs (−4 to
+    +11 %).
 - **A steady cusp from the magnetic pump** (`sim/ah_steady_cusp.py`, `sim/ah-steady-cusp-findings.md`):
   - **Today:** each AH coil carries its utron branch's 139–449 A-turns, and top and bottom peak in turn, so the cusp's
     null moves every cycle.

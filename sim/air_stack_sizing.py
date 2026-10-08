@@ -220,10 +220,12 @@ T_THICK = 4.0                      # the designer's minimum vane thickness, with
 RHO_AL = SS.TUBE_DEFAULTS["rho_vane"]
 
 
-def masses(q, t_plate):
+def masses(q, t_plate, ro=None):
     """kg of aluminium, both sides: rotor vanes (sectors + inner ring), and on the counter-rotor the stator vanes (sectors
-    + outer ring) and the Ca / Cb plates (full annuli). The rounds take < 1 % off and are ignored."""
-    ri, ro, rs, ring = SS.TUBE_DEFAULTS["r_inMm"], SS.TUBE_DEFAULTS["r_outMm"], SS.SLEEVE_R, 12.0
+    + outer ring) and the Ca / Cb plates (full annuli), for vanes out to ro (default the tube's). The rounds take < 1 %
+    off and are ignored."""
+    ri, rs, ring = SS.TUBE_DEFAULTS["r_inMm"], SS.SLEEVE_R, 12.0
+    ro = ro or SS.TUBE_DEFAULTS["r_outMm"]
     ann = math.pi * (ro * ro - ri * ri)
     a_rot = q["sectors"] * q["wr_deg"] / 360.0 * ann + math.pi * (ri * ri - rs * rs)
     a_sta = q["sectors"] * q["ws_deg"] / 360.0 * ann + math.pi * ((ro + ring) ** 2 - ro * ro)
