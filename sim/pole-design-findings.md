@@ -306,16 +306,17 @@ by §7.*
 - **Checks:**
   - 457 solid pairs, 0 clashes; 0 rotor-sweep hits;
   - air gap aligned 0.500 mm on both sides (B after turning 30°), unaligned 9.74 mm;
-  - winding to iron 1.000 mm (core and neck strip); to the wedge 0.10, the cheeks 1.0, the carrier discs 2.7 and the
-    bridge ring 2.7 mm;
+  - winding to iron 1.000 mm (core and neck strip); to the slot cover 0.10, the cheeks 1.0, the carrier discs 2.7 and
+    the bridge ring 2.7 mm;
   - tip faces at r 130.000.
 
 **The utron (detail drawing):**
 - **Core:** a split U-core. Two L-shaped M235-35A half-cores (tip 14 + half the back iron), stacked 100 mm. The tip
   faces are on the gap arc r 130 (parallel-sided tips, so the slot keeps its 30 mm for the coil).
 - **Neck** (sets Ψ_s):
-  - an 80 % NiFe strip, 2.97 × 100 mm, under the back iron: 0.223 mWb at 0.75 T [RH], equal to the operating
-    point's 1.48 mm of SiFe at 1.5 T;
+  - an 80 % NiFe strip, 3.0 × 100 mm, under the back iron: a stack of 30 NiFe laminations of 0.1 mm (2.97 mm would
+    be exact). That gives 0.225 mWb at 0.75 T [RH], 1.1 % above the operating point's 0.223 mWb (1.48 mm of SiFe at
+    1.5 T). The 1.1 % is well inside the uncertainty of B_sat at 60 °C; the operating point was not re-solved for it;
   - the half-cores sit on the strip, parted by a 12 mm G10-filled air break, so the flux crosses the strip edge-on,
     in the plane of the laminations;
   - it replaces §3's necked laminations over part of the stack: there the flux would cross between laminations,
@@ -326,11 +327,49 @@ by §7.*
   - wound on a 1 mm G10 former. The strip, the spacer and the half-cores slide into it from both sides.
   - R 0.58 Ω, L 81 / 9.4 mH per coil (κ 8.6, τ 0.140 s); group L 0.243 H, 2.81 A peak, 101 V peak.
 - **Retention:**
-  - a G10 slot wedge (0.81 mm in 1 mm grooves of the tips, arc-topped up to 1.7 mm over the slot);
-  - 4 A4 M6 studs per utron through the half-cores and the G10 cheeks;
+  - a G10 slot cover between the tips' inner faces, bonded in the vacuum impregnation, with no grooves: 0.83 mm thick at
+    the tips, 1.7 mm at the centre, its top 0.2 mm below the gap arc. (The first cut had 1 mm grooves in the tips. They
+    left a 0.1–0.2 mm sliver of lamination at each tip corner, which can be neither cut nor kept.) The coil does not
+    rely on the cover: it is a closed loop around the back iron, so the loop carries its slot side (≈ 0.001 mm of
+    bending at 600 rpm) [OC: beam estimate; RH: the impregnated bundle's stiffness];
+  - 4 A4 M6 studs per utron through the half-cores and the G10 cheeks, in Ø 6.4 clearance holes (ISO 273 fine), the
+    hole positions on a 0.5 mm grid;
   - the cheeks bolted to 12 mm G10 carrier discs on the rotor sleeve.
   - The centrifugal load at 600 rpm (each body) is about 0.86 kN per utron.
-- **Mass:** 2.24 kg per utron (SiFe 0.90, NiFe 0.15, Cu 1.07, G10 0.12). Bridges 0.65 kg each, 3.9 kg per side.
+- **Mass:** 2.23 kg per utron (SiFe 0.89, NiFe 0.15, Cu 1.07, G10 0.12). Bridges 0.65 kg each, 3.9 kg per side. The
+  laminated parts are at full density, as in the variant screen; at a stacking factor of 0.95 the two half-cores weigh
+  0.85 kg (0.42 kg per stack, as on the drawing below).
+
+**The SiFe half-core as a part** (`python3 docs/make_core_drawing.py`; outputs in `docs/drawings/`):
+- **What the package holds:**
+  - `DCCREG-UTR-101.pdf` / `.png`, an A3 sheet:
+    - view A, the lamination profile at 2 : 1;
+    - views B and C at 1 : 1 by reference arrows;
+    - datums A (the neck-strip face), B (the break face) and C (a stack end);
+    - flatness, perpendicularity, parallelism, the profile of the tip face and the position of the two holes;
+    - a hole table, notes, a stack-data table, a shaded 3-D view and a title block.
+  - `DCCREG-UTR-101_lamination.dxf`: the as-cut lamination (R12, mm). It is a closed contour of 6 segments with 2
+    holes, the tip face at R 130.20.
+  - `DCCREG-UTR-101_half-core_A.step`: the finished stack, hand A (58 149 mm³).
+- **One lamination for both hands:** hand B is the same lamination turned over. A stack is 100.0 ± 0.1 mm, about 271
+  laminations at a stacking factor ≥ 0.95.
+- **How it is made:**
+  - bonded (a self-bonding varnish, or vacuum epoxy), with no interlocks, rivets or welds, so the two Ø 6.40 holes are
+    the only through-features;
+  - the tip face is supplied with 0.20 mm of stock. OP 50 finishes it to R 130.00 on the assembled rotor (wire EDM or a
+    light grind), so the gap arc is cut about the machine axis. The tip-face profile tolerance of 0.04 applies after
+    OP 50.
+- **Made manufacturable for the drawing** (the solids, the renders and the detail drawing were rebuilt; every check
+  still passes):
+  - the slot wedge's grooves went, for the bonded slot cover above;
+  - the neck strip was rounded to whole 0.1 mm NiFe laminations (3.0 mm, Φ_s + 1.1 %);
+  - the stud holes went from Ø 6.0 to an M6 clearance of Ø 6.4.
+- **Open, to agree with the supplier:**
+  - the bonding route;
+  - whether to anneal (stress relief, 750 °C for 2 h, before bonding);
+  - OP 50 by EDM or by grinding;
+  - the coating class (C-5 for epoxy, C-6 for self-bonding).
+  - The sheet is marked *draft for quotation*: unchecked and unapproved.
 
 **Not settled by the drawing:**
 - **The neck needs a nonlinear field check.** The knee (saturated incremental L ≈ 5 % of aligned, ≈ 30 % of unaligned

@@ -5,6 +5,22 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Geometry
+- **Manufacturing drawing of the SiFe half-core, DCCREG-UTR-101** (`docs/make_core_drawing.py`, `docs/drawings/`,
+  `tools/step-viewer/part.html`, findings §8):
+  - **The sheet:** A3, as PDF and PNG, marked *draft for quotation*. It holds:
+    - the lamination profile at 2 : 1, and views B and C at 1 : 1 by reference arrows;
+    - datums A / B / C, with flatness, perpendicularity, parallelism, the tip-face profile and the hole position;
+    - a hole table, notes, the stack data, a shaded 3-D view and a title block.
+  - **The files with it:** the as-cut lamination as a DXF (R12; the tip face at R 130.20, leaving 0.20 mm of stock for
+    OP 50), and the finished stack as a STEP of hand A. Hand B is the same lamination turned over.
+  - **The stack:** one lamination for both hands, about 271 per 100 mm stack, bonded with no interlocks, rivets or welds.
+- **The utron made manufacturable for the drawing** (`sim/utron_profile.py`). The STEP, parts list, renders, GLB and
+  detail drawing were rebuilt, and every check still passes.
+  - **Slot cover:** the slot wedge sat in 1 mm grooves in the tips. It is now a bonded G10 slot cover between the
+    tips, because the grooves left a 0.1–0.2 mm sliver of lamination at each tip corner.
+  - **Neck strip:** rounded to whole 0.1 mm NiFe laminations, 3.0 mm (30 sheets). Φ_s comes out 1.1 % above the
+    operating point's.
+  - **Stud holes:** now an M6 clearance, Ø 6.4 (they were Ø 6.0), on a 0.5 mm grid.
 - **The setup with wound utrons, as solids** (`sim/tube_geometry.py --rel wound`, `sim/utron_profile.py`,
   `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br.*`, `docs/figures/utron-core-detail.png`, findings §8):
   - **The tube's diode build:** 802 mm long. Each reluctance section is 162 mm: 3 wound utrons on the rotor and
@@ -15,6 +31,7 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
     - a split U-core of M235-35A with its tip faces on the gap arc;
     - an 80 % NiFe neck strip (2.97 × 100 mm) across a 12 mm G10 air break;
     - a 200-turn coil on a G10 former, with a G10 slot wedge, A4 studs, and G10 cheeks bolted to carrier discs.
+    - *(Since made manufacturable, see above: a 3.0 mm strip, a bonded slot cover, Ø 6.4 stud holes.)*
   - **Checks:** 0 clashes over 404 pairs, 0 sweep hits, an aligned gap of exactly 0.500 mm, and 1.000 mm from the
     winding to the iron. The STEP reads back 152 / 152 (each utron's half-cores are separate solids).
   - **The default C-EM build is unchanged:** a re-run gives the same layout, the same 307 parts and the same clash,
