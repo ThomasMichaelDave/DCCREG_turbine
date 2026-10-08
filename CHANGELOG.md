@@ -4,6 +4,20 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Docs
+- **Schematic of the rotor's two circuits as built** (`docs/schematic-rotor-circuits.svg` / `.png`, generator
+  `docs/make_schematic_rotor.py`):
+  - **(a) Reluctance:** the magnetic dual doubler that drives the AH pair. It shows:
+    - the A and B groups as their three utrons each, in series with the AH coil of their branch;
+    - La / Lb, the Lp2 / Lp3 strays, D1*–D4*, the node RC and the start kick (whose source is still open).
+  - **(a) Bodies:** all of it is on the rotor. The counter-rotor's passive bridges couple to it only magnetically.
+  - **(b) Electrostatic:** the de Queiroz diode doubler that drives the bicone. C1 / C2 straddle the two bodies.
+    Ca / Cb, D1–D4 and the 20 kV clamps sit on the counter-rotor, the cones and the shaft on the rotor, and one brush
+    joins the counter-rotor's reference rail to the shaft.
+  - **Values:** taken from the current pick (g 0.5 / 6 bridges / 1200 rpm) and `sim/utron_profile.py`, with each
+    part's body. The electrostatic operating numbers are still the 600 rpm run (`sim/bicone_drive_results.json`). The
+    sheet supersedes the values in `docs/schematic-hub-drive.svg`, which shows the earlier 1150-turn design point.
+
 ### Geometry
 - **Manufacturing drawing of the SiFe half-core, DCCREG-UTR-101** (`docs/make_core_drawing.py`, `docs/drawings/`,
   `tools/step-viewer/part.html`, findings §8):

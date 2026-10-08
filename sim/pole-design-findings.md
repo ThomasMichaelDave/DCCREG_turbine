@@ -273,6 +273,9 @@ by §7.*
     `sim/step_to_glb.py` and `tools/step-viewer/` (three.js in headless Chromium; the same scene with orbit controls is
     `tools/step-viewer/viewer.html`).
 - **Checks:** `sim/tube_geometry_wound_results.json`.
+- **Circuits:** `docs/schematic-rotor-circuits.svg` (generator `docs/make_schematic_rotor.py`). It draws both pumps as
+  built, with the body of each part: the reluctance circuit entirely on the rotor, and the electrostatic one across the
+  rotor and the counter-rotor through one brush.
 - **Source of the dimensions:** every utron and bridge dimension comes from `sim/utron_profile.py`, the same numbers
   that draw `docs/figures/utron-core-detail.png`.
 - **The default build is unchanged:** a re-run of the C-EM tube gives the same layout, the same 307 parts and the
