@@ -35,7 +35,7 @@ import stack_sizing as SS          # noqa: E402
 GAPS = (3.0, 5.0, 6.0, 8.0, 10.0, 12.0, 15.0)
 MARGIN = 30.0 / 20.0               # the vacuum design's breakdown / operating ratio
 RPM, F = 1200.0, 120.0
-L_TUBE_WOUND, L_ES_SIDE_WOUND = 802.0, None       # the built tube; its electrostatic stacks are measured below
+L_TUBE_WOUND = 802.0               # the built tube (sim/tube_geometry.py --rel wound)
 T_VANE = SS.TUBE_DEFAULTS["t_vaneMm"]
 
 
@@ -76,9 +76,10 @@ def stack(g, n, diel, geo=None, v_op=None):
 
 
 def clamped_power(args):
-    """the clamped pump power (W) at 1200 rpm: sim/bicone_drive.py's diodes-only netlist with this stack's caps."""
-    cmin, cmax, ca, v_op = args
-    BD.F, BD.CMIN, BD.CMAX, BD.CA, BD.V_OP = F, cmin * 1e-12, cmax * 1e-12, ca * 1e-12, v_op
+    """the clamped pump power (W) at 1200 rpm: sim/bicone_drive.py's diodes-only netlist with this stack's caps,
+    the clamp's breakdown at V_op and the stack's pump frequency f (sectors x rpm / 60)."""
+    cmin, cmax, ca, v_op, f = args
+    BD.F, BD.CMIN, BD.CMAX, BD.CA, BD.V_OP = f, cmin * 1e-12, cmax * 1e-12, ca * 1e-12, v_op
     txt, vecs, pk = BD.deck("diodes")
     txt = txt.replace("wrdata out.dat " + " ".join(vecs), "wrdata out.dat v(e_limit)")      # one vector: small file
     with tempfile.TemporaryDirectory() as d:
@@ -86,7 +87,7 @@ def clamped_power(args):
         subprocess.run(["ngspice", "-b", "x.cir"], capture_output=True, text=True, timeout=3600, cwd=d)
         raw = np.loadtxt(os.path.join(d, "out.dat"))
     t, y = raw[:, 0], raw[:, 1]
-    t0 = (24 - 8) / F
+    t0 = (24 - 8) / f
     return float((np.interp(t[-1], t, y) - np.interp(t0, t, y)) / (t[-1] - t0))
 
 
@@ -121,48 +122,45 @@ def geometry_search():
     return out
 
 
+def _clamp_job(q, v_op_kV):
+    return (q["C_min_pF"], q["C_max_pF"], q["Ca_pF"], v_op_kV * 1e3, q["cycles_per_rev"] * RPM / 60.0)
+
+
 def main():
-    base = stack(3.0, 8, "vacuum")                         # the built design
+    base = stack(3.0, 8, "vacuum", v_op=20e3)              # the built design
     base_es_side = base["L_varicap_mm"] + base["L_ca_mm"]
-    rows, jobs = [], [(base["C_min_pF"], base["C_max_pF"], base["Ca_pF"], 20e3)]
+    base.update(V_op_kV=20.0, V_bd_kV=30.0, L_es_side_mm=base_es_side, L_tube_mm=L_TUBE_WOUND)
+    # stage 1: today's 6-sector vanes, wider gaps, N for the same C_max
+    gaps = []
     for g in GAPS:
         v_bd = SS.gap_breakdown_kV(g, "air")
         v_op = v_bd / MARGIN
-        one = stack(g, 1, "air")                           # per-gap C (N enters only as the 2N - 1 gaps)
-        n_c = max(1, math.ceil((base["C_max_pF"] / one["per_gap_max_pF"] + 1) / 2))
-        r = dict(gap_mm=g, V_bd_kV=v_bd, V_op_kV=v_op, same_C=stack(g, n_c, "air"))
-        rows.append(r)
-        q = r["same_C"]
-        jobs.append((q["C_min_pF"], q["C_max_pF"], q["Ca_pF"], v_op * 1e3))
-    print(f"stacks sized; {len(jobs)} clamped-power runs", flush=True)
-    P = [clamped_power(j) for j in jobs]                  # one at a time: each ngspice run holds ~0.4 GB of vectors
-    base["P_clamped_W"] = P[0]
-    for r, p in zip(rows, P[1:]):
-        r["same_C"]["P_clamped_W"] = p
-        # the power scales with the number of working gaps at fixed kappa and V_op: the N for the vacuum design's power
-        n_gap_p = r["same_C"]["n_gap"] * base["P_clamped_W"] / p
-        n_p = max(1, math.ceil((n_gap_p + 1) / 2))
-        q = stack(r["gap_mm"], n_p, "air")
-        q["P_clamped_W_est"] = p * q["n_gap"] / r["same_C"]["n_gap"]
-        r["same_power"] = q
-        for key in ("same_C", "same_power"):
-            s = r[key]
-            s["L_es_side_mm"] = s["L_varicap_mm"] + s["L_ca_mm"]
-            s["L_tube_mm"] = L_TUBE_WOUND + 2 * (s["L_es_side_mm"] - base_es_side)
-    out = dict(rpm=RPM, margin=MARGIN, base_vacuum=dict(base, L_es_side_mm=base_es_side, L_tube_mm=L_TUBE_WOUND,
-                                                         V_op_kV=20.0, V_bd_kV=30.0), rows=rows)
+        one = stack(g, 1, "air")
+        n = max(1, math.ceil((base["C_max_pF"] / one["per_gap_max_pF"] + 1) / 2))
+        q = stack(g, n, "air", v_op=v_op * 1e3)
+        q.update(gap_mm=g, V_bd_kV=v_bd, V_op_kV=v_op, L_es_side_mm=q["L_varicap_mm"] + q["L_ca_mm"])
+        gaps.append(q)
+        print(f"gap {g:4.1f} mm: V_op {v_op:.1f} kV, N {n}, kappa {q['kappa']:.2f}, z {q['z']:.3f}", flush=True)
+    # stage 2: the sector geometry at 6 / 8 / 10 mm
+    search = geometry_search()
+    best = []
+    for g in SEARCH_GAPS:
+        ok = [q for q in search if q["gap_mm"] == g and q["z"] >= 1.3]
+        if ok:
+            best.append(max(ok, key=lambda q: q["P_eigen_per_m"]))
+    # stage 3: the clamped power (ngspice, one run at a time: ~0.4 GB of vectors each)
+    rows = [base] + gaps + best
+    for q in rows:
+        q["P_clamped_W"] = clamped_power(_clamp_job(q, q["V_op_kV"]))
+        print(f"clamped: {q.get('gap_mm', 3.0)} mm {q.get('sectors', 6)} sectors -> {q['P_clamped_W']:.2f} W", flush=True)
+    for q in gaps + best:
+        q["L_tube_mm"] = L_TUBE_WOUND + 2 * (q["L_es_side_mm"] - base_es_side)
+        # the vane count (and stack length) that would give the vacuum design's clamped power: P scales with the gaps
+        k = base["P_clamped_W"] / q["P_clamped_W"]
+        q["same_power"] = dict(n_plates=math.ceil(((2 * q["n_plates"] - 1) * k + 1) / 2), scale=k,
+                               L_es_side_mm=q["L_es_side_mm"] * k, L_tube_mm=L_TUBE_WOUND + 2 * (q["L_es_side_mm"] * k - base_es_side))
+    out = dict(rpm=RPM, margin=MARGIN, base_vacuum=base, gap_sweep=gaps, geometry_search=search, best_per_gap=best)
     json.dump(out, open(os.path.join(HERE, "air_stack_sizing_results.json"), "w"), indent=1, default=float)
-    b = base
-    print(f"vacuum 3 mm, N 8: C {b['C_min_pF']:.0f}-{b['C_max_pF']:.0f} pF k {b['kappa']:.1f} z {b['z']:.3f} "
-          f"P {b['P_clamped_W']:.1f} W at 20 kV; stacks {base_es_side:.0f} mm/side, tube {L_TUBE_WOUND:.0f} mm")
-    for r in rows:
-        for key in ("same_C", "same_power"):
-            s = r[key]
-            P_ = s.get("P_clamped_W", s.get("P_clamped_W_est"))
-            print(f"air {r['gap_mm']:4.1f} mm ({r['V_bd_kV']:.1f} kV bd, V_op {r['V_op_kV']:.1f} kV) {key:10s}: N {s['n_plates']:3d} "
-                  f"C {s['C_min_pF']:.0f}-{s['C_max_pF']:.0f} pF k {s['kappa']:.1f} z {s['z']:.3f} P {P_:.1f} W | "
-                  f"varicap {s['L_varicap_mm']:.0f} + Ca {s['L_ca_mm']:.0f} mm/side, tube {s['L_tube_mm']:.0f} mm, "
-                  f"rotor vanes {s['m_rotor_vanes_kg']:.1f} kg")
 
 
 if __name__ == "__main__":
