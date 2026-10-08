@@ -1,0 +1,56 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>part render</title>
+<style>html,body{margin:0;background:#ffffff;overflow:hidden}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+// one part from a GLB (sim/step_to_glb.py), shaded with its CAD edges, in an axonometric (orthographic) view for a drawing
+// sheet. Query: ?model=/path/part.glb&dir=1,-1.4,0.9&up=0,0,1&color=b9bdc5 (view direction, up axis, base colour)
+import * as THREE from "three";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+const q = new URLSearchParams(location.search);
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(devicePixelRatio); renderer.setSize(innerWidth, innerHeight); renderer.setClearColor(0xffffff);
+document.body.appendChild(renderer.domElement);
+const scene = new THREE.Scene();
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x9aa0a8, 0.5));
+const key = new THREE.DirectionalLight(0xffffff, 1.6); key.position.set(1.0, -1.4, 2.0); scene.add(key);
+const gltf = await new GLTFLoader().loadAsync(q.get("model"));
+const root = gltf.scene; scene.add(root);
+root.traverse((o) => {
+  if (!o.isMesh) return;
+  o.material = o.material.clone(); o.material.side = THREE.DoubleSide;
+  if (q.get("color")) { o.material.color = new THREE.Color("#" + q.get("color")).convertSRGBToLinear();
+                        o.material.metalness = 0.25; o.material.roughness = 0.45; }
+  o.material.polygonOffset = true; o.material.polygonOffsetFactor = 1; o.material.polygonOffsetUnits = 1;
+  const edges = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry, 25), new THREE.LineBasicMaterial({ color: 0x1d1d1f }));
+  o.add(edges);
+});
+root.updateMatrixWorld(true);
+const box = new THREE.Box3().setFromObject(root), c = box.getCenter(new THREE.Vector3());
+const dir = new THREE.Vector3(...(q.get("dir") || "1,-1.4,0.9").split(",").map(Number)).normalize();
+const R = box.getSize(new THREE.Vector3()).length() / 2;
+const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.0001, 100);
+cam.up.set(...(q.get("up") || "0,0,1").split(",").map(Number)); cam.position.copy(c.clone().add(dir.multiplyScalar(4 * R)));
+cam.lookAt(c);
+{ // light from over the viewer's shoulder, whatever the up axis
+  const up = cam.up.clone(), side = new THREE.Vector3().crossVectors(up, dir).normalize();
+  key.position.copy(dir.clone().normalize().add(up.multiplyScalar(0.9)).add(side.multiplyScalar(0.5)));
+}
+// fit the frustum to the projected box corners
+cam.updateMatrixWorld(true);
+const inv = cam.matrixWorldInverse, pts = [];
+for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z])
+  pts.push(new THREE.Vector3(x, y, z).applyMatrix4(inv));
+const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y), pad = 1.06;
+let hw = (Math.max(...xs) - Math.min(...xs)) / 2 * pad, hh = (Math.max(...ys) - Math.min(...ys)) / 2 * pad;
+const a = innerWidth / innerHeight;
+if (hw / hh > a) hh = hw / a; else hw = hh * a;
+const cx = (Math.max(...xs) + Math.min(...xs)) / 2, cy = (Math.max(...ys) + Math.min(...ys)) / 2;
+Object.assign(cam, { left: cx - hw, right: cx + hw, top: cy + hh, bottom: cy - hh });
+cam.updateProjectionMatrix();
+renderer.render(scene, cam);
+window.ready = true;
+</script></body></html>
