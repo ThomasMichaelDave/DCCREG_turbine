@@ -452,12 +452,13 @@ def main(pick="g 0.5 / 6 bridges / 1200 rpm"):
     notes = [
         "NOTES",
         "1  Material: non-oriented electrical steel M235-35A to EN 10106, 0.35 mm, fully processed. Insulation coating on both sides:",
-        "    C-5 (EN 10342) for an epoxy-bonded stack, or a self-bonding varnish (C-6) for a varnish-bonded stack.",
+        "    C-5 (EN 10342) for an epoxy-bonded stack, or the supplier's self-bonding varnish for a varnish-bonded stack.",
         f"2  Laminations: laser or wire-EDM cut to the DXF {DWG}_lamination.dxf (as-cut profile, tip face R{R + STOCK:.2f}). Burr ≤ 0.02 mm,",
         "    all burrs to one side within a stack. No interlocks, rivets or welds: the two Ø6.40 holes are the only through-features.",
         f"3  Stack: {L:.1f} ±0.1 mm at a stacking factor ≥ {SF:.2f}; laminations aligned on datums A and B and the two holes; bonded",
         "    (self-bonding varnish cured to the supplier's cycle, or vacuum epoxy). Hand B is stacked from laminations turned over.",
         "4  Stress-relief anneal after cutting (optional, to agree): 750 °C for 2 h in a non-oxidising atmosphere, before bonding.",
+        "    Epoxy route only: a self-bonding varnish does not survive the anneal.",
         f"5  Tip face: supplied as cut to R{R + STOCK:.2f} ({STOCK:.2f} mm stock). OP 50 (by DCCREG, on the assembled rotor) finishes it to",
         f"    R{R:.2f}: wire EDM or a light grind, then deburr and re-varnish the face. The profile tolerance on the tip face applies after OP 50.",
         f"    The centre of R{R:.0f} is the machine axis: basic {-f['cx']:.2f} from B (away from the tip) and {-f['cy']:.2f} below A.",
@@ -469,7 +470,7 @@ def main(pick="g 0.5 / 6 bridges / 1200 rpm"):
         "10 Views by reference arrows (ISO 128-30). Boxed values are basic dimensions. Do not scale from this drawing.",
     ]
     for i, n in enumerate(notes):
-        S.text(24, 141 - i * 4.4, n, size=TXT, weight="bold" if i == 0 else "normal")
+        S.text(24, 141 - i * 4.25, n, size=TXT, weight="bold" if i == 0 else "normal")
 
     # ---------------- revision table ----------------
     rx, ry = 300.0, 268.0

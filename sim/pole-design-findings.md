@@ -366,9 +366,10 @@ by §7.*
   - the stud holes went from Ø 6.0 to an M6 clearance of Ø 6.4.
 - **Open, to agree with the supplier:**
   - the bonding route;
-  - whether to anneal (stress relief, 750 °C for 2 h, before bonding);
+  - whether to anneal (stress relief, 750 °C for 2 h, before bonding). That goes with the epoxy route only: a
+    self-bonding varnish does not survive it;
   - OP 50 by EDM or by grinding;
-  - the coating class (C-5 for epoxy, C-6 for self-bonding).
+  - the coating: C-5 for the epoxy route, the supplier's self-bonding varnish otherwise.
   - The sheet is marked *draft for quotation*: unchecked and unapproved.
 
 **Not settled by the drawing:**
