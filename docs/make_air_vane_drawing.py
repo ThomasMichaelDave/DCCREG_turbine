@@ -1,6 +1,7 @@
 """docs/make_air_vane_drawing.py -- writes docs/figures/air-vane-stack-6mm.png: the electrostatic vane stack for AIR
 (sim/air_stack_sizing.py, stages 4b / 4c): 6 mm gaps, Al vanes and Ca / Cb plates with every exposed edge a full round
-(R = t / 2), on the sector widths searched for the full-round vanes.
+(R = t / 2), on the sector widths searched for the full-round vanes. The HV side is on the rotor (sim/core_field.py):
+the rotor vanes are nodes 1 / 4, the stator vanes the reference of C1 / C2, and the Ca / Cb plates ride on the rotor.
   (a) a stator vane, (b) a rotor vane, (c) both at minimum C, with today's 30 deg stator dashed;
   (d) the half-section of side A from stack_sizing.layout (the elements that are built), with detail B: the rims;
   (e) the vane cell at minimum C at r 100 (sim/vane_cell): the 1.5 mm square-cut 24 / 22 deg stack against this one;
@@ -292,15 +293,15 @@ def section_panel(ax, axd, lad, q, g):
          ha="center", va="bottom")
     s0 = [e for e in vanes if e["body"] == "stator"][min(3, n - 1)]
     r0 = [e for e in vanes if e["body"] == "rotor"][min(5, n - 1)]
-    note(ax, (0.5 * sum(zz(s0)), 156), (v0 + 40, 212), f"stator vane, node 1: r {R_IN:g}–{R_OUT:g} + ring to "
-         f"{R_OUT + RING:g}", ha="left", va="bottom")
-    note(ax, (0.5 * sum(zz(r0)), 36), (-36, -46), f"rotor vane, R-A: ring from r {SLEEVE:g}, sector to {R_OUT:g}",
-         ha="left")
-    note(ax, (0.5 * sum(zz(plates[min(4, nca - 1)])), 100), (p0, -62), "Ca plates: full annuli, nodes 1 / 2 alternating",
-         ha="left")
+    note(ax, (0.5 * sum(zz(s0)), 156), (v0 + 40, 212), f"stator vane, REF (counter-rotor): r {R_IN:g}–{R_OUT:g} + ring "
+         f"to {R_OUT + RING:g}", ha="left", va="bottom")
+    note(ax, (0.5 * sum(zz(r0)), 36), (-36, -46), f"rotor vane, node 1 (R-A): ring from r {SLEEVE:g}, sector to "
+         f"{R_OUT:g}", ha="left")
+    note(ax, (0.5 * sum(zz(plates[min(4, nca - 1)])), 100), (p0, -62), "Ca plates on the rotor: full annuli, nodes 1 / 2 "
+         "alternating (mounts not drawn)", ha="left")
     note(ax, (z_end - 20, CAGE[1]), (z_end + 4, 186), f"G10 stator cage\nr {CAGE[0]:g}–{CAGE[1]:g}", ha="left")
     note(ax, (z_end - 30, 0.5 * (SHAFT + SLEEVE)), (z_end + 4, 26), f"G10 sleeve r {SHAFT:g}–{SLEEVE:g}\non the d {2 * SHAFT:g} "
-         "shaft", ha="left")
+         "shaft: holds\nnode 1 off the shaft", ha="left")
     zs = [zz(e) for e in vanes[:6]]
     zbc = 0.5 * (zs[0][0] + zs[4][1])
     ax.add_patch(Circle((zbc, R_IN), 26, fill=False, ec=OLD, lw=0.8, zorder=7))
@@ -380,7 +381,7 @@ def main(t_sel=3.0, n_sel=6):
 
     # (a) stator vane
     ax = fig.add_subplot(gs[0, 0])
-    plan_axes(ax, f"(a) stator vane (counter-rotor, node 1 / node 4): {ns} × {ws:g}° on a {per:g}° pitch")
+    plan_axes(ax, f"(a) stator vane (counter-rotor, REF of C1 / C2): {ns} × {ws:g}° on a {per:g}° pitch")
     vane_stator(ax, ns, ws, R)
     arc_dim(ax, 120, -0.5 * ws, 0.5 * ws, f"{ws:g}°", out=-14)
     arc_dim(ax, 128, 0.0, per, f"{per:g}° pitch", out=11)
@@ -393,7 +394,7 @@ def main(t_sel=3.0, n_sel=6):
 
     # (b) rotor vane
     ax = fig.add_subplot(gs[0, 1])
-    plan_axes(ax, f"(b) rotor vane (rotor, R-A / R-B): {ns} × {wr:g}° on a {per:g}° pitch")
+    plan_axes(ax, f"(b) rotor vane (rotor, node 1 / node 4): {ns} × {wr:g}° on a {per:g}° pitch")
     vane_rotor(ax, ns, wr, R)
     arc_dim(ax, 120, -0.5 * wr, 0.5 * wr, f"{wr:g}°", out=-14)
     dim(ax, (0, 0), pol(R_OUT, 180 + per), f"r {R_OUT:g}", tx=(-12, 4))
@@ -482,8 +483,10 @@ def main(t_sel=3.0, n_sel=6):
         ("", f"({ref('L_es_side_mm', '{:.0f}')}1.5 mm stack {old['L_es_side_mm']:.0f}; today's {built['L_es_side_mm']:.0f})"),
         ("tube", f"{q['L_tube_mm']:.0f} mm (stack_sizing.layout; {ref('L_tube_mm', '{:.0f}')}the wound build "
                  f"{vac['L_tube_mm']:.0f})"),
-        ("aluminium", f"rotor vanes {q['rotor_vanes_kg']:.1f} kg; counter-rotor: stator vanes {q['stator_vanes_kg']:.1f} + "
-                      f"Ca / Cb plates {q['ca_plates_kg']:.1f} kg"),
+        ("aluminium", f"rotor: rotor vanes {q['rotor_vanes_kg']:.1f} + Ca / Cb plates {q['ca_plates_kg']:.1f} kg; "
+                      f"counter-rotor: stator vanes {q['stator_vanes_kg']:.1f} kg"),
+        ("HV side", "on the rotor: the rotor vanes (nodes 1 / 4), Ca / Cb, D1–D4, Z1 / Z4"),
+        ("", "the stator vanes are C1 / C2's REF (sim/core-field-findings.md)"),
         ("rims at the peak", f"{rim['E_peak_kV_cm']:.1f} kV/cm (× {rim['enhancement']:.2f} the faces' "
                              f"{rim['E_face_kV_cm']:.1f}); onset at {onset(rim):.1f} kV smooth, {onset(rim, 0.85):.1f} kV "
                              f"handled (m 0.85)"),
