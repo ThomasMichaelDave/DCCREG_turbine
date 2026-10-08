@@ -26,10 +26,11 @@ The design [RH]:
               retainer, r 47-53, |z| 18-24 [RH]. The other REF parts are far from the gap and are left out (REF at
               infinity); the glass and composite (dielectrics) are left out too. Neither changes the gap's field
               (checked: with the coils removed E at the centre is unchanged and the surface peak moves 0.2 %).
-              The electromagnet register (presets/electromagnets-RA.json) instead puts the AH coils on axial ferrite
+              The electromagnet register (presets/electromagnets-RA.json) instead puts the AH coils on axial MnZn
               rods just outside a 52 mm vessel's poles; the stems then cannot leave along the axis and must enter from
-              the side, turning onto the axis behind each electrode. That leaves the gap's field as solved (the stems
-              sit behind the electrodes) but is a 3-D layout, not modelled here.
+              the side, turning onto the axis behind each electrode (3-D, not modelled). Checked: that hub (each AH
+              winding on its rod as a REF cylinder, r 13 mm, |z| 30.7-72) with stemless electrodes leaves the field
+              at the null unchanged and moves the surface peak 0.1 %.
 Method [OC]: axisymmetric boundary elements in vacuum. Each conductor's meridian contour is cut into straight panels
 of constant surface charge; collocation at the panel midpoints with the ring-charge kernel (complete elliptic K),
 the self panel by a u^2 substitution about its log singularity, near panels subdivided. The surface field is sigma /
@@ -55,6 +56,7 @@ E_OP_KV_MM = 10.0 / 1.5                                  # the vacuum design fie
 VESSEL = dict(R_in=42.0, R_v=45.0)                       # [RH] the tube placeholder (sim/core_rings.py HUB), mm
 COILS = dict(r=(47.0, 53.0), z=(18.0, 24.0))             # [RH] the AH coils' placeholder, REF
 STEM_R, STEM_END = 2.5, 50.0                             # [RH] the stems' radius and how far out they are modelled, mm
+RA = dict(vessel_od=52.0, rod_z=(30.7, 72.0), coil_r=13.0)  # the register's hub: vessel, AH rod span, winding r [RH]
 GAPS = (1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0, 6.0, 8.0, 10.0, 12.0)
 R_CAP = 30.0                                             # [RH] the electrodes' largest radius: 12 mm clear of the vessel
 G_PROFILE = 3.1                                          # the gap of the profile study: dc1's at the design field, mm
@@ -97,8 +99,23 @@ def rogowski(g, rf, u0=-3.0, u1=1.0, rc=None, side=+1, rs=STEM_R, z_end=STEM_END
     pts = [np.array([[0.0, z0], [rf, z0]]), np.column_stack([x, y]),
            arc(c, rc, th0, 0.5 * math.pi, 400)]
     zb = c[1] + rc
-    pts += [np.array([[c[0], zb], [rs, zb]]), np.array([[rs, zb], [rs, z_end - rs]]),
-            arc((0.0, z_end - rs), rs, 0.0, 0.5 * math.pi, 100)]
+    if rs is None:                                                     # no stem: the back closes on the axis
+        pts += [np.array([[c[0], zb], [0.0, zb]])]
+    else:
+        pts += [np.array([[c[0], zb], [rs, zb]]), np.array([[rs, zb], [rs, z_end - rs]]),
+                arc((0.0, z_end - rs), rs, 0.0, 0.5 * math.pi, 100)]
+    p = np.vstack(pts)
+    p[:, 1] *= side
+    return p
+
+
+def ah_on_rod(side=+1, f=2.0):
+    """the electromagnet register's AH (presets/electromagnets-RA.json): the winding on its G-10 former round the MnZn
+    rod, |z| 30.7-72 mm, taken as one REF cylinder out to the winding's outside, r 13 mm [RH], edges rounded f."""
+    r1, z0, z1 = RA["coil_r"], RA["rod_z"][0], RA["rod_z"][1]
+    pts = [np.array([[0.0, z0], [r1 - f, z0]]), arc((r1 - f, z0 + f), f, -0.5 * math.pi, 0.0, 40),
+           np.array([[r1, z0 + f], [r1, z1 - f]]), arc((r1 - f, z1 - f), f, 0.0, 0.5 * math.pi, 40),
+           np.array([[r1 - f, z1], [0.0, z1]])]
     p = np.vstack(pts)
     p[:, 1] *= side
     return p
@@ -272,7 +289,7 @@ def design_shape(g):
     return dict(rf=0.0, u0=-4.0, u1=u1, rc=rc)
 
 
-def build(shape, g, coils=True, hf=1.0, **kw):
+def build(shape, g, coils=True, hf=1.0, ah_rods=False, **kw):
     h0 = h_rule(g)
     h = (lambda p: hf * h0(p)) if hf != 1.0 else h0
     mk = dict(pill=pill, ball=ball, rod=rod, rogowski=rogowski)[shape]
@@ -280,6 +297,9 @@ def build(shape, g, coils=True, hf=1.0, **kw):
     bodies = [("electrode A", "A", cut(mk(g, side=-1, **kw), h)), ("electrode B", "B", cut(mk(g, side=+1, **kw), h))]
     if coils:
         bodies += [("AH coil, top", "REF", cut(coil(+1), lambda p: 0.6)), ("AH coil, bottom", "REF", cut(coil(-1), lambda p: 0.6))]
+    if ah_rods:
+        bodies += [("AH on its rod, top", "REF", cut(ah_on_rod(+1), lambda p: 0.6)),
+                   ("AH on its rod, bottom", "REF", cut(ah_on_rod(-1), lambda p: 0.6))]
     return Model(bodies)
 
 
@@ -398,7 +418,11 @@ def main():
     # the checks: the coils removed (the REF parts' influence), and the panels halved (convergence)
     nocoil = analyse(build("rogowski", g, coils=False, **dsg), g, "design, no coils", dict(shape="rogowski", **dsg), sup)
     fine = analyse(build("rogowski", g, hf=0.5, **dsg), g, "design, panels halved", dict(shape="rogowski", **dsg), sup)
-    for q in (nocoil, fine):
+    # the register's hub: the AH windings on their rods on the axis (REF) and no axial stems (they would enter from the
+    # side, behind the electrodes; not axisymmetric, so left out)
+    ra = analyse(build("rogowski", g, coils=False, ah_rods=True, rs=None, **dsg), g, "design, register hub (AH on rods)",
+                 dict(shape="rogowski", rs=None, **dsg), sup)
+    for q in (nocoil, fine, ra):
         for k in ("Ez_axis_rel", "z_axis_mm", "Ez_mid_rel", "r_mid_mm"):
             q.pop(k)
         print(q["label"], "E0 g/V %.5f k %.4f k_dc1 %.4f C_gap %.3f" % (q["uniformity"], q["k_surf_diff"],
@@ -454,7 +478,8 @@ def main():
         print(nm, {k: v for k, v in design[nm].items() if not isinstance(v, list)}, flush=True)
     out = dict(note="see the module docstring", E_op_kV_mm=E_OP_KV_MM, vessel=VESSEL, coils=COILS, stem_r_mm=STEM_R,
                stem_end_mm=STEM_END, selftest=st, supplies_V={k: list(v) for k, v in sup.items()},
-               profile_gap_mm=G_PROFILE, profile=profile, no_coils=nocoil, panels_halved=fine, sweep=sweep, design=design,
+               profile_gap_mm=G_PROFILE, profile=profile, no_coils=nocoil, panels_halved=fine, register_hub=ra, ra_hub=RA,
+               sweep=sweep, design=design,
                run_s=time.time() - t0)
     json.dump(out, open(os.path.join(HERE, "core_null_field_results.json"), "w"), indent=1, default=float)
     print(f"done in {time.time() - t0:.0f} s")
