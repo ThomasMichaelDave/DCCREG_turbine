@@ -19,6 +19,17 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **Why each core electrode swings −4.4 / +2.7 kV against the shaft while the core sees a symmetric ±7.1 kV**
+  (`docs/make_core_swing_figure.py` → `docs/figures/core-swing-waveforms.png`, `sim/core_swing_waveforms.json`;
+  `sim/core-field-findings.md` §2).
+  - **Node 1 is not a sine:** 3.84 kV at 120 Hz plus 1.19 kV at 240 Hz. Its average sits 0.9 kV above the midpoint of
+    its swing, and the coupling capacitor removes only the average.
+  - **Node 4 is node 1 half a cycle later,** so the 240 Hz part cancels across the core and moves both electrodes
+    together against the shaft.
+- **The cones are non-metallic, probably G10** (designer's note).
+  - Each needs an electrode on it, whose form is not chosen.
+  - The findings, the schematic and BOM fixed say so; the circuit numbers stand for any electrode with the assumed
+    strays.
 - **A swinging field on floating cones** (`sim/core_field.py`, `sim/core-field-findings.md` §2–§3). This is the
   designer's choice over a field referred to the shaft.
   - **The wiring:** each cone couples to node 1 / 4 through 1 nF, and nothing else ties the cones to the shaft.

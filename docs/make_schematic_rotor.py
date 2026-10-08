@@ -5,9 +5,9 @@
     counter-rotor's passive bridges make L(theta); no wire crosses between the bodies.
 (b) ELECTROSTATIC: the de Queiroz diode doubler with its HV side on the rotor (sim/core_field.py netlist; the air
     build's capped stack) -- C1 / C2 between the rotor vanes (nodes 1 / 4) and the counter-rotor's stator vanes, which
-    are the reference; Ca / Cb, D1-D4 and the clamps Z1 / Z4 on the rotor; the cones floating, each coupled to its node
-    (A to 1, B to 4) through Cc, so the core sees a swinging field; the stator vanes joined to the shaft through one
-    inner bearing for now (a brush later).
+    are the reference; Ca / Cb, D1-D4 and the clamps Z1 / Z4 on the rotor; the electrodes on the two G10 cones floating,
+    each coupled to its node (A to 1, B to 4) through Cc, so the core sees a swinging field; the stator vanes joined to
+    the shaft through one inner bearing for now (a brush later).
 Values: sim/pole_design_variants_op.json (the pick), sim/utron_profile.py, sim/rotor_parts_duty_results.json (La / Lb,
 D1*-D4* at the pick), sim/core_field_results.json (the electrostatic pump, the core and the link).
 Usage: python3 docs/make_schematic_rotor.py   (the PNG needs playwright + chromium)
@@ -323,7 +323,7 @@ def panel_b(ox, N):
     tx(xk + 46, 372, "cone A", "ta", "start", 'font-weight="bold"')
     tx(xk + 46, 387, f"{kv(ca['min'])} … +{ca['max']:.1f} kV", "ms")
     tx(ox + 42, 226, "THE CORE (hub)", "zh")
-    tx(ox + 42, 242, "floating: no DC path to REF", "ms")
+    tx(ox + 42, 242, "electrodes on G10 cones, floating", "ms")
     # the one rotating contact: an inner bearing (outer ring on the counter-rotor, inner ring on the shaft)
     ln(xb, y_s, xb, y_bd - 10)
     ln(xb - 17, y_bd - 10, xb + 17, y_bd - 10, "ring"); ln(xb - 17, y_bd + 10, xb + 17, y_bd + 10, "ring")
@@ -356,7 +356,8 @@ def panel_b_table(ox, y, N):
                   "parts not chosen"),
         ("Z1, Z4", f"avalanche strings, BV {d['V_op_kV']:.1f} kV (e.g. {n_z} × {zs['V_Z']:.0f} V), on the rotor: "
                    f"{fs['Z1']['P_W']:.2f} W, {fs['Z1']['I_pk_mA']:.2f} mA peak each"),
-        ("core", f"Cca, Ccb: 1 nF, up to {vr['CC']:.1f} kV, from node 1 / 4 to cone A / B; the cones float"),
+        ("core", f"Cca, Ccb: 1 nF, up to {vr['CC']:.1f} kV, node 1 / 4 to the electrodes on G10 cones A / B; they "
+                 "float"),
         ("", f"the core sees ±{fs['swing_pk_kV']:.1f} kV at 120 Hz: ±{fs['E_pk_kV_cm']:.1f} kV/cm over "
              f"{cf['D_CORE_mm']:.0f} mm [RH]"),
         ("strays", f"≈ {cf['CPAR_pF']:.0f} pF at every node, {cf['C_CONE_pF']:.0f} pF per cone, {cf['C_CC_pF']:.0f} pF "
