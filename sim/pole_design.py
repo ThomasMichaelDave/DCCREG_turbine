@@ -288,10 +288,11 @@ def final():
 DIODES = {"Si (0.55 V @ 1 A)": 1.0, "Schottky (0.35 V @ 1 A)": 0.65}
 
 
-def run_real(r, N_u, la, nd, psi_s, seed_frac=0.03, n_cyc=90):
+def run_real(r, N_u, la, nd, psi_s, seed_frac=0.03, n_cyc=90, snub="fixed"):
     Lmax = 3 * N_u ** 2 * r["L_al"]
     m = M.run(prof=r["prof"], tau=r["tau"], tau_fixed=TAU_FIXED, sat=True, F=r["f_Hz"], n_cyc=n_cyc, L_max=Lmax,
-              psi_s=psi_s, la_ratio=la, ah="custom", ah_custom=M.AH["r160"], seed=seed_frac * psi_s / Lmax, nd=nd)
+              psi_s=psi_s, la_ratio=la, ah="custom", ah_custom=M.AH["r160"], seed=seed_frac * psi_s / Lmax, nd=nd,
+              snub=snub)
     m.pop("wave", None)
     return m
 
@@ -393,6 +394,242 @@ def kick():
     json.dump(out, open(os.path.join(HERE, "pole_design_kick.json"), "w"), indent=1, default=float)
 
 
+# ---------------------------------------------------------------- variants: 12 bridges per side and 1200 rpm relative
+RPMS = (600.0, 1200.0)                   # relative rpm: 300 / 600 each way, rotor and stator geared 1 : -1
+Z_LEVELS = (1.15, 1.20, 1.25)
+
+
+def s_family12():
+    """12 stator bridges per side (30 deg pitch): narrower utrons, the same isolation rule as the 6-bridge search."""
+    out = []
+    for g in (0.5, 1.0):
+        for r_g in (130.0, 165.0):
+            pitch = 2 * math.pi * r_g / 12
+            for w_p in (8.0, 10.0, 12.0, 14.0):
+                for s in (15.0, 20.0, 25.0, 30.0):
+                    if 2 * w_p + s > 0.53 * pitch:
+                        continue
+                    for d in (30.0, 40.0, 50.0, 60.0):
+                        D = P.Design(kind="S", g=g, w_p=w_p, s=s, d=d, r_g=r_g, n_br=12)
+                        if D.fits():
+                            out.append(dict(kind="S", g=g, w_p=w_p, s=s, d=d, r_g=r_g, n_br=12))
+    return out
+
+
+def s_family6small():
+    """6 bridges per side with the 12-bridge utron sizes: small utrons between widely spaced bridges."""
+    out = []
+    for g in (0.5, 1.0):
+        for r_g in (130.0, 165.0):
+            for w_p in (8.0, 10.0, 12.0, 14.0):
+                for s in (15.0, 20.0, 25.0, 30.0):
+                    for d in (30.0, 40.0, 50.0):
+                        if (w_p, s) == (14.0, 30.0) and d in (40.0, 50.0):
+                            continue                                     # already in p1b
+                        D = P.Design(kind="S", g=g, w_p=w_p, s=s, d=d, r_g=r_g, n_br=6)
+                        if D.fits():
+                            out.append(dict(kind="S", g=g, w_p=w_p, s=s, d=d, r_g=r_g, n_br=6))
+    return out
+
+
+def variants_ext():
+    """extend the variant set with the small 6-bridge utrons, both speeds, appended to pole_design_variants.json."""
+    path = os.path.join(HERE, "pole_design_variants.json")
+    data = json.load(open(path))
+    cands = s_family6small()
+    print(f"variants_ext: {len(cands)} small six-bridge designs x {N_THETA} angles", flush=True)
+    with Pool(4) as pool:
+        new = pool.map(_char, cands)
+    for r in new:
+        r["prof"], r["fit_err"] = fit_cos(r["theta"], r["L_per_n2"], 360.0 / r["cyc_per_rev"])
+        r["z_rpm"] = {}
+    jobs = [(r, rpm) for r in new for rpm in RPMS]
+    with Pool(4) as pool:
+        zs = pool.map(_z_at, jobs)
+    for (r, rpm), z in zip(jobs, zs):
+        r["z_rpm"][str(int(rpm))] = z["z"]
+    for r in new:
+        r.update(mass(r))
+        r["n_br"] = 6
+        r.pop("theta", None)
+    data["rows"] += new
+    json.dump(data, open(path, "w"), indent=1, default=float)
+    report_variants(data["rows"])
+
+
+def mass(r):
+    """per utron: copper + iron; per side: the stator bridges (kg), at the screened stack length."""
+    D = P.Design(**r["design"])
+    plus, minus, a = D.coil_rects()
+    h = plus[3] - plus[2]
+    lt = 2 * (D.L_stk + D.b) + math.pi * (h / 2 + D.clr) + 4 * D.clr
+    cu = a * 1e-6 * P.FILL * lt * 1e-3 * 8900.0
+    fe = (2 * D.w_p * D.d + D.W_u * D.b) * D.L_stk * 1e-9 * RHO_FE
+    st = D.n_br * D.l_b * D.t_b * D.L_stk * 1e-9 * RHO_FE
+    return dict(m_cu_kg=cu, m_fe_kg=fe, m_utron_kg=cu + fe, m_stator_side_kg=st, W_u=D.W_u, depth=D.radial_depth())
+
+
+def _z_at(args):
+    r, rpm = args
+    f = r["cyc_per_rev"] * rpm / 60.0
+    m = M.run(prof=r["prof"], tau=r["tau"], tau_fixed=TAU_FIXED, sat=False, F=f, n_cyc=16, snub="scaled")
+    return dict(z=m.get("z_late"), z_early=m.get("z_early"), z_error=m.get("error"))
+
+
+def variants():
+    """the four combinations {6, 12 bridges} x {600, 1200 rpm relative}, both gaps; L(theta) does not depend on rpm, so
+    the 6-bridge characterisations of p1b are reused and only their circuit runs repeat at 1200 rpm."""
+    old = [r for r in json.load(open(os.path.join(HERE, "pole_design_p1b.json")))["rows"]
+           if r["design"]["kind"] == "S" and r["fits"] and r.get("z")]
+    cands = s_family12()
+    print(f"variants: {len(old)} six-bridge designs reused, {len(cands)} new twelve-bridge designs x {N_THETA} angles", flush=True)
+    with Pool(4) as pool:
+        new = pool.map(_char, cands)
+    for r in new:
+        r["prof"], r["fit_err"] = fit_cos(r["theta"], r["L_per_n2"], 360.0 / r["cyc_per_rev"])
+    jobs, where = [], []
+    for k, r in enumerate(old):
+        r["z_rpm"] = {"600": r["z"]}
+        jobs.append((r, 1200.0)); where.append((k, "old", "1200"))
+    for k, r in enumerate(new):
+        r["z_rpm"] = {}
+        for rpm in RPMS:
+            jobs.append((r, rpm)); where.append((k, "new", str(int(rpm))))
+    with Pool(4) as pool:
+        zs = pool.map(_z_at, jobs)
+    for (k, which, rpm), z in zip(where, zs):
+        (old if which == "old" else new)[k]["z_rpm"][rpm] = z["z"]
+    rows = []
+    for r in old + new:
+        r.update(mass(r))
+        r["n_br"] = r["design"].get("n_br", 6)
+        r.pop("theta", None)
+        rows.append(r)
+    json.dump(dict(stage="variants", tau_fixed=TAU_FIXED, rpms=RPMS, rows=rows),
+              open(os.path.join(HERE, "pole_design_variants.json"), "w"), indent=1, default=float)
+    report_variants(rows)
+
+
+def report_variants(rows=None):
+    if rows is None:
+        rows = json.load(open(os.path.join(HERE, "pole_design_variants.json")))["rows"]
+    for g in (0.5, 1.0):
+        for n_br in (6, 12):
+            for rpm in ("600", "1200"):
+                rs = sorted([r for r in rows if r["design"]["g"] == g and r["n_br"] == n_br and r["z_rpm"].get(rpm)],
+                            key=lambda r: r["m_utron_kg"])
+                f = n_br * int(rpm) / 60
+                print(f"\n== gap {g} mm, {n_br} bridges/side, {rpm} rpm relative ({f:.0f} Hz): {len(rs)} designs")
+                best = -1.0
+                for r in rs:
+                    z = r["z_rpm"][rpm]
+                    if z > best + 0.005:
+                        best = z
+                        d = r["design"]
+                        print(f"   r_g {d['r_g']:.0f} tip {d['w_p']:.0f} slot {d['s']:.0f}x{d['d']:.0f} | W_u {r['W_u']:.0f} depth {r['depth']:.0f} mm"
+                              f" | utron {r['m_utron_kg']:.2f} kg (Cu {r['m_cu_kg']:.2f}) stator/side {r['m_stator_side_kg']:.1f} kg"
+                              f" | kappa {r['kappa']:.1f} tau {r['tau']:.3f} s f*tau {f * r['tau']:.1f} | z {z:.3f}", flush=True)
+                for zl in Z_LEVELS:
+                    ok = [r for r in rs if r["z_rpm"][rpm] >= zl]
+                    if ok:
+                        print(f"   lightest with z >= {zl:.2f}: {ok[0]['m_utron_kg']:.2f} kg per utron", flush=True)
+
+
+def iron_v(r, q, rpm):
+    """iron loss per side: 3 utrons at the L-cycle rate (body at B_SAT neck / w_p, the neck at B_SAT), n_br bridges at the
+    rate the 3 utrons pass them (unipolar: x 0.5); M235-35A rating scaled f^1.3 B^2 [RH]."""
+    D = P.Design(**r["design"])
+    f_u = D.n_br * rpm / 60.0
+    f_b = 3 * rpm / 60.0
+    k = lambda f: P_FE_50 * (f / 50.0) ** 1.3
+    b_body = B_SAT * min(1.0, q["neck_mm"] / D.w_p)
+    mm = mass(r)
+    m_u = mm["m_fe_kg"]
+    m_b = D.l_b * D.t_b * D.L_stk * 1e-9 * RHO_FE
+    m_neck = 10.0 * q["neck_mm"] * D.L_stk * 1e-9 * RHO_FE
+    P_u = 3 * (k(f_u) * m_u * (b_body / 1.5) ** 2 + k(f_u) * m_neck)
+    P_b = D.n_br * 0.5 * k(f_b) * m_b * (b_body / 1.5) ** 2
+    return dict(B_body_T=b_body, P_fe_side_W=P_u + P_b, f_utron_Hz=f_u, f_bridge_Hz=f_b)
+
+
+def size_op(args):
+    """AH 450 A-t, Si diodes, a start kick: three utron turn counts set by the group resistance against the AH's
+    (R_group = m R_AH), Psi_s iterated to the target, then the smallest kick that still starts."""
+    tag, r, rpm = args
+    r = dict(r, f_Hz=r["cyc_per_rev"] * rpm / 60.0)
+    R_AH, N_AH = M.AH["r160"]["R"], M.AH["r160"]["N"]
+    out = []
+    for mult in (4.5, 6.5, 9.0):
+        N_u = int(round(math.sqrt(mult * R_AH / (3 * r["R_per_n2"])) / 10.0) * 10)
+        Lg = 3 * N_u ** 2 * r["L_al"]
+        psi = 0.15 * Lg * AT_TARGET / N_AH
+        m = None
+        for _ in range(4):
+            m = run_real(r, N_u, 0.6, 1.0, psi, seed_frac=0.3, n_cyc=60, snub="scaled")
+            at = m.get("AH_AT_pk") or 0.0
+            if at < 1 or abs(at / AT_TARGET - 1) < 0.02:
+                break
+            psi *= AT_TARGET / at
+        if not m.get("AH_AT_pk") or m["AH_AT_pk"] < 0.9 * AT_TARGET:
+            out.append(dict(tag=tag, rpm=rpm, N_u=N_u, mult=mult, runs=False, z_early=m.get("z_early")))
+            continue
+        q = dict(tag=tag, rpm=rpm, N_u=N_u, mult=mult, runs=True, psi_s=psi, z_early=m["z_early"], AT_pk=m["AH_AT_pk"],
+                 AT_min=m["AH_AT_min"], P_belt_el_W=m["P_belt_W"], P_utron_coil_W=m["P_cu_utron_W"] / 6,
+                 P_fixed_W=m["P_cu_fixed_W"], P_AH_W=m["P_AH_W"], P_snub_W=m.get("P_snub_W", 0.0), I_pk=m["I1_pk"],
+                 I_rms=m["I1_rms"], L_group_H=Lg, V_pk=2 * math.pi * r["f_Hz"] * psi,
+                 neck_mm=psi / (3 * N_u * B_SAT * P.Design(**r["design"]).L_stk * 1e-3) * 1e3,
+                 wire_mm2=P.FILL * r["a_coil_mm2"] / N_u)
+        q["P_diode_W"] = q["P_belt_el_W"] - 6 * q["P_utron_coil_W"] - q["P_fixed_W"] - q["P_AH_W"] - q["P_snub_W"]
+        q.update(iron_v(r, q, rpm))
+        q["P_total_W"] = q["P_belt_el_W"] + 2 * q["P_fe_side_W"]
+        th = thermal(r)
+        A = th["A_coil_m2"]
+        q["T_coil_air_C"] = T_AMB - 273.15 + q["P_utron_coil_W"] / (H_AIR * A)
+        q["T_coil_vac_C"] = (T_AMB ** 4 + q["P_utron_coil_W"] / (SIGMA * EPS_RAD * A)) ** 0.25 - 273.15
+        thr = None
+        for fr in (0.03, 0.05, 0.08, 0.1, 0.15, 0.2, 0.3):
+            mm_ = run_real(r, N_u, 0.6, 1.0, psi, fr, n_cyc=40, snub="scaled")
+            if (mm_.get("AH_AT_pk") or 0) > 0.5 * AT_TARGET:
+                thr = fr
+                break
+        q["kick_frac"] = thr
+        q["kick_mJ"] = 0.5 * Lg * (thr * q["I_pk"]) ** 2 * 1e3 if thr else None
+        out.append(q)
+    return out
+
+
+def variants_op():
+    rows = json.load(open(os.path.join(HERE, "pole_design_variants.json")))["rows"]
+    picks = []
+    for g in (0.5, 1.0):
+        for n_br in (6, 12):
+            for rpm in RPMS:
+                key = str(int(rpm))
+                ok = sorted([r for r in rows if r["design"]["g"] == g and r["n_br"] == n_br and (r["z_rpm"].get(key) or 0) >= 1.20],
+                            key=lambda r: r["m_utron_kg"])
+                if ok:
+                    picks.append((f"g {g} / {n_br} bridges / {int(rpm)} rpm", ok[0], rpm))
+    print(f"variants_op: sizing {len(picks)} designs (lightest utron with z >= 1.20 per combination)", flush=True)
+    with Pool(4) as pool:
+        res = pool.map(size_op, picks)
+    out = dict(stage="variants_op", AT_target=AT_TARGET, designs={})
+    for (tag, r, rpm), qs in zip(picks, res):
+        good = [q for q in qs if q["runs"]]
+        best = min(good, key=lambda q: q["P_total_W"]) if good else None
+        out["designs"][tag] = dict(design=r["design"], mass={k: r[k] for k in ("m_cu_kg", "m_fe_kg", "m_utron_kg", "m_stator_side_kg", "W_u", "depth")},
+                                   kappa=r["kappa"], tau=r["tau"], z_lin=r["z_rpm"][str(int(rpm))], runs=qs, best=best)
+        print(f"\n{tag}: {r['design']}  utron {r['m_utron_kg']:.2f} kg, kappa {r['kappa']:.1f}, tau {r['tau']:.3f} s, z {r['z_rpm'][str(int(rpm))]:.3f}", flush=True)
+        for q in qs:
+            if not q["runs"]:
+                print(f"   N_u {q['N_u']:5d} (R_group {q['mult']:.1f} x R_AH): no steady state (z {q['z_early']})", flush=True)
+                continue
+            print(f"   N_u {q['N_u']:5d} (R_group {q['mult']:.1f} x R_AH): AH {q['AT_min']:.0f}-{q['AT_pk']:.0f} | total {q['P_total_W']:.1f} W = el {q['P_belt_el_W']:.1f}"
+                  f" (utron {q['P_utron_coil_W']:.2f} W/coil x6, fixed {q['P_fixed_W']:.2f}, AH {q['P_AH_W']:.2f}, diodes {q['P_diode_W']:.2f})"
+                  f" + iron {2 * q['P_fe_side_W']:.2f} | coil {q['T_coil_air_C']:.0f} C air / {q['T_coil_vac_C']:.0f} C vac | V_pk {q['V_pk']:.0f} V"
+                  f" I_pk {q['I_pk']:.2f} A neck {q['neck_mm']:.2f} mm | kick >= {q['kick_frac']}", flush=True)
+    json.dump(out, open(os.path.join(HERE, "pole_design_variants_op.json"), "w"), indent=1, default=float)
+
+
 def _char(kw):
     D = P.Design(**kw)
     r = P.characterise(D, n_theta=N_THETA)
@@ -431,4 +668,6 @@ def _z(r):
 
 
 if __name__ == "__main__":
-    {"p1": p1, "p1b": p1b, "p3": p3, "final": final, "real": real, "kick": kick}[sys.argv[1]]()
+    {"p1": p1, "p1b": p1b, "p3": p3, "final": final, "real": real, "kick": kick,
+     "variants": variants, "report_variants": report_variants, "variants_op": variants_op,
+     "variants_ext": variants_ext}[sys.argv[1]]()

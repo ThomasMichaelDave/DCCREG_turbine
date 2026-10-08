@@ -12,12 +12,14 @@
 - `sim/pole_fd2d.py`: a new 2-D magnetostatic finite-volume solver for A_z in the plane of rotation, unrolled at the
   gap radius, periodic over 120°, with linear iron μ_r 3000 [RH].
 - `sim/pole_design.py`: the staged search and sizing.
-- `sim/magnetic_doubler.py`: the pump circuit, extended to take a tabulated L(θ) shape and the pump frequency.
+- `sim/magnetic_doubler.py`: the pump circuit, extended to take a tabulated L(θ) shape, the pump frequency and
+  frequency-scaled node snubbers.
 - Drawings: `docs/figures/pole-pair-flux-g0p5.png` and `docs/figures/pole-pair-flux-g1p0.png`, from
   `docs/make_pole_drawing.py`.
+- Chart: `docs/figures/utron-size-vs-gain.png`, from `docs/make_variants_chart.py` (§6).
 
-Results: `sim/pole_design_{p1,p1b,p3,final,real,kick}.json`. The p1 T-family rows are superseded by p1b, after a
-tooth-parity fix.
+Results: `sim/pole_design_{p1,p1b,p3,final,real,kick,recheck,variants,variants_op}.json`. The p1 T-family rows are
+superseded by p1b, after a tooth-parity fix.
 
 ## 1. Topology (what changed)
 
@@ -80,29 +82,117 @@ converged to 0.5 %.
 
 ## 5. Design points and the 1.0 mm penalty
 
-Si diodes, kicked start, AH 450 ampere-turns, 600 rpm relative.
+Si diodes, kicked start, AH 450 ampere-turns, 600 rpm relative, stack 70 mm. Turn counts come from the systematic rule
+of §6: the utron group's resistance set to m × the AH coil's, with m 4.5 / 6.5 / 9. The table shows the lowest-power
+one that holds the target (`sim/pole_design_recheck.json`).
 
 | | **0.5 mm** | 1.0 mm | 1.0 mm, from a small seed (no kick) |
 |:--|--:|--:|--:|
-| utron turns (3 per group, wire) | 400 (3.4 mm²) | 600 (2.3 mm²) | 1000 Si / 800 Schottky |
-| utron group L (La = Lb) | 0.90 H (0.54 H) | 1.16 H (0.70 H) | — |
-| utron current / peak winding voltage | 0.8–2.8 A / 106 V | 0.8–2.8 A / 259 V | — / 690 V |
-| **belt power** (copper + diodes + AH + iron) | **18.6 W** | **38.3 W** | 99 W Si / 65 W Schottky |
-| heat per utron coil | 1.9 W | 4.7 W | 13.3 W / 8.6 W |
-| fixed inductors / AH / diodes | 2.4 / 1.9 / 1.9 W | 3.6 / 2.0 / 2.0 W | — |
-| coil temperature, air / vacuum (radiation only) | 42 / 49 °C | 45 / 61 °C | — |
-| minimum start kick | 10 % of Ψ_s | 8 % | (small seed) |
-| AH share of the belt | 10.6 % | 5.6 % | ~2 % |
+| utron turns (3 per group, wire) | 340 (4.0 mm²) | 410 (3.3 mm²) | 1000 Si / 800 Schottky |
+| utron group L | 0.65 H | 0.54 H | — |
+| utron current / peak winding voltage | 0.9–2.8 A / 80 V | 1.0–2.8 A / 131 V | — / 690 V |
+| **total power** (copper + diodes + AH + iron) | **14.5 W** | **20.3 W** | 99 W Si / 65 W Schottky |
+| heat per utron coil | 1.4 W | 2.2 W | 13.3 W / 8.6 W |
+| fixed inductors / AH / diodes / iron | 1.7 / 1.9 / 1.9 / 0.7 W | 1.7 / 2.1 / 2.0 / 1.1 W | — |
+| coil temperature, air / vacuum (radiation only) | 41 / 46 °C | 42 / 50 °C | — |
+| minimum start kick | 15 % of Ψ_s (58 mJ) | 15 % (48 mJ) | (small seed) |
+| AH share of the power | 12.9 % | 10.1 % | ~2 % |
 | linear gain margin z | 1.30 | 1.19 | — |
 
-- **The 1.0 mm penalty: about 2.1× the power for the same AH**, efficiency 10.6 % → 5.6 %. The gain margin also
-  drops from 1.30 to 1.19.
-- Without a start kick, the two gaps cost about the same (≈ 90 W with Si), because start-up sets the turn count.
+- **The 1.0 mm penalty: about 1.4× the power for the same AH** (14.5 → 20.3 W), more turns (410 instead of 340), and
+  a lower gain margin (1.30 → 1.19).
+- **Correction.** An earlier version of this section reported 18.6 W against 38.3 W, i.e. 2.1×. Two things inflated it:
+  - its 1.0 mm turn search started at 600 turns;
+  - its first screen used a 0.1 % seed, in which even the ideal diodes' few-mV drop stalls growth.
+
+  The systematic rule with a kick finds the real minimum. The 400 / 600-turn points of `pole_design_kick.json` still
+  hold; they just aren't the minimum.
+- **Fewer turns means a larger kick** (15 % instead of 10 %), because the winding voltage is lower.
+- **Without a start kick** both gaps cost about the same (≈ 90 W with Si), because start-up sets the turn count.
 - **Air and vacuum both work.** The design points sit far below the cooling limits: about 87 W per coil in air and
   about 40 W per coil at 155 °C in vacuum (radiation only).
-- **Masses:** 3.4 kg of copper per utron coil, 2.25 kg of iron per utron, 0.96 kg per bridge.
+- **Masses:** 3.4 kg of copper per utron coil, 2.25 kg of iron per utron, 0.96 kg per bridge (stack 70 mm).
   - The copper is there for τ, not current: J ≈ 0.6 A/mm².
   - Aluminium would save about 2/3 of the winding mass for about 0.6 × τ.
+
+## 6. Smaller utrons: 12 bridges and 1200 rpm
+
+**Question.** How small can the utron get if the pump frequency goes up?
+- 12 stator bridges per side instead of 6 (30° pitch; 24 bridges in total);
+- or 1200 rpm relative instead of 600 (600 rpm each way through the 1 : −1 gear);
+- or both.
+
+**Method** (`python3 sim/pole_design.py variants`, `variants_ext`, `variants_op`):
+- **Designs:**
+  - L(θ) doesn't depend on speed, so the 92 six-bridge designs of P1b were reused;
+  - 84 new 12-bridge designs, and 154 small 6-bridge designs at the 12-bridge utron sizes (tips 8–14 mm, slots
+    15–30 mm wide), so both bridge counts were compared on the same utrons;
+  - all at a 100 mm stack, at both gaps.
+- **Gain:** each design's gain z comes from the pump circuit at its own frequency, f = bridges × rpm / 60.
+- **Snubber check.** The node snubbers are scaled with frequency (L·C·f² and R/√(L/C) held at their validated 60 Hz
+  values). That keeps z to ±0.002 when their capacitance is halved or quartered. The old fixed 10 nF would have inflated
+  z to 1.47 at 240 Hz, with an artificial 213 W in the snubbers.
+
+**Lightest utron (copper + iron, kg) reaching each gain** (chart: `docs/figures/utron-size-vs-gain.png`):
+
+| gap | bridges / rpm | f | z ≥ 1.10 | z ≥ 1.15 | **z ≥ 1.20** | z ≥ 1.25 | best z |
+|:--|:--|--:|--:|--:|--:|--:|--:|
+| 0.5 mm | 6 / 600 (today) | 60 Hz | 2.20 | 3.11 | **3.40** | 4.01 | 1.31 |
+| 0.5 mm | 6 / 1200 | 120 Hz | 1.54 | 1.75 | **1.97** | 3.11 | 1.36 |
+| 0.5 mm | 12 / 600 | 120 Hz | 1.55 | 2.56 | — | — | 1.16 |
+| 0.5 mm | 12 / 1200 | 240 Hz | 1.15 | 1.34 | **1.55** | — | 1.21 |
+| 1.0 mm | 6 / 600 | 60 Hz | 4.01 | 4.67 | **7.31** | — | 1.20 |
+| 1.0 mm | 6 / 1200 | 120 Hz | 2.83 | 3.40 | **4.03** | 5.01 | 1.26 |
+| 1.0 mm | 12 / 600 | 120 Hz | — | — | — | — | 1.01 |
+| 1.0 mm | 12 / 1200 | 240 Hz | — | — | — | — | 1.07 |
+
+- **Frequency is the lever.** At a fixed margin, each doubling of the pump frequency cuts the utron mass by about 40 %.
+  - At 0.5 mm and z ≥ 1.20: 3.40 → 1.97 → 1.55 kg.
+  - At 1.0 mm: 7.31 → 4.03 kg.
+  - That matches the earlier scaling estimate of about 0.8 × linear size per doubling.
+- **For the same utron, bridges and speed are interchangeable.** 12 bridges lower κ_L by at most 0.5, and at equal
+  frequency the gains agree within about 0.02. Example: tip 10, slot 25 × 30 gives z 1.12 with 6 bridges at
+  1200 rpm and 1.13 with 12 bridges at 600 rpm, both at 120 Hz.
+- **12 bridges cap the utron width** at ≤ 0.53 × the 30° pitch (36 mm at r 130, 46 mm at r 165), so the large,
+  high-margin utrons are no longer possible.
+  - They pay off only together with 1200 rpm, and only at 0.5 mm.
+  - **At 1.0 mm no 12-bridge design even reaches z 1.10.**
+
+**Operating points of the winners.** AH 450 ampere-turns, Si diodes, kicked start, best of the three turn counts:
+
+| | utron (geometry) | turns | total power | heat per coil | coil °C air / vac | iron | kick | V_pk |
+|:--|:--|--:|--:|--:|:--|--:|--:|--:|
+| 0.5 mm, 6 / 600 | 3.40 kg (r 130, tip 18, slot 30 × 40) | 240 | 18.2 W | 2.0 W | 44 / 57 | 1.0 W | 20 % (68 mJ) | 92 V |
+| **0.5 mm, 6 / 1200** | **1.97 kg** (r 165, tip 12, slot 30 × 30) | 220 | 18.8 W | 2.2 W | 46 / 63 | 1.1 W | 20 % (42 mJ) | 101 V |
+| **0.5 mm, 12 / 1200** | **1.55 kg** (r 165, tip 10, slot 25 × 30) | 160 | 16.2 W | 1.6 W | 45 / 59 | 2.0 W | 15 % (10 mJ) | 117 V |
+| 1.0 mm, 6 / 600 | 7.31 kg (r 165, tip 20, slot 50 × 60) | 310 | 15.7 W | 1.6 W | 41 / 46 | 0.9 W | 20 % (70 mJ) | 104 V |
+| **1.0 mm, 6 / 1200** | **4.03 kg** (r 165, tip 18, slot 40 × 40) | 230 | 14.9 W | 1.5 W | 43 / 51 | 1.1 W | 20 % (35 mJ) | 103 V |
+
+- **Shrinking the utron does not cost power.** At the best turn count every winner needs 15–19 W. The heat is set by
+  the AH coil's resistance and the current it needs, not by the utron's size.
+- **Stator iron per side:** 5.5 kg (6 / 600, 3.40 kg utron), 3.0 kg (6 / 1200), 4.1 kg (12 / 1200: 12 smaller
+  bridges).
+- **What 1200 rpm relative costs:**
+  - **Centrifugal load on the rotor coils:** about 52 g instead of 13 g at r ≈ 130 mm. That is 0.4–0.5 kN per coil,
+    so the coils need banding or a retaining ring.
+  - **Electrostatic pump:** its power doubles (power ∝ frequency at fixed voltage): about 18 W with diodes only
+    instead of 9 W. The bicone dumps rise to about 120–135 per second per side.
+  - **Iron at 240 Hz** (12 / 1200): 1.0 W per side. The 0.35 mm laminations are still below the skin depth (about
+    0.45 mm), but 0.2 mm is preferred.
+  - **Air windage grows with speed cubed.** It is not modelled here.
+
+**Recommendation:**
+- **At 0.5 mm, go to 1200 rpm relative.**
+  - With 6 bridges per side (keeping today's 12-C-EM count), the utron shrinks from 3.4 to about 2.0 kg at the same
+    margin and the same power.
+  - With 12 bridges per side, it reaches about 1.55 kg.
+- **At 1.0 mm,** 1200 rpm with 6 bridges halves the utron (7.3 → 4.0 kg). 12 bridges don't work there.
+
+**Open items:**
+- the turn rule is coarse (m 4.5 / 6.5 / 9);
+- the stack is fixed at 100 mm;
+- the start kick is 15–20 % of Ψ_s (10–70 mJ);
+- everything else carries the caveats below.
 
 ## Caveats
 - **2-D model [IR].** Curvature is neglected and the end/axial-fringe corrections (+30 % unaligned, +3 % aligned) are
