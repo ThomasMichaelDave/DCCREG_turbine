@@ -5,6 +5,17 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Physics
+- **The electrostatic stacks sized for air** (`sim/air_stack_sizing.py`, `sim/air-stack-sizing-findings.md`). The method
+  takes the hold-off at the vacuum design's 1.5 margin, κ from the 2-D vane cell, and the clamped power at 1200 rpm
+  relative.
+  - **The gap buys voltage, not power density.** Air allows about a third of the vacuum design's field at any gap.
+    The clamped power per metre of stack is 184 W/m in vacuum, and in air 24 W/m for today's 3 mm stack, falling to
+    13 W/m at 10 mm.
+  - **Today's 6-sector vanes lose κ at wide gaps** (15.7 at 3 mm, 3.4 at 10 mm; the pump is dead by 15 mm).
+    Reshaping the sectors restores it: at 6 mm, 6 sectors of 24° / 22° with 16 vanes give κ 8.4, z 1.40 and
+    7.4 W at 13 kV, from a 1.29 m tube.
+  - **The vacuum design's 18.5 W in air** needs a 2.1–2.5 m tube.
+  - **Edge corona:** wider gaps in air also need rolled vane rims.
 - **The electrostatic core's diode directions, checked against de Queiroz's Fig. 1** (`sim/queiroz_fig1_check.py`,
   `sim/electrostatic-no-clamp-findings.md` §1):
   - **Directions:** every one of the repo's four diodes is reversed relative to the paper's symmetrical unipolar
