@@ -15,6 +15,19 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **Thinner full rounds, and a 6 + 6 vane cap, for the air stack** (`sim/air_stack_sizing.py` stage 4c,
+  `sim/air-stack-sizing-findings.md` §6.5). All on 6 × 22° / 22° at 6 mm.
+  - **The C_max rule (16 + 16):**
+    - 2.5 mm gives 7.07 W, κ 8.04, z 1.391; 3 mm gives 6.96 W, κ 7.65, z 1.380.
+    - That is most of the 1.5 mm stack's 7.43 W, for 40–63 mm more stack per side.
+    - The rims reach corona onset at 13.3 kV (2.5 mm) and 14.0 kV (3 mm) on a handled surface, against the 13.1 kV
+      peak. 1.5 mm reaches it at 11.5 kV.
+  - **Capped at 6 + 6:**
+    - Power falls to a third: 2.25 / 2.18 / 2.14 / 2.05 W for 1.5 / 2.5 / 3 / 4 mm.
+    - The stacks shrink to 129–174 mm per side and the tube to 0.86–0.95 m.
+    - z falls to 1.29–1.34: the fixed 20 pF stray weighs about 3× more against the smaller stack, and at 4 mm z is
+      below 1.3.
+    - That is about today's air power (2.44 W at 7.3 kV), at 13 kV.
 - **The designer's vanes for air: 4 mm with full-round edges** (`sim/air_stack_sizing.py` stages 4 / 4b,
   `sim/vane_cell.py`, `sim/air-stack-sizing-findings.md` §6). The Ca / Cb plates get the same, as asked.
   - **Thickness costs κ.** On 6 × 24° / 22° at 6 mm, κ goes 8.38 → 6.51 and z 1.402 → 1.339 (C_min per gap

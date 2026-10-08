@@ -191,6 +191,48 @@ On 6 sectors the eigen-cycle power per metre of stack stays within 9.2–10.4 W/
   longer span (f ∝ √(1 / m L³)) puts the shaft's first bending mode near 100 Hz. That is still above the 30 Hz
   criterion, but it needs a check with `sim/shaft_bearings.py`. The counter-rotor carries 32 kg of aluminium.
 
+### 6.5 Thinner rounds, and the 6 + 6 cap
+
+**Designer's inputs.** Run 2.5 and 3 mm as well, and cap the stack at 6 stator + 6 rotor vanes per varicap per side.
+
+Every row uses 6 × 22° / 22°, 6 mm gaps, and full-round vanes and Ca / Cb plates of one thickness (`thick_compare`,
+stage 4c). The first row is the stage-2 stack (square-cut, 24° / 22°).
+
+| vanes | per varicap | κ | z | clamped at 13.1 kV | stacks, side A | tube | Al: rotor / counter-rotor |
+|:--|--:|--:|--:|--:|--:|--:|--:|
+| 1.5 mm (stage 2) | 16 + 16 | 8.38 | 1.402 | 7.43 W | 354 mm | 1312 mm | 3.8 / 12.9 kg |
+| 2.5 mm | 16 + 16 | 8.04 | 1.391 | 7.07 W | 394 mm | 1391 mm | 6.4 / 20.2 kg |
+| 3 mm | 16 + 16 | 7.65 | 1.380 | 6.96 W | 417 mm | 1438 mm | 7.7 / 24.3 kg |
+| 4 mm | 16 + 16 | 6.86 | 1.353 | 6.69 W | 464 mm | 1532 mm | 10.2 / 32.4 kg |
+| 1.5 mm | 6 + 6 | 8.72 | 1.339 | 2.25 W | 129 mm | 862 mm | 1.4 / 4.7 kg |
+| 2.5 mm | 6 + 6 | 7.84 | 1.319 | 2.18 W | 147 mm | 898 mm | 2.4 / 7.9 kg |
+| **3 mm** | **6 + 6** | **7.47** | **1.309** | **2.14 W** | **156 mm** | **916 mm** | **2.9 / 9.5 kg** |
+| 4 mm | 6 + 6 | 6.72 | 1.287 | 2.05 W | 174 mm | 952 mm | 3.8 / 12.7 kg |
+
+**When the rims reach corona.** This is the operating peak at which the solved rim field reaches Peek's onset, for a
+smooth surface (m 1) and a handled or weathered one (m 0.85) [RH]. The design runs at 13.1 kV.
+
+| surface | 1.5 mm | 2.5 mm | 3 mm | 4 mm |
+|:--|--:|--:|--:|--:|
+| smooth, m 1 | 13.5 kV | 15.7 kV | 16.5 kV | 17.8 kV |
+| handled, m 0.85 | 11.5 kV | 13.3 kV | 14.0 kV | 15.1 kV |
+
+- **Without the cap, 2.5–3 mm is the balance.**
+  - It keeps most of the 1.5 mm stack's κ and power, for 40–63 mm more stack per side.
+  - It holds 13.1 kV at the rims on a handled surface. The 1.5 mm stack doesn't: run at its 11.5 kV onset it would
+    give about 5.7 W (P ∝ V² [RH]).
+- **The cap gives 11 working gaps.** C_max is then about 410 pF against the 1113 pF target; the ladder scales with it
+  (Ca = 1.1 C_max).
+  - Power falls to a third (2.1–2.25 W). The stacks shrink to 129–174 mm per side, the tube to 0.86–0.95 m, and the
+    aluminium to a third.
+  - **z falls too**, 1.38 → 1.31 at 3 mm. That is mostly the fixed 20 pF stray, which weighs almost 3× more against
+    the smaller stack. At 4 mm, z drops below the 1.3 floor the searches used.
+  - With the cap the window is 2.5–3 mm: 3 mm for the corona margin, 2.5 mm for a little more gain.
+- **Against today's stack in air** (3 mm gaps, 8 + 8 × 1.5 mm, clamped at ≈ 7 kV), which gives 2.44 W from 105 mm
+  per side: the capped 6 mm stack gives about the same power at 13 kV instead of 7. It costs 51 mm more stack per
+  side and a 114 mm longer tube.
+- **Not re-searched:** the sector widths under the cap. They were chosen for 16 + 16.
+
 ## Caveats
 - **[RH]:** the 1.5 margin on uniform-field air breakdown (humidity, temperature and the vane edges all move it).
 - **Clamped power:** near-ideal diodes, cosine C(θ).

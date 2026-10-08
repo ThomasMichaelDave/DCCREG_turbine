@@ -20,10 +20,12 @@ the eigen-cycle power (stack_sizing ledger at V_op) per mm of stack.
 Stage 4 (thick_vanes, --thick): the designer's vanes on the best 6 mm geometry, at least 4 mm thick with full-round
 edges (sim/vane_cell.py), against the 1.5 mm square-cut vanes the search used; the rims' peak field against corona.
 Stage 4b (thick_search, --thick-search): the sector count and widths searched again for those vanes.
+Stage 4c (thick_compare, --thick-compare): other thicknesses and vane counts on the chosen widths.
 Usage: python3 sim/air_stack_sizing.py            (about 40 min: 11 ngspice runs, one at a time)
        python3 sim/air_stack_sizing.py --finish   (the derived columns only, from the saved results)
        python3 sim/air_stack_sizing.py --thick    (stage 4 only, into the saved results: about 10 min)
        python3 sim/air_stack_sizing.py --thick-search   (stage 4b, after --thick: 4 processes, about 15 min)
+       python3 sim/air_stack_sizing.py --thick-compare 3:rule 3:6 ...   (stage 4c: t:n, n = rule or a vane count)
 """
 import json
 import math
@@ -333,10 +335,66 @@ def thick_search(out, procs=4):
     return tv
 
 
+def _thick_variant(args):
+    """one variant of stage 4c (a worker process): t thick full-round vanes and Ca / Cb plates on the chosen widths,
+    n vanes (None: the C_max rule); the stack, the clamped power, the lengths, the masses."""
+    g, ns, ws, wr, t, n, c_max, v_op = args
+    geo = dict(N_sec=2 * ns, ws_deg=ws, wr_deg=wr, t_vaneMm=t, edge="round", pitch_fixed_mm=g + t)
+    if n is None:
+        one = stack(g, 1, "air", geo)
+        n = max(1, math.ceil((c_max / one["per_gap_max_pF"] + 1) / 2))
+    q = stack(g, n, "air", geo, v_op=v_op)
+    q.update(gap_mm=g, V_op_kV=v_op / 1e3, sectors=ns, ws_deg=ws, wr_deg=wr, t_vaneMm=t, edge="round", t_plate_mm=t,
+             n_rule=args[5] is None)
+    q["P_eigen_per_m"] = q["P_eigen_W"] / (q["L_es_side_mm"] * 1e-3)
+    q["P_clamped_W"] = clamped_power(_clamp_job(q, q["V_op_kV"]))
+    q["P_clamped_per_m"] = q["P_clamped_W"] / (q["L_es_side_mm"] * 1e-3)
+    q.update(masses(q, t))
+    return q
+
+
+def thick_compare(out, variants, procs=4):
+    """stage 4c: other vane thicknesses (and vane counts) on the chosen widths, each with full-round edges: variants is
+    a list of (t_mm, n or None for the C_max rule). Adds each rim's field. Replaces variants already in the results."""
+    from multiprocessing import Pool
+    tv = out["thick_vanes"]
+    c = tv["chosen"]
+    base = out["base_vacuum"]
+    jobs = [(c["gap_mm"], c["sectors"], c["ws_deg"], c["wr_deg"], t, n, base["C_max_pF"], c["V_op_kV"] * 1e3)
+            for t, n in variants]
+    with Pool(procs) as pool:
+        rows = pool.map(_thick_variant, jobs, chunksize=1)
+    for q in rows:
+        q["L_tube_mm"] = L_TUBE_WOUND + q["L_layout_mm"] - base["L_layout_mm"]
+    keep = [q for q in tv.get("compare", []) if (q["t_vaneMm"], q["n_plates"]) not in {(r["t_vaneMm"], r["n_plates"])
+                                                                                     for r in rows}]
+    tv["compare"] = sorted(keep + rows, key=lambda q: (q["t_vaneMm"], -q["n_plates"]))
+    have = {e["t_mm"] for e in tv["rim_field"]}
+    for t in sorted({t for t, _ in variants} - have):
+        e = VC.edge_field(t, c["gap_mm"], "round")
+        E = e["E_peak_per_V"] * c["V_op_kV"] * 10.0
+        tv["rim_field"].append(dict(t_mm=t, r_edge_mm=0.5 * t, E_peak_kV_cm=E, enhancement=e["enhancement"],
+                                    angle_deg=e["angle_deg"], E_face_kV_cm=c["V_op_kV"] / c["gap_mm"] * 10.0,
+                                    peek_kV_cm=VC.peek_kV_per_cm(0.5 * t), ratio_to_onset=E / VC.peek_kV_per_cm(0.5 * t)))
+    tv["rim_field"].sort(key=lambda e: e["t_mm"])
+    for q in rows:
+        print(f"t {q['t_vaneMm']:g} round {q['ws_deg']:g}/{q['wr_deg']:g}, N {q['n_plates']}"
+              f"{' (rule)' if q['n_rule'] else ''}: C {q['C_min_pF']:.0f} / {q['C_max_pF']:.0f} pF, kappa {q['kappa']:.2f}, "
+              f"z {q['z']:.3f}, clamped {q['P_clamped_W']:.2f} W, ES {q['L_es_side_mm']:.0f} mm/side, tube "
+              f"{q['L_tube_mm']:.0f}, Al rotor {q['rotor_vanes_kg']:.1f} / counter {q['stator_vanes_kg'] + q['ca_plates_kg']:.1f}"
+              f" kg", flush=True)
+    return tv
+
+
 if __name__ == "__main__":
     RES = os.path.join(HERE, "air_stack_sizing_results.json")
     if sys.argv[1:] == ["--finish"]:                       # recompute the derived columns of an existing results file
         finish(json.load(open(RES)))
+    elif sys.argv[1:2] == ["--thick-compare"]:             # stage 4c: t:n pairs, n "rule" for the C_max rule
+        o = json.load(open(RES))
+        thick_compare(o, [(float(a.split(":")[0]), None if a.split(":")[1] == "rule" else int(a.split(":")[1]))
+                          for a in sys.argv[2:]])
+        json.dump(o, open(RES, "w"), indent=1, default=float)
     elif sys.argv[1:] == ["--thick-search"]:               # stage 4b into the existing results file
         o = json.load(open(RES))
         thick_search(o)
