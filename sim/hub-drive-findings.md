@@ -90,6 +90,8 @@ elements one for one [OC]:
   R-B → cone B → shaft.
   - The hub and the rotor vanes turn together, so no rotating contact is needed.
   - The pump's nodes 1–4 and the diodes stay on the stator vanes.
+  - **Superseded:** the HV side has moved onto the rotor, and the cones are now the core's electrodes
+    (`sim/core-field-findings.md`).
   - D1/D2 still need the stator-to-shaft reference brush.
 
 | limiter | belt (600 rpm rel.) | cone current | ampere-turns |

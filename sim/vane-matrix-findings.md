@@ -31,6 +31,10 @@
 **Feasible** means the rims hold the operating peak on a handled surface (Peek, m 0.85 [RH]) and z ≥ 1.3: 1553 of the
 2700 designs.
 
+**The bodies in these tables are the old placement.** The HV side has since moved onto the rotor
+(`sim/core-field-findings.md`), which puts the Ca / Cb plates on the rotor. Move their mass from the counter-rotor's
+column to the rotor's.
+
 ## 1. What a larger radius buys
 
 At the 6 + 6 cap, with 6 mm gaps, 3 mm full-round vanes and 22° sectors:

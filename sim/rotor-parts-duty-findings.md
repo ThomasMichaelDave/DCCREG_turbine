@@ -104,7 +104,8 @@ reference rail.
   - Select or trim the string by whole parts: each 200 V part is a 1 % step.
 - **Insulation:** the string holds 20 kV end to end, so it needs the creepage of an HV assembly (potted, or in oil).
 - **Place:** on the counter-rotor next to nodes 1 / 4, at 1 atm and outside the vacuum, like the D1–D4 stacks
-  (`sim/diode-stack-findings.md`).
+  (`sim/diode-stack-findings.md`). With the HV side on the rotor (`sim/core-field-findings.md`), the clamps and D1–D4
+  ride on the rotor instead.
 - **Cooling:** about 9 W per string.
 
 ## 4. The reference link runs through the bearings for now (designer's decision)
@@ -112,7 +113,8 @@ reference rail.
 **What crosses between the bodies.** The counter-rotor-to-shaft current is the sum of the two cone currents, i.e. the
 displacement current of C1 and C2.
 - At 1200 rpm it is **2.25 mA rms and 4.4 mA peak, pure AC, with no DC** (1.12 mA rms at 600 rpm).
-- The DC through the clamps and D1 / D2 circulates on the counter-rotor and never crosses.
+- The DC through the clamps and D1 / D2 circulates on the counter-rotor and never crosses. With the HV side on the
+  rotor it circulates on the rotor; the link still carries only C1 and C2's AC (`sim/core-field-findings.md` §1).
 
 **The path.** The rail connects through a lead to the outer ring of one inner bearing, then through the balls and the
 inner ring to the steel shaft.
