@@ -1,12 +1,13 @@
 """docs/make_air_vane_drawing.py -- writes docs/figures/air-vane-stack-6mm.png: the electrostatic vane stack for AIR
-(sim/air_stack_sizing.py, stage 4b 'chosen'): 6 mm gaps, 4 mm Al vanes and Ca / Cb plates with every exposed edge a
-full round (R = t / 2), on the sector widths searched again for those vanes.
+(sim/air_stack_sizing.py, stages 4b / 4c): 6 mm gaps, Al vanes and Ca / Cb plates with every exposed edge a full round
+(R = t / 2), on the sector widths searched for the full-round vanes.
   (a) a stator vane, (b) a rotor vane, (c) both at minimum C, with today's 30 deg stator dashed;
   (d) the half-section of side A from stack_sizing.layout (the elements that are built), with detail B: the rims;
   (e) the vane cell at minimum C at r 100 (sim/vane_cell): the 1.5 mm square-cut 24 / 22 deg stack against this one;
   (f) the rim's field: a vane edge between its neighbours' faces at the operating peak, against Peek's onset;
   (g) the data, from sim/air_stack_sizing_results.json.
-Usage: python3 docs/make_air_vane_drawing.py
+Usage: python3 docs/make_air_vane_drawing.py [--t 3 --n 6]   (the vane thickness and count, from stage 4c's
+       thick_compare rows or stage 4b's 'chosen'; default the designer's capped stack, 3 mm and 6 + 6)
 """
 import json
 import math
@@ -230,6 +231,14 @@ def rim_panel(axm, axp, t_new, g, v_op_kV, peaks):
                   loc="left", color=INK)
 
 
+def section_extent(lad, g):
+    """the half-section's data limits (z', r): from the hub to just past the Ca|reluctance bearing."""
+    el = lad["tube_geometry"]["elements"]
+    zf = [e for e in el if e["kind"] == "hub"][0]["z0"]
+    carel = [e for e in el if e["side"] == "A" and e["kind"] == "bearing" and e["where"] not in ("hub face", "end")][0]
+    return (-40.0, zf - carel["z0"] + g + 24.0 + 70.0), (-72.0, 262.0)
+
+
 def section_panel(ax, axd, lad, q, g):
     """(d) side A from stack_sizing.layout, z' from the hub's face outward; the vanes as sim/tube_geometry builds them
     (stator: sector + outer ring into the cage; rotor: inner ring from the sleeve + sector), full rounds on the rims."""
@@ -273,22 +282,22 @@ def section_panel(ax, axd, lad, q, g):
     v0, v1 = zz(vanes[0])[0], zz(vanes[-1])[1]
     p0, p1 = zz(plates[0])[0], zz(plates[-1])[1]
     n, nca = q["n_plates"], len(plates)
-    dim(ax, (v0, CAGE[1]), (v1, CAGE[1]), f"C1: {n} stator + {n} rotor vanes, {2 * n - 1} gaps of {g:g}  →  {v1 - v0:.0f}",
-        off=(0, 12))
-    dim(ax, (p0, CAGE[1]), (p1, CAGE[1]), f"Ca: {nca} plates, {nca - 1} gaps  →  {p1 - p0:.0f}", off=(0, 12))
+    dim(ax, (v0, CAGE[1]), (v1, CAGE[1]), f"C1: {n} + {n} vanes, {2 * n - 1} gaps  →  {v1 - v0:.0f}", off=(0, 12))
+    dim(ax, (p0, CAGE[1]), (p1, CAGE[1]), f"Ca: {nca} plates  →  {p1 - p0:.0f}", off=(0, 27))
     dim(ax, (v1, 120), (p0, 120), f"{p0 - v1:g}", fs=6.5, tx=(0, 6), ext=False)
     dim(ax, (v0, -12), (p1, -12), f"electrostatic stacks, side A: {p1 - v0:.0f}  (first vane to last plate)", ext=False)
     dim(ax, (0, -28), (zz(carel)[1], -28), f"hub face to the Ca|reluctance bearing: {zz(carel)[1]:.0f}", ext=False)
     note(ax, (0.5 * sum(zz(hubface)), 120), (-36, 236), "hub-face bearing + G10 spider", ha="left", va="bottom")
     note(ax, (0.5 * sum(zz(carel)), 120), (0.5 * sum(zz(carel)) - 4, 236), "Ca|reluctance bearing + G10 spider",
          ha="center", va="bottom")
-    s0 = [e for e in vanes if e["body"] == "stator"][3]
-    r0 = [e for e in vanes if e["body"] == "rotor"][5]
+    s0 = [e for e in vanes if e["body"] == "stator"][min(3, n - 1)]
+    r0 = [e for e in vanes if e["body"] == "rotor"][min(5, n - 1)]
     note(ax, (0.5 * sum(zz(s0)), 156), (v0 + 40, 212), f"stator vane, node 1: r {R_IN:g}–{R_OUT:g} + ring to "
          f"{R_OUT + RING:g}", ha="left", va="bottom")
-    note(ax, (0.5 * sum(zz(r0)), 36), (v0 + 75, -46), f"rotor vane, R-A: ring from r {SLEEVE:g}, sector to {R_OUT:g}",
+    note(ax, (0.5 * sum(zz(r0)), 36), (-36, -46), f"rotor vane, R-A: ring from r {SLEEVE:g}, sector to {R_OUT:g}",
          ha="left")
-    note(ax, (0.5 * sum(zz(plates[4])), 100), (p0 + 8, -46), "Ca plates: full annuli, nodes 1 / 2 alternating", ha="left")
+    note(ax, (0.5 * sum(zz(plates[min(4, nca - 1)])), 100), (p0, -62), "Ca plates: full annuli, nodes 1 / 2 alternating",
+         ha="left")
     note(ax, (z_end - 20, CAGE[1]), (z_end + 4, 186), f"G10 stator cage\nr {CAGE[0]:g}–{CAGE[1]:g}", ha="left")
     note(ax, (z_end - 30, 0.5 * (SHAFT + SLEEVE)), (z_end + 4, 26), f"G10 sleeve r {SHAFT:g}–{SLEEVE:g}\non the d {2 * SHAFT:g} "
          "shaft", ha="left")
@@ -296,7 +305,8 @@ def section_panel(ax, axd, lad, q, g):
     zbc = 0.5 * (zs[0][0] + zs[4][1])
     ax.add_patch(Circle((zbc, R_IN), 26, fill=False, ec=OLD, lw=0.8, zorder=7))
     ax.text(zbc + 22, R_IN - 26, "B", fontsize=9, color=OLD, weight="bold", zorder=7)
-    ax.set_aspect("equal"); ax.set_xlim(-40, z_end + 66); ax.set_ylim(-56, 262)
+    (xa, xb), (ya, yb) = section_extent(lad, g)
+    ax.set_aspect("equal"); ax.set_xlim(xa, xb); ax.set_ylim(ya, yb)
     ax.set_xlabel("z′ (mm), from the hub face outward (side B is the mirror image: C2, Cb)", fontsize=8)
     ax.set_ylabel("r (mm)", fontsize=8)
     ax.tick_params(labelsize=7)
@@ -327,13 +337,27 @@ def section_panel(ax, axd, lad, q, g):
 
 
 # ------------------------------------------------------------------------------------------------------------ the sheet
-def main():
+def pick(tv, t, n):
+    """the drawn design: a stage 4c row (t, n), or stage 4b's chosen stack."""
+    rows = [q for q in tv.get("compare", []) if q["t_vaneMm"] == t and q["n_plates"] == n]
+    if rows:
+        return rows[0]
+    c = tv["chosen"]
+    assert (c["t_vaneMm"], c["n_plates"]) == (t, n), f"no results for {t} mm, {n} + {n}: run air_stack_sizing --thick-compare"
+    return c
+
+
+def main(t_sel=3.0, n_sel=6):
     res = json.load(open(os.path.join(SIM, "air_stack_sizing_results.json")))
     tv = res["thick_vanes"]
-    q = tv["chosen"]
-    old, sq4, same = tv["rows"]                                  # 1.5 square, 4 square, 4 round: all on 24 / 22 deg
+    q = pick(tv, t_sel, n_sel)
+    rule = [r for r in tv.get("compare", []) + [tv["chosen"]] if r["t_vaneMm"] == q["t_vaneMm"] and r.get("n_rule", True)
+            and r["n_plates"] >= q["n_plates"]]
+    qr = rule[0] if rule and rule[0]["n_plates"] != q["n_plates"] else None      # the same vanes at the C_max rule
+    old = tv["rows"][0]                                          # the stage 2 stack: 1.5 mm square-cut, 24 / 22 deg
+    built = res["gap_sweep"][0]                                  # today's stack in air (3 mm gaps, 8 + 8 x 1.5 mm)
     vac = res["base_vacuum"]
-    assert (old["t_vaneMm"], old["edge"], sq4["edge"], same["edge"]) == (1.5, "square", "square", "round")
+    assert (old["t_vaneMm"], old["edge"], built["gap_mm"]) == (1.5, "square", 3.0)
     ns, ws, wr, g, n, t = q["sectors"], q["ws_deg"], q["wr_deg"], q["gap_mm"], q["n_plates"], q["t_vaneMm"]
     R, per = 0.5 * t, 360.0 / ns
     ws_today = SS.TUBE_DEFAULTS["ws_deg"]
@@ -343,9 +367,9 @@ def main():
     assert abs(lad["tube_caps"]["C_max"] / q["C_max_pF"] - 1) < 1e-9
     assert abs(AS.es_lengths(lad["tube_geometry"])[0] - q["L_es_side_mm"]) < 1e-9
     v_op = q["V_op_kV"]
-    best = tv["best"]
-    ok = [s for s in tv["search"] if s["z"] >= 1.3]
-    s6 = sorted([s for s in tv["search"] if s["sectors"] == 6 and s["ws_deg"] == s["wr_deg"]], key=lambda s: s["ws_deg"])
+    rims = {e["t_mm"]: e for e in tv["rim_field"]}
+    onset = lambda e, m=1.0: m * v_op * e["peek_kV_cm"] / e["E_peak_kV_cm"]     # the peak at which the rim reaches onset
+    rim, rim15 = rims[t], rims[1.5]
 
     fig = plt.figure(figsize=(22, 16.6), facecolor="white")
     gs = fig.add_gridspec(3, 3, height_ratios=(1.0, 0.74, 0.56), width_ratios=(1, 1, 1.0), hspace=0.24, wspace=0.10,
@@ -396,11 +420,18 @@ def main():
                      f"{ws_today:g}° stator (red, dashed): {clr_today:g}°, {100 * math.radians(clr_today):.1f} mm",
             fontsize=8.0, color=OLD, ha="center")
 
-    # (d) the half-section of side A, with detail B
-    sub = gs[1, 0:2].subgridspec(1, 2, width_ratios=(4.2, 1.0), wspace=0.06)
-    ax, axd = fig.add_subplot(sub[0, 0]), fig.add_subplot(sub[0, 1])
+    # (d) the half-section of side A, sized to its content, with detail B beside it
+    FW, FH = fig.get_size_inches()
+    bb = gs[1, 0:2].get_position(fig)
+    (xa, xb), (ya, yb) = section_extent(lad, g)
+    h_in = bb.height * FH
+    w_in = min(h_in * (xb - xa) / (yb - ya), bb.width * FW - 4.2)
+    h_in = w_in * (yb - ya) / (xb - xa)
+    ax = fig.add_axes([bb.x0 + 0.35 / FW, bb.y1 - h_in / FH, w_in / FW, h_in / FH])
+    w_d = min(4.6, bb.width * FW - w_in - 1.3)
+    axd = fig.add_axes([bb.x0 + (0.35 + w_in + 0.8) / FW, bb.y0 + 0.16 * bb.height, w_d / FW, 0.62 * bb.height])
     section_panel(ax, axd, lad, q, g)
-    ax.set_title("(d) side A, half-section in the plane of a sector at alignment (stack_sizing.layout): hub-face bearing, "
+    ax.set_title("(d) side A, half-section in the plane of a sector at alignment (stack_sizing.layout):\nhub-face bearing, "
                  "C1, Ca, Ca|reluctance bearing", fontsize=10.5, loc="left", color=INK)
 
     # (e) the vane cell at minimum C: the 1.5 mm stack against this one
@@ -419,47 +450,45 @@ def main():
     # (f) the rim
     pf = gs[2, 1].subgridspec(1, 2, width_ratios=(1.0, 1.3), wspace=0.34)
     axm, axp = fig.add_subplot(pf[0, 0]), fig.add_subplot(pf[0, 1])
-    rim_panel(axm, axp, t, g, v_op, tv["rim_field"])
+    rim_panel(axm, axp, t, g, v_op, (rim15, rim))
     axm.set_title(f"(f) a rim at {v_op:.1f} kV, {g:g} mm to the\nfaces; equipotentials every 0.1, ● the peak",
                   fontsize=8.3, loc="left", color=INK)
 
     # (g) the data
     axt = fig.add_subplot(gs[1:, 2]); axt.axis("off")
-    rim15, rim4 = tv["rim_field"]
     L_var, L_ca = q["L_varicap_mm"], q["L_es_side_mm"] - q["L_varicap_mm"] - g
     P_old = res["best_per_gap"][0]["P_clamped_W"]
+    nr = qr["n_plates"] if qr else None
+    ref = (lambda key, f="{:.2f}": f"{nr} + {nr}: " + f.format(qr[key]) + "; ") if qr else (lambda key, f="": "")
     rows = [
         ("air, 1 atm", f"gap {g:g} mm: breakdown {res['gap_sweep'][2]['V_bd_kV']:.1f} kV (uniform field), operating "
                        f"{v_op:.1f} kV (÷ {res['margin']:.1f})"),
         ("vanes", f"{n} stator + {n} rotor per varicap per side, Al {t:g} mm, full-round edges R{R:g}; {2 * n - 1} gaps"),
-        ("sectors", f"{ns} on a {per:g}° pitch: stator {ws:g}°, rotor {wr:g}° (the 1.5 mm stack: 24° / 22°)"),
+        ("sectors", f"{ns} on a {per:g}° pitch: stator {ws:g}°, rotor {wr:g}° (searched for 4 mm at the C_max rule)"),
         ("clearance at min C", f"{clr:g}° each side, {100 * math.radians(clr):.1f} mm at r 100 (1.5 mm stack: {clr_old:.0f}°, "
                                f"{100 * math.radians(clr_old):.1f} mm)"),
-        ("C per gap", f"{q['per_gap_min_pF']:.2f} – {q['per_gap_max_pF']:.1f} pF (1.5 mm: {old['per_gap_min_pF']:.2f} – "
-                      f"{old['per_gap_max_pF']:.1f}; 4 mm on 24° / 22°: {same['per_gap_min_pF']:.2f} – "
-                      f"{same['per_gap_max_pF']:.1f})"),
-        ("C1 = C2", f"{q['C_min_pF']:.0f} – {q['C_max_pF']:.0f} pF, κ {q['kappa']:.2f} (1.5 mm: {old['kappa']:.2f}; "
-                    f"4 mm on 24° / 22°: {same['kappa']:.2f}; vacuum {vac['kappa']:.1f})"),
+        ("C per gap", f"{q['per_gap_min_pF']:.2f} – {q['per_gap_max_pF']:.1f} pF (1.5 mm stack: {old['per_gap_min_pF']:.2f} – "
+                      f"{old['per_gap_max_pF']:.1f})"),
+        ("C1 = C2", f"{q['C_min_pF']:.0f} – {q['C_max_pF']:.0f} pF, κ {q['kappa']:.2f} ({ref('kappa')}1.5 mm stack "
+                    f"{old['kappa']:.2f}; vacuum {vac['kappa']:.1f})"),
         ("Ca = Cb", f"{q['Ca_pF']:.0f} pF: {q['n_gap_ca'] + 1} full-annulus plates, Al {t:g} mm, rims R{R:g}; "
                     f"{q['n_gap_ca']} gaps of {g:g}"),
-        ("gain z", f"{q['z']:.3f} per cycle (1.5 mm: {old['z']:.3f}; 4 mm on 24° / 22°: {same['z']:.3f}; vacuum "
-                   f"{vac['z']:.3f})"),
+        ("gain z", f"{q['z']:.3f} per cycle ({ref('z', '{:.3f}')}1.5 mm stack {old['z']:.3f}; vacuum {vac['z']:.3f})"),
         ("pump", f"{q['P_clamped_W']:.2f} W clamped at {v_op:.1f} kV, {res['rpm']:.0f} rpm relative "
                  f"({q['cycles_per_rev'] * res['rpm'] / 60:.0f} Hz)"),
-        ("", f"(1.5 mm: {P_old:.2f} W; 4 mm on 24° / 22°: {same['P_clamped_W']:.2f} W; vacuum {vac['P_clamped_W']:.1f} W "
-             f"at 20 kV)"),
-        ("stacks, side A", f"{L_var:g} C1 + {g:g} + {L_ca:g} Ca = {q['L_es_side_mm']:.0f} mm, first vane to last plate "
-                           f"(1.5 mm: {old['L_es_side_mm']:.0f})"),
-        ("tube", f"{q['L_tube_mm']:.0f} mm (stack_sizing.layout; the 1.5 mm stack {old['L_tube_mm']:.0f}, the wound build "
+        ("", f"({ref('P_clamped_W')}1.5 mm stack {P_old:.2f} W; today's stack in air {built['P_clamped_W']:.2f} W at "
+             f"{built['V_op_kV']:.1f} kV)"),
+        ("stacks, side A", f"{L_var:g} C1 + {g:g} + {L_ca:g} Ca = {q['L_es_side_mm']:.0f} mm, first vane to last plate"),
+        ("", f"({ref('L_es_side_mm', '{:.0f}')}1.5 mm stack {old['L_es_side_mm']:.0f}; today's {built['L_es_side_mm']:.0f})"),
+        ("tube", f"{q['L_tube_mm']:.0f} mm (stack_sizing.layout; {ref('L_tube_mm', '{:.0f}')}the wound build "
                  f"{vac['L_tube_mm']:.0f})"),
         ("aluminium", f"rotor vanes {q['rotor_vanes_kg']:.1f} kg; counter-rotor: stator vanes {q['stator_vanes_kg']:.1f} + "
                       f"Ca / Cb plates {q['ca_plates_kg']:.1f} kg"),
-        ("", f"(1.5 mm: {old['rotor_vanes_kg']:.1f}; {old['stator_vanes_kg']:.1f} + {old['ca_plates_kg']:.1f} kg)"),
-        ("rims at the peak", f"{rim4['E_peak_kV_cm']:.1f} kV/cm (× {rim4['enhancement']:.2f} the faces' "
-                             f"{rim4['E_face_kV_cm']:.1f}); Peek {rim4['peek_kV_cm']:.1f}: {rim4['ratio_to_onset']:.2f} of "
-                             f"onset"),
-        ("", f"(1.5 mm, full round R0.75: {rim15['E_peak_kV_cm']:.1f} against {rim15['peek_kV_cm']:.1f}: "
-             f"{rim15['ratio_to_onset']:.2f}; square-cut: singular)"),
+        ("rims at the peak", f"{rim['E_peak_kV_cm']:.1f} kV/cm (× {rim['enhancement']:.2f} the faces' "
+                             f"{rim['E_face_kV_cm']:.1f}); onset at {onset(rim):.1f} kV smooth, {onset(rim, 0.85):.1f} kV "
+                             f"handled (m 0.85)"),
+        ("", "(smooth / handled, kV: " + ", ".join(f"{e['t_mm']:g} mm {onset(e):.1f} / {onset(e, 0.85):.1f}"
+                                                    for e in tv["rim_field"] if e["t_mm"] != t) + ")"),
     ]
     axt.set_title("(g) data (sim/air_stack_sizing_results.json: thick_vanes)", fontsize=10.5, loc="left", color=INK)
     y = 0.985
@@ -467,30 +496,32 @@ def main():
         axt.text(0.0, y, k, fontsize=8.4, weight="bold", color=INK, transform=axt.transAxes, va="top")
         axt.text(0.235, y, v, fontsize=8.4, color=INK, transform=axt.transAxes, va="top")
         y -= 0.0415
-    knee = ", ".join(f"{s['ws_deg']:g}°: {s['P_eigen_per_m']:.1f} W/m, κ {s['kappa']:.1f}" for s in s6
-                     if s["ws_deg"] in (18.0, 22.0, 26.0))
-    paras = [
-        "Why 4 mm costs κ: at minimum C a rotor vane's capacitance is the fringe field from its edges to the next stator "
-        f"sectors, and a 4 mm edge carries more of it. On 24° / 22°, C_min per gap {old['per_gap_min_pF']:.2f} → "
-        f"{same['per_gap_min_pF']:.2f} pF and κ {old['kappa']:.1f} → {same['kappa']:.1f} (4 mm square-cut: "
-        f"{sq4['kappa']:.2f}; the round claws a little back).",
-        f"The width search (3, 4 and 6 sectors; {len(tv['search'])} designs) finds the power per metre of stack nearly flat "
-        f"on 6 sectors ({knee}). Its top, {best['ws_deg']:g}° / {best['wr_deg']:g}°, gives {best['P_eigen_per_m']:.1f} W/m "
-        f"(eigen cycle) at z {best['z']:.3f}; drawn is the most z within {100 * tv['knee']:.0f} % of that [IR]. Fewer "
-        "sectors raise κ to 12–24 but pump fewer cycles per turn: 5–8 W/m.",
-        f"What 4 mm buys: the rims' peak field falls {rim15['E_peak_kV_cm']:.0f} → {rim4['E_peak_kV_cm']:.0f} kV/cm at "
-        f"{v_op:.1f} kV, from the corona onset to {rim4['ratio_to_onset']:.2f} of it (a rim between two full faces is the "
-        "worst case; a sector's side edge faces less). Stiffer vanes too, for flatness and pull-in at 6 mm. Keep the rounds "
-        "polished and the vanes clean and dry.",
+    kap = "; ".join(f"{r['t_vaneMm']:g} mm {r['kappa']:.2f}" for r in sorted(
+        [r for r in tv.get("compare", []) + [tv["chosen"]] if r.get("n_rule", True)], key=lambda r: r["t_vaneMm"]))
+    paras = []
+    if qr:
+        paras.append(
+            f"The cap: {n} + {n} vanes give {2 * n - 1} working gaps per side and C_max {q['C_max_pF']:.0f} pF against the "
+            f"{vac['C_max_pF']:.0f} pF the ladder was sized for (Ca = Cb = 1.1 C_max scale with it). Power falls to "
+            f"{q['P_clamped_W'] / qr['P_clamped_W']:.2f} of the {nr} + {nr} stack's, the stacks to {q['L_es_side_mm']:.0f} mm "
+            f"per side and the tube to {q['L_tube_mm']:.0f} mm. z falls {qr['z']:.3f} → {q['z']:.3f}, mostly because the "
+            "fixed 20 pF stray weighs about 3× more against the smaller stack; with 4 mm vanes it drops below 1.3.")
+    paras += [
+        f"The thickness: thicker edges fringe more at minimum C (κ at the C_max rule on {ws:g}° / {wr:g}°: {kap}) but "
+        f"hold more voltage at the rims; against the {v_op:.1f} kV peak, {t:g} mm reaches Peek's onset at "
+        f"{onset(rim):.1f} kV smooth and {onset(rim, 0.85):.1f} kV handled, 1.5 mm at {onset(rim15):.1f} / "
+        f"{onset(rim15, 0.85):.1f} kV.",
+        f"Against today's stack in air (3 mm gaps, 8 + 8 × 1.5 mm, clamped near {built['V_op_kV']:.0f} kV): "
+        f"{built['P_clamped_W']:.2f} W from {built['L_es_side_mm']:.0f} mm per side; this one gives "
+        f"{q['P_clamped_W']:.2f} W at {v_op:.0f} kV from {q['L_es_side_mm']:.0f} mm.",
         "[OC] the Laplace solves (vane cell, rim), the core's z; Peek's law (empirical). [IR] the full round on the grid, "
         "the 2-D cell with its 2 pF rim floor and 0.25 mm grid (finer grids raise C_min by up to 7 %), the cosine C(θ), "
-        "the choice within the flat optimum. [RH] the 1.5 margin on breakdown, the rim field read as a corona margin, the "
-        "air's humidity and temperature.",
+        "the sector widths (searched for 4 mm at the C_max rule, not for this count). [RH] the 1.5 margin on breakdown, "
+        "the rim field read as a corona margin and the surface factor, the air's humidity and temperature.",
     ]
     import textwrap
     notes = "\n\n".join(textwrap.fill(x, 118) for x in paras)
     axt.text(0.0, y - 0.01, notes, fontsize=7.9, color=INK2, transform=axt.transAxes, va="top")
-    del ok
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     fig.savefig(OUT, dpi=120)
@@ -499,4 +530,9 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--t", type=float, default=3.0, help="vane thickness, mm")
+    ap.add_argument("--n", type=int, default=6, help="vanes per varicap per side (stator = rotor)")
+    a = ap.parse_args()
+    main(a.t, a.n)

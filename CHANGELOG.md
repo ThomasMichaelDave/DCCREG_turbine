@@ -85,6 +85,11 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - that is fine for diodes only, but not for the spark-gap dump: its 21 A pulses need a brush.
 
 ### Docs
+- **The air vane-stack drawing now shows the capped stack** (`docs/make_air_vane_drawing.py --t 3 --n 6`, the default):
+  3 mm full-round vanes and plates, 6 + 6 vanes per varicap per side.
+  - **Any sized design:** `--t` / `--n` pick any stage 4b / 4c row, e.g. `--t 4 --n 16` for the earlier sheet.
+  - **Layout:** the half-section is sized to its stack, with detail B beside it.
+  - **Data:** compared against the same vanes at 16 + 16, the 1.5 mm stack and today's stack in air.
 - **Drawing of the air vane stack** (`docs/figures/air-vane-stack-6mm.png`, generator `docs/make_air_vane_drawing.py`).
   It shows the chosen 6 mm design: 6 × 22° / 22°, 16 + 16 vanes, 4 mm Al vanes and Ca / Cb plates with full-round edges.
   - **Plans:** the stator vane and the rotor vane, with the rounds' tangent lines; both at minimum C, against
