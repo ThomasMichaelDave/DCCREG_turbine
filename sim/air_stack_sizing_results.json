@@ -19,10 +19,11 @@
   "P_eigen_W": 12.031404199182226,
   "V_op_kV": 20.0,
   "V_bd_kV": 30.0,
-  "L_es_side_mm": 100.5,
+  "L_es_side_mm": 105.0,
   "L_tube_mm": 802.0,
   "P_clamped_W": 18.506027757142853,
-  "P_clamped_per_m": 184.1395796730632
+  "P_clamped_per_m": 176.2478834013605,
+  "L_layout_mm": 735.5999999999999
  },
  "gap_sweep": [
   {
@@ -44,17 +45,18 @@
    "gap_mm": 3.0,
    "V_bd_kV": 10.896628300508734,
    "V_op_kV": 7.264418867005823,
-   "L_es_side_mm": 100.5,
+   "L_es_side_mm": 105.0,
    "P_clamped_W": 2.4429678391666663,
    "L_tube_mm": 802.0,
    "same_power": {
     "n_plates": 58,
     "scale": 7.57522365233246,
-    "L_es_side_mm": 761.3099770594123,
-    "L_tube_mm": 2123.6199541188244
+    "L_es_side_mm": 795.3984834949083,
+    "L_tube_mm": 2182.7969669898166
    },
    "reached_clamp": true,
-   "P_clamped_per_m": 24.308137703150905
+   "P_clamped_per_m": 23.26636037301587,
+   "L_layout_mm": 735.5999999999999
   },
   {
    "n_plates": 13,
@@ -75,17 +77,18 @@
    "gap_mm": 5.0,
    "V_bd_kV": 16.817407281148157,
    "V_op_kV": 11.211604854098772,
-   "L_es_side_mm": 242.0,
+   "L_es_side_mm": 248.5,
    "P_clamped_W": 5.160273321923076,
-   "L_tube_mm": 1085.0,
+   "L_tube_mm": 1097.0,
    "same_power": {
     "n_plates": 46,
     "scale": 3.5862495264584595,
-    "L_es_side_mm": 867.8723854029472,
-    "L_tube_mm": 2336.7447708058944
+    "L_es_side_mm": 891.1830073249272,
+    "L_tube_mm": 2382.366014649854
    },
    "reached_clamp": true,
-   "P_clamped_per_m": 21.323443479020977
+   "P_clamped_per_m": 20.765687412165295,
+   "L_layout_mm": 1030.6
   },
   {
    "n_plates": 15,
@@ -106,17 +109,18 @@
    "gap_mm": 6.0,
    "V_bd_kV": 19.698116250146885,
    "V_op_kV": 13.132077500097923,
-   "L_es_side_mm": 324.0,
+   "L_es_side_mm": 331.49999999999994,
    "P_clamped_W": 6.292090321590908,
-   "L_tube_mm": 1249.0,
+   "L_tube_mm": 1267.0,
    "same_power": {
     "n_plates": 44,
     "scale": 2.941157359683887,
-    "L_es_side_mm": 952.9349845375795,
-    "L_tube_mm": 2506.869969075159
+    "L_es_side_mm": 974.9936647352084,
+    "L_tube_mm": 2553.9873294704166
    },
    "reached_clamp": true,
-   "P_clamped_per_m": 19.42003185676206
+   "P_clamped_per_m": 18.980664620183735,
+   "L_layout_mm": 1200.6
   },
   {
    "n_plates": 19,
@@ -137,17 +141,18 @@
    "gap_mm": 8.0,
    "V_bd_kV": 25.360609557229452,
    "V_op_kV": 16.90707303815297,
-   "L_es_side_mm": 524.0,
+   "L_es_side_mm": 533.5,
    "P_clamped_W": 8.082120792894735,
-   "L_tube_mm": 1649.0,
+   "L_tube_mm": 1679.0,
    "same_power": {
     "n_plates": 43,
     "scale": 2.2897489695293998,
-    "L_es_side_mm": 1199.8284600334055,
-    "L_tube_mm": 3000.656920066811
+    "L_es_side_mm": 1221.5810752439347,
+    "L_tube_mm": 3055.1621504878694
    },
    "reached_clamp": true,
-   "P_clamped_per_m": 15.423894642928882
+   "P_clamped_per_m": 15.149242348443739,
+   "L_layout_mm": 1612.6
   },
   {
    "n_plates": 23,
@@ -168,17 +173,18 @@
    "gap_mm": 10.0,
    "V_bd_kV": 30.93,
    "V_op_kV": 20.62,
-   "L_es_side_mm": 783.5,
+   "L_es_side_mm": 795.0,
    "P_clamped_W": 5.865201960290503,
-   "L_tube_mm": 2168.0,
+   "L_tube_mm": 2210.0,
    "same_power": {
     "n_plates": 72,
     "scale": 3.155224301300317,
-    "L_es_side_mm": 2472.1182400687985,
-    "L_tube_mm": 5545.236480137597
+    "L_es_side_mm": 2508.403319533752,
+    "L_tube_mm": 5636.806639067505
    },
    "reached_clamp": true,
-   "P_clamped_per_m": 7.485899119707088
+   "P_clamped_per_m": 7.377612528667299,
+   "L_layout_mm": 2143.6
   },
   {
    "n_plates": 27,
@@ -199,12 +205,13 @@
    "gap_mm": 12.0,
    "V_bd_kV": 36.43325660101747,
    "V_op_kV": 24.288837734011647,
-   "L_es_side_mm": 1095.0,
+   "L_es_side_mm": 1108.5,
    "P_clamped_W": 7.291052693749998e-08,
-   "L_tube_mm": 2791.0,
+   "L_tube_mm": 2845.0000000000005,
    "same_power": null,
    "reached_clamp": false,
-   "P_clamped_per_m": null
+   "P_clamped_per_m": null,
+   "L_layout_mm": 2778.6000000000004
   },
   {
    "n_plates": 32,
@@ -225,12 +232,13 @@
    "gap_mm": 15.0,
    "V_bd_kV": 44.59758401018707,
    "V_op_kV": 29.731722673458048,
-   "L_es_side_mm": 1602.0,
+   "L_es_side_mm": 1618.5,
    "P_clamped_W": 5.564587955089285e-09,
-   "L_tube_mm": 3805.0,
+   "L_tube_mm": 3877.0000000000005,
    "same_power": null,
    "reached_clamp": false,
-   "P_clamped_per_m": null
+   "P_clamped_per_m": null,
+   "L_layout_mm": 3810.6000000000004
   }
  ],
  "geometry_search": [
@@ -255,8 +263,9 @@
    "sectors": 3,
    "ws_deg": 48.0,
    "wr_deg": 30.0,
-   "L_es_side_mm": 429.0,
-   "P_eigen_per_m": 6.275658734854569
+   "L_es_side_mm": 436.49999999999994,
+   "P_eigen_per_m": 6.167829546970471,
+   "L_layout_mm": 1410.6
   },
   {
    "n_plates": 19,
@@ -279,8 +288,9 @@
    "sectors": 3,
    "ws_deg": 48.0,
    "wr_deg": 36.0,
-   "L_es_side_mm": 384.0,
-   "P_eigen_per_m": 7.1149134118038075
+   "L_es_side_mm": 391.49999999999994,
+   "P_eigen_per_m": 6.978612388589176,
+   "L_layout_mm": 1320.6
   },
   {
    "n_plates": 16,
@@ -303,8 +313,9 @@
    "sectors": 3,
    "ws_deg": 48.0,
    "wr_deg": 44.04,
-   "L_es_side_mm": 339.0,
-   "P_eigen_per_m": 8.044178924167655
+   "L_es_side_mm": 346.49999999999994,
+   "P_eigen_per_m": 7.87006249723762,
+   "L_layout_mm": 1230.6
   },
   {
    "n_plates": 22,
@@ -327,8 +338,9 @@
    "sectors": 3,
    "ws_deg": 60.0,
    "wr_deg": 30.0,
-   "L_es_side_mm": 429.0,
-   "P_eigen_per_m": 6.1863513640620535
+   "L_es_side_mm": 436.49999999999994,
+   "P_eigen_per_m": 6.080056667085043,
+   "L_layout_mm": 1410.6
   },
   {
    "n_plates": 19,
@@ -351,8 +363,9 @@
    "sectors": 3,
    "ws_deg": 60.0,
    "wr_deg": 36.0,
-   "L_es_side_mm": 384.0,
-   "P_eigen_per_m": 7.004791151241763
+   "L_es_side_mm": 391.49999999999994,
+   "P_eigen_per_m": 6.8705997498769795,
+   "L_layout_mm": 1320.6
   },
   {
    "n_plates": 16,
@@ -375,8 +388,9 @@
    "sectors": 3,
    "ws_deg": 60.0,
    "wr_deg": 44.04,
-   "L_es_side_mm": 339.0,
-   "P_eigen_per_m": 7.935820906043889
+   "L_es_side_mm": 346.49999999999994,
+   "P_eigen_per_m": 7.764049890761555,
+   "L_layout_mm": 1230.6
   },
   {
    "n_plates": 22,
@@ -399,8 +413,9 @@
    "sectors": 4,
    "ws_deg": 36.0,
    "wr_deg": 22.5,
-   "L_es_side_mm": 429.0,
-   "P_eigen_per_m": 8.419197213183256
+   "L_es_side_mm": 436.49999999999994,
+   "P_eigen_per_m": 8.274537467252275,
+   "L_layout_mm": 1410.6
   },
   {
    "n_plates": 19,
@@ -423,8 +438,9 @@
    "sectors": 4,
    "ws_deg": 36.0,
    "wr_deg": 27.0,
-   "L_es_side_mm": 384.0,
-   "P_eigen_per_m": 9.478271598703754
+   "L_es_side_mm": 391.49999999999994,
+   "P_eigen_per_m": 9.296695514437399,
+   "L_layout_mm": 1320.6
   },
   {
    "n_plates": 16,
@@ -447,8 +463,9 @@
    "sectors": 4,
    "ws_deg": 36.0,
    "wr_deg": 33.03,
-   "L_es_side_mm": 339.0,
-   "P_eigen_per_m": 10.610423675633024
+   "L_es_side_mm": 346.49999999999994,
+   "P_eigen_per_m": 10.3807608255111,
+   "L_layout_mm": 1230.6
   },
   {
    "n_plates": 22,
@@ -471,8 +488,9 @@
    "sectors": 4,
    "ws_deg": 45.0,
    "wr_deg": 22.5,
-   "L_es_side_mm": 429.0,
-   "P_eigen_per_m": 8.216606758078482
+   "L_es_side_mm": 436.49999999999994,
+   "P_eigen_per_m": 8.07542794780222,
+   "L_layout_mm": 1410.6
   },
   {
    "n_plates": 19,
@@ -495,8 +513,9 @@
    "sectors": 4,
    "ws_deg": 45.0,
    "wr_deg": 27.0,
-   "L_es_side_mm": 384.0,
-   "P_eigen_per_m": 9.224087188937771
+   "L_es_side_mm": 391.49999999999994,
+   "P_eigen_per_m": 9.047380537808696,
+   "L_layout_mm": 1320.6
   },
   {
    "n_plates": 16,
@@ -519,8 +538,9 @@
    "sectors": 4,
    "ws_deg": 45.0,
    "wr_deg": 33.03,
-   "L_es_side_mm": 339.0,
-   "P_eigen_per_m": 10.377230670904838
+   "L_es_side_mm": 346.49999999999994,
+   "P_eigen_per_m": 10.152615288417723,
+   "L_layout_mm": 1230.6
   },
   {
    "n_plates": 20,
@@ -543,8 +563,9 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 15.0,
-   "L_es_side_mm": 399.0,
-   "P_eigen_per_m": 12.008181033291388
+   "L_es_side_mm": 406.49999999999994,
+   "P_eigen_per_m": 11.786627877695606,
+   "L_layout_mm": 1350.6
   },
   {
    "n_plates": 18,
@@ -567,8 +588,9 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 18.0,
-   "L_es_side_mm": 369.0,
-   "P_eigen_per_m": 13.53541828021552
+   "L_es_side_mm": 376.49999999999994,
+   "P_eigen_per_m": 13.26578843399609,
+   "L_layout_mm": 1290.6
   },
   {
    "n_plates": 16,
@@ -591,8 +613,8 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 22.02,
-   "L_es_side_mm": 346.5,
-   "P_eigen_per_m": 14.69984345222042,
+   "L_es_side_mm": 353.99999999999994,
+   "P_eigen_per_m": 14.388406090944569,
    "P_clamped_W": 7.4258394971428565,
    "L_tube_mm": 1294.0,
    "same_power": {
@@ -600,7 +622,8 @@
     "scale": 2.492112543539781,
     "L_es_side_mm": 863.516996336534,
     "L_tube_mm": 2328.033992673068
-   }
+   },
+   "L_layout_mm": 1245.6
   },
   {
    "n_plates": 20,
@@ -623,8 +646,9 @@
    "sectors": 6,
    "ws_deg": 30.0,
    "wr_deg": 15.0,
-   "L_es_side_mm": 399.0,
-   "P_eigen_per_m": 11.349611007122338
+   "L_es_side_mm": 406.49999999999994,
+   "P_eigen_per_m": 11.14020859001676,
+   "L_layout_mm": 1350.6
   },
   {
    "n_plates": 18,
@@ -647,8 +671,9 @@
    "sectors": 6,
    "ws_deg": 30.0,
    "wr_deg": 18.0,
-   "L_es_side_mm": 369.0,
-   "P_eigen_per_m": 12.782398022133068
+   "L_es_side_mm": 376.49999999999994,
+   "P_eigen_per_m": 12.527768579461096,
+   "L_layout_mm": 1290.6
   },
   {
    "n_plates": 15,
@@ -671,8 +696,9 @@
    "sectors": 6,
    "ws_deg": 30.0,
    "wr_deg": 22.02,
-   "L_es_side_mm": 324.0,
-   "P_eigen_per_m": 13.908375212533665
+   "L_es_side_mm": 331.49999999999994,
+   "P_eigen_per_m": 13.593706090078154,
+   "L_layout_mm": 1200.6
   },
   {
    "n_plates": 29,
@@ -695,8 +721,9 @@
    "sectors": 3,
    "ws_deg": 48.0,
    "wr_deg": 30.0,
-   "L_es_side_mm": 723.5,
-   "P_eigen_per_m": 6.160151000073748
+   "L_es_side_mm": 733.0,
+   "P_eigen_per_m": 6.080312753824498,
+   "L_layout_mm": 2011.6
   },
   {
    "n_plates": 25,
@@ -719,8 +746,9 @@
    "sectors": 3,
    "ws_deg": 48.0,
    "wr_deg": 36.0,
-   "L_es_side_mm": 647.5,
-   "P_eigen_per_m": 6.9451297587790295
+   "L_es_side_mm": 657.0,
+   "P_eigen_per_m": 6.844705508081311,
+   "L_layout_mm": 1859.6
   },
   {
    "n_plates": 21,
@@ -743,8 +771,9 @@
    "sectors": 3,
    "ws_deg": 48.0,
    "wr_deg": 44.04,
-   "L_es_side_mm": 571.5,
-   "P_eigen_per_m": 7.755727808616712
+   "L_es_side_mm": 581.0,
+   "P_eigen_per_m": 7.628912982141912,
+   "L_layout_mm": 1707.6
   },
   {
    "n_plates": 29,
@@ -767,8 +796,9 @@
    "sectors": 3,
    "ws_deg": 60.0,
    "wr_deg": 30.0,
-   "L_es_side_mm": 723.5,
-   "P_eigen_per_m": 6.012364163161816
+   "L_es_side_mm": 733.0,
+   "P_eigen_per_m": 5.934441298837073,
+   "L_layout_mm": 2011.6
   },
   {
    "n_plates": 25,
@@ -791,8 +821,9 @@
    "sectors": 3,
    "ws_deg": 60.0,
    "wr_deg": 36.0,
-   "L_es_side_mm": 647.5,
-   "P_eigen_per_m": 6.768273649980516
+   "L_es_side_mm": 657.0,
+   "P_eigen_per_m": 6.670406679394801,
+   "L_layout_mm": 1859.6
   },
   {
    "n_plates": 21,
@@ -815,8 +846,9 @@
    "sectors": 3,
    "ws_deg": 60.0,
    "wr_deg": 44.04,
-   "L_es_side_mm": 571.5,
-   "P_eigen_per_m": 7.582898439567723
+   "L_es_side_mm": 581.0,
+   "P_eigen_per_m": 7.45890956663159,
+   "L_layout_mm": 1707.6
   },
   {
    "n_plates": 28,
@@ -839,8 +871,9 @@
    "sectors": 4,
    "ws_deg": 36.0,
    "wr_deg": 22.5,
-   "L_es_side_mm": 704.5,
-   "P_eigen_per_m": 8.058950536371727
+   "L_es_side_mm": 714.0,
+   "P_eigen_per_m": 7.9517236034648215,
+   "L_layout_mm": 1973.6
   },
   {
    "n_plates": 24,
@@ -863,8 +896,9 @@
    "sectors": 4,
    "ws_deg": 36.0,
    "wr_deg": 27.0,
-   "L_es_side_mm": 628.5,
-   "P_eigen_per_m": 8.972471674754317
+   "L_es_side_mm": 638.0,
+   "P_eigen_per_m": 8.838869040098885,
+   "L_layout_mm": 1821.6
   },
   {
    "n_plates": 21,
@@ -887,8 +921,9 @@
    "sectors": 4,
    "ws_deg": 36.0,
    "wr_deg": 33.03,
-   "L_es_side_mm": 571.5,
-   "P_eigen_per_m": 10.036382700691744
+   "L_es_side_mm": 581.0,
+   "P_eigen_per_m": 9.872276615224324,
+   "L_layout_mm": 1707.6
   },
   {
    "n_plates": 27,
@@ -911,8 +946,9 @@
    "sectors": 4,
    "ws_deg": 45.0,
    "wr_deg": 22.5,
-   "L_es_side_mm": 676.0,
-   "P_eigen_per_m": 7.740612270481716
+   "L_es_side_mm": 685.5,
+   "P_eigen_per_m": 7.633339015092108,
+   "L_layout_mm": 1916.6
   },
   {
    "n_plates": 24,
@@ -935,8 +971,9 @@
    "sectors": 4,
    "ws_deg": 45.0,
    "wr_deg": 27.0,
-   "L_es_side_mm": 628.5,
-   "P_eigen_per_m": 8.585571849557862
+   "L_es_side_mm": 638.0,
+   "P_eigen_per_m": 8.457730262456296,
+   "L_layout_mm": 1821.6
   },
   {
    "n_plates": 20,
@@ -959,8 +996,9 @@
    "sectors": 4,
    "ws_deg": 45.0,
    "wr_deg": 33.03,
-   "L_es_side_mm": 543.0,
-   "P_eigen_per_m": 9.641847770258519
+   "L_es_side_mm": 552.5,
+   "P_eigen_per_m": 9.476060342534618,
+   "L_layout_mm": 1650.6
   },
   {
    "n_plates": 26,
@@ -983,8 +1021,9 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 15.0,
-   "L_es_side_mm": 666.5,
-   "P_eigen_per_m": 10.877000967404276
+   "L_es_side_mm": 676.0,
+   "P_eigen_per_m": 10.724143705288387,
+   "L_layout_mm": 1897.6
   },
   {
    "n_plates": 23,
@@ -1007,8 +1046,8 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 18.0,
-   "L_es_side_mm": 609.5,
-   "P_eigen_per_m": 12.090776010039546,
+   "L_es_side_mm": 619.0,
+   "P_eigen_per_m": 11.905214827332964,
    "P_clamped_W": 10.175740121315789,
    "L_tube_mm": 1820.0,
    "same_power": {
@@ -1016,7 +1055,8 @@
     "scale": 1.8186419401943124,
     "L_es_side_mm": 1108.4622625484333,
     "L_tube_mm": 2817.9245250968665
-   }
+   },
+   "L_layout_mm": 1783.6
   },
   {
    "n_plates": 20,
@@ -1039,8 +1079,9 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 22.02,
-   "L_es_side_mm": 552.5,
-   "P_eigen_per_m": 13.042956191725184
+   "L_es_side_mm": 562.0,
+   "P_eigen_per_m": 12.8224791742494,
+   "L_layout_mm": 1669.6
   },
   {
    "n_plates": 25,
@@ -1063,8 +1104,9 @@
    "sectors": 6,
    "ws_deg": 30.0,
    "wr_deg": 15.0,
-   "L_es_side_mm": 638.0,
-   "P_eigen_per_m": 9.866771178266502
+   "L_es_side_mm": 647.5,
+   "P_eigen_per_m": 9.722007740129774,
+   "L_layout_mm": 1840.6
   },
   {
    "n_plates": 22,
@@ -1087,8 +1129,9 @@
    "sectors": 6,
    "ws_deg": 30.0,
    "wr_deg": 18.0,
-   "L_es_side_mm": 581.0,
-   "P_eigen_per_m": 10.948498257331172
+   "L_es_side_mm": 590.5,
+   "P_eigen_per_m": 10.772358149888925,
+   "L_layout_mm": 1726.6
   },
   {
    "n_plates": 19,
@@ -1111,8 +1154,9 @@
    "sectors": 6,
    "ws_deg": 30.0,
    "wr_deg": 22.02,
-   "L_es_side_mm": 524.0,
-   "P_eigen_per_m": 11.79417758923456
+   "L_es_side_mm": 533.5,
+   "P_eigen_per_m": 11.58415943160058,
+   "L_layout_mm": 1612.6
   },
   {
    "n_plates": 35,
@@ -1135,8 +1179,9 @@
    "sectors": 3,
    "ws_deg": 48.0,
    "wr_deg": 30.0,
-   "L_es_side_mm": 1059.5,
-   "P_eigen_per_m": 6.017782004965369
+   "L_es_side_mm": 1071.0,
+   "P_eigen_per_m": 5.953165298095994,
+   "L_layout_mm": 2695.6000000000004
   },
   {
    "n_plates": 30,
@@ -1159,8 +1204,9 @@
    "sectors": 3,
    "ws_deg": 48.0,
    "wr_deg": 36.0,
-   "L_es_side_mm": 944.5,
-   "P_eigen_per_m": 6.742999893964963
+   "L_es_side_mm": 956.0,
+   "P_eigen_per_m": 6.661886401516639,
+   "L_layout_mm": 2465.6000000000004
   },
   {
    "n_plates": 26,
@@ -1183,8 +1229,9 @@
    "sectors": 3,
    "ws_deg": 48.0,
    "wr_deg": 44.04,
-   "L_es_side_mm": 852.5,
-   "P_eigen_per_m": 7.535836467669878
+   "L_es_side_mm": 864.0,
+   "P_eigen_per_m": 7.435533088759921,
+   "L_layout_mm": 2281.6000000000004
   },
   {
    "n_plates": 35,
@@ -1207,8 +1254,9 @@
    "sectors": 3,
    "ws_deg": 60.0,
    "wr_deg": 30.0,
-   "L_es_side_mm": 1059.5,
-   "P_eigen_per_m": 5.800152353850632
+   "L_es_side_mm": 1071.0,
+   "P_eigen_per_m": 5.737872473300416,
+   "L_layout_mm": 2695.6000000000004
   },
   {
    "n_plates": 30,
@@ -1231,8 +1279,9 @@
    "sectors": 3,
    "ws_deg": 60.0,
    "wr_deg": 36.0,
-   "L_es_side_mm": 944.5,
-   "P_eigen_per_m": 6.494006911343267
+   "L_es_side_mm": 956.0,
+   "P_eigen_per_m": 6.415888627367903,
+   "L_layout_mm": 2465.6000000000004
   },
   {
    "n_plates": 25,
@@ -1255,8 +1304,9 @@
    "sectors": 3,
    "ws_deg": 60.0,
    "wr_deg": 44.04,
-   "L_es_side_mm": 829.5,
-   "P_eigen_per_m": 7.180260683786728
+   "L_es_side_mm": 841.0,
+   "P_eigen_per_m": 7.0820763819275765,
+   "L_layout_mm": 2235.6
   },
   {
    "n_plates": 33,
@@ -1279,8 +1329,9 @@
    "sectors": 4,
    "ws_deg": 36.0,
    "wr_deg": 22.5,
-   "L_es_side_mm": 1013.5,
-   "P_eigen_per_m": 7.624502795061777
+   "L_es_side_mm": 1025.0,
+   "P_eigen_per_m": 7.538959592970841,
+   "L_layout_mm": 2603.6000000000004
   },
   {
    "n_plates": 29,
@@ -1303,8 +1354,9 @@
    "sectors": 4,
    "ws_deg": 36.0,
    "wr_deg": 27.0,
-   "L_es_side_mm": 921.5,
-   "P_eigen_per_m": 8.51302417896802
+   "L_es_side_mm": 933.0,
+   "P_eigen_per_m": 8.408094084586313,
+   "L_layout_mm": 2419.6000000000004
   },
   {
    "n_plates": 25,
@@ -1327,8 +1379,8 @@
    "sectors": 4,
    "ws_deg": 36.0,
    "wr_deg": 33.03,
-   "L_es_side_mm": 829.5,
-   "P_eigen_per_m": 9.342721481328875,
+   "L_es_side_mm": 841.0,
+   "P_eigen_per_m": 9.214967263688825,
    "P_clamped_W": 11.011365920000001,
    "L_tube_mm": 2260.0,
    "same_power": {
@@ -1336,7 +1388,8 @@
     "scale": 1.680629623208712,
     "L_es_side_mm": 1394.0822724516265,
     "L_tube_mm": 3389.164544903253
-   }
+   },
+   "L_layout_mm": 2235.6
   },
   {
    "n_plates": 33,
@@ -1359,8 +1412,9 @@
    "sectors": 4,
    "ws_deg": 45.0,
    "wr_deg": 22.5,
-   "L_es_side_mm": 1013.5,
-   "P_eigen_per_m": 7.144770682677695
+   "L_es_side_mm": 1025.0,
+   "P_eigen_per_m": 7.064609840872044,
+   "L_layout_mm": 2603.6000000000004
   },
   {
    "n_plates": 29,
@@ -1383,8 +1437,9 @@
    "sectors": 4,
    "ws_deg": 45.0,
    "wr_deg": 27.0,
-   "L_es_side_mm": 921.5,
-   "P_eigen_per_m": 7.968150289768057
+   "L_es_side_mm": 933.0,
+   "P_eigen_per_m": 7.869936218672309,
+   "L_layout_mm": 2419.6000000000004
   },
   {
    "n_plates": 24,
@@ -1407,8 +1462,9 @@
    "sectors": 4,
    "ws_deg": 45.0,
    "wr_deg": 33.03,
-   "L_es_side_mm": 806.5,
-   "P_eigen_per_m": 8.661052910343521
+   "L_es_side_mm": 818.0,
+   "P_eigen_per_m": 8.539289941555072,
+   "L_layout_mm": 2189.6
   },
   {
    "n_plates": 30,
@@ -1431,8 +1487,9 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 15.0,
-   "L_es_side_mm": 944.5,
-   "P_eigen_per_m": 9.278702463919165
+   "L_es_side_mm": 956.0,
+   "P_eigen_per_m": 9.167086273192103,
+   "L_layout_mm": 2465.6000000000004
   },
   {
    "n_plates": 27,
@@ -1455,8 +1512,9 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 18.0,
-   "L_es_side_mm": 875.5,
-   "P_eigen_per_m": 10.314131758507838
+   "L_es_side_mm": 887.0,
+   "P_eigen_per_m": 10.180408516993925,
+   "L_layout_mm": 2327.6000000000004
   },
   {
    "n_plates": 24,
@@ -1479,8 +1537,9 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 22.02,
-   "L_es_side_mm": 806.5,
-   "P_eigen_per_m": 11.001094822326886
+   "L_es_side_mm": 818.0,
+   "P_eigen_per_m": 10.84643395379784,
+   "L_layout_mm": 2189.6
   },
   {
    "n_plates": 30,
@@ -1503,8 +1562,9 @@
    "sectors": 6,
    "ws_deg": 30.0,
    "wr_deg": 15.0,
-   "L_es_side_mm": 944.5,
-   "P_eigen_per_m": 7.843158127151243
+   "L_es_side_mm": 956.0,
+   "P_eigen_per_m": 7.748810513697018,
+   "L_layout_mm": 2465.6000000000004
   },
   {
    "n_plates": 26,
@@ -1527,8 +1587,9 @@
    "sectors": 6,
    "ws_deg": 30.0,
    "wr_deg": 18.0,
-   "L_es_side_mm": 852.5,
-   "P_eigen_per_m": 8.593730242695043
+   "L_es_side_mm": 864.0,
+   "P_eigen_per_m": 8.479346101733245,
+   "L_layout_mm": 2281.6000000000004
   },
   {
    "n_plates": 23,
@@ -1551,8 +1612,9 @@
    "sectors": 6,
    "ws_deg": 30.0,
    "wr_deg": 22.02,
-   "L_es_side_mm": 783.5,
-   "P_eigen_per_m": 9.101215251652135
+   "L_es_side_mm": 795.0,
+   "P_eigen_per_m": 8.969562452414399,
+   "L_layout_mm": 2143.6
   }
  ],
  "best_per_gap": [
@@ -1577,18 +1639,19 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 22.02,
-   "L_es_side_mm": 346.5,
-   "P_eigen_per_m": 14.69984345222042,
+   "L_es_side_mm": 353.99999999999994,
+   "P_eigen_per_m": 14.388406090944569,
    "P_clamped_W": 7.4258394971428565,
-   "L_tube_mm": 1294.0,
+   "L_tube_mm": 1312.0,
    "same_power": {
     "n_plates": 40,
     "scale": 2.492112543539781,
-    "L_es_side_mm": 863.516996336534,
-    "L_tube_mm": 2328.033992673068
+    "L_es_side_mm": 882.2078404130823,
+    "L_tube_mm": 2368.4156808261646
    },
    "reached_clamp": true,
-   "P_clamped_per_m": 21.430994219748502
+   "P_clamped_per_m": 20.97694773204197,
+   "L_layout_mm": 1245.6
   },
   {
    "n_plates": 23,
@@ -1611,18 +1674,19 @@
    "sectors": 6,
    "ws_deg": 24.0,
    "wr_deg": 18.0,
-   "L_es_side_mm": 609.5,
-   "P_eigen_per_m": 12.090776010039546,
+   "L_es_side_mm": 619.0,
+   "P_eigen_per_m": 11.905214827332964,
    "P_clamped_W": 10.175740121315789,
-   "L_tube_mm": 1820.0,
+   "L_tube_mm": 1850.0,
    "same_power": {
     "n_plates": 42,
     "scale": 1.8186419401943124,
-    "L_es_side_mm": 1108.4622625484333,
-    "L_tube_mm": 2817.9245250968665
+    "L_es_side_mm": 1125.7393609802793,
+    "L_tube_mm": 2863.4787219605587
    },
    "reached_clamp": true,
-   "P_clamped_per_m": 16.695225793791284
+   "P_clamped_per_m": 16.43899858047785,
+   "L_layout_mm": 1783.6
   },
   {
    "n_plates": 25,
@@ -1645,18 +1709,19 @@
    "sectors": 4,
    "ws_deg": 36.0,
    "wr_deg": 33.03,
-   "L_es_side_mm": 829.5,
-   "P_eigen_per_m": 9.342721481328875,
+   "L_es_side_mm": 841.0,
+   "P_eigen_per_m": 9.214967263688825,
    "P_clamped_W": 11.011365920000001,
-   "L_tube_mm": 2260.0,
+   "L_tube_mm": 2302.0,
    "same_power": {
     "n_plates": 42,
     "scale": 1.680629623208712,
-    "L_es_side_mm": 1394.0822724516265,
-    "L_tube_mm": 3389.164544903253
+    "L_es_side_mm": 1413.4095131185268,
+    "L_tube_mm": 3446.8190262370535
    },
    "reached_clamp": true,
-   "P_clamped_per_m": 13.274702736588308
+   "P_clamped_per_m": 13.093181831153391,
+   "L_layout_mm": 2235.6
   }
  ]
 }

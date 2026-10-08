@@ -4,17 +4,27 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Fixed
+- **The air stacks' lengths now come from `stack_sizing.layout`** (`sim/air_stack_sizing.py` `finish()`,
+  `sim/air-stack-sizing-findings.md` §1–§5):
+  - **Cause:** the length per side was taken as L_varicap + L_ca, and L_ca counts n_ca plate pitches. That left out
+    the last plate, the gap between the varicap and the Ca stack, and the layout's gaps at the Ca|reluctance bearing.
+  - **Now:** the stacks run from the first vane to the last plate, and the tube is the layout's own length. At 6 mm
+    (24° / 22°) that is 354 mm per side and a 1312 mm tube, not 346 / 1294.
+  - **Power per metre** drops a few %: vacuum 184 → 176 W/m, air at 3 mm 24 → 23 W/m.
+  - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
+
 ### Physics
 - **The electrostatic stacks sized for air** (`sim/air_stack_sizing.py`, `sim/air-stack-sizing-findings.md`). The method
   takes the hold-off at the vacuum design's 1.5 margin, κ from the 2-D vane cell, and the clamped power at 1200 rpm
   relative.
   - **The gap buys voltage, not power density.** Air allows about a third of the vacuum design's field at any gap.
-    The clamped power per metre of stack is 184 W/m in vacuum, and in air 24 W/m for today's 3 mm stack, falling to
+    The clamped power per metre of stack is 176 W/m in vacuum, and in air 23 W/m for today's 3 mm stack, falling to
     13 W/m at 10 mm.
   - **Today's 6-sector vanes lose κ at wide gaps** (15.7 at 3 mm, 3.4 at 10 mm; the pump is dead by 15 mm).
     Reshaping the sectors restores it: at 6 mm, 6 sectors of 24° / 22° with 16 vanes give κ 8.4, z 1.40 and
-    7.4 W at 13 kV, from a 1.29 m tube.
-  - **The vacuum design's 18.5 W in air** needs a 2.1–2.5 m tube.
+    7.4 W at 13 kV, from a 1.31 m tube.
+  - **The vacuum design's 18.5 W in air** needs a 2.2–2.4 m tube.
   - **Edge corona:** wider gaps in air also need rolled vane rims.
 - **The electrostatic core's diode directions, checked against de Queiroz's Fig. 1** (`sim/queiroz_fig1_check.py`,
   `sim/electrostatic-no-clamp-findings.md` §1):

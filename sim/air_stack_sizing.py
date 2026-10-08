@@ -10,8 +10,9 @@ For each vane gap g (the Ca / Cb plates get the same gap, plate pitch g + t):
     "same C"     -- C_max at least the vacuum design's 1113 pF (the same ladder: Ca = Cb = 1.1 C_max, Cpar 20 pF);
     "same power" -- the clamped pump power at V_op at least the vacuum design's (at 1200 rpm relative, 120 Hz);
 - for each: kappa, the gain z of the bare de Queiroz core (stack_sizing.z_stack, topology 'core'), the clamped power at
-  V_op (sim/bicone_drive.py's netlist in ngspice, clamp BV = V_op), the varicap and Ca stack lengths, the tube's length
-  (the wound build's 802 mm with its electrostatic stacks swapped), the rotor-vane mass.
+  V_op (sim/bicone_drive.py's netlist in ngspice, clamp BV = V_op), the electrostatic stacks' length per side (first
+  varicap vane to the last Ca plate) and the tube's length, both from stack_sizing.layout (the tube: the wound build's
+  802 mm plus the layout's change), the rotor-vane mass.
 The tube's other dimensions are unchanged: r 50..150 mm, 6 sectors (stator 30 deg, rotor 22 deg), 1.5 mm Al vanes.
 Stage 2 (geometry_search): at 6 / 8 / 10 mm, the sector count (3, 4, 6) and the stator / rotor widths, because at wide
 gaps the fringe field between a rotor vane and the next stator sector keeps C_min high and kappa collapses; ranked by
@@ -63,15 +64,24 @@ def _cached_tube_caps(p):
 SS.tube_caps = _cached_tube_caps
 
 
+def es_lengths(tg):
+    """from stack_sizing.layout's elements (the layout that is drawn and built): the electrostatic stacks' axial length
+    per side (side A: first C1 vane to the last Ca plate) and the layout's tube length."""
+    es = [e for e in tg["elements"] if e["side"] == "A" and e["kind"] in ("C1 vane", "Ca plate")]
+    return max(e["z1"] for e in es) - min(e["z0"] for e in es), tg["L_total_mm"]
+
+
 def stack(g, n, diel, geo=None, v_op=None):
     lad = SS.size_stack("tube", plates(g, n, diel, geo), dict(rpm=RPM))
     tc, tg = lad["tube_caps"], lad["tube_geometry"]
+    L_es, L_lay = es_lengths(tg)
     if v_op:
         SS.V_OP = v_op                                     # the eigen-cycle ledger at this stack's operating peak
     z = SS.z_stack(lad, topology="core", ledger=bool(v_op))
     return dict(n_plates=n, n_gap=tc["n_gap"], C_max_pF=tc["C_max"], C_min_pF=tc["C_min"], kappa=tc["C_max"] / tc["C_min"],
                 Ca_pF=lad["ladder"]["Ca"]["value"], z=z["z"], L_varicap_mm=tg["L_varicap_mm"], n_gap_ca=tg["n_gap_ca"],
-                L_ca_mm=tg["L_ca_mm"], m_rotor_vanes_kg=tg["m_rotor_vanes_kg"], per_gap_max_pF=tc["per_gap_max_pF"],
+                L_ca_mm=tg["L_ca_mm"], L_es_side_mm=L_es, L_layout_mm=L_lay, m_rotor_vanes_kg=tg["m_rotor_vanes_kg"],
+                per_gap_max_pF=tc["per_gap_max_pF"],
                 per_gap_min_pF=tc["per_gap_min_pF"], cycles_per_rev=(geo or {}).get("N_sec", SS.TUBE_DEFAULTS["N_sec"]) // 2,
                 P_eigen_W=(z.get("ledger") or {}).get("P_surplus_W"))
 
@@ -114,8 +124,7 @@ def geometry_search():
                     one = stack(g, 1, "air", geo)
                     n = max(1, math.ceil((base["C_max_pF"] / one["per_gap_max_pF"] + 1) / 2))
                     q = stack(g, n, "air", geo, v_op=v_op)
-                    q.update(gap_mm=g, V_op_kV=v_op / 1e3, sectors=ns, ws_deg=geo["ws_deg"], wr_deg=geo["wr_deg"],
-                             L_es_side_mm=q["L_varicap_mm"] + q["L_ca_mm"])
+                    q.update(gap_mm=g, V_op_kV=v_op / 1e3, sectors=ns, ws_deg=geo["ws_deg"], wr_deg=geo["wr_deg"])
                     q["P_eigen_per_m"] = q["P_eigen_W"] / (q["L_es_side_mm"] * 1e-3)
                     out.append(q)
                     print(f"g {g:4.1f} sectors {ns} ws {geo['ws_deg']:5.1f} wr {geo['wr_deg']:5.1f}: N {n:3d} k {q['kappa']:5.2f} "
@@ -129,8 +138,7 @@ def _clamp_job(q, v_op_kV):
 
 def main():
     base = stack(3.0, 8, "vacuum", v_op=20e3)              # the built design
-    base_es_side = base["L_varicap_mm"] + base["L_ca_mm"]
-    base.update(V_op_kV=20.0, V_bd_kV=30.0, L_es_side_mm=base_es_side, L_tube_mm=L_TUBE_WOUND)
+    base.update(V_op_kV=20.0, V_bd_kV=30.0, L_tube_mm=L_TUBE_WOUND)
     # stage 1: today's 6-sector vanes, wider gaps, N for the same C_max
     gaps = []
     for g in GAPS:
@@ -139,7 +147,7 @@ def main():
         one = stack(g, 1, "air")
         n = max(1, math.ceil((base["C_max_pF"] / one["per_gap_max_pF"] + 1) / 2))
         q = stack(g, n, "air", v_op=v_op * 1e3)
-        q.update(gap_mm=g, V_bd_kV=v_bd, V_op_kV=v_op, L_es_side_mm=q["L_varicap_mm"] + q["L_ca_mm"])
+        q.update(gap_mm=g, V_bd_kV=v_bd, V_op_kV=v_op)
         gaps.append(q)
         print(f"gap {g:4.1f} mm: V_op {v_op:.1f} kV, N {n}, kappa {q['kappa']:.2f}, z {q['z']:.3f}", flush=True)
     # stage 2: the sector geometry at 6 / 8 / 10 mm
@@ -161,14 +169,31 @@ def main():
 P_REACHED = 0.05                   # W: below this the pump did not reach its clamp in the 24-cycle run (z too low)
 
 
+def _geo(q):
+    return dict(N_sec=2 * q["sectors"], ws_deg=q["ws_deg"], wr_deg=q["wr_deg"]) if "sectors" in q else None
+
+
 def finish(out):
-    """the derived columns: tube length, clamped power per metre of stack, and the vane count / stack length that would
-    give the vacuum design's clamped power (power scales with the working gaps at a fixed geometry and V_op)."""
+    """the derived columns: the stack and tube lengths from stack_sizing.layout (filled in for results saved before they
+    were), the clamped power per metre of stack, and the vane count / stack length that would give the vacuum design's
+    clamped power (power scales with the working gaps at a fixed geometry and V_op)."""
     base = out["base_vacuum"]
+    rows = [(base, "vacuum")] + [(q, "air") for q in out["gap_sweep"] + out["geometry_search"] + out["best_per_gap"]]
+    for q, diel in rows:
+        if "L_layout_mm" not in q:
+            lad = SS.size_stack("tube", plates(q.get("gap_mm", 3.0), q["n_plates"], diel, _geo(q)), dict(rpm=RPM))
+            q["L_es_side_mm"], q["L_layout_mm"] = es_lengths(lad["tube_geometry"])
+    for q in out["geometry_search"]:
+        q["P_eigen_per_m"] = q["P_eigen_W"] / (q["L_es_side_mm"] * 1e-3)
+    for b in out["best_per_gap"]:                          # the clamped powers belong to these designs: same ranking
+        ok = [q for q in out["geometry_search"] if q["gap_mm"] == b["gap_mm"] and q["z"] >= 1.3]
+        top = max(ok, key=lambda q: q["P_eigen_per_m"])
+        assert (top["sectors"], top["ws_deg"], top["wr_deg"]) == (b["sectors"], b["ws_deg"], b["wr_deg"]), b["gap_mm"]
+        b["P_eigen_per_m"] = top["P_eigen_per_m"]
     base_es_side = base["L_es_side_mm"]
     base["P_clamped_per_m"] = base["P_clamped_W"] / (base_es_side * 1e-3)
     for q in out["gap_sweep"] + out["best_per_gap"]:
-        q["L_tube_mm"] = L_TUBE_WOUND + 2 * (q["L_es_side_mm"] - base_es_side)
+        q["L_tube_mm"] = L_TUBE_WOUND + q["L_layout_mm"] - base["L_layout_mm"]
         if q["P_clamped_W"] < P_REACHED:
             q.update(reached_clamp=False, P_clamped_per_m=None, same_power=None)
             continue
@@ -177,7 +202,7 @@ def finish(out):
         k = base["P_clamped_W"] / q["P_clamped_W"]
         q["same_power"] = dict(n_plates=math.ceil(((2 * q["n_plates"] - 1) * k + 1) / 2), scale=k,
                                L_es_side_mm=q["L_es_side_mm"] * k,
-                               L_tube_mm=L_TUBE_WOUND + 2 * (q["L_es_side_mm"] * k - base_es_side))
+                               L_tube_mm=q["L_tube_mm"] + 2 * q["L_es_side_mm"] * (k - 1))
     json.dump(out, open(os.path.join(HERE, "air_stack_sizing_results.json"), "w"), indent=1, default=float)
 
 
