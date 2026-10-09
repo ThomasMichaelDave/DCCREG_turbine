@@ -78,14 +78,15 @@ V_OP = Q["V_op_kV"] * 1e3
 
 def deck(opt="none", clamp=True, link=True, n_cyc=24, steps=20000, c_core=1e-9, r_leak=10e9, cx=100e-12, v0=-1000.0,
          vk0=None, reltol=1e-5, cmin=None, cmax=None, ca=None, cc=CC, ic=None, n_cw=1, c_cw=1e-9, c_gap=2e-12,
-         c_e=3e-12, n_cw_a=0):
+         c_e=3e-12, n_cw_a=0, a_ref="dk"):
     """the rotor-side netlist. Nodes: 1-4 the pump (rotor), s the counter-rotor (stator vanes), 0 the shaft;
     series: ra / rb the rotor vanes behind the cones; peak: k cone A; float: ka / kb the floating cones;
     dc: ea / eb the two core electrodes -- ea peak-charged from node 1, eb charged positive by an n_cw-stage
     Cockcroft-Walton on node 4's swing (m1.. the oscillating column, b1.. the smoothing column, eb = b_n; n_cw 0 puts
     eb on the shaft), c_gap between the electrodes and c_e from each to the shaft side; n_cw_a > 0 extends ea negative
     by an n_cw_a-stage Cockcroft-Walton on node 1's swing, stacked on the peak-charged a0 (n1.. the oscillating column,
-    a1.. the smoothing column, ea = a_n; c_core then sits on a0) -- the balanced supply.
+    a1.. the smoothing column, ea = a_n; c_core then sits on a0) -- the balanced supply; a_ref "shaft" starts that chain
+    at the shaft instead, without Dk: the mirror image of ring B's chain (the symmetric supply).
     cmin / cmax / ca default to the stack of record; ic overrides the initial node voltages."""
     CMIN_, CMAX_, CA_ = (CMIN if cmin is None else cmin), (CMAX if cmax is None else cmax), (CA if ca is None else ca)
     w = 2 * math.pi * F
@@ -119,9 +120,12 @@ def deck(opt="none", clamp=True, link=True, n_cyc=24, steps=20000, c_core=1e-9, 
     elif opt == "dc":
         if n_cw_a == 0:
             t += ["Dk ea 1 ND", f"Cea ea 0 {c_core + c_e:.4e}", f"Rea ea 0 {r_leak:.4e}", f"Cgap ea eb {c_gap:.4e}"]
+        elif a_ref == "shaft":                                           # ea on its own chain from the shaft: B's mirror
+            prev_m, prev_a = "1", "0"
         else:                                                            # ea stacked negative on the peak-charged a0
             t += ["Dk a0 1 ND", f"Ca0 a0 0 {c_core:.4e}"]
             prev_m, prev_a = "1", "a0"
+        if n_cw_a:
             for k in range(1, n_cw_a + 1):
                 nk, ak = f"n{k}", ("ea" if k == n_cw_a else f"a{k}")
                 t += [f"Coa{k} {prev_m} {nk} {c_cw:.4e}", f"Dca{k} {nk} {prev_a} ND", f"Dpa{k} {ak} {nk} ND",
@@ -163,7 +167,9 @@ def deck(opt="none", clamp=True, link=True, n_cyc=24, steps=20000, c_core=1e-9, 
     if opt == "dc":
         ics.update(ea=v0, eb=0.0, **{f"m{k}": 0.0 for k in range(1, n_cw + 1)},
                    **{f"b{k}": 0.0 for k in range(1, n_cw)})
-        if n_cw_a:                                                      # the negative chain starts at node 1's level
+        if n_cw_a and a_ref == "shaft":                                 # the mirror chain starts at the shaft, as B's
+            ics.update(ea=0.0, **{f"n{k}": 0.0 for k in range(1, n_cw_a + 1)}, **{f"a{k}": 0.0 for k in range(1, n_cw_a)})
+        elif n_cw_a:                                                    # the negative chain starts at node 1's level
             ics.update(a0=v0, **{f"n{k}": v0 for k in range(1, n_cw_a + 1)}, **{f"a{k}": v0 for k in range(1, n_cw_a)})
     ics.update(ic or {})
     ics.update({f"e_{nd}": 0.0 for nd in P})
@@ -173,8 +179,8 @@ def deck(opt="none", clamp=True, link=True, n_cyc=24, steps=20000, c_core=1e-9, 
     vecs += ["v(ka)", "v(kb)"] if opt == "float" else []
     vecs += (["v(ea)", "v(eb)"] + [f"v(m{k})" for k in range(1, n_cw + 1)] + [f"v(b{k})" for k in range(1, n_cw)]) \
         if opt == "dc" else []
-    vecs += (["v(a0)"] + [f"v(n{k})" for k in range(1, n_cw_a + 1)] + [f"v(a{k})" for k in range(1, n_cw_a)]) \
-        if opt == "dc" and n_cw_a else []
+    vecs += ((["v(a0)"] if a_ref != "shaft" else []) + [f"v(n{k})" for k in range(1, n_cw_a + 1)]
+             + [f"v(a{k})" for k in range(1, n_cw_a)]) if opt == "dc" and n_cw_a else []
     vecs += ["i(Vz1)", "i(Vz4)"] if clamp else []
     vecs += [f"v(e_{nd})" for nd in P]
     ms = 1.0 / F / steps
@@ -260,11 +266,12 @@ def run(case):
     if kw.get("opt") == "float":                                       # across the coupling capacitors, either sign
         vr["CC"] = np.maximum(np.abs(v["1"] - c["v(ka)"][s]), np.abs(v["4"] - c["v(kb)"][s]))
     if kw.get("opt") == "dc":
-        na = kw.get("n_cw_a", 0)
-        vr["Dk"] = v["1"] - c["v(a0)" if na else "v(ea)"][s]
+        na, sym = kw.get("n_cw_a", 0), kw.get("a_ref", "dk") == "shaft"
+        if not (na and sym):                                           # no Dk on the symmetric supply
+            vr["Dk"] = v["1"] - c["v(a0)" if na else "v(ea)"][s]
         for k in range(1, na + 1):                                     # the negative chain: cathodes up, anodes down
             vn = c[f"v(n{k})"][s]
-            va_prev = c["v(a0)"][s] if k == 1 else c[f"v(a{k - 1})"][s]
+            va_prev = (0.0 if sym else c["v(a0)"][s]) if k == 1 else c[f"v(a{k - 1})"][s]
             va = c["v(ea)"][s] if k == na else c[f"v(a{k})"][s]
             vr[f"Dca{k}"] = va_prev - vn
             vr[f"Dpa{k}"] = vn - va

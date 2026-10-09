@@ -33,6 +33,19 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **The rings' supply, symmetric against asymmetric** (the designer's question, 2026-10-09; `sim/hub_rings_symmetric.py`,
+  `sim/hub-rings-build-findings.md` §4).
+  - **Why the record is asymmetric:** the pump's nodes 1 and 4 are twins, both between −13.2 and −5.7 kV.
+    - **Identical circuits:** a peak detector on each node puts both rings at −13.23 kV, with no field at the null.
+    - **The record:** one ring takes the negative peak through Dk, the other is lifted positive by a multiplier.
+  - **The mirror pair** (`sim/core_field.py` `a_ref="shaft"`): each ring gets its own multiplier from the shaft, ring A
+    negative and ring B positive, ±7.5 kV a stage.
+    - **At the design ratings, 2 + 2 beats the record:** 7.10 against 6.93 kV/cm, for three more diodes and three more
+      capacitors.
+    - **Why:** both rings sit at the 15 kV the polar beads hold, where the record's ring A stays at 13.2.
+    - **With the gel qualified to 8 kV/mm,** the record's stacked kind wins.
+  - **The record is unchanged** pending the designer's choice. I had written that a mirror circuit gives less; it gives
+    less per part, not less field.
 - **The rings as built: the edges set the stages** (designer's brief 2026-10-09; `sim/hub_rings_build.py`,
   `sim/hub-rings-build-findings.md`, `docs/figures/hub-rings-build.png`, `presets/hub-locked.json`).
   - **The retainer:** unfilled PEEK, machined with a 0.5 mm pocket over the glass, filled void-free with silicone gel;

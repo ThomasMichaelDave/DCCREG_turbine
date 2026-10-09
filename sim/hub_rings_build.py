@@ -263,13 +263,15 @@ def leak_total():
 def _stage_run(args):
     n, r_leak = args[:2]
     n_a = args[2] if len(args) > 2 else 0                               # ring A's negative stages (the balanced supply)
+    a_ref = args[3] if len(args) > 3 else "dk"                          # "shaft": ring A's chain from the shaft (mirror)
     t0 = time.time()
-    nm = f"A{n_a} " if n_a else ""
-    r = CF.run((f"rings {nm}B{n} {r_leak:.0e}", dict(opt="dc", n_cw=n, n_cw_a=n_a, n_cyc=120 + 80 * max(n, n_a), steps=5000,
-                                                  c_core=0.1e-9, c_cw=0.1e-9, r_leak=r_leak)))
-    fr = CF.run((f"free rings {nm}B{n} {r_leak:.0e}", dict(opt="dc", n_cw=n, n_cw_a=n_a, clamp=False, n_cyc=12, v0=-10.0,
-                                                        c_core=0.1e-9, c_cw=0.1e-9, r_leak=r_leak)))
-    return dict(n_a=n_a, n_cw=n, r_leak=r_leak, V_A_kV=r["V_ea_kV"]["mean"], V_B_kV=r["V_eb_kV"]["mean"],
+    nm = (f"A{n_a}{'s' if a_ref == 'shaft' else ''} " if n_a else "")
+    kw = dict(opt="dc", n_cw=n, n_cw_a=n_a, c_core=0.1e-9, c_cw=0.1e-9, r_leak=r_leak,
+              **({"a_ref": a_ref} if a_ref != "dk" else {}))
+    r = CF.run((f"rings {nm}B{n} {r_leak:.0e}", dict(kw, n_cyc=120 + 80 * max(n, n_a), steps=5000)))
+    fr = CF.run((f"free rings {nm}B{n} {r_leak:.0e}", dict(kw, clamp=False, n_cyc=12, v0=-10.0)))
+    return dict(n_a=n_a, n_cw=n, r_leak=r_leak, **({"a_ref": a_ref} if a_ref != "dk" else {}),
+                V_A_kV=r["V_ea_kV"]["mean"], V_B_kV=r["V_eb_kV"]["mean"],
                 ripple_B_V=r["V_eb_kV"]["pp"] * 1e3, ripple_A_V=r["V_ea_kV"]["pp"] * 1e3, z_start=fr.get("z"),
                 P_belt_W=r["P_belt_W"], P_leak_W=r["P_leak_W"], VR_pk_kV=r["VR_pk_kV"],
                 settled=bool(abs(r["Vk_per_cycle_kV"][-1] - r["Vk_per_cycle_kV"][-10]) < 0.003 * abs(r["Vk_per_cycle_kV"][-1])),
@@ -376,8 +378,9 @@ def design(st, e_t, e_gel, K, POL, EQ):
     v_a, v_b = st["V_A_kV"], st["V_B_kV"]
     vg = v_b - v_a
     te = 90.0 - math.degrees(vg / e_t / (2 * R_v))
-    out = dict(n_a=st["n_a"], n_cw=st["n_cw"], V_A_kV=v_a, V_B_kV=v_b, V_gap_kV=vg, E_t_kV_mm=e_t, E_gel_kV_mm=e_gel,
-               theta_e=te, gap_mm=2 * R_v * math.radians(90.0 - te), feasible=False)
+    out = dict(n_a=st["n_a"], n_cw=st["n_cw"], **({"a_ref": st["a_ref"]} if st.get("a_ref", "dk") != "dk" else {}),
+               V_A_kV=v_a, V_B_kV=v_b, V_gap_kV=vg, E_t_kV_mm=e_t, E_gel_kV_mm=e_gel, theta_e=te,
+               gap_mm=2 * R_v * math.radians(90.0 - te), feasible=False)
     if te < TAB_TE[0]:
         return dict(out, why="the gap leaves no band")
     tp_best = rho_p = None

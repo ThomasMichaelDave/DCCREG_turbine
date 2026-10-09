@@ -185,6 +185,39 @@
   - **the start-up:** z 1.180;
   - **the ripple:** ring B 29 V p-p.
 
+### Why the supply is asymmetric, and the symmetric one (the designer's question, 2026-10-09)
+`sim/hub_rings_symmetric.py` → `sim/hub_rings_symmetric_results.json`.
+- **The field at the null sees only the difference between the rings.** The hub is mirror-symmetric top to bottom, so
+  raising both rings together gives no field at the null [OC].
+- **The pump's two outputs are twins.** Nodes 1 and 4 carry the same waveform half a cycle apart, both between −13.2
+  and −5.7 kV; nothing in the pump is positive.
+- **So identical circuits make no field.** The same peak detector on each node puts both rings at −13.23 kV: nothing
+  across them. Each ring would still stand 13 kV off the AH, for no field at the null.
+- **A mirror-image pair does make one.** Reversing the diodes on one side gives each ring its own Cockcroft-Walton
+  chain from the shaft, ring A negative on node 1's swing, ring B positive on node 4's (`sim/core_field.py`
+  `n_cw_a`, `a_ref="shaft"`). Each stage collects only the swing: ±7.52 / ±14.96 / ±22.17 kV on 1 / 2 / 3 stages a
+  side, every chain diode at 7.5 kV, start-up gain 1.207 / 1.191 / 1.189.
+- **The record's two different circuits use what the mirror pair leaves:** Dk puts ring A at the pump's −13.2 kV peak
+  with one diode and one capacitor, and the stages all go on ring B.
+- **Sized the same way** (both beads at the gel's rating, the gap at the interface's; each pair's best solved
+  directly):
+
+| ratings (interface / gel at a bead) | the record's kind: Dk and chains | the mirror pair |
+|:--|:--|:--|
+| **1 / 5 kV/mm (design)** | **ring B on 2: −13.2 / +15.0 kV, 28.2 kV across, 6.93 kV/cm; 5 diodes, 5 capacitors** | **2 + 2: ±15.0 kV, 29.9 kV across, bands 26.25–55.7°, beads Ø3 / Ø2 mm: 7.10 kV/cm; 8 diodes, 8 capacitors** |
+| 2 / 5 | ring B on 2: 7.91 kV/cm | 2 + 2: 8.35 kV/cm (beads Ø3 / Ø4 mm) |
+| 1 / 8 | ring A on 1 + B on 2: 7.97 kV/cm | 3 + 3: 7.80 kV/cm |
+| 2 / 8 | ring A on 2 + B on 4: 13.25 kV/cm | 3 + 3: 11.84 kV/cm (the mirror pair was run to three a side) |
+
+- **At the gel's design rating the mirror pair wins, by 2.5 % (5.6 % at 2 / 5):** the polar beads hold each ring to
+  about 15 kV from the shaft. The mirror pair puts both rings at 15.0 kV; the record's ring A sits at 13.2 kV, under
+  its limit, so the record has 1.7 kV less across the rings for the same worst ring.
+  - **Its cost:** three more diodes and three more 100 pF capacitors. The chain diodes stay at 7.5 kV, and the start-up
+    gain rises to 1.191 (record 1.180).
+- **With the gel qualified higher, the record's kind wins:** Dk's free 13.2 kV lets the stacked supplies reach more
+  voltage per part.
+- **The record stays as it is** until the designer chooses.
+
 ## 5. The bench test, and what the field should do
 - **The plan:** `docs/bench-test-rings.md`:
   - (1) the hold-off on coupons and the sphere, which sets the stages;
