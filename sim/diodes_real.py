@@ -13,8 +13,8 @@ sim/diodes-real-findings.md.
    record's ND (n 1). Without and with the bypass, per model:
    - the smallest start kick (a fraction of Psi_s seeded as sim/pole_design.py run_real seeds it) that passes the
      record's start criterion (sim/pole_design.py size_op: N_AH x the branch peak over the last 4 of 40 cycles above
-     half of AT_TARGET), by bisection; the largest failing kick re-run for 120 cycles;
-   - the start-up from the record's 20 % kick (sim/pole_design_variants_op.json kick_frac), 80 cycles: does it start,
+     half of AT_TARGET), by bisection to 1 % of Psi_s;
+   - the start-up from the record's 20 % kick (sim/pole_design_variants_op.json kick_frac), 60 cycles: does it start,
      the time to 95 % and to within 2 % of the steady branch peak (and of the coil's mean with the bypass);
    - the steady state from the record's operating seed (sim/rotor_parts_duty.py SEED_FRAC 0.3; 1.25 x the threshold
      where that is larger), 60 cycles: A-turns per coil, z_early, the belt and its ledger, each diode's terminal power
@@ -28,9 +28,10 @@ sim/diodes-real-findings.md.
    carried as one level-1 diode (N x the junction's forward law, Rs, the string's junction capacitance, Tt, BV) with
    its reverse leakage set by the Is of a parallel leakage element; the D3 / D4 positions take two sticks (the
    record's x2-rated guidance). Variants: forward only; no leakage; typical / maximum / hot leakage; V_F x 2; a 1 pF
-   body capacitance; a slow (Tt 3 us) stick. Per variant: the gain z from the record's two seeds (-10 V free,
-   -1 kV clamped), the smallest seed that grows (bisection), the start-up (95 %), the rings' steady voltages and
-   ripple, the stacks' leakage and what it costs the rings, the clamps' and the stacks' dissipation.
+   body capacitance; a slow (Tt 3 us) stick; the 22 kOhm surge resistors of sim/parts-first-cut-findings.md. Per
+   variant: the gain z from the record's two seeds (-10 V free, -1 kV clamped), the smallest seed that grows
+   (bisection, the leakage family), the start-up (95 %), the rings' steady voltages and ripple, the stacks' leakage
+   and what it costs the rings, the clamps' and the stacks' dissipation.
    The record's deck starts its two charge-defined varicaps uncharged under uic (ngspice ignores the .ic of nodes 1 /
    4 for them: the -1 kV seed relaxes in the first step) [OC, checked here]. The real-diode runs need a consistent
    start, so each varicap is split into a linear capacitor at its t = 0 value (it takes the .ic) and a charge-defined
@@ -41,8 +42,9 @@ sim/diodes-real-findings.md.
    in stored energy); a step-size check of one new run per pump.
 Tags (CONVENTIONS.md §1): [OC] derivable physics; [IR] a modelling or engineering choice, datasheet-class device
 parameters included; [RH] heuristic, not load-bearing. Never a bare d: g for a gap, "diameter" spelled out.
-Usage: python3 sim/diodes_real.py [--procs 4] [--only mag|es] [--figure-only]   (needs ngspice; about an hour with 4
-       processes)
+Usage: python3 sim/diodes_real.py [--procs 4] [--only mag|es] [--figure-only] [--cache FILE]
+       (needs ngspice; about an hour of CPU on an idle 4-core machine; --cache keeps every finished run in FILE, a
+       JSON-lines file outside the repository, and a rerun skips them)
 """
 import argparse
 import json
