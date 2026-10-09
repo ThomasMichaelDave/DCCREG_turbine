@@ -316,22 +316,45 @@ def panel_b(ox, N):
     for x, xz, nm in ((x1, x1z, "Z1"), (x4, x4z, "Z4")):
         dot(x, y_z); pl([(x, y_z), (xz, y_z), (xz, 392)], "lim"); diode(xz, 392, "down", "#7d3c98", zener=True)
         ln(xz, 410, xz, y_sh, "lim"); tx(xz + (14 if x == x1 else -14), 406, nm, "tl", "start" if x == x1 else "end")
-    # the core: two rings outside the glass. A on node 1's negative peak (Dk, C_A); B on the record's Cockcroft-Walton
-    # stages on node 4's swing (Co, Dc, Dp, Cs each, drawn once); all storage 100 pF to the shaft
+    # the core: two rings outside the glass. B on the record's Cockcroft-Walton stages on node 4's swing; A either on
+    # node 1's negative peak (Dk, C_A) or, the symmetric supply, on the mirror-image chain on node 1 (Coa, Dca, Dpa, Csa);
+    # each chain's stage drawn once; all storage 100 pF to the shaft
     dc, nl = N["dc"], N["ring"]
-    xk, yc, y_cw, xl = ox + 105, 345, 536, ox + 48
-    ln(x1, y_n, x1, y_k); dot(x1, y_k)
+    sym = nl.get("a_ref") == "shaft"
+    xk, yc, xl = ox + 105, 345, ox + 48
+    y_cw = 590 if sym else 536
+    y_a = 466 if sym else y_k
     ln(x4, y_z, x4, y_cw); dot(x4, y_cw)
     (xbl, ybl), (xar, yar) = ring_core(xk, yc, nl["theta_p"], nl["theta_e"])
-    # A: from the lower ring down to the Dk lead; C_A to the shaft
-    pl([(xar, yar), (xar, y_k), (xk, y_k)])
-    ln(xk, y_k, ox + 170, y_k); diode(ox + 170, y_k, "right"); ln(ox + 188, y_k, x1, y_k)
-    tx(ox + 179, y_k - 15, "Dk", "t", "middle", 'font-weight="bold"')
-    dot(ox + 132, y_k); ln(ox + 132, y_k, ox + 132, y_k + 18); cap_v(ox + 132, y_k + 18, 14)
-    ln(ox + 132, y_k + 28, ox + 132, y_k + 44); ground(ox + 132, y_k + 44)
-    tx(ox + 152, y_k + 27, "C_A", "t", "start", 'font-weight="bold"')
+    if sym:
+        # A: the lower ring's lead round to its chain's output; Csa to the shaft; Dpa from A into the oscillating node
+        ln(x1, y_n, x1, y_a); dot(x1, y_a)
+        pl([(xar, yar), (xar, 398), (ox + 30, 398), (ox + 30, y_a), (ox + 100, y_a)])
+        dot(xl, y_a); ln(xl, y_a, xl, y_a + 24); cap_v(xl, y_a + 24, 14); ln(xl, y_a + 34, xl, y_a + 50)
+        ground(xl, y_a + 50)
+        tx(xl + 20, y_a + 33, "Csa", "t", "start", 'font-weight="bold"')
+        ln(ox + 30, y_a, ox + 100, y_a); diode(ox + 100, y_a, "right"); ln(ox + 118, y_a, ox + 150, y_a)   # Dpa: A -> n
+        tx(ox + 109, y_a - 15, "Dpa", "t", "middle", 'font-weight="bold"')
+        dot(ox + 150, y_a); tx(ox + 150, y_a - 10, "n", "ms", "middle")
+        ln(ox + 150, y_a, ox + 150, y_a + 12); diode(ox + 150, y_a + 12, "down"); ln(ox + 150, y_a + 30, ox + 150, y_a + 50)
+        ground(ox + 150, y_a + 50)                                                                  # Dca: n -> shaft
+        tx(ox + 166, y_a + 27, "Dca", "t", "start", 'font-weight="bold"')
+        ln(ox + 150, y_a, ox + 190, y_a); cap_h(ox + 190, y_a, 10); ln(ox + 200, y_a, x1, y_a)   # Coa: node 1 -> n
+        tx(ox + 195, y_a - 16, "Coa", "t", "middle", 'font-weight="bold"')
+        o.append(f'<rect x="{ox + 22:.1f}" y="{y_a - 32:.1f}" width="{ox + 222 - (ox + 22):.1f}" height="94" '
+                 'fill="none" stroke="#7f8c8d" stroke-width="1.2" stroke-dasharray="5 4"/>')
+        tx(ox + 228, y_a - 36, f"× {nl['n_a']} stages, mirrored", "t", "end", 'font-weight="bold"')
+    else:
+        ln(x1, y_n, x1, y_k); dot(x1, y_k)
+        # A: from the lower ring down to the Dk lead; C_A to the shaft
+        pl([(xar, yar), (xar, y_k), (xk, y_k)])
+        ln(xk, y_k, ox + 170, y_k); diode(ox + 170, y_k, "right"); ln(ox + 188, y_k, x1, y_k)
+        tx(ox + 179, y_k - 15, "Dk", "t", "middle", 'font-weight="bold"')
+        dot(ox + 132, y_k); ln(ox + 132, y_k, ox + 132, y_k + 18); cap_v(ox + 132, y_k + 18, 14)
+        ln(ox + 132, y_k + 28, ox + 132, y_k + 44); ground(ox + 132, y_k + 44)
+        tx(ox + 152, y_k + 27, "C_A", "t", "start", 'font-weight="bold"')
     # B: from the upper ring up and round to the multiplier's output; Cs to the shaft
-    pl([(xbl, ybl), (xbl, 270), (xl, 270), (xl, y_cw), (ox + 100, y_cw)])
+    pl([(xbl, ybl), (xbl, 270), (xl - 30 if sym else xl, 270), (xl - 30 if sym else xl, y_cw), (ox + 100, y_cw)])
     dot(xl, y_cw); ln(xl, y_cw, xl, y_cw + 30); cap_v(xl, y_cw + 30, 14); ln(xl, y_cw + 40, xl, y_cw + 58)
     ground(xl, y_cw + 58)
     tx(xl + 20, y_cw + 39, "Cs", "t", "start", 'font-weight="bold"')
@@ -343,10 +366,11 @@ def panel_b(ox, N):
     tx(ox + 166, y_cw + 31, "Dc", "t", "start", 'font-weight="bold"')
     ln(ox + 150, y_cw, ox + 190, y_cw); cap_h(ox + 190, y_cw, 10); ln(ox + 200, y_cw, x4, y_cw)   # Co: node 4 -> m
     tx(ox + 195, y_cw - 16, "Co", "t", "middle", 'font-weight="bold"')
-    o.append(f'<rect x="{ox + 36:.1f}" y="{y_cw - 34:.1f}" width="{ox + 222 - (ox + 36):.1f}" height="104" '
+    o.append(f'<rect x="{ox + 22 if sym else ox + 36:.1f}" y="{y_cw - 34:.1f}" '
+             f'width="{ox + 222 - (ox + 22 if sym else ox + 36):.1f}" height="104" '
              'fill="none" stroke="#7f8c8d" stroke-width="1.2" stroke-dasharray="5 4"/>')
     tx(ox + 228, y_cw - 38, f"× {nl['n_cw']} stages", "t", "end", 'font-weight="bold"')
-    tx(ox + 42, y_cw + 90, "C_A, Co, Cs 100 pF · ground = the shaft", "ms", "start")
+    tx(ox + 42, y_cw + 90, ("Coa, Csa, Co, Cs" if sym else "C_A, Co, Cs") + " 100 pF · ground = the shaft", "ms", "start")
     tx(xk + 50, yc - 23, f"B +{nl['V_B_kV']:.1f} kV", "tu", "start", 'font-weight="bold"')
     tx(xk + 50, yc - 5, f"rings {nl['theta_p']:.0f}–{nl['theta_e']:.0f}°", "ms")
     tx(xk + 50, yc + 9, f"{nl['E_dc_kV_cm']:.1f} kV/cm ↓", "ms")
@@ -361,9 +385,10 @@ def panel_b(ox, N):
         o.append(f'<circle cx="{xb + dx:.1f}" cy="{y_bd:.1f}" r="3.8" class="ball"/>')
     ln(xb, y_bd + 10, xb, y_sh)
     lk = N["dc"]["link"]
+    y_lb = 614 if sym else 560                                         # clear of the B chain's Co lead
     for i, t_ in enumerate(("inner bearing", "(6205), for now;", "a brush later", f"{lk['I_rms_mA']:.2f} mA rms AC",
                             "no DC")):
-        tx(xb - 8, 560 + 15 * i, t_, "t" if i == 0 else "ms", "end", 'font-weight="bold"' if i == 0 else "")
+        tx(xb - 8, y_lb + 14 * i, t_, "t" if i == 0 else "ms", "end", 'font-weight="bold"' if i == 0 else "")
     # shaft
     ln(x1z - 18, y_sh, xb + 12, y_sh, "rail")
     for x in (x1z, x2, x3, x4z, xb):
@@ -390,10 +415,12 @@ def panel_b_table(ox, y, N):
                  f"{nl['gap_mm']:.1f} mm apart along it"),
         ("", f"beaded edges Ø{2 * nl['rho_pol_mm']:g} / Ø{2 * nl['rho_eq_mm']:g} mm (polar / equatorial) in gel, "
              "under the PEEK retainer"),
-        ("supply", f"A: Dk + C_A on node 1's peak, {kv(nl['V_A_kV'])} kV · B: {nl['n_cw']} CW stages on node 4, "
-                   f"+{nl['V_B_kV']:.1f} kV"),
-        ("", f"100 pF storage; Dk, Dc, Dp ≤ {max(v for k, v in vr.items() if k[:2] in ('Dk', 'Dc', 'Dp')):.1f} kV "
-             f"reverse; {1e3 * fs['P_leak_W']:.0f} mW leakage at 100 GΩ per ring [RH]"),
+        ("supply", (f"A: {nl['n_a']} CW stages on node 1, mirrored, {kv(nl['V_A_kV'])} kV" if nl.get("a_ref") == "shaft"
+                    else f"A: Dk + C_A on node 1's peak, {kv(nl['V_A_kV'])} kV") +
+                   f" · B: {nl['n_cw']} CW stages on node 4, +{nl['V_B_kV']:.1f} kV"),
+        ("", f"100 pF storage; {'Dca, Dpa, Dc, Dp' if nl.get('a_ref') == 'shaft' else 'Dk, Dc, Dp'} ≤ "
+             f"{max(v for k, v in vr.items() if k[:2] in ('Dk', 'Dc', 'Dp')):.1f} kV "
+             f"reverse; {1e3 * fs['P_leak_W']:.0f} mW leakage at 100 GΩ/ring [RH]"),
         ("", f"{nl['V_gap_kV']:.1f} kV across: {nl['E_dc_kV_cm']:.1f} kV/cm, {nl['p_dc_Pa']:.1f} Pa at the null "
              f"(as connected; {nl['E_settled_kV_cm']:.1f} settled)"),
         ("strays", f"≈ {cf['CPAR_pF']:.0f} pF per node [RH]; the rings {nl['C_ring_ref_pF']:.1f} pF each to REF, "
@@ -409,7 +436,7 @@ def panel_b_table(ox, y, N):
 # ------------------------------------------------------------------------------------------------ sheet
 def main():
     N = numbers()
-    W, H = 1440, 1210
+    W, H = 1440, 1228
     o.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
              'font-family="DejaVu Sans, Arial, sans-serif" font-size="13">')
     o.append("<title>Rotor circuits</title>")
@@ -447,17 +474,20 @@ def main():
         "Bodies. Rotor: shaft, sleeve, rotor vanes (nodes 1 / 4), Ca / Cb plates, the 6 utrons on their carrier discs, the hub "
         "(the glass vessel with the rings outside it, the AH pair, retainer and coupler).",
         "Counter-rotor: stator cage, stator vanes (REF), bridges. Frame: end bearings, the gear.",
-        "Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, Dk, the CW stage, "
-        "C_A, the rings (all rotor);",
+        "Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, " +
+        ("the two CW chains, " if N["ring"].get("a_ref") == "shaft" else "Dk, the CW stage, C_A, ") +
+        "the rings (all rotor);",
         "sim/tube_geometry.py still puts Ca / Cb on the counter-rotor. Each pump's reaction torque goes into the gear.",
         "(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, "
         "the clamps Z1 / Z4 → the NiFe neck's saturation.",
         "A and B swap every half cycle: one group generates (L falling) while the other motors. The AH coils are named by branch; "
         "sim/magnetic_doubler.py calls them AH top / bottom (A was then the upper side).",
-        f"Polarity: (b) runs negative; ring A takes node 1's negative peak and ring B {N['ring']['n_cw']} CW stages positive: "
-        "E at the null "
-        "is steady, B to A. de Queiroz's Fig. 1 "
-        "draws the core positive, all four diodes the other way (sim/queiroz_fig1_check.py).",
+        ("Polarity: (b) runs negative; ring A on its own chain from node 1, negative, and ring B on the mirror chain from "
+         "node 4, positive (the symmetric supply): E at the null " if N["ring"].get("a_ref") == "shaft" else
+         f"Polarity: (b) runs negative; ring A takes node 1's negative peak and ring B {N['ring']['n_cw']} CW stages "
+         "positive: E at the null ") +
+        "is steady, B to A.",
+        "de Queiroz's Fig. 1 draws the core positive, all four diodes the other way (sim/queiroz_fig1_check.py).",
         f"Numbers: sim/pole_design_variants_op.json ({PICK}), sim/utron_profile.py, sim/rotor_parts_duty_results.json, "
         "sim/core_field_results.json, sim/hub_rings_build_results.json (b: the air build's capped stack)",
         "Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/hub-rings-build-findings.md "
