@@ -141,6 +141,7 @@ def numbers():
     rsn = MDm.RSNUB * (Lg / MDm.L_MAX) * (F / 60.0)
     duty = json.load(open(os.path.join(ROOT, "sim", "rotor_parts_duty_results.json")))
     parts = json.load(open(os.path.join(ROOT, "sim", "parts_first_cut_results.json")))   # the first cuts (PROPOSED)
+    u3d = json.load(open(os.path.join(ROOT, "sim", "utron_3d_results.json")))["summary"]  # the utrons in 3-D
     cf = json.load(open(os.path.join(ROOT, "sim", "core_field_results.json")))
     cfr = {r["name"]: r for r in cf["rows"]}
     hb = json.load(open(os.path.join(ROOT, "sim", "hub_rings_build_results.json")))       # the rings as built
@@ -150,7 +151,7 @@ def numbers():
     cusp = [r for r in json.load(open(os.path.join(ROOT, "sim", "ah_steady_cusp_results.json")))["rows"]
             if r["C_byp_mF"] == 22.0][0]                                           # the bypass (PROPOSED)
     return dict(op=op, b=b, sp=sp, Lg=Lg, ah=ah, F=F, csn=csn, rsn=rsn, la=LA_RATIO * Lg, lp=MDm.R_PAR * Lg, duty=duty, cusp=cusp,
-                parts=parts,
+                parts=parts, u3d=u3d,
                 cf=cf, cfr=cfr, hb=hb, dc=hb["record_supply"], dc_free=hb["record_supply_free"], ring=ring)
 
 
@@ -252,6 +253,9 @@ def panel_a_table(ox, y, N):
                          f"{sp['R_coil_ohm']:.2f} Ω each"),
         ("group", f"L̂ {N['Lg']:.3f} H, ratio κ {N['op']['kappa']:.1f}, τ = L/R {N['op']['tau']:.3f} s; "
                   f"Ψs {b['psi_s']:.3f} Wb-t (the {sp['t_n']:.1f} mm NiFe neck)"),
+        ("", f"in 3-D: {N['u3d']['frame_a']['L_al_coil_mH']:.1f} / {N['u3d']['frame_a']['L_un_coil_mH']:.1f} mH, "
+             f"κ {N['u3d']['frame_a']['kappa']:.2f}; {N['u3d']['cyl_aiding']['kappa']:.2f}–"
+             f"{N['u3d']['cyl_one_reversed']['kappa']:.2f} with the coils coupled (sim/utron-3d-findings.md)"),
         ("bridges", f"a passing bridge closes the utron's flux path: L(θ) {sp['n_br']} × per rev; B row half a pitch on"),
         ("AH", f"anti-Helmholtz pair at the hub, one coil per branch: {ah['N']} t, {ah['L'] * 1e3:.2f} mH, "
                f"{ah['R']:.2f} Ω each [RH]"),
@@ -270,14 +274,19 @@ def panel_a_table(ox, y, N):
     cu = N["cusp"]
     tx(ox + 42, y + 6, f"At {b['rpm']:.0f} rpm relative ({N['F']:.0f} Hz): {I_min:.2f}–{b['I_pk']:.2f} A per branch, "
                        f"{b['V_pk']:.0f} V peak per group; AH {b['AT_min']:.0f}–{b['AT_pk']:.0f} A-turns unbypassed.", "op")
-    y += 18
+    y += 16
     tx(ox + 42, y + 6, f"With the bypass (PROPOSED): {cu['top']['AT_min']:.0f}–{cu['top']['AT_max']:.0f} A-turns per coil "
                        f"({cu['top']['AT_mean']:.0f} mean), top and bottom within {cu['dAT_max']:.0f}.", "op")
-    tx(ox + 42, y + 24, f"Belt {b['P_belt_el_W']:.1f} W = utron Cu 6 × {b['P_utron_coil_W']:.2f} + La / Lb {b['P_fixed_W']:.2f} "
+    tx(ox + 42, y + 22, f"Belt {b['P_belt_el_W']:.1f} W = utron Cu 6 × {b['P_utron_coil_W']:.2f} + La / Lb {b['P_fixed_W']:.2f} "
                         f"+ AH {b['P_AH_W']:.2f} + diodes {b['P_diode_W']:.2f} W; + iron {2 * b['P_fe_side_W']:.2f} W "
                         f"= {b['P_total_W']:.1f} W.", "op")
-    tx(ox + 42, y + 42, f"With the bypass the belt reads {cu['P_belt_W']:.1f} W + iron {2 * b['P_fe_side_W']:.2f} W "
+    tx(ox + 42, y + 38, f"With the bypass the belt reads {cu['P_belt_W']:.1f} W + iron {2 * b['P_fe_side_W']:.2f} W "
                         "(sim/ah-steady-cusp-findings.md).", "op")
+    du = json.load(open(os.path.join(ROOT, "sim", "utron_3d_results.json")))["deck"]
+    mean = [du[k]["22mF"]["top"]["AT_mean"] for k in ("cyl_aiding", "frame_a")]
+    zl = [N["u3d"][k]["z_lin"] for k in ("cyl_aiding", "frame_a")]
+    tx(ox + 42, y + 54, f"With the 3-D utrons: AH {mean[0]:.0f}–{mean[1]:.0f} A-turns mean with the bypass, "
+                        f"z_lin {zl[0]:.2f}–{zl[1]:.2f} (sim/utron-3d-findings.md).", "op")
 
 
 # ------------------------------------------------------------------------------------------------ (b) electrostatic

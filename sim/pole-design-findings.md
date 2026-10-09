@@ -27,6 +27,7 @@ superseded by p1b, after a tooth-parity fix.
 **Two bases for the gain z** (quote z with its basis):
 - **z_lin, the screen's:** the linear gain per cycle from the L(θ) profile, with ideal diodes and no load. The variants
   are selected on z_lin ≥ 1.20; the pick has 1.208 (`pole_design_variants_op.json` `z_lin`).
+  - **2026-10-09:** with the 3-D utrons (`sim/utron-3d-findings.md`) the pick reads 1.16–1.17, under that rule.
 - **z_early, the loaded run's:** the early cycles' growth in the transient deck, with Si diodes, the AH, La / Lb, the
   wiring strays and the snubbers (`sim/magnetic_doubler.py` `analyse`). The pick has 1.139, and 1.147 with the 22 mF
   bypass (`sim/ah-steady-cusp-findings.md`).
@@ -47,6 +48,9 @@ stages' JSONs (p1 .. recheck) and the copper numbers in §2–§6 still carry th
 
 **Self-check:** aligned L comes out 1.21 × the two-gap analytic value (gap fringing plus slot leakage). The mesh is
 converged to 0.5 %.
+- **2026-10-09** (`sim/utron-3d-findings.md` §1, G-2D): bracketed by two other solvers, the 2-D aligned value lies at
+  1.974–1.992 µH per turn², so this solver at its own mesh (1.9666) sits 0.4 % under it; its uniform x-grid also moves
+  the unaligned L +1.5 % at a non-commensurate hx 0.35 mm.
 
 ## 2. Screening and refinement (P1, P1b)
 
@@ -357,6 +361,8 @@ by §7.*
   - rounded end turns (R 28 outside, R 1 inside), 156 mm long over them;
   - wound on a 1 mm G10 former. The strip, the spacer and the half-cores slide into it from both sides.
   - R 0.58 Ω, L 81 / 9.4 mH per coil (κ 8.6, τ 0.140 s); group L 0.243 H, 2.81 A peak, 101 V peak.
+  - **In 3-D** (2026-10-09, `sim/utron-3d-findings.md`): 83.3 / 12.4 mH, κ 6.70; 5.96–6.44 with the coils' coupling
+    round the machine; group L 0.250 H.
 - **Retention:**
   - a G10 slot cover between the tips' inner faces, bonded in the vacuum impregnation, with no grooves: 0.83 mm thick at
     the tips, 1.7 mm at the centre, its top 0.2 mm below the gap arc. (The first cut had 1 mm grooves in the tips. They
@@ -423,6 +429,9 @@ by §7.*
 - **2-D model [IR].** Curvature is neglected and the end/axial-fringe corrections (+30 % unaligned, +3 % aligned) are
   [RH], so a 3-D check of κ_L is still due. The iron is linear μ_r 3000, and saturation enters the circuit through the
   neck law.
+  - **Done** (2026-10-09, `sim/utron-3d-findings.md`): the corrections are +71.3 % and +5.85 %, and the coils couple
+    round the machine; the pick's κ is 6.70 (5.96–6.44 coupled), its z_lin 1.16–1.17, and the AH 221–245 A-turns with
+    the bypass.
 - Iron loss is from the M235-35A 1.5 T / 50 Hz rating scaled as f^1.3·B² [RH]. τ_fixed of 0.5 s for La/Lb assumes
   large gapped cores (about 2 J stored each) [RH].
 - **AH:** the 160-turn rewind (1.0 mH, 0.27 Ω) is [RH], and the AH–bicone mutual coupling is not included.

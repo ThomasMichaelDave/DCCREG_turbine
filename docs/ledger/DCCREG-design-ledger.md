@@ -66,7 +66,8 @@ in opposite directions through a 1 : −1 reversing gear.
 
 **The two pumps** run at 1200 rpm relative, 120 Hz.
 - **The magnetic pump:**
-  - each side's three utrons form one group, A or B, whose inductance swings 9.4 ↔ 81 mH per coil as the bridges
+  - each side's three utrons form one group, A or B, whose inductance swings 9.4 ↔ 81 mH per coil (12.4 ↔ 83 mH in 3-D,
+    `sim/utron-3d-findings.md`) as the bridges
     pass;
   - groups A and B run in antiphase, in a circuit that is the exact dual of a diode charge doubler;
   - the saturating NiFe neck in each utron is the clamp;
@@ -92,8 +93,8 @@ in opposite directions through a 1 : −1 reversing gear.
 | tube | 940 mm: the air stack of record and the locked hub in solids, 153 solids without a clash | `sim/tube-shaft-findings.md` §0 |
 | diameters | vanes Ø300 mm; bridge ring Ø313 mm; stator cage Ø332 mm | `sim/pole-design-findings.md` §8 |
 | magnetic pump, per side | 3 wound utrons (200 turns, 2.23 kg each) and 6 SiFe bridges, gap 0.5 mm | `sim/pole-design-findings.md` §8 |
-| AH | 160-turn coils on Fair-Rite 77 MnZn rods (0.80 mm wire, 0.333 Ω as wound); 22 mF bypass each (PROPOSED); 290–308 A-turns (300 mean, ±3 %; 294 as wound) | `sim/ah-steady-cusp-findings.md`; `sim/hub-thermal-findings.md` §1 |
-| the AH's null | at the centre; 0.113 T/m; within ±0.44 mm over a cycle with the bypass, ±6.4 mm without | `sim/ah-null-findings.md` |
+| AH | 160-turn coils on Fair-Rite 77 MnZn rods (0.80 mm wire, 0.333 Ω as wound); 22 mF bypass each (PROPOSED); 290–308 A-turns (300 mean, ±3 %; 294 as wound) with the record's 2-D utrons, 221–245 with the 3-D ones | `sim/ah-steady-cusp-findings.md`; `sim/hub-thermal-findings.md` §1; `sim/utron-3d-findings.md` §4 |
+| the AH's null | at the centre; 0.113 T/m (0.083–0.092 with the 3-D utrons); within ±0.44 mm over a cycle with the bypass, ±6.4 mm without | `sim/ah-null-findings.md`; `sim/utron-3d-findings.md` |
 | electrostatic pump, per side | 6 + 6 Al vanes 3 mm, full rounds R1.5, 6 mm air gaps; C1 / C2 55–410 pF; Ca / Cb 451 pF | `sim/air-stack-sizing-findings.md` §6.5 |
 | operating peak | 13.1 kV at the clamps (the 6 mm gap's breakdown over 1.5) | `sim/air_stack_sizing_results.json` |
 | rings | Cu foil 0.10 mm, 26.25–55.71° from the axis; beads Ø3 / Ø2 mm; 29.9 mm apart along the glass | `docs/rings-design.md` §2 |
@@ -249,6 +250,10 @@ commits' dates.
 - A utron is a U-core electromagnet on the rotor. Its two radial tips face the counter-rotor at r 130 mm.
 - When a passive SiFe bridge spans both tips, the flux closes across two 0.5 mm gaps and the coil's inductance is
   high: 81.0 mH. Between bridges the nearest iron is 9.74 mm away and it falls to 9.4 mH (κ 8.6).
+- **In 3-D** (`sim/utron-3d-findings.md`, model check 34) the stack's ends add +71 % unaligned against the record's
+  [RH] +30 %: 83.3 / 12.4 mH, κ 6.70. The group's three series coils also couple round the machine, which the 2-D
+  section excludes: κ 5.96 with the coils aiding, 6.44 with one of the three reversed. How the three are connected is
+  not recorded: the designer's.
 - Six bridges on a 60° pitch at 1200 rpm relative swing it at 120 Hz. Each bridge sees the three utrons pass, so it
   carries unipolar flux at 60 Hz (`sim/pole-design-findings.md` §8).
 
@@ -263,6 +268,10 @@ commits' dates.
 - Per cycle the stored flux grows by a fixed factor: z 1.21 in the design screen's linear model, against a selection
   rule of ≥ 1.20. The loaded transient run reads 1.139 early on, and 1.147 with the AH bypass
   (`sim/pole_design_variants_op.json`; `sim/ah-steady-cusp-findings.md`).
+- **With the 3-D utrons** the pick reads z_lin 1.16–1.17, under its own rule, and z_early 1.07–1.09. The AH gets
+  221–245 A-turns with the bypass instead of 300, and the belt pays 10–12 W instead of 18
+  (`sim/utron-3d-findings.md` §4). Restoring 450 A-turns at the peak takes Ψs × 1.27–1.42 (a neck of about
+  3.8–4.3 mm), or a longer stack: the designer's (§5.2).
 - Its duality check against the electrostatic doubler gave z 1.528 against 1.512 (`sim/hub-drive-findings.md`).
 
 ![Figure 3. The wound utron against a bridge: the 200-turn coil on the split U-core, the 3.0 mm NiFe neck, the bonded slot cover, the studs; the solved 2-D flux. Source: docs/figures/utron-core-detail.png (docs/make_utron_drawing.py). The half-core's manufacturing drawing is DCCREG-UTR-101 (bundle sheet 4).](../figures/utron-core-detail.png)
@@ -327,6 +336,9 @@ commits' dates.
     0.5 V, 8 mW for the pair.
 - **The cost of steadiness:** the steady field is the mean, 300 A-turns, against the 449 A-turn peak the AH was
   sized to. A steady 450 needs 240 turns or a larger pump, which is not re-sized.
+- **With the 3-D utrons** (§3.2) the pump settles lower: 237–251 A-turns with the bypass in the record's frame (245
+  mean), 229–242 with one coil of each group reversed and 214–227 with the coils aiding; so 0.083–0.092 T/m at the
+  null (`sim/utron-3d-findings.md` §4).
 - **The rods** peak at 0.121 T at 300 A-turns. They reach the register's 0.30 T limit [RH] at 743 A-turns for the AH
   alone; the record's "about 600" scaled a run with the cone windings in series (`sim/ah-null-findings.md` §4).
 
@@ -605,14 +617,14 @@ and tooling.
 | item | value |
 |:--|:--|
 | utrons | 3 at 0 / 120 / 240° on two 12 mm G10 carrier discs; r 57–130 mm; tips 14 mm; slot 30 × 30 mm; stack 100 mm of M235-35A 0.35 mm |
-| coil | 200 turns of 1.89 mm² (Ø1.55 mm), 50 % fill, mean turn 319 mm; R 0.58 Ω; L 81.0 / 9.4 mH (κ 8.6); τ 0.140 s |
+| coil | 200 turns of 1.89 mm² (Ø1.55 mm), 50 % fill, mean turn 319 mm; R 0.58 Ω; L 81.0 / 9.4 mH (κ 8.6, the 2-D screen); in 3-D 83.3 / 12.4 mH (κ 6.70; 5.96–6.44 with the coils coupled); τ 0.140 s |
 | neck (clamp) | 80 % NiFe, 3.0 × 100 mm; Ψs 0.134 Wb-turns per group |
 | bridges | 6 M235-35A sectors, r 130.5–144.5 mm, 25.5° face, 0.65 kg each, in a G10 ring r 131.5–156.5 mm; side B offset 30° |
 | gap | 0.500 mm aligned, 9.74 mm unaligned; 0 clashes in 457 pairs |
 | group | 3 utrons in series: 0.243 H; 0.87–2.81 A per branch; 101 V peak |
 | La / Lb | 0.146 H DC chokes, 0.29 Ω in the deck, 0.87–1.15 A, ≤ 110 V; first cut EI-84 × 35 mm, 150 t of Ø1.40 mm, 0.276 Ω, 1.66 kg (PROPOSED) |
 | D1*–D4* | 0.54 V at 1 A in the deck (a Schottky-class drop); 1.9 / 2.3 A peak; reverse 113 / 104 / 58 / 60 V with the start-up; first cut Schottky 200 / 150 V, ≥ 3 A (PROPOSED) |
-| gain | z 1.21 (z_lin, the screen's linear model); 1.139 loaded early (z_early), 1.147 with the bypass |
+| gain | z 1.21 (z_lin, the screen's linear model); 1.139 loaded early (z_early), 1.147 with the bypass; with the 3-D utrons z_lin 1.16–1.17 (under the ≥ 1.20 rule), z_early 1.07–1.09 (`sim/utron-3d-findings.md`) |
 | kick | once, at full speed (600 rpm each way, never below 500): the record's 20 % of Ψs seeds 0.110 A, 3.5 mJ; the threshold is 16 %; first cut K4, 470 µF + SCR, reed-fired (PROPOSED) |
 | mass | 2.23 kg per utron as built (SiFe 0.89, NiFe 0.15, Cu 1.07, G10 0.12) |
 | power | belt 17.6 W (18.1 W with the bypass) + iron 1.25 W; coils 46 °C in air at a 40 °C ambient |
@@ -625,7 +637,7 @@ and tooling.
 | coils | 160 turns of 0.80 mm grade-1 wire in 4 layers, r 8.25–11.45 mm, ±31.35–71.35 mm; 1.01 mH; 0.333 Ω as wound (0.27 Ω in the deck); 1.22 W each, 43 °C |
 | winding | two identical coils, start to the group's utrons, finish to the diode side; rotated copies, start leads toward the vessel |
 | bypass (PROPOSED) | 22 mF per coil, ESR 10 mΩ [RH]; LC 34 Hz; 0.65 A rms, about 0.5 V, 8 mW for the pair |
-| field | 290–308 A-turns per coil (300 mean, ±3 %; 294 as wound); top and bottom within 17 A-turns |
+| field | 290–308 A-turns per coil (300 mean, ±3 %; 294 as wound); top and bottom within 17 A-turns; 221–245 mean with the 3-D utrons |
 | the null | at the centre; 0.113 T/m (0.111 as wound); 25 µm per A-turn of imbalance; ±0.44 mm over a cycle with the bypass, ±6.4 mm without (`sim/ah-null-findings.md`) |
 | rods | 0.121 T at 300 A-turns; 0.30 T [RH] at 743 A-turns for the AH alone |
 | 77 MnZn | µi 2000; 0.51 T at 400 A/m (25 °C); Br 0.18 T; Hc 20 A/m; 1 Ω·m; Curie above 200 °C (Fair-Rite's data sheet, as a search rendered it; to verify, `presets/hub-locked.json` AH core) |
@@ -712,8 +724,12 @@ and tooling.
   polar beads 2.3–2.4 % of margin), the coupler as a tube with the flanges turned to Ø60, the leads' path;
 - **the rings' joints** (§3.6, `sim/hub-joints-findings.md` §5): the laps' free edges filleted, the polar rings seamless
   (turned) or their joints dressed with the AH ends rounded, the equatorial joints dressed, the contacts void-free;
-- **the AH's steady field:** 300 A-turns (294 as wound) against the 449 the AH was sized to; a steady 450 needs
-  240 turns or a larger pump;
+- **the AH's steady field and the utrons in 3-D** (§3.2, §3.3; `sim/utron-3d-findings.md`): 300 A-turns (294 as
+  wound) against the 449 the AH was sized to with the record's 2-D utrons, and 221–245 with the 3-D ones, whose z_lin
+  1.16–1.17 is under the pick's own ≥ 1.20 rule. Accept the lower field; or restore it with a thicker neck (Ψs × 1.27–
+  1.42, about 3.8–4.3 mm of NiFe, the utrons' copper loss × 1.6–2.0), a longer stack (κ about 7.8 at 150 mm, 8.4 at
+  200 mm) or a larger pump; and set how each group's three coils are connected (one reversed: κ 6.44, against 5.96
+  aiding);
 - **the parts' first cuts** (`sim/parts-first-cut-findings.md`): La / Lb (EI-84 × 35), Schottky D1*–D4*, the HV
   sticks and their surge resistors, the clamp strings, the chains' parts, the K4 kick fired at full speed, the
   creepage and the potting;
@@ -810,7 +826,7 @@ more; each line says what was done and where. The model checks (31–34) run as 
 | 31 | the neck, a nonlinear field check | `sim/neck-nonlinear-findings.md` |
 | 32 | real diodes at start-up | `sim/diodes-real-findings.md` |
 | 33 | the tube's strays, by a field solve | `sim/tube-strays-findings.md` |
-| 34 | the utrons' κ in 3-D | `sim/utron-3d-findings.md` |
+| 34 | the utrons' κ in 3-D | **done, and a correction:** κ 6.70 in the record's frame (the ends +71 % unaligned against the [RH] +30 %), 5.96–6.44 with the coils' coupling round the machine; the pick's z_lin 1.16–1.17, under its ≥ 1.20 rule; the AH 221–245 A-turns with the bypass, not 300; the coils' connection not recorded: the designer's (`sim/utron-3d-findings.md`) |
 
 **Found by the parts' first cut** (`sim/parts-first-cut-findings.md`)
 

@@ -177,6 +177,25 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
 - **Fixed: the shaft's material in the record's solids:** the halves and flanges were labelled "steel"; they are
   "austenitic stainless, non-magnetic" (μ_r ≤ 1.05, the AH null's condition). `sim/tube_geometry.py --record` and
   `sim/step_to_glb.py` re-run; the geometry and the renders are unchanged.
+- **Added: the utrons in 3-D** (`sim/utron_3d.py`, `sim/utron_3d_results.json`, `sim/utron-3d-findings.md`, figure
+  `docs/figures/utron-3d.png`; the ledger's model check 34): a 3-D finite-volume magnetostatic solve (H = T − ∇Ω)
+  of a side's three utrons and six bridges, in the record's unrolled frame and in the machine's cylinder, gated on
+  closed forms and the 2-D record; then the record's own deck with each utron set.
+  - **κ is 6.70, not 8.59:** the stack's ends add +5.85 % aligned and +71.3 % unaligned, where the record's [RH] end
+    corrections took +3 % and +30 %; L_al 83.3 mH, L_un 12.4 mH per coil.
+  - **A group's three series coils couple round the machine** [OC], which the 2-D section excludes: κ 5.96 with the
+    coils aiding, 6.44 with one of the three reversed. How they are connected is not in the record: the designer's.
+- **Corrected, from the utrons in 3-D** (dated notes where each stood; `sim/pole-design-findings.md`,
+  `sim/ah-steady-cusp-findings.md`, `sim/ah-null-findings.md`, `sim/parts-first-cut-findings.md` §3, the K_END comment
+  in `sim/pole_fd2d.py`, the ledger and the rotor schematic):
+  - the pump is weaker than recorded: z_lin 1.16–1.17, under the pick's own selection rule (≥ 1.20); z_early with the
+    bypass 1.072–1.091;
+  - the AH's steady field with the 22 mF bypass is 221–245 A-turns mean, not 300, so the null's gradient is
+    0.083–0.092 T/m, not 0.113; the belt pays 10.2–12.3 W, not 18.1;
+  - the start's kick and speeds were found with the record's utrons; a lower z_early starts harder (not re-run).
+  - **Open, the designer's:** accept 221–245 A-turns, or restore 450 at the peak by a thicker neck (Ψs × 1.27–1.42,
+    about 3.8–4.3 mm of NiFe against 3.0), a longer stack (κ about 7.8 at 150 mm) or a larger pump; and the coils'
+    connection.
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the

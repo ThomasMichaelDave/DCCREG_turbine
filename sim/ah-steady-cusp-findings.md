@@ -27,6 +27,9 @@ is below, so AHt is side A's coil (below) and AHb side B's (above); each branch 
 | **22 mF** | **34 Hz** | **290–308 (300) A-t** | **5.9 %** | **17 A-t** | **1.147** | **18.1 W** |
 | 47 mF | 23 Hz | 295–303 (300) A-t | 2.8 % | 8 A-t | 1.148 | 18.1 W |
 
+- **With the 3-D utrons** (2026-10-09, `sim/utron-3d-findings.md` §4) the 22 mF row reads 214–251 A-turns (221–245
+  mean, by how each group's coils are connected), z_early 1.072–1.091 and 10.2–12.3 W: the bypass still holds the coil
+  within ±3 %.
 - **Size it well below resonance.** The AH coil's 1.0 mH and the capacitor resonate at 1/(2π√(LC)).
   - At 2.2 mF that is 107 Hz, close to the 120 Hz pump frequency, and the ripple gets worse.
   - From 10 mF (50 Hz) the pair filters. 22 mF (34 Hz) holds the coil within ±3 %.

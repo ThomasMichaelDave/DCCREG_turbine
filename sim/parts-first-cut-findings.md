@@ -68,6 +68,8 @@ changed.
   2.29 W in the diodes, a 16 % threshold.
 
 ### 3. The start kick: a capacitor dumped across La through an SCR, fired contactlessly at speed (PROPOSED)
+- **2026-10-09:** the start was run with the record's 2-D utrons. With the 3-D ones (`sim/utron-3d-findings.md`)
+  z_early falls to 1.07–1.09, so the threshold and the start speeds below are optimistic until re-run.
 - **The recommendation [IR]:** a 9 V lithium primary cell charges a 470 µF bipolar electrolytic through 10 kΩ.
   - At speed, an outside magnet closes a reed switch on the rotor, and the reed pulses an SCR's gate.
   - The SCR dumps the capacitor across La, + to node a: 19 mJ, 0.60 A peak, over 17 ms.

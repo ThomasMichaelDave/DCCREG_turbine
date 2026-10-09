@@ -24,6 +24,9 @@ MUR_FE = 3000.0
 RHO_CU = 1.72e-8
 FILL = 0.50
 K_END_U, K_END_A = 0.30, 0.03          # end / axial-fringe corrections to the 2-D permeance [RH: SRM practice]
+# 2026-10-09: in 3-D the pick's are 0.713 and 0.0585 (sim/utron-3d-findings.md §2), and its three series coils also
+# couple round the machine, which the A = 0 walls exclude (§3). The record's numbers keep these values; the 3-D ones
+# are reported beside them, not carried into this screen.
 R_G = 130.0                             # gap radius (mm), the tube's utron radius
 DOMAIN_DEG = 120.0
 

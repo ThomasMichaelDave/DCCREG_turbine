@@ -374,26 +374,29 @@
 <text x="154.0" y="778.0" class="tv" text-anchor="start" >wound utrons at 0 / 120 / 240°, 200 t of Ø1.55 mm Cu: 81.0 / 9.4 mH (aligned / unaligned), 0.58 Ω each</text>
 <text x="62.0" y="797.5" class="tk" text-anchor="start" >group</text>
 <text x="154.0" y="797.5" class="tv" text-anchor="start" >L̂ 0.243 H, ratio κ 8.6, τ = L/R 0.140 s; Ψs 0.134 Wb-t (the 3.0 mm NiFe neck)</text>
-<text x="62.0" y="817.0" class="tk" text-anchor="start" >bridges</text>
-<text x="154.0" y="817.0" class="tv" text-anchor="start" >a passing bridge closes the utron's flux path: L(θ) 6 × per rev; B row half a pitch on</text>
-<text x="62.0" y="836.5" class="tk" text-anchor="start" >AH</text>
-<text x="154.0" y="836.5" class="tv" text-anchor="start" >anti-Helmholtz pair at the hub, one coil per branch: 160 t, 1.01 mH, 0.27 Ω each [RH]</text>
-<text x="62.0" y="856.0" class="tk" text-anchor="start" ></text>
-<text x="154.0" y="856.0" class="tv" text-anchor="start" >bypass 22 mF across each coil, ESR 10 mΩ [RH] (PROPOSED)</text>
-<text x="62.0" y="875.5" class="tk" text-anchor="start" >La, Lb</text>
-<text x="154.0" y="875.5" class="tv" text-anchor="start" >0.146 H DC chokes: 0.87–1.15 A, ≤ 110 V, 0.29 Ω in the deck (τ 0.5 s [RH])</text>
-<text x="62.0" y="895.0" class="tk" text-anchor="start" ></text>
-<text x="154.0" y="895.0" class="tv" text-anchor="start" >first cut (PROPOSED): EI-84 × 35 mm, 150 t of Ø1.40 mm, 0.126 mm gap, 0.276 Ω, 1.66 kg each</text>
-<text x="62.0" y="914.5" class="tk" text-anchor="start" >Lp2, Lp3</text>
-<text x="154.0" y="914.5" class="tv" text-anchor="start" >4.4 mH wiring stray, as modelled (dual of Cpar) [IR]</text>
-<text x="62.0" y="934.0" class="tk" text-anchor="start" >D1*–D4*</text>
-<text x="154.0" y="934.0" class="tv" text-anchor="start" >0.54 V at 1 A in the deck; 1.9 / 2.3 A peak; reverse 113 / 104 / 58 / 60 V with the start-up</text>
-<text x="62.0" y="953.5" class="tk" text-anchor="start" ></text>
-<text x="154.0" y="953.5" class="tv" text-anchor="start" >first cut (PROPOSED): Schottky, 200 V (D1* / D2*) and 150 V (D3* / D4*), ≥ 3 A</text>
-<text x="62.0" y="979.0" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): 0.87–2.81 A per branch, 101 V peak per group; AH 139–449 A-turns unbypassed.</text>
-<text x="62.0" y="997.0" class="op" text-anchor="start" >With the bypass (PROPOSED): 290–308 A-turns per coil (300 mean), top and bottom within 17.</text>
-<text x="62.0" y="1015.0" class="op" text-anchor="start" >Belt 17.6 W = utron Cu 6 × 2.15 + La / Lb 0.66 + AH 2.00 + diodes 2.01 W; + iron 1.25 W = 18.8 W.</text>
-<text x="62.0" y="1033.0" class="op" text-anchor="start" >With the bypass the belt reads 18.1 W + iron 1.25 W (sim/ah-steady-cusp-findings.md).</text>
+<text x="62.0" y="817.0" class="tk" text-anchor="start" ></text>
+<text x="154.0" y="817.0" class="tv" text-anchor="start" >in 3-D: 83.3 / 12.4 mH, κ 6.70; 5.96–6.44 with the coils coupled (sim/utron-3d-findings.md)</text>
+<text x="62.0" y="836.5" class="tk" text-anchor="start" >bridges</text>
+<text x="154.0" y="836.5" class="tv" text-anchor="start" >a passing bridge closes the utron's flux path: L(θ) 6 × per rev; B row half a pitch on</text>
+<text x="62.0" y="856.0" class="tk" text-anchor="start" >AH</text>
+<text x="154.0" y="856.0" class="tv" text-anchor="start" >anti-Helmholtz pair at the hub, one coil per branch: 160 t, 1.01 mH, 0.27 Ω each [RH]</text>
+<text x="62.0" y="875.5" class="tk" text-anchor="start" ></text>
+<text x="154.0" y="875.5" class="tv" text-anchor="start" >bypass 22 mF across each coil, ESR 10 mΩ [RH] (PROPOSED)</text>
+<text x="62.0" y="895.0" class="tk" text-anchor="start" >La, Lb</text>
+<text x="154.0" y="895.0" class="tv" text-anchor="start" >0.146 H DC chokes: 0.87–1.15 A, ≤ 110 V, 0.29 Ω in the deck (τ 0.5 s [RH])</text>
+<text x="62.0" y="914.5" class="tk" text-anchor="start" ></text>
+<text x="154.0" y="914.5" class="tv" text-anchor="start" >first cut (PROPOSED): EI-84 × 35 mm, 150 t of Ø1.40 mm, 0.126 mm gap, 0.276 Ω, 1.66 kg each</text>
+<text x="62.0" y="934.0" class="tk" text-anchor="start" >Lp2, Lp3</text>
+<text x="154.0" y="934.0" class="tv" text-anchor="start" >4.4 mH wiring stray, as modelled (dual of Cpar) [IR]</text>
+<text x="62.0" y="953.5" class="tk" text-anchor="start" >D1*–D4*</text>
+<text x="154.0" y="953.5" class="tv" text-anchor="start" >0.54 V at 1 A in the deck; 1.9 / 2.3 A peak; reverse 113 / 104 / 58 / 60 V with the start-up</text>
+<text x="62.0" y="973.0" class="tk" text-anchor="start" ></text>
+<text x="154.0" y="973.0" class="tv" text-anchor="start" >first cut (PROPOSED): Schottky, 200 V (D1* / D2*) and 150 V (D3* / D4*), ≥ 3 A</text>
+<text x="62.0" y="998.5" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): 0.87–2.81 A per branch, 101 V peak per group; AH 139–449 A-turns unbypassed.</text>
+<text x="62.0" y="1014.5" class="op" text-anchor="start" >With the bypass (PROPOSED): 290–308 A-turns per coil (300 mean), top and bottom within 17.</text>
+<text x="62.0" y="1030.5" class="op" text-anchor="start" >Belt 17.6 W = utron Cu 6 × 2.15 + La / Lb 0.66 + AH 2.00 + diodes 2.01 W; + iron 1.25 W = 18.8 W.</text>
+<text x="62.0" y="1046.5" class="op" text-anchor="start" >With the bypass the belt reads 18.1 W + iron 1.25 W (sim/ah-steady-cusp-findings.md).</text>
+<text x="62.0" y="1062.5" class="op" text-anchor="start" >With the 3-D utrons: AH 221–245 A-turns mean with the bypass, z_lin 1.16–1.17 (sim/utron-3d-findings.md).</text>
 <text x="822.0" y="778.0" class="tk" text-anchor="start" >C1, C2</text>
 <text x="898.0" y="778.0" class="tv" text-anchor="start" >6 + 6 vanes, 6 × 22° / 22°, 6 mm air gaps, 3 mm full rounds: 55–410 pF, κ 7.5</text>
 <text x="822.0" y="797.5" class="tk" text-anchor="start" >Ca, Cb</text>

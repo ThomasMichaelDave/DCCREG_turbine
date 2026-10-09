@@ -9,7 +9,9 @@
 (`sim/ah-steady-cusp-findings.md`, the winding sense); the magnitudes and positions here do not depend on it [OC].
 
 ## Headline numbers
-At the pick's 300 A-turns per coil, rods μ_r 2000, the shaft non-magnetic as recorded, unless stated.
+At the pick's 300 A-turns per coil, rods μ_r 2000, the shaft non-magnetic as recorded, unless stated. With the 3-D
+utrons (2026-10-09, `sim/utron-3d-findings.md`) the coils carry 221–245 A-turns, so the gradient is 0.083–0.092 T/m
+(0.377 mT/m per A-turn); the positions scale with the imbalance, which stays within 12–14 A-turns.
 
 | what | value | where |
 |:--|:--|:--|
