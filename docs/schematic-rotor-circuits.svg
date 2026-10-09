@@ -168,11 +168,12 @@
 <circle cx="480.0" cy="690.0" r="3.6" class="dot"/>
 <circle cx="710.0" cy="690.0" r="3.6" class="dot"/>
 <text x="60.0" y="710.0" class="m" text-anchor="start" >REF = shaft (rotor), shared with (b)</text>
-<rect x="150.0" y="514.0" width="200.0" height="80.0" class="kick"/>
-<text x="160.0" y="534.0" class="tk2" text-anchor="start" >START KICK: source open</text>
-<text x="160.0" y="551.0" class="ms" text-anchor="start" >once, ≥ 20 % of Ψs at start-up:</text>
-<text x="160.0" y="567.0" class="ms" text-anchor="start" >0.11 A, 3.5 mJ seeded</text>
-<text x="160.0" y="583.0" class="ms" text-anchor="start" >into the utron loop</text>
+<rect x="150.0" y="514.0" width="200.0" height="96.0" class="kick"/>
+<text x="160.0" y="534.0" class="tk2" text-anchor="start" >START KICK (PROPOSED)</text>
+<text x="160.0" y="551.0" class="ms" text-anchor="start" >470 µF + SCR across La (+ to a)</text>
+<text x="160.0" y="567.0" class="ms" text-anchor="start" >reed-fired at full speed, once;</text>
+<text x="160.0" y="583.0" class="ms" text-anchor="start" >the record's 20 % of Ψs seeds</text>
+<text x="160.0" y="599.0" class="ms" text-anchor="start" >0.11 A, 3.5 mJ; threshold 16 %</text>
 <circle cx="550.0" cy="528.0" r="3.6" class="dot"/>
 <text x="560.0" y="532.0" class="ms" text-anchor="start" >any node</text>
 <line x1="550.0" y1="528.0" x2="550.0" y2="542.0" class="w"/>
@@ -380,17 +381,19 @@
 <text x="62.0" y="856.0" class="tk" text-anchor="start" ></text>
 <text x="154.0" y="856.0" class="tv" text-anchor="start" >bypass 22 mF across each coil, ESR 10 mΩ [RH] (PROPOSED)</text>
 <text x="62.0" y="875.5" class="tk" text-anchor="start" >La, Lb</text>
-<text x="154.0" y="875.5" class="tv" text-anchor="start" >0.146 H DC chokes: 0.87–1.15 A, ≤ 110 V, 0.29 Ω (τ 0.5 s [RH]); not designed</text>
+<text x="154.0" y="875.5" class="tv" text-anchor="start" >0.146 H DC chokes: 0.87–1.15 A, ≤ 110 V, 0.29 Ω in the deck (τ 0.5 s [RH])</text>
 <text x="62.0" y="895.0" class="tk" text-anchor="start" ></text>
-<text x="154.0" y="895.0" class="tv" text-anchor="start" >first cut [RH]: gapped EI of M235-35A, 28 mm leg, 179 t, 0.21 mm gap, 1.0 kg Fe + 0.4 kg Cu each</text>
+<text x="154.0" y="895.0" class="tv" text-anchor="start" >first cut (PROPOSED): EI-84 × 35 mm, 150 t of Ø1.40 mm, 0.126 mm gap, 0.276 Ω, 1.66 kg each</text>
 <text x="62.0" y="914.5" class="tk" text-anchor="start" >Lp2, Lp3</text>
 <text x="154.0" y="914.5" class="tv" text-anchor="start" >4.4 mH wiring stray, as modelled (dual of Cpar) [IR]</text>
 <text x="62.0" y="934.0" class="tk" text-anchor="start" >D1*–D4*</text>
-<text x="154.0" y="934.0" class="tv" text-anchor="start" >Si, 0.55 V at 1 A; 2.8 A peak; reverse 112 / 101 / 43 / 45 V peak</text>
-<text x="62.0" y="959.5" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): 0.87–2.81 A per branch, 101 V peak per group; AH 139–449 A-turns unbypassed.</text>
-<text x="62.0" y="977.5" class="op" text-anchor="start" >With the bypass (PROPOSED): 290–308 A-turns per coil (300 mean), top and bottom within 17.</text>
-<text x="62.0" y="995.5" class="op" text-anchor="start" >Belt 17.6 W = utron Cu 6 × 2.15 + La / Lb 0.66 + AH 2.00 + diodes 2.01 W; + iron 1.25 W = 18.8 W.</text>
-<text x="62.0" y="1013.5" class="op" text-anchor="start" >With the bypass the belt reads 18.1 W + iron 1.25 W (sim/ah-steady-cusp-findings.md).</text>
+<text x="154.0" y="934.0" class="tv" text-anchor="start" >0.54 V at 1 A in the deck; 1.9 / 2.3 A peak; reverse 113 / 104 / 58 / 60 V with the start-up</text>
+<text x="62.0" y="953.5" class="tk" text-anchor="start" ></text>
+<text x="154.0" y="953.5" class="tv" text-anchor="start" >first cut (PROPOSED): Schottky, 200 V (D1* / D2*) and 150 V (D3* / D4*), ≥ 3 A</text>
+<text x="62.0" y="979.0" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): 0.87–2.81 A per branch, 101 V peak per group; AH 139–449 A-turns unbypassed.</text>
+<text x="62.0" y="997.0" class="op" text-anchor="start" >With the bypass (PROPOSED): 290–308 A-turns per coil (300 mean), top and bottom within 17.</text>
+<text x="62.0" y="1015.0" class="op" text-anchor="start" >Belt 17.6 W = utron Cu 6 × 2.15 + La / Lb 0.66 + AH 2.00 + diodes 2.01 W; + iron 1.25 W = 18.8 W.</text>
+<text x="62.0" y="1033.0" class="op" text-anchor="start" >With the bypass the belt reads 18.1 W + iron 1.25 W (sim/ah-steady-cusp-findings.md).</text>
 <text x="822.0" y="778.0" class="tk" text-anchor="start" >C1, C2</text>
 <text x="898.0" y="778.0" class="tv" text-anchor="start" >6 + 6 vanes, 6 × 22° / 22°, 6 mm air gaps, 3 mm full rounds: 55–410 pF, κ 7.5</text>
 <text x="822.0" y="797.5" class="tk" text-anchor="start" >Ca, Cb</text>

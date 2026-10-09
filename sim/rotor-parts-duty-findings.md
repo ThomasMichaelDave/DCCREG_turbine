@@ -32,7 +32,9 @@
 
 - **The current is almost pure DC**, with a ripple of ±13 % at the pump frequency.
 - **So the core has to hold a DC bias.** That means a gapped core, like a filter choke.
-- **The AC flux swing is small,** so iron loss is negligible and laminated SiFe is fine.
+- **The AC flux swing is small,** so laminated SiFe is fine.
+  - **Corrected 2026-10-09** (`sim/parts-first-cut-findings.md` §1): the iron loss is small, not negligible: about
+    0.12–0.21 W per choke [RH], against 0.33 W of copper.
 
 **How much the 0.5 s matters.** The runs below keep the pick's Ψ_s; the operating point is not re-solved.
 

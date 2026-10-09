@@ -61,7 +61,9 @@ minute; numpy / scipy).
 - shaft halves 3.04 kg, flanges 0.41 kg; G10 sleeve 1.01 kg; carrier discs 0.79 kg;
 - the hub 0.72 kg (vessel 0.025, AH cores 0.048, AH coils 0.085, PEEK 0.40, gel 0.004, coupler 0.16);
 - six bearing inner rings 0.27 kg;
-- La / Lb first cut 2.82 kg (`sim/rotor-parts-duty-findings.md` §1) [RH];
+- La / Lb first cut 2.82 kg (`sim/rotor-parts-duty-findings.md` §1) [RH]. The bobbin-wound EI-84 × 35 of
+  `sim/parts-first-cut-findings.md` §1 is 3.3 kg for the pair (2026-10-09): the rotor 0.5 kg (1.5 %) heavier, which
+  moves no result here by more than that;
 - 1.5 kg for the clamps, D1–D4, the CW chains, D1*–D4*, the snubbers, the bypass, wiring and potting [RH, not designed].
 
 **Counter-rotor, 33.4 kg:**

@@ -331,7 +331,8 @@ def build():
     row("HV diode stick price", 2.5, "/each", "Placeholder.", "PRICE_STICK", fmt=NUM2)
     row("HV diode derating (stack rating / operating peak)", 1.5, "", "D1-D4, the core diode Dk (feed 1) and the "
         "chains' Dc / Dp (Dca / Dpa), each a series stack sized for the operating peak (Dk and the chains' diodes see "
-        "about 0.57 of it).",
+        "about 0.57 of it). The parts' first cut (PROPOSED) takes x2, so D3 / D4 each take two 20 kV sticks "
+        "(sim/parts-first-cut-findings.md §2.2); not costed until accepted.",
         "DIODE_SAFETY",
         fmt=NUM2)
     row("Contingency", 0.15, "fraction", "On the whole build.", "CONT", key=True, fmt=PCT)
@@ -363,16 +364,19 @@ def build():
         ("Magnetic pump", "G10 carrier discs", 4, 25.0, "2 per side. Placeholder."),
         ("Magnetic pump", "SiFe passive bridges, laminated (counter-rotor)", 12, 15.0, "6 per side. Placeholder."),
         ("Magnetic pump", "G10 bridge rings (counter-rotor)", 2, 60.0, "Placeholder."),
-        ("Magnetic pump", "La / Lb gapped EI chokes (1.0 kg iron, 0.41 kg Cu)", 2, 45.0,
-         "First cut, rotor_parts_duty_results.json. Placeholder."),
-        ("Magnetic pump", "D1*-D4* power diodes", 4, 3.0, "Low-voltage, high-current. Placeholder."),
-        ("Magnetic pump", "Node snubbers (RC)", 8, 1.5, "Placeholder."),
-        ("Magnetic pump", "Start-kick source (capacitor + push-button)", 1, 30.0,
-         "Open item: 20 % of Psi_s once, about 3.5 mJ at 0.11 A seeded (sim/pole-design-findings.md §7)."),
+        ("Magnetic pump", "La / Lb gapped EI-84 x 35 chokes (1.20 kg iron, 0.34 kg Cu each)", 2, 45.0,
+         "First cut, PROPOSED (sim/parts-first-cut-findings.md §1). Placeholder price."),
+        ("Magnetic pump", "D1*-D4* Schottky rectifiers, 200 V / 150 V, >= 3 A", 4, 3.0,
+         "First cut, PROPOSED (sim/parts-first-cut-findings.md §2.1). Placeholder price."),
+        ("Magnetic pump", "Node snubbers (22 nF PP film + 240 ohm)", 8, 1.5,
+         "First cut, PROPOSED (sim/parts-first-cut-findings.md §2.5). Placeholder price."),
+        ("Magnetic pump", "Start kick K4: 9 V lithium cell, 470 uF bipolar, SCR, reed and outside magnet", 1, 30.0,
+         "First cut, PROPOSED: fired at full speed; the threshold 16 % of Psi_s, 2.2 mJ seeded "
+         "(sim/parts-first-cut-findings.md §3). Placeholder price."),
         ("AH (hub)", "AH coils, 160 turns, on the former", 2, 15.0, "Placeholder."),
         ("AH (hub)", "AH bypass capacitors, 22 mF / 6.3 V (1 per coil), PROPOSED", 2, 12.0,
-         "The steady cusp, as modelled (sim/ah-steady-cusp-findings.md); not yet accepted by the designer. Bipolar "
-         "parts if the kick polarity is free."),
+         "The steady cusp, as modelled (sim/ah-steady-cusp-findings.md); not yet accepted by the designer. "
+         "Polarised, + to nodes d / b: the diodes set the sign (sim/parts-first-cut-findings.md §2.6)."),
         ("AH (hub)", "MnZn rod (the AH core), Fair-Rite 77, d 12.3 x 41.3 mm", 2, 30.0,
          "One per AH coil, top and bottom on the z axis (presets/hub-locked.json). Placeholder price."),
         ("Hub", "Shaft coupler, G10, around the PEEK retainer (two halves; shape open)", 2, 40.0,
@@ -405,7 +409,9 @@ def build():
         ("Electrostatic (fixed)", "Rotor HV insulation: sleeve bore bonded or coated, potting of D1-D4, Z1 / Z4 and the "
                                   "chains' diodes", 1,
          80.0, "The HV side is on the rotor now (sim/core-field-findings.md). Placeholder."),
-        ("Electrostatic (fixed)", "Surge resistors for D1-D4", 4, 5.0, "10-47 kOhm HV resistors. Placeholder."),
+        ("Electrostatic (fixed)", "Surge resistors for D1-D4", 4, 5.0, "First cut (PROPOSED): 22 kOhm, >= 15 kV across "
+         "the body, >= 1 W, >= 0.1 J in one pulse, and two more at the chains' inputs, not costed until accepted "
+         "(sim/parts-first-cut-findings.md §2.2). Placeholder."),
         ("Electrostatic (fixed)", "HV wiring, insulation, standoffs (on the rotor)", 1, 60.0, "Placeholder."),
         ("Electrostatic (fixed)", "Reference link (brush or bearing strap)", 1, 20.0, "Placeholder."),
         ("Mechanics", "Bearings, 6205-class", 6, 12.0, "4 inner + 2 end. Placeholder."),

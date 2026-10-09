@@ -11,13 +11,14 @@
     (sim/hub-rings-build-findings.md; the drawing also handles the earlier Dk supply);
     the stator vanes joined to the shaft through one inner bearing for now (a brush later).
 (a) also draws the 22 mF bypass across each AH coil (PROPOSED; sim/ah-steady-cusp-findings.md), dashed.
-Values: sim/pole_design_variants_op.json (the pick), sim/utron_profile.py, sim/rotor_parts_duty_results.json (La / Lb,
+Values: sim/pole_design_variants_op.json (the pick), sim/utron_profile.py, sim/rotor_parts_duty_results.json and sim/parts_first_cut_results.json (La / Lb,
 D1*-D4* at the pick), sim/core_field_results.json (the electrostatic pump), sim/hub_rings_build_results.json (the rings
 as built and their supply in full: the clamps, the link), sim/hub_drift_results.json (the settled field),
 sim/ah_steady_cusp_results.json (the bypass).
 Usage: python3 docs/make_schematic_rotor.py   (the PNG needs playwright + chromium)
 """
 import json
+import re
 import math
 import os
 import sys
@@ -139,6 +140,7 @@ def numbers():
     csn = MDm.CSNUB * (MDm.L_MAX / Lg) * (60.0 / F) ** 2          # magnetic_doubler.deck(snub="scaled")
     rsn = MDm.RSNUB * (Lg / MDm.L_MAX) * (F / 60.0)
     duty = json.load(open(os.path.join(ROOT, "sim", "rotor_parts_duty_results.json")))
+    parts = json.load(open(os.path.join(ROOT, "sim", "parts_first_cut_results.json")))   # the first cuts (PROPOSED)
     cf = json.load(open(os.path.join(ROOT, "sim", "core_field_results.json")))
     cfr = {r["name"]: r for r in cf["rows"]}
     hb = json.load(open(os.path.join(ROOT, "sim", "hub_rings_build_results.json")))       # the rings as built
@@ -148,6 +150,7 @@ def numbers():
     cusp = [r for r in json.load(open(os.path.join(ROOT, "sim", "ah_steady_cusp_results.json")))["rows"]
             if r["C_byp_mF"] == 22.0][0]                                           # the bypass (PROPOSED)
     return dict(op=op, b=b, sp=sp, Lg=Lg, ah=ah, F=F, csn=csn, rsn=rsn, la=LA_RATIO * Lg, lp=MDm.R_PAR * Lg, duty=duty, cusp=cusp,
+                parts=parts,
                 cf=cf, cfr=cfr, hb=hb, dc=hb["record_supply"], dc_free=hb["record_supply_free"], ring=ring)
 
 
@@ -221,12 +224,13 @@ def panel_a(ox, N):
     for x in (xa, xd, xc, xb):
         dot(x, REF)
     tx(xa - 30, REF + 20, "REF = shaft (rotor), shared with (b)", "m")
-    # start kick: not designed (no connection drawn)
-    box(xa + 60, 514, 200, 80, "kick")
-    tx(xa + 70, 534, "START KICK: source open", "tk2")
-    tx(xa + 70, 551, f"once, ≥ {100 * b['kick_frac']:.0f} % of Ψs at start-up:", "ms")
-    tx(xa + 70, 567, f"{b['kick_I_A']:.2f} A, {b['kick_mJ']:.1f} mJ seeded", "ms")
-    tx(xa + 70, 583, "into the utron loop", "ms")
+    # start kick: the first cut, PROPOSED (sim/parts-first-cut-findings.md §3); no connection drawn
+    box(xa + 60, 514, 200, 96, "kick")
+    tx(xa + 70, 534, "START KICK (PROPOSED)", "tk2")
+    tx(xa + 70, 551, "470 µF + SCR across La (+ to a)", "ms")
+    tx(xa + 70, 567, "reed-fired at full speed, once;", "ms")
+    tx(xa + 70, 583, f"the record's {100 * b['kick_frac']:.0f} % of Ψs seeds", "ms")
+    tx(xa + 70, 599, f"{b['kick_I_A']:.2f} A, {b['kick_mJ']:.1f} mJ; threshold 16 %", "ms")
     # the node snubber, drawn once
     xs, ys = xc + 70, 528
     dot(xs, ys); tx(xs + 10, ys + 4, "any node", "ms")
@@ -238,7 +242,10 @@ def panel_a(ox, N):
 
 def panel_a_table(ox, y, N):
     b, sp, ah = N["b"], N["sp"], N["ah"]
-    la, ch = N["duty"]["la_lb"]["La"], N["duty"]["la_core"][0]
+    la, ch = N["duty"]["la_lb"]["La"], N["parts"]["la_lb"]["chosen"]
+    rt = {q["part"]: q for q in N["parts"]["ratings"]}
+    vr = [float(re.search(r"VR (\d+) V", rt[k]["duty"]).group(1)) for k in ("D1*", "D2*", "D3*", "D4*")]
+    ipk = [float(re.search(r"([\d.]+) A pk", rt[k]["duty"]).group(1)) for k in ("D1*", "D3*")]
     rows = [
         ("A1–A3, B1–B3", f"wound utrons at 0 / 120 / 240°, {sp['N_u']} t of Ø{sp['wire_d_mm']:.2f} mm Cu: "
                          f"{1e3 * sp['L_al_coil_H']:.1f} / {1e3 * sp['L_un_coil_H']:.1f} mH (aligned / unaligned), "
@@ -250,12 +257,13 @@ def panel_a_table(ox, y, N):
                f"{ah['R']:.2f} Ω each [RH]"),
         ("", f"bypass {N['cusp']['C_byp_mF']:.0f} mF across each coil, ESR {1e3 * 0.01:.0f} mΩ [RH] (PROPOSED)"),
         ("La, Lb", f"{N['la']:.3f} H DC chokes: {la['I_min_A']:.2f}–{la['I_max_A']:.2f} A, ≤ {la['V_pk_V']:.0f} V, "
-                   f"{N['la'] / TAU_FIXED:.2f} Ω (τ {TAU_FIXED:g} s [RH]); not designed"),
-        ("", f"first cut [RH]: gapped EI of M235-35A, {ch['a_mm']:.0f} mm leg, {ch['turns']} t, {ch['gap_mm']:.2f} mm gap, "
-             f"{ch['m_core_kg']:.1f} kg Fe + {ch['m_cu_kg']:.1f} kg Cu each"),
+                   f"{N['la'] / TAU_FIXED:.2f} Ω in the deck (τ {TAU_FIXED:g} s [RH])"),
+        ("", f"first cut (PROPOSED): {ch['core']} × {ch['stack_mm']:.0f} mm, {ch['turns']} t of Ø{ch['wire_mm']:.2f} mm, "
+             f"{ch['gap_total_mm']:.3f} mm gap, {ch['R20_ohm']:.3f} Ω, {ch['m_with_bobbin_kg']:.2f} kg each"),
         ("Lp2, Lp3", f"{N['lp'] * 1e3:.1f} mH wiring stray, as modelled (dual of Cpar) [IR]"),
-        ("D1*–D4*", f"Si, 0.55 V at 1 A; {b['I_pk']:.1f} A peak; reverse "
-                    + " / ".join(f"{v:.0f}" for v in N['duty']['la_lb']['diode_VR_pk_V'].values()) + " V peak"),
+        ("D1*–D4*", f"0.54 V at 1 A in the deck; {ipk[0]:.1f} / {ipk[1]:.1f} A peak; reverse "
+                    + " / ".join(f"{v:.0f}" for v in vr) + " V with the start-up"),
+        ("", "first cut (PROPOSED): Schottky, 200 V (D1* / D2*) and 150 V (D3* / D4*), ≥ 3 A"),
     ]
     y = table(ox + 42, y, rows)
     I_min = b["AT_min"] / ah["N"]

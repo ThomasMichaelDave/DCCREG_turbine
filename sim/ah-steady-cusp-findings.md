@@ -61,8 +61,12 @@ is below, so AHt is side A's coil (below) and AHb side B's (above); each branch 
 - **The check at the bench:** energise the pair from a DC supply through the same terminals. B at the centre must read
   zero within noise, with opposite signs 10 mm above and below.
 - **The bypass's polarity:** each coil carries about 0.5 V DC, with d (and b) positive, and a ripple of tens of mV. So
-  polarised parts go + to d (b), and the kick must seed this sign, which is the deck's sign. Seeded the other way, the
-  pump runs mirrored and reverse-biases them [OC].
+  polarised parts go + to d (b).
+  - **Corrected 2026-10-09** (`sim/parts-first-cut-findings.md` §3, §5): this said the kick must seed this sign and
+    that a seed of the other sign runs the pump mirrored, reverse-biasing the parts. It does not. Seeds of the other
+    sign (20, 25 and 30 % of Ψs) start the pump in the deck's own sign, with and without the bypass, and the bypass
+    never sees more than 1.3 mV the wrong way. The diodes set the sign [OC, from the deck]; the kick is wired + to
+    node a all the same.
 
 ## Caveats
 - **[RH]:** the 10 mΩ ESR. Electrolytics also age and run warm.

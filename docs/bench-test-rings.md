@@ -79,6 +79,8 @@ The test measures them in that order. The ratings come first because they decide
   - **the gel's rating at a bead:** half the lowest [RH].
 - **(c) The sphere:**
   - Hold the record's DC (−15.0 / +15.0 kV) for 1 h, then 1.25× it (−18.7 / +18.7 kV) for 1 h.
+  - A vane flashover at node 4 lifts ring B to 19.0 kV, 2 % past 1.25× (`sim/parts-first-cut-findings.md` §2.7).
+    Whether to qualify to ±20 kV (1.33×) instead is the designer's (OPEN).
   - Partial discharge must stay below the 10 pC threshold.
   - On a sacrificial build, optionally ramp to flashover.
 - **What it decides** (`sim/hub_rings_build_results.json` best_by_family; the symmetric supply, the designer's

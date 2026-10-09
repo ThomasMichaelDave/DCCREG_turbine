@@ -220,7 +220,10 @@ form's 0.399, and zero for equal inertias (`selfcheck_rigid_limit` in the result
   - It is a property of the counter-rotor, not of the gear: the gear's ripple moves by about 10 % across it.
 - **The run-up crosses the 20 Hz gear mode** at about 100 rpm, with only the electrostatic pump running (the magnetic
   pump is kicked at speed). At a 2 rad/s² ramp the crossing takes a fraction of a second against the mode's 1.6 s
-  build-up. So kick the magnetic pump above about 200 rpm [IR].
+  build-up. So the kick comes after the crossing [IR].
+  - **Corrected 2026-10-09** (`sim/parts-first-cut-findings.md` §3): this said "above about 200 rpm". The magnetic
+    pump does not start there: at 200 rpm each way the kick dies within 8 cycles. It starts at every rotor phase from
+    500 rpm each way with the deck's diodes, so the kick fires at full speed, 600 rpm each way, never below 500.
 
 ### 4.3 The run-up and the limit
 

@@ -135,6 +135,30 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
 - **The ledger revised** (`docs/ledger/DCCREG-design-ledger.md` and `.pdf`), the register and the drawings bundle
   (50 sheets: the record in solids in part A, the AH null and the drive in part B, the model before the record in part
   C), and the architecture figure.
+- **Added: the rotor's parts, first cut** (`sim/parts_first_cut.py`, `sim/parts-first-cut-findings.md`, PROPOSED).
+  Both decks reproduce their records first.
+  - La / Lb: EI-84 laminations, a 35 mm stack, 150 turns of Ø1.40 mm and a 0.126 mm gap trimmed to 0.146 H; 0.276 Ω,
+    1.66 kg each. The pick is unchanged at its own τ.
+  - The ratings of every part: Schottky D1*–D4* (silicon rectifiers would cost z 1.139 → 1.074), 20 kV sticks with
+    22 kΩ surge resistors for D1–D4 (and two more at the chains' inputs), the clamp strings of 1.5KE200A-class parts
+    trimmed warm, the chains' parts, the snubbers and the bypass.
+  - The start kick K4: a 470 µF capacitor dumped across La through a reed-fired SCR, at full speed.
+  - Creepage and clearance by interface (IEC 60664-1 style), and the potting.
+- **Corrected, from the parts' first cut** (dated notes where each stood):
+  - the kick fires at full speed, not "above about 200 rpm": the pump starts at every rotor phase only from 500 rpm
+    each way (`docs/drive-gear-belt.md` §4.2, the ledger);
+  - the seed's sign does not set the pump's; the diodes do, so polarised bypass parts go + to nodes d / b
+    (`sim/ah-steady-cusp-findings.md`);
+  - D1*–D4*: the deck's 0.54 V is a Schottky-class drop; 1.9 / 2.3 A per diode; 113 / 104 / 58 / 60 V with the
+    start-up;
+  - the Ca / Cb mounts' creepage is a length, 40 mm on PTFE or 80 mm on G10;
+  - La / Lb weigh 3.3 kg for the pair, and their iron loss is small, not negligible (`sim/rotor-mechanics-findings.md`,
+    `sim/rotor-parts-duty-findings.md`);
+  - a push-button kick cannot work on the rotor (`sim/pole-design-findings.md` §4).
+  - The rotor schematic's kick box and parts table, and the cost sheet's notes, carry the first cuts; the sheet's
+    numbers are unchanged.
+- **Open, the designer's:** a vane flashover at node 4 lifts ring B to 19.0 kV, 2 % past the bench's ±18.7 kV
+  (`sim/parts-first-cut-findings.md` §2.7; `docs/bench-test-rings.md` phase 1).
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the

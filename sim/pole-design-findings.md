@@ -96,6 +96,10 @@ converged to 0.5 %.
 - **The kick source is open.** Options: a one-time start pulse (a capacitor or battery with a push-button, the only
   switch and used only at start-up), a small PM bias in the utron back iron (untested), or a pulse from the
   electrostatic side.
+  - **Since** (2026-10-09, `sim/parts-first-cut-findings.md` §3): the kick must fire at speed, so a push-button on the
+    rotor cannot be used. The first cut (PROPOSED) is a 470 µF bipolar capacitor charged from a 9 V lithium cell and
+    dumped across La through an SCR, which a reed switch fires as it passes an outside magnet, at full speed (600 rpm
+    each way).
 
 ## 5. Design points and the 1.0 mm penalty
 

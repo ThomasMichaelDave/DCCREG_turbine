@@ -272,16 +272,24 @@ commits' dates.
   utron's back iron saturates at Ψs 0.134 Wb-turns per group, and the current then stops growing. The law
   i = Ψ/L·(1 + (Ψ/Ψs)⁶) is a fit [IR]. The neck is sized to the AH's need and no larger, because heat goes as Ψs²
   (`sim/pole-design-findings.md` §3, §8).
-- **The start.** With silicon diodes (0.55 V) a small seed does not grow, because the winding voltage while growing
-  is only a few volts. A one-time kick of about 20 % of Ψs starts it: it seeds 0.110 A and 3.5 mJ
-  (`sim/pole-design-findings.md` §7). Kick above about 200 rpm, clear of the drive's 20 Hz gear mode
-  (`docs/drive-gear-belt.md` §4.2). The kick source is OPEN, and so is its polarity if the bypass electrolytics are
-  polarised.
+- **The start.** With the deck's diodes (0.54 V at 1 A, a Schottky-class drop) a small seed does not grow, because the
+  winding voltage while growing is only a few volts. A one-time kick starts it: the record's 20 % of Ψs seeds 0.110 A
+  and 3.5 mJ (`sim/pole-design-findings.md` §7); the threshold is 16 %, 2.2 mJ (`sim/parts-first-cut-findings.md` §3).
+  - **At full speed,** 600 rpm each way and never below 500: the pump starts at every rotor phase only from 1000 rpm
+    relative, and a running pump stops below about 750. At 200 rpm each way the kick dies within 8 cycles.
+  - **The first cut (PROPOSED):** a 9 V lithium cell charges a 470 µF bipolar capacitor, and an SCR dumps it across La
+    (+ to node a) when a reed switch on the rotor passes an outside magnet: 19 mJ, 0.60 A, 17 ms, once per charge.
+  - **The sign is the diodes':** a seed of the other sign starts the pump in the deck's own sign, so polarised bypass
+    parts go + to nodes d / b.
 - **The parts:**
   - the utrons: M235-35A 0.35 mm laminations, stack 100 mm, 200 turns of Ø1.55 mm Cu, 0.58 Ω, 2.23 kg each as built;
-  - La / Lb: 0.146 H DC chokes, 0.87–1.15 A, ≤ 110 V; first cut a gapped EI, "not designed" [RH];
-  - D1*–D4*: silicon, 2.8 A peak, reverse 112 / 101 / 43 / 45 V; parts not chosen;
-  - snubbers: an RC at each of the eight nodes (21 nF + 243 Ω) [IR];
+  - La / Lb: 0.146 H DC chokes, 0.87–1.15 A, ≤ 110 V. First cut (PROPOSED): EI-84 laminations, a 35 mm stack,
+    150 turns of Ø1.40 mm, a 0.126 mm gap trimmed to 0.146 H; R20 0.276 Ω, 1.20 T at the peak, 1.66 kg each
+    (`sim/parts-first-cut-findings.md` §1);
+  - D1*–D4*: reverse 113 / 104 / 58 / 60 V with the start-up, 1.9 / 2.3 A peak in each diode (2.8 A in the branch).
+    First cut (PROPOSED): Schottky, 200 V (D1* / D2*) and 150 V (D3* / D4*), ≥ 3 A. Silicon rectifiers (0.85 V)
+    would cost z 1.139 → 1.074 and the AH 449 → 423 A-turns (§2.1 there);
+  - snubbers: an RC at each of the eight nodes (21 nF + 243 Ω in the deck; first cut 22 nF film + 240 Ω) [IR];
   - the wiring stray Lp2 / Lp3: 4.4 mH [IR];
   - the coils run at 46 °C in air (63 °C in vacuum), at the model's 40 °C ambient (`sim/pole_design.py`).
 - **The power:** 17.6 W on the belt without the bypass (utron copper 12.9, AH 2.00, La / Lb 0.66, diodes 2.01), plus
@@ -353,7 +361,8 @@ the same circuit at negative polarity).
 
 **The clamps and the operating point.**
 - z > 1 at every amplitude, so something must stop the growth. The clamps Z1 (node 1) and Z4 (node 4) are avalanche
-  strings, first cut 66 × 200 V. They break down at the operating peak V_op 13.13 kV, conduct once a cycle near the
+  strings, first cut 66 × 200 V (1.5KE200A-class parts, one lot, sorted and trimmed warm:
+  `sim/parts-first-cut-findings.md` §2.4). They break down at the operating peak V_op 13.13 kV, conduct once a cycle near the
   peak and turn the whole surplus into heat: 1.07 W each, 0.95 mA peak (`sim/core_field_results.json`).
 - **V_op** is the 6 mm air gap's breakdown, 19.7 kV, over a 1.5 margin [RH].
 - **The rims' field** at 13.1 kV is 44.4 kV/cm, 0.80 of Peek's onset (55.7 kV/cm). Corona starts at 16.5 kV on a
@@ -361,13 +370,19 @@ the same circuit at negative polarity).
 - **The nodes:**
   - nodes 1 and 4 swing −13.2 ↔ −5.7 kV, half a cycle apart (mean −8.6 kV);
   - nodes 2 and 3 swing 0 ↔ −6.1 kV.
-  - D1–D4 see reverse peaks of 6.1 / 6.1 / 13.2 / 13.2 kV (parts not chosen; the guidance is ×2 rated HV sticks with
-    a surge resistor).
+  - D1–D4 see reverse peaks of 6.1 / 6.1 / 13.2 / 13.2 kV. First cut (PROPOSED): one 20 kV avalanche stick for D1 /
+    D2 and two in series for D3 / D4, each with a 22 kΩ surge resistor (`sim/parts-first-cut-findings.md` §2.2).
 - **The power:** the belt pays 2.14 W, all of it into the clamps.
 - **Without clamps** the pump runs as a relaxation oscillator: it arcs at the stack, sends 25–47 A surges through the
   diodes and 38 A through the bearing link, so the clamps stay (`sim/electrostatic-no-clamp-findings.md`).
-- **Ca / Cb:** 1.1 C_max, six full-annulus aluminium plates per side with 5 gaps of 6 mm, on the rotor. Their mounts
-  need 5.7–7.5 kV of creepage and are not drawn.
+- **Ca / Cb:** 1.1 C_max, six full-annulus aluminium plates per side with 5 gaps of 6 mm, on the rotor. Adjacent
+  plates differ by 5.7–7.5 kV, which needs 40 mm of creepage on PTFE or 80 mm on G10 (design; 32 / 64 mm by the
+  standard) and 13 mm of clearance. So no mount may bridge two adjacent plates: a first cut rides the node-1 plates on
+  the vane stack and hangs the node-2 plates on PTFE-sleeved tie-rods (`sim/parts-first-cut-findings.md` §4). Not
+  drawn.
+- **A vane flashover** at node 4, at its lowest point, lifts ring B from 14.96 to 19.0 kV until the leakage drains it:
+  2 % past the bench's 1.25× hold-off. Before the DC settles, the polar bead's gel would then run at about 6.3 kV/mm
+  (`sim/parts-first-cut-findings.md` §2.7) [IR]. OPEN for the designer (§5.2).
 - **Strays:** 20 pF per node [RH]. Each pF costs about 0.003 of z (`sim/core-field-findings.md` §4).
 
 ### 3.5 The hub
@@ -584,10 +599,10 @@ and tooling.
 | bridges | 6 M235-35A sectors, r 130.5–144.5 mm, 25.5° face, 0.65 kg each, in a G10 ring r 131.5–156.5 mm; side B offset 30° |
 | gap | 0.500 mm aligned, 9.74 mm unaligned; 0 clashes in 457 pairs |
 | group | 3 utrons in series: 0.243 H; 0.87–2.81 A per branch; 101 V peak |
-| La / Lb | 0.146 H DC chokes, 0.29 Ω, 0.87–1.15 A, ≤ 110 V (not designed) |
-| D1*–D4* | Si, 0.55 V at 1 A, 2.8 A peak; reverse 112 / 101 / 43 / 45 V |
+| La / Lb | 0.146 H DC chokes, 0.29 Ω in the deck, 0.87–1.15 A, ≤ 110 V; first cut EI-84 × 35 mm, 150 t of Ø1.40 mm, 0.276 Ω, 1.66 kg (PROPOSED) |
+| D1*–D4* | 0.54 V at 1 A in the deck (a Schottky-class drop); 1.9 / 2.3 A peak; reverse 113 / 104 / 58 / 60 V with the start-up; first cut Schottky 200 / 150 V, ≥ 3 A (PROPOSED) |
 | gain | z 1.21 (z_lin, the screen's linear model); 1.139 loaded early (z_early), 1.147 with the bypass |
-| kick | about 20 % of Ψs, once, at start-up: 0.110 A, 3.5 mJ seeded; above about 200 rpm |
+| kick | once, at full speed (600 rpm each way, never below 500): the record's 20 % of Ψs seeds 0.110 A, 3.5 mJ; the threshold is 16 %; first cut K4, 470 µF + SCR, reed-fired (PROPOSED) |
 | mass | 2.23 kg per utron as built (SiFe 0.89, NiFe 0.15, Cu 1.07, G10 0.12) |
 | power | belt 17.6 W (18.1 W with the bypass) + iron 1.25 W; coils 46 °C in air at a 40 °C ambient |
 
@@ -618,8 +633,8 @@ and tooling.
 | operating peak | 13.13 kV (19.7 kV breakdown / 1.5 [RH]); face field 21.9 kV/cm; rim 44.4 kV/cm (0.80 of onset) |
 | gain | z 1.31 bare (1.3095 ngspice); 1.191 at start-up with the rings' chains |
 | nodes | 1 / 4: −13.2 ↔ −5.7 kV (mean −8.6); 2 / 3: 0 ↔ −6.1 kV |
-| clamps | Z1 / Z4 avalanche strings, BV 13.1 kV (66 × 200 V); 1.07 W, 0.95 mA peak each |
-| D1–D4 | reverse peaks 6.1 / 6.1 / 13.2 / 13.2 kV (parts not chosen) |
+| clamps | Z1 / Z4 avalanche strings, BV 13.1 kV (66 × 200 V, 1.5KE200A class, PROPOSED); 1.07 W, 0.95 mA peak each |
+| D1–D4 | reverse peaks 6.1 / 6.1 / 13.2 / 13.2 kV; first cut 20 kV sticks (one / two in series) + 22 kΩ (PROPOSED) |
 | power | belt 2.14 W, all into the clamps |
 | aluminium (both sides) | rotor vanes 2.9 kg + Ca / Cb plates 6.1 kg; stator vanes 3.4 kg |
 
@@ -663,7 +678,7 @@ and tooling.
 | the HV side on the rotor; the link through one inner bearing | DECIDED | "for now"; a brush later |
 | the magnetic pick (g 0.5, 6 bridges, 1200 rpm, 200 turns) | DECIDED (10-09) | the basis of DCCREG-UTR-101 (Rev A draft) |
 | the steady cusp (22 mF bypass) | PROPOSED | drawn dashed on the schematic; it holds the null within ±0.44 mm |
-| La / Lb, D1*–D4*, D1–D4, the clamp strings, the kick source | PROPOSED (first cuts) | `sim/parts-first-cut-findings.md` |
+| La / Lb, D1*–D4*, D1–D4, the clamp strings, the chains' parts, the kick source, creepage and potting | PROPOSED (first cuts) | `sim/parts-first-cut-findings.md` |
 | the hub: layer order, sphere, wall, AH placement, symmetric pumps | DECIDED | |
 | the rings outside the glass, copper foil, the symmetric supply | DECIDED | |
 | the bands and beads | DESIGN | from the [RH] ratings; as drawn the polar bead sits 0.4 % under its rating |
@@ -685,8 +700,11 @@ and tooling.
   with the flanges turned to Ø60, the leads' path;
 - **the AH's steady field:** 300 A-turns (294 as wound) against the 449 the AH was sized to; a steady 450 needs
   240 turns or a larger pump;
-- **the parts' first cuts** (`sim/parts-first-cut-findings.md`): La / Lb, the diodes, the clamp strings, the kick
-  source and its polarity;
+- **the parts' first cuts** (`sim/parts-first-cut-findings.md`): La / Lb (EI-84 × 35), Schottky D1*–D4*, the HV
+  sticks and their surge resistors, the clamp strings, the chains' parts, the K4 kick fired at full speed, the
+  creepage and the potting;
+- **a vane flashover** (§3.4): ring B rises to 19.0 kV. Qualify the rings to ±20 kV (1.33×) on the bench, limit ring B
+  (a spark gap near 17 kV), or rely on the vanes' 1.5 margin to keep flashovers rare;
 - **the fields' purpose:** what the field at the null is for is not documented (§2.1).
 
 **The bench** (`docs/bench-test-rings.md`):
@@ -780,6 +798,18 @@ more; each line says what was done and where. The model checks (31–34) run as 
 | 33 | the tube's strays, by a field solve | `sim/tube-strays-findings.md` |
 | 34 | the utrons' κ in 3-D | `sim/utron-3d-findings.md` |
 
+**Found by the parts' first cut** (`sim/parts-first-cut-findings.md`)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 35 | "kick above about 200 rpm" (§3.2; `docs/drive-gear-belt.md` §4.2) | **corrected:** the pump starts at every rotor phase only from 500 rpm each way; the kick fires at full speed (`sim/parts-first-cut-findings.md` §3) |
+| 36 | "seeded the other way, the pump runs mirrored" (`sim/ah-steady-cusp-findings.md`) | **corrected:** the diodes set the sign; polarised bypass parts go + to nodes d / b (§3 there) |
+| 37 | D1*–D4* "silicon, 0.55 V, 2.8 A peak, reverse 112 / 101 / 43 / 45 V" | **corrected:** 0.54 V is a Schottky-class drop; 1.9 / 2.3 A per diode; 113 / 104 / 58 / 60 V with the start-up (§2.1 there) |
+| 38 | the Ca / Cb mounts "need 5.7–7.5 kV of creepage" | **corrected:** creepage is a length, 40 mm on PTFE or 80 mm on G10; no mount bridges two adjacent plates (§4 there) |
+| 39 | La / Lb "not designed", 2.82 kg; their iron loss "negligible" | **settled:** the EI-84 × 35 first cut, 3.3 kg for the pair; 0.12–0.21 W of iron each (§1 there) |
+| 40 | a kick "with a push-button" (`sim/pole-design-findings.md` §4; the cost sheet) | **corrected:** it fires at speed, so contactlessly: the K4 first cut (§3 there) |
+| 41 | a vane flashover at node 4 lifts ring B to 19.0 kV, past the bench's ±18.7 kV | **open:** the designer's (§5.2) |
+
 ## 7. Drawing register
 
 The bundle, `docs/ledger/DCCREG-drawings-bundle.pdf`, carries every sheet below on A3, in this order. It opens with a
@@ -850,7 +880,7 @@ redraw them (`docs/ledger/register.py`).
   - the bridge, the bridge ring, the carrier discs and cheeks, the NiFe strip and the coil as parts;
   - La / Lb (first cut in `sim/parts-first-cut-findings.md`);
   - the AH coil and core (in the record's solids);
-  - the kick source;
+  - the kick source (first cut in `sim/parts-first-cut-findings.md` §3);
   - the gear (its concept is sheet 25);
   - the retainer and the coupler (in the record's solids; first cut in `docs/rings-design.md` §2).
 
