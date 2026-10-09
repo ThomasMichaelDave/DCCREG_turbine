@@ -157,6 +157,9 @@ The test measures them in that order. The ratings come first because they decide
   - **the start-up from the seed:** 50 % at 0.12 s, 95 % at 0.24 s (29 cycles), 99 % at 0.33 s. From a consistent −1
     kV seed it is 27 cycles, 0.225 s (`sim/diodes-real-findings.md` §4.2: the deck's `uic` start). The pump needs that
     seed: with real sticks it does not grow from below about 17 V on nodes 1 and 4 (260 V hot; §4.1 there);
+  - **as built** (the tube's strays solved, `sim/diodes-real-findings.md` §6): about 6.8 kV/cm with typical sticks, 95 % at about
+    0.58 s from a −1 kV seed, which the pump needs: it does not self-excite. At the sticks' maximum leakage 6.3 kV/cm
+    and only just a start from −1 kV; hot, none. The lines below are on the record's capacitances;
   - **the field and its 120 Hz ripple at the null:** with real HV sticks 7.47 kV/cm and 0.049 kV/cm p-p (0.66 %),
     as the sticks' junction capacitance passes the pump's swing (`sim/diodes-real-findings.md` §4.3); with ideal diodes
     7.62 and 0.014 kV/cm p-p (0.19 %). The field stays DC from B to A; it does not swing from A to B. The probe needs a

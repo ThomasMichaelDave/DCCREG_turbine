@@ -98,8 +98,8 @@ in opposite directions through a 1 : −1 reversing gear.
 | electrostatic pump, per side | 6 + 6 Al vanes 3 mm, full rounds R1.5, 6 mm air gaps; C1 / C2 55–410 pF; Ca / Cb 451 pF. As built (a 3-D field solve): C1 / C2 128–451 pF (κ 3.51), Ca 480.5 pF, node strays 66 / 25 pF; z 1.058 bare, 1.031 with the rings' chains | `sim/air-stack-sizing-findings.md` §6.5; `sim/tube-strays-findings.md` |
 | operating peak | 13.1 kV at the clamps (the 6 mm gap's breakdown over 1.5) | `sim/air_stack_sizing_results.json` |
 | rings | Cu foil 0.10 mm, 26.25–55.71° from the axis; beads Ø3 / Ø2 mm; 29.9 mm apart along the glass | `docs/rings-design.md` §2 |
-| rings' supply | symmetric: −14.96 / +14.96 kV on 2 + 2 Cockcroft-Walton stages from the shaft (−14.65 / +14.67 kV with real HV sticks) | `sim/hub_rings_build_results.json` record; `sim/diodes-real-findings.md` §4.3 |
-| field at the null | 7.62 kV/cm from B to A at switch-on, 2.57 Pa (the bands alone 7.10); 8.20 kV/cm once settled at 25 °C; ripple 0.014 kV/cm p-p (0.19 %); no sign change in a revolution. With real HV sticks 7.47 kV/cm at switch-on and 0.049 kV/cm p-p (6.96 kV/cm at their datasheet's maximum leakage). With the tube's strays solved, 7.06 kV/cm (±13.86 kV) | `sim/hub-beads-settled-findings.md` §2; `sim/hub_drift_results.json`; `sim/hub_revolution_results.json`; `sim/diodes-real-findings.md` §4.3; `sim/tube-strays-findings.md` §5 |
+| rings' supply | symmetric: −14.96 / +14.96 kV on 2 + 2 Cockcroft-Walton stages from the shaft (−14.65 / +14.67 kV with real HV sticks; as built −13.38 / +13.40 kV) | `sim/hub_rings_build_results.json` record; `sim/diodes-real-findings.md` §4.3, §6.5 |
+| field at the null | 7.62 kV/cm from B to A at switch-on, 2.57 Pa (the bands alone 7.10); 8.20 kV/cm once settled at 25 °C; ripple 0.014 kV/cm p-p (0.19 %); no sign change in a revolution. With real HV sticks 7.47 kV/cm at switch-on and 0.049 kV/cm p-p (6.96 kV/cm at their datasheet's maximum leakage). With the tube's strays solved, 7.06 kV/cm (±13.86 kV); as built with real HV sticks 6.82 kV/cm, 6.31 at their maximum leakage, and hot the pump does not start from the deck's −1 kV | `sim/hub-beads-settled-findings.md` §2; `sim/hub_drift_results.json`; `sim/hub_revolution_results.json`; `sim/diodes-real-findings.md` §4.3, §6.5; `sim/tube-strays-findings.md` §5 |
 | power from the belt | magnetic 18.1 W + 1.25 W iron (10.2–12.3 W with the 3-D utrons, 12.7–15.0 W with the neck's field map as well, + iron); electrostatic 2.14 W (0.65 W as built); windage about 12 W and bearings 5 W | `sim/ah-steady-cusp-findings.md`; `sim/utron-3d-findings.md`; `sim/core_field_results.json`; `sim/tube-strays-findings.md`; `sim/rotor-mechanics-findings.md` §5 |
 | the hub's heat | the AH coils 1.22 W each: the coils at 43 °C, the glass at 32–37 °C in a 25 °C room | `sim/hub-thermal-findings.md` |
 | cost (placeholders) | the stack of record's build 6,477 EUR; the cheapest qualifying build 6,060 EUR | `docs/cost/README.md` |
@@ -407,8 +407,10 @@ the same circuit at negative polarity).
     nA, 10 V at 1 µA), and its capacitance and leakage take z below 1 at small amplitudes. The free pump decays below
     about 17 V on nodes 1 and 4 (typical leakage), 64 V (the datasheet's maximum) or 260 V (hot), so a contact
     potential or a triboelectric charge does not start it.
-  - It needs a seed of tens of volts, a few hundred hot. The deck's −1 kV seed is enough at every leakage level;
-    the machine's seed source is not designed (§5.2).
+  - On the record's capacitances it needs a seed of tens of volts, a few hundred hot, and the deck's −1 kV is enough at
+    every leakage level. **As built** (the tube's strays solved, `sim/diodes-real-findings.md` §6) it needs 122 V with typical
+    leakage, 1.0 kV at the datasheet's maximum and 3.65 kV hot, so the deck's −1 kV starts it only just at the maximum
+    and not at all hot. The machine's seed source is not designed (§5.2).
 
 **The clamps and the operating point.**
 - z > 1 at every amplitude, so something must stop the growth. The clamps Z1 (node 1) and Z4 (node 4) are avalanche
@@ -440,7 +442,12 @@ the same circuit at negative polarity).
     shaft through the G10 sleeve and 15–23 pF the first Ca plate to the stator vanes through the last rotor vane's
     openings; 24.5 pF on nodes 2 / 3, 11.5 pF of it to the utrons. Across the hub, 0.05 pF or less.
   - **As built** (every capacitance solved, the record's deck): z 1.058 bare and 1.031 with the rings' chains,
-    0.65 W, the rings at ±13.86 kV (7.06 kV/cm at the null), 95 % in 0.63 s. The pump barely self-excites.
+    0.65 W, the rings at ±13.86 kV (7.06 kV/cm at the null), 95 % in 0.63 s: with ideal diodes it barely
+    self-excites.
+  - **As built with real HV sticks** (`sim/diodes-real-findings.md` §6): it does not self-excite. It starts from 122 V (typical
+    leakage), 1.0 kV (the datasheet's maximum) or 3.65 kV (hot), and holds −13.38 / +13.40 kV and 6.82 kV/cm with
+    typical sticks (95 % at 0.575 s from −1 kV), 6.31 kV/cm at the maximum leakage. The clamps' own leakage helps
+    decide it: their hot 5 µA a string is [RH] and sets the 3.65 kV.
   - The parts' first cut's conductive spacer rings on the sleeve would raise node 1's stray to 105 pF and take z with
     the chains to 1.008; insulating mounts avoid it (§5.2).
 
@@ -587,7 +594,8 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
 
 **In time** (the bench test's predictions are Figure 10, §5.3):
 - **Start-up** from the pump's seed: 50 % at 0.12 s, 95 % at 0.24 s, 99 % at 0.33 s; as built, with the tube's strays
-  solved, 95 % at 0.63 s on the deck's own start (`sim/tube-strays-findings.md` §5).
+  solved, 95 % at 0.63 s on the deck's own start (`sim/tube-strays-findings.md` §5); with real HV sticks as well, 0.575 s
+  from a consistent −1 kV, 1.49 s at their maximum leakage, and hot no start from −1 kV (`sim/diodes-real-findings.md` §6.4).
   - **Corrected 2026-10-09** (`sim/diodes-real-findings.md` §1.2, §4.2): the deck's 29 cycles start from −0.58 / −0.90
     kV, not −1 kV, because under `uic` ngspice starts its charge-defined varicaps uncharged. From a consistent −1 kV,
     95 % takes 27 cycles (0.225 s), with ideal diodes and typical sticks alike; 0.30 s with hot sticks.
@@ -712,7 +720,7 @@ and tooling.
 | Ca = Cb | 450.9 pF = 1.1 C_max: 6 full-annulus plates, 5 gaps of 6 mm, on the rotor; as laid out 480.5 pF (the gap count rounded up) |
 | stack length | 102 mm of C1 + 6 mm + 48 mm of Ca = 156 mm |
 | operating peak | 13.13 kV (19.7 kV breakdown / 1.5 [RH]); face field 21.9 kV/cm; rim 44.4 kV/cm (0.80 of onset) |
-| gain | z 1.31 bare (1.3095 ngspice); 1.191 at start-up with the rings' chains, a large-signal gain: with real HV sticks below 1 under about 17 V (260 V hot), so a seed is needed (`sim/diodes-real-findings.md` §4.1); as built, with the tube's strays solved, 1.058 bare and 1.031 with the chains (`sim/tube-strays-findings.md` §5) |
+| gain | z 1.31 bare (1.3095 ngspice); 1.191 at start-up with the rings' chains, a large-signal gain: with real HV sticks below 1 under about 17 V (260 V hot), so a seed is needed (`sim/diodes-real-findings.md` §4.1); as built, with the tube's strays solved, 1.058 bare and 1.031 with the chains (`sim/tube-strays-findings.md` §5), and with real HV sticks a seed of 122 V / 1.0 kV / 3.65 kV (typical / maximum / hot leakage, `sim/diodes-real-findings.md` §6.3) |
 | nodes | 1 / 4: −13.2 ↔ −5.7 kV (mean −8.6); 2 / 3: 0 ↔ −6.1 kV |
 | clamps | Z1 / Z4 avalanche strings, BV 13.1 kV (66 × 200 V, 1.5KE200A class, PROPOSED); 1.07 W, 0.95 mA peak each |
 | D1–D4 | reverse peaks 6.1 / 6.1 / 13.2 / 13.2 kV; first cut 20 kV sticks (one / two in series) + 22 kΩ (PROPOSED) |
@@ -727,7 +735,7 @@ and tooling.
 | bands | 26.25–55.71°; 12.85 mm along the glass, 13.1 cm² each; gap 29.92 mm; Cu-ETP 0.10 mm, 12 gores per band, the laps' free edges filleted (PROPOSED) |
 | beads | Ø3 mm polar (contact r 11.06, z ±22.42 mm), Ø2 mm equatorial (contact r 20.65, z ±14.08 mm) |
 | ratings used | 1 kV/mm along the glass; 5 kV/mm in the gel at a bead [RH]; 2 / 8 to qualify |
-| supply | 2 + 2 CW stages from the shaft; ring A −14.96 kV, ring B +14.96 kV (−14.65 / +14.67 with real HV sticks); 8 diodes at 7.5 kV, selected for ≤ 25 nA; 8 × 100 pF / 30 kV |
+| supply | 2 + 2 CW stages from the shaft; ring A −14.96 kV, ring B +14.96 kV (−14.65 / +14.67 with real HV sticks; −13.38 / +13.40 as built); 8 diodes at 7.5 kV, selected for ≤ 25 nA; 8 × 100 pF / 30 kV |
 | k | 0.2546 (kV/cm)/kV as built; 0.2373 for the bands alone |
 | at the null | 7.62 kV/cm, 2.57 Pa at switch-on (the bands alone 7.10); 8.20 kV/cm, 2.98 Pa settled at 25 °C; ±5 mm uniformity 4.4 % (axis) / 2.0 % (equator) |
 | fields in the insulation | glass along the gap 1.00 kV/mm on average; gel at the beads 4.98 / 4.46 kV/mm as drawn; glass at the beads 1.46 / 3.01 kV/mm; to the AH 1.81 kV/mm |
@@ -793,15 +801,20 @@ and tooling.
   0.90 [RH]) and its foils, stacked across the radius, cost 10 % of the aligned L at the laps. Keep it; stack the
   foils axially (the record's gain back, 322 A-turns at z_early 1.147 in the 2-D frame); or thicken it to about
   3.2–3.3 mm (Ψs back). DCCREG-UTR-101 (Rev A draft) follows the choice;
-- **the electrostatic pump as built** (§3.4, `sim/tube-strays-findings.md`): z 1.031 with the rings' chains, 0.65 W,
-  7.06 kV/cm at the null, 95 % in 0.63 s. Accept it, or win the margin back: a radial clearance at the vanes' rims
-  (κ per gap 3.70 → 4.94 at 12 mm), a PTFE sleeve (the shaft's share of node 1's stray × 0.49), insulating mounts
-  for the Ca plates, or more or larger vanes;
+- **the electrostatic pump as built** (§3.4, `sim/tube-strays-findings.md`, `sim/diodes-real-findings.md` §6): z 1.031 with the
+  rings' chains, 0.65 W; with real HV sticks 6.82 kV/cm at the null and no self-excitation. Accepting it means the
+  selected, cool chain parts and a seed of at least about 1 kV, or 3.65 kV for hot leakage. Or win the margin
+  back. The cheap remedies, solved (`sim/tube-strays-findings.md` §6, [RH] options): a 6 or 12 mm radial clearance at the
+  vanes' rims gives z 1.046 / 1.041 with the chains; a PTFE sleeve, which halves the rotor vanes' coupling to the
+  shaft, 1.045; both, 1.059, 0.91 W and 7.15 kV/cm with ideal diodes. None comes near the record's 1.191, so the
+  larger levers are the stack itself: more or larger vanes (the 6 + 6 cap is the designer's), insulating mounts
+  for the Ca plates in any case;
 - **the parts' first cuts** (`sim/parts-first-cut-findings.md`): La / Lb (EI-84 × 35), Schottky D1*–D4*, the HV
   sticks and their surge resistors, the clamp strings, the chains' parts (their diodes selected for ≤ 25 nA at
   7.5 kV and kept cool), the K4 kick fired at full speed, the creepage and the potting;
 - **the electrostatic pump's seed** (§3.4, `sim/diodes-real-findings.md` §4.1): with real HV sticks it does not
-  self-excite. It needs tens of volts on nodes 1 / 4, a few hundred hot, and no seed source is designed. Candidates: a
+  self-excite. As built it needs 122 V on nodes 1 / 4 (typical leakage), 1.0 kV at the maximum or 3.65 kV hot, and
+  no seed source is designed. Candidates: a
   one-shot HV seed fired with the magnetic pump's kick, or a tap from a charged part through an HV diode;
 - **a vane flashover** (§3.4): ring B rises to 19.0 kV. Qualify the rings to ±20 kV (1.33×) on the bench, limit ring B
   (a spark gap near 17 kV), or rely on the vanes' 1.5 margin to keep flashovers rare;
@@ -838,16 +851,17 @@ Source: `docs/bench-test-rings.md`.
   3. **DC drift on lab supplies for 6 h:** 7.62 → 8.20 kV/cm expected, with the return after grounding and a 40 °C
      repeat. The ratio of the glass's conductivity to the gel's, at the hub's temperature, decides the equatorial
      beads once settled.
-  4. **The pump's own supply at 1200 rpm relative:** with real HV sticks 7.47 kV/cm, 95 % in about 0.225 s from a
-     −1 kV seed and 0.049 kV/cm ripple expected (0.014 with ideal diodes); then the AH powered, with the Faraday
-     offset measured first.
+  4. **The pump's own supply at 1200 rpm relative:** as built with real HV sticks about 6.8 kV/cm, 95 % in about
+     0.58 s from a −1 kV seed and about 0.046 kV/cm ripple expected (`sim/diodes-real-findings.md` §6; 7.47 kV/cm on the
+     record's capacitances, 7.62 with ideal diodes); a low reading points at the sticks' leakage. Then the AH
+     powered, with the Faraday offset measured first.
 
 ![Figure 10. What the bench test should see: the start-up, the 120 Hz ripple (the pump's nodes, the rings, the field), the 6 h drift by material, and the test's phases. Source: docs/figures/hub-bench-predictions.png (docs/make_hub_bench_figure.py).](../figures/hub-bench-predictions.png)
 
 ## 6. Known inconsistencies and stale records
 
 The lock recorded 18 and fixed none. The settlement (2026-10-09) resolved them against the baseline, ran the four
-model checks (31–34) as studies of their own, and found 42 more (19–30 and 35–64), mostly through those studies; each
+model checks (31–34) as studies of their own, and found 43 more (19–30 and 35–65), mostly through those studies; each
 line says what was done and where. Where a check corrects a number of record, the record's value stays as its basis
 and the corrected one stands beside it, dated, until the designer decides.
 
@@ -939,7 +953,7 @@ and the corrected one stands beside it, dated, until the designer decides.
 |:--|:--|:--|
 | 53 | C1 = C2 "55–410 pF, κ 7.47" (§1, §3.4, §4; `sim/air_stack_sizing_results.json`): the 2-D cell with a 2 pF rim floor (`sim/stack_sizing.py` C_edge_pF) | **corrected beside the record's:** as built 128.4–450.6 pF, κ 3.51; the rims add 65 pF to C_min and 37 to C_max (dated notes; §4 there) |
 | 54 | the 20 pF node stray [RH] (§3.4; `sim/core_field.py`, `sim/bicone_drive.py`) | **corrected beside the record's:** 66.2 pF on nodes 1 / 4, 24.5 pF on nodes 2 / 3 (§3 there); the decks keep their 20 pF as the record's basis (comments there) |
-| 55 | Ca = Cb "451 pF = 1.1 C_max" | **corrected:** the layout rounds the gap count up, so the 5 gaps give 480.5 pF as laid out (§4 there) |
+| 55 | Ca = Cb "451 pF = 1.1 C_max" | **corrected:** the layout rounds the gap count up, so the 5 gaps give 480.5 pF as laid out (§4 there); that is 1.07 of the solved C_max, and the rule's 1.1 would take a sixth gap, 495 pF (§6 there): the designer's |
 | 56 | the 2-D cell holds the 3 mm vane as 2.4 mm node to node (`sim/stack_sizing.py`, `sim/vane_cell.py`) | **noted:** C_min per gap +7.2 % and C_max +1.0 % for the vane as drawn, the direction `sim/air-stack-sizing-findings.md` §6.5 states (comments there) |
 | 57 | the rings' supply ran with the deck's 3 / 2 pF ring strays while the record quotes the hub's 5.1 / 1.1 pF | **noted:** the whole machine gives 5.87 / 1.50 pF; none of the three moves the supply (§3 there) |
 | 58 | the record's solids draw C1 and C2 in phase (`sim/tube_geometry.py`: every vane at rot 0), against the circuit's antiphase | **done:** side B's stator vanes turned half a pitch (30°), as side B's bridges are; `sim/tube_geometry.py --record` re-run |
@@ -954,6 +968,12 @@ and the corrected one stands beside it, dated, until the designer decides.
 | 62 | "the flux crosses the strip edge-on, in the plane of the laminations" (`sim/utron_profile.py`, `sim/pole-design-findings.md`) | **corrected:** under the break only; at the laps it crosses the foils, which costs 10 % of the aligned L |
 | 63 | the laps "~3 %", the knee "~5 % / ~30 %" [RH] | **corrected:** 11 %, and 12.8 % / 52 % past the knee (dated notes) |
 | 64 | the pull at the clamp, 28.2 N per utron (`sim/rotor-mechanics-findings.md` §3) | **noted:** about 30 N with the field map's law in the 2-D frame (0.232 mWb aligned), about 28 N with the 3-D utrons as well, against the 834 N the studs carry at 600 rpm (`sim/rotor-mechanics-findings.md` §2) |
+
+**Found by the as-built real-diode run** (`sim/diodes-real-findings.md` §6)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 65 | as built, "the pump barely self-excites"; the seed "tens of volts, a few hundred hot", and "the deck's −1 kV is enough at every leakage level" (§3.4, §5.2) | **corrected:** those hold with ideal diodes or on the record's capacitances. As built with real HV sticks it does not self-excite: it starts from 122 V, 1.0 kV or 3.65 kV (typical, maximum, hot leakage), so −1 kV does not start it hot; 6.82 kV/cm with typical sticks. The clamps' hot leakage [RH] sets the 3.65 kV; the bench settles it |
 
 ## 7. Drawing register
 

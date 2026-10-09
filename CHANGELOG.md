@@ -276,6 +276,20 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
   phases with the record's frame and with the coils aiding. It starts every phase only from 1150 rpm relative (the
   frame) or at full speed (aiding), and the seed threshold is 25–30 %: K4 fires at full speed (dated notes in
   `sim/start-3d-findings.md`, `sim/parts-first-cut-findings.md` §3, `docs/drive-gear-belt.md` §4.2 and the ledger).
+- **Added: the electrostatic pump as built with real HV sticks** (`sim/diodes-real-findings.md` §6, `sim/diodes_real.py`
+  section 2b; the tube-strays study's as-built capacitances, reproduced exactly with the near-ideal diodes; 38 gates):
+  it does not self-excite. It starts from 122 V on nodes 1 / 4 with typical leakage, 1.0 kV at the datasheet's
+  maximum and 3.65 kV hot, so the deck's −1 kV does not start it hot. It holds −13.38 / +13.40 kV and 6.82 kV/cm with
+  typical sticks (95 % at 0.575 s), 6.31 kV/cm at the maximum leakage. The clamps' own leakage helps decide it; their
+  hot 5 µA a string is [RH]. The earlier 40-cycle threshold rule is fooled here (a seed grows while the chains charge,
+  then decays), so these thresholds come from start trials on the clamped deck.
+- **Added: the remedies for the electrostatic pump, for the designer** (`sim/tube-strays-findings.md` §6; [RH]
+  options, not the record): a 6 / 12 mm radial clearance at the vanes' rims gives z 1.046 / 1.041 with the chains, a
+  PTFE sleeve 1.045, both 1.059 (0.91 W, 7.15 kV/cm with ideal diodes). None comes near the record's 1.191; under the
+  rule Ca = 1.1 C_max the as-built stack would take a sixth Ca gap.
+- **Corrected, from these two** (dated notes: the ledger §1, §3.4, §3.7, §4, §5.2, §5.3, §6 items 55 and 65;
+  `sim/tube-strays-findings.md` §5, `docs/rings-design.md`, `docs/bench-test-rings.md` phase 4; the rotor schematic
+  and the architecture figure carry the as-built seed and field).
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the
