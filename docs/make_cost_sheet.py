@@ -196,8 +196,9 @@ def build():
 
     r += 1; put(ws, f"B{r}", "Targets", F_SEC)
     row("Electric field wanted on the core", 6.5, "kV/cm", "Placeholder: set your target. Core field 4 (the default): the "
-        "field at the AH null from the rings, at most what they reach (6.9 kV/cm with the rings as built on two stages; "
-        "more stages need the bench's higher ratings, sim/hub-rings-build-findings.md). Core field 3: at most the rule's "
+        "field at the AH null from the rings, at most what they reach (7.1 kV/cm with the rings as built on the symmetric "
+        "supply, two stages a side; more stages need the bench's higher ratings, sim/hub-rings-build-findings.md). Core "
+        "field 3: at most the rule's "
         "field at the null (below). 1 / 2 were costed at 2 kV/cm over 50 mm.", "E_CORE", key=True, fmt=NUM2)
     row("Core electrode spacing", 3.1, "mm", "Core fields 1-3: the distance across which that field is applied (3: the "
         "free gap at the null; 1 / 2: between the cones). Core field 4 uses the rings' field per kV below instead.",
@@ -206,13 +207,20 @@ def build():
         "the operating peak, cone B on the shaft (DC). 2: the cones float on coupling capacitors from nodes 1 / 4 and "
         "swing at the pump frequency; their strays cost gain (sim/core-field-findings.md). 3: two Rogowski electrodes in "
         "the vacuum on the AH null (sim/core-null-field-findings.md; not chosen). 4 (the default, the designer's "
-        "choice): two rings outside the glass, ring A on node 1's peak (Dk), ring B on the multiplier stages below "
-        "(sim/hub-rings-build-findings.md).", "CORE_MODE", key=True)
+        "choice): two rings outside the glass, ring B on the multiplier stages below, ring A on its own chain from node 1 "
+        "(the symmetric supply) or on node 1's peak (Dk), as ring A's feed says (sim/hub-rings-build-findings.md).",
+        "CORE_MODE", key=True)
     row("Multiplier stages on node 4 (core fields 3 / 4)", 2, "", "Cockcroft-Walton stages that charge electrode / ring B "
         "positive; 0 puts B on the shaft; 0-6 (the sag factors below are simulated up to six). The rings as built: two; "
         "more need higher ratings (sim/hub-rings-build-findings.md).", "N_CW", key=True)
-    row("Negative stages on ring A, on node 1's peak (core fields 3 / 4)", 0, "", "The balanced supply (sim/core_field.py "
-        "n_cw_a): ring A stacked negative on its Dk; 0-2. The rings as built: none.", "N_CW_A", key=True)
+    row("Ring A's feed (core fields 3 / 4: 1 node 1's peak, 2 its own chain)", 2, "", "2 (the designer's choice, "
+        "2026-10-09): the symmetric supply, ring A on its own Cockcroft-Walton chain from the shaft on node 1, the mirror "
+        "of ring B's, so the null sits at the shaft's potential; no Dk, no C_A. 1: ring A peak-charged from node 1 "
+        "through Dk and C_A (about -V_op), with the negative stages below stacked on it (sim/core_field.py n_cw_a, "
+        "a_ref).", "A_FEED", key=True)
+    row("Stages on ring A (core fields 3 / 4)", 2, "", "Feed 2: ring A's own chain, 0-6, with ring B's factors below "
+        "(the mirror pair simulated to 4 + 4: 7.52 / 14.96 / 22.16 / 28.92 kV a side). Feed 1: negative stages stacked "
+        "on its Dk, 0-2 (CW_A1 / CW_A2). The rings as built: two, feed 2.", "N_CW_A", key=True)
     row("Multiplier stage over the floating swing (core fields 3 / 4)", 1.067, "", "The first stage's DC over the floating "
         "swing's peak (Designs AM): 7.52 / 7.05 kV on the stack of record at 100 GOhm per ring "
         "(sim/hub_rings_build_results.json stages; 'float ss'); [RH] on other stacks.", "CW_PER_SWING", fmt=NUM3)
@@ -225,9 +233,13 @@ def build():
     row("Ring A's chain, one negative stage over ring B's first", 0.993, "", "Ring A from -13.22 to -20.69 kV "
         "(sim/hub_rings_build_results.json stages_ab).", "CW_A1", fmt=NUM3)
     row("Ring A's chain, two negative stages over ring B's first", 1.960, "", "Ring A to -27.96 kV.", "CW_A2", fmt=NUM3)
-    row("Rings' field at the null per kV across (core field 4)", 0.2460, "(kV/cm)/kV", "The rings as built: bands "
-        "25.75-57.7 deg with beaded edges, sized for 28.2 kV at 1 kV/mm between them and 5 kV/mm in the gel at the beads "
-        "(sim/hub_rings_build_results.json record) [RH on other voltages].", "K_RING", fmt="0.0000")
+    row("Rings' field at the null per kV across (core field 4)", 0.2373, "(kV/cm)/kV", "The rings as built: bands "
+        "26.25-55.71 deg with beaded edges, sized for 29.9 kV (-15.0 / +15.0 kV) at 1 kV/mm between them and 5 kV/mm in "
+        "the gel at the beads (sim/hub_rings_build_results.json record) [RH on other voltages].", "K_RING",
+        fmt="0.0000")
+    row("Ring A's stages within its feed?", '=IF(OR(CORE_MODE<3,AND(A_FEED=2,N_CW_A<=6),AND(A_FEED=1,N_CW_A<=2)),"yes",'
+        '"no: feed 1 takes 0-2 stages on ring A, feed 2 0-6")', "", "Core fields 3 / 4: the factors cover these counts.",
+        "N_CW_A_OK", formula=True)
     row("Field at the null the vacuum rule allows (core field 3)", 65.7, "kV/cm", "6.67 kV/mm on the electrodes' surface "
         "over the Rogowski electrodes' peak-to-centre ratio, 1.015 (sim/core_null_field_results.json).", "E_NULL_MAX",
         fmt=NUM1)
@@ -313,8 +325,9 @@ def build():
     row("Clamp Zener price", 0.6, "/each", "Placeholder.", "PRICE_Z", fmt=NUM2)
     row("HV diode stick rating", 20.0, "kV", "e.g. a 2CL77-class stick.", "V_STICK", fmt=NUM1)
     row("HV diode stick price", 2.5, "/each", "Placeholder.", "PRICE_STICK", fmt=NUM2)
-    row("HV diode derating (stack rating / operating peak)", 1.5, "", "D1-D4, the core diode Dk and the multiplier's "
-        "Dc / Dp, each a series stack sized for the operating peak (Dk, Dc, Dp see about 0.57 of it).",
+    row("HV diode derating (stack rating / operating peak)", 1.5, "", "D1-D4, the core diode Dk (feed 1) and the "
+        "chains' Dc / Dp (Dca / Dpa), each a series stack sized for the operating peak (Dk and the chains' diodes see "
+        "about 0.57 of it).",
         "DIODE_SAFETY",
         fmt=NUM2)
     row("Contingency", 0.15, "fraction", "On the whole build.", "CONT", key=True, fmt=PCT)
@@ -373,16 +386,17 @@ def build():
          80.0, "About 20 mm across at a 3.1 mm gap (sim/core-null-field-findings.md); non-magnetic. Placeholder."),
         ("Hub", "Vessel HV feedthroughs, non-magnetic seals (W in borosilicate, Mo in aluminosilicate; no Kovar)",
          "=IF(CORE_MODE=3,2,0)", 120.0, "With a grading shield at each seal's triple junction. Placeholder."),
-        ("Hub", "Ring electrodes: two bands of 0.1 mm copper foil on the glass (25.75-57.7 deg) with beaded edges "
+        ("Hub", "Ring electrodes: two bands of 0.1 mm copper foil on the glass (26.25-55.71 deg) with beaded edges "
                 "(Cu wire rings, 3 / 2 mm), and their leads", "=IF(CORE_MODE=4,2,0)", 25.0,
-         "Under the gel and the PEEK retainer; 28.2 mm apart along the glass (sim/hub-rings-build-findings.md). "
-         "Placeholder."),
+         "Under the gel and the PEEK retainer; 29.9 mm apart along the glass (docs/rings-design.md, "
+         "docs/drawings/DCCREG-HUB-201). Placeholder."),
         ("Hub", "Interface filler: silicone gel, degassed and vacuum-cast into the retainer's pocket", "=IF(CORE_MODE=4,1,0)",
          30.0, "0.5 mm over the glass, around the beads (presets/hub-locked.json interface_filler). Placeholder."),
-        ("Hub", "Null storage capacitors, 100 pF / 30 kV: C_A and the multipliers' Co / Cs",
-         "=IF(OR(CORE_MODE=3,CORE_MODE=4),1+2*N_CW+2*N_CW_A,0)",
+        ("Hub", "Null storage capacitors, 100 pF / 30 kV: the chains' Co / Cs (and Coa / Csa), C_A on feed 1",
+         "=IF(OR(CORE_MODE=3,CORE_MODE=4),IF(A_FEED=2,0,1)+2*N_CW+2*N_CW_A,0)",
          12.0, "100 pF keeps the start-up gain (z 1.18 against 1.03 at 1 nF). Placeholder."),
-        ("Electrostatic (fixed)", "Rotor HV insulation: sleeve bore bonded or coated, potting of D1-D4, Z1 / Z4, Dk, Dc / Dp", 1,
+        ("Electrostatic (fixed)", "Rotor HV insulation: sleeve bore bonded or coated, potting of D1-D4, Z1 / Z4 and the "
+                                  "chains' diodes", 1,
          80.0, "The HV side is on the rotor now (sim/core-field-findings.md). Placeholder."),
         ("Electrostatic (fixed)", "Surge resistors for D1-D4", 4, 5.0, "10-47 kOhm HV resistors. Placeholder."),
         ("Electrostatic (fixed)", "HV wiring, insulation, standoffs (on the rotor)", 1, 60.0, "Placeholder."),
@@ -445,20 +459,22 @@ def build():
         ("G10 cage + sleeve", "=V{r}*G10_CAGE+W{r}*G10_SLEEVE", MONEY, 9, "f"),
         ("shaft", "=N{r}/1000*SHAFT_M+SHAFT_SET", MONEY, 8, "f"),
         ("HV parts", "=2*ROUNDUP(G{r}*1000/V_ZENER,0)*PRICE_Z+(4+IF(CORE_MODE=1,1,0)+IF(OR(CORE_MODE=3,CORE_MODE=4),"
-                     "1+2*N_CW+2*N_CW_A,0))"
+                     "IF(A_FEED=2,0,1)+2*N_CW+2*N_CW_A,0))"
                      "*ROUNDUP(G{r}*DIODE_SAFETY/V_STICK,0)*PRICE_STICK", MONEY, 9, "f"),
         ("stack subtotal", "=SUM(X{r}:AF{r})", MONEY, 10, "f"),
         ("fixed BOM", "=FIXED_BOM", MONEY, 9, "link"),
         ("total incl. contingency", "=(AG{r}+AH{r})*(1+CONT)", MONEY, 11, "f"),
         ("per watt", "=IF(AR{r}>0,AI{r}/AR{r},1E+12)", MONEY, 9, "f"),
         ("meets targets", "=IF(AND(AP{r}>=V_NEED,AR{r}>=P_MIN,AQ{r}>=Z_MIN,F{r}<=N_CAP,D{r}<=R_MAX,"
-                          "OR(CORONA_REQ=0,O{r}>=G{r}),OR(CORE_MODE<>3,E_CORE<=E_NULL_MAX)),1,0)", "0", 8, "fv"),
+                          "OR(CORONA_REQ=0,O{r}>=G{r}),OR(CORE_MODE<>3,E_CORE<=E_NULL_MAX),N_CW_A_OK=\"yes\"),1,0)", "0", 8, "fv"),
         ("score", "=IF(AK{r}=1,IF(OBJECTIVE=1,AI{r},AJ{r}),1E+12)+ROW()*1E-9", "0.00", 10, "fv"),
         ("core swing, floating (kV)", None, NUM2, 9, "swing"),
         ("z, swinging core", None, NUM3, 8, "zsw"),
         ("P clamped, swinging core (W)", None, NUM2, 9, "psw"),
-        ("core voltage (kV)", "=IF(CORE_MODE=1,G{r},IF(OR(CORE_MODE=3,CORE_MODE=4),G{r}+(CHOOSE(N_CW+1,0,1,CW_N2,CW_N3,"
-                              "CW_N4,CW_N5,CW_N6)+CHOOSE(N_CW_A+1,0,CW_A1,CW_A2))*CW_PER_SWING*AM{r},AM{r}))", NUM2, 9,
+        ("core voltage (kV)", "=IF(CORE_MODE=1,G{r},IF(OR(CORE_MODE=3,CORE_MODE=4),IF(A_FEED=2,0,G{r})+"
+                              "(CHOOSE(N_CW+1,0,1,CW_N2,CW_N3,CW_N4,CW_N5,CW_N6)+IF(A_FEED=2,CHOOSE(MIN(N_CW_A,6)+1,0,1,"
+                              "CW_N2,CW_N3,CW_N4,CW_N5,CW_N6),CHOOSE(MIN(N_CW_A,2)+1,0,CW_A1,CW_A2)))*CW_PER_SWING*AM{r},"
+                              "AM{r}))", NUM2, 9,
          "fv"),
         ("z with the core", "=IF(CORE_MODE=2,AN{r},K{r})", NUM3, 8, "fv"),
         ("P with the core (W)", "=IF(CORE_MODE=2,AO{r},L{r})", NUM2, 9, "fv"),
@@ -608,10 +624,12 @@ def build():
          "(sim/core_field.py, sim/core-field-findings.md). A design qualifies when the core's voltage reaches E x "
          "spacing.", F_TXT),
         ("4, DC on the rings (the default, the designer's choice): two rings outside the glass, copper foil bands from "
-         "25.75 to 57.7 deg with beaded edges. Ring A is peak-charged from node 1 through Dk (and stacked on N_CW_A "
-         "negative stages, none as built); ring B sits on N_CW multiplier stages on node 4. The core's voltage is V_op + "
-         "CW_PER_SWING x AM x the multipliers' output (1, CW_N2 ... CW_N6 for one to six stages on B, CW_A1 / CW_A2 on "
-         "A; they carry the simulated sag at 100 GOhm per ring), and the field at the null is that voltage x K_RING. The "
+         "26.25 to 55.71 deg with beaded edges. Ring B sits on N_CW multiplier stages on node 4. Ring A, feed 2 (as "
+         "built, the symmetric supply): on its own N_CW_A-stage chain from the shaft on node 1, the mirror of B's, so "
+         "the null sits at the shaft's potential; feed 1: peak-charged from node 1 through Dk and stacked on N_CW_A "
+         "negative stages. The core's voltage is CW_PER_SWING x AM x the chains' outputs (1, CW_N2 ... CW_N6 for one to "
+         "six stages, either ring on feed 2), plus V_op on feed 1 (with CW_A1 / CW_A2 on A); the factors carry the "
+         "simulated sag at 100 GOhm per ring. The field at the null is that voltage x K_RING. The "
          "rings sit behind diodes, so the pump keeps its clamped gain and power (K, L). Outside the vacuum the vacuum "
          "rule does not bind; the bands are sized by the insulation: the gap along the glass, and the gel at the beads, "
          "which holds the record at two stages (sim/hub-rings-build-findings.md).", F_TXT),
@@ -621,7 +639,7 @@ def build():
          "factors as 4. The electrodes sit behind diodes, so the pump keeps its clamped gain and "
          "power (K, L); its start-up gain with 100 pF storage is about 0.9 of K (1.184 against 1.310 on the stack of "
          "record). Every option meets the same field, the vacuum rule's 65.7 kV/cm at the null; the voltage sets the "
-         "gap at that field (D_CORE). HV parts count Dk and the multiplier's Dc / Dp as stacks (sim/core-null-field-"
+         "gap at that field (D_CORE). HV parts count Dk (feed 1) and the chains' diodes as stacks (sim/core-null-field-"
          "findings.md).", F_TXT),
         ("2, swinging: the cones float, each coupled through 1 nF to node 1 / 4, and the core sees the AC "
          "of V(1) - V(4) at the pump frequency. Its peak (AM on Designs) is about 0.55 of the operating peak. The cones' "
