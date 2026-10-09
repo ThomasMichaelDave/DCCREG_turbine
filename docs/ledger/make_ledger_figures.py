@@ -63,12 +63,13 @@ def main():
     # the magnetic pump (upper row)
     SR.tx(300, 110, "THE MAGNETIC PUMP: a reluctance machine, the planar dual of the electrostatic doubler", "zh")
     block(300, 124, 250, 150, "Utrons × bridges", ["3 wound utrons per side (rotor)", "6 SiFe bridges per side (counter)",
-                                                   "gap 0.5 mm, 120 Hz", "L 81 ↔ 9.4 mH per coil"], MAG, MAGS)
+                                                   "gap 0.5 mm, 120 Hz", "L 81 ↔ 9.4 mH (3-D: 83 ↔ 12.4)"], MAG, MAGS)
     block(590, 124, 250, 150, "Magnetic dual doubler", ["groups A / B in antiphase", "La / Lb 0.146 H, D1*–D4*",
                                                         "clamp: the NiFe neck saturates", "kick start; z 1.14–1.21"],
           MAG, MAGS)
-    block(880, 124, 220, 150, "AH coil pair", ["160 turns, one per branch", "22 mF bypass each (PROPOSED)", "300 A-turns, ±3 %",
-                                               "belt 18.1 W + 1.25 W iron"], MAG, MAGS)
+    block(880, 124, 220, 150, "AH coil pair", ["160 turns, one per branch", "22 mF bypass each (PROPOSED)",
+                                               "300 A-turns ±3 % (3-D: 221–245)", "belt 18.1 W + 1.25 W iron"],
+          MAG, MAGS)
     arrow(550, 199, 590, 199)
     arrow(840, 199, 880, 199)
     # the electrostatic pump (lower row)
@@ -121,13 +122,13 @@ def main():
     SR.tx(36, 674, "WHERE THE BELT'S POWER GOES (at 1200 rpm relative)", "zh")
     rows = [
         ("magnetic pump", "18.1 W belt + 1.25 W iron: utron copper 13.5 W, AH coils 2.0 W, diodes 2.0 W, La / Lb 0.7 W; "
-                          "the bypass 8 mW"),
+                          "the bypass 8 mW; with the 3-D utrons 10.2–12.3 W belt"),
         ("electrostatic pump", "2.14 W belt, all into the clamps Z1 / Z4 (1.07 W each); the rings' leakage 4.5 mW at "
                                "100 GΩ per ring"),
         ("the mechanics", "windage about 12 W and the bearings 5 W, so about 39 W in all from the belt; the gear puts "
                           "the same torque on both bodies, the frame takes twice it"),
-        ("the products", "two static fields at the hub's centre: the AH's cusp (300 A-turns per coil) and the DC field "
-                         "7.62 kV/cm (8.2 settled); no electrical output is drawn"),
+        ("the products", "two static fields at the hub's centre: the AH's cusp (300 A-turns per coil; 221–245 with the "
+                         "3-D utrons) and the DC field 7.62 kV/cm (8.2 settled); no electrical output is drawn"),
         ("the reference", "the shaft (REF); the counter-rotor's stator vanes reach it through one inner bearing "
                           "(0.41 mA rms, pure AC)"),
         ("not yet built in", "the gear and belt, La / Lb and the HV parts are not in the 3-D model; the record's stacks, "

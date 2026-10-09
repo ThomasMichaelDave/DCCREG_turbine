@@ -50,7 +50,7 @@
 <text x="312.0" y="166.0" class="tv" text-anchor="start" >3 wound utrons per side (rotor)</text>
 <text x="312.0" y="182.0" class="tv" text-anchor="start" >6 SiFe bridges per side (counter)</text>
 <text x="312.0" y="198.0" class="tv" text-anchor="start" >gap 0.5 mm, 120 Hz</text>
-<text x="312.0" y="214.0" class="tv" text-anchor="start" >L 81 ↔ 9.4 mH per coil</text>
+<text x="312.0" y="214.0" class="tv" text-anchor="start" >L 81 ↔ 9.4 mH (3-D: 83 ↔ 12.4)</text>
 <rect x="590" y="124" width="250" height="150" rx="6" fill="#eef3f8" stroke="#9fb3c8" stroke-width="1.4"/>
 <text x="602.0" y="146.0" class="tk" text-anchor="start" style="fill:#111">Magnetic dual doubler</text>
 <text x="602.0" y="166.0" class="tv" text-anchor="start" >groups A / B in antiphase</text>
@@ -61,7 +61,7 @@
 <text x="892.0" y="146.0" class="tk" text-anchor="start" style="fill:#111">AH coil pair</text>
 <text x="892.0" y="166.0" class="tv" text-anchor="start" >160 turns, one per branch</text>
 <text x="892.0" y="182.0" class="tv" text-anchor="start" >22 mF bypass each (PROPOSED)</text>
-<text x="892.0" y="198.0" class="tv" text-anchor="start" >300 A-turns, ±3 %</text>
+<text x="892.0" y="198.0" class="tv" text-anchor="start" >300 A-turns ±3 % (3-D: 221–245)</text>
 <text x="892.0" y="214.0" class="tv" text-anchor="start" >belt 18.1 W + 1.25 W iron</text>
 <line x1="550.0" y1="199.0" x2="578.0" y2="199.0" stroke="#1d3f5e" stroke-width="2.2"/>
 <polygon points="590.0,199.0 578.0,205.0 578.0,193.0" fill="#1d3f5e"/>
@@ -121,13 +121,13 @@
 <rect x="20" y="648" width="1402" height="186" rx="6" fill="#ffffff" stroke="#c3c2b7" stroke-width="1"/>
 <text x="36.0" y="674.0" class="zh" text-anchor="start" >WHERE THE BELT'S POWER GOES (at 1200 rpm relative)</text>
 <text x="36.0" y="702.0" class="tk" text-anchor="start" >magnetic pump</text>
-<text x="186.0" y="702.0" class="tv" text-anchor="start" >18.1 W belt + 1.25 W iron: utron copper 13.5 W, AH coils 2.0 W, diodes 2.0 W, La / Lb 0.7 W; the bypass 8 mW</text>
+<text x="186.0" y="702.0" class="tv" text-anchor="start" >18.1 W belt + 1.25 W iron: utron copper 13.5 W, AH coils 2.0 W, diodes 2.0 W, La / Lb 0.7 W; the bypass 8 mW; with the 3-D utrons 10.2–12.3 W belt</text>
 <text x="36.0" y="726.0" class="tk" text-anchor="start" >electrostatic pump</text>
 <text x="186.0" y="726.0" class="tv" text-anchor="start" >2.14 W belt, all into the clamps Z1 / Z4 (1.07 W each); the rings' leakage 4.5 mW at 100 GΩ per ring</text>
 <text x="36.0" y="750.0" class="tk" text-anchor="start" >the mechanics</text>
 <text x="186.0" y="750.0" class="tv" text-anchor="start" >windage about 12 W and the bearings 5 W, so about 39 W in all from the belt; the gear puts the same torque on both bodies, the frame takes twice it</text>
 <text x="36.0" y="774.0" class="tk" text-anchor="start" >the products</text>
-<text x="186.0" y="774.0" class="tv" text-anchor="start" >two static fields at the hub's centre: the AH's cusp (300 A-turns per coil) and the DC field 7.62 kV/cm (8.2 settled); no electrical output is drawn</text>
+<text x="186.0" y="774.0" class="tv" text-anchor="start" >two static fields at the hub's centre: the AH's cusp (300 A-turns per coil; 221–245 with the 3-D utrons) and the DC field 7.62 kV/cm (8.2 settled); no electrical output is drawn</text>
 <text x="36.0" y="798.0" class="tk" text-anchor="start" >the reference</text>
 <text x="186.0" y="798.0" class="tv" text-anchor="start" >the shaft (REF); the counter-rotor's stator vanes reach it through one inner bearing (0.41 mA rms, pure AC)</text>
 <text x="36.0" y="822.0" class="tk" text-anchor="start" >not yet built in</text>
