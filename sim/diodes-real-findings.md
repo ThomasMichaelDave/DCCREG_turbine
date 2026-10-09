@@ -152,10 +152,10 @@ Each class is a level-1 diode. Is, N and Rs go through three typical forward poi
 | gate | result | pass |
 |:--|:--|:--|
 | G-MAG: the record's ND, the deck's own options, 22 mF, against `sim/ah_steady_cusp_results.json` | z_early 1.14656, belt 18.1262 W, AHt / AHb 299.82 / 300.18 A-turns (sample means, the record's statistic): within 7e-6 | ✔ |
-| G-MAG: the same without the bypass, + the diodes' reverse peaks of `sim/rotor_parts_duty_results.json` | z_early 1.13942, belt 17.5764 W, 112 / 101 / 43 / 45 V: within 1e-7 | ✔ |
-| G-MAG: both again with the new runs' options | within 8e-5 (the coils' sample means), 5e-7 (z_early, belt) | ✔ |
+| G-MAG: the same without the bypass, + the diodes' reverse peaks of `sim/rotor_parts_duty_results.json` | z_early 1.13942, belt 17.5764 W, 112 / 101 / 43 / 45 V: exact | ✔ |
+| G-MAG: both again with the new runs' options | within 8e-5 (the coils' sample means, D4*'s peak), 5e-7 (z_early, belt) | ✔ |
 | G-ES: the deck as is, against `sim/hub_rings_build_results.json` record_supply / record_supply_free | rings −14.9603 / +14.9635 kV, belt 2.1438 W, Z1 1.0698 W, 29 cycles to 95 %, z 1.19065: exact | ✔ |
-| G-ES: ND run as the new runs are (the deck's maximum step, interpolated output) | the same within 6e-5; 29 cycles; z to 1e-7 | ✔ |
+| G-ES: ND run as the new runs are (the deck's maximum step, interpolated output) | the same within 6e-5; 29 cycles; z to 3e-7 | ✔ |
 | G-ES: ND with the split varicaps | rings and clamps within 6e-5; 95 % in 27 cycles (not 29) and z 1.1878 (not 1.1907): the consistent seed, reported, not gated | ✔ |
 | G-ENERGY: every new steady run, the belt against every dissipation and dW/dt | magnetic ≤ 1.0e-5 of the belt (10 runs); electrostatic ≤ 4.2e-7 (10 runs) | ✔ |
 | G-STEP magnetic: GP, 22 mF, 2000 → 4000 steps a cycle | belt +4e-5, diodes +1e-5, coil +7e-5; z_early −0.2 % (the early cycles) | ✔ |
@@ -179,8 +179,7 @@ Each class is a level-1 diode. Is, N and Rs go through three typical forward poi
 - **Why** [OC]: while the seed grows, the windings' voltage is a few volts and each conduction loses about V_F. The
   seed must therefore exceed a level proportional to the drop at its own current: 0.343 / 0.346 / 0.349 / 0.356
   × V_F(0.1 A) for ND / SB / GP / FR [IR: the fit].
-- **The bypass lowers the threshold by about 1 % of Ψs** in every model. The kick also charges the 22 mF
-  capacitors through the coils.
+- **The bypass lowers the threshold by about 1 % of Ψs** in every model.
 - **Cross-check** (`sim/parts-first-cut-findings.md` §3, cjo 0, no Tt): the record's diodes 14 / 16 %, its 1N540x
   class 20 / 25 %, its Schottky set 16 %. These runs, with C_J, Tt and BV, agree to their grid. Its "Schottky in all
   four" (16 %) is a 100 V part, which D1* / D2* cannot use; a 200 V one in all four needs 20.8 % here.
@@ -214,16 +213,16 @@ Each class is a level-1 diode. Is, N and Rs go through three typical forward poi
 |:--|:--|:--|:--|:--|
 | the record's ND | 0.44 / 0.44 / 0.59 / 0.59 W | none | none | — |
 | SBM | 0.57 / 0.57 / 0.64 / 0.64 W | 5–7 nC, ≤ 0.4 mA (capacitive) | ≤ 0.09 mW | none (no Tt) |
-| SB | 0.56 / 0.56 / 0.79 / 0.79 W | 4–7 nC, ≤ 0.4 mA (capacitive) | ≤ 0.09 mW | none (no Tt) |
+| SB | 0.56 / 0.56 / 0.80 / 0.79 W | 4–7 nC, ≤ 0.4 mA (capacitive) | ≤ 0.09 mW | none (no Tt) |
 | GP | 0.65 / 0.65 / 0.90 / 0.90 W | 9–15 nC, 5.6–11 mA, 6–11 µs | 0.15–0.23 mW | belt +4.5 mW (17.472 against 17.468 W) |
-| FR | 0.72 / 0.71 / 1.00 / 1.00 W | 1–1.5 nC, ≤ 0.4 mA | ≤ 0.02 mW | < 0.1 mW |
+| FR | 0.72 / 0.71 / 1.00 / 1.00 W | 0.9–1.5 nC, ≤ 0.5 mA | ≤ 0.02 mW | < 0.1 mW |
 
 - **The heat is the conduction** (the terminal power over the cycle) [OC: level-1 charges are lossless round a
   cycle]. In the stored-charge phase a GP diode even returns 4–7 nJ per turn-off.
 - **Why recovery is so small** [OC]: the current commutates at about I_pk·ω ≈ 2 kA/s, so the charge left at the zero
   crossing is about (di/dt)·Tt² ≈ 50 nC at most, and the 21 nF snubbers absorb it. D3* / D4* turn off up to 4 times a
   cycle (the counts are in the results).
-- **The reverse peaks** with the start-up: 113–115 / 103–105 / 57–59 / 58–60 V, as `sim/parts-first-cut-findings.md`
+- **The reverse peaks** with the start-up: 112–115 / 102–105 / 57–59 / 58–60 V, as `sim/parts-first-cut-findings.md`
   finds; no diode approaches its BV.
 
 ## 4. The electrostatic pump and the rings
@@ -232,13 +231,13 @@ Each class is a level-1 diode. Is, N and Rs go through three typical forward poi
 
 | sticks | z from −10 V | z from −1 kV | grows from (fails at) | least z, −1 kV to the clamp |
 |:--|--:|--:|:--|--:|
-| the record's ND, the deck as is | 1.1907 | 1.1907 | any seed | 1.183 |
+| the record's ND, the deck as is | 1.1907 | (scale-free) | any seed | 1.183 |
 | the record's ND, split | 1.1878 | 1.1886 | any seed | 1.162 |
 | forward law only | 0.9995 | 1.187 | — | 1.157 |
 | + C_J, Tt | 0.996 | 1.184 | — | 1.153 |
 | typical leakage | 0.994 | 1.184 | 17.5 V (16.5 V) | 1.152 |
 | maximum leakage | 0.940 | 1.170 | 64 V (60 V) | 1.124 |
-| hot leakage | 0.859 | 1.143 | 259 V (246 V) | 1.024 |
+| hot leakage | 0.859 | 1.142 | 259 V (246 V) | 1.024 |
 | typical, V_F × 2 | 0.995 | 1.179 | — | 1.141 |
 
 - **The record's z, 1.191 "at start-up", is a large-signal gain** [OC]. With real sticks it holds from about 1 kV up;
@@ -264,13 +263,14 @@ The record's 29 cycles carry the deck's `uic` artefact: its effective seed is �
 - **The forward law alone changes nothing material:** the drops raise node 1's swing from 7.53 to 7.58 kV, so the
   rings stand 60 V higher (headline table).
 - **The sticks' own capacitance is what costs** [OC: a capacitive path across each chain diode]. 0.2–0.4 pF across
-  each chain diode takes 0.57 kV off the gap and triples the 120 Hz ripple, 57 → 186 V p-p (0.014 → 0.047 kV/cm at
-  the null). A 1 pF body capacitance [RH] takes 2.6 kV and 643 V p-p.
-- **Typical leakage (25 nA) costs 30 V more.** Each chain diode then leaks 19–22 nA; the rings' own 100 GΩ load each
+  each diode takes 0.70 kV off the gap (0.57 kV below the record) and triples the 120 Hz ripple, 57 → 186 V p-p
+  (0.014 → 0.047 kV/cm at the null). A 1 pF body capacitance [RH] takes a further 2.0 kV (27.35 kV across) and gives
+  643 V p-p.
+- **Typical leakage (25 nA) costs 26 V more.** Each chain diode then leaks 19–22 nA; the rings' own 100 GΩ load each
   with 0.15 µA.
-- **At the datasheet maximum (2 µA)** each chain diode leaks 1.4–1.7 µA, ten times the rings' load: the gap falls
-  2.6 kV (−8.7 %) to 27.32 kV, 6.96 kV/cm, with 766 V p-p. **Hot (5 µA)** it falls 5.6 kV (−18.7 %) to 24.34 kV,
-  6.20 kV/cm.
+- **At the datasheet maximum (2 µA)** each chain diode leaks 1.4–1.7 µA, ten times the rings' load: the gap is
+  27.32 kV, 2.6 kV (8.7 %) below the record's, 6.96 kV/cm, with 766 V p-p. **Hot (5 µA)** it is 24.34 kV, 5.6 kV
+  (18.7 %) below, 6.20 kV/cm.
 - So the chain diodes need the selection `sim/parts-first-cut-findings.md` proposes (I_R ≤ 25 nA at 7.5 kV,
   25 °C) [IR], and cool: silicon leakage roughly doubles every 10 K [RH].
 - **Recovery is irrelevant:** a 3 µs stick changes the rings by 1 V and the belt by 0.1 mW.
@@ -286,7 +286,7 @@ The record's 29 cycles carry the deck's `uic` artefact: its effective seed is �
 | typical + 22 kΩ on D1–D4 | 1.058 W | 0.85 mA | 2.3 / 4.2 mW | as typical | 13.7 mW |
 
 - The real string's soft knee conducts longer at a lower peak (0.85 mA against 0.95 mA) [IR: the knee].
-- The leakage's power comes out of the clamps' share: the belt stays 2.11–2.15 W.
+- The leakage's power comes out of the clamps' share: the belt stays 2.06–2.15 W.
 - Against `sim/parts-first-cut-findings.md`: its bound for D1–D4 at the maximum leakage, about 80 mW, holds (42 mW
   here); its chain duty, 0.15 µA average, matches (0.14–0.15 µA).
 
@@ -296,7 +296,7 @@ The record's 29 cycles carry the deck's `uic` artefact: its effective seed is �
    a triboelectric charge) multiplies by z every cycle [OC]". True for ideal diodes only: with real sticks the free
    pump decays below about 17 V (typical leakage), 64 V (maximum) or 260 V (hot) (§4.1).
 2. `docs/ledger/DCCREG-design-ledger.md`:370 and :657, "z is 1.191 at start-up": with real sticks z is 0.86–0.99 at
-   the record's free-run seed (−10 V); 1.17–1.19 holds from about 1 kV (§4.1).
+   the record's free-run seed (−10 V); 1.14–1.19 from −1 kV (§4.1).
 3. `docs/ledger/DCCREG-design-ledger.md`:537, :678, :772; `sim/hub-rings-build-findings.md`:305;
    `docs/rings-design.md`:198; `docs/bench-test-rings.md`:157, "95 % at 0.24 s (29 cycles)": the 29 cycles carry the
    deck's `uic` artefact. From a consistent −1 kV, 27 cycles (0.225 s), with ND and with typical sticks alike; 0.30 s
