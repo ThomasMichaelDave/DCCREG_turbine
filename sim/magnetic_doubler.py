@@ -106,7 +106,10 @@ def deck(kappa=6.0, tau=TAU, tau_fixed=None, sat=True, ah=None, n_cyc=60, steps=
     i0 = seed
     l1_0 = L_max * sum(a) + lp            # at t = 0: L1 at max, L2 at min
     l2_0 = lmin + lp
-    # A branch a -> d (with AH top in series), B branch c -> b (with AH bottom)
+    # A branch a -> d (with AH top in series), B branch c -> b (with AH bottom). AHt / AHb are named from the pivot,
+    # when side A was on top; in the record side A is below, so AHt is side A's coil (below) and AHb side B's (above):
+    # each branch carries its own side's coil. Both carry a unipolar current of the same sign in this orientation
+    # (x1 -> d, x2 -> b), so the pair is anti-Helmholtz when wound alike and mounted end over end (sim/ah_winding.py)
     if ah:
         h = ah_custom if ah == "custom" else AH[ah]
         ind("L1", "a", "x1", L1, R1, -i0 * l1_0, var=True, dinv=dinv1)

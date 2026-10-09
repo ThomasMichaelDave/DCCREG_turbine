@@ -6,6 +6,8 @@
 - **Bicone:** driven by the **electrostatic** diode doubler (diodes only; a spark-gap dump tested as an option).
 - **AH pair:** driven by a **magnetic** pump built from the C-EMs and utrons, pulsed. The utrons are split 2 × 3 (A
   top, B bottom), like the C-EMs (2 × 6).
+  > **Naming (2026-10-09):** this study puts side A on top. The record (the tube build, the hub, the rings) puts side
+  > A below and side B above. Either way each branch carries its own side's AH coil (`sim/ah_winding.py`).
 - Operating point: 300 rpm each way, so 600 rpm relative and 60 pump cycles per second (6 per rev).
 
 **Tools:**

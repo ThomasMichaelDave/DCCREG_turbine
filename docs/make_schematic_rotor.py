@@ -500,8 +500,10 @@ def main():
         "sim/tube_geometry.py still puts Ca / Cb on the counter-rotor. Each pump's reaction torque goes into the gear.",
         "(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, "
         "the clamps Z1 / Z4 → the NiFe neck's saturation.",
-        "A and B swap every half cycle: one group generates (L falling) while the other motors. The AH coils are named by branch; "
-        "sim/magnetic_doubler.py calls them AH top / bottom (A was then the upper side).",
+        "A and B swap every half cycle: one group generates (L falling) while the other motors. Each branch carries its own "
+        "side's AH coil (A below, B above; sim/magnetic_doubler.py's AHt / AHb date from when A was on top).",
+        "The AH coils: wound alike, start to x1 / x2, finish to d / b, mounted end over end with the start leads toward the "
+        "vessel: anti-Helmholtz (sim/ah_winding.py).",
         ("Polarity: (b) runs negative; ring A on its own chain from node 1, negative, and ring B on the mirror chain from "
          "node 4, positive (the symmetric supply): E at the null " if N["ring"].get("a_ref") == "shaft" else
          f"Polarity: (b) runs negative; ring A takes node 1's negative peak and ring B {N['ring']['n_cw']} CW stages "

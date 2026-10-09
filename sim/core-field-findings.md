@@ -185,7 +185,8 @@ with the floating cones and bare. The cost sheet interpolates it for each of the
     the cones;
   - the G10 cones;
   - the flanges, shaft and bearing, the cage and the first stator vanes as REF.
-- **The rings** sit on the vessel under the retainer, A on the upper hemisphere and B its mirror. Each is coupled
+- **The rings** sit on the vessel under the retainer, A on the upper hemisphere and B its mirror (this study's naming;
+  in the record ring B is the upper one and ring A the lower, `docs/rings-design.md`). Each is coupled
   through 1 nF to node 1 / 4.
 - **The solve:** axisymmetric field solves give the field at the centre and each ring's strays [IR]. The solver
   reproduces a sphere between planes to 0.6 %, and halving the grid moves the results 2–3 %.

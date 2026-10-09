@@ -1,0 +1,55 @@
+{
+ "pick": "g 0.5 / 6 bridges / 1200 rpm",
+ "ah": {
+  "L": 0.00101,
+  "R": 0.27,
+  "N": 160
+ },
+ "rows": [
+  {
+   "C_byp_mF": 0.0,
+   "seed_A": 0.16487199781099734,
+   "A (AHt, x1 -> d)": {
+    "I_mean_A": -1.8118124147964325,
+    "I_min_A": -2.8059489603960395,
+    "I_max_A": -0.8681345336633663,
+    "frac_negative": 1.0,
+    "AT_mean": -289.8899863674292
+   },
+   "B (AHb, x2 -> b)": {
+    "I_mean_A": -1.7275650841573555,
+    "I_min_A": -2.8060419900990095,
+    "I_max_A": -0.870130204950495,
+    "frac_negative": 1.0,
+    "AT_mean": -276.4104134651769
+   },
+   "same_sign": true
+  },
+  {
+   "C_byp_mF": 22.0,
+   "seed_A": 0.16487199781099734,
+   "A (AHt, x1 -> d)": {
+    "I_mean_A": -1.8738755752668448,
+    "I_min_A": -1.9246561584158415,
+    "I_max_A": -1.813352900990099,
+    "frac_negative": 1.0,
+    "AT_mean": -299.82009204269514
+   },
+   "B (AHb, x2 -> b)": {
+    "I_mean_A": -1.8761134739247878,
+    "I_min_A": -1.9228287821782177,
+    "I_max_A": -1.8115975742574255,
+    "frac_negative": 1.0,
+    "AT_mean": -300.17815582796607
+   },
+   "same_sign": true
+  }
+ ],
+ "rule": {
+  "currents": "each coil's current is unipolar and of the same sign in its element's orientation, in both branches (the dual's twin branches) [OC]",
+  "connect": "coil A: its start to x1 (group A's utrons), its finish to d; coil B: its start to x2, its finish to b",
+  "wind": "two identical coils (the same hand, the start lead at the same end); mounted as rotated copies, each with its start lead toward the vessel. A coil rotated end over end reverses its circulation about +z for the same terminal current, so the pair's fields oppose: anti-Helmholtz [OC]",
+  "not_this": "identical coils with the same terminal connections, both with the start lead upward (a translated copy) give the same circulation: Helmholtz, a field of about the pair's sum at the null",
+  "check": "at the bench, energise the pair from a DC supply through the same terminals: B at the centre within noise of zero, and of opposite sign 10 mm above and below the centre"
+ }
+}

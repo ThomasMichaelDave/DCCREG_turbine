@@ -24,6 +24,13 @@
 Results: `sim/pole_design_{p1,p1b,p3,final,real,kick,recheck,variants,variants_op}.json`. The p1 T-family rows are
 superseded by p1b, after a tooth-parity fix.
 
+**Two bases for the gain z** (quote z with its basis):
+- **z_lin, the screen's:** the linear gain per cycle from the L(θ) profile, with ideal diodes and no load. The variants
+  are selected on z_lin ≥ 1.20; the pick has 1.208 (`pole_design_variants_op.json` `z_lin`).
+- **z_early, the loaded run's:** the early cycles' growth in the transient deck, with Si diodes, the AH, La / Lb, the
+  wiring strays and the snubbers (`sim/magnetic_doubler.py` `analyse`). The pick has 1.139, and 1.147 with the 22 mF
+  bypass (`sim/ah-steady-cusp-findings.md`).
+
 **Copper correction (§7).** Up to §6 the coil's mean turn was 13–26 % short. The variant screen and its operating
 points (`pole_design_variants*.json`) were re-run with the corrected turn, and §7 holds those numbers. The earlier
 stages' JSONs (p1 .. recheck) and the copper numbers in §2–§6 still carry the short turn.
