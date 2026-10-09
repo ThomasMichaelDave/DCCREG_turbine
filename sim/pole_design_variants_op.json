@@ -61,7 +61,10 @@
      "T_coil_air_C": 43.61891555764137,
      "T_coil_vac_C": 54.69858425032049,
      "kick_frac": 0.2,
-     "kick_mJ": 71.6499929913055
+     "kick_mJ": 6.518834171966329,
+     "kick_I_A": 0.1104136030641531,
+     "kick_mJ_L1": 2.849351359855515,
+     "kick_basis": "frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb"
     },
     {
      "tag": "g 0.5 / 6 bridges / 600 rpm",
@@ -93,7 +96,10 @@
      "T_coil_air_C": 45.398948110648945,
      "T_coil_vac_C": 61.06160627369627,
      "kick_frac": 0.15,
-     "kick_mJ": 59.42558522184869
+     "kick_mJ": 4.861424482785752,
+     "kick_I_A": 0.0799934044678256,
+     "kick_mJ_L1": 2.1260779845897257,
+     "kick_basis": "frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb"
     }
    ],
    "best": {
@@ -126,7 +132,10 @@
     "T_coil_air_C": 43.61891555764137,
     "T_coil_vac_C": 54.69858425032049,
     "kick_frac": 0.2,
-    "kick_mJ": 71.6499929913055
+    "kick_mJ": 6.518834171966329,
+    "kick_I_A": 0.1104136030641531,
+    "kick_mJ_L1": 2.849351359855515,
+    "kick_basis": "frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb"
    }
   },
   "g 0.5 / 6 bridges / 1200 rpm": {
@@ -189,7 +198,10 @@
      "T_coil_air_C": 45.88671939282461,
      "T_coil_vac_C": 62.74332388520787,
      "kick_frac": 0.2,
-     "kick_mJ": 38.26264088526343
+     "kick_mJ": 3.478296651707333,
+     "kick_I_A": 0.10991466520733159,
+     "kick_mJ_L1": 1.5098540478065683,
+     "kick_basis": "frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb"
     },
     {
      "tag": "g 0.5 / 6 bridges / 1200 rpm",
@@ -221,7 +233,10 @@
      "T_coil_air_C": 48.81272539428927,
      "T_coil_vac_C": 72.33707052789498,
      "kick_frac": 0.15,
-     "kick_mJ": 32.0968595930219
+     "kick_mJ": 2.5919765767325385,
+     "kick_I_A": 0.07911174702756239,
+     "kick_mJ_L1": 1.126318910914992,
+     "kick_basis": "frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb"
     }
    ],
    "best": {
@@ -254,7 +269,10 @@
     "T_coil_air_C": 45.88671939282461,
     "T_coil_vac_C": 62.74332388520787,
     "kick_frac": 0.2,
-    "kick_mJ": 38.26264088526343
+    "kick_mJ": 3.478296651707333,
+    "kick_I_A": 0.10991466520733159,
+    "kick_mJ_L1": 1.5098540478065683,
+    "kick_basis": "frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb"
    }
   },
   "g 1.0 / 6 bridges / 1200 rpm": {
@@ -308,7 +326,10 @@
      "T_coil_air_C": 42.4755483134729,
      "T_coil_vac_C": 50.407374545291646,
      "kick_frac": 0.2,
-     "kick_mJ": 32.02021364825727
+     "kick_mJ": 3.664472496321362,
+     "kick_I_A": 0.12239281188985002,
+     "kick_mJ_L1": 1.5665996528624193,
+     "kick_basis": "frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb"
     },
     {
      "tag": "g 1.0 / 6 bridges / 1200 rpm",
@@ -340,7 +361,10 @@
      "T_coil_air_C": 43.88228676931742,
      "T_coil_vac_C": 55.66354460953875,
      "kick_frac": 0.15,
-     "kick_mJ": 27.784448365003865
+     "kick_mJ": 2.7206446275536504,
+     "kick_I_A": 0.0852403716355555,
+     "kick_mJ_L1": 1.1647652810463747,
+     "kick_basis": "frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb"
     },
     {
      "tag": "g 1.0 / 6 bridges / 1200 rpm",
@@ -372,7 +396,10 @@
      "T_coil_air_C": 45.40255993925245,
      "T_coil_vac_C": 61.074152586975345,
      "kick_frac": 0.1,
-     "kick_mJ": 17.05570602798803
+     "kick_mJ": 1.5415213192184125,
+     "kick_I_A": 0.05562658436518247,
+     "kick_mJ_L1": 0.6603999829667745,
+     "kick_basis": "frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb"
     }
    ],
    "best": {
@@ -405,7 +432,10 @@
     "T_coil_air_C": 42.4755483134729,
     "T_coil_vac_C": 50.407374545291646,
     "kick_frac": 0.2,
-    "kick_mJ": 32.02021364825727
+    "kick_mJ": 3.664472496321362,
+    "kick_I_A": 0.12239281188985002,
+    "kick_mJ_L1": 1.5665996528624193,
+    "kick_basis": "frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb"
    }
   }
  }

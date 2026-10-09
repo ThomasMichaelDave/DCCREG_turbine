@@ -291,6 +291,25 @@ def final():
 DIODES = {"Si (0.55 V @ 1 A)": 1.0, "Schottky (0.35 V @ 1 A)": 0.65}
 
 
+def kick_seed(r, N_u, la, psi_s, frac):
+    """what a start kick of frac (a fraction of Psi_s) seeds [OC]: run_real's deck starts L1, L2, both AH coils, La and
+    Lb at i0 = frac Psi_s / L_max (sim/magnetic_doubler.py deck). The energy is their co-energy at t = 0, L1 and L2 with
+    the saturation law i = Psi / L (1 + (Psi / Psi_s)^6)."""
+    Lmax = 3 * N_u ** 2 * r["L_al"]
+    a = M._coeffs(dict(prof=r.get("prof"), kappa=r.get("kappa", 6.0)))
+    lp = M.R_PAR * Lmax
+    l1 = Lmax * sum(a) + lp                                        # aligned at t = 0
+    l2 = Lmax * sum(ak * (-1) ** k for k, ak in enumerate(a)) + lp   # unaligned
+    i0 = frac * psi_s / Lmax
+
+    def w_sat(L):
+        psi = i0 * L
+        return psi ** 2 / (2 * L) + psi ** 8 / (8 * L * psi_s ** 6)
+    w = w_sat(l1) + w_sat(l2) + M.AH["r160"]["L"] * i0 ** 2 + la * Lmax * i0 ** 2   # + 2 x (1/2) L i0^2: AH pair, La, Lb
+    return dict(kick_I_A=i0, kick_mJ=w * 1e3, kick_mJ_L1=w_sat(l1) * 1e3,
+                kick_basis="frac of Psi_s: i0 = frac Psi_s / L_max in L1, L2, the AH pair, La and Lb")
+
+
 def run_real(r, N_u, la, nd, psi_s, seed_frac=0.03, n_cyc=90, snub="fixed"):
     Lmax = 3 * N_u ** 2 * r["L_al"]
     m = M.run(prof=r["prof"], tau=r["tau"], tau_fixed=TAU_FIXED, sat=True, F=r["f_Hz"], n_cyc=n_cyc, L_max=Lmax,
@@ -624,7 +643,7 @@ def size_op(args):
                 thr = fr
                 break
         q["kick_frac"] = thr
-        q["kick_mJ"] = 0.5 * Lg * (thr * q["I_pk"]) ** 2 * 1e3 if thr else None
+        q.update(kick_seed(r, N_u, 0.6, psi, thr) if thr else dict(kick_I_A=None, kick_mJ=None, kick_mJ_L1=None))
         out.append(q)
     return out
 

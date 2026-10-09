@@ -82,7 +82,7 @@ converged to 0.5 %.
   - While growing, their winding voltages are only a few volts, so the diode drop wins.
   - From the same small seed you need ≥ 1000 turns with Si, or ≥ 800 with Schottky. That costs 59–94 W.
 - **Once kicked to ≥ 8–10 % of Ψ_s, the low-turn designs run with Si diodes.** The diode drop then costs only about
-  2 W. A kick of 0.23 A in the utron group (about 35 mJ) is enough.
+  2 W. A kick of 0.23 A in the utron group (about 35 mJ on the old basis, §7) is enough.
 - **The kick source is open.** Options: a one-time start pulse (a capacitor or battery with a push-button, the only
   switch and used only at start-up), a small PM bias in the utron back iron (untested), or a pulse from the
   electrostatic side.
@@ -105,7 +105,7 @@ one that holds the target (`sim/pole_design_recheck.json`).
 | heat per utron coil | 1.4 W | 2.2 W | 13.3 W / 8.6 W |
 | fixed inductors / AH / diodes / iron | 1.7 / 1.9 / 1.9 / 0.7 W | 1.7 / 2.1 / 2.0 / 1.1 W | — |
 | coil temperature, air / vacuum (radiation only) | 41 / 46 °C | 42 / 50 °C | — |
-| minimum start kick | 15 % of Ψ_s (58 mJ) | 15 % (48 mJ) | (small seed) |
+| minimum start kick (mJ on the old basis, §7) | 15 % of Ψ_s (58 mJ) | 15 % (48 mJ) | (small seed) |
 | AH share of the power | 12.9 % | 10.1 % | ~2 % |
 | linear gain margin z | 1.30 | 1.19 | — |
 
@@ -171,7 +171,7 @@ by §7.*
 
 **Operating points of the winners.** AH 450 ampere-turns, Si diodes, kicked start, best of the three turn counts:
 
-| | utron (geometry) | turns | total power | heat per coil | coil °C air / vac | iron | kick | V_pk |
+| | utron (geometry) | turns | total power | heat per coil | coil °C air / vac | iron | kick (mJ: old basis, §7) | V_pk |
 |:--|:--|--:|--:|--:|:--|--:|--:|--:|
 | 0.5 mm, 6 / 600 | 3.40 kg (r 130, tip 18, slot 30 × 40) | 240 | 18.2 W | 2.0 W | 44 / 57 | 1.0 W | 20 % (68 mJ) | 92 V |
 | **0.5 mm, 6 / 1200** | **1.97 kg** (r 165, tip 12, slot 30 × 30) | 220 | 18.8 W | 2.2 W | 46 / 63 | 1.1 W | 20 % (42 mJ) | 101 V |
@@ -202,7 +202,7 @@ by §7.*
 **Open items:**
 - the turn rule is coarse (m 4.5 / 6.5 / 9);
 - the stack is fixed at 100 mm;
-- the start kick is 15–20 % of Ψ_s (10–70 mJ);
+- the start kick is 15–20 % of Ψ_s (10–70 mJ on the old basis; §7: 3.5–6.5 mJ seeded);
 - everything else carries the caveats below.
 
 ## 7. Correction: the coil's mean turn was 13–26 % short
@@ -249,9 +249,16 @@ by §7.*
 | | utron (geometry) | turns | total power | heat per coil | coil °C air / vac | iron | kick | V_pk |
 |:--|:--|--:|--:|--:|:--|--:|--:|--:|
 | 0.5 mm, 6 / 600 | 4.08 kg (r 130, tip 16, slot 40 × 40) | 260 | 18.9 W | 2.1 W | 44 / 55 | 1.0 W | 20 % | 95 V |
-| **0.5 mm, 6 / 1200** | **2.34 kg** (r 130, tip 14, slot 30 × 30) | **200** | **18.8 W** | 2.15 W | 46 / 63 | 1.25 W | 20 % (38 mJ) | 101 V |
+| **0.5 mm, 6 / 1200** | **2.34 kg** (r 130, tip 14, slot 30 × 30) | **200** | **18.8 W** | 2.15 W | 46 / 63 | 1.25 W | 20 % (3.5 mJ) | 101 V |
 | 1.0 mm, 6 / 1200 | 4.72 kg (r 165, tip 20, slot 40 × 40) | 210 | 14.5 W | 1.5 W | 42 / 50 | 1.0 W | 20 % | 94 V |
 
+- **The kick's energy, corrected** (2026-10-09, the settlement of the lock).
+  - **The old basis:** `kick_mJ` was ½ L_group (frac · I_pk)², the running peak current's share. That is not what the
+    kick seeds, and the tables of §5–§6 quote it.
+  - **What the kick seeds** [OC]: the deck starts L1, L2, the AH pair, La and Lb at i0 = frac · Ψs / L_max. Their
+    co-energy at the record's 20 % is **3.48 mJ at 0.110 A** (L1 alone 1.51 mJ). At 0.5 mm, 6 / 600 it is 6.52 mJ;
+    at 1.0 mm, 6 / 1200, 3.66 mJ (`sim/pole_design.py` `kick_seed`, `sim/pole_design_variants_op.json`).
+  - The kick source must deliver that once: about 3.5 mJ at 0.11 A, into the utron loop.
 - **Power stays at 15–19 W.** The AH coil's resistance and current still set the heat.
 - **1.0 mm vs 0.5 mm at 1200 rpm:** the cost of the wider gap is mass, not power. It needs twice the utron
   (4.72 against 2.34 kg). Its bigger slot carries more copper (τ 0.17 s), so it holds the AH for 14.5 W against
