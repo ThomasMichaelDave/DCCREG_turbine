@@ -1312,7 +1312,7 @@
 "place": {
 "dx": 0.0,
 "dz": 570.0,
-"rot": 0.0
+"rot": 30.0
 },
 "label": "side-B / B_C2_s01 - C2 vane, node 0 [Al vane, stator]"
 },
@@ -1340,7 +1340,7 @@
 "place": {
 "dx": 0.0,
 "dz": 588.0,
-"rot": 0.0
+"rot": 30.0
 },
 "label": "side-B / B_C2_s03 - C2 vane, node 0 [Al vane, stator]"
 },
@@ -1368,7 +1368,7 @@
 "place": {
 "dx": 0.0,
 "dz": 606.0,
-"rot": 0.0
+"rot": 30.0
 },
 "label": "side-B / B_C2_s05 - C2 vane, node 0 [Al vane, stator]"
 },
@@ -1396,7 +1396,7 @@
 "place": {
 "dx": 0.0,
 "dz": 624.0,
-"rot": 0.0
+"rot": 30.0
 },
 "label": "side-B / B_C2_s07 - C2 vane, node 0 [Al vane, stator]"
 },
@@ -1424,7 +1424,7 @@
 "place": {
 "dx": 0.0,
 "dz": 642.0,
-"rot": 0.0
+"rot": 30.0
 },
 "label": "side-B / B_C2_s09 - C2 vane, node 0 [Al vane, stator]"
 },
@@ -1452,7 +1452,7 @@
 "place": {
 "dx": 0.0,
 "dz": 660.0,
-"rot": 0.0
+"rot": 30.0
 },
 "label": "side-B / B_C2_s11 - C2 vane, node 0 [Al vane, stator]"
 },

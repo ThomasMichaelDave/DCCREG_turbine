@@ -231,8 +231,11 @@ class Machine:
             if k.endswith("vane"):
                 pr = "stator_vane" if e["body"] == "stator" else "rotor_vane"
                 nm = f"{side}_{k.split()[0]}_{e['body'][0]}{i:02d}"
+                # C2 runs half a pitch on from C1 (the deck's s1 / s2): side B's stator vanes turn by half the vane
+                # pitch, as side B's bridges do, so at rotor angle 0 C1 is at its maximum and C2 at its minimum [IR]
+                rot = 0.5 * per if (k.split()[0] == "C2" and e["body"] == "stator") else 0.0
                 self.add(nm, pr, e["body"], e["node"], f"side-{side}", join="rotor-core" if e["body"] == "rotor" else f"cage-{side}",
-                         dz=e["z0"], desc=f"{k}, node {e['node']}")
+                         dz=e["z0"], rot=rot, desc=f"{k}, node {e['node']}")
             elif k.endswith("plate"):
                 self.add(f"{side}_{k.split()[0]}_{i:02d}", "fixed_plate", e["body"], e["node"], f"side-{side}",
                          dz=e["z0"], desc=f"{k}, node {e['node']} (connection and mounts not drawn)")
@@ -1031,7 +1034,8 @@ def renders_wound(m, out_dir, tag):
              "Counter-rotor, geared 1 : -1 (gear or reversing belt, not drawn): stator cage (one tube across the hub),\n"
              "stator vanes, Ca / Cb plates, the hub-face and Ca|reluctance spiders, bridges + bridge rings.\n")) +
             "Frame: the two end bearings and their spiders. The inner bearings run at the relative speed.\n"
-            f"At rotor angle 0: utron A1 is aligned (gap {sp['g']:g} mm), utron B1 sits between two B bridges (antiphase).\n"
+            f"At rotor angle 0: utron A1 is aligned (gap {sp['g']:g} mm), utron B1 sits between two B bridges (antiphase);\n"
+            "C1 is at its maximum and C2, its stator vanes half a pitch on, at its minimum.\n"
             "This plane (v = 0) cuts the coil, the neck strip and the air-break spacer; the SiFe half-cores and the\n"
             "cheeks lie at |v| >= s / 2 (see the plan cuts and the utron detail drawing).",
             fontsize=8.5, va="top", transform=an.transAxes)

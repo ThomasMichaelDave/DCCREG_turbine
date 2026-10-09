@@ -120,12 +120,17 @@ function sections(S) {
   const n = (re) => S.parts.filter((p) => re.test(p.part)).length;
   const onRotor = S.parts.some((p) => /^A_Ca_/.test(p.part) && p.body === "rotor");
   const locked = n(/^hub_vessel$/) > 0;
+  // C2's stator vanes half a pitch on from C1's (the record): the angle between the two stacks' first stator vanes
+  const qOf = (re) => (S.parts.find((p) => re.test(p.part)) || {}).homeQ;
+  const qa = qOf(/^A_C1_s/), qb = qOf(/^B_C2_s/);
+  const c2off = qa && qb ? 2 * Math.acos(Math.min(1, Math.abs(qa.dot(qb)))) * 180 / Math.PI : 0;
   return [[/^A_U\d_core/, "reluctance A: 3 utrons (rotor), 6 bridges (counter-rotor)"],
           [/^A_Ca_/, "Ca fixed plates" + (onRotor ? " (rotor)" : "")],
           [/^A_C1_/, `C1 varicap: ${n(/^A_C1_s/)} stator + ${n(/^A_C1_r/)} rotor vanes`],
           locked ? [/^hub_(vessel|retainer)$/, "hub (locked): 50 mm sphere, rings, AH pair, PEEK + gel"]
                  : [/^hub_bicone/, "hub: bicone + AH (placeholder)"],
-          [/^B_C2_/, "C2 varicap"], [/^B_Cb_/, "Cb fixed plates"],
+          [/^B_C2_/, c2off > 1 ? `C2 varicap: stator vanes offset ${c2off.toFixed(0)}°` : "C2 varicap"],
+          [/^B_Cb_/, "Cb fixed plates"],
           [/^B_U\d_core/, "reluctance B: bridges offset 30°"]];
 }
 
