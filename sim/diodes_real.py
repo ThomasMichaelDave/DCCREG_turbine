@@ -39,10 +39,13 @@ sim/diodes-real-findings.md.
 2b. The same deck as built (--only ab; the results' key electrostatic_as_built): the tube-strays study's §5 set (every
    capacitance solved: C1v between the solved totals, Ca, the node strays, the couplings, the rings' strays; read from
    sim/tube_strays_results.json decks.sets["as built"] and applied as its deck_strays does) with the record's ND,
-   typical, maximum and hot leakage: the free gain from -10 V and -1 kV, the smallest seed that grows (to 10 kV), and
-   the clamped runs where it starts (from -1 kV, and from twice the threshold where that is above 1 kV / 2), each long
-   enough to reach the clamp at the gain at its seed and doubled until the rings settle, as sim/tube_strays.py
-   run_decks does. Gate: the as-built set with ND (the deck as is, and split) reproduces that study's z and rings.
+   typical, maximum and hot leakage: the free gain from -10 V and -1 kV; the smallest seed from which the machine
+   starts (the clamped deck, the clamps' leakage in it; trials lengthened while undecided: near the threshold the
+   rings' chains charge for tens of cycles while their sticks' leakage rises, so a seed grows at first and then decays;
+   to 10 kV), with the record set's 40-cycle free-run rule beside it; and the clamped runs where it starts (from -1 kV,
+   and from 1.25 x the threshold where that is above 0.5 kV), each long enough to reach the clamp at the gain at its
+   seed and doubled until the rings settle, as sim/tube_strays.py run_decks does. Gate: the as-built set with ND (the
+   deck as is, and split) reproduces that study's z and rings.
 3. Gates: the wrapped decks with the record's ND reproduce the record (magnetic: sim/ah_steady_cusp_results.json and
    sim/rotor_parts_duty_results.json; electrostatic: sim/hub_rings_build_results.json record_supply and
    record_supply_free); the energy balance of every new steady run (the belt against every dissipation and the change
@@ -1056,13 +1059,13 @@ def _ab_find(res, **match):
 
 
 def ab_seeds(res):
-    """per model, the clamped runs' seeds: the deck's -1 kV, and twice the threshold (rounded up to 0.5 kV) where that
-    is above 1 kV [IR]."""
+    """per model, the clamped runs' seeds: the deck's -1 kV, and 1.25 x the machine's threshold (rounded up to 0.5 kV)
+    where that threshold is above 0.5 kV [IR]."""
     thr = {r["model"]: r for j, r in res if j[0] == "ab_thr"}
     seeds = {}
     for m in AB_MODELS:
         vg = (thr.get(m) or {}).get("v_grows_V")
-        seeds[m] = [V0_CLAMPED] + ([-500.0 * math.ceil(2 * vg / 500.0)] if vg and 2 * vg > abs(V0_CLAMPED) else [])
+        seeds[m] = [V0_CLAMPED] + ([-500.0 * math.ceil(1.25 * vg / 500.0)] if vg and vg > 500.0 else [])
     return seeds, thr
 
 
@@ -1176,7 +1179,7 @@ def run_all(procs, only=None, cache=None):
     jobs = [json.loads(json.dumps(j, default=float)) for j in jobs]      # tuples -> lists, as the cache holds them
     res = []
     _pool_run(procs, jobs, res, cache)
-    if only in (None, "ab"):                                         # §2b: the passes that need the first one's results
+    if only in (None, "ab"):                                         # §2b: the passes that need the first's results
         _pool_run(procs, ab_second(res), res, cache)
         _pool_run(procs, ab_clamped(res), res, cache)
         for _ in range(AB_DOUBLE):
@@ -1376,15 +1379,16 @@ def summarise_ab(res):
               rules=dict(free="12 cycles at 20000 steps a cycle, z fitted over cycles 3-11 (sim/core_field.py run); "
                               "with the rings' chains unless 'bare' (opt none, as the tube-strays study's z bare)",
                          threshold=f"the machine's start: the clamped deck from v0 at {ES_STEPS} steps, "
-                                   f"{AB_THR_N[0]} cycles doubled while undecided up to {AB_THR_N[1]}; it grows once it "
+                                   f"{AB_THR_N[0]} cycles doubled while undecided up to {AB_THR_N[1]}; it grows once "
+                                   "it "
                                    "reaches the clamp or while its gain over the last five cycles is above 1 and not "
                                    "falling, fails once decayed 100 x or while that gain is below 1 and not rising "
                                    "(ab_verdict); bisection in log |v0| to 10 %, 1 V - 1 kV, or 1 kV - "
                                    f"{AB_V_HI / 1e3:g} kV when it does not grow from 1 kV [IR]. thresholds_40: the "
                                    f"record set's rule of §4.1 (free runs, {N_THR} cycles, the last cycle's peak above "
                                    "cycle 5's), for comparison",
-                         seeds="the deck's -1 kV; and twice the threshold, rounded up to 0.5 kV, where that is above "
-                               "1 kV [IR]",
+                         seeds="the deck's -1 kV; and 1.25 x the machine's threshold, rounded up to 0.5 kV, where "
+                               "that threshold is above 0.5 kV [IR]",
                          cycles="sim/tube_strays.py _cycles from the seed: 280 + 1.3 ln(V_OP / |v0|) / ln z at the "
                                 "12-cycle free gain from that seed (280 where it is <= 1), doubled at most twice until "
                                 "the rings settle (the last ten cycles within 0.3 %) or while a run still grows below "
@@ -1411,7 +1415,8 @@ def summarise_ab(res):
              for m in AB_MODELS}
     for m in AB_MODELS:
         R = ab["runs"].get(m, {})
-        f10, f1k = R.get(f"free {abs(ES_FREE['v0']):g} V, 12 cycles") or {}, R.get(f"free {abs(V0_CLAMPED):g} V, 12 cycles") or {}
+        f10 = R.get(f"free {abs(ES_FREE['v0']):g} V, 12 cycles") or {}
+        f1k = R.get(f"free {abs(V0_CLAMPED):g} V, 12 cycles") or {}
         thr = ab["thresholds"].get(m, {})
         t40 = ab["thresholds_40"].get(m, {})
         row = dict(z_free_10V=f10.get("z"), z_late_10V=f10.get("z_late"), z_free_1kV=f1k.get("z"),
@@ -1436,6 +1441,20 @@ def summarise_ab(res):
             row["clamped"][f"{v0:g}"] = q
         row["starts_from_1kV"] = (row["clamped"].get(f"{V0_CLAMPED:g}") or {}).get("reached_clamp")
         ab["table"][m] = row
+    # the clamps' share [OC: the same deck less the clamps]: the free 40-cycle trials against the machine's trials from
+    # the same seeds, the gain fitted over the same cycles (30-39)
+    fit = lambda pk: float(math.exp(np.polyfit(np.arange(30, 40), np.log(np.array(pk[30:40])), 1)[0]))
+    ab["free_vs_machine"] = {}
+    for m in AB_MODELS:
+        t40 = {q["v0_V"]: q for q in ab["thresholds_40"].get(m, {}).get("trials", [])}
+        rows_ = []
+        for q in ab["thresholds"].get(m, {}).get("trials", []):
+            f = t40.get(q["v0_V"])
+            pk_f, pk_m = (f or {}).get("V1_peak_per_cycle_kV") or [], q.get("V1_peak_per_cycle_kV") or []
+            if len(pk_f) >= 40 and len(pk_m) >= 40 and min(pk_f[30:40] + pk_m[30:40]) > 0:
+                rows_.append(dict(v0_V=q["v0_V"], z_free_30_39=fit(pk_f), z_machine_30_39=fit(pk_m),
+                                  free_grows=f["grows"], machine_grows=q["grows"]))
+        ab["free_vs_machine"][m] = sorted(rows_, key=lambda x: -x["v0_V"])
     return ab
 
 
@@ -1465,7 +1484,8 @@ def gates_ab(out):
                  ("P_belt_W (the rings' run)", cl["P_belt_W"], rec["rings_P_belt_W"], 2e-3),
                  ("95 % at, s", cl["t_to_95pc_s"], rec["t_to_95pc_s"], 0.0 if exact else None)]
         if not exact:                                               # the late gain (the last quarter of 40 cycles)
-            for nm in (f"free {abs(V0_CLAMPED):g} V bare, {N_THR} cycles", f"free {abs(ES_FREE['v0']):g} V, {N_THR} cycles"):
+            for nm in (f"free {abs(V0_CLAMPED):g} V bare, {N_THR} cycles",
+                       f"free {abs(ES_FREE['v0']):g} V, {N_THR} cycles"):
                 a_, b_ = (R.get(m, {}).get(nm) or {}).get("z_late"), (R.get("ND-deck", {}).get(nm) or {}).get("z_late")
                 pairs.append((f"late gain, {nm} (against the deck as is)", a_, b_, 5e-4))
         rows_ = []
@@ -1496,7 +1516,8 @@ def gates_ab(out):
                                   gain_last5=q.get("gain_last5"),
                                   gain_last5_steps_x2=(pk2[-1] / pk2[-6]) ** 0.2 if pk2[-6] > 0 else None))
         if rows_:
-            g.append(dict(gate=f"G-STEP as built {m}: the threshold's bracketing trials at {2 * ES_STEPS} steps a cycle",
+            g.append(dict(gate=f"G-STEP as built {m}: the threshold's bracketing trials at {2 * ES_STEPS} steps "
+                               "a cycle",
                           ok=all(x["grows"] == x["grows_steps_x2"] for x in rows_), rows=rows_))
     return g
 
@@ -1558,7 +1579,8 @@ def figure(out, path):
     else:
         fig, axs = plt.subplots(2, 2, figsize=(13.0, 9.2), facecolor=SURF)
         fig.subplots_adjust(left=0.065, right=0.975, top=0.9, bottom=0.075, wspace=0.22, hspace=0.4)
-    fig.suptitle("Both pumps of record with real diodes: the start kick, the start-up and the gain against the seed "
+    fig.suptitle("Both pumps of record with real diodes: the start kick, the start-up and the gain against the seed"
+                 + ("; (e, f) the electrostatic pump as built" if ab else "") + " "
                  "(sim/diodes_real.py)", fontsize=11.0, color=INK, x=0.065, ha="left")
     cols = {"ND": BASE, "GP": SERIES[0], "FR": SERIES[1], "SB": SERIES[2], "SBM": SERIES[3]}
     names = {"ND": "the record's ND", "GP": "1N54xx class", "FR": "fast recovery", "SB": "Schottky 200 V",
@@ -1650,8 +1672,8 @@ def figure_ab(ab, ax_e, ax_f, style, ecols, enames):
     view = dict(runs={m: {k: v for k, v in R.items() if "bare" not in k and "steps" not in k}
                       for m, R in ab["runs"].items()}, thresholds=ab["thresholds"])
     ys = []
-    for m in AB_MODELS:
-        pts = _z_points(view, m)
+    for m in AB_MODELS:                                              # 1 V up: below it a decayed run's tail, and its
+        pts = [p_ for p_ in _z_points(view, m) if 1.0 <= p_[0] <= 2e4]   # noise, carry nothing
         if not pts:
             continue
         ys += [p_[1] for p_ in pts]
@@ -1661,14 +1683,16 @@ def figure_ab(ab, ax_e, ax_f, style, ecols, enames):
         if vg and vg > 1.0:
             ax_e.plot([vg], [1.0], marker="v", ms=7, color=ecols[m], mec=SURF, lw=0)
     ax_e.axhline(1.0, color=INK2, lw=0.8, ls=":")
-    lo, hi = (min(ys) - 0.01, max(ys) + 0.01) if ys else (0.9, 1.1)
+    lo, hi = (max(0.8, min(ys)) - 0.01, min(1.1, max(ys)) + 0.01) if ys else (0.9, 1.1)
     for v, lab in ((abs(ES_FREE["v0"]), "the free-run seed"), (abs(V0_CLAMPED), "the deck's seed")):
         ax_e.axvline(v, color=AXIS, lw=0.8)
         ax_e.text(v * 1.06, lo + 0.004, lab, fontsize=7.0, color=INK2, rotation=90, va="bottom")
     ax_e.set_ylim(lo, hi)
-    style(ax_e, "(e) As built (sim/tube_strays_results.json): the gain over a cycle against node 1's amplitude; "
-                "▼ the smallest seed that grows", "V1 peak ratio, next cycle / this cycle", "node 1's peak, |V|")
-    ax_e.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right", markerscale=2)
+    ax_e.set_xlim(1.0, 2e4)
+    style(ax_e, "(e) As built: the gain over a cycle against node 1's amplitude (▼ the machine's start seed)",
+          "V1 peak ratio, next cycle / this cycle", "node 1's peak, |V|")
+    ax_e.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower center", bbox_to_anchor=(0.43, 0.0),
+                markerscale=2)
     t_max = 0.0
     for m in AB_MODELS:
         R = ab["runs"].get(m, {})
@@ -1680,11 +1704,12 @@ def figure_ab(ab, ax_e, ax_f, style, ecols, enames):
             y = -np.array(r["Vk_per_cycle_kV"])
             tt = (np.arange(len(y)) + 1) / CF.F
             t_max = max(t_max, tt[-1])
-            ax_f.plot(tt, y, color=ecols[m], lw=2.0 if m != "ND" else 1.6, ls="--" if (m == "ND" or k) else "-",
+            ls = "--" if m == "ND" else (":" if k else "-")
+            ax_f.plot(tt, y, color=ecols[m], lw=2.0 if m != "ND" else 1.6, ls=ls,
                       label=enames[m] + f", from −{v / 1e3:g} kV")
-    ax_f.set_xlim(0, t_max or 1.0)
-    style(ax_f, "(f) As built: the rings' DC from the clamped runs that start", "V_B − V_A, the least in each cycle, kV",
-          "time, s")
+    ax_f.set_xlim(0, min(t_max, 2.5) if t_max else 1.0)
+    style(ax_f, "(f) As built: the rings' DC from the clamped runs that start",
+          "V_B − V_A, the least in each cycle, kV", "time, s")
     ax_f.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right")
 
 

@@ -12,7 +12,9 @@ text:
 - the magnetic dual doubler at the pick (`sim/magnetic_doubler.py`, exactly as `sim/rotor_parts_duty.py` `_kw` and
   `sim/ah_steady_cusp.py` run it), without and with the bypass;
 - the electrostatic doubler with the rings' symmetric supply (`sim/core_field.py` dc, the settings of
-  `sim/hub_rings_build_results.json` record_supply: 2 + 2 stages, 100 pF, 100 GΩ, 280 cycles from −1 kV).
+  `sim/hub_rings_build_results.json` record_supply: 2 + 2 stages, 100 pF, 100 GΩ, 280 cycles from −1 kV);
+- the same deck on the tube-strays study's as-built capacitances (`sim/tube_strays_results.json`; §6, the results'
+  key `electrostatic_as_built`).
 
 ## Headline
 
@@ -54,6 +56,27 @@ sticks' capacitance and leakage cost the rings.** [IR: the stick and clamp class
   record) [OC: linear].
 - **The clamps** take 1.06 W each with typical sticks (1.07 W in the record), 16 mW per 200 V device. The sticks take
   9 mW in all; at the maximum leakage 96 mW, at the hot leakage 213 mW.
+
+**As built (on the tube-strays study's solved capacitances) the real sticks leave the electrostatic pump almost no
+start margin, and hot it does not start from the deck's −1 kV at all.** [OC: the circuit; IR: the stick and clamp
+classes]
+- **The set** is `sim/tube_strays_results.json`'s "as built" (`sim/tube-strays-findings.md` §5). With the record's ND
+  it reproduces that study exactly: z 1.0579 bare and 1.0310 with the rings' chains, ±13.86 kV (§6.2).
+- **The machine (the clamped deck, the clamps' leakage in it) starts from** any seed with ND; from 122 V with typical
+  sticks; from 1.0 kV at the datasheet maximum (it fails from 0.95 kV); and from 3.65 kV hot (it fails from 3.40 kV).
+  On the record's capacitances the same sticks grew from 17.5 / 64 / 259 V (§4.1).
+- **From the deck's −1 kV:**
+  - with typical sticks it starts: 95 % at 0.575 s;
+  - at the maximum leakage only just: 95 % at 1.49 s;
+  - **hot, not at all: it decays to nothing.**
+  - From −1.5 kV / −5 kV the maximum / hot cases reach 95 % in 0.69 / 0.30 s.
+- **The rings as built,** against ND's −13.86 / +13.86 kV, 7.06 kV/cm at the null and 55 V p-p across:
+
+  | sticks | ring A / ring B | at the null | 120 Hz ripple across | the two clamps | the 12 sticks |
+  |:--|--:|--:|--:|--:|--:|
+  | typical leakage | −13.38 / +13.40 kV | 6.82 kV/cm | 182 V p-p | 0.64 W | 3.5 mW |
+  | maximum leakage (2 µA, 25 °C) | −12.35 / +12.42 kV | 6.31 kV/cm | 764 V p-p | 0.56 W | 87 mW |
+  | hot leakage (5 µA, 100 °C) | −10.72 / +10.89 kV | 5.50 kV/cm | 1722 V p-p | 0.42 W | 198 mW |
 
 ## 1. The models
 
@@ -321,12 +344,149 @@ The record's 29 cycles carry the deck's `uic` artefact: its effective seed is �
    diode drop then costs only about 2 W") and `sim/pole_design.py`:291 (the label "Si (0.55 V @ 1 A)"): a real silicon
    rectifier drops 0.85 V at 1 A; the pick then needs a 25 % kick and its diodes take 3.0–3.1 W.
 
+## 6. As built: the tube-strays study's capacitances
+
+### 6.1 The set and the runs
+- **The set** [OC: that study's 3-D field solve; IR: its cosine C(θ) between the two solved angles] is
+  `sim/tube_strays_results.json` decks.sets["as built"], read by the script as that study's deck takes it:
+  - C1v = C2v 133.0 ↔ 446.0 pF: node 1's solved total to REF, unaligned / aligned (199.2 / 512.2 pF,
+    `sim/tube-strays-findings.md`:206), less its 66.2 pF fixed stray. So the first Ca plate's swing is in it; the
+    vanes alone are 128.4 / 450.6 pF (:25);
+  - Ca = Cb 481.6 pF: 480.5 pF as laid out (`sim/tube-strays-findings.md`:27) plus the 1.1 pF from node 1 to node 2;
+  - the node strays 66.2 pF (nodes 1, 4) and 24.5 pF (nodes 2, 3); across the hub 0.048 pF (nodes 1–4) and less;
+  - the rings 5.87 pF each to REF and 1.50 pF between them; 0.015 / 0.007 pF from node 1 (4) to ring A (B) / B (A).
+- **Applied as that study applies it:** `sim/tube_strays.py` deck_strays replaces the node strays and adds the
+  couplings. The script replicates it (`apply_strays`) rather than importing it, because that module rebinds
+  `sim/core_field.py`'s deck at import [IR].
+- **The cases:** (a) the record's ND, the varicaps split (§1.2); (b) typical, (c) maximum and (d) hot leakage, with the
+  sticks and clamps of §1.2.
+- **The free runs:** 12 cycles at 20 000 steps a cycle, z as the record fits it (cycles 3–11), with the rings' chains,
+  from −10 V and −1 kV. For the gate, also bare (no rings) from −1 kV, as that study runs it.
+- **The start trials** [IR]:
+  - the clamped deck itself (the machine, the clamps and their leakage in it) from a seed v0 on nodes 1 and 4;
+  - 120 cycles, doubled while undecided, up to 960; bisection in log |v0| to 10 %, up to 10 kV;
+  - a trial grows once it reaches the clamp, or while its gain over the last five cycles is above 1 and not falling
+    (against the five cycles 20 earlier);
+  - it fails once it has decayed 100×, or while that gain is below 1 and not rising.
+- **Why not §1.3's rule** (free runs of 40 cycles, the last peak above cycle 5's) [OC: the runs]:
+  - as built the pump's surplus is small, and the rings' chains take tens of cycles to charge;
+  - while they charge, the chains' reverse voltage rises, and their sticks' leakage with it;
+  - so a seed near the threshold grows for 20–40 cycles and then decays. With typical sticks §1.3's rule reads
+    "grows" at 67 V, where the gain over cycles 30–39 is 0.9997; the machine from 75 V decays (0.9991 over its last
+    five of 120 cycles).
+  - §1.3's rule is still run as built (the results' thresholds_40), for comparison with §4.1.
+- **The clamped runs** [IR]:
+  - from the deck's −1 kV, and from 1.25 × the threshold (rounded up to 0.5 kV) where the threshold is above 0.5 kV;
+  - each as long as `sim/tube_strays.py` _cycles gives from its seed at its 12-cycle free gain,
+    280 + 1.3 ln(13.227 kV / |v0|) / ln z cycles;
+  - each doubled until the rings settle (the last ten cycles within 0.3 %);
+  - ND runs that study's own 390 cycles.
+
+### 6.2 Gates
+
+| gate | result | pass |
+|:--|:--|:--|
+| G-AB: the as-built set with the deck as is, against `sim/tube_strays_results.json` decks.table["as built"] | z 1.0578642 bare and 1.0309849 with the rings' chains (to 2e-10); rings −13.8599 / +13.8625 kV, 7.0575 kV/cm, 95 % at 0.625 s: exact; belt 0.64665 W (−1.6e-6) | ✔ |
+| G-AB: the same with the split varicaps | rings, field and belt within 3e-5; the late gain (cycles 30–39 of 40) 1.05771 bare and 1.03870 with the chains, against the deck's 1.05771 / 1.03838 (1e-6 / 3e-4). z over cycles 3–11 (1.0544 / 1.0285) and 95 % at 0.525 s carry the consistent seed's start: reported, not gated (§1.2) | ✔ |
+| G-ENERGY: the four clamped runs with sticks that start | ≤ 9e-8 of the belt | ✔ |
+| G-STEP: each threshold's two bracketing trials at 20 000 steps a cycle | the same verdicts; the last five cycles' gain within 2e-6 | ✔ |
+
+### 6.3 The gain, and the seed it needs
+
+| sticks | z from −10 V | z from −1 kV | the machine starts from (fails at) | §1.3's rule, as built | on the record's capacitances (§4.1) |
+|:--|--:|--:|:--|--:|--:|
+| (a) the record's ND, split | 1.0285 | 1.0298 | any seed (1 V) | any seed | any seed |
+| (b) typical leakage | 0.9966 | 1.0244 | 122 V (115 V) | 67 V | 17.5 V |
+| (c) maximum leakage (25 °C) | 0.9518 | 1.0038 | 1.00 kV (0.95 kV) | 0.81 kV | 64 V |
+| (d) hot leakage (100 °C) | 0.8808 | 0.9672 | 3.65 kV (3.40 kV) | 2.21 kV | 259 V |
+
+- **The seed rises 7–16× against the record's capacitances** [OC]. The sticks' drop and leakage take a share of
+  each cycle's charge that falls with the amplitude. The seed must be large enough for that share to fall below the
+  pump's surplus, and as built the surplus with the chains is 0.031 a cycle, against the record's 0.191
+  (`sim/tube_strays_results.json` decks.table: z_rings_start 1.0310 / 1.1907).
+- **The clamps' own leakage counts** [OC: the same deck less the clamps; the results' free_vs_machine]. The gain
+  over cycles 30–39 from the same seed, free (no clamps) against the machine:
+  - at the maximum leakage from 0.81 kV, 1.0018 against 0.983: the free pump grows, the machine decays;
+  - hot from 3.16 kV, 1.021 against 0.974;
+  - with typical sticks from 75 V, 0.9998 against 0.9994.
+  - Each clamp string's leakage (0.5 µA at the maximum, 5 µA hot [RH]) drains nodes 1 and 4 directly.
+- **So the deck's −1 kV seed is 8× the typical sticks' threshold, on the maximum's, and 0.27× the hot one**
+  (Figure (e), where ▼ marks each threshold).
+
+### 6.4 The start-up
+
+| sticks | from | it starts | 95 % at |
+|:--|--:|:--|--:|
+| the record's ND, the deck as is (the tube-strays study's run) | −1 kV | yes | 0.625 s (75 cycles) |
+| (a) the record's ND, split | −1 kV | yes | 0.525 s (63) |
+| (b) typical leakage | −1 kV | yes | 0.575 s (69) |
+| (c) maximum leakage | −1 kV | yes, on its threshold | 1.49 s (179) |
+| (c) maximum leakage | −1.5 kV | yes | 0.69 s (83) |
+| (d) hot leakage | −1 kV | **no:** it decays to nothing (node 1's peak 1.85 kV in the first cycle, 1e-17 kV by cycle 280) | — |
+| (d) hot leakage | −5 kV | yes | 0.30 s (36) |
+
+- **At the maximum leakage, from −1 kV,** node 1's peak takes 0.46 s to reach 2 kV and 0.90 s to reach 3 kV. It then
+  reaches the clamp at 1.43 s (Figure (f)). The least gain on the way is 0.996, at cycle 11; the gain is 1.0025 by
+  cycle 40 and 1.0074 by cycle 80 [OC: the chains charging while the amplitude grows].
+- **The steady state does not depend on the seed** [OC]: the maximum-leakage runs from −1 kV and −1.5 kV agree to
+  1e-8 kV on the rings and 5e-6 on the belt.
+
+### 6.5 The rings, the field at the null, the ripple and the heat
+
+| sticks | ring A / ring B | across | at the null | 120 Hz ripple across | the belt | each clamp (per device) | clamp peak current / node peak | the 12 sticks (their leakage) |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|
+| (a) the record's ND, split | −13.859 / +13.862 kV | 27.72 kV | 7.06 kV/cm | 55 V p-p (0.014 kV/cm) | 0.647 W | 0.322 W (4.9 mW) | 0.47 mA / 13.18 kV | — |
+| (b) typical | −13.385 / +13.402 kV | 26.79 kV | 6.82 kV/cm | 182 V (0.046 kV/cm) | 0.649 W | 0.321 W (4.9 mW) | 0.30 mA / 13.04 kV | 3.5 mW (1.1 mW) |
+| (c) maximum | −12.347 / +12.421 kV | 24.77 kV | 6.31 kV/cm | 764 V (0.194 kV/cm) | 0.651 W | 0.280 W (4.2 mW) | 0.26 mA / 13.01 kV | 87 mW (85 mW) |
+| (d) hot (from −5 kV) | −10.720 / +10.886 kV | 21.61 kV | 5.50 kV/cm | 1722 V (0.438 kV/cm) | 0.616 W | 0.210 W (3.2 mW) | 0.17 mA / 12.94 kV | 198 mW (195 mW) |
+
+- **The field at the null** is k (V_B − V_A), k = 0.2546 (kV/cm)/kV (`sim/hub_rings_build_results.json` record), and
+  its ripple is k × the gap's peak-to-peak [OC: linear].
+- **The sticks cost a little more of the gap as built than on the record's capacitances** [OC]: 0.93 kV typical
+  (0.60 kV, §4.3), 2.95 kV at the maximum (2.60 kV) and 6.12 kV hot (5.58 kV). That is 3.4 / 10.7 / 22.1 % of ND's
+  27.72 kV.
+- **The field at the null with typical sticks, 6.82 kV/cm,** is 10.5 % below the record's 7.62 kV/cm
+  (`docs/ledger/DCCREG-design-ledger.md`:102) and 3.4 % below the as-built ND's 7.06 kV/cm.
+- **The ripple** comes from the sticks' capacitance and leakage, as in §4.3: 55 → 182 V p-p across with typical sticks
+  (98 / 96 V on ring A / B).
+- **The clamps carry less of the same belt** (0.62–0.65 W). The sticks' leakage takes 85 mW of it at the maximum and
+  195 mW hot. Each chain diode leaks 19–22 nA typical, 1.4–1.7 µA at the maximum and 3.4–4.3 µA hot.
+
+### 6.6 What this adds against the record
+1. `docs/ledger/DCCREG-design-ledger.md`:443, "The pump barely self-excites" (as built): with real sticks it does not
+   self-excite. From −10 V it decays (z 0.997 typical, 0.952 at the maximum, 0.881 hot), and the machine starts only
+   from 122 V, 1.0 kV or 3.65 kV (§6.3).
+2. `docs/ledger/DCCREG-design-ledger.md`:443, :590 and :797; `sim/tube-strays-findings.md`:254, "±13.86 kV,
+   7.06 kV/cm, 95 % in 0.63 s" as built: that is the record's ND on the deck's own start.
+   - With typical sticks: −13.38 / +13.40 kV, 6.82 kV/cm, 182 V p-p, and 95 % at 0.575 s from a consistent −1 kV.
+   - At the maximum leakage: 6.31 kV/cm, and 95 % at 1.49 s from −1 kV.
+   - Hot: no start from −1 kV (§6.4, §6.5).
+3. On the record's capacitances only:
+   - `docs/ledger/DCCREG-design-ledger.md`:715, the gain: "with real HV sticks below 1 under about 17 V (260 V hot),
+     so a seed is needed";
+   - :102, "With real HV sticks 7.47 kV/cm at switch-on";
+   - this file's §4.1 (:269–270), "The record's −1 kV is enough at every leakage level".
+   - As built, the seed is 122 V to 3.65 kV, −1 kV does not start the hot pump, and the field with typical sticks is
+     6.82 kV/cm.
+4. **For the designer** (not a contradiction): `docs/ledger/DCCREG-design-ledger.md`:797 offers "Accept it, or win the
+   margin back". With real sticks, accepting it as built means one of two things:
+   - the selected, cool parts of `sim/parts-first-cut-findings.md` (I_R ≤ 25 nA at 7.5 kV) and a seed of at least
+     about 1 kV;
+   - or a seed of at least 3.65 kV, for hot leakage.
+   - The sticks' and the clamps' leakage are the bench's to settle (`docs/bench-test-rings.md`), OPEN until it measures
+     them.
+
 ## Caveats
 - **[IR] datasheet-class models:** typical curves at 25 °C; the stick as one level-1 string; the leakage element's
   shape (N V_T 250 V [RH]); the stick capacitance carried with Vj 0.7 V; the clamp's knee; the split varicaps. No
   vendor part is modelled.
-- **[RH]:** the body capacitance (1 pF), the hot leakage of the clamps, the leakage's temperature law.
+- **[RH]:** the body capacitance (1 pF), the hot leakage of the clamps, the leakage's temperature law. The clamps' hot
+  leakage (5 µA a string) is load-bearing for §6's hot threshold (3.65 kV).
 - **Not modelled:** temperature (V_F falls about 2 mV/K a junction hot, the leakage rises); the HV parts' stray
-  capacitance to their surroundings beyond the deck's 20 pF a node; corona; a physical kick source (the K4 dump of
-  `sim/parts-first-cut-findings.md`); speeds below 1200 rpm relative.
+  capacitance to their surroundings (§3–§5 keep the deck's 20 pF a node; §6 takes the solved node strays, but not the
+  sticks' own strays); corona; a physical kick source (the K4 dump of `sim/parts-first-cut-findings.md`); speeds below
+  1200 rpm relative.
 - **The start criterion is the record's** (40 cycles); every failing trial decayed, so the bracketing is sharp.
+- **§6's start trials are a rule of this study** [IR]. Every bracketing trial is decided within 240 cycles. Two trials
+  far below the typical sticks' threshold (1 V and 32 V) are still undecided at 960 cycles, with gains of 0.9989; they
+  count as failing.
