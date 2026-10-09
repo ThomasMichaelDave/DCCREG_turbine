@@ -310,6 +310,9 @@ commits' dates.
   - **With the 3-D utrons** (`sim/start-3d-findings.md`): K4 still starts the pump at full speed at every phase, with
     every set. It starts at every phase only from 1050–1100 rpm relative, so never below 550 each way; a running pump
     stops below 850; and the seed threshold is 20–25 %, so the record's 20 % seed kick starts only the record's frame.
+  - **With the neck's field map as well** (the best estimate, `sim/neck-nonlinear-findings.md` §7): K4 still starts it at full speed at
+    every phase, but starts every phase only from 1150 rpm relative (the record's frame) or at full speed (the coils
+    aiding), and the seed threshold is 25–30 %. So K4 fires at full speed, 600 rpm each way.
   - **The first cut (PROPOSED):** a 9 V lithium cell charges a 470 µF bipolar capacitor, and an SCR dumps it across La
     (+ to node a) when a reed switch on the rotor passes an outside magnet: 19 mJ, 0.60 A, 17 ms, once per charge.
   - **The sign is the diodes':** a seed of the other sign starts the pump in the deck's own sign, so polarised bypass
@@ -680,7 +683,7 @@ and tooling.
 | La / Lb | 0.146 H DC chokes, 0.29 Ω in the deck, 0.87–1.15 A, ≤ 110 V; first cut EI-84 × 35 mm, 150 t of Ø1.40 mm, 0.276 Ω, 1.66 kg (PROPOSED) |
 | D1*–D4* | 0.54 V at 1 A in the deck (a 100 V Schottky's drop; the 200 V class drops 0.71 V); 1.9 / 2.3 A peak; reverse 113 / 104 / 58 / 60 V with the start-up; first cut Schottky 200 / 150 V, ≥ 3 A (PROPOSED); with it the AH 295 A-turns, the diodes 2.42 W (`sim/diodes-real-findings.md` §3.3) |
 | gain | z 1.21 (z_lin, the screen's linear model); 1.139 loaded early (z_early), 1.147 with the bypass; with the 3-D utrons z_lin 1.16–1.17 (under the ≥ 1.20 rule), z_early 1.07–1.09 (`sim/utron-3d-findings.md`) |
-| kick | once, at full speed (600 rpm each way, never below 500): the record's 20 % of Ψs seeds 0.110 A, 3.5 mJ; the threshold is 16 % with the deck's diodes, 17.2 % with the first-cut Schottky set, 25–28 % with silicon PN rectifiers (`sim/diodes-real-findings.md` §3.1); first cut K4, 470 µF + SCR, reed-fired (PROPOSED); with the 3-D utrons K4 starts at every phase from 1050–1100 rpm relative, the seed threshold 20–25 % (`sim/start-3d-findings.md`) |
+| kick | once, at full speed (600 rpm each way, never below 500): the record's 20 % of Ψs seeds 0.110 A, 3.5 mJ; the threshold is 16 % with the deck's diodes, 17.2 % with the first-cut Schottky set, 25–28 % with silicon PN rectifiers (`sim/diodes-real-findings.md` §3.1); first cut K4, 470 µF + SCR, reed-fired (PROPOSED); with the 3-D utrons K4 starts at every phase from 1050–1100 rpm relative, the seed threshold 20–25 % (`sim/start-3d-findings.md`); with the neck's field map as well from 1150–1200 rpm relative and 25–30 % (`sim/neck-nonlinear-findings.md` §7) |
 | mass | 2.23 kg per utron as built (SiFe 0.89, NiFe 0.15, Cu 1.07, G10 0.12) |
 | power | belt 17.6 W (18.1 W with the bypass) + iron 1.25 W; coils 46 °C in air at a 40 °C ambient |
 

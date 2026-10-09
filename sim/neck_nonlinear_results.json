@@ -6932,5 +6932,175 @@
    }
   },
   "pull_basis": "28.2 N per utron at 0.223 mWb (sim/rotor-mechanics-findings.md:183-184), x phi^2 [OC]"
+ },
+ "case_D_start": {
+  "source": "sim/start_3d.py _job (sim/parts_first_cut.py mag_job), sim/magnetic_doubler.deck wrapped",
+  "criterion": "the AH coil (top) reaches half the set's own case-D steady peak (the 30 % seed, 150 cycles)",
+  "numerics": "the dense neck table (x4), trapezoidal integration, 150 cycles [IR]; mag_job's z_early uses the record's law and is not reported",
+  "gate": {
+   "here_AT": 307.87616,
+   "record_AT": 307.87616,
+   "passed": true
+  },
+  "sets": {
+   "frame_a": {
+    "steady_AT": 278.69504,
+    "half_AT": 139.34752,
+    "case_D_steady_peak_AT": 279.4611881188119,
+    "rows": {
+     "seed|0.20": {
+      "AH_AT_final": 4.839542399999999e-66,
+      "starts": false,
+      "retried": false,
+      "kick_E_out_mJ": null
+     },
+     "seed|0.25": {
+      "AH_AT_final": 278.69616,
+      "starts": true,
+      "retried": true,
+      "kick_E_out_mJ": null
+     },
+     "seed|0.30": {
+      "AH_AT_final": 278.69504,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": null
+     },
+     "seed|0.40": {
+      "AH_AT_final": 278.69504,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": null
+     },
+     "K4|1": {
+      "AH_AT_final": 278.69504,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 17.22230250393266
+     },
+     "K4|1.25": {
+      "AH_AT_final": 278.69504,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 18.111820571353128
+     },
+     "K4|1.5": {
+      "AH_AT_final": 278.69504,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 18.363316792324365
+     },
+     "K4|1.75": {
+      "AH_AT_final": 278.69504,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 18.4134827834685
+     },
+     "K4|1100 rpm|1": {
+      "AH_AT_final": 268.25552,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 19.035000000000004
+     },
+     "K4|1100 rpm|1.5": {
+      "AH_AT_final": 3.3394048e-15,
+      "starts": false,
+      "retried": false,
+      "kick_E_out_mJ": 19.035000000000004
+     },
+     "K4|1150 rpm|1": {
+      "AH_AT_final": 273.5448,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 19.035000000000004
+     },
+     "K4|1150 rpm|1.5": {
+      "AH_AT_final": 273.5448,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 19.035000000000004
+     }
+    }
+   },
+   "cyl_aiding": {
+    "steady_AT": 255.37104,
+    "half_AT": 127.68552,
+    "case_D_steady_peak_AT": 256.43536475247527,
+    "rows": {
+     "seed|0.20": {
+      "AH_AT_final": 3.1920912e-67,
+      "starts": false,
+      "retried": false,
+      "kick_E_out_mJ": null
+     },
+     "seed|0.25": {
+      "AH_AT_final": 5.4654144e-59,
+      "starts": false,
+      "retried": false,
+      "kick_E_out_mJ": null
+     },
+     "seed|0.30": {
+      "AH_AT_final": 255.37104,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": null
+     },
+     "seed|0.40": {
+      "AH_AT_final": 255.37104,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": null
+     },
+     "K4|1": {
+      "AH_AT_final": 255.37104,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 17.035034044978126
+     },
+     "K4|1.25": {
+      "AH_AT_final": 255.37104,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 17.98713047241457
+     },
+     "K4|1.5": {
+      "AH_AT_final": 255.37104,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 18.268911887689086
+     },
+     "K4|1.75": {
+      "AH_AT_final": 255.37104,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 18.169753290007762
+     },
+     "K4|1100 rpm|1": {
+      "AH_AT_final": 4.1091663999999995e-15,
+      "starts": false,
+      "retried": false,
+      "kick_E_out_mJ": 19.035000000000004
+     },
+     "K4|1100 rpm|1.5": {
+      "AH_AT_final": 3.3483263999999996e-15,
+      "starts": false,
+      "retried": false,
+      "kick_E_out_mJ": 19.035000000000004
+     },
+     "K4|1150 rpm|1": {
+      "AH_AT_final": 250.55216000000001,
+      "starts": true,
+      "retried": false,
+      "kick_E_out_mJ": 19.035000000000004
+     },
+     "K4|1150 rpm|1.5": {
+      "AH_AT_final": 3.3613872e-15,
+      "starts": false,
+      "retried": false,
+      "kick_E_out_mJ": 19.035000000000004
+     }
+    }
+   }
+  }
  }
 }

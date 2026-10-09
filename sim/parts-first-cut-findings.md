@@ -75,6 +75,8 @@ changed.
   - **Re-run** (`sim/start-3d-findings.md`): K4 still starts the pump at full speed at every phase with every 3-D set. It
     starts at every phase from 1050–1100 rpm relative (not 1000), a running pump stops below 850 (not about 750), and
     the seed threshold is 20–25 % (not 16 %). So K4 fires at full speed, never below 550 rpm each way.
+  - **With the neck's field map as well** (`sim/neck-nonlinear-findings.md` §7): K4 starts every phase only from 1150 rpm
+    relative, or only at full speed with the coils aiding; the seed threshold is 25–30 %. K4 fires at full speed.
 - **The recommendation [IR]:** a 9 V lithium primary cell charges a 470 µF bipolar electrolytic through 10 kΩ.
   - At speed, an outside magnet closes a reed switch on the rotor, and the reed pulses an SCR's gate.
   - The SCR dumps the capacitor across La, + to node a: 19 mJ, 0.60 A peak, over 17 ms.

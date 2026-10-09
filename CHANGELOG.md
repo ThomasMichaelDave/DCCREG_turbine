@@ -271,6 +271,11 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
   the null, z_early 1.028–1.051 and 12.7–15.0 W on the belt; the pull stays about 28 N per utron. The ledger (§1, §3.2,
   §3.3, §4, §5.2), the AH's records, the cost notes, the rotor schematic and the architecture figure carry it beside
   the record's 300 and the 3-D study's 221–245.
+- **Added: the start in the best estimate** (`sim/neck-nonlinear-findings.md` §7; `sim/start_3d.py`'s runs with the
+  case D law; the gate reproduces `sim/start_3d_results.json`): K4 still starts the pump at full speed at all four
+  phases with the record's frame and with the coils aiding. It starts every phase only from 1150 rpm relative (the
+  frame) or at full speed (aiding), and the seed threshold is 25–30 %: K4 fires at full speed (dated notes in
+  `sim/start-3d-findings.md`, `sim/parts-first-cut-findings.md` §3, `docs/drive-gear-belt.md` §4.2 and the ledger).
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the

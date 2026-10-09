@@ -2,7 +2,8 @@
 
 **Source:** `sim/neck_nonlinear.py` → `sim/neck_nonlinear_results.json`; figure `docs/figures/neck-nonlinear.png` (the
 same script). About 30 min with 2 processes on an idle machine (59 field solves, 22 ngspice runs); case D (§6) about
-6 min more (`python3 sim/neck_nonlinear.py D`, on the written results).
+6 min more (`python3 sim/neck_nonlinear.py D`, on the written results); its start runs (§7) about 10 min
+(`python3 sim/neck_nonlinear.py Dstart`).
 
 **Status:**
 - [OC] the magnetostatics, the laminate's two limits, the circuit;
@@ -256,6 +257,34 @@ factors. i_neck(Ψ) is C's, unchanged: the neck sits within the stack. The deck 
 - **The flux at the clamp barely moves**: 221–223 µWb per utron, so the pull stays at ≈ 28 N per utron, as recorded.
 - **Which set is the machine's** is the 3-D study's call (`sim/utron-3d-findings.md`); the designer decides on the
   neck and the coils' connection.
+
+## 7. Case D: the start
+**The runs** [IR]: `sim/start_3d.py` `_job` unchanged (`sim/parts_first_cut.py` `mag_job` with the 3-D set's `RP._kw`
+override, La / Lb at 0.146 H), with `sim/magnetic_doubler.deck` wrapped so that its text carries case D's law
+(`sim/neck_nonlinear.py` `_start_job`). All with the 22 mF bypass, 150 cycles, the dense table and trapezoidal
+integration (`case_D_start`).
+- **The gate:** the record's law and set, K4 at phase 1, 40 cycles: 307.88 A-turns, as `sim/start_3d_results.json`.
+- **The criterion** (as `sim/start_3d.py`): the AH coil reaches half the set's own case-D steady peak by the end. That
+  peak is the 30 % seed's run, 278.7 / 255.4 A-turns (§6's runs: 279.5 / 256.4).
+- `mag_job`'s own z_early uses the record's law and is not reported.
+
+| run | frame_a (κ 6.07): final A-turns | cyl_aiding (κ 5.40): final A-turns |
+|:--|--:|--:|
+| seed 20 % of Ψs | dies (0) | dies (0) |
+| seed 25 % | **278.7** (starts) | dies (0) |
+| seed 30 % / 40 % | 278.7 / 278.7 | 255.4 / 255.4 |
+| K4 at full speed, phases 1 / 1.25 / 1.5 / 1.75 | 278.7 at all four (17.2–18.4 mJ out of K4) | 255.4 at all four (17.0–18.3 mJ) |
+| K4 at 1150 rpm relative, phases 1 / 1.5 | 273.5 / 273.5 | 250.6 / **dies** |
+| K4 at 1100 rpm relative, phases 1 / 1.5 | 268.3 / **dies** | **dies / dies** |
+
+- **K4 still starts the pump at full speed at every phase**, in both sets [OC circuit; IR law].
+- **The seed threshold rises one step** to 25 % (frame_a) and 30 % (aiding). With the record's law it was 20 % and
+  25 % (`sim/start_3d_results.json` `sets`).
+- **The speed window narrows.**
+  - K4 starts every phase from 1150 rpm relative for frame_a, and only at full speed for the aiding set.
+  - With the record's law it was from 1050 and 1100 (`sim/start_3d_results.json`
+    `K4_every_phase_from_rpm_relative`).
+  - So K4 must fire within the last 50 rpm (or at speed) of the 1200 rpm relative run-up.
 
 ## Notes against the record
 - `sim/utron_profile.py`:13–15 and `sim/pole-design-findings.md`:417–418: the lap joints "add ~3 % to the aligned

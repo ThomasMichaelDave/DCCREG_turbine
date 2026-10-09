@@ -43,6 +43,10 @@ Below full speed "it runs" is the parts study's own: more than 50 A-turns over t
     point is 1200, so "fire at full speed, never below 500 each way" (`docs/ledger/DCCREG-design-ledger.md` §3.2)
     becomes "never below 550 each way";
   - **a running pump** stops below 850 rpm relative (425 each way), not about 750.
+- **With the neck's field map as well** (2026-10-09, `sim/neck-nonlinear-findings.md` §7, the best estimate): K4 still starts the
+  pump at full speed at all four phases in the record's frame and with the coils aiding. It starts every phase only
+  from 1150 rpm relative (the frame) or at full speed (aiding), and the seed threshold is 25 % / 30 %. So K4 fires at
+  full speed.
 - **The gate passes exactly:** the record's set reproduces `sim/parts_first_cut_results.json` run for run: the
   threshold pair (14 % dies, 16 % reaches 304.70 A-turns), K4 at two phases (307.88 / 307.85), the speed rows at 950
   and 1000 rpm relative (one phase of two at 950) and the hold at 700 / 800.
