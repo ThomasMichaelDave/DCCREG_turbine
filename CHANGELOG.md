@@ -290,6 +290,9 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
 - **Corrected, from these two** (dated notes: the ledger §1, §3.4, §3.7, §4, §5.2, §5.3, §6 items 55 and 65;
   `sim/tube-strays-findings.md` §5, `docs/rings-design.md`, `docs/bench-test-rings.md` phase 4; the rotor schematic
   and the architecture figure carry the as-built seed and field).
+- **The ledger and the drawings bundle rebuilt** (`docs/ledger/make_ledger.py`): the ledger with the four model checks
+  (its abstract, §6's 65 items and the designer's list in §5.2), the bundle with their figures in part B (sheets 26–29;
+  54 sheets behind the register).
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the
