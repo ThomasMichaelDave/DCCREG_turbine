@@ -43,8 +43,8 @@ sim/diodes-real-findings.md.
 Tags (CONVENTIONS.md §1): [OC] derivable physics; [IR] a modelling or engineering choice, datasheet-class device
 parameters included; [RH] heuristic, not load-bearing. Never a bare d: g for a gap, "diameter" spelled out.
 Usage: python3 sim/diodes_real.py [--procs 4] [--only mag|es] [--figure-only] [--cache FILE]
-       (needs ngspice; about an hour of CPU on an idle 4-core machine; --cache keeps every finished run in FILE, a
-       JSON-lines file outside the repository, and a rerun skips them)
+       (needs ngspice; a few CPU-hours; --cache keeps every finished run in FILE, a JSON-lines file outside the
+       repository, and a rerun skips them)
 """
 import argparse
 import json
@@ -1187,7 +1187,8 @@ def figure(out, path):
         ax.semilogy(tt, y, color=cols[m], lw=2.0 if m != "ND" else 1.6, ls="-" if m != "ND" else "--",
                     label=names[m] + ("" if r.get("starts") else ": does not start"))
     ax.axhline(START_AT, color=INK2, lw=0.8, ls=":")
-    ax.text(0.003, START_AT * 1.08, f"the start criterion, {START_AT:.0f} A-turns", fontsize=7.2, color=INK2)
+    ax.set_ylim(1e-2, 2e3)
+    ax.text(0.003, START_AT * 1.15, f"the start criterion, {START_AT:.0f} A-turns", fontsize=7.2, color=INK2)
     style(ax, f"(b) From the record's {100 * KICK_REC:.0f} % kick, with the 22 mF bypass: the branch peak per cycle",
           "N_AH × peak branch current, A-turns", "time, s")
     ax.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right")
@@ -1204,13 +1205,14 @@ def figure(out, path):
         ax.semilogx([p_[0] for p_ in pts], [p_[1] for p_ in pts], color=ecols[m], lw=0, marker="o", ms=2.6,
                     alpha=0.85, label=enames[m])
     ax.axhline(1.0, color=INK2, lw=0.8, ls=":")
-    for v, lab in ((abs(ES_FREE["v0"]), "the record's free-run seed"), (abs(V0_CLAMPED), "its clamped run's seed")):
+    for v, lab, y0, va in ((abs(ES_FREE["v0"]), "the record's free-run seed", 1.215, "top"),
+                           (abs(V0_CLAMPED), "its clamped run's seed", 0.905, "bottom")):
         ax.axvline(v, color=AXIS, lw=0.8)
-        ax.text(v * 1.06, 0.905, lab, fontsize=7.0, color=INK2, rotation=90, va="bottom")
+        ax.text(v * 1.06, y0, lab, fontsize=7.0, color=INK2, rotation=90, va=va)
     ax.set_ylim(0.9, 1.22)
     style(ax, "(c) The electrostatic pump's gain over a cycle against its node-1 amplitude (every run)",
           "V1 peak ratio, next cycle / this cycle", "node 1's peak, |V|")
-    ax.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right", markerscale=2)
+    ax.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="center left", markerscale=2)
 
     # (d) the rings' DC in the record's clamped run
     ax = axs[1, 1]
