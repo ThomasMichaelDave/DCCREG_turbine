@@ -1,7 +1,8 @@
 # The neck's nonlinear field check — findings
 
 **Source:** `sim/neck_nonlinear.py` → `sim/neck_nonlinear_results.json`; figure `docs/figures/neck-nonlinear.png` (the
-same script). About 30 min with 2 processes on an idle machine (59 field solves, 22 ngspice runs).
+same script). About 30 min with 2 processes on an idle machine (59 field solves, 22 ngspice runs); case D (§6) about
+6 min more (`python3 sim/neck_nonlinear.py D`, on the written results).
 
 **Status:**
 - [OC] the magnetostatics, the laminate's two limits, the circuit;
@@ -32,6 +33,7 @@ DCCREG-UTR-101), its deck as `sim/rotor_parts_duty.py` runs it, with and without
 | z_early, bypass / none | 1.147 / 1.139 | 1.112 / 1.104 | same |
 | belt, bypass / none | 18.1 / 17.6 W | **21.0 / 20.5 W** | same |
 | utron copper, bypass / none | 13.5 / 12.9 W | 15.6 / 15.1 W | same |
+| **with the 3-D utron sets** (case D, 22 mF): AH mean, z_early, belt — frame_a / one reversed / aiding | 245 / 236 / 221 A-t, z 1.091 / 1.084 / 1.072 (the 3-D study, ^6 law) | **272 / 264 / 249 A-t, z 1.051 / 1.043 / 1.028, 15.0 / 14.2 / 12.7 W** | `case_D.runs`; `sim/utron_3d_results.json` `deck` |
 
 1. **The neck sets Ψs about 5 % below the design** [OC model; RH inputs]. The FE knee is 0.2113 mWb per utron. The
    strip's own saturation, J_s × SF × section = 0.78 T × 0.90 × 300 mm², is 0.2106 mWb. The record sized it at
@@ -208,6 +210,53 @@ aligned only):
 - **Stacking the NiFe like the SiFe** (in the plane of rotation) restores the record's z_early at the same field
   [OC model]. That is a build choice for the designer; the record's drawing has the foils stacked radially.
 
+## 6. Case D: the FE neck with the 3-D utron sets
+**The combination** [IR]: each 3-D set's L(θ) enters as its 3-D / 2-D ratio at each angle, L13 / L2d_record_13
+(`sim/utron_3d_results.json` `variants`, pole_fd2d's 2-D solve), on this study's 0.1 mWb secant, in place of C's end
+factors. i_neck(Ψ) is C's, unchanged: the neck sits within the stack. The deck is C's (La / Lb at the record's
+0.146 H, the record's copper, strays, snubbers and seed).
+- **The bracket** "series": the 3-D solid section in series with this study's neck reluctance, 1/L = 1/L13 +
+  (1/L_FE − 1/L_linear) [IR]. It keeps the neck's reluctance as solved; the scaling also scales it. For frame_a it puts
+  the aligned L 1.1 % lower and moves the operating point by ≤ 0.4 % of A-turns (table).
+- **The gate:** fed C's own factor, the same path reproduces C exactly (law and deck: 0.0; `case_D.gate`).
+- **Numerics** [IR]: the 3-D sets grow only 2–5 % per cycle, so they run 150 cycles; every run settles (z_late
+  1.00000). ngspice gets the same neck table resampled ×4 by a monotone cubic. The bypass runs use trapezoidal
+  integration: gear stops where the slowly growing flux first meets the sharp knee.
+  - On the 2-D set these change the result by ≤ 0.2 % against C, and trap against gear by ≤ 0.03 %.
+
+**The sets with the neck** (`case_D.sets`; per coil, at 0.1 mWb):
+
+| set | 3-D / 2-D ratio, 0° / 30° | L_al / L_un per coil | κ |
+|:--|--:|--:|--:|
+| 2-D (C's end factors) | 1.030 / 1.300 | 72.8 / 9.36 mH | 7.78 |
+| frame_a (the record's frame) | 1.059 / 1.713 | 74.9 / 12.3 mH | 6.07 |
+| cyl_one_reversed | 1.060 / 1.786 | 75.0 / 12.9 mH | 5.83 |
+| cyl_aiding | 1.068 / 1.943 | 75.5 / 14.0 mH | 5.40 |
+
+**The operating point** (`case_D.runs`; the AH coil above, "top"; the group's flux at its peak, at alignment):
+
+| set | bypass | AH A-turns per coil: min–max (mean) | z_early | belt | utron Cu | group flux | per utron | pull per utron |
+|:--|:--|--:|--:|--:|--:|--:|--:|--:|
+| 2-D (= C) | 22 mF | 313–333 (323) | 1.112 | 21.0 W | 15.6 W | 1.061 Ψs | 0.232 mWb | 30.4 N |
+| frame_a | none | 133–388 (263) | 1.042 | 14.8 W | 10.7 W | 1.020 Ψs | 0.223 mWb | 28.2 N |
+| frame_a | 22 mF | 263–279 (272) | 1.051 | 15.0 W | 11.0 W | 1.023 Ψs | 0.223 mWb | 28.3 N |
+| frame_a, series | none / 22 mF | 133–388 (263) / 264–281 (273) | 1.034 / 1.044 | 14.8 / 15.1 W | 10.7 / 11.0 W | 1.020 / 1.022 Ψs | 0.223 mWb | 28.1 / 28.3 N |
+| cyl_one_reversed | none | 130–377 (253) | 1.034 | 14.0 W | 10.1 W | 1.017 Ψs | 0.222 mWb | 28.0 N |
+| cyl_one_reversed | 22 mF | 256–272 (264) | 1.043 | 14.2 W | 10.4 W | 1.020 Ψs | 0.223 mWb | 28.1 N |
+| cyl_aiding | none | 124–355 (239) | 1.019 | 12.5 W | 9.0 W | 1.009 Ψs | 0.221 mWb | 27.6 N |
+| cyl_aiding | 22 mF | 242–256 (249) | 1.028 | 12.7 W | 9.2 W | 1.012 Ψs | 0.221 mWb | 27.7 N |
+
+Ψs is the record's 0.1336 Wb-t; the pull scales the record's 28.2 N at 0.223 mWb (`sim/rotor-mechanics-findings.md`
+:183–184) as Φ² [OC].
+- **The neck raises the 3-D sets' field by 11–13 %** [OC circuit]. With the 22 mF bypass that is 272 / 264 / 249
+  A-turns against the 3-D study's 245 / 236 / 221 with the record's law (`sim/utron_3d_results.json` `deck`). As in C,
+  the sharp knee holds the flux higher through the cycle; the belt rises by 2.5–2.7 W (12.3 / 11.6 / 10.2 W there).
+- **It costs gain** [OC]: z_early falls by about 0.04 to 1.051 / 1.043 / 1.028 with the bypass (1.091 / 1.084 / 1.072
+  there). Without the bypass the aiding set reads 1.019, the thinnest margin in this note.
+- **The flux at the clamp barely moves**: 221–223 µWb per utron, so the pull stays at ≈ 28 N per utron, as recorded.
+- **Which set is the machine's** is the 3-D study's call (`sim/utron-3d-findings.md`); the designer decides on the
+  neck and the coils' connection.
+
 ## Notes against the record
 - `sim/utron_profile.py`:13–15 and `sim/pole-design-findings.md`:417–418: the lap joints "add ~3 % to the aligned
   reluctance"; the saturated incremental L is "~5 % of aligned and ~30 % of unaligned".
@@ -232,7 +281,7 @@ aligned only):
   basis. Flagged only: the figure is redrawn by its script.
 - `sim/rotor-mechanics-findings.md`:183–184: 0.223 mWb across a tip face at the clamp.
   - In case C the aligned flux reaches about 0.232 mWb per utron (1.06 of the record's Ψs), so the pull at the clamp
-    is ≈ 31 N per utron rather than 28 N [OC: ∝ Φ²].
+    is ≈ 30 N per utron rather than 28 N [OC: ∝ Φ²] (`case_D.runs["gate, 2-D, as C"]`).
 
 ## Caveats
 - **[RH] the three inputs the result leans on.**
@@ -247,8 +296,8 @@ aligned only):
   model is weakest. The mesh changes the knee by under 0.25 % (G-MESH), but that does not test the homogenisation.
 - **[IR] 2-D.** The ends enter through pole_fd2d's [RH] factors, here on the external path (the end flux through the
   neck); through the air around it the post-knee fractions are 15 % / 63 % (§2).
-  - The 3-D check (`sim/utron-3d-findings.md`, ledger line 665) puts κ at 6.70 with linear iron and no neck. This
-    study's neck acts in series with that path; the two are not combined here.
+  - The 3-D check (`sim/utron-3d-findings.md`, ledger line 665) puts κ at 6.70 with linear iron and no neck. The two
+    are combined in §6 (case D).
 - **[IR] magnetostatic.** No eddy currents: the 0.1 mm foils at 120 Hz have a skin depth of about 0.15 mm at μ_r 5·10⁴,
   larger past the knee [RH].
 - **[IR] the law.** The series neck holds below the knee (§2). Its knee is the aligned one; the true knee falls with

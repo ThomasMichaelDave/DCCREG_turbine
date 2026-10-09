@@ -19,7 +19,8 @@ The deck: sim/rotor_parts_duty._kw (the pick as sim/pole_design.size_op runs it)
 22 mF bypass inserted as sim/ah_steady_cusp.run does; the utron groups' law replaced (text substitution, the files are
 not edited) by the FE's: i = Psi / L(theta) + i_neck(Psi), the neck in series with the rest of the path [IR, checked
 against the FE map along the deck's own trajectory].
-Usage: python3 sim/neck_nonlinear.py [D]   (D: case D only, on the written results; NECK_PROCS worker processes, default 2; about 30 minutes with 2 on an idle machine)
+Usage: python3 sim/neck_nonlinear.py [D | Dstart]   (D: case D, Dstart: its start runs, both on the written
+results; NECK_PROCS worker processes, default 2; about 30 minutes with 2 on an idle machine)
 """
 import json
 import math
@@ -518,6 +519,8 @@ def deck_text(law, c_mf):
     """the pick's deck (sim/rotor_parts_duty._kw -> sim/magnetic_doubler.deck), the utron groups' law replaced if law
     is not 'record', the bypass inserted as sim/ah_steady_cusp.run does, the AH fluxes exported."""
     kw = _kw()
+    if law.get("n_cyc"):                                # the same deck run longer, to its steady state
+        kw = dict(kw, n_cyc=law["n_cyc"])
     if law.get("psi_s") is not None:                    # the record's law at another Psi_s (seed unchanged)
         seed = kw["seed"]
         kw = dict(kw, psi_s=law["psi_s"])
@@ -531,6 +534,8 @@ def deck_text(law, c_mf):
         txt = txt.replace("D1s f2 b ND", "\n".join(byp) + "\nD1s f2 b ND")
     ex = ["v(ps_AHt)", "v(ps_AHb)"]
     txt = txt.replace("wrdata out.dat " + " ".join(vecs), "wrdata out.dat " + " ".join(vecs + ex))
+    if law.get("method"):                               # case D's bypass runs: trapezoidal integration [IR: numerical]
+        txt = txt.replace("method=gear", "method=" + law["method"])
     return txt, vecs + ex, info, kw
 
 
@@ -587,7 +592,7 @@ def replace_law(txt, kw, info, law):
     return "\n".join(out) + "\n"
 
 
-def law_from_L3(fe_al, L3, thetas, name):
+def law_from_L3(fe_al, L3, thetas, name, dense=0, n_cyc=None):
     """the series-neck law on a given L(theta) per turn^2 (13-angle grid, ends included): its cosine series, the group's
     L_max, the aligned sweep's neck excess over its PHI_REF secant on the utrons' share of the group flux [IR]."""
     N = REC["best"]["N_u"]
@@ -601,12 +606,20 @@ def law_from_L3(fe_al, L3, thetas, name):
     lp = M.R_PAR * kw["L_max"]
     lg0 = L_max * sum(prof)
     r0 = lg0 / (lg0 + lp)
-    return dict(kind="fe", name=name, L_max=L_max, prof=list(prof), fit_err=float(err),
-                pwl_psi=list(np.r_[0.0, 3 * N * phi / r0]), pwl_i=list(np.r_[0.0, Fn / N]), L3d_theta=list(L3), r0=r0,
-                tau=L_max / (kw["L_max"] / kw["tau"]))
+    xp, yp = np.r_[0.0, 3 * N * phi / r0], np.r_[0.0, Fn / N]
+    if dense:                                           # the same table resampled by a monotone cubic [IR: numerical,
+        xd = np.unique(np.r_[xp, np.interp(np.arange(dense * (len(xp) - 1) + 1) / dense,  # for ngspice's step control]
+                                           np.arange(len(xp)), xp)])
+        xp, yp = xd, PchipInterpolator(np.r_[0.0, 3 * N * phi / r0], np.r_[0.0, Fn / N])(xd)
+    out = dict(kind="fe", name=name, L_max=L_max, prof=list(prof), fit_err=float(err), pwl_psi=list(xp), pwl_i=list(yp),
+               L3d_theta=list(L3), r0=r0, tau=L_max / (kw["L_max"] / kw["tau"]))
+    if n_cyc:
+        out["n_cyc"] = n_cyc
+    return out
 
 
 D_SETS = ("frame_a", "cyl_one_reversed", "cyl_aiding")
+D_DENSE, D_CYC = 4, 150        # case D's runs: the neck table resampled x4, 150 cycles [IR: numerical]
 
 
 def case_D(out):
@@ -624,10 +637,19 @@ def case_D(out):
     ratios = {"2-D (C's end factors)": L3c / L2}
     for k in D_SETS:
         ratios[k] = np.array(r3["variants"][k]["L13"]) / fd
-    laws = {k: law_from_L3(fe_al, L2 * r, THETAS, "D, " + k) for k, r in ratios.items()}
-    laws["frame_a, series"] = law_from_L3(fe_al, 1 / (1 / np.array(r3["variants"]["frame_a"]["L13"]) + 1 / L2 - 1 / Llin),
-                                          THETAS, "D, frame_a, series")
-    jobs = [("D, " + k, law, c) for k, law in laws.items() for c in (0.0, 22.0)]
+    L13s = 1 / (1 / np.array(r3["variants"]["frame_a"]["L13"]) + 1 / L2 - 1 / Llin)
+    laws = {"gate, 2-D, as C": law_from_L3(fe_al, L2 * ratios["2-D (C's end factors)"], THETAS, "D, gate")}
+    for k, r in ratios.items():                         # 150 cycles and the dense table: settled runs
+        laws[k] = law_from_L3(fe_al, L2 * r, THETAS, "D, " + k, dense=D_DENSE, n_cyc=D_CYC)
+    laws["frame_a, series"] = law_from_L3(fe_al, L13s, THETAS, "D, frame_a, series", dense=D_DENSE, n_cyc=D_CYC)
+    jobs = []
+    for k, law in laws.items():
+        jobs.append(("D, " + k, law, 0.0))
+        # with the bypass, gear stops where the slowly growing flux first meets the sharp knee; the 3-D sets run on
+        # trapezoidal integration, and the 2-D set on both, which measures the integrator's effect
+        jobs.append(("D, " + k, dict(law, method="trap") if k not in ("gate, 2-D, as C",) else law, 22.0))
+        if k == "2-D (C's end factors)":
+            jobs.append(("D, " + k + ", gear", law, 22.0))
     with Pool(PROCS) as pool:
         runs = pool.map(run_deck, jobs, chunksize=1)
     N, ps0 = REC["best"]["N_u"], REC["best"]["psi_s"]
@@ -639,7 +661,7 @@ def case_D(out):
             continue
         phi_u = r["psi1_max_Wb"] * law["r0"] / (3 * N)
         res.setdefault(key, {})["bypass_22mF" if c else "no_bypass"] = dict(
-            z_early=r["z_early"], P_belt_W=r["P_belt_W"], P_cu_utron_W=r["P_cu_utron_W"], P_AH_W=r["P_AH_W"],
+            z_early=r["z_early"], z_late=r["z_late"], n_cyc=law.get("n_cyc", RP.N_CYC), P_belt_W=r["P_belt_W"], P_cu_utron_W=r["P_cu_utron_W"], P_AH_W=r["P_AH_W"],
             P_cu_fixed_W=r["P_cu_fixed_W"], P_diode_W=r["P_diode_W"], AH_AT_top=r["top"], AH_AT_bottom=r["bottom"],
             branch_AT_min=r["branch_AT_min"], branch_AT_max=r["branch_AT_max"], I1_pk_A=r["I1_pk"],
             psi1_max_Wb=r["psi1_max_Wb"], psi1_max_over_psi_s_record=r["psi1_max_Wb"] / ps0, phi_utron_max_Wb=phi_u,
@@ -649,17 +671,103 @@ def case_D(out):
                     L_un_coil_mH=N ** 2 * law["L3d_theta"][-1] * 1e3,
                     kappa=law["L3d_theta"][0] / law["L3d_theta"][-1], L_max_H=law["L_max"], fit_err=law["fit_err"])
             for k, law in laws.items()}
-    lc, ld = out["laws"]["C"], laws["2-D (C's end factors)"]
+    lc, ld = out["laws"]["C"], laws["gate, 2-D, as C"]
     gate_law = max(max(abs(a - b) / max(abs(b), 1e-30) for a, b in zip(ld[f], lc[f])) for f in ("prof", "pwl_psi", "pwl_i"))
     gd = []
     for key in ("no_bypass", "bypass_22mF"):
-        a, b = res["2-D (C's end factors)"][key], out["operating_point"][f"C | {key}"]
+        a, b = res["gate, 2-D, as C"][key], out["operating_point"][f"C | {key}"]
         gd.append(max(abs(a[f] / b[f] - 1) for f in ("z_early", "P_belt_W", "P_cu_utron_W")) if "error" not in a else 1.0)
         gd.append(abs(a["AH_AT_top"]["AT_mean"] / b["AH_AT_top"]["AT_mean"] - 1) if "error" not in a else 1.0)
     return dict(combination="L_D(theta) = L_FE,0.1mWb(theta) x L13_set(theta) / L2d_record_13(theta) [IR]; i_neck as C",
                 source="sim/utron_3d_results.json variants (L13), L2d_record_13", sets=sets,
                 gate=dict(law_rel_diff=gate_law, deck_rel_diff=max(gd), passed=bool(gate_law < 1e-9 and max(gd) < 1e-9)),
                 runs=res, pull_basis="28.2 N per utron at 0.223 mWb (sim/rotor-mechanics-findings.md:183-184), x phi^2 [OC]")
+
+
+START_SETS = ("frame_a", "cyl_aiding")                 # the bracket of the 3-D sets
+START_SEEDS = (0.20, 0.25, 0.30, 0.40)
+START_PHASES = (1.0, 1.25, 1.5, 1.75)
+START_SPEEDS = ((110.0, (1.0, 1.5)), (115.0, (1.0, 1.5)))   # Hz: 1100, 1150 rpm relative
+
+
+def _start_job(args):
+    """one start run: sim/start_3d._job unchanged (sim/parts_first_cut.mag_job with the 3-D set's RP._kw override,
+    La / Lb at 0.146 H), with sim/magnetic_doubler.deck wrapped so that the text it returns carries the case D law (and
+    trapezoidal integration); law None runs the record's law (the gate). mag_job's own i1 / i2 (its z_early) use the
+    record's law; the verdict uses the AH coil's A-turns, which do not."""
+    import start_3d as S3
+    name, set_name, law, job = args
+    var = S3.utron_sets()[set_name]
+    orig = M.deck
+    if law is not None:
+        def deck_case_d(**kw):
+            txt, vecs, info = orig(**kw)
+            txt = replace_law(txt, kw, info, law)
+            if law.get("method"):
+                txt = txt.replace("method=gear", "method=" + law["method"])
+            return txt, vecs, info
+        M.deck = deck_case_d
+    try:
+        r = S3._job((name, var, dict(job)))
+    finally:
+        M.deck = orig
+    return r
+
+
+def case_D_start(out):
+    """the start in case D (sim/start_3d.py's runs, the 22 mF bypass, 150 cycles): K4 at the four full-speed phases,
+    seeds of 20-40 % of Psi_s, K4 at 1100 / 1150 rpm relative at phases 1 and 1.5; frame_a and cyl_aiding. A run starts
+    if the AH coil reaches half the set's own case-D steady peak (the 30 % seed's run) by the end [IR: as start_3d]."""
+    import parts_first_cut as PF
+    import start_3d as S3
+    r3 = json.load(open(os.path.join(HERE, "utron_3d_results.json")))
+    fd = np.array(r3["L2d_record_13"])
+    L2 = np.array(out["lowfield"]["L2d_fe_H"])
+    q = out["fe_sweeps"]["base | 0.0"]
+    fe_al = dict(NI=q["NI"], phi=q["phi_Wb"])
+    la_rec = RP.LA_RATIO * REC["best"]["L_group_H"]
+    K4 = S3.K4
+    kd = lambda ph: dict(kind="cap", V0=K4[3], pol=1, phase=ph, into="a", label=None, C_mF=K4[2] * 1e-3,
+                         t_on=PF.t_on_cap(K4[2], la_rec))
+    byp, n = PF.C_BYP_MF, D_CYC
+    jobs = [("gate|record|K4|1", "record", None, dict(seed_frac=0.0, n_cyc=40, bypass_mF=byp, kick=kd(1.0)))]
+    for sn in START_SETS:
+        law = dict(law_from_L3(fe_al, L2 * np.array(r3["variants"][sn]["L13"]) / fd, THETAS, "D, " + sn,
+                               dense=D_DENSE), method="trap")
+        for f in START_SEEDS:
+            jobs.append((f"{sn}|seed|{f:.2f}", sn, law, dict(seed_frac=f, n_cyc=n, bypass_mF=byp)))
+        for ph in START_PHASES:
+            jobs.append((f"{sn}|K4|{ph:g}", sn, law, dict(seed_frac=0.0, n_cyc=n, bypass_mF=byp, kick=kd(ph))))
+        for F, phs in START_SPEEDS:
+            for ph in phs:
+                jobs.append((f"{sn}|K4|{F * 10:.0f} rpm|{ph:g}", sn, law,
+                             dict(seed_frac=0.0, n_cyc=n, bypass_mF=byp, kick=kd(ph), F_Hz=F)))
+    with Pool(PROCS) as pool:
+        runs = pool.map(_start_job, jobs, chunksize=1)
+    R = {j[0]: r for j, r in zip(jobs, runs)}
+    ref = json.load(open(os.path.join(HERE, "start_3d_results.json")))["raw"]["record|K4|1"]["AHt_AT_max"]
+    g = R["gate|record|K4|1"]
+    gate = dict(here_AT=g.get("AHt_AT_max"), record_AT=ref, passed=bool(g.get("AHt_AT_max") is not None and
+                                                                        abs(g["AHt_AT_max"] / ref - 1) < 1e-3))
+    sets = {}
+    for sn in START_SETS:
+        st = R[f"{sn}|seed|0.30"]
+        half = 0.5 * st["AHt_AT_max"] if "AHt_AT_max" in st else None
+        rows = {}
+        for k, r in R.items():
+            if not k.startswith(sn + "|"):
+                continue
+            rows[k[len(sn) + 1:]] = dict(error=r["error"]) if "error" in r else dict(
+                AH_AT_final=r["AHt_AT_max"], starts=bool(half and r["AHt_AT_max"] > half), retried=r.get("retried"),
+                kick_E_out_mJ=(r.get("kick") or {}).get("E_out_mJ"))
+        sets[sn] = dict(steady_AT=st.get("AHt_AT_max"), half_AT=half, case_D_steady_peak_AT=None, rows=rows)
+        cd = (out.get("case_D") or {}).get("runs", {}).get(sn, {}).get("bypass_22mF")
+        if cd:
+            sets[sn]["case_D_steady_peak_AT"] = cd["AH_AT_top"]["AT_max"]
+    return dict(source="sim/start_3d.py _job (sim/parts_first_cut.py mag_job), sim/magnetic_doubler.deck wrapped",
+                criterion="the AH coil (top) reaches half the set's own case-D steady peak (the 30 % seed, 150 cycles)",
+                numerics="the dense neck table (x4), trapezoidal integration, 150 cycles [IR]; mag_job's z_early uses "
+                         "the record's law and is not reported", gate=gate, sets=sets)
 
 
 def law_current(law, kw, psi, t, which):
@@ -1252,7 +1360,12 @@ def figure(out, base, L2, L3):
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["D"]:                           # case D on the written results, without re-solving the field
+    if sys.argv[1:] == ["Dstart"]:                      # the start in case D, on the written results
+        res = json.load(open(OUT_JSON))
+        res["case_D_start"] = case_D_start(res)
+        json.dump(res, open(OUT_JSON, "w"), indent=1, default=float)
+        print(json.dumps(res["case_D_start"], default=float)[:4000])
+    elif sys.argv[1:] == ["D"]:                         # case D on the written results, without re-solving the field
         res = json.load(open(OUT_JSON))
         res["case_D"] = case_D(res)
         json.dump(res, open(OUT_JSON, "w"), indent=1, default=float)

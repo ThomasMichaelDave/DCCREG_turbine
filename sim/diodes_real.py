@@ -615,6 +615,7 @@ K_NULL = _HRB["record"]["k_kV_cm_per_kV"]         # (kV/cm)/kV: the field at the
 AB_MODELS = ("ND", "HV-typ", "HV-max", "HV-hot")
 AB_V_HI = 10e3          # V: the threshold search's top seed, below the clamp's 13.2 kV [IR]
 AB_DOUBLE = 2           # the clamped runs doubled at most twice until the rings settle [IR, as sim/tube_strays.py]
+N_THR_AB = 120          # cycles of an as-built threshold trial: the rings' chains take about 75 to charge [IR]
 
 
 def apply_strays(txt, strays):
@@ -835,7 +836,7 @@ def es_job(job):
     if real:                                                        # every dissipation integrated: a closed balance
         res = other - sum(p_st.values())
         out.update(P_stacks_W=sum(p_st.values()),
-                   balance=dict(residual_W=res, residual_frac=res / P["belt"],
+                   balance=dict(residual_W=res, residual_frac=res / P["belt"] if P["belt"] else None,
                                 note="belt - clamps - rings' leakage - link - stacks - dW/dt over the last 8 cycles"))
     out["V_kV"] = {x: st(c[f"v({x})"] / 1e3) for x in ("1", "2", "3", "4")}
     spec = ES_MODELS[model]
@@ -858,31 +859,47 @@ def es_job(job):
     return out
 
 
+def _grows(pk, late=False):
+    """a free run's verdict: the node-1 peak of the last cycle exceeds that of cycle 5 (the first cycles carry the
+    seed's own transient) [IR]; late: and the last five cycles grow too, unless the sticks' avalanche holds the
+    amplitude (above 1.5 V_OP: the free runs have no clamps) -- on the as-built set the rings' chains charge for tens of
+    cycles while their sticks' leakage rises, so a seed near the threshold grows at first and then decays [IR]."""
+    g = bool(pk) and len(pk) > 6 and pk[-1] > pk[5]
+    if late:
+        g = g and (pk[-1] > pk[-6] or max(pk) > 1.5 * CF.V_OP / 1e3)
+    return bool(g)
+
+
 def es_threshold(model):
-    """the smallest seed |v0| (nodes 1 and 4) from which the pump grows: free runs of N_THR cycles, 'grows' when the
-    node-1 peak of the last cycle exceeds that of cycle 5 (the first cycles carry the seed's own transient; a large
-    seed's run ends at the sticks' avalanche, where a late fit reads 1) [IR]; bisection in log |v0| between 1 V and
-    1 kV to 10 %. model: a name (the record's set) or dict(model, set, v_hi): the as-built set (§2b), where a pump that
-    does not grow from 1 kV is tried at v_hi and, if it grows there, bisected between 1 kV and v_hi."""
+    """the smallest seed |v0| (nodes 1 and 4) from which the pump grows: free runs of N_THR cycles, 'grows' as _grows
+    (a large seed's run ends at the sticks' avalanche, where a late fit reads 1) [IR]; bisection in log |v0| between
+    1 V and 1 kV to 10 %. model: a name (the record's set) or dict(model, set, v_hi[, n_cyc, late]): the as-built set
+    (§2b), where a pump that does not grow from 1 kV is tried at v_hi and, if it grows there, bisected between 1 kV and
+    v_hi; n_cyc the trials' length, late the late criterion of _grows."""
     trials = []
     if isinstance(model, dict):
-        extra, v_hi, model = dict(set=model["set"]), model.get("v_hi", 1000.0), model["model"]
+        extra, v_hi = dict(set=model["set"]), model.get("v_hi", 1000.0)
+        n_thr, late, model = model.get("n_cyc", N_THR), bool(model.get("late")), model["model"]
     else:
-        extra, v_hi = {}, 1000.0
+        extra, v_hi, n_thr, late = {}, 1000.0, N_THR, False
 
     def grows(v):
-        r = cached("es", dict(model=model, case="free", v0=-v, n_cyc=N_THR, steps=ES_STEPS, **extra), es_job)
+        r = cached("es", dict(model=model, case="free", v0=-v, n_cyc=n_thr, steps=ES_STEPS, **extra), es_job)
         pk = r.get("V1_peak_per_cycle_kV") or [0.0] * 6
-        g = bool(r.get("done")) and pk[-1] > pk[5]
-        trials.append(dict(v0_V=-v, z=r.get("z"), z_late=r.get("z_late"), grows=g, done=r.get("done"),
-                           reltol=r.get("reltol"), V1_peak_per_cycle_kV=pk))
+        g = bool(r.get("done")) and _grows(pk, late)
+        q = dict(v0_V=-v, z=r.get("z"), z_late=r.get("z_late"), grows=g, done=r.get("done"), reltol=r.get("reltol"),
+                 V1_peak_per_cycle_kV=pk)
+        if late:
+            q["gain_last5"] = (pk[-1] / pk[-6]) ** 0.2 if pk[-6] > 0 else None
+        trials.append(q)
         return g
+    tag = dict(extra, criterion="late") if late else extra
     lo, hi = 1.0, 1000.0
     if grows(lo):
-        return dict(model=model, v_grows_V=lo, v_fails_V=None, n_cyc=N_THR, trials=trials, **extra)
+        return dict(model=model, v_grows_V=lo, v_fails_V=None, n_cyc=n_thr, trials=trials, **tag)
     if not grows(hi):
         if v_hi <= hi or not grows(v_hi):
-            return dict(model=model, v_grows_V=None, v_fails_V=max(hi, v_hi), n_cyc=N_THR, trials=trials, **extra)
+            return dict(model=model, v_grows_V=None, v_fails_V=max(hi, v_hi), n_cyc=n_thr, trials=trials, **tag)
         lo, hi = hi, v_hi
     while hi / lo > 1.1:
         mid = math.sqrt(lo * hi)
@@ -890,8 +907,8 @@ def es_threshold(model):
             hi = mid
         else:
             lo = mid
-    return dict(model=model, v_grows_V=hi, v_fails_V=lo, n_cyc=N_THR, trials=sorted(trials, key=lambda q: -q["v0_V"]),
-                **extra)
+    return dict(model=model, v_grows_V=hi, v_fails_V=lo, n_cyc=n_thr, trials=sorted(trials, key=lambda q: -q["v0_V"]),
+                **tag)
 
 
 # ===================================================================================================== the jobs
@@ -992,7 +1009,8 @@ def ab_jobs():
     for m in AB_MODELS:
         for v0 in (ES_FREE["v0"], V0_CLAMPED):
             jobs.append(("es", dict(model=m, case="free", v0=v0, n_cyc=ES_FREE["n_cyc"], **S)))
-        jobs.append(("es_thr", dict(model=m, set=AB_NAME, v_hi=AB_V_HI)))
+        jobs.append(("es_thr", dict(model=m, set=AB_NAME, v_hi=AB_V_HI)))      # the record set's 40-cycle rule
+        jobs.append(("es_thr", dict(model=m, set=AB_NAME, v_hi=AB_V_HI, n_cyc=N_THR_AB, late=True)))
     return _uniq(jobs)
 
 
@@ -1005,7 +1023,7 @@ def _ab_find(res, **match):
 def ab_seeds(res):
     """per model, the clamped runs' seeds: the deck's -1 kV, and twice the threshold (rounded up to 0.5 kV) where that
     is above 1 kV [IR]."""
-    thr = {r["model"]: r for j, r in res if j[0] == "es_thr" and _is_ab(j)}
+    thr = {r["model"]: r for j, r in res if j[0] == "es_thr" and _is_ab(j) and j[1].get("late")}
     seeds = {}
     for m in AB_MODELS:
         vg = (thr.get(m) or {}).get("v_grows_V")
@@ -1025,7 +1043,8 @@ def ab_second(res):
         q = thr.get(m) or {}
         for v in (q.get("v_grows_V"), q.get("v_fails_V")):
             if v and m != "ND":
-                jobs.append(("es", dict(model=m, case="free", v0=-v, n_cyc=N_THR, steps=2 * ES_STEPS, tag="steps", **S)))
+                jobs.append(("es", dict(model=m, case="free", v0=-v, n_cyc=N_THR_AB, steps=2 * ES_STEPS, tag="steps",
+                                        **S)))
     return _uniq(jobs)
 
 
@@ -1061,7 +1080,8 @@ def ab_redo(res):
         if not r.get("done"):
             continue
         pk = r.get("V1_peak_per_cycle_kV") or []
-        rising = len(pk) > 6 and pk[-1] > pk[-6]
+        rising = len(pk) > 6 and pk[-1] > pk[-6] and pk[-1] > 1e-3 * abs(v0) / 1e3   # (not the noise of a run
+        #                                                                               that has decayed to nothing)
         if (r.get("reached_clamp") and not r.get("settled")) or (not r.get("reached_clamp") and rising):
             redo.append(("es", dict(j[1], n_cyc=2 * j[1]["n_cyc"])))
     return _uniq(redo)
@@ -1073,7 +1093,7 @@ def _cost(job):
     if kind == "mag_thr":
         return 8 * N_START * 2.5
     if kind == "es_thr":
-        return 9 * N_THR
+        return 9 * (j.get("n_cyc", N_THR) if isinstance(j, dict) else N_THR)
     if kind == "uic":
         return 0
     if kind == "es":
@@ -1312,12 +1332,15 @@ def summarise_ab(res):
                           Cp={k: v * pF for k, v in s["Cp"].items()}, Cx={k: v * pF for k, v in s["Cx"].items()},
                           Cx_rings={k: v * pF for k, v in s["Cx_rings"].items()}, c_e=s["c_e"] * pF,
                           c_gap=s["c_gap"] * pF, label=s.get("label")),
-              record=AB_REC, k_null_kV_cm_per_kV=K_NULL, v_hi_V=AB_V_HI, n_thr=N_THR,
+              record=AB_REC, k_null_kV_cm_per_kV=K_NULL, v_hi_V=AB_V_HI, n_thr=N_THR_AB,
               rules=dict(free="12 cycles at 20000 steps a cycle, z fitted over cycles 3-11 (sim/core_field.py run); "
                               "with the rings' chains unless 'bare' (opt none, as the tube-strays study's z bare)",
-                         threshold=f"free runs of {N_THR} cycles at {ES_STEPS} steps; grows when the node-1 peak of "
-                                   "the last cycle exceeds that of cycle 5; bisection in log |v0| to 10 %, 1 V - 1 kV, "
-                                   f"or 1 kV - {AB_V_HI / 1e3:g} kV when it does not grow from 1 kV [IR]",
+                         threshold=f"free runs of {N_THR_AB} cycles at {ES_STEPS} steps; grows when the node-1 peak "
+                                   "of the last cycle exceeds that of cycle 5 and the last five cycles grow (or the "
+                                   "sticks' avalanche holds it above 1.5 V_OP); bisection in log |v0| to 10 %, 1 V - "
+                                   f"1 kV, or 1 kV - {AB_V_HI / 1e3:g} kV when it does not grow from 1 kV [IR]. "
+                                   f"thresholds_40: the record set's rule ({N_THR} cycles, the first condition only), "
+                                   "for comparison",
                          seeds="the deck's -1 kV; and twice the threshold, rounded up to 0.5 kV, where that is above "
                                "1 kV [IR]",
                          cycles="sim/tube_strays.py _cycles from the seed: 280 + 1.3 ln(V_OP / |v0|) / ln z at the "
@@ -1326,11 +1349,12 @@ def summarise_ab(res):
                                 "the clamp; the gate's ND runs at that study's own 390",
                          E_null="k (V_B - V_A), the samples' means over the last 8 cycles; its ripple k x the gap's "
                                 "peak-to-peak [OC: linear]"),
-              models={m: ES_MODELS[m]["label"] for m in ("ND-deck",) + AB_MODELS}, runs={}, thresholds={}, table={})
+              models={m: ES_MODELS[m]["label"] for m in ("ND-deck",) + AB_MODELS}, runs={}, thresholds={},
+              thresholds_40={}, table={})
     for job, r in res:
         kind, j = job
         if kind == "es_thr":
-            ab["thresholds"][r["model"]] = r
+            ab["thresholds" if j.get("late") else "thresholds_40"][r["model"]] = r
             continue
         pk = r.get("V1_peak_per_cycle_kV")
         if j["case"] == "free" and r.get("done") and pk:              # one criterion for every free run
@@ -1347,9 +1371,11 @@ def summarise_ab(res):
         R = ab["runs"].get(m, {})
         f10, f1k = R.get(f"free {abs(ES_FREE['v0']):g} V, 12 cycles") or {}, R.get(f"free {abs(V0_CLAMPED):g} V, 12 cycles") or {}
         thr = ab["thresholds"].get(m, {})
-        row = dict(z_free_10V=f10.get("z"), grows_10V=f10.get("grows"), z_free_1kV=f1k.get("z"),
-                   z_late_1kV=f1k.get("z_late"), grows_1kV=f1k.get("grows"), threshold_grows_V=thr.get("v_grows_V"),
-                   threshold_fails_V=thr.get("v_fails_V"), clamped={})
+        t40 = ab["thresholds_40"].get(m, {})
+        row = dict(z_free_10V=f10.get("z"), z_late_10V=f10.get("z_late"), z_free_1kV=f1k.get("z"),
+                   z_late_1kV=f1k.get("z_late"), threshold_grows_V=thr.get("v_grows_V"),
+                   threshold_fails_V=thr.get("v_fails_V"), threshold_40_grows_V=t40.get("v_grows_V"),
+                   threshold_40_fails_V=t40.get("v_fails_V"), clamped={})
         for v0 in seeds[m]:
             c = _longest_clamped(R, v0)
             if not c:
@@ -1410,8 +1436,8 @@ def gates_ab(out):
                       record="sim/tube_strays_results.json decks.table['as built']"))
     for m, rows in R.items():
         for name, r in rows.items():
-            if name.startswith("clamped") and r.get("done") and "balance" in r:
-                b = r["balance"]
+            if name.startswith("clamped") and r.get("done") and "balance" in r and r.get("reached_clamp"):
+                b = r["balance"]                                    # (a run that decays has no belt to balance)
                 g.append(dict(gate=f"G-ENERGY as built {m} {name}", ok=abs(b["residual_frac"]) < 5e-3,
                               residual_W=b["residual_W"], residual_frac=b["residual_frac"], P_belt_W=r["P_belt_W"]))
     for m, thr in ab["thresholds"].items():
@@ -1421,10 +1447,11 @@ def gates_ab(out):
         for q in thr.get("trials", []):
             if q["v0_V"] not in [-(thr.get("v_grows_V") or 0), -(thr.get("v_fails_V") or 0)]:
                 continue
-            r2 = R.get(m, {}).get(f"free {abs(q['v0_V']):g} V, {N_THR} cycles, steps x2")
+            r2 = R.get(m, {}).get(f"free {abs(q['v0_V']):g} V, {N_THR_AB} cycles, steps x2")
             if r2 and r2.get("done"):
-                rows_.append(dict(v0_V=q["v0_V"], grows=q["grows"], grows_steps_x2=r2["grows"], z_late=q["z_late"],
-                                  z_late_steps_x2=r2["z_late"]))
+                pk2 = r2["V1_peak_per_cycle_kV"]
+                rows_.append(dict(v0_V=q["v0_V"], grows=q["grows"], grows_steps_x2=_grows(pk2, True),
+                                  gain_last5=q.get("gain_last5"), gain_last5_steps_x2=(pk2[-1] / pk2[-6]) ** 0.2))
         if rows_:
             g.append(dict(gate=f"G-STEP as built {m}: the threshold's bracketing trials at {2 * ES_STEPS} steps a cycle",
                           ok=all(x["grows"] == x["grows_steps_x2"] for x in rows_), rows=rows_))
