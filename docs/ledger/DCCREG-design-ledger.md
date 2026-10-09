@@ -66,12 +66,12 @@ in opposite directions through a 1 : −1 reversing gear.
 
 **The two pumps** run at 1200 rpm relative, 120 Hz.
 - **The magnetic pump:**
-  - each side's three utrons form one group, A or B, whose inductance swings 9.4 ↔ 81 mH per coil (12.4 ↔ 83 mH in 3-D,
-    `sim/utron-3d-findings.md`) as the bridges
-    pass;
+  - each side's three utrons form one group, A or B, whose inductance swings 9.4 ↔ 81 mH per coil as the bridges
+    pass (12.4 ↔ 83 mH in 3-D, `sim/utron-3d-findings.md`);
   - groups A and B run in antiphase, in a circuit that is the exact dual of a diode charge doubler;
   - the saturating NiFe neck in each utron is the clamp;
-  - one AH coil sits in each group's branch, and a 22 mF bypass across it (PROPOSED) holds a steady 300 ampere-turns.
+  - one AH coil sits in each group's branch, and a 22 mF bypass across it (PROPOSED) holds a steady 300 ampere-turns
+    (221–245 with the 3-D utrons).
 - **The electrostatic pump:**
   - the varicaps C1 / C2 swing 55 ↔ 410 pF in antiphase;
   - the de Queiroz diode doubler multiplies its charge each cycle until the clamps Z1 / Z4 hold the nodes at their
@@ -100,7 +100,7 @@ in opposite directions through a 1 : −1 reversing gear.
 | rings | Cu foil 0.10 mm, 26.25–55.71° from the axis; beads Ø3 / Ø2 mm; 29.9 mm apart along the glass | `docs/rings-design.md` §2 |
 | rings' supply | symmetric: −14.96 / +14.96 kV on 2 + 2 Cockcroft-Walton stages from the shaft | `sim/hub_rings_build_results.json` record |
 | field at the null | 7.62 kV/cm from B to A at switch-on, 2.57 Pa (the bands alone 7.10); 8.20 kV/cm once settled at 25 °C; ripple 0.014 kV/cm p-p (0.19 %); no sign change in a revolution | `sim/hub-beads-settled-findings.md` §2; `sim/hub_drift_results.json`; `sim/hub_revolution_results.json` |
-| power from the belt | magnetic 18.1 W + 1.25 W iron; electrostatic 2.14 W; windage about 12 W and bearings 5 W | `sim/ah-steady-cusp-findings.md`; `sim/core_field_results.json`; `sim/rotor-mechanics-findings.md` §5 |
+| power from the belt | magnetic 18.1 W + 1.25 W iron (10.2–12.3 W + iron with the 3-D utrons); electrostatic 2.14 W; windage about 12 W and bearings 5 W | `sim/ah-steady-cusp-findings.md`; `sim/utron-3d-findings.md`; `sim/core_field_results.json`; `sim/rotor-mechanics-findings.md` §5 |
 | the hub's heat | the AH coils 1.22 W each: the coils at 43 °C, the glass at 32–37 °C in a 25 °C room | `sim/hub-thermal-findings.md` |
 | cost (placeholders) | the stack of record's build 6,477 EUR; the cheapest qualifying build 6,060 EUR | `docs/cost/README.md` |
 
@@ -181,6 +181,10 @@ commits' dates.
 - **Solve what is built** [IR]. The beads were sized in local boxes and never put back in the hub, so the record's
   null missed their 7 %; the drawing's grooves bring the PEEK to the beads, which the boxes had filled with gel
   (`sim/hub-beads-settled-findings.md`).
+- **An end correction is a model, not a measurement** [IR]. The utrons' 2-D section took the stack's ends as [RH]
+  corrections, +3 % aligned and +30 % unaligned. In 3-D they are +5.9 % and +71 %, and a group's series coils
+  couple round the machine, which the 2-D walls exclude: κ 6.7 (5.96–6.44 coupled), not 8.6, and the pick's gain
+  falls under its own selection rule (`sim/utron-3d-findings.md`).
 - **Only the difference between the rings makes field at the null** [OC].
   - The pump's nodes are twins, so identical circuits give none.
   - The record's mirror chains put the null at the shaft's potential and each ring 15 kV from it, and the field is DC

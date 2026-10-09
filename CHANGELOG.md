@@ -186,8 +186,9 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
   - **A group's three series coils couple round the machine** [OC], which the 2-D section excludes: κ 5.96 with the
     coils aiding, 6.44 with one of the three reversed. How they are connected is not in the record: the designer's.
 - **Corrected, from the utrons in 3-D** (dated notes where each stood; `sim/pole-design-findings.md`,
-  `sim/ah-steady-cusp-findings.md`, `sim/ah-null-findings.md`, `sim/parts-first-cut-findings.md` §3, the K_END comment
-  in `sim/pole_fd2d.py`, the ledger and the rotor schematic):
+  `sim/ah-steady-cusp-findings.md`, `sim/ah-null-findings.md`, `sim/parts-first-cut-findings.md` §3,
+  `sim/hub-drive-findings.md`, `docs/cost/README.md`, the K_END comment in `sim/pole_fd2d.py`, the ledger and the
+  rotor schematic):
   - the pump is weaker than recorded: z_lin 1.16–1.17, under the pick's own selection rule (≥ 1.20); z_early with the
     bypass 1.072–1.091;
   - the AH's steady field with the 22 mF bypass is 221–245 A-turns mean, not 300, so the null's gradient is
