@@ -20,6 +20,11 @@ The rings, three ways [OC]:
                      (ngspice, sim/core_field.py float).
 Against: the two Rogowski electrodes inside the vacuum at the dc1 design gap, with this hub's REF parts (boundary
 elements, stemless: the axis is the AH's, so the stems would enter from the side).
+The designer chose the rings (2026-10-09). The design stage sizes them for the most DC field at the null [RH]:
+  bands on the glass from a polar edge (>= 20 deg: the AH seat's footprint is r 8.25) to an equatorial edge, against
+  the DC options (sim/core_field.py 'dc<n> 0.1nF'); outside the vacuum the vacuum rule no longer binds, so the limits
+  are the insulation between the rings, along the glass under the retainer (E_T_MAX average, with 2 and 5 kV/mm as
+  sensitivities), and each ring's clearance to the AH (E_BULK average).
 Usage: python3 sim/hub_locked.py [--h 0.25] [--procs 4]   (writes sim/hub_locked_results.json)
 """
 import argparse
@@ -53,6 +58,17 @@ RINGS = {"wire 1.5 mm": dict(kind="wire", d=1.5), "band 4 mm": dict(kind="band",
          "band 8 mm": dict(kind="band", w=8.0, t=0.5)}
 THETAS = (20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0)
 RHO_GLASS = V("vessel_resistivity")["rho_ohm_m"]
+E_T_MAX = 1.0                # kV/mm: average tangential field along the glass between the rings, under the retainer [RH]
+E_T_SENS = (2.0, 5.0)        # kV/mm: sensitivities; 5 = garolite derated with creepage margin (sim/design_synth.py) [IR]
+E_BULK = 5.0                 # kV/mm: each ring's average field to the AH, through the retainer and seat [IR]
+BAND_POLAR = (20.0, 25.0, 30.0)
+BAND_EQ = (45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0)
+SUPPLY_ROWS = {"dc0": "dc0 0.1nF", "dc1": "dc1 0.1nF", "dc2": "dc2 0.1nF", "dc3": "dc3 0.1nF"}
+
+
+def band(theta_p, theta_e, t=0.5):
+    """a ring as a band on the glass from the polar edge theta_p to the equatorial edge theta_e (deg), t thick."""
+    return dict(kind="arc", p=theta_p, e=theta_e, t=t)
 
 
 def maps(ring, theta, coils, h, hub=HUB):
@@ -74,6 +90,9 @@ def maps(ring, theta, coils, h, hub=HUB):
     if ring["kind"] == "wire":
         rc = hub["R_v"] + 0.5 * ring["d"]
         m = np.hypot(R - rc * math.sin(th), Z - rc * math.cos(th)) <= 0.5 * ring["d"]
+    elif ring["kind"] == "arc":
+        pol = np.degrees(np.arctan2(R, Z))
+        m = (rho >= hub["R_v"]) & (rho <= hub["R_v"] + ring["t"]) & (pol >= ring["p"]) & (pol <= ring["e"])
     else:
         pol = np.arctan2(R, Z)
         m = (rho >= hub["R_v"]) & (rho <= hub["R_v"] + ring["t"]) & (np.abs(pol - th) <= 0.5 * ring["w"] / hub["R_v"])
@@ -83,6 +102,8 @@ def maps(ring, theta, coils, h, hub=HUB):
 
 def edge_deg(ring, theta, hub=HUB):
     """the ring's edge toward the equator, as a polar angle on the vessel (deg)."""
+    if ring["kind"] == "arc":
+        return ring["e"]
     half = 0.5 * ring["d"] if ring["kind"] == "wire" else 0.5 * ring["w"]
     return theta + math.degrees(half / hub["R_v"])
 
@@ -110,6 +131,46 @@ def _solve_case(args):
     for k in ("r_mm", "z_mm", "Ez_axis_kV_cm_per_kV", "Ez_mid_kV_cm_per_kV"):
         q.pop(k)
     return q
+
+
+def _band_case(args):
+    tp, te, h = args
+    t0 = time.time()
+    q = CR.solve(band(tp, te), 0.5 * (tp + te), True, h, hub=HUB, maps_fn=maps)
+    for k in ("r_mm", "z_mm", "Ez_axis_kV_cm_per_kV", "Ez_mid_kV_cm_per_kV"):
+        q.pop(k)
+    q.update(theta_p=tp, theta_e=te, solve_s=time.time() - t0)
+    return q
+
+
+def supplies():
+    """the DC options with 100 pF storage (sim/core_field_results.json), V: (A, B)."""
+    rows = {r["name"]: r for r in json.load(open(os.path.join(HERE, "core_field_results.json")))["rows"]}
+    return {nm: (rows[row]["V_ea_kV"]["mean"] * 1e3, rows[row]["V_eb_kV"]["mean"] * 1e3, rows["free " + row]["z"])
+            for nm, row in SUPPLY_ROWS.items()}
+
+
+def ah_clearance_mm(theta_p, hub=HUB):
+    """from the ring's polar edge on the glass to the AH envelope (r <= ah_r, z >= ah_z[0])."""
+    x, z = hub["R_v"] * math.sin(math.radians(theta_p)), hub["R_v"] * math.cos(math.radians(theta_p))
+    return math.hypot(max(0.0, x - hub["ah_r"]), max(0.0, hub["ah_z"][0] - z))
+
+
+def rate(bands, sup, e_t):
+    """every band against every supply: the field at the null (as connected and settled) and the two checks."""
+    out = []
+    for q in bands:
+        gap_mm = 2 * HUB["R_v"] * math.radians(90.0 - q["theta_e"])
+        e_set, _ = settled(q["theta_e"])
+        for nm, (va, vb, z) in sup.items():
+            vg = (vb - va) / 1e3
+            et = vg / gap_mm
+            eb = max(abs(va), abs(vb)) / 1e3 / ah_clearance_mm(q["theta_p"])
+            out.append(dict(theta_p=q["theta_p"], theta_e=q["theta_e"], supply=nm, V_gap_kV=vg, gap_mm=gap_mm,
+                            E_t_kV_mm=et, E_ah_kV_mm=eb, ok=bool(et <= e_t and eb <= E_BULK), z_start=z,
+                            E_dc_kV_cm=q["E_centre_kV_cm_per_kV"] * vg, E_settled_kV_cm=e_set * 1e-5 * vg * 1e3,
+                            C_ring_ref_pF=q["C_ring_ref_pF"], C_ring_ring_pF=q["C_ring_ring_pF"]))
+    return out
 
 
 def _pump_case(args):
@@ -185,11 +246,48 @@ def main():
     # 3. the discs inside, in this hub
     disc = discs_inside(d1)
     print("discs inside:", {k: v for k, v in disc.items() if k not in ("supplies", "shape")}, disc["supplies"]["dc1"])
-    # 4. the settled field's limits: rings at the equator (hemispheres at +-1/2) and the glass's time constant
+    # 4. the design: bands from a polar to an equatorial edge, against the DC options and the insulation limits
+    with Pool(a.procs) as pool:
+        bands = list(pool.imap(_band_case, [(tp, te, a.h) for tp in BAND_POLAR for te in BAND_EQ]))
+    sup = supplies()
+    rated = {f"{e_t:g}": rate(bands, sup, e_t) for e_t in (E_T_MAX,) + E_T_SENS}
+    best = {}
+    for key, rows in rated.items():
+        ok = [x for x in rows if x["ok"]]
+        best[key] = max(ok, key=lambda x: x["E_dc_kV_cm"]) if ok else None
+        b = best[key]
+        print(f"E_t {key} kV/mm: best {b['supply']} band {b['theta_p']:g}-{b['theta_e']:g} deg, {b['V_gap_kV']:.1f} kV "
+              f"across a {b['gap_mm']:.1f} mm gap -> {b['E_dc_kV_cm']:.2f} kV/cm as connected, "
+              f"{b['E_settled_kV_cm']:.2f} settled", flush=True)
+    for q in bands:
+        print(f"band {q['theta_p']:4.0f}-{q['theta_e']:4.0f}: {q['E_centre_kV_cm_per_kV']:.4f} (kV/cm)/kV, C_ref "
+              f"{q['C_ring_ref_pF']:.2f}, C_rr {q['C_ring_ring_pF']:.2f} pF")
+    # the design of record: per supply, the band from 20 deg with its equatorial edge exactly at E_T_MAX
+    tp = BAND_POLAR[0]
+    exact = []
+    for nm, (va, vb, z) in sup.items():
+        vg = (vb - va) / 1e3
+        te = 90.0 - math.degrees(vg / E_T_MAX / (2 * HUB["R_v"]))
+        q = _band_case((tp, te, a.h))
+        e_set, _ = settled(te)
+        exact.append(dict(supply=nm, theta_p=tp, theta_e=te, V_A_kV=va / 1e3, V_B_kV=vb / 1e3, V_gap_kV=vg, z_start=z,
+                          gap_mm=2 * HUB["R_v"] * math.radians(90.0 - te), E_t_kV_mm=E_T_MAX,
+                          E_ah_kV_mm=max(abs(va), abs(vb)) / 1e3 / ah_clearance_mm(tp),
+                          k_kV_cm_per_kV=q["E_centre_kV_cm_per_kV"], E_dc_kV_cm=q["E_centre_kV_cm_per_kV"] * vg,
+                          E_settled_kV_cm=e_set * 1e-5 * vg * 1e3, C_ring_ref_pF=q["C_ring_ref_pF"],
+                          C_ring_ring_pF=q["C_ring_ring_pF"]))
+        x = exact[-1]
+        x["p_dc_Pa"] = 0.5 * 8.8541878128e-12 * (x["E_dc_kV_cm"] * 1e5) ** 2
+        print(f"exact {nm}: band {tp:g}-{te:.1f} deg, {vg:.1f} kV across {x['gap_mm']:.1f} mm -> {x['E_dc_kV_cm']:.2f} kV/cm "
+              f"({x['p_dc_Pa']:.2f} Pa), settled {x['E_settled_kV_cm']:.2f}; to the AH {x['E_ah_kV_mm']:.2f} kV/mm", flush=True)
+    record = max(exact, key=lambda x: x["E_dc_kV_cm"])
+    # 5. the settled field's limits: rings at the equator (hemispheres at +-1/2) and the glass's time constant
     e_hemi, _ = settled(89.999)
     tau = 8.8541878128e-12 * HUB["eps_glass"] * RHO_GLASS
     out = dict(note="see the module docstring", spec="presets/hub-locked.json", hub=HUB, rings_def=RINGS, h_mm=a.h,
-               V_dc_kV=v_dc, rings=rings, convergence_h2=conv, discs_inside=disc, design_dc1=d1,
+               V_dc_kV=v_dc, rings=rings, convergence_h2=conv, discs_inside=disc, design_dc1=d1, bands=bands,
+               supplies_V={k: list(v) for k, v in sup.items()}, E_t_kV_mm=E_T_MAX, E_t_sens=list(E_T_SENS),
+               E_bulk_kV_mm=E_BULK, rated=rated, band_design=best, exact=exact, record=record,
                settled_hemispheres_kV_cm=e_hemi * 1e-5 * v_dc * 1e3, glass_tau_s=tau, run_s=time.time() - t0)
     json.dump(out, open(os.path.join(HERE, "hub_locked_results.json"), "w"), indent=1, default=float)
     for q in rings:

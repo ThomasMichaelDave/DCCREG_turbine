@@ -1,76 +1,178 @@
 {
   "schema": "hub-register/1",
-  "generation": "locked 2026-10-08",
+  "generation": "locked 2026-10-08, decisions 2026-10-09",
   "note": "The hub as the designer locked it, inside out. Every value carries its status word and source: DECIDED (the designer), REGISTER (carried from presets/electromagnets-RA.json), OPEN (a placeholder [RH] until the designer sets it). Read by sim/hub_locked.py.",
   "layer_order": {
-    "value": ["vessel (vacuum inside)", "rings (around the vessel)", "AH cores with their coils (on the z axis, top and bottom)",
-              "retainer (holds the vessel, the rings and the AH)", "shaft coupler (encapsulates the retainer)",
-              "shaft (the same shaft top and bottom, one half per side)",
-              "pumps (each shaft half carries its side's electrostatic and magnetic pump, symmetric)"],
-    "unit": "-", "status": "DECIDED", "source": "designer, 2026-10-08 (lock-down)", "tag": "[IR]"
+    "value": [
+      "vessel (vacuum inside)",
+      "rings (around the vessel)",
+      "AH cores with their coils (on the z axis, top and bottom)",
+      "retainer (holds the vessel, the rings and the AH)",
+      "shaft coupler (encapsulates the retainer)",
+      "shaft (the same shaft top and bottom, one half per side)",
+      "pumps (each shaft half carries its side's electrostatic and magnetic pump, symmetric)"
+    ],
+    "unit": "-",
+    "status": "DECIDED",
+    "source": "designer, 2026-10-08 (lock-down)",
+    "tag": "[IR]"
   },
   "vessel": {
-    "value": {"shape": "sphere", "od_mm": 50.0, "material": "borosilicate glass", "eps_r": 4.6},
-    "unit": "-", "status": "DECIDED", "source": "designer, 2026-10-08; eps_r datasheet-class (Borofloat / Pyrex 4.6)",
+    "value": {
+      "shape": "sphere",
+      "od_mm": 50.0,
+      "material": "borosilicate glass",
+      "eps_r": 4.6
+    },
+    "unit": "-",
+    "status": "DECIDED",
+    "source": "designer, 2026-10-08; eps_r datasheet-class (Borofloat / Pyrex 4.6)",
     "tag": "[IR] eps_r"
   },
   "vessel_wall": {
-    "value": {"t_mm": 1.5}, "unit": "mm", "status": "OPEN",
-    "source": "placeholder: a blown 50 mm sphere; 1.5 mm holds vacuum with a wide margin (shell stress about 0.8 MPa)",
-    "tag": "[RH]"
+    "value": {
+      "t_mm": 1.5
+    },
+    "unit": "mm",
+    "status": "DECIDED",
+    "source": "designer, 2026-10-09 (shell stress about 0.8 MPa under vacuum)",
+    "tag": "[IR]"
   },
   "vessel_resistivity": {
-    "value": {"rho_ohm_m": 1.0e13}, "unit": "ohm m", "status": "OPEN",
+    "value": {
+      "rho_ohm_m": 10000000000000.0
+    },
+    "unit": "ohm m",
+    "status": "OPEN",
     "source": "borosilicate at 25 C, datasheet-class (about 1e15 ohm cm); falls steeply with temperature",
     "tag": "[IR]"
   },
   "rings": {
-    "value": {"count": 2, "where": "around the vessel, one on each hemisphere, mirror-symmetric about the equator",
-              "form": "OPEN (the field study compares a wire and bands)", "polar_angle_deg": "OPEN (the field study)"},
-    "unit": "-", "status": "DECIDED", "source": "designer, 2026-10-08 (placement); form and angle open", "tag": "[IR]"
+    "value": {
+      "count": 2,
+      "role": "the field's electrodes: the rings outside the glass (not electrodes inside the vacuum)",
+      "where": "on the vessel's outer surface, one on each hemisphere, mirror-symmetric about the equator",
+      "form": "bands, 0.5 mm, a conductive layer on the glass under the retainer (copper foil or a fired coating: OPEN)",
+      "polar_edge_deg": 20.0,
+      "equatorial_edge_deg": 53.1,
+      "equatorial_gap_mm": 32.2,
+      "supply": "DC: ring A on node 1's peak (Dk, -13.2 kV), ring B on three Cockcroft-Walton stages on node 4 (+19.0 kV); 32.2 kV across"
+    },
+    "unit": "-",
+    "status": "DECIDED (rings outside the glass) / DESIGN (edges, supply: sim/hub_locked.py)",
+    "source": "designer, 2026-10-09; edges and supply from sim/hub-locked-findings.md (the most field at the null with 1 kV/mm along the glass between the rings)",
+    "tag": "[RH] the 1 kV/mm interface rating"
   },
   "AH": {
-    "value": {"where": "on the z axis, top and bottom of the vessel",
-              "core": {"part": "Fair-Rite 4077484611", "material": "77 MnZn", "d_mm": 12.3, "absz_mm": [30.7, 72.0]},
-              "former": {"material": "G-10", "id_mm": 13.5, "od_mm": 16.5},
-              "coil": {"turns": 160, "window": "variant (a)'s: 2 layers of 1.6 mm pitch on the former",
-                       "r_mm": [8.25, 11.45], "absz_mm": [31.35, 71.35]},
-              "potential": "the coil's cold end; the core tied to it (about the shaft's potential)"},
-    "unit": "-", "status": "DECIDED (placement) / REGISTER (dimensions)",
+    "value": {
+      "where": "on the z axis, top and bottom of the vessel",
+      "core": {
+        "part": "Fair-Rite 4077484611",
+        "material": "77 MnZn",
+        "d_mm": 12.3,
+        "absz_mm": [
+          30.7,
+          72.0
+        ]
+      },
+      "former": {
+        "material": "G-10",
+        "id_mm": 13.5,
+        "od_mm": 16.5
+      },
+      "coil": {
+        "turns": 160,
+        "window": "variant (a)'s: 2 layers of 1.6 mm pitch on the former",
+        "r_mm": [
+          8.25,
+          11.45
+        ],
+        "absz_mm": [
+          31.35,
+          71.35
+        ]
+      },
+      "potential": "the coil's cold end; the core tied to it (about the shaft's potential)"
+    },
+    "unit": "-",
+    "status": "DECIDED (placement) / REGISTER (dimensions)",
     "source": "designer, 2026-10-08; presets/electromagnets-RA.json AH_rod, AH_former, AH_variants (a); sim/magnetic_doubler.py AH r160",
     "tag": "[IR]"
   },
   "AH_seat": {
-    "value": {"material": "PEEK", "between": "the vessel's pole and the core's tip", "absz_mm": [25.0, 30.7]},
-    "unit": "-", "status": "REGISTER", "source": "presets/electromagnets-RA.json (sim/em_solids.py RA_seat); now 5.7 mm with the 50 mm vessel",
+    "value": {
+      "material": "PEEK",
+      "between": "the vessel's pole and the core's tip",
+      "absz_mm": [
+        25.0,
+        30.7
+      ]
+    },
+    "unit": "-",
+    "status": "REGISTER",
+    "source": "presets/electromagnets-RA.json (sim/em_solids.py RA_seat); now 5.7 mm with the 50 mm vessel",
     "tag": "[RH] length"
   },
   "retainer": {
-    "value": {"holds": "the vessel, the rings, the AH cores and coils", "material": "non-magnetic composite (OPEN)",
-              "eps_r": 4.7, "r_max_mm": 30.0, "absz_max_mm": 72.0},
-    "unit": "-", "status": "DECIDED (role) / OPEN (material, dimensions)",
-    "source": "designer, 2026-10-08; dimensions a placeholder that just encloses the AH coils", "tag": "[RH]"
+    "value": {
+      "holds": "the vessel, the rings, the AH cores and coils",
+      "material": "non-magnetic composite (OPEN)",
+      "eps_r": 4.7,
+      "r_max_mm": 30.0,
+      "absz_max_mm": 72.0
+    },
+    "unit": "-",
+    "status": "DECIDED (role) / OPEN (material, dimensions)",
+    "source": "designer, 2026-10-08; dimensions a placeholder that just encloses the AH coils",
+    "tag": "[RH]"
   },
   "shaft_coupler": {
-    "value": {"encapsulates": "the retainer", "material": "non-metallic, non-magnetic (G10 probably)", "eps_r": 4.7,
-              "wall_mm": 3.0, "shape": "OPEN (the tube's bicone is a placeholder)"},
-    "unit": "-", "status": "DECIDED (role) / OPEN (shape, dimensions)", "source": "designer, 2026-10-08", "tag": "[RH]"
+    "value": {
+      "encapsulates": "the retainer",
+      "material": "non-metallic, non-magnetic (G10 probably)",
+      "eps_r": 4.7,
+      "wall_mm": 3.0,
+      "shape": "OPEN (the tube's bicone is a placeholder)"
+    },
+    "unit": "-",
+    "status": "DECIDED (role) / OPEN (shape, dimensions)",
+    "source": "designer, 2026-10-08",
+    "tag": "[RH]"
   },
   "shaft": {
-    "value": {"layout": "the same shaft top and bottom, one half per side", "d_mm": 30.0, "flange_r_mm": 32.0,
-              "flange_t_mm": 8.0, "flange_absz_mm": [72.0, 80.0], "magnetic": false},
-    "unit": "-", "status": "DECIDED (layout) / REGISTER (d) / OPEN (the flange's place)",
-    "source": "designer, 2026-10-08; presets/electromagnets-RA.json shaft (d 30, non-magnetic tip); sim/stack_sizing.py FLANGE_R / FLANGE_T. The flange moves out to |z| 72 to clear the 160-turn coil (the tube layout's 120 mm hub puts it at 60).",
-    "tag": "[RH] flange place"
+    "value": {
+      "layout": "the same shaft top and bottom, one half per side",
+      "d_mm": 30.0,
+      "flange_r_mm": 32.0,
+      "flange_t_mm": 8.0,
+      "flange_absz_mm": [
+        72.0,
+        80.0
+      ],
+      "magnetic": false
+    },
+    "unit": "-",
+    "status": "DECIDED (layout, the flanges outside the vessel, outboard of the AH) / REGISTER (d)",
+    "source": "designer, 2026-10-08 / 2026-10-09 ('the AH flanges sit outside the vessel'; the 160-turn coil kept); presets/electromagnets-RA.json shaft (d 30, non-magnetic tip); sim/stack_sizing.py FLANGE_R / FLANGE_T. The tube layout still carries the 120 mm placeholder hub: refreshing it puts the flanges at |z| 72 and grows the tube by about 24 mm.",
+    "tag": "[IR]"
   },
   "pumps": {
     "value": "symmetric top and bottom: each shaft half carries its side's electrostatic stack and magnetic (utron) group (the tube layout's sides A / B)",
-    "unit": "-", "status": "DECIDED", "source": "designer, 2026-10-08", "tag": "[IR]"
+    "unit": "-",
+    "status": "DECIDED",
+    "source": "designer, 2026-10-08",
+    "tag": "[IR]"
   },
   "open": {
-    "value": ["the field's electrodes: the rings outside the glass, or the two Rogowski electrodes inside it (sim/hub-locked-findings.md)",
-              "the vessel's wall", "the rings' form and polar angle", "the retainer's and coupler's materials and dimensions",
-              "the hub's length: the 160-turn coil reaches |z| 71.35, past the tube layout's 120 mm hub"],
-    "unit": "-", "status": "OPEN", "source": "sim/hub-locked-findings.md", "tag": "-"
+    "value": [
+      "the retainer's and coupler's materials and dimensions",
+      "the rings' material and leads; the glass-retainer interface's rating (1 kV/mm placeholder sets the rings' gap)",
+      "the electrodes' leakage (10 G placeholder per ring sets the multiplier's sag)",
+      "the tube layout and its 3-D model still carry the 120 mm placeholder hub (sim/stack_sizing.py hub_mm, sim/tube_geometry.py)"
+    ],
+    "unit": "-",
+    "status": "OPEN",
+    "source": "sim/hub-locked-findings.md",
+    "tag": "-"
   }
 }
