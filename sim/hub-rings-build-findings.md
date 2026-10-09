@@ -200,10 +200,8 @@
     half-way at 12 min. The leakage moves the potential along the glass and through the gel and the PEEK, from the
     electrostatic toward the conduction-settled state [OC]. The other materials bracket it: PEI +14 %, G10 +1 %
     (its σ/ε matches the glass's), PEEK at 40 °C +12 % in a quarter of the time.
-- **"I expect the field to swing, with the power supplies":** with the DC on the rings, it does not, beyond 0.13 %.
-  A field at the null that swings with the pump is the float wiring's: about ±1.5 kV/cm on 8 mm bands
-  (`sim/hub-locked-findings.md` §2), against 6.9 kV/cm DC. That is a different design; it is the designer's to say
-  which was meant.
+- **"I expect the field to swing, with the power supplies":** the designer meant the ripple on the DC (2026-10-09).
+  With the DC on the rings it is 0.13 %: 0.009 kV/cm p-p on 6.93 at 120 Hz. The bench's phase 4 measures it.
 
 ## 6. What changes
 - **`presets/hub-locked.json`:**
@@ -248,5 +246,3 @@
 - **The AH seat's length (5.7 mm):** it sets how near the pole the bands may start, since the polar beads must clear
   the AH coil's end. A longer seat would let the bands start nearer the pole, but it moves the AH: the designer's call.
 - **The fired-on coating's edges:** beaded, or graded by a resistive layer toward the pole.
-- **What "the field to swing with the power supplies" means:** the 120 Hz ripple on the DC (0.13 % here), or a field
-  that swings with the pump (the float wiring).
