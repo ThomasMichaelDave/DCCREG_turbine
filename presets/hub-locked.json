@@ -1,6 +1,6 @@
 {
   "schema": "hub-register/1",
-  "generation": "locked 2026-10-08, decisions 2026-10-09, build 2026-10-09",
+  "generation": "locked 2026-10-08, decisions 2026-10-09, build 2026-10-09, open points 2026-10-09",
   "note": "The hub as the designer locked it, inside out. Every value carries its status word and source: DECIDED (the designer), REGISTER (carried from presets/electromagnets-RA.json), DESIGN / PROPOSED (sized or proposed here, the designer's to accept), ESTIMATE, OPEN (a placeholder [RH] until the designer sets it). Read by sim/hub_locked.py and sim/hub_rings_build.py.",
   "layer_order": {
     "value": [
@@ -40,11 +40,14 @@
   },
   "vessel_resistivity": {
     "value": {
-      "rho_ohm_m": 10000000000000.0
+      "rho_ohm_m": 10000000000000.0,
+      "activation_eV": 0.9,
+      "service_estimate_ohm_m": 4200000000000.0,
+      "service_T_C": 32.5
     },
     "unit": "ohm m",
-    "status": "OPEN",
-    "source": "borosilicate at 25 C, datasheet-class (about 1e15 ohm cm); falls steeply with temperature",
+    "status": "OPEN (the bench's phase 3 measures it) / ESTIMATE (in service)",
+    "source": "borosilicate at 25 C, datasheet-class (about 1e15 ohm cm); falls steeply with temperature; in service: the glass between the rings at 32.5 C in a 25 C room (the AH coils' 1.2 W each), Arrhenius through sim/hub_drift.py's 25 / 40 C points (sim/hub_thermal.py, sim/hub-thermal-findings.md)",
     "tag": "[IR]"
   },
   "rings": {
@@ -62,11 +65,13 @@
         "equatorial": 2.0
       },
       "supply": "DC, the symmetric supply: ring A on its own 2-stage Cockcroft-Walton chain from the shaft on node 1 (-15.0 kV), ring B on the mirror chain on node 4 (+15.0 kV); 29.9 kV across, the null at the shaft's potential; storage 100 pF; no Dk, no C_A",
-      "field_at_null_kV_cm": 7.1
+      "field_at_null_kV_cm": 7.62,
+      "field_at_null_bands_kV_cm": 7.1,
+      "field_at_null_settled_kV_cm": 8.2
     },
     "unit": "-",
     "status": "DECIDED (rings outside the glass; copper foil with rounded edges for the prototype; the symmetric supply) / DESIGN (edges, beads: sim/hub_rings_build.py)",
-    "source": "designer, 2026-10-09 (the rings; then the symmetric supply, 'if it pumps against the core centre, yes'); the design from sim/hub-rings-build-findings.md: the most field at the null with the gap holding the interface rating along the glass and both beads the gel's rating (ratings below), in the mirror family. Supersedes the asymmetric 25.75-57.7 deg on ring B's 2 stages and Dk (6.93 kV/cm), and the lock-down's 20-53 deg on three stages, whose edges were not checked. Drawing: docs/drawings/DCCREG-HUB-201; design: docs/rings-design.md.",
+    "source": "designer, 2026-10-09 (the rings; then the symmetric supply, 'if it pumps against the core centre, yes'); the design from sim/hub-rings-build-findings.md: the most field at the null with the gap holding the interface rating along the glass and both beads the gel's rating (ratings below), in the mirror family. Supersedes the asymmetric 25.75-57.7 deg on ring B's 2 stages and Dk (6.93 kV/cm), and the lock-down's 20-53 deg on three stages, whose edges were not checked. Drawing: docs/drawings/DCCREG-HUB-201; design: docs/rings-design.md. The field at the null as built: 7.62 kV/cm at switch-on with the beads in their grooves (7.10 the bands alone, on which the edges were sized), settling to 8.20 kV/cm at 25 C as the insulators leak (sim/hub_beads_settled.py, sim/hub_rings_build.py's as-built step, sim/hub_drift.py).",
     "tag": "[RH] the ratings; [IR] the field solves (a modelling choice); [OC] the electrostatics they solve"
   },
   "ratings": {
@@ -114,7 +119,7 @@
       },
       "coil": {
         "turns": 160,
-        "window": "variant (a)'s: 2 layers of 1.6 mm pitch on the former",
+        "window": "variant (a)'s window, 3.2 x 40 mm (its 50 turns of 1.6 mm wire), rewound with 160 turns",
         "r_mm": [
           8.25,
           11.45
@@ -122,13 +127,17 @@
         "absz_mm": [
           31.35,
           71.35
-        ]
+        ],
+        "wire": "0.80 mm grade-1 enamelled (0.869 mm over), orthocyclic, 4 layers of up to 46 turns, 3.13 mm build",
+        "R20_ohm": 0.333,
+        "R_deck_ohm": 0.27
       },
-      "potential": "the coil's cold end; the core tied to it (about the shaft's potential)"
+      "potential": "the coil's cold end; the core tied to it (about the shaft's potential)",
+      "end": "the outer corner facing the seat rounded to r >= 1.5 mm at REF: a conductive-coated former flange tied to the core, or a REF end ring over the last turns"
     },
     "unit": "-",
-    "status": "DECIDED (placement) / REGISTER (dimensions)",
-    "source": "designer, 2026-10-08; presets/electromagnets-RA.json AH_rod, AH_former, AH_variants (a); sim/magnetic_doubler.py AH r160",
+    "status": "DECIDED (placement) / REGISTER (dimensions) / DESIGN (the winding) / PROPOSED (the end's radius)",
+    "source": "designer, 2026-10-08; presets/electromagnets-RA.json AH_rod, AH_former, AH_variants (a); sim/magnetic_doubler.py AH r160; the winding: sim/hub_thermal.py (the deck keeps 0.27 ohm, the bare-copper scaling); the end: sim/hub-beads-settled-findings.md §5",
     "tag": "[IR]"
   },
   "AH_seat": {
@@ -138,10 +147,11 @@
       "absz_mm": [
         25.0,
         30.7
-      ]
+      ],
+      "holds": "4.5 kV/mm in the PEEK settled at the AH end rounded to 1.5 mm; 2.3 kV/mm on average (sim/hub-beads-settled-findings.md §5)"
     },
     "unit": "-",
-    "status": "REGISTER",
+    "status": "REGISTER / DESIGN (kept at 5.7 mm)",
     "source": "presets/electromagnets-RA.json (sim/em_solids.py RA_seat); now 5.7 mm with the 50 mm vessel",
     "tag": "[RH] length"
   },
@@ -153,10 +163,12 @@
       "pocket": "0.5 mm over the glass with grooves for the rings' beads, filled with the interface filler",
       "alternative": "PEI (Ultem 1000), eps 3.15: higher resistivity and strength, slower to settle, more moisture",
       "r_max_mm": 30.0,
-      "absz_max_mm": 72.0
+      "absz_max_mm": 72.0,
+      "grooves": "full-round tops, a ball-end cut concentric with each bead with 1.0 mm of gel over it: 5 x 4 mm at the polar edge, 4 x 3 mm at the equatorial (width x depth); PROPOSED. The drawing's square tops leave 7 kV/mm in the PEEK at their corners once settled",
+      "dimensions_check": "r 30 / |z| 72 hold: the air outside the coupler at 0.55 kV/mm (switch-on), the coils at 43 C, the glass at 32-37 C (sim/hub-beads-settled-findings.md §6, sim/hub-thermal-findings.md)"
     },
     "unit": "-",
-    "status": "DECIDED (role; material: the designer, 2026-10-09) / OPEN (dimensions)",
+    "status": "DECIDED (role; material: the designer, 2026-10-09) / PROPOSED (the grooves' shape; the dimensions' first cut, docs/rings-design.md §2)",
     "source": "designer, 2026-10-08 (role), 2026-10-09 (accepted PEEK, the gel and the G10 coupler); the material from sim/hub-rings-build-findings.md: non-magnetic and non-conducting (no effect on the AH), low eps (the field at the null moves under 1 % from eps 2.1 to 4.7), low moisture, machines and holds size; the dimensions a placeholder that encloses the AH coils",
     "tag": "[IR] datasheet-class"
   },
@@ -178,10 +190,10 @@
       "material": "G10, outside the retainer (not against the glass or the rings)",
       "eps_r": 4.7,
       "wall_mm": 3.0,
-      "shape": "OPEN (the tube's bicone is a placeholder)"
+      "shape": "PROPOSED first cut: a straight G10 tube, 60 / 66 mm, |z| <= 80 mm, bonded over the PEEK retainer and over both shaft flanges, the flanges turned to 60 mm and each pinned radially (docs/rings-design.md §2); the tube's bicone was a placeholder"
     },
     "unit": "-",
-    "status": "DECIDED (role; G10 outside the PEEK: the designer, 2026-10-09) / OPEN (shape, dimensions)",
+    "status": "DECIDED (role; G10 outside the PEEK: the designer, 2026-10-09) / PROPOSED (shape, dimensions)",
     "source": "designer, 2026-10-08 and 2026-10-09; G10's fibres would give a tracking path at the rings, so PEEK takes the inside",
     "tag": "[RH]"
   },

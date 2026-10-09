@@ -23,7 +23,8 @@ The test measures them in that order. The ratings come first because they decide
 - **the retainer:** unfilled PEEK with a 0.5 mm gel-filled pocket, and the G10 coupler outside;
 - **the supply, symmetric:** ring A at −15.0 kV on its own two-stage Cockcroft-Walton chain from the shaft on node
   1, ring B at +15.0 kV on the mirror chain on node 4; 29.9 kV across, the null at the shaft's potential;
-- **at the null:** 7.10 kV/cm and 2.23 Pa as connected, DC from B to A.
+- **at the null:** 7.62 kV/cm and 2.57 Pa as connected, DC from B to A, with the beads in their grooves as drawn (the
+  bands alone 7.10); settling to 8.20 kV/cm as the insulators leak (`sim/hub-beads-settled-findings.md`).
 
 ## 1. The test hub
 - **The vessel:**
@@ -83,9 +84,9 @@ The test measures them in that order. The ratings come first because they decide
 - **What it decides** (`sim/hub_rings_build_results.json` best_by_family; the symmetric supply, the designer's
   family, with the asymmetric family's best for comparison):
 
-| ratings qualified (interface / gel at a bead) | stages a side | across the rings | bands | beads (polar / eq.) | at the null | asymmetric best |
+| ratings qualified (interface / gel at a bead) | stages a side | across the rings | bands | beads (polar / eq.) | at the null (the bands alone) | asymmetric best |
 |:--|:--|--:|:--|:--|--:|--:|
-| **1 / 5 kV/mm (the record)** | **2 + 2** | **29.9 kV** | **26.25–55.7°** | **Ø3 / Ø2 mm** | **7.10 kV/cm** | 6.93 |
+| **1 / 5 kV/mm (the record)** | **2 + 2** | **29.9 kV** | **26.25–55.7°** | **Ø3 / Ø2 mm** | **7.10 kV/cm (7.62 with the beads)** | 6.93 |
 | 1 / 8 | 3 + 3 | 44.3 kV | 24.0–39.2° | Ø3 / Ø2 mm | 7.80 kV/cm | 7.97 |
 | 2 / 5 | 2 + 2 | 29.9 kV | 25.5–72.9° | Ø3 / Ø4 mm | 8.35 kV/cm | 7.91 |
 | 2 / 8 | 4 + 4 | 57.9 kV | 30.75–56.8° | Ø3 / Ø3 mm | 13.38 kV/cm | 13.25 |
@@ -115,23 +116,28 @@ The test measures them in that order. The ratings come first because they decide
   - ground both rings and record the return;
   - repeat at 40 °C.
 - **Expect** (sim/hub_drift.py; PEEK retainer, gel, 25 °C):
-  - **the rise:** 7.10 kV/cm at switch-on, 7.41 at 10 min, 7.78 at 1 h, 7.82 at 6 h (+10 %);
-  - **the times:** half-way at 13 min and 90 % at 48 min; two exponentials fit it, τ ≈ 8 and 23 min;
-  - **the return:** grounding the settled rings leaves the field at the null at +0.72 kV/cm (the settled minus the
+  - **the rise:** 7.62 kV/cm at switch-on, 7.95 at 10 min, 8.18 at 1 h, 8.20 at 6 h (+7.6 %);
+  - **the times:** half-way at 7.6 min and 90 % at 39 min; two exponentials fit it, τ ≈ 6 and 24 min;
+  - **the return:** grounding the settled rings leaves the field at the null at +0.58 kV/cm (the settled minus the
     connected field), decaying with the same times. This checks that the drift is linear charging of the insulators.
-  - **At 40 °C** (the glass five times as conductive): 8.08 kV/cm, half-way at 3.5 min.
+  - **At 40 °C** (the glass five times as conductive): 8.27 kV/cm, half-way at 2.8 min.
+  - **The ratio of the glass's conductivity to the gel's,** which E∞ / E(0) and the τᵢ measure, decides the equatorial
+    beads once settled: their gel holds 5 kV/mm while the glass conducts at most about 4 times the gel
+    (`sim/hub-beads-settled-findings.md` §7). In service the hub runs at about 2.4 (`sim/hub-thermal-findings.md`).
+    Measure it at 25 °C and at 40 °C, and the gel's own conductivity on a coupon at both.
 - **The other cases bracket the materials:**
 
 | case | switch-on | 10 min | 1 h | 6 h | half-way |
 |:--|--:|--:|--:|--:|--:|
-| **PEEK retainer, gel, 25 °C (the design)** | **7.10** | **7.41** | **7.78** | **7.82 kV/cm** | **13 min** |
-| PEI retainer, gel, 25 °C | 7.10 | 7.45 | 8.07 | 8.23 | 20 min |
-| G10 retainer, gel, 25 °C | 7.10 | 7.16 | 7.18 | 7.18 | 5 min |
-| PEEK retainer, gel, 40 °C glass | 7.10 | 7.89 | 8.07 | 8.08 | 3.5 min |
-| PEEK retainer, no gel (air in the pocket), 25 °C | 6.99 | 7.25 | 7.59 | 7.65 | 15 min |
+| **PEEK retainer, gel, 25 °C (the design)** | **7.62** | **7.95** | **8.18** | **8.20 kV/cm** | **7.6 min** |
+| PEI retainer, gel, 25 °C | 7.62 | 7.98 | 8.33 | 8.42 | 12 min |
+| G10 retainer, gel, 25 °C | 7.62 | 7.74 | 7.77 | 7.77 | 4.5 min |
+| PEEK retainer, gel, 40 °C glass | 7.62 | 8.18 | 8.27 | 8.27 | 2.8 min |
+| PEEK retainer, no gel (air in the pocket and the grooves), 25 °C | 7.35 | 7.68 | 7.97 | 8.00 | 9.8 min |
 
 - **Analysis:** fit E(t) = E∞ − Σ aᵢ exp(−t/τᵢ) with one or two terms, then compare:
-  - **E(0)** checks the electrostatics (k = 0.2373 (kV/cm)/kV) and the probe's calibration;
+  - **E(0)** checks the electrostatics (k = 0.2546 (kV/cm)/kV with the beads; 0.2373 for the bands alone) and the
+    probe's calibration;
   - **E∞ / E(0)** checks the ratios of the conductivities;
   - **the τᵢ** check the conductivities themselves.
   - Then set the measured conductivities in `sim/hub_drift.py` SIG.
@@ -142,7 +148,7 @@ The test measures them in that order. The ratings come first because they decide
 - **(a) The rings on the rotor's own supply:** ring A on its two-stage chain at node 1, ring B on the mirror chain at
   node 4, the pump at 1200 rpm relative (120 Hz). Expect:
   - **the start-up from the seed:** 50 % at 0.12 s, 95 % at 0.24 s (29 cycles), 99 % at 0.33 s;
-  - **the 120 Hz ripple on the field at the null:** 0.014 kV/cm p-p on 7.10 (0.19 %). The field stays DC from B to A;
+  - **the 120 Hz ripple on the field at the null:** 0.014 kV/cm p-p on 7.62 (0.19 %). The field stays DC from B to A;
     it does not swing from A to B. The probe needs a resolution of about 5e-4.
   - **the rings' ripple** (non-contact voltmeters): about 29 V p-p on ring B and 34 V on ring A. Ring A tops up as
     node 1 bottoms, 1.03 ms before ring B tops up as node 4 peaks, so the ripples mostly add across the gap (57 V

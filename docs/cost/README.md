@@ -33,7 +33,10 @@ Pick it on Inputs (core field). The electrostatic circuit's HV side is on the ro
       ring; on feed 1, ring A adds 0.993 / 1.960 for one or two stages. The output carries the simulated sag at
       100 GΩ per ring.
     - **On the stack of record** that is 29.7 kV, against 29.9 kV simulated.
-  - **The field at the null** is that voltage × 0.2373 (kV/cm)/kV, the rings as built's field per kV.
+  - **The field at the null** is that voltage × 0.2373 (kV/cm)/kV, the field per kV of the record's bands alone.
+    - **As built the rings give more:** their beads in their grooves add about 7 %, 0.2546 (kV/cm)/kV or 7.62 kV/cm at
+      switch-on, and the leakage settles that to 8.20 (`sim/hub-beads-settled-findings.md` §2). The sheet keeps the
+      bands' basis, which every rating's design below shares, so its picks are conservative.
     - That figure belongs to the record's bands. Other stage counts need their own bands and figure
       (`sim/hub_rings_build_results.json` designs). On the symmetric supply: 0.2892 for 1 + 1, 0.1758 for 3 + 3
       (1 / 8 kV/mm), 0.2791 for 2 + 2 at 2 / 5, and 0.2311 for 4 + 4 (2 / 8).
@@ -87,7 +90,7 @@ picks stay the same.
 | 1 / 5, the asymmetric record (feed 1) | ring B on 2, ring A on Dk | 6.5 kV/cm (0.2460) | 28.1 kV | 6,011 |
 
 - **The symmetric supply costs 50 more** than the asymmetric record: three more diode stacks and three more 100 pF
-  capacitors, for 7.10 kV/cm against 6.93 at the null.
+  capacitors, for 7.10 kV/cm against 6.93 at the null (the bands alone; 7.62 as built).
 - **The stack of record** (6 mm, 3 mm, r 150, 6 + 6; the designer kept it, 2026-10-09) also qualifies, at 6,477.
 - **The fixed parts** with the rings are 3,754:
   - the PEEK retainer (120) and the gel (30);
@@ -145,7 +148,8 @@ The best per watt with a swinging core is 6 mm gaps, 2.5 mm vanes at r 300 mm, 2
   re-sized, which is not costed.
 
 ## Open
-- **The field wanted at the null:** 6.5 kV/cm on Inputs is a placeholder under what the rings as built reach (7.1).
+- **The field wanted at the null:** 6.5 kV/cm on Inputs is a placeholder under what the rings as built reach (7.62
+  at switch-on, 8.20 settled; 7.10 for the bands alone, the sheet's basis).
 - **The ratings:** the interface along the glass (1 kV/mm) and the gel at the beads (5 kV/mm) [RH] set the bands, the
   stages and the field per kV (0.2373). The bench qualifies them (`docs/bench-test-rings.md`); higher ratings carry
   more stages (the table above).

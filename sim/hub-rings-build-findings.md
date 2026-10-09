@@ -31,8 +31,12 @@
 - **The stages:** the rings' separation is not what limits them; the beads in the gel are. Each polar bead faces the
   AH coil's end across the PEEK seat.
 - **The record: the symmetric supply** (the designer's choice, 2026-10-09). Each ring sits on its own two-stage chain
-  from the shaft, ring A on node 1 and ring B on node 4. That gives **−15.0 / +15.0 kV, 29.9 kV across, 7.10 kV/cm and
-  2.23 Pa at the null**, with the null at the shaft's potential.
+  from the shaft, ring A on node 1 and ring B on node 4. That gives **−15.0 / +15.0 kV, 29.9 kV across, 7.62 kV/cm and
+  2.57 Pa at the null** as built, with the null at the shaft's potential.
+  - **Corrected 2026-10-09:** this study sized the edges on the bands alone, which give 7.10 kV/cm and 2.23 Pa. With
+    the beads in their grooves as drawn the field is 7.62 kV/cm, settling to 8.20 as the insulators leak
+    (`sim/hub-beads-settled-findings.md` §2; `sim/hub_rings_build.py --as-built` sets it on the record). The design
+    tables below stay on the bands' basis; the time behaviour (§4, §5) is re-run with the beads.
   - The bands run 26.25–55.71°, with Ø3 / Ø2 mm beads (§4, the record).
   - It replaces the asymmetric record: ring A on node 1's peak through Dk, ring B on two stages (28.2 kV, 6.93 kV/cm).
 - **The field does not swing from A to B.** It is DC from B to A, and the pressure holds its maximum all the time. The
@@ -105,6 +109,8 @@
 - **The beads of record** (the symmetric supply; both rings alike, mirrored):
   - **Ø3 mm at the polar edges:** 4.85 kV/mm in the gel, under the limit by 3 %;
   - **Ø2 mm at the equatorial edges:** 4.36 kV/mm, 4.46 at half the cell.
+  - **As drawn** (the grooves' PEEK within 0.5 mm of the bead, where this box had gel throughout): 4.98 and
+    4.46 kV/mm, so the polar bead sits 0.4 % under its limit (`sim/hub-beads-settled-findings.md` §3).
 - **The local solve's convergence** (`convergence` in the results, at the record's beads):
   - **Ø3 mm beads:** converged (no change at half the cell, +0.2 % with the box 1.5× as large);
   - **Ø2 mm beads:** read 2.4 % low at the base cell (−0.3 % with the box 1.5×). The record's equatorial bead is still
@@ -260,7 +266,7 @@ keeps each family's best per pair of ratings (`best_by_family`).
   - **the pump:** start-up gain z 1.191, belt 2.14 W, leakage 4.5 mW;
   - **the parts:** no Dk and no C_A.
 - **"The field from A to B swings now ... correct?":** no. The field at the null is DC and points from B to A at
-  7.10 kV/cm, and the pressure holds its maximum, 2.23 Pa, all the time.
+  7.62 kV/cm as built, and the pressure holds its maximum, 2.57 Pa, all the time.
   - **The ripple** (`sim/hub_drift.py` swing):
     - ring A 34 V and ring B 29 V p-p at 120 Hz;
     - ring A tops up as node 1 bottoms (at 0.375 of the cycle), and ring B as node 4 peaks, 0.124 of a cycle
@@ -275,7 +281,7 @@ keeps each family's best per pair of ratings (`best_by_family`).
       −7.5 kV.
     - **The smoothing nodes and the rings hold:** b1 and a1 within 20 V; ring B +14.96 kV (29 V p-p); ring A
       −14.96 kV (34 V p-p).
-    - **The field at the null** stays at 7.093 … 7.107 kV/cm from B to A, with no sign change in the revolution.
+    - **The field at the null** stays at 7.611 … 7.625 kV/cm from B to A, with no sign change in the revolution.
     - **Why:** every diode in a chain passes charge one way only. Ring B's chain can only push ring B up, and ring
       A's can only push ring A down. The storage capacitors hold the rings between the pump's cycles. What swings is
       the pump and the chains' oscillating nodes, and the rings only see their small top-ups.
@@ -297,17 +303,18 @@ keeps each family's best per pair of ratings (`best_by_family`).
 - **The probe:** an electro-optic BGO sensor on a fibre, along the axis through a pumping tube at one pole.
 - **What the field at the null should do** (`sim/hub_drift.py`, the record: the symmetric supply):
   - **the start-up:** 95 % in 0.24 s (29 cycles) from the seed;
-  - **the 120 Hz ripple:** 0.014 kV/cm p-p on 7.10 (0.19 %). With the DC supply, the chains smooth the pump's swing
+  - **the 120 Hz ripple:** 0.014 kV/cm p-p on 7.62 (0.19 %). With the DC supply, the chains smooth the pump's swing
     almost completely. The AH's ampere-turns swing 5.9 % p-p with 22 mF across each coil.
-  - **the drift:** with the rings held at their DC, 7.10 kV/cm at switch-on, 7.41 at 10 min, 7.78 at 1 h and 7.82 at
-    6 h (+10 %), half-way at 13 min. The leakage moves the potential along the glass and through the gel and the
-    PEEK, from the electrostatic toward the conduction-settled state [OC].
-    - The other materials bracket it: PEI +16 %, G10 +1 % (its σ/ε matches the glass's), and PEEK at 40 °C +14 % in
-      a quarter of the time.
-    - Without the gel (air gaps): 6.99 → 7.65.
+  - **the drift:** with the rings held at their DC, 7.62 kV/cm at switch-on, 7.95 at 10 min, 8.18 at 1 h and 8.20 at
+    6 h (+7.6 %), half-way at 7.6 min (with the beads; the bands alone ran 7.10 → 7.82). The leakage moves the
+    potential along the glass and through the gel and the PEEK, from the electrostatic toward the conduction-settled
+    state [OC].
+    - The other materials bracket it: PEI +10.5 %, G10 +2.0 % (its σ/ε matches the glass's), and the glass at 40 °C
+      +8.5 % in about a third of the time.
+    - Without the gel (air gaps): 7.35 → 8.00.
   - The asymmetric record read 6.93 → 7.57 kV/cm, 0.009 kV/cm p-p.
 - **"I expect the field to swing, with the power supplies":** the designer meant the ripple on the DC (2026-10-09).
-  On the symmetric supply it is 0.19 %: 0.014 kV/cm p-p on 7.10 at 120 Hz. The bench's phase 4 measures it.
+  On the symmetric supply it is 0.19 %: 0.014 kV/cm p-p on 7.62 at 120 Hz. The bench's phase 4 measures it.
 
 ## 6. What changes
 - **`presets/hub-locked.json`:**
@@ -349,16 +356,20 @@ keeps each family's best per pair of ratings (`best_by_family`).
 - **[OC]:** the superposition of the modes, exact for the linear problem.
 - **Not modelled:**
   - **the contact wedge** where a bead touches the glass. It is skipped in the sampling; the void-free gel is what keeps
-    it benign, and the coupons test it.
-  - **the AH side's edges** (the coil's end turns and former), which face the polar beads. Round or cap them.
+    it benign, and the coupons test it. Since solved: finite, and under half of Paschen's breakdown for a void
+    (`sim/hub-beads-settled-findings.md` §4).
+  - **the AH side's edges** (the coil's end turns and former), which face the polar beads. Round or cap them. Since
+    solved: a 1.5 mm radius at REF holds the PEEK to 4.5 kV/mm settled (`sim/hub-beads-settled-findings.md` §5).
   - **the rings' leads** through the retainer and the coupler.
   - **the gores' overlaps and joints.**
   - **the beads' field in the settled DC state.** Conduction then shares the DC by the conductivities, not the
-    permittivities. The PEEK, ten times less conductive than the gel, should take more of it, which would ease the
-    beads [IR]; not checked.
+    permittivities. Since solved (`sim/hub-beads-settled-findings.md`): the PEEK takes it and the polar beads ease, as
+    expected; the equatorial beads hold only while the glass conducts at most about 4 times the gel.
 
 ## Open
 - **The ratings:** the bench's phase 1. They set the stages, from the record's two to the qualified six.
 - **The AH seat's length (5.7 mm):** it sets how near the pole the bands may start, since the polar beads must clear
   the AH coil's end. A longer seat would let the bands start nearer the pole, but it moves the AH: the designer's call.
+  With the AH ends rounded to 1.5 mm the 5.7 mm seat holds once settled (`sim/hub-beads-settled-findings.md` §5), so
+  nothing forces a change.
 - **The fired-on coating's edges:** beaded, or graded by a resistive layer toward the pole.

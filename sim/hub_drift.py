@@ -7,8 +7,9 @@ Three time scales [OC]:
              DC across the rings, as connected (k of the record's bands);
   120 Hz     the supply's ripple on the rings (the same run's last cycles): the field swings with it;
   minutes-   the leakage of the glass, the interface gel, the retainer, the coupler and the air: quasi-static current
-  hours      continuity, C dV/dt + G V = b, on the hub's finite volumes (the record's bands at +-1/2, the AH, flanges
-             and shaft at REF); implicit Euler from the electrostatic solution at switch-on, PER_DECADE steps a decade.
+  hours      continuity, C dV/dt + G V = b, on the hub's finite volumes (the record's bands at +-1/2 with each edge's
+             own bead in its groove, as drawn; the AH, flanges and shaft at REF); implicit Euler from the
+             electrostatic solution at switch-on, PER_DECADE steps a decade.
 Conductivities at 25 C [IR datasheet-class]: borosilicate 1e-13 S/m (about 5e-13 at 40 C), silicone gel 1e-13, PEEK
 1e-14, PEI 1e-15, G10 1e-13 (dry), air 2e-14 (its natural ions), the vacuum 0.
 Usage: python3 sim/hub_drift.py [--procs 4]   (writes sim/hub_drift_results.json)
@@ -47,20 +48,25 @@ PER_DECADE = 60                    # implicit Euler steps per decade of time (on
 
 
 def maps(rec, ret, glass, gel, h):
-    """the hub's eps and sigma maps and its conductors (the record's bands)."""
+    """the hub's eps and sigma maps and its conductors: the record's bands, each edge with its own bead in its groove
+    (the drawing's, docs/drawings/DCCREG-HUB-201: sim/hub_beads_settled.py's materials) [IR]."""
+    import hub_beads_settled as S                     # it imports this module, so it is imported here
     hub = B.hub_system()
     if not gel:
-        hub = dict(hub, eps_fill=1.0)                                 # the pocket left as air
-    r, z, eps, cond = HL.maps(HL.band(rec["theta_p"], rec["theta_e"]), 0.0, True, h, hub)
+        hub = dict(hub, eps_fill=1.0)                                 # the pocket and the grooves left as air
+    r, z, _, cond = HL.maps(HL.band(rec["theta_p"], rec["theta_e"]), 0.0, True, h, hub)
     R, Z = np.meshgrid(r, z, indexing="ij")
-    rho = np.hypot(R, Z)
+    m = S.materials(R, Z, rec, hub, groove="rect")
+    for th, rb in S.rec_beads(rec).values():
+        cx, cz = (hub["R_v"] + rb) * math.sin(math.radians(th)), (hub["R_v"] + rb) * math.cos(math.radians(th))
+        cond[(np.hypot(R - cx, Z - cz) <= max(rb, 0.5 * h)) & (cond == 0)] = 2
+    eps = S.prop(m, hub, None)
     sig = np.full(eps.shape, SIG["air"])                              # the air around the hub
-    region = (R <= hub["ret_r"]) & (Z <= hub["ret_z"]) & (rho >= hub["R_v"])
-    sig[region] = SIG[ret]
-    sig[region & (R > hub["ret_r"] - hub["cpl_t"])] = SIG["g10"]      # the coupler
-    sig[region & (rho < hub["R_v"] + hub["fill_t"])] = SIG["gel"] if gel else SIG["air"]
-    sig[(rho >= hub["R_in"]) & (rho < hub["R_v"])] = SIG[glass]
-    sig[rho < hub["R_in"]] = 0.0                                      # the vacuum
+    sig[m == S.PEEK] = SIG[ret]
+    sig[m == S.G10] = SIG["g10"]                                      # the coupler
+    sig[m == S.GEL] = SIG["gel"] if gel else SIG["air"]
+    sig[m == S.GLASS] = SIG[glass]
+    sig[m == S.VAC] = 0.0                                             # the vacuum
     return r, z, eps, sig, cond
 
 

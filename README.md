@@ -28,7 +28,7 @@ fields come from charge pumps driven by the relative rotation of the machine's t
 - **The electrostatic pump:** an air vane stack per side (6 + 6 aluminium vanes, 6 mm gaps) in a de Queiroz diode
   doubler, clamped at 13.1 kV. Two mirrored Cockcroft-Walton chains lift two copper rings on the sphere to ±15.0 kV.
 - **The hub:** a 50 mm borosilicate vacuum sphere in a PEEK retainer with a silicone-gel interface, the AH's MnZn
-  cores on the axis. At its centre: the AH's null and 7.10 kV/cm from ring B to ring A, steady.
+  cores on the axis. At its centre: the AH's null and 7.62 kV/cm from ring B to ring A, steady (8.2 once settled).
 - **The physics is mainstream throughout** [OC]. The ratings, the leakage and several parts are placeholders that
   the bench test qualifies.
 

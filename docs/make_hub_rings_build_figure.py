@@ -27,6 +27,7 @@ SIM = os.path.join(HERE, "..", "sim")
 sys.path.insert(0, SIM)
 import core_rings as CR                                           # noqa: E402
 import hub_locked as HL                                           # noqa: E402
+import hub_beads_settled as S                                     # noqa: E402
 import hub_rings_build as B                                       # noqa: E402
 
 SURF, INK, INK2, MUTED, GRID, AXIS = "#fcfcfb", "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"
@@ -88,7 +89,7 @@ def section(ax, rec, R):
         a, b = sorted((s * hub["ah_z"][0], s * 46.0))
         ax.add_patch(Rectangle((0, a), hub["ah_r"], b - a, fc=STEEL, ec="#5d6670", lw=0.6, zorder=3))
     # the DC: the record's bands (plain) on the hub's finite volumes
-    res = CR.solve(HL.band(tp, te), 0.5 * (tp + te), True, 0.25, hub=hub, keep=True, maps_fn=HL.maps)
+    res = CR.solve(HL.band(tp, te), 0.5 * (tp + te), True, 0.25, hub=hub, keep=True, maps_fn=S.maps_fn(rec))
     va, vb = rec["V_A_kV"] * 1e3, rec["V_B_kV"] * 1e3
     cm, dm = 0.5 * (vb + va), 0.5 * (vb - va)
     Va, Vs, cond = res["V_anti"], res["V_sym"], res["cond"]
@@ -126,9 +127,9 @@ def section(ax, rec, R):
     pb = ((Rv + 2 * rp) * math.sin(t_p), (Rv + 2 * rp) * math.cos(t_p))
     qb = ((Rv + rq) * math.sin(t_e) + rq * math.cos(t_e), (Rv + rq) * math.cos(t_e) - rq * math.sin(t_e))
     ax.annotate(f"ring B, {kv(rec['V_B_kV'], '+{:.1f}')} kV: Cu foil {B.FOIL_T:g} mm,\n{tp:.1f}–{te:.1f}°; polar bead "
-                f"Ø{2 * rp:g} mm:\n{rec['E_pol']['gel']:.1f} kV/mm in the gel", pb, (12.6, 39.3), arrowprops=arr, va="top",
+                f"Ø{2 * rp:g} mm:\n{rec.get('E_pol_drawn', rec['E_pol'])['gel']:.2f} kV/mm in the gel", pb, (12.6, 39.3), arrowprops=arr, va="top",
                 **lab)
-    ax.annotate(f"equatorial bead Ø{2 * rq:g} mm:\n{rec['E_eq']['gel']:.1f} kV/mm in the gel", qb, (24.5, 27.0),
+    ax.annotate(f"equatorial bead Ø{2 * rq:g} mm:\n{rec.get('E_eq_drawn', rec['E_eq'])['gel']:.2f} kV/mm in the gel", qb, (24.5, 27.0),
                 arrowprops=arr, **lab)
     ax.annotate(f"ring A, {kv(rec['V_A_kV'])} kV", (Rv * math.sin(0.5 * (t_p + t_e)), -Rv * math.cos(0.5 * (t_p + t_e))),
                 (2.0, -37.0), arrowprops=arr, **lab)
@@ -179,9 +180,11 @@ def main():
     h_fams = [axB.plot([], [], color=INK2, lw=lw, ls=ls, marker=mk, ms=4, mec=SURF, label=lab)[0]
               for (fam, ls, mk, lw), lab in zip(FAM, ("symmetric: A and B each on their own chain (the record's)",
                                                       "ring A on Dk plus its own stages", "ring A on Dk, stages on B"))]
-    axB.plot([rec["V_gap_kV"]], [rec["E_null_kV_cm"]], "o", ms=12, mfc="none", mec=INK, mew=1.4, zorder=7)
-    axB.annotate(f"the record: {rec['E_null_kV_cm']:.2f} kV/cm", (rec["V_gap_kV"], rec["E_null_kV_cm"]), (31.5, 5.0),
-                 textcoords="data", fontsize=7.4, color=INK, ha="left",
+    e_b = rec.get("E_null_bands_kV_cm", rec["E_null_kV_cm"])           # the curves are the bands alone
+    axB.plot([rec["V_gap_kV"]], [e_b], "o", ms=12, mfc="none", mec=INK, mew=1.4, zorder=7)
+    axB.plot([rec["V_gap_kV"]], [rec["E_null_kV_cm"]], "^", ms=7, color=INK, zorder=7)
+    axB.annotate(f"the record: {e_b:.2f} kV/cm for the bands alone,\n{rec['E_null_kV_cm']:.2f} with its beads (▲)",
+                 (rec["V_gap_kV"], e_b), (31.5, 4.6), textcoords="data", fontsize=7.4, color=INK, ha="left",
                  arrowprops=dict(arrowstyle="-", lw=0.5, color=INK2))
     old = R["best_by_family"]["stacked"].get("1/5")
     if old:
@@ -246,7 +249,8 @@ def main():
 
     # (e) the best symmetric design of each pair of ratings, solved directly; the stacked family's best beside it
     axT = fig.add_subplot(gs[1, 2]); axT.axis("off")
-    axT.set_title("(e) the best symmetric design at each pair of ratings, solved directly", fontsize=9.6, loc="left",
+    axT.set_title("(e) the best symmetric design at each pair of ratings, solved directly\n(the bands alone; "
+                  "with the beads as drawn, about 7 % more at the null)", fontsize=9.6, loc="left",
                   color=INK)
     xs = (0.0, 0.15, 0.33, 0.52, 0.68, 0.84)
     for x_, h_ in zip(xs, ("ratings\n(kV/mm)", "stages,\nrings A / B", "bands,\nbeads", "gel, polar /\neq. bead",

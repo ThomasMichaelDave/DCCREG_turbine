@@ -5,7 +5,9 @@
   (c) the electrostatic pressure eps0 E^2 / 2 along the same lines;
   (d), (e) ring B's polar and equatorial beads: the field in the gel and the glass around them (local solves);
   below, the numbers.
-The DC as connected (the electrostatic solution); the leakage later moves it (sim/hub_drift.py).
+The hub as drawn (docs/drawings/DCCREG-HUB-201): each band edge with its own bead in its gel-filled groove
+(sim/hub_beads_settled.py's maps). The DC as connected (the electrostatic solution); the leakage later moves it
+(sim/hub_drift.py).
 Usage: python3 docs/make_rings_field_figure.py
 """
 import json
@@ -26,6 +28,7 @@ SIM = os.path.join(HERE, "..", "sim")
 sys.path.insert(0, SIM)
 import core_rings as CR                                           # noqa: E402
 import hub_locked as HL                                           # noqa: E402
+import hub_beads_settled as S                                     # noqa: E402
 import hub_rings_build as B                                       # noqa: E402
 
 SURF, INK, INK2, MUTED, GRID, AXIS = "#fcfcfb", "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7"
@@ -60,7 +63,7 @@ def hub_field(rec):
     """the hub's DC as connected on its finite volumes, both halves: r, z (mm), V (V), |E| (kV/cm), Er, Ez, cond."""
     hub = B.hub_system()
     tp, te = rec["theta_p"], rec["theta_e"]
-    res = CR.solve(HL.band(tp, te), 0.5 * (tp + te), True, 0.25, hub=hub, keep=True, maps_fn=HL.maps)
+    res = CR.solve(HL.band(tp, te), 0.5 * (tp + te), True, 0.25, hub=hub, keep=True, maps_fn=S.maps_fn(rec))
     va, vb = rec["V_A_kV"] * 1e3, rec["V_B_kV"] * 1e3
     cm, dm = 0.5 * (vb + va), 0.5 * (vb - va)
     Va, Vs, cond = res["V_anti"], res["V_sym"], res["cond"]
@@ -77,20 +80,23 @@ def hub_field(rec):
     return dict(r=r, z=zf, V=V, E=Em, Er=Er, Ez=Ez, cond=cf, h=h, hub=hub)
 
 
-def bead_map(rec, which):
-    """the local solve around ring B's bead ('pol' / 'eq') at the record's DC: the box's cells and |E| (kV/mm)."""
-    tp, te = rec["theta_p"], rec["theta_e"]
+def bead_map(rec, which, hub_at):
+    """the local solve around ring B's bead ('pol' / 'eq') as drawn, at the record's DC, the hub's solution (hub_at) on
+    its edges: the box's cells, |E| (kV/mm) and the gel's peak along the bead's normals (sim/hub_beads_settled.py)."""
     rho = rec["rho_pol_mm"] if which == "pol" else rec["rho_eq_mm"]
-    h_loc, half = 0.025, 4.0
-    res = B.hub_beads(tp, te, rho)
-    _, vbc = B.hub_potential(res, rec["V_A_kV"] * 1e3, rec["V_B_kV"] * 1e3)
-    bx = B._edge_box(tp, te, rho, which, h_loc, half)
-    V = B.local_fv(bx["eps"], bx["cond"], rec["V_B_kV"] * 1e3, h_loc, bx["r0"], bx["z0"], vbc)
-    Em = np.hypot(np.gradient(V, h_loc * 1e-3, axis=0), np.gradient(V, h_loc * 1e-3, axis=1)) / 1e6
+    q = S.bead_box(rec, which, None, hub_at, groove="rect")
+    bx, Em, h_loc = q["bx"], q["Em"], S.H_BOX
+    best = (0.0, None)
+    for a, sx, sz, p2, p4, where in bx["normals"]:
+        if where == "filler":
+            e0 = 2 * B._bilin(Em, *p2, bx["r0"], bx["z0"], h_loc) - B._bilin(Em, *p4, bx["r0"], bx["z0"], h_loc)
+            if e0 > best[0]:
+                best = (float(e0), (sx, sz))
     n = bx["n"]
     r = bx["r0"] + (np.arange(n) + 0.5) * h_loc
     z = bx["z0"] + (np.arange(n) + 0.5) * h_loc
-    return dict(r=r, z=z, E=np.ma.masked_where(bx["cond"], Em), V=V, cond=bx["cond"], rho=rho, which=which)
+    return dict(r=r, z=z, E=np.ma.masked_where(bx["cond"], Em), V=q["V"], cond=bx["cond"], rho=rho, which=which,
+                m=q["m"], peak=best)
 
 
 def materials(ax, hub, both=True, lw=0.6):
@@ -120,7 +126,9 @@ def rings(ax, rec, hub):
 def main():
     R = json.load(open(os.path.join(SIM, "hub_rings_build_results.json")))
     rec = R["record"]
-    sw = json.load(open(os.path.join(SIM, "hub_drift_results.json")))["swing"]
+    Dr = json.load(open(os.path.join(SIM, "hub_drift_results.json")))
+    sw = Dr["swing"]
+    sw_set = Dr["drift"][0]["E_kV_cm"][-1]
     F = hub_field(rec)
     hub = F["hub"]
     fig = plt.figure(figsize=(16.5, 12.4), facecolor="white")
@@ -221,19 +229,21 @@ def main():
     axC.legend(fontsize=7.6, frameon=False, loc="upper center")
 
     # (d), (e) the beads
+    hub_at = S.hub_solve(rec, None)["at"]
     for k, which in enumerate(("pol", "eq")):
-        M = bead_map(rec, which)
+        M = bead_map(rec, which, hub_at)
         axE = fig.add_subplot(right[2, k])
         Rb, Zb = np.meshgrid(M["r"], M["z"], indexing="ij")
         pm = axE.pcolormesh(Rb, Zb, M["E"], cmap=SEQ, vmin=0, vmax=6.0, shading="auto", rasterized=True)
         axE.contour(Rb, Zb, np.ma.masked_where(M["cond"], M["V"]), levels=12, colors=INK2, linewidths=0.3)
         th = np.linspace(0, math.pi / 2, 400)
-        for rad, col in ((hub["R_in"], "#6f8ea6"), (hub["R_v"], "#6f8ea6"), (hub["R_v"] + hub["fill_t"], "#b9ad8a")):
+        for rad, col in ((hub["R_in"], "#6f8ea6"), (hub["R_v"], "#6f8ea6")):
             axE.plot(rad * np.sin(th), rad * np.cos(th), color=col, lw=0.8)
-        q = rec["E_pol"] if which == "pol" else rec["E_eq"]
-        at = q["rings"]["B"]["at_gel"]
+        Rm, Zm = np.meshgrid(M["r"], M["z"], indexing="ij")
+        axE.contour(Rm, Zm, (M["m"] == S.GEL).astype(float), levels=[0.5], colors="#b9ad8a", linewidths=0.8)
+        e_pk, at = M["peak"]
         axE.plot([at[0]], [at[1]], marker="o", ms=7, mfc="none", mec=INK, mew=1.3)
-        axE.annotate(f"peak {q['rings']['B']['gel']:.2f} kV/mm\nin the gel (design 5)", (at[0], at[1]), (0.04, 0.90),
+        axE.annotate(f"peak {e_pk:.2f} kV/mm\nin the gel (design 5)", (at[0], at[1]), (0.04, 0.90),
                      textcoords="axes fraction", va="top", fontsize=7.4, color=INK,
                      bbox=dict(fc="white", ec="none", pad=0.6, alpha=0.92), arrowprops=dict(arrowstyle="-", color=INK,
                                                                                           lw=0.7))
@@ -253,9 +263,11 @@ def main():
            f"axis, {rec['gap_mm']:.1f} mm apart along the glass ({rec['V_gap_kV'] / rec['gap_mm']:.2f} kV/mm). At the "
            f"null {rec['E_null_kV_cm']:.2f} kV/cm, {rec['p_null_Pa']:.2f} Pa; within ±5 mm it varies {u_axis:.1f} % along "
            f"the axis and {u_eq:.1f} % across the equator. The supply's ripple moves it {sw['E_pp_kV_cm']:.3f} kV/cm p-p "
-           f"(sim/hub_drift.py swing): the field does not swing. Beads in the gel: polar {rec['E_pol']['gel']:.2f}, "
-           f"equatorial {rec['E_eq']['gel']:.2f} kV/mm (design 5); in the glass {rec['E_pol']['glass']:.2f} / "
-           f"{rec['E_eq']['glass']:.2f}. Each ring to the AH cores: {rec['E_ah_kV_mm']:.2f} kV/mm on average.")
+           f"(sim/hub_drift.py swing): the field does not swing. With the beads in their grooves as drawn (the bands "
+           f"alone give {rec['E_null_bands_kV_cm']:.2f} kV/cm). Beads in the gel: polar {rec['E_pol_drawn']['gel']:.2f}, "
+           f"equatorial {rec['E_eq_drawn']['gel']:.2f} kV/mm (design 5); in the glass {rec['E_pol_drawn']['glass']:.2f}"
+           f" / {rec['E_eq_drawn']['glass']:.2f}. Each ring to the AH cores: {rec['E_ah_kV_mm']:.2f} kV/mm on average. "
+           f"Settled (the insulators' leakage, 25 °C): {sw_set:.2f} kV/cm at the null (sim/hub_drift.py).")
     fig.text(0.01, 0.012, "\n".join(textwrap.wrap(txt, 245)), fontsize=8.0, color=INK2, va="bottom")
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     fig.savefig(OUT, dpi=130, facecolor="white")

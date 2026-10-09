@@ -6341,9 +6341,9 @@
   "theta_p": 26.25,
   "rho_pol_mm": 1.5,
   "rho_eq_mm": 1.0,
-  "k_kV_cm_per_kV": 0.2372681657489171,
-  "E_null_kV_cm": 7.099998475472056,
-  "p_null_Pa": 2.2316970798259144,
+  "k_kV_cm_per_kV": 0.25457701665749793,
+  "E_null_kV_cm": 7.617947500260931,
+  "p_null_Pa": 2.569180901465381,
   "verified": true,
   "E_pol": {
    "gel": 4.851286411433181,
@@ -6395,7 +6395,29 @@
   },
   "C_ring_ref_pF": 5.137336372013312,
   "C_ring_ring_pF": 1.141433449393868,
-  "E_ah_kV_mm": 1.807579924632839
+  "E_ah_kV_mm": 1.807579924632839,
+  "k_bands_kV_cm_per_kV": 0.2372681657489171,
+  "E_null_bands_kV_cm": 7.099998475472056,
+  "p_null_bands_Pa": 2.2316970798259144,
+  "as_built": {
+   "source": "sim/hub_beads_settled.py hub_solve: eps at switch-on; each edge its own bead in the drawing's groove (docs/drawings/DCCREG-HUB-201)",
+   "h_mm": [
+    0.25,
+    0.125
+   ],
+   "E_null_kV_cm": [
+    7.617947500260931,
+    7.6505662180241165
+   ]
+  },
+  "E_pol_drawn": {
+   "gel": 4.979848193851871,
+   "glass": 1.4557992817146292
+  },
+  "E_eq_drawn": {
+   "gel": 4.458944232223087,
+   "glass": 3.014451310231488
+  }
  },
  "phase5_s": 304.8440639972687,
  "record_supply": {
@@ -7106,9 +7128,9 @@
   "E_mean_kV_cm": 5.984765003607935,
   "E_swing_kV_cm": 0.011402139999999861,
   "ripple_pc": 0.19051942713082376,
-  "E_null_mean_kV_cm": 7.099971074221829,
-  "E_null_pk_kV_cm": 7.1066094061365455,
-  "E_null_pp_kV_cm": 0.013526824217061622,
+  "E_null_mean_kV_cm": 7.617918100073539,
+  "E_null_pk_kV_cm": 7.6250407021685005,
+  "E_null_pp_kV_cm": 0.01451361392355544,
   "E_convention": "E_pk / E_mean / E_swing_kV_cm: V over D_CORE_MM (50 mm), sim/core_field.py's cost-sheet convention; E_null_*: the field at the null, k (V_B - V_A)"
  },
  "record_supply_free": {

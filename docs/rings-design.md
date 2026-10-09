@@ -41,9 +41,9 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
 | beads | Cu wire rings soldered along the edges: Ø3 mm polar, Ø2 mm equatorial |
 | insulation | 0.5 mm of silicone gel over the glass, in a pocket of an unfilled PEEK retainer; G10 coupler outside |
 | supply | symmetric: ring A −15.0 kV, ring B +15.0 kV, 2 + 2 Cockcroft-Walton stages from the shaft; 29.9 kV across |
-| at the null | **7.10 kV/cm, 2.23 Pa, DC from B to A**; the null at the shaft's potential (0 V) |
+| at the null | **7.62 kV/cm, 2.57 Pa, DC from B to A** as connected, with the beads (the bands alone 7.10); the null at the shaft's potential (0 V) |
 | ripple | 0.014 kV/cm p-p at 120 Hz (0.19 %): no swing |
-| drift | 7.10 at switch-on → 7.82 kV/cm settled (+10 %, half-way at 13 min), PEEK and gel at 25 °C [IR] |
+| drift | 7.62 at switch-on → 8.20 kV/cm settled (+7.6 %, half-way at 7.6 min), PEEK and gel at 25 °C [IR] |
 | limits used | 1 kV/mm along the glass between the rings; 5 kV/mm in the gel at a bead [RH] |
 
 ## 2. Geometry and dimensions (drawing DCCREG-HUB-201)
@@ -63,19 +63,40 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
 | bead's centre | r 11.72, z ±23.77 | r 21.48, z ±14.65 |
 | ring centre-line diameter | Ø23.44 | Ø42.96 |
 | wire per ring (cut, close, solder) | 73.6 mm | 135.0 mm |
-| groove in the PEEK (depth over the glass) | 3.5 mm | 2.5 mm |
-| peak field in the gel (record) | 4.85 kV/mm | 4.36 kV/mm (4.46 at half the cell) |
-| peak field in the glass | 1.41 kV/mm | 2.97 kV/mm |
+| groove in the PEEK (depth over the glass), as drawn | 3.5 mm | 2.5 mm |
+| the groove proposed: full-round top, 1.0 mm of gel (width × depth) | 5 × 4 mm | 4 × 3 mm |
+| peak field in the gel, as drawn (the build's box, gel throughout) | 4.98 kV/mm (4.85) | 4.46 kV/mm (4.36) |
+| peak field in the glass, as drawn | 1.46 kV/mm | 3.01 kV/mm |
+| settled at 25 °C: gel / glass | 0.69 / 0.20 kV/mm | 1.88 / 1.19 kV/mm |
 
 - **The gores:** each band is cut flat as 12 gores (24 in all), each with a 1 mm overlap on its neighbour.
   - Each gore is 12.85 mm long along its centre line (the meridian).
   - Its width is 2π · 25 · sin θ / 12 along the arc: 5.79 mm at the polar end, 10.81 mm at the equatorial end.
 - **The retainer:** unfilled PEEK, to r 30 mm and |z| 72 mm. It holds the vessel, the rings and the AH cores and coils.
   - **The pocket:** 0.5 mm over the glass, gel-filled.
-  - **The grooves:** as in the bead table.
+  - **The grooves:** as in the bead table. Proposed: their tops full-round, a ball-end cut concentric with the bead,
+    with 1.0 mm of gel over it. Once the DC has settled the PEEK takes it, and the drawn grooves' square top corners
+    then hold 7 kV/mm in the PEEK; the full-round tops hold 4.1 (`sim/hub-beads-settled-findings.md` §5) [IR].
   - **The AH seats:** each AH core's end is at |z| 30.7 mm. The polar bead's top is at |z| 25.3 mm, so 5.4 mm of
-    PEEK lies between them.
-- **The coupler:** G10, r 30 to 33 mm, outside the PEEK, not against the glass or the rings (shape open).
+    PEEK lies between them. The seat stays 5.7 mm long.
+  - **The AH ends:** proposed, each end's outer corner rounded to 1.5 mm or more at REF: the G10 former's end flange
+    turned and coated conductive, tied to the core, or a REF end ring over the last turns. Settled, the PEEK there
+    then holds 4.5 kV/mm, against 7.9 at a square corner [IR].
+- **The coupler:** G10, r 30 to 33 mm, outside the PEEK, not against the glass or the rings. A first cut [IR,
+  PROPOSED]:
+  - a straight tube, Ø60 / Ø66 mm, over |z| ≤ 80 mm: it holds the PEEK retainer (Ø60 × 144 mm) and both shaft
+    flanges, turned to Ø60 from the register's Ø64, each bonded and pinned radially (3 × Ø4 mm);
+  - the hub's torque and bending pass through it. The torque is about 0.5 N·m (`docs/drive-gear-belt.md`). The axis is
+    vertical, so the bending is small in service; laid horizontal, the rotor's weight over its span bends the hub by
+    about 40 N·m at most: 4 MPa in the G10, about 3 MPa in the bonds [OC estimate];
+  - outside it, the air sees at most 0.55 kV/mm at switch-on, about a sixth of its strength; the coupler's surface
+    reaches 6.2 kV (`sim/hub-beads-settled-findings.md` §6).
+- **The leads** [IR, PROPOSED]: each leaves its equatorial bead along the bead's outward normal, in a Ø3 mm channel
+  through the PEEK and the coupler, filled with the gel. It then runs axially over the coupler to its own end and on to
+  its chain on its own shaft half. PTFE-insulated HV wire rated above 30 kV DC, potted where it leaves the coupler: it
+  passes the flange (REF) with the ring's 15 kV across its insulation.
+- **The temperatures** (`sim/hub-thermal-findings.md`): with the AH coils' 1.2 W each, in a 25 °C room, the coils run
+  at 43 °C and the glass at 32–37 °C, 32.5 °C between the rings.
 
 ## 3. Materials
 
@@ -131,24 +152,35 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
   swing.
 
 ## 5. The fields (`docs/figures/hub-rings-field.png`)
-- **At the null:** 7.10 kV/cm, from ring B to ring A (−z), with a pressure ε0E²/2 of 2.23 Pa. The field per kV across
-  is k = 0.2373 (kV/cm)/kV.
+- **At the null:** 7.62 kV/cm as connected, from ring B to ring A (−z), with a pressure ε0E²/2 of 2.57 Pa. The field
+  per kV across is k = 0.2546 (kV/cm)/kV.
+  - **The beads add 7 %:** the bands alone give 7.10 kV/cm (k 0.2373), on which the edges were sized. The beads are at
+    the ring's potential and reach past its edges toward the gap (`sim/hub-beads-settled-findings.md` §2). At half the
+    cell it is 7.65.
 - **Around the null:**
-  - within ±5 mm it varies 4.6 % along the axis and 2.0 % across the equatorial plane;
-  - across the equator it rises to about 7.7 kV/cm at r 14 mm;
-  - along the axis it falls to zero at |z| ≈ 17 mm and then turns toward the AH cores near the poles. Each band sits
+  - within ±5 mm it varies 4.4 % along the axis and 2.0 % across the equatorial plane;
+  - across the equator it rises to 8.5 kV/cm at r 16 mm;
+  - along the axis it falls to zero at |z| ≈ 18 mm and then turns toward the AH cores near the poles. Each band sits
     between the null and an AH core, both at 0 V, so the potential on the axis peaks between them.
   - On both lines the field is axial (by symmetry), so these are the whole field and the whole pressure.
 - **In the insulation:**
   - **along the glass** between the rings: 1.00 kV/mm, the interface rating [RH];
-  - **in the gel at the beads:** 4.85 kV/mm (polar) and 4.36 kV/mm (equatorial), against 5 kV/mm [RH]. The polar peak
-    is on the bead's top, toward the AH coil's end.
-  - **in the glass under the beads:** 1.41 / 2.97 kV/mm;
+  - **in the gel at the beads,** as drawn: 4.98 kV/mm (polar) and 4.46 kV/mm (equatorial), against 5 kV/mm [RH]. The
+    polar peak is on the bead's top, toward the AH coil's end. The build's own box, filled with gel, gave 4.85 / 4.36;
+  - **in the glass under the beads:** 1.46 / 3.01 kV/mm;
   - **each ring to the AH cores:** 1.81 kV/mm on average, through the PEEK.
 - **The equatorial plane is at 0 V** with the symmetric supply. No voltage runs along it, so a joint in it carries
   only the normal field (§7) [OC].
+- **Once the DC has settled** (`sim/hub-beads-settled-findings.md`): conduction shares the DC by the conductivities.
+  - The beads relax: 0.69 / 1.88 kV/mm in the gel at 25 °C. The PEEK, ten times less conductive than the gel, takes
+    the DC: 2.3 kV/mm across the AH seat on average.
+  - **The equatorial beads set a condition:** their gel stays within 5 kV/mm while the glass conducts at most 4.1 times
+    the gel (4.4 with the full-round grooves). In service the ratio is about 2.4 (`sim/hub-thermal-findings.md`).
+  - **The contact wedge** where each bead touches the glass stays finite, and its voltage at most half of air's
+    Paschen breakdown for a void of its gap.
 - **The solves** [IR]: the hub's finite volumes with 0.25 mm cells; the beads by local solves with 0.025 mm cells,
-  bounded by the hub's solution. The convergence is in `sim/hub_rings_build_results.json` convergence.
+  bounded by the hub's solution. The convergence is in `sim/hub_rings_build_results.json` convergence; the beads as
+  drawn in `sim/hub_beads_settled_results.json`.
 
 ## 6. In time: start-up, ripple, drift (`sim/hub_drift.py`)
 - **The start-up** from the pump's seed: 50 % at 0.12 s, 95 % at 0.24 s (29 cycles), 99 % at 0.33 s.
@@ -157,10 +189,10 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
     (1.03 ms) later.
   - The two ripples mostly add: 57 V p-p across the gap, 0.014 kV/cm p-p at the null (0.19 %).
 - **"The field from A to B swings now ... correct?" No.** The field at the null is DC, steady from B to A at
-  7.10 kV/cm, and the pressure holds its maximum, 2.23 Pa, all the time.
+  7.62 kV/cm, and the pressure holds its maximum, 2.57 Pa, all the time.
   - **Over one revolution of the rotor** (`sim/hub_revolution.py`, `docs/figures/hub-rings-revolution.png`): the pump
     goes through its phases twelve times. Nodes 1 and 4 and the chains' oscillating nodes swing by 7.5 kV each.
-    The rings hold to within 29–34 V, and the field stays at 7.093 … 7.107 kV/cm from B to A, with no sign change.
+    The rings hold to within 29–34 V, and the field stays at 7.611 … 7.625 kV/cm from B to A, with no sign change.
   - **Why:** each chain's diodes pass charge one way only, ring B's up and ring A's down, and the storage capacitors
     hold the rings between cycles.
   - **A field that swings from A to B** would need AC on the rings: rings on coupling capacitors, following nodes 1 and
@@ -169,8 +201,8 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
     zero between. The pump would also lose gain [IR estimate; not simulated with the rings].
 - **The drift** with the rings held at their DC: the leakage moves the potential along the glass and through the gel
   and PEEK, from the electrostatic toward the conduction-settled state [OC].
-  - PEEK and gel at 25 °C: 7.10 → 7.41 (10 min) → 7.78 (1 h) → 7.82 kV/cm (6 h), half-way at 13 min.
-  - The other cases bracket it: PEI +16 %, G10 +1 %, the glass at 40 °C +14 % in a quarter of the time. The
+  - PEEK and gel at 25 °C: 7.62 → 7.95 (10 min) → 8.18 (1 h) → 8.20 kV/cm (6 h), half-way at 7.6 min.
+  - The other cases bracket it: PEI +10.5 %, G10 +2.0 %, the glass at 40 °C +8.5 % in about a third of the time. The
     conductivities are datasheet-class [IR].
 - **The leakage:** the ledger gives 158 GΩ per ring and the design uses 100 GΩ (estimate). The chains' diodes and
   capacitors dominate; the rings' own insulation is about 200 TΩ.
@@ -188,12 +220,12 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
   - close each by a butt solder joint and file it round;
   - solder each along its foil edge, centred on the edge angle, touching the glass.
   - Smooth every joint: no point or burr may stand above the bead's radius.
-- **4. The leads:** solder a PTFE-insulated HV wire to each equatorial bead, and route it out through the PEEK and the
-  coupler (the path is open, §8).
+- **4. The leads:** solder a PTFE-insulated HV wire to each equatorial bead, and route it out along the bead's normal
+  through the PEEK and the coupler, then over the coupler to its own end (§2, proposed).
 - **5. Check:** continuity bead to bead around each ring; insulation ring to ring and ring to the AH dummies.
 - **6. The retainer:**
-  - machine the PEEK from annealed stock: the pocket 0.5 mm over the glass, the grooves 3.5 / 2.5 mm deep, the AH
-    seats;
+  - machine the PEEK from annealed stock: the pocket 0.5 mm over the glass, the grooves 3.5 / 2.5 mm deep (proposed:
+    full-round tops with 1.0 mm of gel, 4 / 3 mm deep, §2), the AH seats;
   - **split it at the equatorial plane** (proposed) [IR]. With the symmetric supply that plane is at 0 V [OC], so the joint
     sees no voltage along it, only the normal field. A split through the axis would put the full 1 kV/mm along its
     joint.
@@ -210,20 +242,31 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
 - **The ratings** (1 kV/mm along the glass, 5 kV/mm in the gel at a bead) are [RH]. The bench's phase 1 qualifies
   them, and with them the stages:
 
-| ratings (interface / gel) | stages a side | across | at the null |
-|:--|:--|--:|--:|
-| **1 / 5 kV/mm (the record)** | **2** | **29.9 kV** | **7.10 kV/cm** |
+| ratings (interface / gel) | stages a side | across | at the null (the bands alone) |
+|:--|--:|--:|--:|
+| **1 / 5 kV/mm (the record)** | **2** | **29.9 kV** | **7.10 kV/cm (7.62 with the beads)** |
 | 1 / 8 | 3 | 44.3 kV | 7.80 kV/cm |
 | 2 / 5 | 2 (wider bands) | 29.9 kV | 8.35 kV/cm |
 | 2 / 8 | 4 | 57.9 kV | 13.38 kV/cm |
 
 - **Each ring's leakage** (100 GΩ estimate): the bench's phase 2.
-- **The retainer's and coupler's dimensions, the equatorial split, and the leads' path** through them.
-- **The AH ends facing the polar beads:** the coil's end turns and former, rounded or capped. The AH seat's length
-  sets how near the pole the bands may start.
+- **The conductivities at temperature** (the bench's phase 3 with its 40 °C repeat): settled, the equatorial beads hold
+  their rating while the glass conducts at most about 4 times the gel (`sim/hub-beads-settled-findings.md` §7). In a
+  25 °C room the hub runs at about 2.4 (`sim/hub-thermal-findings.md`); that holds up to a room of about 30 °C if the
+  gel's conductivity does not rise with temperature.
+- **Proposed here, the designer's to accept** (§2):
+  - the grooves' full-round tops with 1.0 mm of gel;
+  - the AH ends rounded to 1.5 mm or more at REF, with the seat kept at 5.7 mm;
+  - the coupler as a straight G10 tube over the retainer and both flanges, the flanges turned to Ø60;
+  - the leads' path;
+  - the retainer split at the equatorial plane (§7).
 - **The fired-on coating's edges** for the later build: beaded the same way, or graded by a resistive layer toward the
   pole.
-- **The beads in the settled DC state:** conduction then shares the DC by the conductivities, not the permittivities.
-  This was not checked; it should ease the beads [RH].
-- **The tube layout and its 3-D model** still carry the 120 mm placeholder hub (`sim/stack_sizing.py`,
-  `sim/tube_geometry.py`).
+
+**Settled since the design** (2026-10-09):
+- **The beads in the settled DC state and the contact wedge:** `sim/hub-beads-settled-findings.md`. The polar beads
+  ease; the equatorial beads set the condition on the conductivities above; the wedge holds.
+- **The field at the null with the beads:** 7.62 kV/cm at switch-on, 8.20 settled (§5, §6).
+- **The hub's temperature and the vessel's resistivity in service:** `sim/hub-thermal-findings.md`.
+- **The tube layout and its 3-D model** carry the locked hub: `sim/tube_geometry.py --record`
+  (`docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.*`).

@@ -183,7 +183,8 @@ def main():
 
     # (d) the lock-down's pick and the alternatives
     axT = fig.add_subplot(gs[1, 1:]); axT.axis("off")
-    axT.set_title("(d) the lock-down's pick and the alternatives (the record now: 2 + 2 stages, ±15.0 kV, 7.10 kV/cm)",
+    axT.set_title("(d) the lock-down's pick and the alternatives (the record now: 2 + 2 stages, ±15.0 kV, "
+                  "7.62 kV/cm with its beads)",
                   fontsize=9.6, loc="left", color=INK)
     b8 = [x for x in R["rings"] if x["ring_name"] == "band 8 mm" and x["theta_deg"] == 50.0 and x["coils"]][0]
     disc = R["discs_inside"]["supplies"]["dc1"]

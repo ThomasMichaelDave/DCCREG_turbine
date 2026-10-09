@@ -61,6 +61,44 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 - **The architecture figure** (`docs/ledger/figures/architecture.svg` / `.png`, generator
   `docs/ledger/make_ledger_figures.py`): what drives what, and where the belt's power goes.
 
+### Settling the open points (2026-10-09)
+The designer: "Let's go over all inconsistencies and settle all open points as much as possible." Recorded here as it
+lands; the ledger's revision closes it.
+
+- **Fixed: the field at the null as built is 7.62 kV/cm, not 7.10** (`sim/hub-beads-settled-findings.md` §2).
+  - **The cause:** `sim/hub_rings_build.py` solved the null for the bands alone; the beads were sized afterwards in
+    local boxes and never put back in the hub. They are copper at the ring's potential and reach past each band's edge
+    toward the gap, so the null gains 7 %: 7.62 kV/cm and 2.57 Pa at switch-on (7.65 at half the cell). It settles to
+    8.20 kV/cm at 25 °C as the insulators leak (was 7.82).
+  - **What carries it:** `sim/hub_rings_build.py --as-built` sets it on the record (the bands alone kept as
+    `*_bands_*`, and the beads as drawn as `E_*_drawn`); `sim/hub_drift.py` now maps the beads in their grooves. The
+    drift, the one-revolution run and the figures (`hub-rings-field`, `hub-rings-build`, `hub-bench-predictions`,
+    `hub-rings-revolution`, `hub-locked`), both schematics, `docs/rings-design.md`, `docs/bench-test-rings.md`,
+    `sim/hub-rings-build-findings.md`, `presets/hub-locked.json` and `README.md` follow.
+  - **What stays:** the design tables, stage counts and edges (sized on the bands, and still within their ratings), and
+    the cost sheet, which keeps the bands' 0.2373 (kV/cm)/kV as the basis every rating's row shares (its picks are
+    conservative by about 7 %).
+- **Fixed: the beads as drawn** run 4.98 / 4.46 kV/mm in the gel at switch-on, not 4.85 / 4.36: the drawing's grooves
+  bring the PEEK within 0.5 mm of each bead, where the build's box had gel throughout. The polar bead holds its 5 kV/mm
+  rating by 0.4 %.
+- **Added: the beads once the DC has settled, the contact wedge, the PEEK and the AH's end** (`sim/hub_beads_settled.py`,
+  `sim/hub-beads-settled-findings.md`).
+  - Settled, the beads relax (0.69 / 1.88 kV/mm) and the PEEK takes the DC: 7 kV/mm at the drawn grooves' square
+    corners and 7.9 at the AH end's square corner.
+  - The equatorial beads hold only while σ_glass ≤ 4.1 σ_gel; with the glass at 40 °C they reach 6.15 kV/mm.
+  - The contact wedge is finite and stays under half of Paschen's breakdown.
+  - Proposed: full-round groove tops with 1.0 mm of gel (4.99 / 4.45 kV/mm; the PEEK 4.1 settled) and the AH ends
+    rounded to 1.5 mm at REF (4.5 kV/mm settled); the AH seat stays 5.7 mm.
+- **Added: the hub's temperature, the AH coils as wound and the vessel's resistivity** (`sim/hub_thermal.py`,
+  `sim/hub-thermal-findings.md`).
+  - The 160 turns fit the window only as 0.80 mm wire in 4 layers: 0.333 Ω, not the deck's 0.27 (a window of bare
+    copper). That gives 294 A-turns per coil and 1.22 W each.
+  - In a 25 °C room the coils run at 43 °C and the glass at 32–37 °C (32.5 °C between the rings). There the vessel's
+    resistivity is 4.2e12 Ω·m and σ_glass / σ_gel about 2.4. The beads' limit holds to a room of about 30 °C.
+- **Added: a first cut of the retainer, coupler and leads** (`docs/rings-design.md` §2, PROPOSED): a straight G10 tube
+  Ø60 / Ø66 over the retainer and both flanges (turned to Ø60), and each lead out along its equatorial bead's normal.
+  The air outside the coupler sees at most 0.55 kV/mm.
+
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the
   solver's choices [OC] and datasheet values [IR] under a redefinition. They now carry `CONVENTIONS.md` §1's meanings:

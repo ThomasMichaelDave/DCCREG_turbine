@@ -459,6 +459,43 @@ def null_field(q, k):
     return q
 
 
+def as_built(rec, h=0.25):
+    """the record as built: its field at the null with each band edge's own bead in its groove (the drawing's;
+    sim/hub_beads_settled.py's hub, eps, at switch-on), against the bands alone, on which the edges were sized [IR].
+    The beads reach past each band's edge, nearer the gap: about 7 % more field. The half cell is the check. The
+    beads' own peaks as drawn (E_*_drawn) beside the build's box values (E_pol / E_eq: gel throughout the box). Returns
+    the fields to set on the record (the bands alone kept as *_bands_*)."""
+    import hub_beads_settled as S                     # it imports this module, so it is imported here
+    q, f = S.hub_solve(rec, None, groove="rect", h=h), S.hub_solve(rec, None, groove="rect", h=0.5 * h)
+    k_b = rec.get("k_bands_kV_cm_per_kV", rec["k_kV_cm_per_kV"])
+    e, e_b = q["k_kV_cm_per_kV"] * rec["V_gap_kV"], k_b * rec["V_gap_kV"]
+    bd = {w: S.bead_state(rec, w, None, q, groove="rect", wedge=False) for w in ("pol", "eq")}
+    return dict(k_bands_kV_cm_per_kV=k_b, E_null_bands_kV_cm=e_b, p_null_bands_Pa=0.5 * EPS0 * (e_b * 1e5) ** 2,
+                k_kV_cm_per_kV=q["k_kV_cm_per_kV"], E_null_kV_cm=e, p_null_Pa=0.5 * EPS0 * (e * 1e5) ** 2,
+                E_pol_drawn=dict(gel=bd["pol"]["E_gel_kV_mm"], glass=bd["pol"]["E_glass_kV_mm"]),
+                E_eq_drawn=dict(gel=bd["eq"]["E_gel_kV_mm"], glass=bd["eq"]["E_glass_kV_mm"]),
+                as_built=dict(source="sim/hub_beads_settled.py hub_solve: eps at switch-on; each edge its own bead in "
+                                     "the drawing's groove (docs/drawings/DCCREG-HUB-201)",
+                              h_mm=[h, 0.5 * h], E_null_kV_cm=[e, f["E_null_kV_cm"]]))
+
+
+def patch_as_built(path):
+    """sets the record's as-built field on an existing results file (and the record's supply's field, k (V_B - V_A))."""
+    out = json.load(open(path))
+    rec = out["record"]
+    upd = as_built(rec)
+    ratio = upd["k_kV_cm_per_kV"] / rec["k_kV_cm_per_kV"]
+    rec.update(upd)
+    for key in ("record_supply", "record_supply_free"):
+        q = out.get(key) or {}
+        for f in ("E_null_mean_kV_cm", "E_null_pk_kV_cm", "E_null_pp_kV_cm"):
+            if f in q:
+                q[f] *= ratio
+    json.dump(out, open(path, "w"), indent=1, default=float)
+    print(f"the record as built: {upd['E_null_bands_kV_cm']:.3f} -> {upd['E_null_kV_cm']:.3f} kV/cm "
+          f"(half the cell {upd['as_built']['E_null_kV_cm'][1]:.3f}), {upd['p_null_Pa']:.3f} Pa", flush=True)
+
+
 def phase5(stages, procs, rec):
     """the tables, every supply's design at each pair of ratings, and each family's best at each pair solved
     directly: {family: {pair: design}}."""
@@ -496,7 +533,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--procs", type=int, default=4)
     ap.add_argument("--resume", action="store_true", help="keep phases 1-4 from the results file")
+    ap.add_argument("--as-built", action="store_true", help="only set the record's as-built field on the results file")
     a = ap.parse_args()
+    if a.as_built:
+        patch_as_built(os.path.join(HERE, "hub_rings_build_results.json"))
+        return
     t0 = time.time()
     rec = json.load(open(os.path.join(HERE, "hub_locked_results.json")))["record"]
     path = os.path.join(HERE, "hub_rings_build_results.json")
@@ -573,6 +614,8 @@ def main():
     best_v = {k: max((rows[k] for rows in best_fam.values() if k in rows), key=lambda q: q["E_null_kV_cm"]) for k in keys}
     # the record: the designer's family at the design ratings
     rb, conv = best_fam.get(RECORD_FAMILY, {}).get("1/5"), []
+    if rb:                                            # the field at the null with the beads, as drawn; best_by_family
+        rb = dict(rb, **as_built(rb))                 # keeps the bands alone, as every other design there
     # the local solve's convergence at the record's beads (ring B; the mirror pair's rings are alike): the cell halved;
     # the box 1.5x
     if rb:

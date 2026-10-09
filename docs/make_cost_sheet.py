@@ -196,8 +196,8 @@ def build():
 
     r += 1; put(ws, f"B{r}", "Targets", F_SEC)
     row("Electric field wanted on the core", 6.5, "kV/cm", "Placeholder: set your target. Core field 4 (the default): the "
-        "field at the AH null from the rings, at most what they reach (7.1 kV/cm with the rings as built on the symmetric "
-        "supply, two stages a side; more stages need the bench's higher ratings, sim/hub-rings-build-findings.md). Core "
+        "field at the AH null from the rings, at most what they reach (7.6 kV/cm at switch-on with the rings as built on the "
+        "symmetric supply, two stages a side, settling to 8.2; more stages need the bench's higher ratings, sim/hub-rings-build-findings.md). Core "
         "field 3: at most the rule's "
         "field at the null (below). 1 / 2 were costed at 2 kV/cm over 50 mm.", "E_CORE", key=True, fmt=NUM2)
     row("Core electrode spacing", 3.1, "mm", "Core fields 1-3: the distance across which that field is applied (3: the "
@@ -233,10 +233,14 @@ def build():
     row("Ring A's chain, one negative stage over ring B's first", 0.993, "", "Ring A from -13.22 to -20.69 kV "
         "(sim/hub_rings_build_results.json stages_ab).", "CW_A1", fmt=NUM3)
     row("Ring A's chain, two negative stages over ring B's first", 1.960, "", "Ring A to -27.96 kV.", "CW_A2", fmt=NUM3)
-    row("Rings' field at the null per kV across (core field 4)", 0.2373, "(kV/cm)/kV", "The rings as built: bands "
-        "26.25-55.71 deg with beaded edges, sized for 29.9 kV (-15.0 / +15.0 kV) at 1 kV/mm between them and 5 kV/mm in "
-        "the gel at the beads (sim/hub_rings_build_results.json record) [RH on other voltages].", "K_RING",
-        fmt="0.0000")
+    rec_ = json.load(open(os.path.join(SIM, "hub_rings_build_results.json")))["record"]
+    k_ring = round(rec_.get("k_bands_kV_cm_per_kV", rec_["k_kV_cm_per_kV"]), 4)
+    row("Rings' field at the null per kV across (core field 4)", k_ring, "(kV/cm)/kV", "The rings' bands alone: "
+        "26.25-55.71 deg, sized for 29.9 kV (-15.0 / +15.0 kV) at 1 kV/mm between them and 5 kV/mm in the gel at the "
+        "beads (sim/hub_rings_build_results.json record, k_bands). The basis every rating's design here shares. As "
+        f"built, with the beads in their grooves, the rings give {rec_['k_kV_cm_per_kV']:.4f}, about 7 % more, and the "
+        "leakage settles that about 8 % higher still (sim/hub_beads_settled.py, sim/hub_drift.py): the picks below are "
+        "conservative [RH on other voltages].", "K_RING", fmt="0.0000")
     row("Ring A's stages within its feed?", '=IF(OR(CORE_MODE<3,AND(A_FEED=2,N_CW_A<=6),AND(A_FEED=1,N_CW_A<=2)),"yes",'
         '"no: feed 1 takes 0-2 stages on ring A, feed 2 0-6")', "", "Core fields 3 / 4: the factors cover these counts.",
         "N_CW_A_OK", formula=True)

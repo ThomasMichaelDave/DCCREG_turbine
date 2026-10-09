@@ -345,8 +345,8 @@
 <text x="822.0" y="680.0" class="ms" text-anchor="start" >Coa, Csa, Co, Cs 100 pF · ground = the shaft</text>
 <text x="935.0" y="322.0" class="tu" text-anchor="start" font-weight="bold">B +15.0 kV</text>
 <text x="935.0" y="340.0" class="ms" text-anchor="start" >rings 26–56°</text>
-<text x="935.0" y="354.0" class="ms" text-anchor="start" >7.1 kV/cm ↓</text>
-<text x="935.0" y="368.0" class="ms" text-anchor="start" >2.2 Pa</text>
+<text x="935.0" y="354.0" class="ms" text-anchor="start" >7.6 kV/cm ↓</text>
+<text x="935.0" y="368.0" class="ms" text-anchor="start" >2.6 Pa</text>
 <text x="935.0" y="388.0" class="ta" text-anchor="start" font-weight="bold">A −15.0 kV</text>
 <text x="822.0" y="226.0" class="zh" text-anchor="start" >THE CORE (hub)</text>
 <text x="822.0" y="242.0" class="ms" text-anchor="start" >rings outside the glass</text>
@@ -408,7 +408,7 @@
 <text x="822.0" y="914.5" class="tk" text-anchor="start" ></text>
 <text x="898.0" y="914.5" class="tv" text-anchor="start" >100 pF storage; Dca, Dpa, Dc, Dp ≤ 7.5 kV reverse; 4 mW leakage at 100 GΩ/ring [RH]</text>
 <text x="822.0" y="934.0" class="tk" text-anchor="start" ></text>
-<text x="898.0" y="934.0" class="tv" text-anchor="start" >29.9 kV across: 7.1 kV/cm, 2.2 Pa at the null (as connected; 7.8 settled)</text>
+<text x="898.0" y="934.0" class="tv" text-anchor="start" >29.9 kV across: 7.6 kV/cm, 2.6 Pa at the null (as connected; 8.2 settled)</text>
 <text x="822.0" y="953.5" class="tk" text-anchor="start" >strays</text>
 <text x="898.0" y="953.5" class="tv" text-anchor="start" >≈ 20 pF per node [RH]; the rings 5.1 pF each to REF, 1.1 pF between</text>
 <text x="822.0" y="973.0" class="tk" text-anchor="start" >bearing</text>

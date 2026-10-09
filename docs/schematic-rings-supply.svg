@@ -10,6 +10,8 @@
     .ring{stroke:#111;stroke-width:4} .ball{fill:#fff;stroke:#111;stroke-width:1.6} .dot{fill:#111}
     .zone_cr{fill:#f3f0e6;stroke:#b9ad8a;stroke-width:1;stroke-dasharray:6 4} .zone_r{fill:#eef3f8;stroke:#9fb3c8;stroke-width:1;stroke-dasharray:6 4}
     .kick{fill:#fff7ec;stroke:#d68910;stroke-width:1.4;stroke-dasharray:5 4} .frame{fill:none;stroke:#999;stroke-width:1}
+    .prop{stroke:#9c640c;stroke-width:1.6;fill:none;stroke-dasharray:5 3} .propc{stroke:#9c640c;stroke-width:2.4}
+    .tp{fill:#9c640c;font-size:10.5px}
     .t{fill:#111} .tu{fill:#1f6fb2} .ta{fill:#c0392b} .tl{fill:#7d3c98} .nd{fill:#111;font-size:12.5px}
     .m{fill:#444;font-size:12px} .ms{fill:#555;font-size:11px} .zh{fill:#333;font-size:12.5px;font-weight:bold;letter-spacing:0.06em}
     .tk{fill:#111;font-size:11.5px;font-weight:bold} .tk2{fill:#9c640c;font-size:11.5px;font-weight:bold} .tv{fill:#333;font-size:11.5px}
@@ -195,8 +197,8 @@
 <text x="1176.0" y="304.0" class="ms" text-anchor="start" >26.25–55.71° from the axis</text>
 <text x="1176.0" y="464.0" class="ta" text-anchor="start" font-weight="bold">ring A −15.0 kV</text>
 <text x="1176.0" y="480.0" class="ms" text-anchor="start" >ring B's mirror image</text>
-<text x="1176.0" y="376.0" class="te" text-anchor="start" >7.10 kV/cm at the null, B to A</text>
-<text x="1176.0" y="392.0" class="ms" text-anchor="start" >2.23 Pa, steady (ripple 0.014 kV/cm p-p)</text>
+<text x="1176.0" y="376.0" class="te" text-anchor="start" >7.62 kV/cm at the null, B to A</text>
+<text x="1176.0" y="392.0" class="ms" text-anchor="start" >2.57 Pa, steady (ripple 0.014 kV/cm p-p)</text>
 <text x="1080.0" y="208.0" class="zh" text-anchor="middle" >THE HUB</text>
 <text x="1080.0" y="224.0" class="ms" text-anchor="middle" >the vessel, the AH cores on its axis</text>
 <text x="42.0" y="690.0" class="tk" text-anchor="start" >chains</text>
