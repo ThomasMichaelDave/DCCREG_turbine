@@ -431,10 +431,13 @@ def build_cyl(sp_, theta, h, mu_r, sector="mirror60", L=None, zfar=None, r_min=1
     mu[iron2[:, :, None] & (G.xc[2] / MM < L)[None, None, :]] = MU0 * mu_r
     coils = [coil(sp_, theta_c=tu, s=float(excite[k]), L=L) for k, tu in enumerate(uth) if excite[k]]
     tau = tau_cyl(G, coils)
+    extra = tau_cyl(G, [coil(sp_, theta_c=uth[1], s=1.0, L=L)]) if sector == "half" else None
     hot = current_cells(G, tau)
+    for k, tu in enumerate(uth):                                 # every winding in the model, excited or not
+        if not excite[k] and (sector == "half" or k == 0):
+            hot |= current_cells(G, extra if k == 1 else tau_cyl(G, [coil(sp_, theta_c=tu, s=1.0, L=L)]))
     G.n_hot_iron = int(np.sum(hot & (mu > 10 * MU0)))
     mu[hot] = MU0                                                # a cell carrying winding current is air [IR]
-    extra = tau_cyl(G, [coil(sp_, theta_c=uth[1], s=1.0, L=L)]) if sector == "half" else None
     return G, mu, tau, 4.0, L, extra
 
 
