@@ -689,23 +689,6 @@ def make_law(fe_al, L2d_theta, thetas, use_fe_L=True, name="fe"):
                 pwl_i=list(i_tab), L3d_theta=list(L3), r0=r0, tau=L_max / (kw["L_max"] / kw["tau"]))
 
 
-def law_NI_per_utron(law, theta, phi_u):
-    """the law's NI per utron at a flux per turn phi_u and angle theta (for the fidelity check)."""
-    N = REC["best"]["N_u"]
-    kw = _kw()
-    t = (theta / 60.0) / kw["F"]
-    psi = 3 * N * phi_u                                  # utrons' flux; the stray adds lp i (solved by iteration)
-    lp = M.R_PAR * kw["L_max"]
-    i = 0.0
-    for _ in range(60):
-        tot = psi + lp * i
-        i_new = float(law_current(law, kw, np.array([tot]), np.array([t]), 1)[0])
-        if abs(i_new - i) < 1e-12:
-            break
-        i = i_new
-    return i * N
-
-
 # ------------------------------------------------------------------------------------------------ main
 THETAS = [2.5 * k for k in range(13)]
 
@@ -1010,9 +993,10 @@ def report(out):
         if "error" in v:
             print(k, "ERROR", v["error"][-200:])
             continue
+        fv = v["fidelity_vs_FE"] or dict(rms_rel=float("nan"), max_rel=float("nan"))
         print(f"{k:34s} z {v['z_early']:.4f} belt {v['P_belt_W']:.2f} W utron Cu {v['P_cu_utron_W']:.2f} W AH top "
               f"{v['AH_AT_top']['AT_min']:.0f}-{v['AH_AT_top']['AT_max']:.0f} ({v['AH_AT_top']['AT_mean']:.0f}) A-t | "
-              f"law vs FE rms {100 * v['fidelity_vs_FE']['rms_rel']:.1f} % max {100 * v['fidelity_vs_FE']['max_rel']:+.1f} %")
+              f"law vs FE rms {100 * fv['rms_rel']:.1f} % max {100 * fv['max_rel']:+.1f} %")
 
 
 INK, INK2, MUTED, GRID, BASEL, SURF = "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7", "#fcfcfb"
