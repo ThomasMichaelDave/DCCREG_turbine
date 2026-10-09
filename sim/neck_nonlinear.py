@@ -470,13 +470,14 @@ def gate_linear(lin_res):
 
 
 # ------------------------------------------------------------------------------------------------ analysis of a sweep
-def knee(res):
-    """low-field L (first point), the post-knee asymptote (fit over the last points) and their intersection."""
+def knee(res, tail=0.06e-3):
+    """the low-field L (first point), the post-knee asymptote (a line through the sweep's last 0.06 mWb, if the sweep has
+    passed a knee) and their intersection (the knee flux) [IR: the definition]."""
     NI, phi = np.array(res["NI"]), np.array(res["phi"])
     L0 = phi[0] / NI[0]
-    hi = phi > 1.25 * 0.21e-3
     out = dict(L_low_H=float(L0))
-    if hi.sum() >= 3:
+    hi = phi >= phi[-1] - tail
+    if hi.sum() >= 2 and (phi[-1] - phi[-2]) / (NI[-1] - NI[-2]) < 0.8 * L0:
         c = np.polyfit(NI[hi], phi[hi], 1)
         out.update(L_inc_H=float(c[0]), phi0_Wb=float(c[1]))
         NIk = c[1] / (L0 - c[0])
@@ -757,15 +758,19 @@ def main():
 
 
 def half_knee(res):
-    """the flux (Wb) and NI where the incremental L first falls to half the low-field L (interpolated)."""
+    """the knee's centre: the flux (Wb) and NI where the incremental L first falls to the mean of the low-field L and the
+    post-knee asymptote (half the low-field L if the sweep has no asymptote) [IR: the definition]."""
     NI, phi = np.r_[0.0, res["NI"]], np.r_[0.0, res["phi"]]
     L0 = phi[1] / NI[1]
+    k_ = knee(res)
+    lev = 0.5 * (L0 + k_["L_inc_H"]) if "L_inc_H" in k_ else 0.5 * L0
     inc = np.diff(phi) / np.diff(NI)
-    k = np.where(inc < 0.5 * L0)[0]
+    k = np.where(inc < lev)[0]
     if not len(k):
         return None, None
     k = k[0]
-    return float(phi[k]), float(NI[k])
+    # the crossing inside segment k: the segment's own incremental L is below the level; take its start-to-end mean
+    return float(0.5 * (phi[k] + phi[k + 1])), float(0.5 * (NI[k] + NI[k + 1]))
 
 
 def saturation_order(res):
@@ -1098,7 +1103,7 @@ def figure(out, base, L2, L3):
     ra = out["record_aligned"]
     m, mat, reg, pr, A = field_at(BASE, 0.0, [20.0, 80.0, 120.0, 150.0, ra["NI"]])
     bb = m.b(A)
-    Bn = np.sqrt(0.5 * (bb ** 2).sum(1)) / 4.0 * 0.0
+    Bn = np.zeros(m.ncell)
     for k, md in pr.materials.items():
         sl = pr.sel[k]
         if md["kind"] == "iso":
