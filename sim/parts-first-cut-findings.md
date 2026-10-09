@@ -341,7 +341,7 @@ record's seed never exceeds the steady peak.
     fast 4.1 kV step would add its capacitive share, about 1.35 and 1.2 kV/mm: about 2.0 and 3.1 kV/mm [IR:
     superposition, the step's share scaled from the switch-on field]. With the glass at 40 °C the equatorial bead is
     already at 6.15 kV/mm settled (the record's condition on σ_glass / σ_gel), and the step would take it to about
-    7.4.
+    7.4 kV/mm.
   - The chain's parts stay within their ratings: ≤ 10.3 kV on a 30 kV capacitor, and the diodes under 20 kV.
 - **OPEN for the designer.** Options [RH]:
   - qualify the rings to ±20 kV (1.33×) on the bench;
