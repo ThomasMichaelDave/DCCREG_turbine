@@ -1,11 +1,13 @@
 """docs/make_hub_locked_figure.py -- writes docs/figures/hub-locked.png: the locked hub (presets/hub-locked.json) with
-its field generator of record, two rings outside the glass on the electrostatic pump's DC (sim/hub_locked.py ->
-sim/hub_locked_results.json).
-  (a) the hub's section to scale with the rings of record (bands 20-53 deg, three multiplier stages), DC equipotentials
-      every 2 kV;
+the lock-down study's field generator (2026-10-08), two rings outside the glass on the electrostatic pump's DC
+(sim/hub_locked.py -> sim/hub_locked_results.json). The hub's stack-up stands; the lock-down's rings (bands 20-53
+deg, three stages, ring A through Dk) are superseded by the rings of record (docs/rings-design.md,
+docs/drawings/DCCREG-HUB-201.pdf, docs/figures/hub-rings-field.png).
+  (a) the hub's section to scale with the lock-down's rings (bands 20-53 deg, three multiplier stages), DC
+      equipotentials every 2 kV;
   (b) the field at the null against the bands' equatorial edge at that DC, with the gaps the insulation allows;
   (c) the field at the null against the supply, each at its widest allowed bands, for three interface ratings;
-  (d) the design of record and the alternatives.
+  (d) the lock-down's pick and the alternatives.
 Usage: python3 docs/make_hub_locked_figure.py
 """
 import json
@@ -114,7 +116,7 @@ def section(ax, rec):
     ax.annotate("flange (REF): outside the vessel,\noutboard of the AH; the shaft half\nwith side B's pumps", (20, 78),
                 (14, 96), arrowprops=arr, **lab)
     ax.annotate("side A: the same, mirrored", (20, -78), (18, -96), arrowprops=arr, **lab)
-    ax.set_title("(a) the locked hub to scale, with the rings of record;\nDC equipotentials every 2 kV",
+    ax.set_title("(a) the locked hub to scale, with the lock-down's rings (superseded);\nDC equipotentials every 2 kV",
                  fontsize=9.6, loc="left", color=INK)
 
 
@@ -124,7 +126,8 @@ def main():
     fig = plt.figure(figsize=(16.5, 10.6), facecolor="white")
     gs = fig.add_gridspec(2, 3, width_ratios=(0.95, 1, 1), height_ratios=(1, 1), hspace=0.36, wspace=0.27, left=0.04,
                           right=0.985, top=0.875, bottom=0.06)
-    fig.suptitle("The locked hub: two rings outside the glass make the field at the AH null, on three multiplier stages",
+    fig.suptitle("The locked hub, as the lock-down study sized its rings (2026-10-08; the rings superseded by the record, "
+                 "docs/rings-design.md)",
                  fontsize=11.8, x=0.01, ha="left", color=INK)
     fig.text(0.01, 0.92, "Designer's stack-up and choices (presets/hub-locked.json): 50 mm borosilicate sphere, 1.5 mm "
              "wall; the rings outside it; the AH cores on the z axis, their flanges outside the vessel; retainer, shaft "
@@ -132,7 +135,7 @@ def main():
              fontsize=8.3, color=INK2)
     section(fig.add_subplot(gs[:, 0]), rec)
 
-    # (b) the field at the null against the bands' equatorial edge, at the record's DC
+    # (b) the field at the null against the bands' equatorial edge, at the pick's DC
     axB = fig.add_subplot(gs[0, 1])
     vg = rec["V_gap_kV"]
     for col, tp in zip(RAMP3, HL.BAND_POLAR):
@@ -148,7 +151,7 @@ def main():
             axB.axvline(te_lim, color=INK2, lw=0.9, ls=ls)
             axB.text(te_lim - 0.4, 2.1, f"{e_t:g} kV/mm", rotation=90, fontsize=7.0, color=INK2, ha="right", va="bottom")
     axB.plot([rec["theta_e"]], [rec["E_dc_kV_cm"]], "o", ms=8, mfc="none", mec=INK, mew=1.4, zorder=6)
-    axB.annotate(f"the record: {rec['E_dc_kV_cm']:.1f} kV/cm", (rec["theta_e"], rec["E_dc_kV_cm"]), (6, -14),
+    axB.annotate(f"the lock-down's pick: {rec['E_dc_kV_cm']:.1f} kV/cm", (rec["theta_e"], rec["E_dc_kV_cm"]), (6, -14),
                  textcoords="offset points", fontsize=7.4, color=INK)
     axB.set_xlim(44, 81); axB.set_ylim(2, 11)
     style(axB, f"(b) the field at the null against the bands' equatorial edge, {vg:.1f} kV\nacross; lines: the edge each "
@@ -168,7 +171,7 @@ def main():
         if key == "1":                                             # the exact edge, not the grid's
             ys = [next(x for x in exact if x["supply"] == nm)["E_dc_kV_cm"] for nm in names]
         axC.plot(xv, ys, color=col, lw=2.0 if key == "1" else 1.4, marker="o", ms=5, mec=SURF,
-                 label=f"interface {key} kV/mm" + (" (the record's rating)" if key == "1" else " (grid of edges)"))
+                 label=f"interface {key} kV/mm" + (" (the rating used)" if key == "1" else " (grid of edges)"))
     axC.plot(xv, [next(x for x in exact if x["supply"] == nm)["E_settled_kV_cm"] for nm in names], color=MUTED, lw=1.3,
              ls=(0, (5, 2)), label="1 kV/mm, settled (the glass alone leaking)")
     for nm, x in zip(names, xv):
@@ -178,9 +181,10 @@ def main():
           "kV/cm", "DC across the rings (kV)")
     axC.legend(fontsize=7.0, frameon=False, loc="upper left")
 
-    # (d) the design of record and the alternatives
+    # (d) the lock-down's pick and the alternatives
     axT = fig.add_subplot(gs[1, 1:]); axT.axis("off")
-    axT.set_title("(d) the design of record and the alternatives", fontsize=9.6, loc="left", color=INK)
+    axT.set_title("(d) the lock-down's pick and the alternatives (the record now: 2 + 2 stages, ±15.0 kV, 7.10 kV/cm)",
+                  fontsize=9.6, loc="left", color=INK)
     b8 = [x for x in R["rings"] if x["ring_name"] == "band 8 mm" and x["theta_deg"] == 50.0 and x["coils"]][0]
     disc = R["discs_inside"]["supplies"]["dc1"]
 
@@ -189,7 +193,7 @@ def main():
     rows = []
     for nm in ("dc3", "dc2", "dc1", "dc0"):
         x = next(y for y in exact if y["supply"] == nm)
-        rows.append((f"{nm}: bands {x['theta_p']:.0f}–{x['theta_e']:.0f}°" + ("  (the record)" if nm == rec["supply"] else ""),
+        rows.append((f"{nm}: bands {x['theta_p']:.0f}–{x['theta_e']:.0f}°" + ("  (its pick)" if nm == rec["supply"] else ""),
                      f"{x['V_gap_kV']:.1f} kV", f"{x['gap_mm']:.1f} mm", f"{x['E_dc_kV_cm']:.1f}", f"{p_of(x['E_dc_kV_cm']):.2f}",
                      f"{x['E_settled_kV_cm']:.1f}", f"{x['z_start']:.3f}", f"{x['C_ring_ref_pF']:.1f} / {x['C_ring_ring_pF']:.1f}"))
     rows.append(("the swing: 8 mm bands at 50°", "±7.4 kV", "", f"±{b8['E_swing_kV_cm']:.1f}",

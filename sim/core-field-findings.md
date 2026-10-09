@@ -34,7 +34,8 @@
 4. **Proposal (designer):** two electrode rings on the vessel, one on each hemisphere, as those conductors (§4).
 5. **Brief (designer), after the rings:** the strongest electrostatic field (pressure) at the core's centre, on the AH
    null. The AH coils stay independent; the bicone may go; how is open; both pumps are the supplies.
-   - **Now the design of record:** two Rogowski electrodes in the vacuum on the null, on the pump's DC. Electrode A
+   - **Was the design of record** (superseded by decision 7 and then by the rings of record,
+     `docs/rings-design.md`): two Rogowski electrodes in the vacuum on the null, on the pump's DC. Electrode A
      takes node 1's peak and electrode B one multiplier stage on node 4: 20.6 kV across 3.14 mm, 65.7 kV/cm and 191 Pa
      at the null.
    - See `sim/core-null-field-findings.md`. §2–§4 below are the cones' and rings' studies that led there.
@@ -45,8 +46,10 @@
    - the rings outside the glass make the field;
    - the wall is 1.5 mm;
    - the AH flanges sit outside the vessel.
-   - **Now the design of record:** bands from 20° to 53° on the glass, on three multiplier stages (32.2 kV across):
-     7.8 kV/cm at the null (`sim/hub-locked-findings.md` §1).
+   - **Was the design of record:** bands from 20° to 53° on the glass, on three multiplier stages (32.2 kV across):
+     7.8 kV/cm at the null (`sim/hub-locked-findings.md` §1). Superseded by the rings of record
+     (`docs/rings-design.md`): bands 26.25–55.71° with beaded edges, the symmetric supply of 2 + 2 stages, ±14.96 kV,
+     7.10 kV/cm at the null (`sim/hub-rings-build-findings.md` §4).
 
 **The design.** The air build's capped stack (`sim/air_stack_sizing.py` stage 4c): 3 mm full-round vanes, 6 + 6 per
 varicap per side, 6 × 22° / 22°, 6 mm gaps, r 150. That gives C 55–410 pF, Ca = Cb 451 pF and V_op 13.1 kV, at 1200 rpm
@@ -184,7 +187,7 @@ with the floating cones and bare. The cost sheet interpolates it for each of the
   - the flanges, shaft and bearing, the cage and the first stator vanes as REF.
 - **The rings** sit on the vessel under the retainer, A on the upper hemisphere and B its mirror. Each is coupled
   through 1 nF to node 1 / 4.
-- **The solve:** axisymmetric field solves give the field at the centre and each ring's strays [OC]. The solver
+- **The solve:** axisymmetric field solves give the field at the centre and each ring's strays [IR]. The solver
   reproduces a sphere between planes to 0.6 %, and halving the grid moves the results 2–3 %.
 - **The pump:** the float wiring with those strays.
 

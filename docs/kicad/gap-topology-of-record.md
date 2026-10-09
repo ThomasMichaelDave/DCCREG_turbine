@@ -1,5 +1,10 @@
 # Gap topology of record — the real 8-gap commutator (from TMD's schematic)
 
+> **History: superseded since 2026-10-07.** This document belongs to the disc spark-gap machine. Its
+> commutation (spark gaps, islands, the resonant tank) is superseded by the diode core: the design of record is the
+> tube with the de Queiroz diode doubler (`sim/core_field.py`, `sim/diode-stack-findings.md`; the ledger,
+> `docs/ledger/DCCREG-design-ledger.md` §2). Kept for the record; do not read it as current.
+
 **Status: COMPLETE.** TMD's `DCCREG_Turbine_circuit.kicad_sch` (43 components) now carries **all eight
 commutation gaps**. The connectivity below is **read directly from the schematic geometry** (no labels;
 pure wire/junction geometry) by `sim/sch_to_netlist.py`, with a **pin-exact transform (86/86 pins land

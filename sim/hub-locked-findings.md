@@ -2,8 +2,10 @@
 
 > **Superseded in part by the build (2026-10-09, `sim/hub-rings-build-findings.md`).**
 > - **The record:** §1's three stages at 20–53° were sized without the copper edges. Their polar beads would run at
->   7.7 kV/mm in the gel, against 5. The rings as built hold **two stages on ring B, 28.2 kV across, bands 25.75–57.7°
->   with beaded edges: 6.9 kV/cm at the null**. More stages need the bench's higher ratings.
+>   7.7 kV/mm in the gel, against 5. The rings of record are the symmetric pair (`docs/rings-design.md`): **bands
+>   26.25–55.71° with beaded edges, each ring on its own two-stage chain from the shaft, ±14.96 kV (29.9 kV across):
+>   7.10 kV/cm at the null**. (The build's first record, two stages on ring B alone, 28.2 kV across, 6.9 kV/cm, is
+>   superseded too.) More stages need the bench's higher ratings.
 > - **The placeholders:** the retainer (now PEEK with a gel pocket, G10 outside), the leakage (now about 100 GΩ per
 >   ring) and the open items on the rings' material and the drift test are answered there.
 > - **Still the lock-down's:** the rest of this study stands (its tables use the placeholder ε 4.7, `EPS_RET_LOCKDOWN`).
@@ -131,7 +133,8 @@ Both readings of "the rings" were solved in the locked hub, at one stage (20.6 k
   - the retainer's and coupler's permittivity and extent;
   - the AH as one REF envelope (core, former and coil);
   - the borosilicate resistivity (it falls steeply with temperature).
-- **[OC]:** the finite volumes. At half the cell the field moves 1.0 % and the strays 1–3 % (8 mm band, 50°).
+- **[IR]:** the finite volumes (a modelling choice; `CONVENTIONS.md` §1). At half the cell the field moves 1.0 % and
+  the strays 1–3 % (8 mm band, 50°).
 - **Not modelled:**
   - the rings' leads through the retainer and coupler to the rotor's pump;
   - the field at the bands' edges inside the retainer (a rounded or graded edge is needed);

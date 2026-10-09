@@ -1,5 +1,10 @@
 # Rotary Commutator — Switching Design
 
+> **History: superseded since 2026-10-07.** This document belongs to the disc spark-gap machine. Its
+> commutation (spark gaps, islands, the resonant tank) is superseded by the diode core: the design of record is the
+> tube with the de Queiroz diode doubler (`sim/core_field.py`, `sim/diode-stack-findings.md`; the ledger,
+> `docs/ledger/DCCREG-design-ledger.md` §2). Kept for the record; do not read it as current.
+
 **Status:** [IR] Geometry frozen; transfer model open. Physical realisation of the
 solver's ideal diodes `D1–D4`; `solveDoubler4` is unchanged and remains the ideal-diode
 ceiling. Mainstream EE only — no DCCREG theory.

@@ -1,5 +1,10 @@
 # The strongest steady field at the AH null — findings
 
+> **Superseded as the design of record** (the designer, 2026-10-09: "the rings outside the glass make the field").
+> The pair inside the vacuum needed two HV feedthroughs. The record is now the rings outside the glass on the
+> symmetric supply: 7.10 kV/cm at the null (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`). This study
+> stands as the ceiling for electrodes inside the vacuum.
+
 **Source:**
 - the electrodes: `sim/core_null_field.py` → `sim/core_null_field_results.json` (axisymmetric boundary elements);
 - the supply: `sim/core_field.py`, the `dc` runs → `sim/core_field_results.json` (ngspice);
