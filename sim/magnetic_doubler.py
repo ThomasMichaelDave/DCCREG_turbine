@@ -49,6 +49,7 @@ R_CA, R_PAR = 1224.694 / 1113.358, 20.0 / 1113.358
 AH = {"a50": dict(L=98.5e-6, R=0.026, N=50), "r160": dict(L=1.01e-3, R=0.27, N=160), "r600": dict(L=14.2e-3, R=3.8, N=600)}
 # r160 / r600: rewinds of variant (a)'s former; L ~ N^2, R ~ N^2 in the same window [RH]
 AT_ROD_LIMIT = 1022 * 0.30 / 0.51         # A-turns that put the AH rod at 0.30 T (G-AH-SAT scaling from 0.51 T @ 1022)
+# (conservative: that run had the cone windings in series; for the AH alone 0.30 T is 743 A-turns, sim/ah_null.py)
 SEED = 0.01                               # A
 CSNUB, RSNUB = 10e-9, 1e3                 # RC at each dual node [IR]
 

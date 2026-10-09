@@ -51,8 +51,18 @@ back. Not drawn [IR]: the vanes' full rounds, the Ca / Cb mounts, the HV parts, 
 - **The shaft's diameter alone buys little:** d 40 just reaches 60 Hz.
 - **A bearing between the shaft and each bridge ring's outer end**, beside the end bearing, closes the overhang. f1
   rises sixfold and the gap barely moves, even at d 25.
+- **Three caveats on the eighth pair** (`sim/rotor-mechanics-findings.md` §4, an independent model that reproduces this
+  table on its inputs):
+  - **the seats set its f1.** A preloaded 6205 in a G10 spider is about 0.86e8 N/m, not the 2e8 taken here [RH]. Then
+    f1 is 131 Hz at d 25 (138 at d 30), 9–15 % above the pumps' 120 Hz. Stiffen the seats (metal cartridges in the
+    spiders) to keep it clear, and tap-test the build;
+  - **its place:** at the bridge ring's outer end + 18 mm, as modelled here, its spider would cut through the utrons'
+    end turns (z 23–51 mm on side A). The layout grows 10–20 mm a side for it;
+  - **the gap tilts** along the stack: its outer end moves 1.7 × its centre, so the 123 µm above is the centre's.
+- **The runout it allows:** 0.05 mm total per inner bearing with the eighth pair, against 0.027 mm as laid out
+  (`sim/rotor-mechanics-findings.md` §5).
 - **The decision is the designer's** (the ledger's open items): the eighth bearing pair with d 25 (one 6205 class
-  throughout), or six bearings with d 40.
+  throughout, the seats stiffened), or six bearings with d 40.
 - **The bridge rings could be lighter:** 25 mm of solid G10 against 6 × 0.65 kg of bridges.
 
 ## 1. Reluctance radius: the C-EMs move outward

@@ -97,6 +97,9 @@ the best per gap: z ≥ 1.3, most power per millimetre.
 - **Shaft.** A full-power stack of 0.8–0.9 m per side puts about 5–6 kg of rotor vanes on that span. A 25 mm
   shaft's first bending mode then lands near 40–60 Hz: above the 30 Hz criterion (3 × 600 rpm), but it needs a check
   with `sim/shaft_bearings.py`, a thicker shaft or a mid-stack bearing. The 354 mm option stays near 250 Hz.
+  > **Since checked (2026-10-09):** with the counter-rotor floating on the inner bearings, the record's build has its
+  > first mode at 27–29 Hz at d 25, below that criterion (`sim/tube-shaft-findings.md` §0,
+  > `sim/rotor-mechanics-findings.md` §4).
 - **The reluctance pump is unaffected.** It was sized in air.
 
 ## 5. What it means for the air phase
@@ -190,6 +193,8 @@ On 6 sectors the eigen-cycle power per metre of stack stays within 9.2–10.4 W/
 - **Mass [RH]:** the rotor carries 2.7× the vane mass over a 464 mm stack. Scaling §4's 250 Hz with that mass and the
   longer span (f ∝ √(1 / m L³)) puts the shaft's first bending mode near 100 Hz. That is still above the 30 Hz
   criterion, but it needs a check with `sim/shaft_bearings.py`. The counter-rotor carries 32 kg of aluminium.
+  > **Since checked (2026-10-09):** 27–29 Hz on the record's build (`sim/tube-shaft-findings.md` §0,
+  > `sim/rotor-mechanics-findings.md` §4).
 
 ### 6.5 Thinner rounds, and the 6 + 6 cap
 

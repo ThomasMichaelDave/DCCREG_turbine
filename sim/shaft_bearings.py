@@ -27,6 +27,7 @@ import stack_sizing as S                                 # noqa: E402
 E_STEEL, RHO_STEEL = 210e9, 7850.0
 RHO = {"Al vane": 2700.0, "G10": 1850.0, "WCu": 15000.0, "lam": 7650.0, "Cu": 8900.0, "glass": 2500.0}
 K_BEARING = 2e8                                          # N/m, radial, deep-groove / angular-contact class [RH]
+# (a preloaded 6205 in a G10 spider is about 0.86e8 N/m: sim/rotor-mechanics-findings.md §4)
 RPM_MAX = 3000.0
 UTRON_CORE_MM3, UTRON_COIL_MM3 = 71917.0, 2 * 3295.0     # sim/motor_geometry pieces
 

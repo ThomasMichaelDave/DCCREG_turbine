@@ -74,6 +74,9 @@ converged to 0.5 %.
 ## 3. Sizing the operating point (P3, final)
 
 **AH target:** 450 ampere-turns peak, against the rod limit of about 600, with the AH rewound to 160 turns [RH].
+> **Since checked (2026-10-09):** for the AH alone the rod reaches 0.30 T at 743 A-turns. The "about 600" scaled the
+> register's run, which had the cone windings in series (`sim/ah-null-findings.md` §4). The 0.30 T limit itself has no
+> recorded basis [RH].
 
 **Three optimisations found:**
 1. **Saturation level.** The level is set by a deliberately narrow **neck** in the utron back iron. Heat ∝ Ψ_s², so
@@ -193,11 +196,17 @@ by §7.*
 - **What 1200 rpm relative costs:**
   - **Centrifugal load on the rotor coils:** about 52 g instead of 13 g at r ≈ 130 mm. That is 0.4–0.5 kN per coil,
     so the coils need banding or a retaining ring.
+    > **Since checked (2026-10-09):** no banding is needed. The impregnated coil, the cheeks, the studs and the carrier
+    > disc carry 1.35 kN per utron at 750 rpm with factors of 19 or more, if the studs are preloaded and the joints
+    > bonded (`sim/rotor-mechanics-findings.md` §1). A band could not go over the utrons anyway: it would sit in the
+    > 0.5 mm gap.
   - **Electrostatic pump:** its power doubles (power ∝ frequency at fixed voltage): about 18 W with diodes only
     instead of 9 W. The bicone dumps rise to about 120–135 per second per side.
   - **Iron at 240 Hz** (12 / 1200): 1.0 W per side. The 0.35 mm laminations are still below the skin depth (about
     0.45 mm), but 0.2 mm is preferred.
   - **Air windage grows with speed cubed.** It is not modelled here.
+    > **Since estimated (2026-10-09):** about 12 W at 600 rpm each way (7.9–25 W), and 5 W of bearing friction, so the
+    > belt delivers about 39 W, not the pumps' 21.5 W alone (`sim/rotor-mechanics-findings.md` §5).
 
 **Recommendation:**
 - **At 0.5 mm, go to 1200 rpm relative.**
@@ -396,6 +405,9 @@ by §7.*
   linear SiFe without the neck.
 - **The 0.5 mm gap** needs runout of about 0.05 mm or better between two counter-rotating bodies on four inner
   bearings [RH]. The bearing arrangement for that is not designed.
+  > **Since budgeted (2026-10-09):** as laid out, each inner bearing's total runout must stay within 0.027 mm for the
+  > gap to stay within 10 % eccentric: P5 bearings under an axial spring preload. With a bearing added at each bridge
+  > ring's outer end, 0.05 mm holds (`sim/rotor-mechanics-findings.md` §5).
 - **Not in the solids:**
   - the 1 : −1 gear or belt;
   - La / Lb, the diodes, the snubbers, the start-kick source;

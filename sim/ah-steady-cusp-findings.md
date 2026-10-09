@@ -40,7 +40,8 @@ is below, so AHt is side A's coil (below) and AHb side B's (above); each branch 
   sized to.
   - A steady 450 needs more AH turns (240 instead of 160, with R and L × 2.25) or a larger pump. That is not re-sized
     here.
-  - The rod limit (≈ 600 A-turns) now meets a steady field instead of peaks.
+  - The rod limit (≈ 600 A-turns; 743 for the AH alone, `sim/ah-null-findings.md` §4) now meets a steady field instead
+    of peaks.
 
 ## The winding sense, and the bypass's polarity (2026-10-09)
 **Source:** `sim/ah_winding.py` → `sim/ah_winding_results.json` (the pick, as above, without and with 22 mF).

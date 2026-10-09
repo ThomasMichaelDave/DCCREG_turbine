@@ -9,6 +9,8 @@
   > **Naming (2026-10-09):** this study puts side A on top. The record (the tube build, the hub, the rings) puts side
   > A below and side B above. Either way each branch carries its own side's AH coil (`sim/ah_winding.py`).
 - Operating point: 300 rpm each way, so 600 rpm relative and 60 pump cycles per second (6 per rev).
+  > **The pivot's first operating point.** The record runs 600 rpm each way, 1200 rpm relative and 120 Hz, and its
+  > pumps take 21.5 W (`sim/pole-design-findings.md` §6, `docs/drive-gear-belt.md` §1).
 
 **Tools:**
 - `sim/magnetic_doubler.py` → `sim/magnetic_doubler_results.json`
@@ -76,7 +78,8 @@ elements one for one [OC]:
   - For true AC, couple the AH through a transformer, which removes the DC part.
   - **For a steady cusp**, put a bypass capacitor across each AH coil. At the pick, 22 mF per coil holds both coils at
     300 A-turns ±3 % with the pump unchanged (`sim/ah-steady-cusp-findings.md`).
-- **AH rod limit.** The MnZn rod's 0.30 T limit corresponds to about 600 ampere-turns.
+- **AH rod limit.** The MnZn rod's 0.30 T limit corresponds to about 600 ampere-turns (with the register's cone
+  windings in series; for the AH alone 743, `sim/ah-null-findings.md` §4).
   - The 160-turn rewind fits at the design point.
   - The 600-turn rewind saturates the rod.
 - **The power is set by the iron.** Growth stops where the cores saturate.
