@@ -19,7 +19,7 @@ The deck: sim/rotor_parts_duty._kw (the pick as sim/pole_design.size_op runs it)
 22 mF bypass inserted as sim/ah_steady_cusp.run does; the utron groups' law replaced (text substitution, the files are
 not edited) by the FE's: i = Psi / L(theta) + i_neck(Psi), the neck in series with the rest of the path [IR, checked
 against the FE map along the deck's own trajectory].
-Usage: python3 sim/neck_nonlinear.py   (NECK_PROCS worker processes, default 2; about 30 minutes with 2 on an idle machine)
+Usage: python3 sim/neck_nonlinear.py [D]   (D: case D only, on the written results; NECK_PROCS worker processes, default 2; about 30 minutes with 2 on an idle machine)
 """
 import json
 import math
@@ -587,6 +587,81 @@ def replace_law(txt, kw, info, law):
     return "\n".join(out) + "\n"
 
 
+def law_from_L3(fe_al, L3, thetas, name):
+    """the series-neck law on a given L(theta) per turn^2 (13-angle grid, ends included): its cosine series, the group's
+    L_max, the aligned sweep's neck excess over its PHI_REF secant on the utrons' share of the group flux [IR]."""
+    N = REC["best"]["N_u"]
+    kw = _kw()
+    NI, phi = np.array(fe_al["NI"]), np.array(fe_al["phi"])
+    L0 = l_ref(fe_al)
+    Fn = NI - phi / L0
+    L3 = np.asarray(L3)
+    prof, err = PD.fit_cos(np.asarray(thetas), L3, 60.0)
+    L_max = 3 * N ** 2 * L3[0]
+    lp = M.R_PAR * kw["L_max"]
+    lg0 = L_max * sum(prof)
+    r0 = lg0 / (lg0 + lp)
+    return dict(kind="fe", name=name, L_max=L_max, prof=list(prof), fit_err=float(err),
+                pwl_psi=list(np.r_[0.0, 3 * N * phi / r0]), pwl_i=list(np.r_[0.0, Fn / N]), L3d_theta=list(L3), r0=r0,
+                tau=L_max / (kw["L_max"] / kw["tau"]))
+
+
+D_SETS = ("frame_a", "cyl_one_reversed", "cyl_aiding")
+
+
+def case_D(out):
+    """case D: C's neck law with the 3-D utron sets of sim/utron_3d_results.json 'variants'. Their L(theta) enters as the
+    set's 3-D / 2-D ratio at each angle (L13 / L2d_record_13, pole_fd2d's 2-D solve) on this study's 0.1 mWb secant, in
+    place of C's end factors; i_neck unchanged (the neck sits within the stack) [IR]. Fed C's own factor the same path
+    must reproduce C (the gate). The bracket 'frame_a, series': the 3-D solid section in series with this study's neck
+    reluctance, 1/L = 1/L13 + (1/L_FE - 1/L_linear) [IR]."""
+    r3 = json.load(open(os.path.join(HERE, "utron_3d_results.json")))
+    fd = np.array(r3["L2d_record_13"])
+    lf = out["lowfield"]
+    L2, L3c, Llin = (np.array(lf[k]) for k in ("L2d_fe_H", "L3d_fe_H", "L2d_linear_H"))
+    q = out["fe_sweeps"]["base | 0.0"]
+    fe_al = dict(NI=q["NI"], phi=q["phi_Wb"])
+    ratios = {"2-D (C's end factors)": L3c / L2}
+    for k in D_SETS:
+        ratios[k] = np.array(r3["variants"][k]["L13"]) / fd
+    laws = {k: law_from_L3(fe_al, L2 * r, THETAS, "D, " + k) for k, r in ratios.items()}
+    laws["frame_a, series"] = law_from_L3(fe_al, 1 / (1 / np.array(r3["variants"]["frame_a"]["L13"]) + 1 / L2 - 1 / Llin),
+                                          THETAS, "D, frame_a, series")
+    jobs = [("D, " + k, law, c) for k, law in laws.items() for c in (0.0, 22.0)]
+    with Pool(PROCS) as pool:
+        runs = pool.map(run_deck, jobs, chunksize=1)
+    N, ps0 = REC["best"]["N_u"], REC["best"]["psi_s"]
+    res = {}
+    for (name, law, c), r in zip(jobs, runs):
+        key = name[3:]
+        if "error" in r:
+            res.setdefault(key, {})["bypass_22mF" if c else "no_bypass"] = dict(error=r["error"])
+            continue
+        phi_u = r["psi1_max_Wb"] * law["r0"] / (3 * N)
+        res.setdefault(key, {})["bypass_22mF" if c else "no_bypass"] = dict(
+            z_early=r["z_early"], P_belt_W=r["P_belt_W"], P_cu_utron_W=r["P_cu_utron_W"], P_AH_W=r["P_AH_W"],
+            P_cu_fixed_W=r["P_cu_fixed_W"], P_diode_W=r["P_diode_W"], AH_AT_top=r["top"], AH_AT_bottom=r["bottom"],
+            branch_AT_min=r["branch_AT_min"], branch_AT_max=r["branch_AT_max"], I1_pk_A=r["I1_pk"],
+            psi1_max_Wb=r["psi1_max_Wb"], psi1_max_over_psi_s_record=r["psi1_max_Wb"] / ps0, phi_utron_max_Wb=phi_u,
+            pull_N_per_utron=28.2 * (phi_u / 0.223e-3) ** 2)
+    sets = {k: dict(ratio_0=float(ratios[k][0]) if k in ratios else None,
+                    ratio_30=float(ratios[k][-1]) if k in ratios else None, L_al_coil_mH=N ** 2 * law["L3d_theta"][0] * 1e3,
+                    L_un_coil_mH=N ** 2 * law["L3d_theta"][-1] * 1e3,
+                    kappa=law["L3d_theta"][0] / law["L3d_theta"][-1], L_max_H=law["L_max"], fit_err=law["fit_err"])
+            for k, law in laws.items()}
+    lc, ld = out["laws"]["C"], laws["2-D (C's end factors)"]
+    gate_law = max(max(abs(a - b) / max(abs(b), 1e-30) for a, b in zip(ld[f], lc[f])) for f in ("prof", "pwl_psi", "pwl_i"))
+    gd = []
+    for key in ("no_bypass", "bypass_22mF"):
+        a, b = res["2-D (C's end factors)"][key], out["operating_point"][f"C | {key}"]
+        gd.append(max(abs(a[f] / b[f] - 1) for f in ("z_early", "P_belt_W", "P_cu_utron_W")) if "error" not in a else 1.0)
+        gd.append(abs(a["AH_AT_top"]["AT_mean"] / b["AH_AT_top"]["AT_mean"] - 1) if "error" not in a else 1.0)
+    return dict(combination="L_D(theta) = L_FE,0.1mWb(theta) x L13_set(theta) / L2d_record_13(theta) [IR]; i_neck as C",
+                source="sim/utron_3d_results.json variants (L13), L2d_record_13", sets=sets,
+                gate=dict(law_rel_diff=gate_law, deck_rel_diff=max(gd), passed=bool(gate_law < 1e-9 and max(gd) < 1e-9)),
+                runs=res, pull_basis="28.2 N per utron at 0.223 mWb (sim/rotor-mechanics-findings.md:183-184), x phi^2 [OC]")
+
+
 def law_current(law, kw, psi, t, which):
     """the group current of a law (numpy), for the analysis."""
     if law["kind"] == "record":
@@ -687,10 +762,8 @@ def make_law(fe_al, L2d_theta, thetas, use_fe_L=True, name="fe"):
     L2 = np.asarray(L2d_theta)
     L3 = L2 * (1 + end_k(L2, L2[0], L2[-1]))
     if use_fe_L:
-        prof, err = PD.fit_cos(th, L3, 60.0)
-        L_max = 3 * N ** 2 * L3[0]
-    else:
-        prof, err, L_max = list(row["prof"]), row["fit_err"], kw["L_max"]
+        return law_from_L3(fe_al, L3, thetas, name)
+    prof, err, L_max = list(row["prof"]), row["fit_err"], kw["L_max"]
     lp = M.R_PAR * kw["L_max"]
     lg0 = L_max * sum(prof)
     r0 = lg0 / (lg0 + lp)                                            # the utrons' share of the group flux, aligned
@@ -1002,6 +1075,8 @@ def post(fe, slab, t_start):
     print(f"wrote {OUT_JSON}", flush=True)
     figure(out, base, L2, L3)
     report(out)
+    out["case_D"] = case_D(out)
+    json.dump(out, open(OUT_JSON, "w"), indent=1, default=float)
     return out
 
 
@@ -1177,4 +1252,11 @@ def figure(out, base, L2, L3):
 
 
 if __name__ == "__main__":
-    main()
+    if sys.argv[1:] == ["D"]:                           # case D on the written results, without re-solving the field
+        res = json.load(open(OUT_JSON))
+        res["case_D"] = case_D(res)
+        json.dump(res, open(OUT_JSON, "w"), indent=1, default=float)
+        print(json.dumps({k: {kk: (vv.get("AH_AT_top"), vv.get("z_early"), vv.get("P_belt_W")) for kk, vv in v.items()}
+                          for k, v in res["case_D"]["runs"].items()}, default=float)[:3000])
+    else:
+        main()
