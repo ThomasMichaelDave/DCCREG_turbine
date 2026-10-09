@@ -74,6 +74,7 @@ H_2D_FINE = (0.5, 0.35)                  # finer 2-D scalar sections for the bra
 C_BYP = (0.0, 22.0)                      # mF across each AH coil (sim/ah_steady_cusp.py; 22 mF is PROPOSED)
 STRENGTH = ("evolution", {})
 NPROC = min(4, os.cpu_count() or 1)
+MD_AH_N = RP.M.AH["r160"]["N"]                           # 160 turns per AH coil (sim/magnetic_doubler.AH r160)
 OUT_DIR = os.environ.get("UTRON3D_OUT")                 # testing only: write the results and the figure elsewhere
 if os.environ.get("UTRON3D_QUICK"):                     # testing only: coarse meshes
     H_MESH, H_AUX, H_CYL, THETA_MID, FD_REFINE, H_2D_FINE = (4.0, 3.0, 2.0), 4.0, 3.0, (5.0,), ((1090, 0.05),), (1.5,)
@@ -827,12 +828,22 @@ def variant(name, L13, th13, rec, note):
 
 
 def finish(rec, out):
-    """nothing heavy: the summary numbers the findings quote."""
+    """the summary numbers the findings quote; the Psi_s that would put the AH back on the record's 450 A-turn peak
+    without the bypass, scaled linearly from the deck's peak at the record's Psi_s [IR: the clamp law is homogeneous
+    in Psi / Psi_s; the diodes' drop is not]."""
     v = out["variants"]
     r0 = v["record"]
-    out["summary"] = {k: dict(L_al_uH=x["L_al"] * 1e6, L_un_uH=x["L_un"] * 1e6, kappa=x["kappa"], L_max_H=x["L_max"],
-                              L_max_vs_record=x["L_max"] / r0["L_max"] - 1, kappa_vs_record=x["kappa"] / r0["kappa"] - 1,
-                              tau_s=x["tau"]) for k, x in v.items()}
+    N_u, N_ah = rec["best"]["N_u"], MD_AH_N
+    out["summary"] = {}
+    for k, x in v.items():
+        d = out["deck"][k]
+        at_pk = d["0mF"]["branch_AT_max"]
+        out["summary"][k] = dict(
+            L_al_uH=x["L_al"] * 1e6, L_un_uH=x["L_un"] * 1e6, L_al_coil_mH=x["L_al"] * N_u ** 2 * 1e3,
+            L_un_coil_mH=x["L_un"] * N_u ** 2 * 1e3, kappa=x["kappa"], L_max_H=x["L_max"],
+            L_max_vs_record=x["L_max"] / r0["L_max"] - 1, kappa_vs_record=x["kappa"] / r0["kappa"] - 1, tau_s=x["tau"],
+            z_lin=d["z_lin"], AT_pk_0mF=at_pk, psi_s_for_450_Wb=rec["best"]["psi_s"] * PD.AT_TARGET / at_pk,
+            psi_s_ratio_for_450=PD.AT_TARGET / at_pk, AH_turns=N_ah)
 
 
 def decks(rec, out):

@@ -830,3 +830,508 @@ def deck_cases(sets, rings_kw):
                                           c_e=s["c_e"], c_gap=s["c_gap"], clamp=False, n_cyc=12, v0=-10.0)),
                 (f"{nm}|rings", dict(base, **rings_kw, c_e=s["c_e"], c_gap=s["c_gap"]))]
     return out
+
+
+# ================================================================================================ the gates
+def gate_analytic(log=print):
+    """the solver against closed forms [OC]: a coaxial pair with a G10 layer (exact for the log-law radial edges);
+    concentric spheres (curved surfaces across the grid: the sub-cell distances against the plain staircase); a thin
+    strip midway between two planes (Cohn's stripline, fringing at sharp edges)."""
+    from scipy.special import ellipk
+    out = {}
+    # coaxial: shaft r 12.5, G10 to 20.5, air to 50, in a 10 deg wedge, 10 mm long
+    P = Problem(axis(5.0, 60.0, [12.5, 20.5, 50.0], [(5, 60, 0.7)]), np.radians([0.0, 10.0]), np.array([0.0, 5.0, 10.0]))
+    P.add_conductor(0, "in", lambda R, T, Z: R <= 12.5 + 1e-9, (0, 12.5, -1, 1, -1, 11))
+    P.add_conductor(1, "out", lambda R, T, Z: R >= 50 - 1e-9, (50, 60, -1, 1, -1, 11))
+    P.add_dielectric(4.7, ann_c(12.5, 20.5, -1, 11), (12.5, 20.5, -1, 1, -1, 11))
+    P.assemble(log=lambda s: None)
+    c = -P.maxwell([0], log=lambda s: None)[0][1, 0]
+    ex = 2 * math.pi * EPS0_MM / (math.log(20.5 / 12.5) / 4.7 + math.log(50 / 20.5)) * 10.0 * (10 / 360) * 1e12
+    out["coax"] = dict(C_pF=c, exact_pF=ex, rel_err=c / ex - 1)
+    rows = []
+    for h in (1.0, 0.5, 0.25):
+        a, b = 20.0, 40.0
+        res = {}
+        for sw in (True, False):
+            P = Problem(axis(1e-3, 45.0, [], [(0, 45, h)]), np.radians([0.0, 5.0]), axis(-45.0, 45.0, [], [(-45, 45, h)]))
+            P.add_conductor(0, "in", lambda R, T, Z: R * R + Z * Z <= a * a, (0, a, -1, 1, -a, a))
+            P.add_conductor(1, "out", lambda R, T, Z: R * R + Z * Z >= b * b, (0, 50, -1, 1, -50, 50))
+            if not sw:
+                P._fractions = lambda ax, ca, cb, **k: (np.nonzero((ca < 0) ^ (cb < 0)), np.ones(int(((ca < 0) ^ (cb < 0)).sum())))
+            P.assemble(log=lambda s: None)
+            res[sw] = -P.maxwell([0], log=lambda s: None)[0][1, 0]
+        ex = 4 * math.pi * EPS0_MM * a * b / (b - a) * (5 / 360) * 1e12
+        rows.append(dict(h_mm=h, sub_cell=res[True] / ex - 1, staircase=res[False] / ex - 1))
+    out["spheres"] = dict(a_mm=20.0, b_mm=40.0, rows=rows)
+    rows = []
+    R0, W, bs = 3000.0, 20.0, 12.0
+    for h in (0.5, 0.25, 0.125):
+        P = Problem(axis(R0 - 60, R0 + 60, [R0 - W / 2, R0 + W / 2], [(R0 - 60, R0 + 60, h)]), np.radians([0.0, 1.0]),
+                    axis(0.0, bs / 2, [], [(0, bs, h)]))
+        P.add_conductor(0, "strip", lambda R, T, Z: (np.abs(R - R0) <= W / 2 + 1e-9) & (Z <= 1e-9), (R0 - W, R0 + W, -1, 1, -1, 1))
+        P.add_conductor(1, "plane", lambda R, T, Z: Z >= bs / 2 - 1e-9, (0, 1e5, -1, 1, bs / 2 - 1, bs))
+        P.assemble(log=lambda s: None)
+        rows.append(dict(h_mm=h, C_pF=-P.maxwell([0], log=lambda s: None)[0][1, 0]))
+    k = 1 / math.cosh(math.pi * W / (2 * bs))
+    ex = 0.5 * 4 * EPS0_MM * ellipk(1 - k * k) / ellipk(k * k) * R0 * math.radians(1.0) * 1e12
+    for q in rows:
+        q["rel_err"] = q["C_pF"] / ex - 1
+    rich = 2 * rows[-1]["C_pF"] - rows[-2]["C_pF"]
+    out["stripline"] = dict(W_mm=W, b_mm=bs, exact_pF=ex, rows=rows, richardson_pF=rich, richardson_err=rich / ex - 1,
+                            note="Cohn: C' = 4 eps0 K(k')/K(k), k = sech(pi W / 2b), zero-thickness strip; first order at the "
+                                 "sharp edges, so Richardson with p = 1")
+    log(f"  coax {out['coax']['rel_err']:+.1e}; spheres sub-cell " + ", ".join(f"{q['sub_cell']:+.3%}" for q in out["spheres"]["rows"])
+        + " (staircase " + ", ".join(f"{q['staircase']:+.2%}" for q in out["spheres"]["rows"]) + "); stripline "
+        + ", ".join(f"{q['rel_err']:+.2%}" for q in rows) + f", extrapolated {out['stripline']['richardson_err']:+.3%}")
+    return out
+
+
+def gate_vane_record_like(log=print):
+    """the record's 2-D cell as it discretises the vane (sim/stack_sizing._cell / sim/vane_cell.grid at h 0.25: 11 node
+    rows at 0.24 mm, so 2.4 mm node to node, a full round of 1.2 mm, the gap 6.0 mm, the z period 16.8 mm), solved
+    here in 3-D with no rims: it must return the record's per-gap C_max / C_min (sim/air_stack_sizing_results.json)."""
+    I = inputs()
+    rec = I["rec"]
+    out = []
+    for h in (0.5, 0.25):
+        row = dict(h_mm=h)
+        for un in (False, True):
+            t, g, half = 2.4, rec["gap_mm"], 0.5 * rec["wr_deg"]
+            zr = t + g
+            z = axis(0.0, zr, [0.5 * t, zr - 0.5 * t], [(0, zr, h)])
+            edges = [half] + ([30.0 - half] if un else [])
+            th = axis(0, 30.0, [0, 30] + edges, [(e - 2.5, e + 2.5, 0.4 * h) for e in edges] + [(0, 30, 1.2 * h)], h_far=1.2 * h, grow=1.2)
+            P = Problem(axis(50.0, 150.0, [], [(50, 150, 5.0)]), np.radians(th), z, eps_bg=I["eps_air"])
+            st = Vane("stator", -0.5 * t, 0.5 * t, 30.0 if un else 0.0, half, 0.0, 1000.0)
+            rt = Vane("rotor", zr - 0.5 * t, zr + 0.5 * t, 0.0, half, 0.0, 1000.0, 0.0)
+            P.add_conductor(0, "rotor", rt.inside, (0, 1e4, -1, 2, zr - t, zr + t))
+            P.add_conductor(1, "stator", st.inside, (0, 1e4, -1, 2, -t, t))
+            P.assemble(log=lambda s: None)
+            row["unaligned" if un else "aligned"] = -12 * P.maxwell([0], log=lambda s: None)[0][1, 0]
+        row["aligned_vs_record"] = row["aligned"] / rec["per_gap_max_pF"] - 1
+        row["unaligned_vs_record"] = row["unaligned"] / rec["per_gap_min_pF"] - 1
+        out.append(row)
+    log("  the record's cell in 3-D: " + "; ".join(f"h {q['h_mm']}: {q['aligned']:.3f} ({q['aligned_vs_record']:+.2%}) / "
+                                                 f"{q['unaligned']:.3f} ({q['unaligned_vs_record']:+.2%}) pF per gap" for q in out))
+    return out
+
+
+# ================================================================================================ the orchestration
+def _hs(level):
+    return LEVELS[level]["hz"]
+
+
+def stray_sets(res):
+    """the stray sets for the deck, per side (F): the record; the record's caps with the solved strays; the pump as
+    built; its variants."""
+    rec = inputs()["rec"]
+    pF = 1e-12
+    R = res["record_deck"]
+    best = res["side_best"]
+    ac, rings = res["across"], res["rings_axi"]
+    m = lambda k: 0.5 * (best["aligned"][k] + best["unaligned"][k])
+    cx_pump = {"1 2": m("stray_12") * pF, "3 4": m("stray_12") * pF, "1 4": ac["C14_pF"] * pF, "2 3": ac["C23_pF"] * pF,
+               "1 3": ac["C13_pF"] * pF, "2 4": ac["C13_pF"] * pF}
+    cx_rings = {"1 ea": rings["C_node1_ringA_pF"] * pF, "4 eb": rings["C_node1_ringA_pF"] * pF,
+                "1 eb": rings["C_node1_ringB_pF"] * pF, "4 ea": rings["C_node1_ringB_pF"] * pF}
+    base = dict(cmin=rec["C_min_pF"] * pF, cmax=rec["C_max_pF"] * pF, ca=rec["Ca_pF"] * pF)
+    sets = {"record": dict(base, Cp={n: R["CPAR_pF"] * pF for n in "1234"}, Cx={}, Cx_rings={}, c_e=R["c_e_pF"] * pF,
+                           c_gap=R["c_gap_pF"] * pF)}
+    cp = {"1": m("stray1") * pF, "4": m("stray1") * pF, "2": m("stray2") * pF, "3": m("stray2") * pF}
+    sets["strays"] = dict(base, Cp=cp, Cx=dict(cx_pump), Cx_rings={}, c_e=R["c_e_pF"] * pF, c_gap=R["c_gap_pF"] * pF)
+    sets["strays + rings"] = dict(sets["strays"], Cx_rings=cx_rings, c_e=rings["C_ring_ref_pF"] * pF, c_gap=rings["C_ring_ring_pF"] * pF)
+
+    def built(b, label):
+        tot_a, tot_u = b["aligned"]["node1_ref"], b["unaligned"]["node1_ref"]
+        cp1 = 0.5 * (b["aligned"]["stray1"] + b["unaligned"]["stray1"])
+        ca = 0.5 * (b["aligned"]["ca"] + b["unaligned"]["ca"] + b["aligned"]["stray_12"] + b["unaligned"]["stray_12"])
+        cp2 = 0.5 * (b["aligned"]["stray2"] + b["unaligned"]["stray2"])
+        cxp = {k: v for k, v in cx_pump.items() if k not in ("1 2", "3 4")}
+        return dict(cmin=(tot_u - cp1) * pF, cmax=(tot_a - cp1) * pF, ca=ca * pF,
+                    Cp={"1": cp1 * pF, "4": cp1 * pF, "2": cp2 * pF, "3": cp2 * pF}, Cx=cxp, Cx_rings=cx_rings,
+                    c_e=rings["C_ring_ref_pF"] * pF, c_gap=rings["C_ring_ring_pF"] * pF, label=label)
+    sets["varicap as solved, 20 pF"] = dict(sets["record"], cmin=best["unaligned"]["varicap"] * pF, cmax=best["aligned"]["varicap"] * pF)
+    sets["as built"] = built(best, "the best estimate")
+    for nm, b in res.get("side_variants", {}).items():
+        sets[f"as built, {nm}"] = built(b, nm)
+    for lev, b in res.get("side_levels", {}).items():
+        sets[f"as built, level {lev}"] = built(b, f"level {lev}")
+    return sets
+
+
+def run_decks(sets, rings_kw, procs, log=print):
+    cases = []
+    for nm, s in sets.items():
+        base = dict(cmin=s["cmin"], cmax=s["cmax"], ca=s["ca"], strays=dict(Cp=s["Cp"], Cx=s["Cx"]))
+        rbase = dict(base, strays=dict(Cp=s["Cp"], Cx=dict(s["Cx"], **s["Cx_rings"])))
+        cases.append((f"{nm}|free", dict(base, opt="none", clamp=False, n_cyc=12)))
+        if not nm.startswith("as built, level"):
+            cases.append((f"{nm}|clamped", dict(base, opt="none")))
+            cases.append((f"{nm}|rings free", dict(rbase, **{k: v for k, v in rings_kw.items() if k not in ("n_cyc", "steps")},
+                                                    c_e=s["c_e"], c_gap=s["c_gap"], clamp=False, n_cyc=12, v0=-10.0)))
+            cases.append((f"{nm}|rings", dict(rbase, **rings_kw, c_e=s["c_e"], c_gap=s["c_gap"])))
+    out = {}
+    with Pool(procs) as pool:
+        for name, r in pool.imap_unordered(_run, cases[::-1]):
+            out[name] = r
+            log(f"  deck {name}: " + (f"z {r['z']:.4f}" if "z" in r else f"belt {r.get('P_belt_W', float('nan')):.3f} W"
+                                       + (f", A {r['V_ea_kV']['mean']:.2f} / B {r['V_eb_kV']['mean']:.2f} kV" if "V_ea_kV" in r else "")))
+    table = {}
+    for nm in sets:
+        t = dict(z=out.get(f"{nm}|free", {}).get("z"))
+        c = out.get(f"{nm}|clamped")
+        if c:
+            t.update(P_clamped_W=c.get("P_belt_W"), V1_kV=c.get("V", {}).get("1"), V2_kV=c.get("V", {}).get("2"),
+                     VR_pk_kV=c.get("VR_pk_kV"), link_mA_rms=(c.get("link") or {}).get("I_rms_mA"))
+        rf, rr = out.get(f"{nm}|rings free"), out.get(f"{nm}|rings")
+        if rf:
+            t["z_rings_start"] = rf.get("z")
+        if rr:
+            t.update(rings_P_belt_W=rr.get("P_belt_W"), V_A_kV=(rr.get("V_ea_kV") or {}).get("mean"),
+                     V_B_kV=(rr.get("V_eb_kV") or {}).get("mean"), rings_done=rr.get("done"))
+        table[nm] = t
+    return table
+
+
+def analyse(res, levels, log=print):
+    """the solves into the record's terms: the periodic cell, the side model per level (and extrapolated), the
+    variants, the couplings across the hub, the rings."""
+    S = res["solves"]
+    I = inputs()
+    rec = I["rec"]
+    key = lambda kind, **kw: kind + ":" + ",".join(f"{k}={v}" for k, v in sorted(kw.items()))
+    # ---- the periodic cell
+    cell = dict(record=dict(per_gap_max_pF=rec["per_gap_max_pF"], per_gap_min_pF=rec["per_gap_min_pF"],
+                            C_edge_pF=rec["C_min_pF"] - rec["n_gap"] * rec["per_gap_min_pF"], n_gap=rec["n_gap"]))
+    for rims in (False, True):
+        rows = []
+        for h in CELL_H:
+            row = dict(h_mm=h)
+            for un in (False, True):
+                s = S.get(key("cell", h=h, unaligned=un, rims=rims))
+                if not s:
+                    continue
+                C, nm = matrix(s)
+                tag = "unaligned" if un else "aligned"
+                row[tag] = -12 * C[nm.index("SA"), nm.index("N1v")]
+                if rims:
+                    row[f"{tag}_rotor_vane_shaft_pF"] = -24 * C[nm.index("SHAFT"), nm.index("N1v")]
+                    row[f"{tag}_rotor_vane_wall_pF"] = -24 * C[nm.index("W"), nm.index("N1v")]
+            rows.append(row)
+        cell["with_rims" if rims else "no_rims"] = rows
+    clr = []
+    for c in (0.0, 3.0, 6.0, 12.0):
+        row = dict(clear_mm=c)
+        for un in (False, True):
+            s = S.get(key("cell", h=0.5, unaligned=un, rims=True)) if c == 0 else S.get(key("cell", h=0.5, unaligned=un, rims=True, clear=c))
+            if s:
+                C, nm = matrix(s)
+                row["unaligned" if un else "aligned"] = -12 * C[nm.index("SA"), nm.index("N1v")]
+        if "aligned" in row and "unaligned" in row:
+            row["kappa_gap"] = row["aligned"] / row["unaligned"]
+        clr.append(row)
+    cell["clearance"] = clr
+    res["cell"] = cell
+    # ---- the side model per level
+    lv = {}
+    for lev in levels:
+        caps = {}
+        for un in (False, True):
+            s = S.get(key("side", level=lev, unaligned=un))
+            if s:
+                caps["unaligned" if un else "aligned"] = side_caps(s)
+        if len(caps) == 2:
+            lv[lev] = caps
+    res["side_levels"] = lv
+    hs = [_hs(l) for l in sorted(lv)]
+    best, ext = {"aligned": {}, "unaligned": {}}, {"aligned": {}, "unaligned": {}}
+    for ang in ("aligned", "unaligned"):
+        for k in ("varicap", "ca", "stray_12", "node1_ref", "node2_ref", "stray1", "stray2", "internal_N1v_N1c"):
+            xs = [lv[l][ang][k] for l in sorted(lv)]
+            v, p = richardson(xs, hs)
+            best[ang][k] = v
+            ext[ang][k] = dict(levels=xs, h_mm=hs, value=v, order=p,
+                               last_step=(xs[-1] / xs[-2] - 1) if len(xs) > 1 and xs[-2] else None)
+        for grp in ("items1", "items2"):
+            best[ang][grp] = {k: richardson([lv[l][ang][grp][k] for l in sorted(lv)], hs)[0] for k in lv[max(lv)][ang][grp]}
+    res["side_best"], res["side_extrapolation"] = best, ext
+    # ---- variants, at level 1 (or the finest below it)
+    lvv = max([l for l in lv if l <= 1] or [max(lv)])
+    var = {}
+    s_a, s_u = S.get(key("side", level=lvv, unaligned=False)), S.get(key("side", level=lvv, unaligned=True))
+    if s_a and "UT" in s_a["driven"] and "W" in s_a["driven"]:
+        var["the room floating"] = {"aligned": side_caps(s_a, floating=("BRa", "BRb", "W"), ref=tuple(x for x in REF_PARTS if x != "W")),
+                                    "unaligned": side_caps(s_u, floating=("BRa", "BRb", "W"), ref=tuple(x for x in REF_PARTS if x != "W"))}
+        var["the utrons floating"] = {"aligned": side_caps(s_a, floating=("BRa", "BRb", "UT"), ref=tuple(x for x in REF_PARTS if x != "UT")),
+                                      "unaligned": side_caps(s_u, floating=("BRa", "BRb", "UT"), ref=tuple(x for x in REF_PARTS if x != "UT"))}
+        var["the bridges at REF"] = {"aligned": side_caps(s_a, floating=(), ref=REF_PARTS + ("BRa", "BRb")),
+                                     "unaligned": side_caps(s_u, floating=(), ref=REF_PARTS + ("BRa", "BRb"))}
+    sp_a, sp_u = S.get(key("side", level=lvv, unaligned=False, spacers=True)), S.get(key("side", level=lvv, unaligned=True, spacers=True))
+    if sp_a and sp_u:
+        var["node-1 spacers on the sleeve [RH]"] = {"aligned": side_caps(sp_a), "unaligned": side_caps(sp_u)}
+    res["side_variants"] = var
+    res["side_variants_level"] = lvv
+    # ---- across the hub: the odd mode against the even (level lvv)
+    ac = dict(level=lvv)
+    for un in (False, True):
+        se, so = S.get(key("side", level=lvv, unaligned=un)), S.get(key("side", level=lvv, unaligned=un, mid="zero"))
+        if not (se and so):
+            continue
+        Ce, ne = matrix(se)
+        Co, no = matrix(so)
+        grp = lambda C, nm, A, B: sum(C[nm.index(a), nm.index(b)] for a in A for b in B)
+        n1, n2 = ("N1v", "N1c"), ("N2",)
+        tag = "unaligned" if un else "aligned"
+        ac[tag] = dict(C14_pF=3.0 * (grp(Co, no, n1, n1) - grp(Ce, ne, n1, n1)),
+                       C23_pF=3.0 * (grp(Co, no, n2, n2) - grp(Ce, ne, n2, n2)),
+                       C13_pF=3.0 * (grp(Co, no, n2, n1) - grp(Ce, ne, n2, n1)))
+    for k in ("C14_pF", "C23_pF", "C13_pF"):
+        ac[k] = float(np.mean([ac[t][k] for t in ("aligned", "unaligned") if t in ac])) if any(t in ac for t in ("aligned", "unaligned")) else 0.0
+    res["across"] = ac
+    # ---- the axisymmetric whole machine: the rings, and the bound
+    sa = S.get(key("axi", h=0.5, h_hub=0.25))
+    if sa:
+        C, nm = matrix(sa)
+        g = lambda a, b: -360.0 * C[nm.index(a), nm.index(b)]
+        refs = ("STA", "REF", "W")
+        res["rings_axi"] = dict(C_ring_ref_pF=sum(g("RA", b) for b in refs), C_ring_ring_pF=g("RA", "RB"),
+                                C_node1_ringA_pF=g("N1", "RA"), C_node1_ringB_pF=g("N1", "RB"), C_node2_ringA_pF=g("N2", "RA"),
+                                C14_axi_pF=g("N1", "N4"), C13_axi_pF=g("N1", "N3"), C23_axi_pF=g("N2", "N3"),
+                                node1_ref_axi_pF=sum(g("N1", b) for b in refs), node2_ref_axi_pF=sum(g("N2", b) for b in refs),
+                                record_hub_solve=dict(C_ring_ref_pF=_rings_record()["C_ring_ref_pF"],
+                                                      C_ring_ring_pF=_rings_record()["C_ring_ring_pF"],
+                                                      source=SRC["rings"] + " record"))
+    return res
+
+
+def _rings_record():
+    return json.load(open(os.path.join(ROOT, SRC["rings"])))["record"]
+
+
+def record_deck():
+    """the record's deck inputs: the node strays (sim/core_field.py CPAR), the rings' strays as record_supply ran them
+    (the deck's defaults c_e / c_gap; sim/hub_rings_build.py passes neither), the record_supply case."""
+    import inspect
+    dflt = {k: v.default for k, v in inspect.signature(_DECK).parameters.items()}
+    rb = json.load(open(os.path.join(ROOT, SRC["rings"])))
+    rs = rb["record_supply"]
+    rings_kw = {k: rs[k] for k in ("opt", "n_cw", "n_cw_a", "c_core", "c_cw", "r_leak", "a_ref", "n_cyc", "steps")}
+    core = {r["name"]: r for r in json.load(open(os.path.join(ROOT, SRC["core"])))["rows"]}
+    return dict(CPAR_pF=CF.CPAR * 1e12, c_e_pF=dflt["c_e"] * 1e12, c_gap_pF=dflt["c_gap"] * 1e12, rings_kw=rings_kw,
+                z_free=core["free none"]["z"], P_clamped_W=core["none"]["P_belt_W"],
+                z_rings=rb["record_supply_free"]["z"], rings_P_belt_W=rs["P_belt_W"],
+                V_A_kV=rs["V_ea_kV"]["mean"], V_B_kV=rs["V_eb_kV"]["mean"])
+
+
+def sensitivity(procs, log=print):
+    """the deck's own price of a pF (the record's caps): z against Cp on nodes 1 / 4 and on nodes 2 / 3."""
+    pF = 1e-12
+    cases = []
+    for c1, c2 in ((20, 20), (30, 20), (20, 30), (60, 20)):
+        cases.append((f"sens|{c1}|{c2}", dict(opt="none", clamp=False, n_cyc=12,
+                                             strays=dict(Cp={"1": c1 * pF, "4": c1 * pF, "2": c2 * pF, "3": c2 * pF}, Cx={}))))
+    with Pool(procs) as pool:
+        r = dict(pool.map(_run, cases))
+    z = lambda a, b: r[f"sens|{a}|{b}"]["z"]
+    return dict(dz_per_pF_nodes14=(z(30, 20) - z(20, 20)) / 10.0, dz_per_pF_nodes23=(z(20, 30) - z(20, 20)) / 10.0,
+                z_at=dict(cp20_20=z(20, 20), cp30_20=z(30, 20), cp20_30=z(20, 30), cp60_20=z(60, 20)),
+                note="each pair of nodes raised together (1 and 4, or 2 and 3), the record's C1 / C2 / Ca / Cb")
+
+
+# ================================================================================================ the figure
+INK, INK2, MUTED, GRID, BASE, SURF = "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7", "#fcfcfb"
+SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948"]   # fixed order
+
+
+def figure(res, path=FIGURE, log=print):
+    """the model's section, the strays per node against the record's 20 pF, the varicap, and the pump."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.colors import ListedColormap
+    plt.rcParams.update({"font.size": 8.5, "axes.edgecolor": BASE, "axes.labelcolor": INK2, "xtick.color": MUTED,
+                         "ytick.color": MUTED, "axes.titlesize": 9.5, "axes.titleweight": "bold", "axes.titlecolor": INK,
+                         "font.family": "sans-serif"})
+    fig = plt.figure(figsize=(16.5, 10.2), facecolor=SURF)
+    gs = fig.add_gridspec(2, 3, width_ratios=[1.05, 1.0, 1.0], wspace=0.28, hspace=0.32, left=0.045, right=0.985, top=0.93, bottom=0.07)
+    # (a) the section
+    ax = fig.add_subplot(gs[:, 0])
+    P = build_side(level=0, unaligned=False, log=lambda s: None)
+    j = 0
+    col = {"N1v": SERIES[0], "N1c": SERIES[0], "N2": SERIES[1], "SA": "#7d7b74", "SHAFT": "#4d4c48", "BRG": "#4d4c48",
+           "UT": "#a8a69e", "BRa": "#d2d0c8", "BRb": "#d2d0c8", "RA": SERIES[2], "W": SURF, "MID": SURF}
+    cmap = ListedColormap([col[n] for n in SIDE])
+    Cc = P.cid[:, j, :].astype(float)
+    Cc[Cc < 0] = np.nan
+    E = P.eps[:, j, :]
+    ax.pcolormesh(P.r, P.z, np.where(E.T > 1.5, E.T, np.nan), cmap=ListedColormap(["#efe8d0"]), shading="flat", rasterized=True)
+    ax.pcolormesh(P.r, P.z, Cc.T, cmap=cmap, vmin=-0.5, vmax=len(SIDE) - 0.5, shading="nearest", rasterized=True)
+    ax.set_xlim(0, 200); ax.set_ylim(Z_LO, 470); ax.set_aspect("equal")
+    ax.set_xlabel("r (mm)"); ax.set_ylabel("z (mm), side A; the hub's equator at 470")
+    ax.set_title("(a) The model: side A at 0°, aligned (60° mirror wedge)", loc="left")
+    for txt, xy in (("stator vanes (REF)", (152, 362)), ("rotor vanes (node 1)", (60, 352)), ("Ca node-1 plates", (152, 256)),
+                    ("Ca node-2 plates", (152, 216)), ("G10 sleeve on the shaft", (24, 300)), ("hub-face bearing + spider", (30, 392)),
+                    ("Ca|reluctance bearing", (30, 210)), ("utron (REF)", (75, 185)), ("bridge (floating)", (133, 160)),
+                    ("G10 cage", (168, 330)), ("flange, AH, ring A", (36, 440))):
+        ax.annotate(txt, xy, fontsize=7.5, color=INK)
+    ax.text(0.0, -0.075, "dielectrics (G10, PEEK, gel, glass) tinted; the REF wall at r 400 mm and the reluctance "
+            "section's mid-plane (z 100) close the box", transform=ax.transAxes, fontsize=7, color=INK2)
+    best = res["side_best"]
+    # (b) the strays per node, by the part they reach (the colours follow the part)
+    ax = fig.add_subplot(gs[0, 1])
+    cats = [("SHAFT", "the shaft, flange and AH (through the sleeve)"), ("SA", "the stator vanes"), ("UT", "the utrons"),
+            ("BRG", "the bearings"), ("W", "the room (REF wall, r 400)")]
+    rows = []
+    for node, grp, srcs in (("node 1 / 4", "items1", ("N1v", "N1c")), ("node 2 / 3", "items2", ("N2",))):
+        it = {k: 0.5 * (best["aligned"][grp].get(k, 0) + best["unaligned"][grp].get(k, 0)) for k in best["aligned"][grp]}
+        rows.append((node, [sum(it.get(f"{s_}-{c}", 0.0) for s_ in srcs) for c, _ in cats]))
+    y = [1.0, 0.0]
+    for (node, vals), yy in zip(rows, y):
+        x0 = 0.0
+        for k, v in enumerate(vals):
+            ax.barh(yy, v, left=x0, height=0.42, color=SERIES[k], edgecolor=SURF, linewidth=2,
+                    label=cats[k][1] if yy == 1.0 else None)
+            if v > 3.0:
+                ax.text(x0 + 0.5 * v, yy + 0.27, f"{v:.1f}", ha="center", va="bottom", fontsize=7.5, color=INK)
+            x0 += v
+        ax.text(x0 + 1, yy, f"{x0:.1f} pF", va="center", fontsize=9, color=INK, fontweight="bold")
+    ax.axvline(res["record_deck"]["CPAR_pF"], color=INK2, lw=1)
+    ax.text(res["record_deck"]["CPAR_pF"] + 0.6, 1.5, "the record: 20 pF per node [RH]", fontsize=7.5, color=INK2)
+    ax.set_yticks(y); ax.set_yticklabels([r[0] for r in rows]); ax.set_ylim(-0.6, 1.75)
+    ax.set_xlim(0, 1.25 * max(sum(r[1]) for r in rows))
+    ax.set_xlabel("stray to REF per node, pF (mean of the two angles; the varicap's own and Ca's own taken out)")
+    ax.set_title("(b) The strays per node, by the part they reach", loc="left")
+    ax.grid(axis="x", color=GRID, lw=0.8); ax.set_axisbelow(True)
+    ax.legend(fontsize=7, loc="lower right", frameon=False, title="node 1: the stator vanes are the Ca node-1 plates' (through "
+              "the last rotor vane's openings)", title_fontsize=6.5)
+    # (c) the varicap
+    ax = fig.add_subplot(gs[0, 2])
+    cl = res["cell"]
+    n = cl["record"]["n_gap"]
+    nr, wr = cl["no_rims"][-1], cl["with_rims"][-1]
+    models = [("the record (2-D cell + 2 pF)", res["inputs"]["C_max_pF"], res["inputs"]["C_min_pF"]),
+              ("3-D cell, no rims, × 11", n * nr["aligned"], n * nr["unaligned"]),
+              ("3-D cell with rims, × 11", n * wr["aligned"], n * wr["unaligned"]),
+              ("the stack as built (ends in)", best["aligned"]["varicap"], best["unaligned"]["varicap"]),
+              ("node 1 to REF, all of it", best["aligned"]["node1_ref"], best["unaligned"]["node1_ref"])]
+    xx = np.arange(len(models))
+    ax.bar(xx - 0.17, [m[1] for m in models], width=0.3, color=SERIES[0], label="aligned (C_max)", edgecolor=SURF, linewidth=1)
+    ax.bar(xx + 0.17, [m[2] for m in models], width=0.3, color=SERIES[1], label="unaligned (C_min)", edgecolor=SURF, linewidth=1)
+    for k, m in enumerate(models):
+        ax.text(k, max(m[1], m[2]) + 12, f"κ {m[1] / m[2]:.2f}", ha="center", fontsize=8, color=INK)
+        ax.text(k + 0.17, m[2] + 4, f"{m[2]:.0f}", ha="center", fontsize=7, color=INK2)
+        ax.text(k - 0.17, m[1] + 4, f"{m[1]:.0f}", ha="center", fontsize=7, color=INK2)
+    ax.set_xticks(xx); ax.set_xticklabels([m[0] for m in models], rotation=14, ha="right", fontsize=7.5)
+    ax.set_ylabel("C1 per side, pF"); ax.set_ylim(0, 640)
+    ax.set_title("(c) The varicap C1: the rims' fringe the 2-D cell leaves out", loc="left")
+    ax.legend(fontsize=7.5, frameon=False, loc="upper left")
+    ax.grid(axis="y", color=GRID, lw=0.8); ax.set_axisbelow(True)
+    # (d) the gain, (e) the power
+    D = res["decks"]["table"]
+    show = [k for k in ("record", "strays", "strays + rings", "varicap as solved, 20 pF", "as built") if k in D]
+    names = {"record": "the record\n(20 pF)", "strays": "record caps,\nsolved strays", "strays + rings": "+ the rings'\nsolved strays",
+             "varicap as solved, 20 pF": "varicap solved,\n20 pF", "as built": "as built\n(all solved)"}
+    ax = fig.add_subplot(gs[1, 1])
+    xx = np.arange(len(show))
+    zb = [D[k]["z"] for k in show]
+    zr = [D[k].get("z_rings_start") for k in show]
+    ax.bar(xx - 0.17, zb, width=0.3, color=SERIES[0], label="z, bare (12 free cycles)", edgecolor=SURF, linewidth=1)
+    ax.bar(xx + 0.17, [v or 0 for v in zr], width=0.3, color=SERIES[2], label="z at start-up, with the rings' chains", edgecolor=SURF, linewidth=1)
+    for k in range(len(show)):
+        ax.text(k - 0.17, zb[k] + 0.006, f"{zb[k]:.3f}", ha="center", fontsize=7, color=INK)
+        if zr[k]:
+            ax.text(k + 0.17, zr[k] + 0.006, f"{zr[k]:.3f}", ha="center", fontsize=7, color=INK)
+    ax.axhline(1.0, color=INK2, lw=1)
+    ax.text(len(show) - 0.5, 1.004, "z = 1: no self-excitation below", ha="right", fontsize=7.5, color=INK2)
+    ax.set_ylim(0.9, 1.36); ax.set_xticks(xx); ax.set_xticklabels([names[k] for k in show], fontsize=7.5)
+    ax.set_ylabel("gain per pump cycle, z")
+    ax.set_title("(d) The start-up gain (sim/core_field.py's deck)", loc="left")
+    ax.legend(fontsize=7.5, frameon=False, loc="upper right")
+    ax.grid(axis="y", color=GRID, lw=0.8); ax.set_axisbelow(True)
+    ax = fig.add_subplot(gs[1, 2])
+    pw = [D[k].get("P_clamped_W") or 0 for k in show]
+    ax.bar(xx, pw, width=0.4, color=SERIES[0], edgecolor=SURF, linewidth=1)
+    for k in range(len(show)):
+        ax.text(k, pw[k] + 0.03, f"{pw[k]:.2f} W", ha="center", fontsize=7.5, color=INK)
+        va, vb = D[show[k]].get("V_A_kV"), D[show[k]].get("V_B_kV")
+        if va is not None:
+            ax.text(k, 0.06, f"rings\n{va:.1f} / {vb:+.1f} kV", ha="center", fontsize=6.8, color=SURF if pw[k] > 0.5 else INK)
+    ax.set_xticks(xx); ax.set_xticklabels([names[k] for k in show], fontsize=7.5)
+    ax.set_ylabel("clamped power from the belt, W (clamps at 13.13 kV)")
+    ax.set_title("(e) The clamped power and the rings' supply", loc="left")
+    ax.grid(axis="y", color=GRID, lw=0.8); ax.set_axisbelow(True)
+    fig.suptitle("The tube's strays by a field solve: the record's electrostatic stack (6 + 6 vanes, 6 mm gaps, Ca / Cb 6 plates) "
+                 "in 3-D — sim/tube_strays.py", x=0.045, ha="left", fontsize=11.5, fontweight="bold", color=INK)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    fig.savefig(path, dpi=130, facecolor=SURF)
+    plt.close(fig)
+    log(f"  figure: {os.path.relpath(path, ROOT)}")
+
+
+# ================================================================================================ main
+def _cost(j):
+    if j["kind"] == "side":
+        return {0: 1.3, 1: 3.2, 2: 7.0}[j["kw"]["level"]] * (1.3 if j["kw"].get("unaligned") else 1.0) * len(j["drive"]) / 8.0
+    if j["kind"] == "cell":
+        return 0.02 if j["kw"]["h"] >= 0.5 else 0.3
+    return 0.5
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--resume", action="store_true", help="reuse the solves already in the results file")
+    ap.add_argument("--procs", type=int, default=3)
+    ap.add_argument("--levels", type=int, nargs="*", default=[0, 1, 2])
+    ap.add_argument("--solves-only", action="store_true")
+    a = ap.parse_args()
+    t0 = time.time()
+    sig = signature()
+    old = json.load(open(RESULTS)) if a.resume and os.path.exists(RESULTS) else {}
+    cache = old.get("solves", {}) if old.get("signature") == sig else {}
+    I = inputs()
+    rec = I["rec"]
+    res = dict(note="the tube's strays by a field solve (sim/tube_strays.py; findings sim/tube-strays-findings.md). "
+                    "Capacitances in pF per side unless stated; the deck's sets in F.",
+               tags="CONVENTIONS.md section 1: [OC] derivable physics; [IR] a modelling choice; [RH] a heuristic",
+               sources=SRC, signature=sig, levels=LEVELS, cell_h_mm=list(CELL_H), wedge_deg=WEDGE, r_box_mm=R_BOX, z_lo_mm=Z_LO,
+               inputs=dict(C_max_pF=rec["C_max_pF"], C_min_pF=rec["C_min_pF"], Ca_pF=rec["Ca_pF"], kappa=rec["kappa"],
+                           per_gap_max_pF=rec["per_gap_max_pF"], per_gap_min_pF=rec["per_gap_min_pF"], n_gap=rec["n_gap"],
+                           t_vane_mm=rec["t_vaneMm"], gap_mm=rec["gap_mm"], ws_deg=rec["ws_deg"], wr_deg=rec["wr_deg"],
+                           eps_air=I["eps_air"], eps_g10=I["hub"]["shaft_coupler"]["value"]["eps_r"],
+                           Ca_parallel_plate_pF=5 * EPS0_MM * I["eps_air"] * math.pi * (150 ** 2 - 50 ** 2) / rec["gap_mm"] * 1e12),
+               solves=cache)
+    print("the solver's gates", flush=True)
+    res["gates"] = dict(analytic=gate_analytic(), vane_record_like=gate_vane_record_like())
+    todo = [j for j in jobs(a.levels) if j["key"] not in cache]
+    small = sorted([j for j in todo if not (j["kind"] == "side" and j["kw"]["level"] >= 2)], key=_cost, reverse=True)
+    big = sorted([j for j in todo if j not in small], key=_cost, reverse=True)
+    print(f"{len(todo)} solves to run ({len(cache)} cached)", flush=True)
+    for group, procs in ((small, a.procs), (big, max(1, min(a.procs, 2)))):
+        if not group:
+            continue
+        with Pool(procs, maxtasksperchild=1) as pool:
+            for s in pool.imap_unordered(_solve, group):
+                cache[s["key"]] = s
+                json.dump(res, open(RESULTS, "w"), indent=1, default=float)
+                print(f"solved {s['key']} in {s['run_s']:.0f} s", flush=True)
+    if a.solves_only:
+        return
+    analyse(res, sorted(set(a.levels)))
+    res["record_deck"] = record_deck()
+    sets = stray_sets(res)
+    res["decks"] = dict(sets={k: {kk: vv for kk, vv in v.items()} for k, v in sets.items()})
+    print("the decks", flush=True)
+    res["decks"]["table"] = run_decks(sets, res["record_deck"]["rings_kw"], a.procs)
+    res["decks"]["sensitivity"] = sensitivity(a.procs)
+    R, T = res["record_deck"], res["decks"]["table"]["record"]
+    res["gates"]["deck_record"] = dict(z=[T["z"], R["z_free"]], P_clamped_W=[T.get("P_clamped_W"), R["P_clamped_W"]],
+                                       z_rings=[T.get("z_rings_start"), R["z_rings"]], rings_P_belt_W=[T.get("rings_P_belt_W"), R["rings_P_belt_W"]],
+                                       V_A_kV=[T.get("V_A_kV"), R["V_A_kV"]], V_B_kV=[T.get("V_B_kV"), R["V_B_kV"]])
+    figure(res)
+    res["run_s"] = time.time() - t0
+    json.dump(res, open(RESULTS, "w"), indent=1, default=float)
+    print(f"done in {res['run_s']:.0f} s", flush=True)
+
+
+if __name__ == "__main__":
+    main()

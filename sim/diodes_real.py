@@ -607,7 +607,7 @@ def es_deck(model, kw_over, steps=ES_STEPS):
     if spec.get("exact"):                                            # the gate: the deck as the record runs it
         out = ["v(1)", "v(4)", "v(ea)", "v(eb)"] + [f"v(e_{k})" for k in pk] + (["i(Vz1)", "i(Vz4)"] if clamp else [])
         return set_output(txt, out), kw, pk, []
-    if spec.get("split"):
+    if spec.get("split", spec["real"]):                              # every real-diode deck is split (§ the docstring)
         txt = split_varicaps(txt)
     ic = ic_of(txt)
     icv = lambda node: 0.0 if node == "0" else ic.get(node.lower(), 0.0)
