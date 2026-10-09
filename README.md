@@ -29,6 +29,10 @@ fields come from charge pumps driven by the relative rotation of the machine's t
   doubler, clamped at 13.1 kV. Two mirrored Cockcroft-Walton chains lift two copper rings on the sphere to ±15.0 kV.
 - **The hub:** a 50 mm borosilicate vacuum sphere in a PEEK retainer with a silicone-gel interface, the AH's MnZn
   cores on the axis. At its centre: the AH's null and 7.62 kV/cm from ring B to ring A, steady (8.2 once settled).
+- **The model checks** (2026-10-09; the ledger's §6 items 31–34) found both pumps weaker than recorded: the AH holds
+  about 250–270 A-turns in the best estimate, not 300, and the electrostatic pump as built (its vanes' rims and the
+  tube's strays solved, real HV diodes) does not self-excite and holds about 6.8 kV/cm. The record's values stay as
+  its basis, with the corrected ones beside them, until the designer decides (the ledger's §5.2).
 - **The physics is mainstream throughout** [OC]. The ratings, the leakage and several parts are placeholders that
   the bench test qualifies.
 
