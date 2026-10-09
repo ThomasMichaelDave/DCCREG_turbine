@@ -50,10 +50,12 @@ def main():
     for q in stages:
         print(f"mirror chains, {q['n_cw']} + {q['n_cw']} stages: A {q['V_A_kV']:.2f}, B {q['V_B_kV']:.2f} kV, "
               f"z {q['z_start']:.3f}, diodes <= {max(q['VR_pk_kV'].values()):.1f} kV", flush=True)
-    designs, best, tables, t5 = B.phase5(stages, a.procs, rec_lock)
+    designs, best_fam, tables, t5 = B.phase5(stages, a.procs, rec_lock)
+    best = best_fam.get("mirror", {})
     rows = []
-    for key in build["best_edges"]:
-        asym, sym = build["best_edges"][key], best.get(key)
+    stacked = build.get("best_by_family", {}).get("stacked", build["best_edges"])   # the asymmetric family's best
+    for key in stacked:
+        asym, sym = stacked[key], best.get(key)
         rows.append(dict(ratings=key, asym=dict(asym, **parts(asym)), sym=dict(sym, **parts(sym)) if sym else None))
         s_ = (f"mirror {sym['n_cw']} + {sym['n_cw']}: {sym['V_A_kV']:.1f} / +{sym['V_B_kV']:.1f} kV, bands "
               f"{sym['theta_p']:.2f}-{sym['theta_e']:.2f}, beads {sym['rho_pol_mm']:.1f} / {sym['rho_eq_mm']:.1f} mm: "
