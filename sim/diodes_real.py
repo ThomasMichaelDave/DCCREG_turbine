@@ -722,10 +722,11 @@ def es_job(job):
     if job["case"] == "free":                                       # the gain per cycle, as sim/core_field.py run
         k = np.arange(3, n)
         out["z"] = float(math.exp(np.polyfit(k, np.log(np.array(pk1[3:n])), 1)[0]))
-        m_ = max(5, n // 4)                                         # the last quarter: the growth once the mode has
-        kl = np.arange(n - m_, n)                                   # settled [IR]
+        m_ = max(5, n // 4)                                         # the last quarter (a large seed's run reaches the
+        kl = np.arange(n - m_, n)                                   # sticks' avalanche: then it reads 1)
         out["z_late"] = float(math.exp(np.polyfit(kl, np.log(np.array(pk1[n - m_:n])), 1)[0]))
-        out["grows"] = bool(out["z_late"] > 1.0)
+        out["grows"] = bool(pk1[-1] > pk1[min(5, n - 1)])           # net growth once the seed's transient has passed
+        #                                                             [IR: cycle 5 on]
         out["run_s"] = time.time() - t_start
         return out
     vka = np.array(vk)
@@ -788,15 +789,18 @@ def es_job(job):
 
 def es_threshold(model):
     """the smallest seed |v0| (nodes 1 and 4) from which the pump grows: free runs of N_THR cycles, 'grows' when the
-    fit over the last quarter exceeds 1 (the first cycles carry the seed's own transient) [IR]; bisection in log |v0|
-    between 1 V and 1 kV to 10 %."""
+    node-1 peak of the last cycle exceeds that of cycle 5 (the first cycles carry the seed's own transient; a large
+    seed's run ends at the sticks' avalanche, where a late fit reads 1) [IR]; bisection in log |v0| between 1 V and
+    1 kV to 10 %."""
     trials = []
 
     def grows(v):
         r = cached("es", dict(model=model, case="free", v0=-v, n_cyc=N_THR, steps=ES_STEPS), es_job)
-        trials.append(dict(v0_V=-v, z=r.get("z"), z_late=r.get("z_late"), grows=r.get("grows"), done=r.get("done"),
-                           reltol=r.get("reltol"), V1_peak_per_cycle_kV=r.get("V1_peak_per_cycle_kV")))
-        return bool(r.get("grows"))
+        pk = r.get("V1_peak_per_cycle_kV") or [0.0] * 6
+        g = bool(r.get("done")) and pk[-1] > pk[5]
+        trials.append(dict(v0_V=-v, z=r.get("z"), z_late=r.get("z_late"), grows=g, done=r.get("done"),
+                           reltol=r.get("reltol"), V1_peak_per_cycle_kV=pk))
+        return g
     lo, hi = 1.0, 1000.0
     if grows(lo):
         return dict(model=model, v_grows_V=lo, v_fails_V=None, n_cyc=N_THR, trials=trials)
@@ -993,6 +997,9 @@ def summarise(res, old=None):
         for job, r in res:
             if job[0] == "es":
                 j = job[1]
+                pk = r.get("V1_peak_per_cycle_kV")
+                if j["case"] == "free" and r.get("done") and pk:              # one criterion for every free run
+                    r["grows"] = bool(pk[-1] > pk[min(5, len(pk) - 1)])
                 name = j["case"] + ("" if j["case"] == "clamped" else f" {abs(j.get('v0', ES_FREE['v0'])):g} V")
                 if j.get("tag") == "steps":
                     name = "clamped steps x2"
@@ -1101,8 +1108,8 @@ BASE = "#8a8f99"                                             # the record's ND: 
 
 def _z_points(es, m):
     """(node-1 amplitude, the gain over the next cycle) from every run of a model: the free runs and the threshold
-    trials once their seed's transient has passed (cycle 5 on), the clamped run up to the clamp [OC: ratios of the
-    runs' own peaks]."""
+    trials once their seed's transient has passed (cycle 5 on), the clamped run from cycle 2; none where the clamp or
+    the sticks' avalanche holds the amplitude [OC: ratios of the runs' own peaks]."""
     pts = []
     runs = list(es["runs"].get(m, {}).items())
     for q in es["thresholds"].get(m, {}).get("trials", []):
@@ -1112,11 +1119,9 @@ def _z_points(es, m):
         if not pk:
             continue
         pk = np.array(pk) * 1e3
-        if name.startswith("clamped"):
-            top = 0.97 * pk.max()
-            pts += [(pk[k], pk[k + 1] / pk[k]) for k in range(2, len(pk) - 1) if pk[k + 1] < top]
-        else:
-            pts += [(pk[k], pk[k + 1] / pk[k]) for k in range(5, len(pk) - 1)]
+        top = 0.97 * pk.max() if pk.max() > 5e3 else np.inf          # not where the clamp or the sticks' avalanche
+        k0 = 2 if name.startswith("clamped") else 5                 # holds the amplitude
+        pts += [(pk[k], pk[k + 1] / pk[k]) for k in range(k0, len(pk) - 1) if pk[k + 1] < top and pk[k] > 0]
     return sorted(pts)
 
 

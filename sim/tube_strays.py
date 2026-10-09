@@ -33,9 +33,10 @@ The pump: sim/core_field.py's deck built by its own function (deck, run), with t
 copy only (and couplings added): the start-up gain z, the clamped power, the rings' symmetric supply as
 sim/hub_rings_build.py runs record_supply.
 Tags: [OC] derivable physics; [IR] a modelling choice; [RH] a heuristic (CONVENTIONS.md section 1). g is a gap, never d.
-Usage: python3 sim/tube_strays.py [--resume] [--procs 2] [--levels 0 1 2]
+Usage: python3 sim/tube_strays.py [--resume] [--procs 3] [--levels 0 1 2]
        (several hours on 4 cores: the level-2 solves are 6-7 M nodes each; --resume reuses the solves already in the
-       results file)
+       results file; --merge FILE reuses another run's; --only KEY runs only those solves; --solves-only stops after
+       them)
 """
 import os
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")      # one BLAS thread per process: the solves run side by side
@@ -712,21 +713,31 @@ def jobs(levels):
     return out
 
 
+def physics_hash():
+    """the solver's, the geometry's and the builders' code (from the finite-volume core to the solves)."""
+    src = open(__file__, "rb").read()
+    a, b = src.index(b"# " + b"=" * 88 + b" the finite-volume core"), src.index(b"# " + b"=" * 96 + b" the solves")
+    return hashlib.sha1(src[a:b]).hexdigest()
+
+
 def signature():
-    """the inputs the solves depend on (a change invalidates the cache)."""
+    """the inputs the solves depend on, and the physics code (a change of either invalidates the cache)."""
     I = inputs()
     blob = json.dumps(dict(rec={k: I["rec"][k] for k in ("gap_mm", "t_vaneMm", "ws_deg", "wr_deg", "n_plates")},
                            el=I["lay"]["elements"], hub={k: I["hub"][k] for k in ("vessel", "vessel_wall", "rings", "AH",
                                                                                    "retainer", "interface_filler", "shaft_coupler")},
-                           levels=LEVELS, cell=CELL_H, box=R_BOX, zlo=Z_LO, wedge=WEDGE,
-                           code=hashlib.sha1(open(__file__, "rb").read().split(b"# ==== the analysis")[0]).hexdigest()),
+                           levels=LEVELS, cell=CELL_H, box=R_BOX, zlo=Z_LO, wedge=WEDGE, code=physics_hash()),
                       sort_keys=True, default=float)
     return hashlib.sha1(blob.encode()).hexdigest()[:16]
 
 
 # ==== the analysis ===============================================================================================
 def matrix(s):
-    return np.array([[np.nan if x is None else x for x in row] for row in s["C"]]), list(s["names"])
+    """a solve's Maxwell matrix (pF, as modelled), the entries of undriven columns filled from their symmetric rows
+    (C is symmetric [OC]); the entries between two undriven conductors stay NaN."""
+    C = np.array([[np.nan if x is None else x for x in row] for row in s["C"]])
+    C = np.where(np.isnan(C), C.T, C)
+    return C, list(s["names"])
 
 
 def side_caps(s, floating=("BRa", "BRb"), ref=REF_PARTS, scale=6.0):
@@ -1184,12 +1195,19 @@ def main():
     ap.add_argument("--resume", action="store_true", help="reuse the solves already in the results file")
     ap.add_argument("--procs", type=int, default=3)
     ap.add_argument("--levels", type=int, nargs="*", default=[0, 1, 2])
-    ap.add_argument("--solves-only", action="store_true")
+    ap.add_argument("--solves-only", action="store_true", help="run the solves and stop")
+    ap.add_argument("--results", default=RESULTS, help="the results file (default sim/tube_strays_results.json)")
+    ap.add_argument("--merge", nargs="*", default=[], help="other results files whose solves to reuse (same signature)")
+    ap.add_argument("--only", nargs="*", default=None, help="run only these solves (their keys)")
     a = ap.parse_args()
     t0 = time.time()
     sig = signature()
-    old = json.load(open(RESULTS)) if a.resume and os.path.exists(RESULTS) else {}
+    old = json.load(open(a.results)) if a.resume and os.path.exists(a.results) else {}
     cache = old.get("solves", {}) if old.get("signature") == sig else {}
+    for f_ in a.merge:
+        o_ = json.load(open(f_)) if os.path.exists(f_) else {}
+        if o_.get("signature") == sig:
+            cache.update({k: v for k, v in o_.get("solves", {}).items() if k not in cache})
     I = inputs()
     rec = I["rec"]
     res = dict(note="the tube's strays by a field solve (sim/tube_strays.py; findings sim/tube-strays-findings.md). "
@@ -1204,7 +1222,7 @@ def main():
                solves=cache)
     print("the solver's gates", flush=True)
     res["gates"] = dict(analytic=gate_analytic(), vane_record_like=gate_vane_record_like())
-    todo = [j for j in jobs(a.levels) if j["key"] not in cache]
+    todo = [j for j in jobs(a.levels) if j["key"] not in cache and (a.only is None or j["key"] in a.only)]
     small = sorted([j for j in todo if not (j["kind"] == "side" and j["kw"]["level"] >= 2)], key=_cost, reverse=True)
     big = sorted([j for j in todo if j not in small], key=_cost, reverse=True)
     print(f"{len(todo)} solves to run ({len(cache)} cached)", flush=True)
@@ -1214,7 +1232,7 @@ def main():
         with Pool(procs, maxtasksperchild=1) as pool:
             for s in pool.imap_unordered(_solve, group):
                 cache[s["key"]] = s
-                json.dump(res, open(RESULTS, "w"), indent=1, default=float)
+                json.dump(res, open(a.results, "w"), indent=1, default=float)
                 print(f"solved {s['key']} in {s['run_s']:.0f} s", flush=True)
     if a.solves_only:
         return
@@ -1231,7 +1249,7 @@ def main():
                                        V_A_kV=[T.get("V_A_kV"), R["V_A_kV"]], V_B_kV=[T.get("V_B_kV"), R["V_B_kV"]])
     figure(res)
     res["run_s"] = time.time() - t0
-    json.dump(res, open(RESULTS, "w"), indent=1, default=float)
+    json.dump(res, open(a.results, "w"), indent=1, default=float)
     print(f"done in {res['run_s']:.0f} s", flush=True)
 
 
