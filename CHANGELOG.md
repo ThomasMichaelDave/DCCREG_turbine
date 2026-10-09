@@ -2,6 +2,43 @@
 
 Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds the authoritative history; this file is the human-readable audit trail. The discipline is inherited from the DCCREG programme conventions; the physics is mainstream (no DCCREG theory).
 
+## Timeline (dated from the git history)
+
+The entries below sit in one undated `[Unreleased]` block. The phases' dates and their first or key commits, from
+`git log` (all 2026):
+
+| dates | phase | first / key commits |
+|:--|:--|:--|
+| 06-06 → 06-13 | the browser tool, `index.html`: Blocks C-I, M, R, D, T, S | `30e92e9` (first), `969889a` (Block S) |
+| 06-15 → 06-29 | the disc spark-gap machine: the freeze v0.10, the gap topology of record, the efficiency resolution | `d51d138` (freeze v0.10, 06-16), `c052628` (gap topology, 06-22), `5c8680a` (η 0.70 → ≈ 0.50, 06-23) |
+| 09-29 → 10-02 | the drawn pump re-checked: Pass A, PUMP-CALC, PUMP-SYNTH, GEOM stage 2, the circuit integrity tool, the radial bar band | `677122b`, `7ca54f0`, `b1a1f9e`, `460072e`, `b33baa2` (the frozen-file base) |
+| 10-03 → 10-05 | the round trip and the design loop | `6d779e1` (round trip), `a76ddbf` (design loop, steps 0–1), `bcd8b0b` (interleaved stacks), `bcf0a85` (the final N = 2 build), `ad79499` (the motor kills the pump) |
+| 10-05 | netlists v2–v4: the C-EMs in the netlist of record | `c7e400e` (v2), `776031a` (v3), `9dfc852`, `570b939` (v4) |
+| 10-05 → 10-07 | the tube: the pump-stack tool, the shaft and bearings, diodes against spark gaps, the diode core | `f297d6a`, `20d0169`, `3f08895`, `7b3cc4c`, `68d4759` |
+| 10-07 | the pivot: two geared pumps; the magnetic dual doubler and its pole design | `96ef5d5`, `7f0827c`, `53622d2` |
+| 10-08 | the air build, the steady cusp, the vane matrix, the cost sheet, the field at the core, the hub locked | `0f4431d`, `d684b81`, `013e99b` |
+| 10-09 | the rings outside the glass, their build, the bench test, the symmetric supply, one revolution; the design lock | `d7c175d`, `314d834`, `5b884a2`, `09243c7` (the design state locked), `6981d30` (the ledger) |
+| 10-09 → | settling the lock's open points and inconsistencies | `f14c3f2` (the designer's decisions) onward |
+
+**Two phases have no entry below**; they are summarised here from their commits and records.
+- **The design loop** (10-03 → 10-05; `sim/rt-design-predictions.md`, `sim/rt_*.py`). Every step and round was
+  predicted before it ran.
+  - **Steps 0–1:** the stray budget and the strays' ownership by physical part.
+  - **Rounds 2–7:** candidates A–E. M1 (counter trim) was refuted and dropped: same-node foils shield each other. M5
+    (PTFE carriers) was kept as a component of round 2.
+  - **The interleaved C1 / C2 stacks** (`sim/rt_interleave.py`): the final N = 2 build reaches z 1.240, converged at
+    12 angles (about 1.244 with the mesh correction; `sim/rt_meshcheck.py`).
+  - **The motor kills the pump** in every branch variant (a series LC across Ca), and garolite carriers give z 1.152,
+    below the target.
+  - **The designer's rulings:** the machine floats; septum ≤ 1000 mm; N = 2; garolite, not PTFE.
+- **Netlists v2–v4** (10-05; `docs/netlist-v2/`, `sim/netlist_v4_pump.py`, `sim/netlist_v4_pump_results.json`).
+  - **v2:** the edge list from the KiCad export, with the spark gaps filled in from the schematic plot. It flags the
+    coils in parallel with SG1 / SG2, and the tank's form.
+  - **v3:** C-EMs in parallel with SG1 / SG2 kill the pump (z 0.554). The series form pumps (z 1.35 at a 2 pF node
+    stray), so the node strays must stay low.
+  - **v4:** C-EMs in series with per-coil gaps SG1-k / SG2-k, and a parallel tank. As drawn it pumps (z 1.33 at 1 pF
+    per node). The node stray budget is about 3.3 pF per coil-gap node, and six of them add up.
+
 ## [Unreleased]
 
 ### Design lock (2026-10-09)
