@@ -214,7 +214,7 @@ def main():
               f"r {g['beads'][1]['r_c']:.2f} / z ±{g['beads'][1]['z_c']:.2f}"),
              ("bead: Cu wire, ring centre-line", f"Ø{2 * g['rp']:g} wire, Ø{g['beads'][0]['d_ring']:.2f}",
               f"Ø{2 * g['rq']:g} wire, Ø{g['beads'][1]['d_ring']:.2f}"),
-             ("wire per ring (cut, close, solder)", f"{g['beads'][0]['wire']:.1f}", f"{g['beads'][1]['wire']:.1f}"),
+             ("length per ring, the centre line (note 3)", f"{g['beads'][0]['wire']:.1f}", f"{g['beads'][1]['wire']:.1f}"),
              ("groove in the PEEK (depth)", f"{g['beads'][0]['groove']:.1f}", f"{g['beads'][1]['groove']:.1f}"),
              ("peak field in the gel (record)", f"{rec['E_pol']['gel']:.2f} kV/mm", f"{rec['E_eq']['gel']:.2f} kV/mm")]
     cw = (66.0, 46.0, 46.0)
@@ -236,13 +236,13 @@ def main():
         "NOTES",
         "1. Material: foil Cu-ETP (CW004A), annealed, 0.10 thick; bead rings Cu-ETP wire. Glass: the vessel as supplied",
         "   (borosilicate, OD 50, wall 1.5), clean and degreased.",
-        f"2. Cut {GORES} gores per band (D); burnish onto the glass from the polar edge, each overlapping its neighbour by",
-        f"   {OVERLAP:g}; solder the overlaps flat. No adhesive film under the foil: the gel bonds and fills it.",
-        "3. Close each bead ring by a butt solder joint, filed round; solder it along the foil's edge, centred on the edge",
-        "   angle (A), touching the glass. Smooth every joint: no point or burr above the bead's radius.",
+        f"2. Cut {GORES} gores per band (D), deburr every edge; burnish them into a gel film (no adhesive) from the polar edge,",
+        f"   each overlapping its neighbour by {OVERLAP:g}; fillet each lap's free edge with solder, >= 0.2 wide. No void under a lap.",
+        "3. Polar rings (Ø3) seamless: turned, or brazed and turned round. Equatorial (Ø2): butt joint dressed round within",
+        "   0.03 over 1. Solder each along its foil's edge at the edge angle (A), touching the glass; no solder ball, no burr.",
         "4. The leads: PTFE-insulated HV wire soldered to the equatorial bead, out through the PEEK and the G10 coupler.",
         "5. The PEEK retainer: unfilled, annealed stock; the pocket 0.5 over the glass and the grooves (B, C) machined to",
-        "   size; degassed silicone gel vacuum-cast into the pocket and the grooves, void-free.",
+        "   size; degassed silicone gel vacuum-cast into the pocket and the grooves, void-free, above all at the contacts.",
         "6. Ring A is ring B mirrored in the equator. Test before potting: continuity; after: hold-off per",
         "   docs/bench-test-rings.md phase 1 (c).",
     ]

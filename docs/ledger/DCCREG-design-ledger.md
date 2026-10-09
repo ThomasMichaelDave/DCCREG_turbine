@@ -416,7 +416,10 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
     (4.5 kV/mm), about a fifth of PEEK's short-term strength. The AH seat stays 5.7 mm;
   - **the equatorial beads set a condition:** their gel holds 5 kV/mm only while the glass conducts at most 4.1 times
     the gel (4.4 with the full-round grooves). With the glass at 40 °C (5.4×) they reach 6.15 kV/mm;
-  - the bead–glass contact wedge stays finite, and the voltage across it at most half of air's Paschen breakdown.
+  - the bead–glass contact wedge stays finite, and with the gel in place the voltage across it is at most half of
+    air's Paschen breakdown. A void in the gel's place is not safe once settled: a sealed void reaching 0.5 mm from an
+    equatorial contact is at 0.99 of it in service, 1.46 at 1 mm (`sim/hub-joints-findings.md` §4). The gel fills
+    those wedges void-free.
 - **The hub's temperature** (`sim/hub-thermal-findings.md`): the AH coils dissipate 1.22 W each. In a 25 °C room, with
   the air between the vane stacks 5 K above it [RH], the coils run at 43 °C and the glass at 32–37 °C, 32.5 °C
   between the rings.
@@ -438,9 +441,17 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
   - Each band is 12.85 mm along the glass and 13.1 cm², and the equatorial gap is 29.9 mm along the glass.
   - Each band is cut as 12 gores, 5.79 → 10.81 mm wide, overlapped 1 mm and soldered, and burnished on. There is no
     adhesive film: the gel bonds it.
+  - **The laps** (first cut, PROPOSED; `sim/hub-joints-findings.md` §2): each upper gore's free edge is a 0.1 mm step.
+    As cut it lifts the gel's 1.20 kV/mm at switch-on to 3.5–4.4 kV/mm; under a solder fillet 0.2 mm wide, to 1.9.
+    So the edges are deburred, each lap's free edge filleted and each lap burnished into the gel film, with no void
+    under it.
 - **The edges are beaded.** A bare foil edge concentrates the field, so each edge carries a soldered copper wire ring:
-  - Ø3 mm at the polar edge, 73.6 mm of wire;
-  - Ø2 mm at the equatorial edge, 135.0 mm of wire;
+  - Ø3 mm at the polar edge, 73.6 mm along its centre line;
+  - Ø2 mm at the equatorial edge, 135.0 mm;
+  - **the closing joints** (first cut, PROPOSED; §3 there): a joint left proud raises the bead's field by about
+    1 + 3.7 δ / w. The equatorial rings take one dressed to the round within 0.03 mm over 1 mm. The polar rings, 0.3–0.4 %
+    under their rating, take none: they are best seamless (turned), or the AH ends rounded to 1.5 mm, which gives them
+    2.3–2.4 %;
   - each bedded in a groove of the PEEK, 3.5 / 2.5 mm deep (proposed: full-round tops with 1.0 mm of gel, 4 / 3 mm
     deep).
 - **Why these angles.**
@@ -643,7 +654,7 @@ and tooling.
 
 | item | value |
 |:--|:--|
-| bands | 26.25–55.71°; 12.85 mm along the glass, 13.1 cm² each; gap 29.92 mm; Cu-ETP 0.10 mm, 12 gores per band |
+| bands | 26.25–55.71°; 12.85 mm along the glass, 13.1 cm² each; gap 29.92 mm; Cu-ETP 0.10 mm, 12 gores per band, the laps' free edges filleted (PROPOSED) |
 | beads | Ø3 mm polar (contact r 11.06, z ±22.42 mm), Ø2 mm equatorial (contact r 20.65, z ±14.08 mm) |
 | ratings used | 1 kV/mm along the glass; 5 kV/mm in the gel at a bead [RH]; 2 / 8 to qualify |
 | supply | 2 + 2 CW stages from the shaft; ring A −14.96 kV, ring B +14.96 kV; 8 diodes at 7.5 kV; 8 × 100 pF / 30 kV |
@@ -684,6 +695,7 @@ and tooling.
 | the bands and beads | DESIGN | from the [RH] ratings; as drawn the polar bead sits 0.4 % under its rating |
 | the PEEK retainer, the gel, the G10 coupler | DECIDED (materials, 10-09) | |
 | the grooves' full-round tops, the AH ends rounded, the coupler as a tube, the leads' path | PROPOSED | `docs/rings-design.md` §2 |
+| the joints' finish: filleted laps, seamless polar rings, dressed equatorial joints, void-free contacts | PROPOSED | `sim/hub-joints-findings.md` §5 |
 | the retainer split at the equatorial plane | PROPOSED | |
 | the shaft's diameter and the bearings | OPEN | the designer's choice (§5.2) |
 | the ratings, the leakage, the conductivities | OPEN / ESTIMATE | the bench qualifies them |
@@ -696,8 +708,10 @@ and tooling.
   a side; stiff seats to keep it clear of 120 Hz);
 - **the drive's first cut** (§3.1, `docs/drive-gear-belt.md`): accept it, or set the gear and belt otherwise;
 - **the bypass and the split**, both PROPOSED;
-- **the hub's first cuts** (§3.5): the grooves' full-round tops, the AH ends rounded to 1.5 mm, the coupler as a tube
-  with the flanges turned to Ø60, the leads' path;
+- **the hub's first cuts** (§3.5): the grooves' full-round tops, the AH ends rounded to 1.5 mm (which also gives the
+  polar beads 2.3–2.4 % of margin), the coupler as a tube with the flanges turned to Ø60, the leads' path;
+- **the rings' joints** (§3.6, `sim/hub-joints-findings.md` §5): the laps' free edges filleted, the polar rings seamless
+  (turned) or their joints dressed with the AH ends rounded, the equatorial joints dressed, the contacts void-free;
 - **the AH's steady field:** 300 A-turns (294 as wound) against the 449 the AH was sized to; a steady 450 needs
   240 turns or a larger pump;
 - **the parts' first cuts** (`sim/parts-first-cut-findings.md`): La / Lb (EI-84 × 35), Schottky D1*–D4*, the HV
@@ -720,7 +734,7 @@ and tooling.
   re-read them from the current sheet before ordering;
 - the capacitor mounts' creepage, potting and balancing: first cuts in `sim/parts-first-cut-findings.md` and
   `sim/rotor-mechanics-findings.md` §6;
-- the gores' overlaps and joints, the fired-on coating's edges.
+- the fired-on coating's edges, for the later build.
 
 ### 5.3 The bench test
 
@@ -809,6 +823,14 @@ more; each line says what was done and where. The model checks (31–34) run as 
 | 39 | La / Lb "not designed", 2.82 kg; their iron loss "negligible" | **settled:** the EI-84 × 35 first cut, 3.3 kg for the pair; 0.12–0.21 W of iron each (§1 there) |
 | 40 | a kick "with a push-button" (`sim/pole-design-findings.md` §4; the cost sheet) | **corrected:** it fires at speed, so contactlessly: the K4 first cut (§3 there) |
 | 41 | a vane flashover at node 4 lifts ring B to 19.0 kV, past the bench's ±18.7 kV | **open:** the designer's (§5.2) |
+
+**Found by the joints study** (`sim/hub-joints-findings.md`)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 42 | the bead study's "a void at the contact would not discharge" took the gel-filled gap's voltage | **corrected:** it holds at switch-on only; settled, a sealed void reaching 0.5 mm from an equatorial contact breaks down (0.99 in service); the contacts are cast void-free and inspected through the glass (§4 there) |
+| 43 | the gores' overlaps and joints, not modelled | **settled:** the laps hold with deburred, filleted edges and no void under them (§2 there) |
+| 44 | the bead rings' closing joints: the polar beads sit 0.3–0.4 % under their rating | **settled:** the polar rings seamless, or the AH ends rounded (2.3–2.4 %); the equatorial joints dressed within δ / w 0.03 (§3 there) |
 
 ## 7. Drawing register
 

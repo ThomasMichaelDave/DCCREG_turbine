@@ -356,12 +356,15 @@ keeps each family's best per pair of ratings (`best_by_family`).
 - **[OC]:** the superposition of the modes, exact for the linear problem.
 - **Not modelled:**
   - **the contact wedge** where a bead touches the glass. It is skipped in the sampling; the void-free gel is what keeps
-    it benign, and the coupons test it. Since solved: finite, and under half of Paschen's breakdown for a void
-    (`sim/hub-beads-settled-findings.md` §4).
+    it benign, and the coupons test it. Since solved: finite, and with the gel in place under half of Paschen's
+    breakdown (`sim/hub-beads-settled-findings.md` §4). A void in the gel's place at an equatorial contact breaks down
+    once settled (`sim/hub-joints-findings.md` §4), so the gel's void-free fill is what keeps it benign.
   - **the AH side's edges** (the coil's end turns and former), which face the polar beads. Round or cap them. Since
     solved: a 1.5 mm radius at REF holds the PEEK to 4.5 kV/mm settled (`sim/hub-beads-settled-findings.md` §5).
   - **the rings' leads** through the retainer and the coupler.
-  - **the gores' overlaps and joints.**
+  - **the gores' overlaps and joints.** Since solved (`sim/hub-joints-findings.md`): the laps hold with their cut edges
+    deburred and filleted and no void under them; the equatorial rings take a dressed joint, the polar rings none (made
+    seamless, or the AH ends rounded).
   - **the beads' field in the settled DC state.** Conduction then shares the DC by the conductivities, not the
     permittivities. Since solved (`sim/hub-beads-settled-findings.md`): the PEEK takes it and the polar beads ease, as
     expected; the equatorial beads hold only while the glass conducts at most about 4 times the gel.

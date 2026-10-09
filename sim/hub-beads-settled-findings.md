@@ -32,7 +32,11 @@
 - **The contact wedge holds in every state solved** (§4).
   - Its field stays finite at the contact: the thin gap ties the glass's surface to the bead [OC].
   - The voltage across the gap is at most 0.51 of air's Paschen breakdown for a void of that gap (the equatorial bead,
-    the glass at 40 °C). A void at the contact would not discharge.
+    the glass at 40 °C), with the gel in place.
+  - **Corrected 2026-10-09** (`sim/hub-joints-findings.md` §4): this said a void at the contact would not discharge.
+    That holds at switch-on only. A void in the gel's place carries more; once settled, in service, a sealed void
+    reaching 0.5 mm from an equatorial contact is at 0.99 of the breakdown and one reaching 1 mm at 1.46. The polar
+    contacts hold (at most 0.33). So the gel must fill the equatorial contacts' wedges void-free.
 - **The equatorial beads set a condition on the materials** (§7). Settled, their gel stays within 5 kV/mm only while
   σ_glass ≤ 4.1 σ_gel (the drawn grooves; 4.4 with the recommended).
   - With the glass at 40 °C (5.4 × its 25 °C conductivity, the gel held) the gel reaches 6.15 kV/mm.
@@ -145,9 +149,12 @@ the interface condition; ΔV is the voltage across the gap.
   rating.
 - **Paschen** (air at 1 atm; A 15 /(cm·Torr), B 365 V/(cm·Torr), γ 0.01, its 0.31 kV minimum held below the
   minimum's gap) [IR]:
-  - at most 0.51 of the breakdown, so even a void at the contact would not discharge;
-  - the void-free casting matters at the beads' tops (4.98 kV/mm, where a void of 1 mm would break down), not in the
-    wedge.
+  - at most 0.51 of the breakdown with the gel in place.
+  - **Corrected 2026-10-09** (`sim/hub-joints-findings.md` §4): these lines read "so even a void at the contact would
+    not discharge" and "the void-free casting matters at the beads' tops, not in the wedge". The ratio above is the
+    gel-filled gap's voltage, not a void's. Re-solved with a void in the wedge, the equatorial contact holds at
+    switch-on (0.65 for a void reaching 1 mm) but not once settled: 0.99 for a sealed void reaching 0.5 mm in service,
+    1.46 for 1 mm. The void-free casting matters at the beads' tops and at the equatorial contacts alike.
 
 ## 5. The PEEK and the AH's end
 - **At the hub's scale** (0.25 mm cells, two cells and more off any conductor):

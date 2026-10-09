@@ -159,6 +159,21 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
     numbers are unchanged.
 - **Open, the designer's:** a vane flashover at node 4 lifts ring B to 19.0 kV, 2 % past the bench's ±18.7 kV
   (`sim/parts-first-cut-findings.md` §2.7; `docs/bench-test-rings.md` phase 1).
+- **Added: the rings' joints and voids** (`sim/hub_joints.py`, `sim/hub-joints-findings.md`): a planar solver with
+  Shortley–Weller conductor boundaries (a half-cylinder ridge reads 1.993 against the exact 2) for a lap across a seam,
+  a closing joint's bulge, and a void at a bead's contact re-solved in the bead study's boxes; settled at σ_glass /
+  σ_gel 1, 2.4, 4 and 5.4.
+  - The laps: as cut, a gore's free edge lifts the gel to 3.5–4.4 kV/mm at switch-on; under a solder fillet 0.2 mm
+    wide to 1.9. The crevice under a lap holds gel-filled, and as a void holds in service.
+  - The closing joints raise a bead's field by about 1 + 3.7 δ / w: the equatorial rings take a dressed joint
+    (δ / w ≤ 0.03), the polar rings none; rounding the AH ends to 1.5 mm gives the polar beads 2.3–2.4 %.
+  - The first cut (PROPOSED): deburred and filleted laps, seamless polar rings, dressed equatorial joints, void-free
+    contacts inspected through the glass. The drawing DCCREG-HUB-201's notes, `docs/rings-design.md` §2 / §7,
+    `presets/hub-locked.json` (rings.joints; the open list brought up to date) and the bench's coupons carry it.
+- **Corrected: a void at a bead's contact** (`sim/hub-beads-settled-findings.md` §4, dated notes): it said a void at
+  the contact would not discharge, from the gel-filled gap's voltage. That holds at switch-on only. Once settled, in
+  service, a sealed void reaching 0.5 mm from an equatorial contact is at 0.99 of Paschen's breakdown and one reaching
+  1 mm at 1.46; the polar contacts hold. The bench's partial-discharge criterion now runs through the settled hours.
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the

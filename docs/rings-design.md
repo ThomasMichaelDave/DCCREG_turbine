@@ -62,7 +62,7 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
 | bead's contact on the glass | r 11.06, z ±22.42 | r 20.65, z ±14.08 |
 | bead's centre | r 11.72, z ±23.77 | r 21.48, z ±14.65 |
 | ring centre-line diameter | Ø23.44 | Ø42.96 |
-| wire per ring (cut, close, solder) | 73.6 mm | 135.0 mm |
+| length per ring, the centre line (polar seamless, proposed) | 73.6 mm | 135.0 mm |
 | groove in the PEEK (depth over the glass), as drawn | 3.5 mm | 2.5 mm |
 | the groove proposed: full-round top, 1.0 mm of gel (width × depth) | 5 × 4 mm | 4 × 3 mm |
 | peak field in the gel, as drawn (the build's box, gel throughout) | 4.98 kV/mm (4.85) | 4.46 kV/mm (4.36) |
@@ -72,6 +72,16 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
 - **The gores:** each band is cut flat as 12 gores (24 in all), each with a 1 mm overlap on its neighbour.
   - Each gore is 12.85 mm long along its centre line (the meridian).
   - Its width is 2π · 25 · sin θ / 12 along the arc: 5.79 mm at the polar end, 10.81 mm at the equatorial end.
+  - **The laps** (first cut, PROPOSED; `sim/hub-joints-findings.md` §2): each upper gore's free edge is a 0.1 mm step
+    on the band's outer face. As cut (r 5–10 µm) it lifts the gel's 1.20 kV/mm at switch-on to 3.5–4.4 kV/mm; under a
+    solder fillet 0.2 mm wide, to 1.9. So deburr every cut edge and fillet each lap's free edge with the solder, then
+    burnish the lap into the gel film, its ramp within 0.5 mm. Gel-filled, the crevice under a lap holds (2.3 kV/mm
+    beside the beads in service); a void there holds in service (0.66 of Paschen) but not with the glass at 40 °C.
+- **The bead rings' closing joints** (first cut, PROPOSED; §3 there): a joint left proud raises the bead's field by
+  about 1 + 3.7 δ / w. The equatorial rings (12 % margin) take a joint dressed to the wire's round within 0.03 mm over
+  1 mm. The polar rings (0.3–0.4 % margin) take none, so they are best seamless: turned from Cu-ETP bar, or brazed and
+  turned to the round. With the AH ends rounded to 1.5 mm their margin is 2.3–2.4 % (a joint within 0.006 mm over
+  1 mm). No solder ball on any bead: it triples the field [OC].
 - **The retainer:** unfilled PEEK, to r 30 mm and |z| 72 mm. It holds the vessel, the rings and the AH cores and coils.
   - **The pocket:** 0.5 mm over the glass, gel-filled.
   - **The grooves:** as in the bead table. Proposed: their tops full-round, a ball-end cut concentric with the bead,
@@ -176,8 +186,10 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
     the DC: 2.3 kV/mm across the AH seat on average.
   - **The equatorial beads set a condition:** their gel stays within 5 kV/mm while the glass conducts at most 4.1 times
     the gel (4.4 with the full-round grooves). In service the ratio is about 2.4 (`sim/hub-thermal-findings.md`).
-  - **The contact wedge** where each bead touches the glass stays finite, and its voltage at most half of air's
-    Paschen breakdown for a void of its gap.
+  - **The contact wedge** where each bead touches the glass stays finite, and with the gel in place its voltage is
+    at most half of air's Paschen breakdown for a void of its gap. A void there is another matter: once settled a
+    sealed void reaching 0.5 mm from an equatorial contact breaks down (0.99 in service), so the gel fills those wedges
+    void-free (`sim/hub-joints-findings.md` §4).
 - **The solves** [IR]: the hub's finite volumes with 0.25 mm cells; the beads by local solves with 0.025 mm cells,
   bounded by the hub's solution. The convergence is in `sim/hub_rings_build_results.json` convergence; the beads as
   drawn in `sim/hub_beads_settled_results.json`.
@@ -211,15 +223,19 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
 - **1. The glass:** clean and degrease the vessel; mark the edge circles (Ø23.44 / Ø42.96 bead centre-lines, the
   contact circles at z ±22.42 / ±14.08) from the poles.
 - **2. The foil:**
-  - cut 24 gores (12 per band) to view D;
-  - burnish them onto the glass from the polar edge, each overlapping its neighbour by 1 mm;
-  - solder the overlaps flat.
-  - No adhesive film under the foil: the gel bonds and fills it.
+  - cut 24 gores (12 per band) to view D, and deburr every cut edge;
+  - burnish them onto the glass from the polar edge, each overlapping its neighbour by 1 mm, into a film of the gel;
+  - solder each lap with a fillet 0.2 mm wide or more along its free edge, and burnish the lap down, its ramp within
+    0.5 mm (§2).
+  - No adhesive film under the foil: the gel bonds and fills it, and no void may stay under a lap.
 - **3. The beads:**
-  - cut Ø3 mm wire to 73.6 mm and Ø2 mm wire to 135.0 mm, two of each;
-  - close each by a butt solder joint and file it round;
-  - solder each along its foil edge, centred on the edge angle, touching the glass.
-  - Smooth every joint: no point or burr may stand above the bead's radius.
+  - the two polar rings (Ø3 mm section, Ø23.44 mm centre line) seamless: turned from Cu-ETP bar, or brazed and turned
+    to the round (§2, proposed);
+  - cut Ø2 mm wire to 135.0 mm for the two equatorial rings; close each by a butt joint and dress it to the wire's
+    round within 0.03 mm over 1 mm;
+  - solder each along its foil edge, centred on the edge angle, touching the glass; no solder on the bare-glass side of
+    the contact.
+  - Smooth every joint: no point, burr or solder ball may stand above the bead's radius.
 - **4. The leads:** solder a PTFE-insulated HV wire to each equatorial bead, and route it out along the bead's normal
   through the PEEK and the coupler, then over the coupler to its own end (§2, proposed).
 - **5. Check:** continuity bead to bead around each ring; insulation ring to ring and ring to the AH dummies.
@@ -231,7 +247,9 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
     joint.
   - Fill the joint void-free with the gel.
 - **7. Cast:** assemble the vessel, the rings and the retainer, then vacuum-cast the degassed gel into the pocket, the
-  grooves and the joint, void-free. Cure it per the gel's datasheet, then fit the G10 coupler.
+  grooves and the joint, void-free, above all in the equatorial beads' contact wedges (§5). Inspect those through the
+  glass from inside, by borescope through the pumping tube [RH]. Cure the gel per its datasheet, then fit the G10
+  coupler.
 - **8. Test:** the hold-off of `docs/bench-test-rings.md` phase 1 (c):
   - hold −15.0 / +15.0 kV for 1 h, then 1.25× (±18.7 kV) for 1 h;
   - partial discharge must stay below 10 pC.

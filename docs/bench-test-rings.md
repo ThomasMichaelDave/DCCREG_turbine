@@ -68,20 +68,25 @@ The test measures them in that order. The ratings come first because they decide
 ### Phase 1: the hold-off (it sets the stages)
 - **(a) Interface coupons:**
   - **the coupon:** a 1.5 mm borosilicate plate (curved to R 25 if available, flat otherwise) with two foil electrodes
-    beaded as built (Ø2 mm), 10 mm apart, under 0.5 mm of gel and a PEEK cover, cast like the hub;
+    beaded as built (Ø2 mm), 10 mm apart, under 0.5 mm of gel and a PEEK cover, cast like the hub. Each electrode is
+    two gores lapped as built, the lap running into the bead, and each bead carries a closing joint
+    (`sim/hub-joints-findings.md` §5);
   - **the test:** ten coupons, the DC ramped at 0.5 kV/s to flashover; record the voltage and the track;
   - **the interface rating:** half the lowest flashover's average field, provided 1.5× that holds for 1 h without
     partial discharge [RH].
 - **(b) Bead coupons:**
   - **the coupon:** a Ø2 or Ø3 mm copper bead in gel, facing a REF plate across 5 mm of gel and PEEK. That is the polar
-    bead facing the AH coil's end, the record's tightest spot.
+    bead facing the AH coil's end, the record's tightest spot. Make the beads as the rings will be: the Ø3 mm seamless,
+    the Ø2 mm with its dressed joint facing the plate.
   - **the test:** ramp to breakdown;
   - **the gel's rating at a bead:** half the lowest [RH].
 - **(c) The sphere:**
   - Hold the record's DC (−15.0 / +15.0 kV) for 1 h, then 1.25× it (−18.7 / +18.7 kV) for 1 h.
   - A vane flashover at node 4 lifts ring B to 19.0 kV, 2 % past 1.25× (`sim/parts-first-cut-findings.md` §2.7).
     Whether to qualify to ±20 kV (1.33×) instead is the designer's (OPEN).
-  - Partial discharge must stay below the 10 pC threshold.
+  - Partial discharge must stay below the 10 pC threshold through both holds: the DC settles 90 % of the way in 39 min
+    (phase 3), and a void at an equatorial bead's contact discharges only once it has (`sim/hub-joints-findings.md`
+    §4). Keep the detector on through phase 3 as well.
   - On a sacrificial build, optionally ramp to flashover.
 - **What it decides** (`sim/hub_rings_build_results.json` best_by_family; the symmetric supply, the designer's
   family, with the asymmetric family's best for comparison):

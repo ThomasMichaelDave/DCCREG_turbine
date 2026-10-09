@@ -55,7 +55,7 @@
       "count": 2,
       "role": "the field's electrodes: the rings outside the glass (not electrodes inside the vacuum)",
       "where": "on the vessel's outer surface, one on each hemisphere, mirror-symmetric about the equator",
-      "form": "prototype: bands of 0.1 mm annealed copper foil on the glass (cut as gores to fit the sphere, overlapped and soldered), each edge beaded with a soldered copper wire ring; a fired-on coating later (its edges beaded or graded the same way)",
+      "form": "prototype: bands of 0.1 mm annealed copper foil on the glass (cut as gores to fit the sphere, overlapped 1 mm, bedded in the gel), each edge beaded with a copper wire ring; a fired-on coating later (its edges beaded or graded the same way)",
       "foil_t_mm": 0.1,
       "polar_edge_deg": 26.25,
       "equatorial_edge_deg": 55.71,
@@ -63,6 +63,13 @@
       "bead_d_mm": {
         "polar": 3.0,
         "equatorial": 2.0
+      },
+      "joints": {
+        "laps": "every cut edge deburred; each lap's free edge under a solder fillet >= 0.2 mm wide (or dressed round, r >= 25 um); the lap burnished into the gel film, its ramp within 0.5 mm; no void under a lap, the more so within 3 mm of the equatorial beads",
+        "closing_joints": "the equatorial rings butt-joined and dressed to the wire's round within 0.03 mm over 1 mm (delta / w <= 0.03); the polar rings seamless (turned, or brazed and turned to the round), or the AH ends rounded to 1.5 mm and the joint within 0.006 mm over 1 mm; no solder ball on any bead",
+        "contacts": "the gel void-free in each contact's wedge, the equatorial ones above all: a sealed void reaching 0.5 mm from an equatorial contact breaks down once the DC has settled (0.99 of Paschen in service)",
+        "status": "PROPOSED (first cut)",
+        "source": "sim/hub_joints.py, sim/hub-joints-findings.md §5"
       },
       "supply": "DC, the symmetric supply: ring A on its own 2-stage Cockcroft-Walton chain from the shaft on node 1 (-15.0 kV), ring B on the mirror chain on node 4 (+15.0 kV); 29.9 kV across, the null at the shaft's potential; storage 100 pF; no Dk, no C_A",
       "field_at_null_kV_cm": 7.62,
@@ -237,14 +244,13 @@
     "value": [
       "the ratings: the interface along the glass and the gel at the beads (they set the stages: bench test phase 1)",
       "each ring's leakage (100 G estimate: bench test phase 2)",
-      "the retainer's and coupler's dimensions; the rings' leads through them",
-      "the AH ends facing the polar beads (the coil's end turns and former: rounded or capped); the AH seat's length, which sets how near the pole the bands may start",
-      "the fired-on coating's edges (beaded, or graded by a resistive layer toward the pole)",
-      "the tube layout and its 3-D model still carry the 120 mm placeholder hub (sim/stack_sizing.py hub_mm, sim/tube_geometry.py)"
+      "the conductivities at temperature (bench test phase 3): the equatorial beads need sigma_glass <= 4.1 sigma_gel (4.4 with the full-round grooves) at the hub's temperature, about 2.4 in service (sim/hub-thermal-findings.md); and the partial-discharge watch through phase 3's settled state for voids at the contacts (sim/hub-joints-findings.md §4)",
+      "the designer's to accept (PROPOSED): the retainer split at the equator, the grooves' full-round tops, the AH ends rounded to 1.5 mm at REF, the coupler as a G10 tube over the retainer and both flanges, the leads' path (docs/rings-design.md §2), and the joints' finish (rings.joints)",
+      "the fired-on coating's edges for the later build (beaded, or graded by a resistive layer toward the pole)"
     ],
     "unit": "-",
     "status": "OPEN",
-    "source": "sim/hub-locked-findings.md, sim/hub-rings-build-findings.md",
+    "source": "sim/hub-locked-findings.md, sim/hub-rings-build-findings.md, sim/hub-beads-settled-findings.md, sim/hub-thermal-findings.md, sim/hub-joints-findings.md",
     "tag": "-"
   }
 }
