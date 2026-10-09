@@ -325,6 +325,8 @@ def run(case):
     out["E_mean_kV_cm"] = abs(st["mean"]) / (D_CORE_MM / 10.0)
     out["E_swing_kV_cm"] = st["pp"] / (D_CORE_MM / 10.0)
     out["ripple_pc"] = 100.0 * st["pp"] / max(1e-9, abs(st["mean"]))
+    out["E_convention"] = ("E_pk / E_mean / E_swing_kV_cm: V over D_CORE_MM, the cost sheet's placeholder convention [RH]; "
+                           "not the field at the null (sim/hub_rings_build.py null_field: k (V_B - V_A))")
     return out
 
 

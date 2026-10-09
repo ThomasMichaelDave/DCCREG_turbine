@@ -448,6 +448,17 @@ def family(q):
     return "mirror" if q.get("a_ref") == "shaft" else "stacked"
 
 
+def null_field(q, k):
+    """adds the field at the null to a dc run of sim/core_field.py, E = k (V_B - V_A) with k the record's bands' field per
+    kV [OC]. CF.run's own E_pk / E_mean / E_swing_kV_cm are V / D_CORE_MM (50 mm), the cost sheet's convention, not this
+    field."""
+    st = q["V_core_kV"]
+    q.update(E_null_mean_kV_cm=k * abs(st["mean"]), E_null_pk_kV_cm=k * q["swing_pk_kV"], E_null_pp_kV_cm=k * st["pp"],
+             E_convention="E_pk / E_mean / E_swing_kV_cm: V over D_CORE_MM (50 mm), sim/core_field.py's cost-sheet "
+                          "convention; E_null_*: the field at the null, k (V_B - V_A)")
+    return q
+
+
 def phase5(stages, procs, rec):
     """the tables, every supply's design at each pair of ratings, and each family's best at each pair solved
     directly: {family: {pair: design}}."""
@@ -583,6 +594,7 @@ def main():
             sup, fr = pool.map(CF.run, [(f"record {nm}", dict(kw, n_cyc=120 + 80 * max(rb["n_cw"], rb["n_a"]),
                                                               steps=10000)),
                                         (f"free record {nm}", dict(kw, clamp=False, n_cyc=12, v0=-10.0))])
+        null_field(sup, rb["k_kV_cm_per_kV"])
         print(f"the record's supply: A {sup['V_ea_kV']['mean']:.2f}, B {sup['V_eb_kV']['mean']:.2f} kV, belt "
               f"{sup['P_belt_W']:.3f} W (waves {sup['P_belt_wave_W']:.3f}), z {fr['z']:.3f}", flush=True)
     out.update(stages_ab=ab, supplies_ab=SUPPLIES_AB, stages_sym=sym, supplies_sym=SUPPLIES_SYM, E_gel_kV_mm=E_GEL,

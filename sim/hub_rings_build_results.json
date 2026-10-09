@@ -7105,7 +7105,11 @@
   "E_pk_kV_cm": 5.9903606400000005,
   "E_mean_kV_cm": 5.984765003607935,
   "E_swing_kV_cm": 0.011402139999999861,
-  "ripple_pc": 0.19051942713082376
+  "ripple_pc": 0.19051942713082376,
+  "E_null_mean_kV_cm": 7.099971074221829,
+  "E_null_pk_kV_cm": 7.1066094061365455,
+  "E_null_pp_kV_cm": 0.013526824217061622,
+  "E_convention": "E_pk / E_mean / E_swing_kV_cm: V over D_CORE_MM (50 mm), sim/core_field.py's cost-sheet convention; E_null_*: the field at the null, k (V_B - V_A)"
  },
  "record_supply_free": {
   "name": "free record A2s B2 1e+11",
