@@ -965,6 +965,108 @@ def es_jobs():
     return jobs
 
 
+def _is_ab(job):
+    return isinstance(job[1], dict) and job[1].get("set") == AB_NAME
+
+
+def _uniq(jobs):
+    seen, out = set(), []
+    for j in jobs:
+        j = json.loads(json.dumps(j, default=float))
+        if _key(j) not in seen:
+            seen.add(_key(j))
+            out.append(j)
+    return out
+
+
+def ab_jobs():
+    """§2b, first pass: the gate's free runs (the deck as is and split; bare from -1 kV and with the rings' chains from
+    -10 V, as sim/tube_strays.py run_decks; 12 cycles, and 40 for the late gain), each model's free runs from -10 V
+    and -1 kV, and its threshold."""
+    S = dict(set=AB_NAME)
+    jobs = []
+    for m in ("ND-deck", "ND"):
+        for n in (12, N_THR):
+            jobs.append(("es", dict(model=m, case="free", bare=True, v0=V0_CLAMPED, n_cyc=n, **S)))
+            jobs.append(("es", dict(model=m, case="free", v0=ES_FREE["v0"], n_cyc=n, **S)))
+    for m in AB_MODELS:
+        for v0 in (ES_FREE["v0"], V0_CLAMPED):
+            jobs.append(("es", dict(model=m, case="free", v0=v0, n_cyc=ES_FREE["n_cyc"], **S)))
+        jobs.append(("es_thr", dict(model=m, set=AB_NAME, v_hi=AB_V_HI)))
+    return _uniq(jobs)
+
+
+def _ab_find(res, **match):
+    """the as-built results whose job matches (the longest run where several do)."""
+    hits = [(j, r) for j, r in res if j[0] == "es" and _is_ab(j) and all(j[1].get(k) == v for k, v in match.items())]
+    return max(hits, key=lambda q: q[1].get("job", {}).get("n_cyc") or 0)[1] if hits else None
+
+
+def ab_seeds(res):
+    """per model, the clamped runs' seeds: the deck's -1 kV, and twice the threshold (rounded up to 0.5 kV) where that
+    is above 1 kV [IR]."""
+    thr = {r["model"]: r for j, r in res if j[0] == "es_thr" and _is_ab(j)}
+    seeds = {}
+    for m in AB_MODELS:
+        vg = (thr.get(m) or {}).get("v_grows_V")
+        seeds[m] = [V0_CLAMPED] + ([-500.0 * math.ceil(2 * vg / 500.0)] if vg and 2 * vg > abs(V0_CLAMPED) else [])
+    return seeds, thr
+
+
+def ab_second(res):
+    """§2b, second pass: the free run at each extra seed (its gain sets the clamped run's length) and the threshold's
+    bracketing trials at twice the steps (the step check)."""
+    S = dict(set=AB_NAME)
+    seeds, thr = ab_seeds(res)
+    jobs = []
+    for m, vs in seeds.items():
+        for v0 in vs[1:]:
+            jobs.append(("es", dict(model=m, case="free", v0=v0, n_cyc=ES_FREE["n_cyc"], **S)))
+        q = thr.get(m) or {}
+        for v in (q.get("v_grows_V"), q.get("v_fails_V")):
+            if v and m != "ND":
+                jobs.append(("es", dict(model=m, case="free", v0=-v, n_cyc=N_THR, steps=2 * ES_STEPS, tag="steps", **S)))
+    return _uniq(jobs)
+
+
+def ab_clamped(res):
+    """§2b, third pass: the clamped runs. The gate's ND-deck and ND at the tube-strays study's own length (its rings'
+    cycles); each real model from each seed for ab_cycles at the 12-cycle free gain from that seed (280 cycles where
+    that gain is <= 1: the run shows whether it starts at all)."""
+    S = dict(set=AB_NAME)
+    n_rec = AB_REC["rings_cycles"]
+    jobs = [("es", dict(model=m, case="clamped", v0=V0_CLAMPED, n_cyc=n_rec, **S)) for m in ("ND-deck", "ND")]
+    seeds, _ = ab_seeds(res)
+    for m, vs in seeds.items():
+        if m == "ND":
+            continue                                                 # ND: the gate's own run
+        for v0 in vs:
+            fr = _ab_find(res, model=m, case="free", v0=v0, n_cyc=ES_FREE["n_cyc"])
+            n = ab_cycles((fr or {}).get("z"), v0) or ES_NCYC
+            jobs.append(("es", dict(model=m, case="clamped", v0=v0, n_cyc=n, **S)))
+    return _uniq(jobs)
+
+
+def ab_redo(res):
+    """the clamped runs again, twice as long, where they reached the clamp but the rings have not settled, or are still
+    growing below it (as sim/tube_strays.py run_decks doubles its rings' runs)."""
+    longest = {}
+    for j, r in res:
+        if j[0] == "es" and _is_ab(j) and j[1]["case"] == "clamped" and j[1]["model"] != "ND-deck":
+            k = (j[1]["model"], j[1]["v0"])
+            if k not in longest or j[1]["n_cyc"] > longest[k][0][1]["n_cyc"]:
+                longest[k] = (j, r)
+    redo = []
+    for (m, v0), (j, r) in longest.items():
+        if not r.get("done"):
+            continue
+        pk = r.get("V1_peak_per_cycle_kV") or []
+        rising = len(pk) > 6 and pk[-1] > pk[-6]
+        if (r.get("reached_clamp") and not r.get("settled")) or (not r.get("reached_clamp") and rising):
+            redo.append(("es", dict(j[1], n_cyc=2 * j[1]["n_cyc"])))
+    return _uniq(redo)
+
+
 def _cost(job):
     """a rough run-time order, the longest first."""
     kind, j = job
@@ -975,8 +1077,8 @@ def _cost(job):
     if kind == "uic":
         return 0
     if kind == "es":
-        return (2 if j.get("model", "").startswith("HV") else 1) * (ES_NCYC if j["case"] == "clamped" else 12) * \
-            j.get("steps", ES_STEPS) / ES_STEPS
+        return (2 if j.get("model", "").startswith("HV") else 1) * \
+            (j.get("n_cyc") or (ES_NCYC if j["case"] == "clamped" else 12)) * j.get("steps", ES_STEPS) / ES_STEPS
     return j["n_cyc"] * j.get("steps", 2000) / 2000 * (1 if j["model"] == "ND" else 2.5)
 
 
@@ -1011,9 +1113,19 @@ def run_all(procs, only=None, cache=None):
         jobs += mag_jobs_first()
     if only in (None, "es"):
         jobs += es_jobs()
+    if only in (None, "ab"):
+        jobs += ab_jobs()
     jobs = [json.loads(json.dumps(j, default=float)) for j in jobs]      # tuples -> lists, as the cache holds them
     res = []
     _pool_run(procs, jobs, res, cache)
+    if only in (None, "ab"):                                         # §2b: the passes that need the first one's results
+        _pool_run(procs, ab_second(res), res, cache)
+        _pool_run(procs, ab_clamped(res), res, cache)
+        for _ in range(AB_DOUBLE):
+            redo = ab_redo(res)
+            if not redo:
+                break
+            _pool_run(procs, redo, res, cache)
     # the steady states need the thresholds: seed max(SEED_OP, 1.25 x threshold)
     if only in (None, "mag"):
         thr = {(r["model"], r["byp_mF"]): r for job, r in res if job[0] == "mag_thr"}
@@ -1065,6 +1177,10 @@ def summarise(res, old=None):
                     steps = r
         mg.update(thresholds=thr, kick=kick, steady=steady, tt0=tt0, gate_runs=gate, steps_run=steps)
         out["magnetic"] = mg
+    ab_res = [(j, r) for j, r in res if _is_ab(j)]                   # §2b: its own key
+    res = [(j, r) for j, r in res if not _is_ab(j)]
+    if ab_res:
+        out["electrostatic_as_built"] = summarise_ab(ab_res)
     if any(j[0].startswith("es") for j, _ in res):
         es = dict(record_kw=dict(ES_KW, n_cyc=ES_NCYC, steps=ES_STEPS), free_kw=ES_FREE, v0_clamped_V=V0_CLAMPED,
                   output_points_per_cycle=OUT_PER_CYCLE, stick=STICK, stick_V_RRM_kV=STICK_KV,
@@ -1171,6 +1287,147 @@ def gates(out):
                 x["rel"] = (x["steps20000"] - x["steps10000"]) / x["steps10000"]
             g.append(dict(gate="G-STEP electrostatic HV-typ: steps 10000 -> 20000 a cycle",
                           ok=all(abs(x["rel"]) < 2e-3 for x in rows_), rows=rows_))
+    return g + gates_ab(out)
+
+
+def _run_name(j):
+    return (f"{j['case']} {abs(j['v0']):g} V" + (" bare" if j.get("bare") else "") + f", {j['n_cyc']} cycles"
+            + (", steps x2" if j.get("tag") == "steps" else ""))
+
+
+def _longest_clamped(R, v0):
+    """the longest clamped run of a model from the seed v0 (the doubled runs replace the shorter ones)."""
+    hits = [(r["job"]["n_cyc"], r) for nm, r in R.items() if nm.startswith(f"clamped {abs(v0):g} V,") and r.get("done")]
+    return max(hits, key=lambda q: q[0])[1] if hits else None
+
+
+def summarise_ab(res):
+    """§2b: every run by model and name, the thresholds, and one row a model."""
+    pF = 1e12
+    s = AB_SET
+    ab = dict(note="the electrostatic pump and the rings' supply (sim/core_field.py dc, the record_supply settings) on "
+                   "the tube-strays study's as-built capacitances, the record's ND against the HV sticks (§2b)",
+              source=SRC["as_built"],
+              set_pF=dict(cmin=s["cmin"] * pF, cmax=s["cmax"] * pF, ca=s["ca"] * pF,
+                          Cp={k: v * pF for k, v in s["Cp"].items()}, Cx={k: v * pF for k, v in s["Cx"].items()},
+                          Cx_rings={k: v * pF for k, v in s["Cx_rings"].items()}, c_e=s["c_e"] * pF,
+                          c_gap=s["c_gap"] * pF, label=s.get("label")),
+              record=AB_REC, k_null_kV_cm_per_kV=K_NULL, v_hi_V=AB_V_HI, n_thr=N_THR,
+              rules=dict(free="12 cycles at 20000 steps a cycle, z fitted over cycles 3-11 (sim/core_field.py run); "
+                              "with the rings' chains unless 'bare' (opt none, as the tube-strays study's z bare)",
+                         threshold=f"free runs of {N_THR} cycles at {ES_STEPS} steps; grows when the node-1 peak of "
+                                   "the last cycle exceeds that of cycle 5; bisection in log |v0| to 10 %, 1 V - 1 kV, "
+                                   f"or 1 kV - {AB_V_HI / 1e3:g} kV when it does not grow from 1 kV [IR]",
+                         seeds="the deck's -1 kV; and twice the threshold, rounded up to 0.5 kV, where that is above "
+                               "1 kV [IR]",
+                         cycles="sim/tube_strays.py _cycles from the seed: 280 + 1.3 ln(V_OP / |v0|) / ln z at the "
+                                "12-cycle free gain from that seed (280 where it is <= 1), doubled at most twice until "
+                                "the rings settle (the last ten cycles within 0.3 %) or while a run still grows below "
+                                "the clamp; the gate's ND runs at that study's own 390",
+                         E_null="k (V_B - V_A), the samples' means over the last 8 cycles; its ripple k x the gap's "
+                                "peak-to-peak [OC: linear]"),
+              models={m: ES_MODELS[m]["label"] for m in ("ND-deck",) + AB_MODELS}, runs={}, thresholds={}, table={})
+    for job, r in res:
+        kind, j = job
+        if kind == "es_thr":
+            ab["thresholds"][r["model"]] = r
+            continue
+        pk = r.get("V1_peak_per_cycle_kV")
+        if j["case"] == "free" and r.get("done") and pk:              # one criterion for every free run
+            r["grows"] = bool(pk[-1] > pk[min(5, len(pk) - 1)])
+        if j["case"] == "clamped" and r.get("done") and "V_ea_mean_samples_kV" in r:
+            gap = r["V_eb_mean_samples_kV"] - r["V_ea_mean_samples_kV"]
+            r.update(E_null_kV_cm=K_NULL * gap, E_null_pp_kV_cm=K_NULL * r["V_gap_kV"]["pp"])
+            if not r.get("reached_clamp"):
+                r.update(t_to_95pc_s=None, cycles_to_95pc=None)
+        ab["runs"].setdefault(j["model"], {})[_run_name(j)] = r
+    seeds = {m: sorted({-float(nm.split(" ")[1]) for nm in ab["runs"].get(m, {}) if nm.startswith("clamped")})
+             for m in AB_MODELS}
+    for m in AB_MODELS:
+        R = ab["runs"].get(m, {})
+        f10, f1k = R.get(f"free {abs(ES_FREE['v0']):g} V, 12 cycles") or {}, R.get(f"free {abs(V0_CLAMPED):g} V, 12 cycles") or {}
+        thr = ab["thresholds"].get(m, {})
+        row = dict(z_free_10V=f10.get("z"), grows_10V=f10.get("grows"), z_free_1kV=f1k.get("z"),
+                   z_late_1kV=f1k.get("z_late"), grows_1kV=f1k.get("grows"), threshold_grows_V=thr.get("v_grows_V"),
+                   threshold_fails_V=thr.get("v_fails_V"), clamped={})
+        for v0 in seeds[m]:
+            c = _longest_clamped(R, v0)
+            if not c:
+                continue
+            q = dict(n_cyc=c["job"]["n_cyc"], reached_clamp=c.get("reached_clamp"), settled=c.get("settled"),
+                     V1_peak_last_kV=(c.get("V1_peak_per_cycle_kV") or [None])[-1])
+            if c.get("reached_clamp"):
+                q.update(V_A_kV=c["V_ea_mean_samples_kV"], V_B_kV=c["V_eb_mean_samples_kV"],
+                         gap_kV=c["V_eb_mean_samples_kV"] - c["V_ea_mean_samples_kV"], E_null_kV_cm=c["E_null_kV_cm"],
+                         E_null_pp_kV_cm=c["E_null_pp_kV_cm"], ripple_A_V=c["ripple_A_V"], ripple_B_V=c["ripple_B_V"],
+                         P_belt_W=c["P_belt_W"], P_clamps_W=c["P_clamps_W"], P_Z1_W=c["Z1"]["P_W"],
+                         P_Z1_per_device_W=c["Z1"]["P_per_device_W"], P_stacks_W=c.get("P_stacks_W"),
+                         P_ring_leak_W=c["P_ring_leak_W"], t_to_95pc_s=c["t_to_95pc_s"],
+                         cycles_to_95pc=c["cycles_to_95pc"], z_min_before_clamp=c.get("z_min_before_clamp"),
+                         balance_residual_frac=(c.get("balance") or {}).get("residual_frac"))
+            row["clamped"][f"{v0:g}"] = q
+        row["starts_from_1kV"] = (row["clamped"].get(f"{V0_CLAMPED:g}") or {}).get("reached_clamp")
+        ab["table"][m] = row
+    return ab
+
+
+def gates_ab(out):
+    """§2b's gates: the as-built set with the record's ND, the deck as is (tight) and split (the rings; the start's
+    z reported, the late gain against the deck's), reproduces sim/tube_strays_results.json; the energy balance of each
+    real-diode clamped run; the threshold's bracketing trials at twice the steps."""
+    ab = out.get("electrostatic_as_built")
+    if not ab:
+        return []
+    g, R, rec = [], ab["runs"], ab["record"]
+    n_rec = rec["rings_cycles"]
+    for m in ("ND-deck", "ND"):
+        Rm, exact = R.get(m, {}), m == "ND-deck"
+        fb = Rm.get(f"free {abs(V0_CLAMPED):g} V bare, 12 cycles") or {}
+        fr = Rm.get(f"free {abs(ES_FREE['v0']):g} V, 12 cycles") or {}
+        cl = Rm.get(f"clamped {abs(V0_CLAMPED):g} V, {n_rec} cycles") or {}
+        if not cl.get("done"):
+            g.append(dict(gate=f"G-AB {m}", ok=False, note="the clamped run did not finish"))
+            continue
+        pairs = [("z bare (12 cycles from -1 kV)", fb.get("z"), rec["z"], 1e-5 if exact else None),
+                 ("z with the rings' chains (12 cycles from -10 V)", fr.get("z"), rec["z_rings_start"],
+                  1e-5 if exact else None),
+                 ("ring A mean kV (samples)", cl["V_ea_mean_samples_kV"], rec["V_A_kV"], 1e-3),
+                 ("ring B mean kV (samples)", cl["V_eb_mean_samples_kV"], rec["V_B_kV"], 1e-3),
+                 ("E at the null kV/cm", cl["E_null_kV_cm"], rec["E_null_kV_cm"], 1e-3),
+                 ("P_belt_W (the rings' run)", cl["P_belt_W"], rec["rings_P_belt_W"], 2e-3),
+                 ("95 % at, s", cl["t_to_95pc_s"], rec["t_to_95pc_s"], 0.0 if exact else None)]
+        if not exact:                                               # the late gain (the last quarter of 40 cycles)
+            for nm in (f"free {abs(V0_CLAMPED):g} V bare, {N_THR} cycles", f"free {abs(ES_FREE['v0']):g} V, {N_THR} cycles"):
+                a_, b_ = (R.get(m, {}).get(nm) or {}).get("z_late"), (R.get("ND-deck", {}).get(nm) or {}).get("z_late")
+                pairs.append((f"late gain, {nm} (against the deck as is)", a_, b_, 5e-4))
+        rows_ = []
+        for q, a_, b_, tol in pairs:
+            rel = (a_ - b_) / b_ if (a_ is not None and b_) else None
+            ok = None if tol is None else (rel is not None and ((abs(rel) <= tol) if tol else a_ == b_))
+            rows_.append(dict(q=q, run=a_, record=b_, rel=rel, tol=tol, ok=ok))
+        g.append(dict(gate=f"G-AB {m}: the as-built set reproduces the tube-strays study",
+                      ok=all(x["ok"] for x in rows_ if x["ok"] is not None), rows=rows_,
+                      record="sim/tube_strays_results.json decks.table['as built']"))
+    for m, rows in R.items():
+        for name, r in rows.items():
+            if name.startswith("clamped") and r.get("done") and "balance" in r:
+                b = r["balance"]
+                g.append(dict(gate=f"G-ENERGY as built {m} {name}", ok=abs(b["residual_frac"]) < 5e-3,
+                              residual_W=b["residual_W"], residual_frac=b["residual_frac"], P_belt_W=r["P_belt_W"]))
+    for m, thr in ab["thresholds"].items():
+        if m == "ND":
+            continue
+        rows_ = []
+        for q in thr.get("trials", []):
+            if q["v0_V"] not in [-(thr.get("v_grows_V") or 0), -(thr.get("v_fails_V") or 0)]:
+                continue
+            r2 = R.get(m, {}).get(f"free {abs(q['v0_V']):g} V, {N_THR} cycles, steps x2")
+            if r2 and r2.get("done"):
+                rows_.append(dict(v0_V=q["v0_V"], grows=q["grows"], grows_steps_x2=r2["grows"], z_late=q["z_late"],
+                                  z_late_steps_x2=r2["z_late"]))
+        if rows_:
+            g.append(dict(gate=f"G-STEP as built {m}: the threshold's bracketing trials at {2 * ES_STEPS} steps a cycle",
+                          ok=all(x["grows"] == x["grows_steps_x2"] for x in rows_), rows=rows_))
     return g
 
 
@@ -1224,8 +1481,13 @@ def figure(out, path):
         ax.tick_params(colors=INK2, labelsize=7.8)
 
     mg, es = out["magnetic"], out["electrostatic"]
-    fig, axs = plt.subplots(2, 2, figsize=(13.0, 9.2), facecolor=SURF)
-    fig.subplots_adjust(left=0.065, right=0.975, top=0.9, bottom=0.075, wspace=0.22, hspace=0.4)
+    ab = out.get("electrostatic_as_built")
+    if ab:                                                           # §2b: a third row
+        fig, axs = plt.subplots(3, 2, figsize=(13.0, 13.6), facecolor=SURF)
+        fig.subplots_adjust(left=0.065, right=0.975, top=0.935, bottom=0.05, wspace=0.22, hspace=0.42)
+    else:
+        fig, axs = plt.subplots(2, 2, figsize=(13.0, 9.2), facecolor=SURF)
+        fig.subplots_adjust(left=0.065, right=0.975, top=0.9, bottom=0.075, wspace=0.22, hspace=0.4)
     fig.suptitle("Both pumps of record with real diodes: the start kick, the start-up and the gain against the seed "
                  "(sim/diodes_real.py)", fontsize=11.0, color=INK, x=0.065, ha="left")
     cols = {"ND": BASE, "GP": SERIES[0], "FR": SERIES[1], "SB": SERIES[2], "SBM": SERIES[3]}
@@ -1306,14 +1568,61 @@ def figure(out, path):
     style(ax, "(d) The rings' DC from the clamped run's −1 kV seed", "V_B − V_A, the least in each cycle, kV",
           "time, s")
     ax.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right")
+    if ab:
+        figure_ab(ab, axs[2, 0], axs[2, 1], style, ecols, enames)
     fig.savefig(path, dpi=150, facecolor=SURF)
     plt.close(fig)
+
+
+def figure_ab(ab, ax_e, ax_f, style, ecols, enames):
+    """§2b's row: (e) the gain against the amplitude on the as-built set (every run with the rings' chains); (f) the
+    rings' DC from each clamped run that reaches the clamp."""
+    view = dict(runs={m: {k: v for k, v in R.items() if "bare" not in k and "steps" not in k}
+                      for m, R in ab["runs"].items()}, thresholds=ab["thresholds"])
+    ys = []
+    for m in AB_MODELS:
+        pts = _z_points(view, m)
+        if not pts:
+            continue
+        ys += [p_[1] for p_ in pts]
+        ax_e.semilogx([p_[0] for p_ in pts], [p_[1] for p_ in pts], color=ecols[m], lw=0, marker="o", ms=2.6,
+                      alpha=0.85, label=enames[m])
+        vg = ab["table"].get(m, {}).get("threshold_grows_V")
+        if vg and vg > 1.0:
+            ax_e.plot([vg], [1.0], marker="v", ms=7, color=ecols[m], mec=SURF, lw=0)
+    ax_e.axhline(1.0, color=INK2, lw=0.8, ls=":")
+    lo, hi = (min(ys) - 0.01, max(ys) + 0.01) if ys else (0.9, 1.1)
+    for v, lab in ((abs(ES_FREE["v0"]), "the free-run seed"), (abs(V0_CLAMPED), "the deck's seed")):
+        ax_e.axvline(v, color=AXIS, lw=0.8)
+        ax_e.text(v * 1.06, lo + 0.004, lab, fontsize=7.0, color=INK2, rotation=90, va="bottom")
+    ax_e.set_ylim(lo, hi)
+    style(ax_e, "(e) As built (sim/tube_strays_results.json): the gain over a cycle against node 1's amplitude; "
+                "▼ the smallest seed that grows", "V1 peak ratio, next cycle / this cycle", "node 1's peak, |V|")
+    ax_e.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right", markerscale=2)
+    t_max = 0.0
+    for m in AB_MODELS:
+        R = ab["runs"].get(m, {})
+        seeds = sorted({float(nm.split(" ")[1]) for nm in R if nm.startswith("clamped")})
+        for k, v in enumerate(seeds):
+            r = _longest_clamped(R, -v)
+            if not r or not r.get("reached_clamp"):
+                continue
+            y = -np.array(r["Vk_per_cycle_kV"])
+            tt = (np.arange(len(y)) + 1) / CF.F
+            t_max = max(t_max, tt[-1])
+            ax_f.plot(tt, y, color=ecols[m], lw=2.0 if m != "ND" else 1.6, ls="--" if (m == "ND" or k) else "-",
+                      label=enames[m] + f", from −{v / 1e3:g} kV")
+    ax_f.set_xlim(0, t_max or 1.0)
+    style(ax_f, "(f) As built: the rings' DC from the clamped runs that start", "V_B − V_A, the least in each cycle, kV",
+          "time, s")
+    ax_f.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right")
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--procs", type=int, default=4)
-    ap.add_argument("--only", choices=("mag", "es"), default=None)
+    ap.add_argument("--only", choices=("mag", "es", "ab"), default=None,
+                    help="ab: the electrostatic pump on the as-built set (§2b) only; the other keys are kept")
     ap.add_argument("--figure-only", action="store_true", help="redraw the figure from the results file")
     ap.add_argument("--cache", default=None, help="a JSON-lines file of finished runs: kept, and skipped on a rerun")
     a = ap.parse_args()
@@ -1327,7 +1636,10 @@ def main():
     old = json.load(open(OUT_JSON)) if (a.only and os.path.exists(OUT_JSON)) else None
     res = run_all(a.procs, a.only, a.cache)
     out = summarise(res, old)
-    out["run_s"] = time.time() - t0
+    if a.only == "ab":                                              # the other keys' run time is kept
+        out["electrostatic_as_built"]["run_s"] = time.time() - t0
+    else:
+        out["run_s"] = time.time() - t0
     json.dump(out, open(OUT_JSON, "w"), indent=1, default=float)
     if "magnetic" in out and "electrostatic" in out:
         figure(out, OUT_FIG)
