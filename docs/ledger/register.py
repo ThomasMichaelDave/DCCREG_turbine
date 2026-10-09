@@ -81,6 +81,18 @@ _R = [
     ("B", "The reversing gear and the belt drive (PROPOSED)", "docs/figures/drive-gear-concept.svg",
      "the first cut: a bevel reverser at side A, its carrier held by the frame, three POM-C pinions; the HTD belt and "
      "the motor", "sim/drive_sizing.py --figure"),
+    ("B", "The utrons in 3-D: their ends, their coupling and the pump", "docs/figures/utron-3d.png",
+     "κ in 3-D against the record's 2-D section, where the flux goes, the coils' coupling round the machine, and the "
+     "pump with each utron set (model check 34)", "sim/utron_3d.py"),
+    ("B", "The neck in a nonlinear field solve", "docs/figures/neck-nonlinear.png",
+     "Ψ(NI) of the built utron, where the iron saturates, and the pump with the field map's law (model check 31)",
+     "sim/neck_nonlinear.py"),
+    ("B", "Real diodes in both pumps", "docs/figures/diodes-real.png",
+     "the kick's threshold by rectifier class, the electrostatic gain against the seed, and the rings with real HV "
+     "sticks (model check 32)", "sim/diodes_real.py"),
+    ("B", "The tube's strays by a field solve", "docs/figures/tube-strays.png",
+     "the strays per node and where they come from, the varicap with its rims, and the pump as built (model check 33)",
+     "sim/tube_strays.py"),
     # ---------------------------------------------------------------------------------------- C: earlier phases
     ("C", "The machine as modelled before the record: section", f"{_TUBE}-section.png",
      "superseded by the record in solids: the old vacuum 8 + 8 stack, Ca / Cb on the counter-rotor, the 120 mm "

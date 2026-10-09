@@ -9,7 +9,7 @@ temporary documentation ledger and the current fact sheet of the exercise.
 | design state | the lock's baseline is commit `09243c7` on branch `claude/new-session-0az7f9`. The settlement (2026-10-09; §2.3, §6) brought the records into line with it, corrected two computed values (the field at the null with the beads; the beads as drawn) and added first cuts, which stay PROPOSED until the designer accepts them |
 | what the lock means | the design of record below is the baseline; later changes are recorded against it. The lock does not settle what is still PROPOSED or OPEN (§5): those keep their status |
 | this ledger | `docs/ledger/DCCREG-design-ledger.md` (the source) and `.pdf` (its print form) |
-| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 50 sheets behind a two-page register (§7) |
+| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 54 sheets behind a two-page register (§7) |
 | how it is built | `python3 docs/ledger/make_ledger.py` (needs markdown-it-py, mdit-py-plugins, pypdf and playwright with Chromium) |
 
 **Abstract.** As locked, the DCCREG turbine is a belt-driven tube machine. Its rotor and counter-rotor turn at 600 rpm
@@ -838,8 +838,10 @@ Source: `docs/bench-test-rings.md`.
 
 ## 6. Known inconsistencies and stale records
 
-The lock recorded 18 and fixed none. The settlement (2026-10-09) resolved them against the baseline and found twelve
-more; each line says what was done and where. The model checks (31–34) run as studies of their own.
+The lock recorded 18 and fixed none. The settlement (2026-10-09) resolved them against the baseline, ran the four
+model checks (31–34) as studies of their own, and found 42 more (19–30 and 35–64), mostly through those studies; each
+line says what was done and where. Where a check corrects a number of record, the record's value stays as its basis
+and the corrected one stands beside it, dated, until the designer decides.
 
 **The lock's 18**
 
@@ -881,7 +883,7 @@ more; each line says what was done and where. The model checks (31–34) run as 
 | 29 | the cost sheet's six bearings; the drive makes seven, the eighth pair eight | **open:** with the shaft and the drive (§5.2) |
 | 30 | the hub's register says d 30, but a 6205 takes a 25 mm journal | **open:** with the shaft (§5.2) |
 
-**The model checks** (running when this revision was written; their findings land in `sim/`)
+**The model checks** (each a study: a script, its results and its findings in `sim/`)
 
 | # | check | where it lands |
 |:--|:--|:--|
@@ -985,20 +987,24 @@ redraw them (`docs/ledger/register.py`).
 | 23 | The vane matrix: rim corona margins | `docs/figures/vane-matrix-corona.png` |
 | 24 | The AH's null in the locked hub | `docs/figures/ah-null.png` |
 | 25 | The reversing gear and the belt drive (PROPOSED) | `docs/figures/drive-gear-concept.svg` |
+| 26 | The utrons in 3-D: their ends, their coupling and the pump | `docs/figures/utron-3d.png` |
+| 27 | The neck in a nonlinear field solve | `docs/figures/neck-nonlinear.png` |
+| 28 | Real diodes in both pumps | `docs/figures/diodes-real.png` |
+| 29 | The tube's strays by a field solve | `docs/figures/tube-strays.png` |
 
 **Part C — earlier phases, superseded, kept for the record**
 
 | sheets | what | files |
 |:--|:--|:--|
-| 26–28 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
-| 29 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
-| 30–31 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
-| 32–34 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
-| 35–37 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
-| 38–41 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
-| 42–43 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
-| 44–46 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
-| 47–50 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
+| 30–32 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
+| 33 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
+| 34–35 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
+| 36–38 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
+| 39–41 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
+| 42–45 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
+| 46–47 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
+| 48–50 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
+| 51–54 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
 
 **CAD and DXF files** (not on sheets; `tools/step-viewer/` renders the STEP files):
 - **of the record:**
