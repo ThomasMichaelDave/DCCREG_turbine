@@ -339,12 +339,15 @@ def build_cart(sp_, theta, h, mu_r, mode="quarter", two_d=False, L=None, zfar=No
     xu = sp_["r_g"] * math.radians(theta)
     d, b, g, rg = sp_["d"], sp_["b"], sp_["g"], sp_["r_g"]
     ylo, yhi = (sp_["u_m0"] - rg) - 40.0 - ywall, g + sp_["t_b"] + 40.0 + ywall
-    ybr = [(0.0, m["hg"]), (g, m["hg"]), (-d, h), (-d - b, h), (g + sp_["t_b"], h), (sp_["u_p0"] - rg, h),
-           (sp_["u_p1"] - rg, h), (sp_["u_m1"] - rg, h), (sp_["u_m0"] - rg, h)]
-    y = graded(ybr, ylo, yhi, m["hc"], m["grow"])
+    ybr = [(sp_["u_p0"] - rg, h), (sp_["u_p1"] - rg, h), (sp_["u_m1"] - rg, h), (sp_["u_m0"] - rg, h),
+           (-d, h), (-d - b, h)]
     bridges = [(j * pitch - xu) for j in range(-2, 4)]
-    xbr = [(v, m["hx"]) for v in (sp_["s"] / 2, sp_["s"] / 2 + sp_["w_p"], -sp_["s"] / 2, -sp_["s"] / 2 - sp_["w_p"])]
-    xbr += [(sp_["cv"], h), (-sp_["cv"], h)] + [(xb + sgn * sp_["l_b"] / 2, m["hx"]) for xb in bridges for sgn in (-1, 1)]
+    xbr = [(sp_["cv"], h), (-sp_["cv"], h)]
+    if iron:                                                     # the iron's faces (the air-cored winding needs none)
+        ybr += [(0.0, m["hg"]), (g, m["hg"]), (g + sp_["t_b"], h)]
+        xbr += [(v, m["hx"]) for v in (sp_["s"] / 2, sp_["s"] / 2 + sp_["w_p"], -sp_["s"] / 2, -sp_["s"] / 2 - sp_["w_p"])]
+        xbr += [(xb + sgn * sp_["l_b"] / 2, m["hx"]) for xb in bridges for sgn in (-1, 1)]
+    y = graded(ybr, ylo, yhi, m["hc"], m["grow"])
     if mode == "quarter":
         xm = X / 2 if xmax is None else xmax
         x = graded([q for q in xbr if -1e-9 <= q[0] <= xm], 0.0, xm, m["hc"], m["grow"])
@@ -356,7 +359,7 @@ def build_cart(sp_, theta, h, mu_r, mode="quarter", two_d=False, L=None, zfar=No
         z, bcz = np.array([0.0, 10.0]), "per"
     else:
         zfar = (L + sp_["clr"] + sp_["h_c"] + 200.0) if zfar is None else zfar
-        z = graded([(L, m["hz"]), (L + sp_["clr"], h), (L + sp_["clr"] + sp_["h_c"], h)], L / 2, zfar,
+        z = graded([(L, m["hz"] if iron else h), (L + sp_["clr"], h), (L + sp_["clr"] + sp_["h_c"], h)], L / 2, zfar,
                    max(m["hc"], 4 * h), m["grow"])
         bcz = ("nat", far_z)
     G = Grid([y * MM, x * MM, z * MM], [(far_y, far_y), bcx, bcz])
