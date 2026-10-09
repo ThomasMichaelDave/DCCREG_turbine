@@ -147,7 +147,7 @@
   "pick": "g 0.5 / 6 bridges / 1200 rpm"
  },
  "step": "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.step",
- "step_bytes": 1255191,
+ "step_bytes": 1255471,
  "step_read_back": {
   "instances": 153,
   "assemblies": 8,

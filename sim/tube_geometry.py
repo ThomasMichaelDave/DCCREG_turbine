@@ -192,9 +192,9 @@ class Machine:
         hub = [e for e in el if e["kind"] == "hub"][0]
         fl = {e["side"]: e for e in el if e["kind"] == "flange"}
         brg = sorted([e for e in el if e["kind"] == "bearing"], key=lambda e: e["z0"])
-        self.proto("shaft_A", lambda: sector(0.0, S.SHAFT_R, z_lo, fl["A"]["z0"]), COL["steel"], "steel shaft half")
-        self.proto("shaft_B", lambda: sector(0.0, S.SHAFT_R, fl["B"]["z1"], z_hi), COL["steel"], "steel shaft half")
-        self.proto("flange", lambda: sector(0.0, S.FLANGE_R, 0.0, S.FLANGE_T), COL["steel"], "steel flange")
+        self.proto("shaft_A", lambda: sector(0.0, S.SHAFT_R, z_lo, fl["A"]["z0"]), COL["steel"], "austenitic stainless shaft half, non-magnetic")
+        self.proto("shaft_B", lambda: sector(0.0, S.SHAFT_R, fl["B"]["z1"], z_hi), COL["steel"], "austenitic stainless shaft half, non-magnetic")
+        self.proto("flange", lambda: sector(0.0, S.FLANGE_R, 0.0, S.FLANGE_T), COL["steel"], "austenitic stainless flange, non-magnetic")
         self.add("shaft_A", "shaft_A", "rotor", "", "rotor", join="rotor-core", desc="shaft half A")
         self.add("shaft_B", "shaft_B", "rotor", "", "rotor", join="rotor-core", desc="shaft half B")
         for side in ("A", "B"):

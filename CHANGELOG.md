@@ -174,6 +174,9 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
   the contact would not discharge, from the gel-filled gap's voltage. That holds at switch-on only. Once settled, in
   service, a sealed void reaching 0.5 mm from an equatorial contact is at 0.99 of Paschen's breakdown and one reaching
   1 mm at 1.46; the polar contacts hold. The bench's partial-discharge criterion now runs through the settled hours.
+- **Fixed: the shaft's material in the record's solids:** the halves and flanges were labelled "steel"; they are
+  "austenitic stainless, non-magnetic" (μ_r ≤ 1.05, the AH null's condition). `sim/tube_geometry.py --record` and
+  `sim/step_to_glb.py` re-run; the geometry and the renders are unchanged.
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the

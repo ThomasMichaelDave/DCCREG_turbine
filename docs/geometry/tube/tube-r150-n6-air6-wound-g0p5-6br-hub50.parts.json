@@ -12,7 +12,7 @@
 "dz": 0.0,
 "rot": 0.0
 },
-"label": "rotor / shaft_A - shaft half A [steel shaft half, rotor]"
+"label": "rotor / shaft_A - shaft half A [austenitic stainless shaft half, non-magnetic, rotor]"
 },
 {
 "name": "shaft_B",
@@ -26,7 +26,7 @@
 "dz": 0.0,
 "rot": 0.0
 },
-"label": "rotor / shaft_B - shaft half B [steel shaft half, rotor]"
+"label": "rotor / shaft_B - shaft half B [austenitic stainless shaft half, non-magnetic, rotor]"
 },
 {
 "name": "A_flange",
@@ -40,7 +40,7 @@
 "dz": 390.0,
 "rot": 0.0
 },
-"label": "hub / A_flange - shaft-half flange A, bolted to the bicone apex [steel flange, rotor]"
+"label": "hub / A_flange - shaft-half flange A, bolted to the bicone apex [austenitic stainless flange, non-magnetic, rotor]"
 },
 {
 "name": "B_flange",
@@ -54,7 +54,7 @@
 "dz": 542.0,
 "rot": 0.0
 },
-"label": "hub / B_flange - shaft-half flange B, bolted to the bicone apex [steel flange, rotor]"
+"label": "hub / B_flange - shaft-half flange B, bolted to the bicone apex [austenitic stainless flange, non-magnetic, rotor]"
 },
 {
 "name": "rotor_sleeve_1",

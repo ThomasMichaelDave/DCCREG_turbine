@@ -831,6 +831,7 @@ more; each line says what was done and where. The model checks (31–34) run as 
 | 42 | the bead study's "a void at the contact would not discharge" took the gel-filled gap's voltage | **corrected:** it holds at switch-on only; settled, a sealed void reaching 0.5 mm from an equatorial contact breaks down (0.99 in service); the contacts are cast void-free and inspected through the glass (§4 there) |
 | 43 | the gores' overlaps and joints, not modelled | **settled:** the laps hold with deburred, filleted edges and no void under them (§2 there) |
 | 44 | the bead rings' closing joints: the polar beads sit 0.3–0.4 % under their rating | **settled:** the polar rings seamless, or the AH ends rounded (2.3–2.4 %); the equatorial joints dressed within δ / w 0.03 (§3 there) |
+| 45 | the record's solids labelled the shaft halves and flanges "steel" against the preset's non-magnetic | **done:** "austenitic stainless, non-magnetic" (μ_r ≤ 1.05, `sim/ah-null-findings.md` §5); `sim/tube_geometry.py --record` and its GLB regenerated, the geometry unchanged |
 
 ## 7. Drawing register
 
