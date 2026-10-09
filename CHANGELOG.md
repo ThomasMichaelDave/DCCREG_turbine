@@ -5,6 +5,12 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 ## [Unreleased]
 
 ### Fixed
+- **The lock-down's ring record overstated what the rings hold** (`sim/hub-locked-findings.md` §1, superseded by
+  `sim/hub-rings-build-findings.md`).
+  - **What was missed:** three stages at 20–53° were sized by the gap between the rings alone. The copper edges were
+    never checked, and the polar beads would run at 7.7 kV/mm in the gel against the AH coil's end (the design value
+    is 5).
+  - **The record now:** the rings as built, two stages on ring B, 28.2 kV across, 6.9 kV/cm at the null (was 7.8).
 - **The cost sheet's BOM had one MnZn AH core**; the hub has two, one per coil (`docs/make_cost_sheet.py`). Every total
   rises by 34.5 (30 + contingency), and the README follows: the DC null's cheapest build is 6,147.
   - The vessel line is now the locked 50 mm borosilicate sphere.
@@ -27,6 +33,50 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **The rings as built: the edges set the stages** (designer's brief 2026-10-09; `sim/hub_rings_build.py`,
+  `sim/hub-rings-build-findings.md`, `docs/figures/hub-rings-build.png`, `presets/hub-locked.json`).
+  - **The retainer:** unfilled PEEK, machined with a 0.5 mm pocket over the glass, filled void-free with silicone gel;
+    the G10 coupler outside it (proposed).
+    - It is non-magnetic and non-conducting.
+    - Its ε barely moves the field at the null: +0.7 % to −1.5 % from PTFE to alumina against PEEK. Only the rings'
+      strays follow it.
+  - **The copper:** 0.1 mm foil bands cut as gores, with soldered wire-ring beads at the edges: Ø3 mm at the polar
+    edges, Ø2 mm at the equatorial edges.
+    - The polar beads face the AH coil's end across the 5.7 mm PEEK seat: about 4 kV/mm in the gel per 10 kV on the
+      ring at 20°. They set how near the pole the bands may start.
+  - **The leakage:** about 100 GΩ per ring (ledger 158 GΩ), set by the multiplier's diodes and capacitors and the HV
+    assembly's surface. The rings' own insulation leaks a thousand times less.
+  - **The stages:** the gap along the glass at 1 kV/mm, and both beads at 5 kV/mm in the gel.
+    - **At those ratings,** two stages on ring B: 28.2 kV across, bands 25.75–57.7°, 6.9 kV/cm (2.1 Pa) at the null.
+      More stages lose, because the beads push the bands from the pole while the gap widens.
+    - **At qualified ratings:** with 2 kV/mm along the glass and 8 kV/mm in the gel, six stages hold (two negative on
+      ring A, four on ring B, 56.9 kV): 13.3 kV/cm. One higher rating alone gains about 15 %.
+  - **The balanced supply:** ring A on its own negative chain (`sim/core_field.py` `n_cw_a`): −20.7 / −28.0 kV on
+    one / two stages. Every earlier deck is unchanged byte for byte.
+  - **The search:** tables of the field at the null and of both edges, from local solves (0.025 mm cells) solved per
+    mode and superposed per supply. Each pair of ratings' best is re-solved directly. The Ø3 mm beads are converged;
+    the Ø2 mm read about 2.5 % low.
+  - **The records:**
+    - **the spec** (`presets/hub-locked.json`) carries the build: the rings, the new ratings, rings_leakage and
+      interface_filler entries, the retainer (PEEK, proposed), the coupler (G10 outside). `sim/hub_locked.py` keeps
+      its placeholder ε 4.7 (`EPS_RET_LOCKDOWN`), so the lock-down study reproduces exactly.
+    - **the schematic's panel (b)** draws ring B's two stages and the beaded bands;
+    - **the cost sheet** (`docs/cost/README.md`) carries two stages, the factors at 100 GΩ up to six and ring A's
+      optional chain, with the PEEK retainer and the gel in the BOM. 81 designs qualify at 6.5 kV/cm: the cheapest
+      5,951, the best per watt 8,250. The qualified ratings' stages cost little more on the same stack (5,984 / 6,084).
+- **The bench test of the rings** (`docs/bench-test-rings.md`, `sim/hub_drift.py`, `docs/figures/hub-bench-predictions.png`).
+  - **The phases:**
+    - the hold-off on coupons and the sphere, which sets the stages;
+    - each ring's leakage;
+    - the DC drift on lab supplies;
+    - the rings on the pump's own supply.
+  - **The probe:** an electro-optic BGO sensor on a fibre along the axis.
+  - **What the field at the null should do** (the record):
+    - **start-up:** 95 % in 0.22 s;
+    - **the 120 Hz swing:** 0.009 kV/cm p-p on 6.93 (0.13 %);
+    - **the drift:** 6.93 kV/cm at switch-on, 7.54 at 1 h, 7.57 at 6 h, as the glass, gel and PEEK leak (current
+      continuity on the hub's finite volumes, datasheet-class conductivities [IR]).
+  - **The other materials:** PEI drifts +14 %, G10 +1 % (its σ/ε matches the glass's).
 - **The rings outside the glass make the field at the AH null** (designer's choice, 2026-10-09; `sim/hub_locked.py`,
   `sim/hub-locked-findings.md`, `docs/figures/hub-locked.png`, `presets/hub-locked.json`).
   - **The choices:** the rings, a 1.5 mm wall, the AH flanges outside the vessel (outboard of the 160-turn coil, at
