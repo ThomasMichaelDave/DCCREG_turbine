@@ -71,7 +71,7 @@ in opposite directions through a 1 : −1 reversing gear.
   - groups A and B run in antiphase, in a circuit that is the exact dual of a diode charge doubler;
   - the saturating NiFe neck in each utron is the clamp;
   - one AH coil sits in each group's branch, and a 22 mF bypass across it (PROPOSED) holds a steady 300 ampere-turns
-    (221–245 with the 3-D utrons).
+    (221–245 with the 3-D utrons; 249–272 with the neck's field map as well, the best estimate).
 - **The electrostatic pump:**
   - the varicaps C1 / C2 swing 55 ↔ 410 pF in antiphase (128 ↔ 451 pF as built, with the vanes' rims, `sim/tube-strays-findings.md`);
   - the de Queiroz diode doubler multiplies its charge each cycle until the clamps Z1 / Z4 hold the nodes at their
@@ -94,13 +94,13 @@ in opposite directions through a 1 : −1 reversing gear.
 | diameters | vanes Ø300 mm; bridge ring Ø313 mm; stator cage Ø332 mm | `sim/pole-design-findings.md` §8 |
 | magnetic pump, per side | 3 wound utrons (200 turns, 2.23 kg each) and 6 SiFe bridges, gap 0.5 mm | `sim/pole-design-findings.md` §8 |
 | AH | 160-turn coils on Fair-Rite 77 MnZn rods (0.80 mm wire, 0.333 Ω as wound); 22 mF bypass each (PROPOSED); 290–308 A-turns (300 mean, ±3 %; 294 as wound) with the record's 2-D utrons, 221–245 with the 3-D ones | `sim/ah-steady-cusp-findings.md`; `sim/hub-thermal-findings.md` §1; `sim/utron-3d-findings.md` §4 |
-| the AH's null | at the centre; 0.113 T/m (0.083–0.092 with the 3-D utrons); within ±0.44 mm over a cycle with the bypass, ±6.4 mm without | `sim/ah-null-findings.md`; `sim/utron-3d-findings.md` |
+| the AH's null | at the centre; 0.113 T/m (0.083–0.092 with the 3-D utrons, 0.094–0.102 with the neck's field map as well); within ±0.44 mm over a cycle with the bypass, ±6.4 mm without | `sim/ah-null-findings.md`; `sim/utron-3d-findings.md` |
 | electrostatic pump, per side | 6 + 6 Al vanes 3 mm, full rounds R1.5, 6 mm air gaps; C1 / C2 55–410 pF; Ca / Cb 451 pF. As built (a 3-D field solve): C1 / C2 128–451 pF (κ 3.51), Ca 480.5 pF, node strays 66 / 25 pF; z 1.058 bare, 1.031 with the rings' chains | `sim/air-stack-sizing-findings.md` §6.5; `sim/tube-strays-findings.md` |
 | operating peak | 13.1 kV at the clamps (the 6 mm gap's breakdown over 1.5) | `sim/air_stack_sizing_results.json` |
 | rings | Cu foil 0.10 mm, 26.25–55.71° from the axis; beads Ø3 / Ø2 mm; 29.9 mm apart along the glass | `docs/rings-design.md` §2 |
 | rings' supply | symmetric: −14.96 / +14.96 kV on 2 + 2 Cockcroft-Walton stages from the shaft (−14.65 / +14.67 kV with real HV sticks) | `sim/hub_rings_build_results.json` record; `sim/diodes-real-findings.md` §4.3 |
 | field at the null | 7.62 kV/cm from B to A at switch-on, 2.57 Pa (the bands alone 7.10); 8.20 kV/cm once settled at 25 °C; ripple 0.014 kV/cm p-p (0.19 %); no sign change in a revolution. With real HV sticks 7.47 kV/cm at switch-on and 0.049 kV/cm p-p (6.96 kV/cm at their datasheet's maximum leakage). With the tube's strays solved, 7.06 kV/cm (±13.86 kV) | `sim/hub-beads-settled-findings.md` §2; `sim/hub_drift_results.json`; `sim/hub_revolution_results.json`; `sim/diodes-real-findings.md` §4.3; `sim/tube-strays-findings.md` §5 |
-| power from the belt | magnetic 18.1 W + 1.25 W iron (10.2–12.3 W + iron with the 3-D utrons); electrostatic 2.14 W (0.65 W as built); windage about 12 W and bearings 5 W | `sim/ah-steady-cusp-findings.md`; `sim/utron-3d-findings.md`; `sim/core_field_results.json`; `sim/tube-strays-findings.md`; `sim/rotor-mechanics-findings.md` §5 |
+| power from the belt | magnetic 18.1 W + 1.25 W iron (10.2–12.3 W with the 3-D utrons, 12.7–15.0 W with the neck's field map as well, + iron); electrostatic 2.14 W (0.65 W as built); windage about 12 W and bearings 5 W | `sim/ah-steady-cusp-findings.md`; `sim/utron-3d-findings.md`; `sim/core_field_results.json`; `sim/tube-strays-findings.md`; `sim/rotor-mechanics-findings.md` §5 |
 | the hub's heat | the AH coils 1.22 W each: the coils at 43 °C, the glass at 32–37 °C in a 25 °C room | `sim/hub-thermal-findings.md` |
 | cost (placeholders) | the stack of record's build 6,477 EUR; the cheapest qualifying build 6,060 EUR | `docs/cost/README.md` |
 
@@ -275,7 +275,8 @@ commits' dates.
   rule of ≥ 1.20. The loaded transient run reads 1.139 early on, and 1.147 with the AH bypass
   (`sim/pole_design_variants_op.json`; `sim/ah-steady-cusp-findings.md`).
 - **With the 3-D utrons** the pick reads z_lin 1.16–1.17, under its own rule, and z_early 1.07–1.09. The AH gets
-  221–245 A-turns with the bypass instead of 300, and the belt pays 10–12 W instead of 18
+  221–245 A-turns with the bypass instead of 300 (249–272 with the neck's field map as well, `sim/neck-nonlinear-findings.md` §6),
+  and the belt pays 10–12 W (12.7–15.0 W) instead of 18
   (`sim/utron-3d-findings.md` §4). Restoring 450 A-turns at the peak takes Ψs × 1.27–1.42 (a neck of about
   3.8–4.3 mm), or a longer stack: the designer's (§5.2).
 - Its duality check against the electrostatic doubler gave z 1.528 against 1.512 (`sim/hub-drive-findings.md`).
@@ -293,6 +294,9 @@ commits' dates.
     κ 7.78, z_lin 1.187 in the 2-D frame). Past it the knee is sharper than the ^6 fit, so the pump drives the AH
     harder: 323 A-turns per coil with the bypass (+8 %) for 21.0 W on the belt. Foils stacked axially would keep the
     record's gain (322 A-turns, z_early 1.147); a 3.2–3.3 mm strip would restore Ψs: the designer's.
+  - **With the 3-D utrons as well** (§6 there, the best estimate [IR]): 249–272 A-turns per coil with the bypass
+    (by how each group's coils are connected), z_early 1.028–1.051, 12.7–15.0 W on the belt; the pull stays about
+    28 N per utron.
 - **The start.** With the deck's diodes (0.54 V at 1 A, a 100 V Schottky's drop) a small seed does not grow, because
   the winding voltage while growing is only a few volts. A one-time kick starts it: the record's 20 % of Ψs seeds
   0.110 A and 3.5 mJ (`sim/pole-design-findings.md` §7); the threshold is 16 %, 2.2 mJ, with the deck's diodes
@@ -688,7 +692,7 @@ and tooling.
 | coils | 160 turns of 0.80 mm grade-1 wire in 4 layers, r 8.25–11.45 mm, ±31.35–71.35 mm; 1.01 mH; 0.333 Ω as wound (0.27 Ω in the deck); 1.22 W each, 43 °C |
 | winding | two identical coils, start to the group's utrons, finish to the diode side; rotated copies, start leads toward the vessel |
 | bypass (PROPOSED) | 22 mF per coil, ESR 10 mΩ [RH]; LC 34 Hz; 0.65 A rms, about 0.5 V, 8 mW for the pair |
-| field | 290–308 A-turns per coil (300 mean, ±3 %; 294 as wound); top and bottom within 17 A-turns; 221–245 mean with the 3-D utrons |
+| field | 290–308 A-turns per coil (300 mean, ±3 %; 294 as wound); top and bottom within 17 A-turns; 221–245 mean with the 3-D utrons, 249–272 with the neck's field map as well (`sim/neck-nonlinear-findings.md` §6) |
 | the null | at the centre; 0.113 T/m (0.111 as wound); 25 µm per A-turn of imbalance; ±0.44 mm over a cycle with the bypass, ±6.4 mm without (`sim/ah-null-findings.md`) |
 | rods | 0.121 T at 300 A-turns; 0.30 T [RH] at 743 A-turns for the AH alone |
 | 77 MnZn | µi 2000; 0.51 T at 400 A/m (25 °C); Br 0.18 T; Hc 20 A/m; 1 Ω·m; Curie above 200 °C (Fair-Rite's data sheet, as a search rendered it; to verify, `presets/hub-locked.json` AH core) |
@@ -776,7 +780,8 @@ and tooling.
 - **the rings' joints** (§3.6, `sim/hub-joints-findings.md` §5): the laps' free edges filleted, the polar rings seamless
   (turned) or their joints dressed with the AH ends rounded, the equatorial joints dressed, the contacts void-free;
 - **the AH's steady field and the utrons in 3-D** (§3.2, §3.3; `sim/utron-3d-findings.md`): 300 A-turns (294 as
-  wound) against the 449 the AH was sized to with the record's 2-D utrons, and 221–245 with the 3-D ones, whose z_lin
+  wound) against the 449 the AH was sized to with the record's 2-D utrons, 221–245 with the 3-D ones and 249–272 with
+  the neck's field map as well (the best estimate; z_early 1.028–1.051). The 3-D utrons' z_lin
   1.16–1.17 is under the pick's own ≥ 1.20 rule. Accept the lower field; or restore it with a thicker neck (Ψs × 1.27–
   1.42, about 3.8–4.3 mm of NiFe, the utrons' copper loss × 1.6–2.0), a longer stack (κ about 7.8 at 150 mm, 8.4 at
   200 mm) or a larger pump; and set how each group's three coils are connected (one reversed: κ 6.44, against 5.96
@@ -945,7 +950,7 @@ and the corrected one stands beside it, dated, until the designer decides.
 | 61 | the neck's "0.225 mWb at 0.75 T, 1.1 % above the operating point" (`sim/pole-design-findings.md` §8; DCCREG-UTR-101's data row) | **corrected (dated note):** that takes a stacking factor of 1; at 0.90 the knee is 0.211 mWb, 5 % below. The drawing's row stays until the designer settles the strip (Rev A draft) |
 | 62 | "the flux crosses the strip edge-on, in the plane of the laminations" (`sim/utron_profile.py`, `sim/pole-design-findings.md`) | **corrected:** under the break only; at the laps it crosses the foils, which costs 10 % of the aligned L |
 | 63 | the laps "~3 %", the knee "~5 % / ~30 %" [RH] | **corrected:** 11 %, and 12.8 % / 52 % past the knee (dated notes) |
-| 64 | the pull at the clamp, 28.2 N per utron (`sim/rotor-mechanics-findings.md` §3) | **noted:** about 31 N with the field map's law (0.232 mWb aligned), against the 834 N the studs carry at 600 rpm (`sim/rotor-mechanics-findings.md` §2) |
+| 64 | the pull at the clamp, 28.2 N per utron (`sim/rotor-mechanics-findings.md` §3) | **noted:** about 30 N with the field map's law in the 2-D frame (0.232 mWb aligned), about 28 N with the 3-D utrons as well, against the 834 N the studs carry at 600 rpm (`sim/rotor-mechanics-findings.md` §2) |
 
 ## 7. Drawing register
 

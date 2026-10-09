@@ -284,9 +284,10 @@ def panel_a_table(ox, y, N):
                         "(sim/ah-steady-cusp-findings.md).", "op")
     du = json.load(open(os.path.join(ROOT, "sim", "utron_3d_results.json")))["deck"]
     mean = [du[k]["22mF"]["top"]["AT_mean"] for k in ("cyl_aiding", "frame_a")]
-    zl = [N["u3d"][k]["z_lin"] for k in ("cyl_aiding", "frame_a")]
-    tx(ox + 42, y + 54, f"With the 3-D utrons: AH {mean[0]:.0f}–{mean[1]:.0f} A-turns mean with the bypass, "
-                        f"z_lin {zl[0]:.2f}–{zl[1]:.2f} (sim/utron-3d-findings.md).", "op")
+    nd = json.load(open(os.path.join(ROOT, "sim", "neck_nonlinear_results.json")))["case_D"]["runs"]   # + the neck
+    md = [nd[k]["bypass_22mF"]["AH_AT_top"]["AT_mean"] for k in ("cyl_aiding", "frame_a")]
+    tx(ox + 42, y + 54, f"3-D utrons: AH {mean[0]:.0f}–{mean[1]:.0f} A-t mean with the bypass; with the neck's field map "
+                        f"{md[0]:.0f}–{md[1]:.0f} (sim/neck-nonlinear-findings.md).", "op")
 
 
 # ------------------------------------------------------------------------------------------------ (b) electrostatic

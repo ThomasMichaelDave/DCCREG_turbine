@@ -43,7 +43,8 @@ The run took 34 min on 4 processes (2028 s), reusing its own cache of solves.
   - **the pick fails its own selection rule:** z_lin ≥ 1.20 (`sim/pole-design-findings.md`:29; the pick's 1.208).
     In 3-D it is 1.16–1.17;
   - **the AH's steady field falls from 300 to 221–245 A-turns** with the bypass, so the null's gradient falls from
-    0.113 to 0.083–0.092 T/m (0.377 mT/m per A-turn, `sim/ah-null-findings.md`);
+    0.113 to 0.083–0.092 T/m (0.377 mT/m per A-turn, `sim/ah-null-findings.md`). With the neck's field map as well
+    (`sim/neck-nonlinear-findings.md` §6, 2026-10-09) the sets give 249–272 A-turns, 0.094–0.102 T/m;
   - the belt pays 10–12 W instead of 18;
   - the start: the kick threshold and the speeds of `sim/parts-first-cut-findings.md` §3 were found with the record's
     utrons, and a lower z_early starts harder. Not re-run here; re-run in `sim/start-3d-findings.md`: K4 still starts

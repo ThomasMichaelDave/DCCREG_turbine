@@ -78,7 +78,8 @@ elements one for one [OC]:
   - For true AC, couple the AH through a transformer, which removes the DC part.
   - **For a steady cusp**, put a bypass capacitor across each AH coil. At the pick, 22 mF per coil holds both coils at
     300 A-turns ±3 % with the pump unchanged (`sim/ah-steady-cusp-findings.md`). With the utrons in 3-D
-    (2026-10-09, `sim/utron-3d-findings.md`) it holds them at 221–245 A-turns.
+    (2026-10-09, `sim/utron-3d-findings.md`) it holds them at 221–245 A-turns; 249–272 with the neck's field map as
+    well (`sim/neck-nonlinear-findings.md` §6).
 - **AH rod limit.** The MnZn rod's 0.30 T limit corresponds to about 600 ampere-turns (with the register's cone
   windings in series; for the AH alone 743, `sim/ah-null-findings.md` §4).
   - The 160-turn rewind fits at the design point.

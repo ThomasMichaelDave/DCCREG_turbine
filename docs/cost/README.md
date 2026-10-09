@@ -146,7 +146,8 @@ The best per watt with a swinging core is 6 mm gaps, 2.5 mm vanes at r 300 mm, 2
     (placeholders).
 - **The AH's steady cusp is met:** 300 A-turns per coil with the 22 mF bypass (PROPOSED). Above that, the AH or the pump must be
   re-sized, which is not costed.
-  - **With the utrons in 3-D** (2026-10-09, `sim/utron-3d-findings.md`) the pump gives 221–245 A-turns, not 300. Its
+  - **With the utrons in 3-D** (2026-10-09, `sim/utron-3d-findings.md`) the pump gives 221–245 A-turns, not 300
+    (249–272 with the neck's field map as well, `sim/neck-nonlinear-findings.md` §6). Its
     remedies (a thicker neck, a longer stack, a larger pump) are the designer's and not costed.
 
 ## Open

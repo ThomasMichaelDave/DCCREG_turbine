@@ -265,6 +265,12 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
   `sim/utron_profile.py`, `sim/rotor-mechanics-findings.md` §3, the ledger §3.2, §4, §5.2, §6 items 31 and 61–64).
   DCCREG-UTR-101's data row ("Φs +1.1 %") stays until the designer settles the strip.
   - **Open, the designer's:** keep the strip, stack its foils axially, or thicken it to about 3.2–3.3 mm.
+- **Added: the best estimate of the AH field** (`sim/neck-nonlinear-findings.md` §6, case D): the neck's field map
+  with each 3-D utron set (its 3-D / 2-D ratio on the FE secant L(θ) [IR]; a series-form bracket moves it ≤ 0.4 %).
+  With the bypass the AH holds 249–272 A-turns per coil (by how each group's coils are connected), 0.094–0.102 T/m at
+  the null, z_early 1.028–1.051 and 12.7–15.0 W on the belt; the pull stays about 28 N per utron. The ledger (§1, §3.2,
+  §3.3, §4, §5.2), the AH's records, the cost notes, the rotor schematic and the architecture figure carry it beside
+  the record's 300 and the 3-D study's 221–245.
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the
