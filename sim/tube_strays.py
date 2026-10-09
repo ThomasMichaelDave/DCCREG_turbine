@@ -1240,7 +1240,7 @@ def figure(res, path=FIGURE, log=print):
     best = res["side_best"]
     # (b) the strays per node, by the part they reach (the colours follow the part)
     ax = fig.add_subplot(gs[0, 1])
-    cats = [("SHAFT", "the shaft, flange and AH (through the sleeve)"), ("SA", "the stator vanes"), ("UT", "the utrons"),
+    cats = [("SHAFT", "the shaft, flange and AH (through the sleeve)"), ("SA", "the stator vanes (node 1's: the Ca node-1 plates')"), ("UT", "the utrons"),
             ("BRG", "the bearings"), ("W", "the room (REF wall, r 400)")]
     rows = []
     for node, grp, srcs in (("node 1 / 4", "items1", ("N1v", "N1c")), ("node 2 / 3", "items2", ("N2",))):
@@ -1258,31 +1258,30 @@ def figure(res, path=FIGURE, log=print):
         ax.text(x0 + 1, yy, f"{x0:.1f} pF", va="center", fontsize=9, color=INK, fontweight="bold")
     ax.axvline(res["record_deck"]["CPAR_pF"], color=INK2, lw=1)
     ax.text(res["record_deck"]["CPAR_pF"] + 0.6, 1.5, "the record: 20 pF per node [RH]", fontsize=7.5, color=INK2)
-    ax.set_yticks(y); ax.set_yticklabels([r[0] for r in rows]); ax.set_ylim(-0.6, 1.75)
-    ax.set_xlim(0, 1.25 * max(sum(r[1]) for r in rows))
-    ax.set_xlabel("stray to REF per node, pF (mean of the two angles; the varicap's own and Ca's own taken out)")
+    ax.set_yticks(y); ax.set_yticklabels([r[0] for r in rows]); ax.set_ylim(-1.15, 1.7)
+    ax.set_xlim(0, 1.22 * max(sum(r[1]) for r in rows))
+    ax.set_xlabel("stray to REF per side, pF (mean of the two angles; the varicap's and Ca's own taken out)")
     ax.set_title("(b) The strays per node, by the part they reach", loc="left")
     ax.grid(axis="x", color=GRID, lw=0.8); ax.set_axisbelow(True)
-    ax.legend(fontsize=7, loc="lower right", frameon=False, title="node 1: the stator vanes are the Ca node-1 plates' (through "
-              "the last rotor vane's openings)", title_fontsize=6.5)
+    ax.legend(fontsize=6.8, loc="lower right", ncol=1, frameon=False)
     # (c) the varicap
     ax = fig.add_subplot(gs[0, 2])
     cl = res["cell"]
     n = cl["record"]["n_gap"]
     nr, wr = cl["no_rims"][-1], cl["with_rims"][-1]
-    models = [("the record (2-D cell + 2 pF)", res["inputs"]["C_max_pF"], res["inputs"]["C_min_pF"]),
-              ("3-D cell, no rims, × 11", n * nr["aligned"], n * nr["unaligned"]),
-              ("3-D cell with rims, × 11", n * wr["aligned"], n * wr["unaligned"]),
-              ("the stack as built (ends in)", best["aligned"]["varicap"], best["unaligned"]["varicap"]),
-              ("node 1 to REF, all of it", best["aligned"]["node1_ref"], best["unaligned"]["node1_ref"])]
+    models = [("the record, 2-D cell + 2 pF", res["inputs"]["C_max_pF"], res["inputs"]["C_min_pF"]),
+              ("3-D cell, no rims × 11", n * nr["aligned"], n * nr["unaligned"]),
+              ("3-D cell, rims × 11", n * wr["aligned"], n * wr["unaligned"]),
+              ("the stack, ends in", best["aligned"]["varicap"], best["unaligned"]["varicap"]),
+              ("node 1 to REF, all", best["aligned"]["node1_ref"], best["unaligned"]["node1_ref"])]
     xx = np.arange(len(models))
     ax.bar(xx - 0.17, [m[1] for m in models], width=0.3, color=SERIES[0], label="aligned (C_max)", edgecolor=SURF, linewidth=1)
     ax.bar(xx + 0.17, [m[2] for m in models], width=0.3, color=SERIES[1], label="unaligned (C_min)", edgecolor=SURF, linewidth=1)
     for k, m in enumerate(models):
-        ax.text(k, max(m[1], m[2]) + 12, f"κ {m[1] / m[2]:.2f}", ha="center", fontsize=8, color=INK)
-        ax.text(k + 0.17, m[2] + 4, f"{m[2]:.0f}", ha="center", fontsize=7, color=INK2)
-        ax.text(k - 0.17, m[1] + 4, f"{m[1]:.0f}", ha="center", fontsize=7, color=INK2)
-    ax.set_xticks(xx); ax.set_xticklabels([m[0] for m in models], rotation=14, ha="right", fontsize=7.5)
+        ax.text(k, max(m[1], m[2]) + 34, f"κ {m[1] / m[2]:.2f}", ha="center", fontsize=8, color=INK, fontweight="bold")
+        ax.text(k + 0.17, m[2] + 6, f"{m[2]:.0f}", ha="center", fontsize=7, color=INK2)
+        ax.text(k - 0.17, m[1] + 6, f"{m[1]:.0f}", ha="center", fontsize=7, color=INK2)
+    ax.set_xticks(xx); ax.set_xticklabels([m[0].replace(", ", ",\n", 1) for m in models], fontsize=7)
     ax.set_ylabel("C1 per side, pF"); ax.set_ylim(0, 640)
     ax.set_title("(c) The varicap C1: the rims' fringe the 2-D cell leaves out", loc="left")
     ax.legend(fontsize=7.5, frameon=False, loc="upper left")
@@ -1302,8 +1301,7 @@ def figure(res, path=FIGURE, log=print):
         ax.text(k - 0.17, zb[k] + 0.006, f"{zb[k]:.3f}", ha="center", fontsize=7, color=INK)
         if zr[k]:
             ax.text(k + 0.17, zr[k] + 0.006, f"{zr[k]:.3f}", ha="center", fontsize=7, color=INK)
-    ax.axhline(1.0, color=INK2, lw=1)
-    ax.text(len(show) - 0.5, 1.004, "z = 1: no self-excitation below", ha="right", fontsize=7.5, color=INK2)
+    ax.axhline(1.0, color=INK2, lw=1, label="z = 1: no self-excitation below")
     ax.set_ylim(0.9, 1.36); ax.set_xticks(xx); ax.set_xticklabels([names[k] for k in show], fontsize=7.5)
     ax.set_ylabel("gain per pump cycle, z")
     ax.set_title("(d) The start-up gain (sim/core_field.py's deck)", loc="left")
@@ -1313,10 +1311,10 @@ def figure(res, path=FIGURE, log=print):
     pw = [D[k].get("P_clamped_W") or 0 for k in show]
     ax.bar(xx, pw, width=0.4, color=SERIES[0], edgecolor=SURF, linewidth=1)
     for k in range(len(show)):
-        ax.text(k, pw[k] + 0.03, f"{pw[k]:.2f} W", ha="center", fontsize=7.5, color=INK)
         va, vb = D[show[k]].get("V_A_kV"), D[show[k]].get("V_B_kV")
-        if va is not None:
-            ax.text(k, 0.06, f"rings\n{va:.1f} / {vb:+.1f} kV", ha="center", fontsize=6.8, color=SURF if pw[k] > 0.5 else INK)
+        ax.text(k, pw[k] + 0.03, f"{pw[k]:.2f} W" + (f"\nrings ±{0.5 * (vb - va):.2f} kV" if va is not None else ""),
+                ha="center", va="bottom", fontsize=7.2, color=INK)
+    ax.set_ylim(0, 1.2 * max(pw))
     ax.set_xticks(xx); ax.set_xticklabels([names[k] for k in show], fontsize=7.5)
     ax.set_ylabel("clamped power from the belt, W (clamps at 13.13 kV)")
     ax.set_title("(e) The clamped power and the rings' supply", loc="left")
@@ -1347,7 +1345,10 @@ def main():
     ap.add_argument("--results", default=RESULTS, help="the results file (default sim/tube_strays_results.json)")
     ap.add_argument("--merge", nargs="*", default=[], help="other results files whose solves to reuse (same signature)")
     ap.add_argument("--only", nargs="*", default=None, help="run only these solves (their keys)")
+    ap.add_argument("--figure-only", action="store_true", help="redraw the figure from the results file")
     a = ap.parse_args()
+    if a.figure_only:
+        return figure(json.load(open(a.results)))
     t0 = time.time()
     sig = signature()
     old = json.load(open(a.results)) if a.resume and os.path.exists(a.results) else {}
