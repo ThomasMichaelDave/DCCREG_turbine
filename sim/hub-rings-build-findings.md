@@ -220,7 +220,7 @@
 
 | ratings (interface / gel at a bead) | the record's kind: Dk and chains | the mirror pair |
 |:--|:--|:--|
-| **1 / 5 kV/mm (design)** | **ring B on 2: −13.2 / +15.0 kV, 28.2 kV across, 6.93 kV/cm; 5 diodes, 5 capacitors** | **2 + 2: ±15.0 kV, 29.9 kV across, bands 26.25–55.7°, beads Ø3 / Ø2 mm: 7.10 kV/cm; 8 diodes, 8 capacitors** |
+| **1 / 5 kV/mm (design)** | **ring B on 2: −13.2 / +15.0 kV, 28.2 kV across, 6.93 kV/cm; 5 diodes, 5 capacitors** | **2 + 2: ±15.0 kV, 29.9 kV across, bands 26.25–55.7°, beads Ø3 / Ø2 mm: 7.10 kV/cm (the bands alone; 7.62 as built); 8 diodes, 8 capacitors** |
 | 2 / 5 | ring B on 2: 7.91 kV/cm | 2 + 2: 8.35 kV/cm (beads Ø3 / Ø4 mm) |
 | 1 / 8 | ring A on 1 + B on 2: 7.97 kV/cm | 3 + 3: 7.80 kV/cm |
 | 2 / 8 | ring A on 2 + B on 4: 13.25 kV/cm | 3 + 3: 11.84 kV/cm (this study ran the mirror pair to three a side; the build runs it to four: 4 + 4, 13.38 kV/cm) |
@@ -242,7 +242,7 @@ keeps each family's best per pair of ratings (`best_by_family`).
 
 | ratings (interface / gel at a bead) | the mirror pair | across | bands | beads | at the null |
 |:--|:--|--:|:--|:--|--:|
-| **1 / 5 kV/mm (the record)** | **2 + 2** | **29.9 kV** | **26.25–55.71°** | **Ø3 / Ø2 mm** | **7.10 kV/cm, 2.23 Pa** |
+| **1 / 5 kV/mm (the record)** | **2 + 2** | **29.9 kV** | **26.25–55.71°** | **Ø3 / Ø2 mm** | **7.10 kV/cm, 2.23 Pa (the bands alone; 7.62, 2.57 Pa as built)** |
 | 1 / 8 | 3 + 3 | 44.3 kV | 24.0–39.2° | Ø3 / Ø2 mm | 7.80 kV/cm, 2.69 Pa |
 | 2 / 5 | 2 + 2 | 29.9 kV | 25.5–72.9° | Ø3 / Ø4 mm | 8.35 kV/cm, 3.09 Pa |
 | 2 / 8 | 4 + 4 | 57.9 kV | 30.75–56.8° | Ø3 / Ø3 mm | 13.38 kV/cm, 7.92 Pa |

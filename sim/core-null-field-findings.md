@@ -2,7 +2,8 @@
 
 > **Superseded as the design of record** (the designer, 2026-10-09: "the rings outside the glass make the field").
 > The pair inside the vacuum needed two HV feedthroughs. The record is now the rings outside the glass on the
-> symmetric supply: 7.10 kV/cm at the null (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`). This study
+> symmetric supply: 7.62 kV/cm at the null as built (7.10 for the bands alone; `docs/rings-design.md`,
+> `sim/hub-rings-build-findings.md`, `sim/hub-beads-settled-findings.md` §2). This study
 > stands as the ceiling for electrodes inside the vacuum.
 
 **Source:**

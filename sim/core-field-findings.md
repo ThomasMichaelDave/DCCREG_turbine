@@ -49,7 +49,8 @@
    - **Was the design of record:** bands from 20° to 53° on the glass, on three multiplier stages (32.2 kV across):
      7.8 kV/cm at the null (`sim/hub-locked-findings.md` §1). Superseded by the rings of record
      (`docs/rings-design.md`): bands 26.25–55.71° with beaded edges, the symmetric supply of 2 + 2 stages, ±14.96 kV,
-     7.10 kV/cm at the null (`sim/hub-rings-build-findings.md` §4).
+     7.62 kV/cm at the null as built, 7.10 for the bands alone (`sim/hub-rings-build-findings.md` §4,
+     `sim/hub-beads-settled-findings.md` §2).
 
 **The design.** The air build's capped stack (`sim/air_stack_sizing.py` stage 4c): 3 mm full-round vanes, 6 + 6 per
 varicap per side, 6 × 22° / 22°, 6 mm gaps, r 150. That gives C 55–410 pF, Ca = Cb 451 pF and V_op 13.1 kV, at 1200 rpm
