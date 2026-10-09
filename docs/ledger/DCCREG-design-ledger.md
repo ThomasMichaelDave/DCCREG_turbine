@@ -1,14 +1,15 @@
 # DCCREG turbine — design ledger and fact sheet
 
-**The design lock of 2026-10-09.** A temporary documentation ledger and the current fact sheet of the exercise.
+**The design lock of 2026-10-09, revised the same day after the settlement of its inconsistencies and open points.** A
+temporary documentation ledger and the current fact sheet of the exercise.
 
 | | |
 |:--|:--|
 | status | **LOCKED for now** — the designer, 2026-10-09: "Let's lock the design for now." |
-| design state | commit `09243c7` on branch `claude/new-session-0az7f9`; nothing in the design changed after it |
+| design state | the lock's baseline is commit `09243c7` on branch `claude/new-session-0az7f9`. The settlement (2026-10-09; §2.3, §6) brought the records into line with it, corrected two computed values (the field at the null with the beads; the beads as drawn) and added first cuts, which stay PROPOSED until the designer accepts them |
 | what the lock means | the design of record below is the baseline; later changes are recorded against it. The lock does not settle what is still PROPOSED or OPEN (§5): those keep their status |
 | this ledger | `docs/ledger/DCCREG-design-ledger.md` (the source) and `.pdf` (its print form) |
-| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 44 sheets behind a two-page register (§7) |
+| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 50 sheets behind a two-page register (§7) |
 | how it is built | `python3 docs/ledger/make_ledger.py` (needs markdown-it-py, mdit-py-plugins, pypdf and playwright with Chromium) |
 
 **Abstract.** As locked, the DCCREG turbine is a belt-driven tube machine. Its rotor and counter-rotor turn at 600 rpm
@@ -20,9 +21,11 @@ in opposite directions through a 1 : −1 reversing gear.
     outside of a 50 mm glass vacuum sphere, through two mirrored Cockcroft-Walton chains.
 - **Two static fields at the sphere's centre:**
   - the AH's steady magnetic cusp (300 ampere-turns per coil), with its null at the centre;
-  - a DC electric field of 7.10 kV/cm (2.23 Pa), pointing from ring B to ring A and steady to 0.19 %.
-- **Where the power goes:** all the belt's power, about 21 W, ends as heat in the clamps, the copper and the iron.
-  The products are the fields.
+  - a DC electric field of 7.62 kV/cm (2.57 Pa) at switch-on, settling to 8.2 kV/cm as the insulators leak. It points
+    from ring B to ring A and is steady to 0.19 %.
+- **Where the power goes:** the pumps take about 21.5 W from the belt, and the windage and the bearings about 17 W more,
+  about 39 W in all. All of it ends as heat in the clamps, the copper, the iron, the air and the bearings. The products
+  are the fields.
 - **What is still open:** the physics is mainstream throughout [OC]. The ratings, the leakage and several parts are
   placeholders that the bench test must qualify.
 
@@ -57,7 +60,8 @@ in opposite directions through a 1 : −1 reversing gear.
   - the stator vanes, which are REF for the varicaps;
   - the passive iron bridges.
   It holds no wires, and it reaches the shaft through one inner bearing, the reference link.
-- **The frame** holds the two end bearings, the reversing gear and the drive. Every reaction torque goes into the gear.
+- **The frame** holds the two end bearings, the reversing gear and the drive. The gear puts the same torque on both
+  bodies, and its carrier, held by the frame, takes twice it (`docs/drive-gear-belt.md` §1).
 - **The axis** is vertical: side A below, side B above, mirror images about the hub's equator.
 
 **The two pumps** run at 1200 rpm relative, 120 Hz.
@@ -66,7 +70,7 @@ in opposite directions through a 1 : −1 reversing gear.
     pass;
   - groups A and B run in antiphase, in a circuit that is the exact dual of a diode charge doubler;
   - the saturating NiFe neck in each utron is the clamp;
-  - one AH coil sits in each group's branch, and a 22 mF bypass across it holds a steady 300 ampere-turns.
+  - one AH coil sits in each group's branch, and a 22 mF bypass across it (PROPOSED) holds a steady 300 ampere-turns.
 - **The electrostatic pump:**
   - the varicaps C1 / C2 swing 55 ↔ 410 pF in antiphase;
   - the de Queiroz diode doubler multiplies its charge each cycle until the clamps Z1 / Z4 hold the nodes at their
@@ -85,17 +89,19 @@ in opposite directions through a 1 : −1 reversing gear.
 | quantity | value | source |
 |:--|:--|:--|
 | speed | 600 rpm each way, 1200 rpm relative; both pumps at 120 Hz | `sim/pole-design-findings.md` §6; `sim/core_field.py` |
-| tube | 916 mm with the air stack of record and the 120 mm placeholder hub; the locked hub adds about 24 mm | `sim/air-stack-sizing-findings.md` §6.5; `sim/hub-locked-findings.md` §4 |
+| tube | 940 mm: the air stack of record and the locked hub in solids, 153 solids without a clash | `sim/tube-shaft-findings.md` §0 |
 | diameters | vanes Ø300 mm; bridge ring Ø313 mm; stator cage Ø332 mm | `sim/pole-design-findings.md` §8 |
 | magnetic pump, per side | 3 wound utrons (200 turns, 2.23 kg each) and 6 SiFe bridges, gap 0.5 mm | `sim/pole-design-findings.md` §8 |
-| AH | 160-turn coils on Fair-Rite 77 MnZn rods; 22 mF bypass each; 290–308 A-turns (300 mean, ±3 %) | `sim/ah-steady-cusp-findings.md` |
+| AH | 160-turn coils on Fair-Rite 77 MnZn rods (0.80 mm wire, 0.333 Ω as wound); 22 mF bypass each (PROPOSED); 290–308 A-turns (300 mean, ±3 %; 294 as wound) | `sim/ah-steady-cusp-findings.md`; `sim/hub-thermal-findings.md` §1 |
+| the AH's null | at the centre; 0.113 T/m; within ±0.44 mm over a cycle with the bypass, ±6.4 mm without | `sim/ah-null-findings.md` |
 | electrostatic pump, per side | 6 + 6 Al vanes 3 mm, full rounds R1.5, 6 mm air gaps; C1 / C2 55–410 pF; Ca / Cb 451 pF | `sim/air-stack-sizing-findings.md` §6.5 |
 | operating peak | 13.1 kV at the clamps (the 6 mm gap's breakdown over 1.5) | `sim/air_stack_sizing_results.json` |
 | rings | Cu foil 0.10 mm, 26.25–55.71° from the axis; beads Ø3 / Ø2 mm; 29.9 mm apart along the glass | `docs/rings-design.md` §2 |
 | rings' supply | symmetric: −14.96 / +14.96 kV on 2 + 2 Cockcroft-Walton stages from the shaft | `sim/hub_rings_build_results.json` record |
-| field at the null | 7.10 kV/cm from B to A, 2.23 Pa; ripple 0.014 kV/cm p-p (0.19 %); no sign change in a revolution | `sim/hub_revolution_results.json` |
-| power from the belt | magnetic 18.1 W + 1.25 W iron; electrostatic 2.14 W | `sim/ah-steady-cusp-findings.md`; `sim/core_field_results.json` |
-| cost (placeholders) | the stack of record's build 6,417 EUR; the cheapest qualifying build 6,001 EUR | `docs/cost/README.md` |
+| field at the null | 7.62 kV/cm from B to A at switch-on, 2.57 Pa (the bands alone 7.10); 8.20 kV/cm once settled at 25 °C; ripple 0.014 kV/cm p-p (0.19 %); no sign change in a revolution | `sim/hub-beads-settled-findings.md` §2; `sim/hub_drift_results.json`; `sim/hub_revolution_results.json` |
+| power from the belt | magnetic 18.1 W + 1.25 W iron; electrostatic 2.14 W; windage about 12 W and bearings 5 W | `sim/ah-steady-cusp-findings.md`; `sim/core_field_results.json`; `sim/rotor-mechanics-findings.md` §5 |
+| the hub's heat | the AH coils 1.22 W each: the coils at 43 °C, the glass at 32–37 °C in a 25 °C room | `sim/hub-thermal-findings.md` |
+| cost (placeholders) | the stack of record's build 6,477 EUR; the cheapest qualifying build 6,060 EUR | `docs/cost/README.md` |
 
 ## 2. How the design got here
 
@@ -107,7 +113,7 @@ in opposite directions through a 1 : −1 reversing gear.
 - **What the field at a magnetic null is to be used for is not documented.** This ledger records the brief as given
   and does not supply a purpose.
 
-### 2.2 The path, in ten steps
+### 2.2 The path, in eleven steps
 
 Each step asked a question, found an answer in mainstream physics and left a decision behind. The dates are the
 commits' dates.
@@ -123,7 +129,8 @@ commits' dates.
 | 7 | the pivot: two geared pumps (10-07 → 10-08) | drive the AH from the belt too | the planar dual of the doubler works (z 1.528 against 1.512); wound utrons and passive bridges; the mean-turn fix moves the pick to 2.34 kg, 200 turns, 18.8 W | the magnetic pump of record |
 | 8 | the air build (10-08) | the first tests run in air | air takes about a third of the vacuum field; 6 mm gaps, full-round vanes, the 6 + 6 cap: 2.14 W; the AH bypass for a steady cusp; the vane matrix and the cost sheet | the electrostatic stack of record |
 | 9 | the field at the core (10-08) | the strongest field at the AH null | HV side onto the rotor (unchanged pump); cones steady or swinging (≈1.4 kV/cm); a DC pair inside the vacuum (65.7 kV/cm, but feedthroughs) | the hub locked; the field needs electrodes |
-| 10 | the rings (10-09) | rings outside the glass | the beads, not the separation, set the stages; asymmetric 6.93 kV/cm → symmetric 7.10 kV/cm; steady, no swing | the rings and supply of record (`docs/rings-design.md`) |
+| 10 | the rings (10-09) | rings outside the glass | the beads, not the separation, set the stages; asymmetric 6.93 kV/cm → symmetric 7.10 kV/cm on the bands alone; steady, no swing | the rings and supply of record (`docs/rings-design.md`) |
+| 11 | the settlement (10-09) | do the records agree, and what can be settled before the bench | the lock's 18 inconsistencies resolved and 12 more found and settled; with its beads the null reads 7.62 kV/cm; the beads settled, the hub's heat, the AH null, the rotating mechanics, the drive and the parts' first cuts, the model checks (§6) | the decisions of §5.2 |
 
 ### 2.3 The designer's decisions
 
@@ -142,6 +149,9 @@ commits' dates.
 | 10-09 | "go multistage as long as the rings' separation can hold it" | `sim/hub-rings-build-findings.md` (brief) |
 | 10-09 | the symmetric supply: "if it pumps against the core centre, yes!" | `docs/rings-design.md` |
 | 10-09 | **"Let's lock the design for now."** | this ledger |
+| 10-09 (the settlement) | keep the stack of record (6 mm gaps, V_op = breakdown / 1.5, 22° / 22°, r 150, Ca = 1.1 C_max) and the clamps Z1 / Z4 | §5.1 |
+| 10-09 (the settlement) | accept the magnetic pick and the retainer's materials (PEEK, the silicone gel, the G10 coupler outside); the 22 mF bypass and the equatorial split stay PROPOSED | `presets/hub-locked.json`; §5.1 |
+| 10-09 (the settlement) | rewrite `README.md` and `CLAUDE.md` for the locked machine | `README.md`, `CLAUDE.md` |
 
 ### 2.4 What was learned, and what it superseded
 - **Charge pumps pay their equalisation tax inside the core** [OC].
@@ -167,6 +177,9 @@ commits' dates.
 - **The field at a null needs electrodes; outside the glass they need edges** (`sim/hub-rings-build-findings.md`).
   - The vacuum pair inside reached 65.7 kV/cm but needed two HV feedthroughs.
   - The rings need none. Their beads facing the AH coil ends, not their separation, set how many stages they hold.
+- **Solve what is built** [IR]. The beads were sized in local boxes and never put back in the hub, so the record's
+  null missed their 7 %; the drawing's grooves bring the PEEK to the beads, which the boxes had filled with gel
+  (`sim/hub-beads-settled-findings.md`).
 - **Only the difference between the rings makes field at the null** [OC].
   - The pump's nodes are twins, so identical circuits give none.
   - The record's mirror chains put the null at the shaft's potential and each ring 15 kV from it, and the field is DC
@@ -176,7 +189,7 @@ commits' dates.
 
 ### 3.1 Bodies, drive, bearings and the reference
 
-![Figure 2. The machine as modelled in 3-D: the section through the shaft (side A below). The reluctance sections are the record; the electrostatic stack drawn is the old vacuum 8 + 8, Ca / Cb sit on the counter-rotor and the hub is the 120 mm placeholder (stale in part, §6). Source: docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-section.png (sim/tube_geometry.py --rel wound).](../geometry/tube/tube-r150-n8-wound-g0p5-6br-section.png)
+![Figure 2. The machine of record in 3-D: the section through the shaft (side A below), with the air stack of record and Ca / Cb on the rotor, the reluctance sections and the locked hub; 940 mm. Source: docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-section.png (sim/tube_geometry.py --record).](../geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-section.png)
 
 - **The rotor** turns at +600 rpm and carries all of both pumps' circuits, so no wire crosses between the bodies
   (`sim/core-field-findings.md` §1, §7). It is the split shaft (two halves, each ending in a flange at the hub) with:
@@ -193,17 +206,35 @@ commits' dates.
   - the four inner bearing spiders;
   - six M235-35A bridges per side in a G10 ring, with side B's offset 30°.
 - **The frame** holds the two end bearings and their housings, the 1 : −1 reversing gear, the drive motor and the
-  belt. The gear and belt are not designed or drawn (placeholders in the cost sheet) [RH].
+  belt. **The drive's first cut** (PROPOSED, `docs/drive-gear-belt.md`):
+  - a bevel reverser at side A, its carrier held by the frame: two stainless side gears (z 30, m 2) and three POM-C
+    pinions;
+  - an HTD 5M belt, 4 : 1, from a 200 W brushless motor whose driver ramps and limits the current;
+  - the gear puts 0.48 / 0.52 N·m on the bodies and 1.00 N·m into the frame; the belt carries 59 W with a 25 W
+    windage allowance; the run-up takes 32 s;
+  - the pumps' 120 / 240 Hz pulsation stays in the bodies: the gear sees 0.061 N·m p-p;
+  - 1,066 EUR against the cost sheet's 800.
 - **The bearings:** six 6205-class deep-groove bearings (25 / 52 / 15 mm), each on an 8 mm G10 spider.
-  - The four inner ones join rotor and counter-rotor at the relative speed; only the two end bearings face the frame
-    (`sim/tube-shaft-findings.md` §5).
-  - Why six: on the earlier 1263 mm build, two end bearings fail at any shaft diameter, and four need d 34–40 mm. Six
-    give d 25 with f1 239 Hz and 5 µm deflection (`sim/tube-shaft-findings.md` §3).
-  - That check has not been re-run on the current build.
+  - The four inner ones join rotor and counter-rotor at the relative speed; only the two end bearings face the frame.
+  - **So the counter-rotor floats on the shaft** (`sim/tube-shaft-findings.md` §0; `sim/rotor-mechanics-findings.md`
+    §4, an independent model that agrees). As laid out (d 25) the first mode is 27–29 Hz, and 1 g lateral moves the
+    utron gap 123 µm at the stack's centre and 1.7× that at its outer end.
+  - **The ways out:** d 40 gives 65 Hz and 25 µm. A bearing between the shaft and each bridge ring's outer end gives
+    131–165 Hz (realistic to stiff seats) and 2–3 µm, but on G10 spiders it sits only 9 % above the pumps' 120 Hz, and
+    the layout grows 10–20 mm a side for it. The choice is the designer's (§5.2).
+  - **The gap budget:** each inner bearing's total runout within 0.027 mm as laid out (P5 bearings under an axial
+    spring preload), or 0.05 mm with the eighth pair (`sim/rotor-mechanics-findings.md` §5).
 - **The shaft:**
-  - it is d 25 in the tube model and d 30 in the hub's register, which is OPEN (§6);
-  - a non-magnetic shaft is recommended [IR];
+  - it is d 25 in the tube model and d 30 in the hub's register: OPEN, with the bearings (§5.2). A 6205 needs 25 mm
+    journals;
+  - non-magnetic, μ_r ≤ 1.05: annealed austenitic stainless. Steel halves would tie the AH null to how each seats, and
+    titanium drops the first mode to 21 Hz (`sim/ah-null-findings.md` §5; `sim/rotor-mechanics-findings.md` §4);
   - it is split at the hub, each half bolted at its flange (r 32 × 8 mm at ±72–80 mm in the locked hub).
+- **The rotating loads** (`sim/rotor-mechanics-findings.md`):
+  - no banding is needed: at 750 rpm every part holds with a factor of 19 or more, if the studs are preloaded and the
+    joints bonded in the impregnation;
+  - balance each body to G2.5;
+  - windage takes about 12 W and the bearings 5 W.
 - **The reference link.** The counter-rotor's stator vanes are REF for C1 / C2. They reach the shaft through one inner
   bearing:
   - the path is rail → lead → outer ring → balls → inner ring → shaft;
@@ -242,29 +273,43 @@ commits' dates.
   i = Ψ/L·(1 + (Ψ/Ψs)⁶) is a fit [IR]. The neck is sized to the AH's need and no larger, because heat goes as Ψs²
   (`sim/pole-design-findings.md` §3, §8).
 - **The start.** With silicon diodes (0.55 V) a small seed does not grow, because the winding voltage while growing
-  is only a few volts. A one-time kick of about 20 % (of Ψs) starts it. The kick source is OPEN, and so is its
-  polarity if the bypass electrolytics are polarised.
+  is only a few volts. A one-time kick of about 20 % of Ψs starts it: it seeds 0.110 A and 3.5 mJ
+  (`sim/pole-design-findings.md` §7). Kick above about 200 rpm, clear of the drive's 20 Hz gear mode
+  (`docs/drive-gear-belt.md` §4.2). The kick source is OPEN, and so is its polarity if the bypass electrolytics are
+  polarised.
 - **The parts:**
   - the utrons: M235-35A 0.35 mm laminations, stack 100 mm, 200 turns of Ø1.55 mm Cu, 0.58 Ω, 2.23 kg each as built;
   - La / Lb: 0.146 H DC chokes, 0.87–1.15 A, ≤ 110 V; first cut a gapped EI, "not designed" [RH];
   - D1*–D4*: silicon, 2.8 A peak, reverse 112 / 101 / 43 / 45 V; parts not chosen;
   - snubbers: an RC at each of the eight nodes (21 nF + 243 Ω) [IR];
   - the wiring stray Lp2 / Lp3: 4.4 mH [IR];
-  - the coils run at 46 °C in air (63 °C in vacuum).
+  - the coils run at 46 °C in air (63 °C in vacuum), at the model's 40 °C ambient (`sim/pole_design.py`).
 - **The power:** 17.6 W on the belt without the bypass (utron copper 12.9, AH 2.00, La / Lb 0.66, diodes 2.01), plus
   1.25 W of iron. With the bypass the belt reads 18.1 W (`docs/schematic-rotor-circuits.png`;
   `sim/ah-steady-cusp-findings.md`).
 
-![Figure 4. The rotor's two circuits as built: (a) the magnetic dual doubler driving the AH pair; (b) the electrostatic de Queiroz doubler with the HV side on the rotor and the rings' two mirrored chains. The 22 mF bypass across each AH coil is not drawn (§6). Source: docs/schematic-rotor-circuits.svg (docs/make_schematic_rotor.py).](../schematic-rotor-circuits.png)
+![Figure 4. The rotor's two circuits as built: (a) the magnetic dual doubler driving the AH pair; (b) the electrostatic de Queiroz doubler with the HV side on the rotor and the rings' two mirrored chains. The 22 mF bypass across each AH coil is drawn dashed (PROPOSED). Source: docs/schematic-rotor-circuits.svg (docs/make_schematic_rotor.py).](../schematic-rotor-circuits.png)
 
 ### 3.3 The AH pair and the steady cusp
 - **The pair:** two coils on the shaft's axis, one in each group's branch:
-  - 160 turns each, 1.01 mH, 0.27 Ω [RH];
+  - 160 turns each, 1.01 mH. As wound, 0.80 mm grade-1 wire in 4 orthocyclic layers fills the window: 0.333 Ω at
+    20 °C, against the deck's 0.27 Ω, which scaled a window of bare copper (`sim/hub-thermal-findings.md` §1). It
+    drives 294 A-turns instead of 300 with the bypass;
   - wound on G-10 formers around Fair-Rite 4077484611 rods of 77 MnZn ferrite, Ø12.3 mm, at ±30.7–72 mm;
   - seated in PEEK 5.7 mm from the vessel (`presets/hub-locked.json` AH, AH_seat).
 - **Anti-Helmholtz:** they are wound to oppose, so their fields cancel at the centre (the null) and rise linearly
-  away from it, the cusp [OC]. Which coil sits in which branch, and the winding sense that makes the pair oppose, are
-  not documented (§6).
+  away from it, the cusp [OC].
+  - **Each branch carries its own side's coil.** Both coils' currents are unipolar and of the same sign in their
+    elements' orientation (x1 → d, x2 → b).
+  - **How to wind them:** two identical coils, each with its start lead to its group's utrons and its finish to the
+    diode side, mounted as rotated copies with their start leads toward the vessel. A translated copy would make the
+    pair Helmholtz (`sim/ah-steady-cusp-findings.md`, the winding sense).
+- **The null's position** (`sim/ah-null-findings.md`):
+  - balanced, it sits at the centre, with 0.113 T/m along the axis (0.377 mT/m per A-turn on both coils; 0.111 T/m as
+    wound), −½ of that across. The rods raise it 4.8×;
+  - each A-turn of imbalance moves it 25 µm toward the weaker coil. With the bypass it stays within ±0.44 mm over the
+    120 Hz cycle; without it it swings ±6.4 mm, beyond the ±5 mm where the rings' field holds 4.4 %;
+  - the earth's vertical field moves it 0.35–0.5 mm; a 0.5 mm misplaced coil, 0.25 mm.
 - **The steady cusp.**
   - Without a bypass, each coil carries its branch's unipolar 139–449 A-turns at 120 Hz. Top and bottom peak in
     turn, so the null moves along the axis every cycle.
@@ -273,8 +318,9 @@ commits' dates.
   - 2.2 mF would resonate near 107 Hz and make the ripple worse. The capacitor's duty is light: 0.65 A rms, about
     0.5 V, 8 mW for the pair.
 - **The cost of steadiness:** the steady field is the mean, 300 A-turns, against the 449 A-turn peak the AH was
-  sized to. A steady 450 needs 240 turns or a larger pump, which is not re-sized. The rod limit is about
-  600 A-turns.
+  sized to. A steady 450 needs 240 turns or a larger pump, which is not re-sized.
+- **The rods** peak at 0.121 T at 300 A-turns. They reach the register's 0.30 T limit [RH] at 743 A-turns for the AH
+  alone; the record's "about 600" scaled a run with the cone windings in series (`sim/ah-null-findings.md` §4).
 
 ### 3.4 The electrostatic pump: the vane stack and the diode doubler
 
@@ -332,11 +378,11 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
 |:--|:--|:--|
 | the vessel | borosilicate sphere, OD 50.0 mm, wall 1.5 mm (R_in 23.5 mm), ε 4.6, vacuum inside; about 0.8 MPa shell stress | DECIDED |
 | the rings | two copper-foil bands on the outer surface (§3.6) | DECIDED / DESIGN |
-| the AH | the MnZn rods with their 160-turn coils on the axis, PEEK seats at ±25–30.7 mm (§3.3) | DECIDED (placement) / REGISTER (dimensions) |
-| the retainer | unfilled PEEK, ε 3.2, r ≤ 30 mm, ±72 mm; a 0.5 mm pocket over the glass with grooves for the beads | DECIDED (role) / PROPOSED (material) / OPEN (dimensions) |
-| the interface filler | two-part silicone gel, degassed and vacuum-cast into the pocket, ε 2.9, 0.5 mm | PROPOSED |
-| the shaft coupler | G10 outside the PEEK, r 30–33 mm, ε 4.7 | DECIDED (role) / PROPOSED (G10) / OPEN (shape) |
-| the shaft | split, flanges r 32 × 8 mm at ±72–80 mm; non-magnetic | DECIDED (layout) / REGISTER (d 30) |
+| the AH | the MnZn rods with their 160-turn coils on the axis, PEEK seats at ±25–30.7 mm (§3.3) | DECIDED (placement) / REGISTER (dimensions) / DESIGN (the winding) / PROPOSED (the ends rounded to 1.5 mm) |
+| the retainer | unfilled PEEK, ε 3.2, r ≤ 30 mm, ±72 mm; a 0.5 mm pocket over the glass with grooves for the beads | DECIDED (role; material, 10-09) / PROPOSED (the grooves' full-round tops; the dimensions' first cut) |
+| the interface filler | two-part silicone gel, degassed and vacuum-cast into the pocket, ε 2.9, 0.5 mm | DECIDED (10-09) |
+| the shaft coupler | G10 outside the PEEK, r 30–33 mm, ε 4.7 | DECIDED (role; G10, 10-09) / PROPOSED (a straight tube over the retainer and both flanges) |
+| the shaft | split, flanges r 32 × 8 mm at ±72–80 mm; non-magnetic | DECIDED (layout) / REGISTER (d 30) / OPEN (with the bearings) |
 | the pumps | each shaft half carries its side's electrostatic stack and utron group, symmetric top and bottom | DECIDED |
 
 - **Why PEEK and gel:**
@@ -346,7 +392,28 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
     to PTFE);
   - it is the ten-times-less-conductive PEEK, against the glass and gel, that sets the drift (§3.7)
     (`sim/hub-rings-build-findings.md` §1).
-- **The vessel's resistivity,** 1e13 Ω·m at 25 °C [IR], falls steeply with temperature (OPEN).
+- **Once the DC has settled** (minutes to hours; `sim/hub-beads-settled-findings.md`), conduction shares it by the
+  conductivities [OC]:
+  - the beads relax (0.69 / 1.88 kV/mm in the gel), and the PEEK, ten times less conductive than the gel, takes the
+    DC: 2.3 kV/mm across the AH seat on average;
+  - the drawn grooves' square top corners then hold 7 kV/mm in the PEEK and the AH end's square corner 7.9. Proposed:
+    the grooves' tops full-round with 1.0 mm of gel (4.1 kV/mm) and the AH ends rounded to 1.5 mm at REF
+    (4.5 kV/mm), about a fifth of PEEK's short-term strength. The AH seat stays 5.7 mm;
+  - **the equatorial beads set a condition:** their gel holds 5 kV/mm only while the glass conducts at most 4.1 times
+    the gel (4.4 with the full-round grooves). With the glass at 40 °C (5.4×) they reach 6.15 kV/mm;
+  - the bead–glass contact wedge stays finite, and the voltage across it at most half of air's Paschen breakdown.
+- **The hub's temperature** (`sim/hub-thermal-findings.md`): the AH coils dissipate 1.22 W each. In a 25 °C room, with
+  the air between the vane stacks 5 K above it [RH], the coils run at 43 °C and the glass at 32–37 °C, 32.5 °C
+  between the rings.
+- **The vessel's resistivity,** 1e13 Ω·m at 25 °C [IR], falls with 0.90 eV (the record's two points). Between the
+  rings in service it is 4.2e12 Ω·m, 2.4 times the gel's conductivity: the beads hold, up to a room of about 30 °C if
+  the gel's conductivity does not rise with temperature. The bench measures both (phase 3).
+- **The coupler and the leads** (first cut, PROPOSED; `docs/rings-design.md` §2):
+  - a straight G10 tube, Ø60 / Ø66 mm over |z| ≤ 80 mm, holding the PEEK retainer and both shaft flanges (turned to
+    Ø60), each bonded and pinned;
+  - each ring's lead leaves its equatorial bead along the bead's normal, through the PEEK and the coupler, and runs over
+    the coupler to its own end;
+  - the air outside sees at most 0.55 kV/mm.
 
 ### 3.6 The rings and their symmetric supply
 
@@ -359,12 +426,14 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
 - **The edges are beaded.** A bare foil edge concentrates the field, so each edge carries a soldered copper wire ring:
   - Ø3 mm at the polar edge, 73.6 mm of wire;
   - Ø2 mm at the equatorial edge, 135.0 mm of wire;
-  - each bedded in a groove of the PEEK, 3.5 / 2.5 mm deep.
+  - each bedded in a groove of the PEEK, 3.5 / 2.5 mm deep (proposed: full-round tops with 1.0 mm of gel, 4 / 3 mm
+    deep).
 - **Why these angles.**
   - The polar bead faces the AH coil's end across 5.4 mm of PEEK. A bigger bead comes closer to it, so the polar
     edge does not ease with size, and a ring at 15 kV needs its polar edge at 26° or more.
   - The gap across the equator holds the DC at 1 kV/mm along the glass.
-  - Both beads hold 5 kV/mm in the gel [RH]: 4.85 / 4.36 kV/mm on the record.
+  - Both beads hold 5 kV/mm in the gel [RH]: 4.98 / 4.46 kV/mm as drawn (4.85 / 4.36 in the build's box, which had
+    gel throughout). The polar bead sits 0.4 % under its rating.
   - The rings' separation is not the limit; the beads are (`sim/hub-rings-build-findings.md` §2, §4).
 - **Later:** a fired-on coating needs the same beads, or a resistive grading toward the pole.
 
@@ -404,25 +473,27 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
   - anti: the rings at ±1, which gives the field at the null per volt across;
   - sym: both at +1, which gives the strays.
 - Any supply is their superposition, exact for this linear problem [OC]: E_null = k (V_B − V_A), with
-  k = 0.2373 (kV/cm)/kV for the record's bands.
-- The beads come from local solves with 0.025 mm cells, bounded by the hub's solution.
+  k = 0.2546 (kV/cm)/kV as built (0.2373 for the bands alone).
+- The beads come from local solves with 0.025 mm cells, bounded by the hub's solution, and as drawn they also sit in
+  the hub's maps (`sim/hub_beads_settled.py`).
 
 ![Figure 8. The rings' field: |E| in the section with equipotentials and field lines from B to A; the field and the pressure along the axis and across the equator; ring B's beads from local solves. Source: docs/figures/hub-rings-field.png (docs/make_rings_field_figure.py).](../figures/hub-rings-field.png)
 
 **In space:**
-- **At the null:** 7.10 kV/cm along −z (from B to A) and a pressure ε0E²/2 of 2.23 Pa.
-- **Within ±5 mm** it varies 4.6 % along the axis and 2.0 % across the equator.
-- **Further out:** across the equator it rises to about 7.7 kV/cm at r 14 mm. Along the axis it falls to zero at
-  |z| ≈ 17 mm and then turns toward the AH cores, because each band sits between the null and an AH core, both at
+- **At the null:** 7.62 kV/cm along −z (from B to A) and a pressure ε0E²/2 of 2.57 Pa, at switch-on. The beads add
+  7 % to the bands' 7.10: they are at the ring's potential and reach past its edges toward the gap.
+- **Within ±5 mm** it varies 4.4 % along the axis and 2.0 % across the equator.
+- **Further out:** across the equator it rises to 8.5 kV/cm at r 16 mm. Along the axis it falls to zero at
+  |z| ≈ 18 mm and then turns toward the AH cores, because each band sits between the null and an AH core, both at
   0 V.
-- **In the insulation:**
-  - 1.00 kV/mm along the glass between the rings;
-  - 4.85 / 4.36 kV/mm in the gel at the beads;
-  - 1.41 / 2.97 kV/mm in the glass under them;
+- **In the insulation,** at switch-on:
+  - 1.00 kV/mm along the glass between the rings, on average;
+  - 4.98 / 4.46 kV/mm in the gel at the beads, as drawn;
+  - 1.46 / 3.01 kV/mm in the glass under them;
   - each ring averages 1.81 kV/mm to the AH cores.
 - **The retainer's ε** moves the field at the null by less than 2 %; the AH cores take about 13 % of it.
 
-![Figure 9. One revolution of the rotor: the pump goes through its phases twelve times (C1 / C2, nodes 1 / 4, the chains' oscillating nodes), while the rings hold and the field at the null stays 7.093–7.107 kV/cm from B to A. Source: docs/figures/hub-rings-revolution.png (sim/hub_revolution.py).](../figures/hub-rings-revolution.png)
+![Figure 9. One revolution of the rotor: the pump goes through its phases twelve times (C1 / C2, nodes 1 / 4, the chains' oscillating nodes), while the rings hold and the field at the null stays 7.611–7.625 kV/cm from B to A. Source: docs/figures/hub-rings-revolution.png (sim/hub_revolution.py).](../figures/hub-rings-revolution.png)
 
 **In time** (the bench test's predictions are Figure 10, §5.3):
 - **Start-up** from the pump's seed: 50 % at 0.12 s, 95 % at 0.24 s, 99 % at 0.33 s.
@@ -438,8 +509,10 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
     ±1.8 kV/cm, with the pressure peaking near 0.14 Pa [IR estimate, not simulated with the rings].
 - **The drift.** With the rings held at their DC, the insulators' leakage moves the potential from the electrostatic
   toward the conduction-settled state [OC]. The conductivities are datasheet-class [IR].
-  - PEEK with gel at 25 °C: 7.10 → 7.41 (10 min) → 7.78 (1 h) → 7.82 kV/cm (6 h), +10 %, half-way at 13 min.
-  - PEI gives +16 %, G10 +1 % (its σ/ε matches the glass's), and the glass at 40 °C +14 % in a quarter of the time.
+  - PEEK with gel at 25 °C: 7.62 → 7.95 (10 min) → 8.18 (1 h) → 8.20 kV/cm (6 h), +7.6 %, half-way at 7.6 min.
+  - PEI gives +10.5 %, G10 +2.0 % (its σ/ε matches the glass's), and the glass at 40 °C +8.5 % in about a third of
+    the time.
+  - Settled, the beads relax and the PEEK takes the DC (§3.5).
 - **The leakage:** the ledger of paths gives 158 GΩ per ring, against a 100 GΩ estimate. The chains' diodes and
   capacitors dominate; the rings' own insulation is about 200 TΩ (`sim/hub-rings-build-findings.md` §3).
 
@@ -450,7 +523,8 @@ Source: `docs/cost/README.md`. Every price is a placeholder for a one-off protot
 **The sheet** (`docs/cost/dccreg-air-build-cost-sheet.xlsx`) costs all 2700 vane-matrix stacks with live formulas.
 
 **The placeholder targets:**
-- 6.5 kV/cm at the null, which needs 27.4 kV across the rings on the symmetric supply;
+- 6.5 kV/cm at the null, which needs 27.4 kV across the rings on the symmetric supply (on the bands' 0.2373: the
+  rings as built give 7 % more, so the picks are conservative);
 - at least 2 W, with z ≥ 1.3;
 - at most 6 + 6 vanes;
 - corona-safe rims;
@@ -460,16 +534,20 @@ Source: `docs/cost/README.md`. Every price is a placeholder for a one-off protot
 
 | build | design | power | total |
 |:--|:--|--:|--:|
-| cheapest that qualifies | 6 mm gaps, 2.5 mm vanes, r 175 mm, 22°, 4 + 4 | 2.01 W | 6,001 |
-| the stack of record | 6 mm gaps, 3 mm vanes, r 150 mm, 22°, 6 + 6 | 2.14 W | 6,417 |
-| lowest cost per watt | 8 mm gaps, 4 mm vanes, r 300 mm, 26°, 6 + 6 | 16.4 W | 8,308 (506 per W) |
+| cheapest that qualifies | 6 mm gaps, 2.5 mm vanes, r 175 mm, 22°, 4 + 4 | 2.01 W | 6,060 |
+| the stack of record (the designer kept it, 10-09) | 6 mm gaps, 3 mm vanes, r 150 mm, 22°, 6 + 6 | 2.14 W | 6,477 |
+| lowest cost per watt | 8 mm gaps, 4 mm vanes, r 300 mm, 26°, 6 + 6 | 16.4 W | 8,368 (510 per W) |
 
-**The fixed parts** are 3,702 before the 15 % contingency, about 70 % of the cheapest build:
+**The fixed parts** are 3,754 before the 15 % contingency, about 70 % of the cheapest build (the BOM corrected at the
+settlement: one 22 mF part per coil, six spiders, the utron's SiFe as built):
 - magnetic pump 1,552;
-- mechanics 1,222, including the gear 250, the drive 250 and the frame 300;
+- mechanics 1,282, including the gear 250, the drive 250 and the frame 300;
 - hub 626;
 - electrostatic 180;
-- AH 122.
+- AH 114.
+
+**The drive's first cut** costs 1,066 against the sheet's 800 for the gear, the drive and the frame
+(`docs/drive-gear-belt.md`). The sheet keeps its placeholders until the designer accepts it.
 
 **The stacks' cost** is per-part work, not metal (metal is about 8 %). Aluminium is the choice.
 
@@ -486,10 +564,15 @@ and tooling.
 |:--|:--|:--|
 | speed | 600 rpm each way, 1200 rpm relative | `sim/pole-design-findings.md` §6 |
 | pump frequency | 120 Hz (6 sectors and 6 bridges per relative revolution) | `sim/core_field.py`; `sim/pole_design_variants_op.json` |
-| tube length | 802 mm as modelled (vacuum stack, 120 mm hub); 916 mm with the air stack of record; about +24 mm for the locked hub | `sim/tube_geometry_wound_results.json`; `sim/air-stack-sizing-findings.md` §6.5; `sim/hub-locked-findings.md` §4 |
-| bearings | 6 × 6205-class (25 / 52 / 15 mm) on 8 mm G10 spiders; 4 inner, 2 end | `sim/stack_sizing.py`; `sim/tube-shaft-findings.md` |
-| shaft | d 25 (tube model) or d 30 (hub register), OPEN; non-magnetic recommended [IR] | `sim/stack_sizing.py`; `presets/hub-locked.json` |
+| tube length | 940 mm, the record in solids (153 solids, no clash) | `sim/tube-shaft-findings.md` §0; `sim/tube_geometry_record_results.json` |
+| masses | rotor 33.4 kg, counter-rotor 33.1 kg from the solids; the other studies' own counts give 32.9–35.3 and 33.4–34.9 kg | `sim/shaft_bearings_record_results.json`; `sim/rotor-mechanics-findings.md` §6; `docs/drive-gear-belt.md` §3 |
+| bearings | 6 × 6205-class (25 / 52 / 15 mm) on 8 mm G10 spiders; 4 inner, 2 end; the counter-rotor floats on the 4 inner | `sim/stack_sizing.py`; `sim/tube-shaft-findings.md` §0 |
+| the shaft's modes | as laid out, d 25: f1 27–29 Hz, 123 µm gap change under 1 g lateral; d 40: 65 Hz, 25 µm; the eighth bearing pair: 131–165 Hz, 2–3 µm | `sim/tube-shaft-findings.md` §0; `sim/rotor-mechanics-findings.md` §4 |
+| shaft | d 25 (tube model) or d 30 (hub register), OPEN; non-magnetic, μ_r ≤ 1.05 | `sim/stack_sizing.py`; `presets/hub-locked.json`; `sim/ah-null-findings.md` §5 |
+| the gap budget | total runout per inner bearing ≤ 0.027 mm as laid out (P5, axial spring preload), 0.05 mm with the eighth pair | `sim/rotor-mechanics-findings.md` §5 |
+| rotating loads | no banding (factors ≥ 19 at 750 rpm); balance G2.5 per body; windage about 12 W, bearings 5 W | `sim/rotor-mechanics-findings.md` |
 | reference link | one inner bearing; 0.41 mA rms AC, no DC | `sim/core_field_results.json` |
+| the drive (PROPOSED) | bevel reverser at side A, POM-C pinions; HTD 5M 4 : 1, 200 W motor; 0.48 / 0.52 N·m on the bodies, 1.00 into the frame; run-up 32 s | `docs/drive-gear-belt.md` |
 
 **Magnetic pump** (per side unless stated; `sim/pole-design-findings.md` §7–§8, `sim/pole_design_variants_op.json`)
 
@@ -503,19 +586,23 @@ and tooling.
 | group | 3 utrons in series: 0.243 H; 0.87–2.81 A per branch; 101 V peak |
 | La / Lb | 0.146 H DC chokes, 0.29 Ω, 0.87–1.15 A, ≤ 110 V (not designed) |
 | D1*–D4* | Si, 0.55 V at 1 A, 2.8 A peak; reverse 112 / 101 / 43 / 45 V |
-| gain | z 1.21 (screen, linear); 1.139 loaded early, 1.147 with the bypass |
-| kick | about 20 % of Ψs, once, at start-up |
+| gain | z 1.21 (z_lin, the screen's linear model); 1.139 loaded early (z_early), 1.147 with the bypass |
+| kick | about 20 % of Ψs, once, at start-up: 0.110 A, 3.5 mJ seeded; above about 200 rpm |
 | mass | 2.23 kg per utron as built (SiFe 0.89, NiFe 0.15, Cu 1.07, G10 0.12) |
-| power | belt 17.6 W (18.1 W with the bypass) + iron 1.25 W; coils 46 °C in air |
+| power | belt 17.6 W (18.1 W with the bypass) + iron 1.25 W; coils 46 °C in air at a 40 °C ambient |
 
 **AH pair** (`presets/hub-locked.json`; `sim/ah-steady-cusp-findings.md`)
 
 | item | value |
 |:--|:--|
 | cores | Fair-Rite 4077484611, 77 MnZn, Ø12.3 × 41.3 mm at ±30.7–72 mm; G-10 formers ID 13.5 / OD 16.5 mm |
-| coils | 160 turns, r 8.25–11.45 mm, ±31.35–71.35 mm; 1.01 mH, 0.27 Ω each [RH] |
-| bypass | 22 mF per coil, ESR 10 mΩ [RH]; LC 34 Hz; 0.65 A rms, about 0.5 V, 8 mW for the pair |
-| field | 290–308 A-turns per coil (300 mean, ±3 %); top and bottom within 17 A-turns; rod limit about 600 A-turns |
+| coils | 160 turns of 0.80 mm grade-1 wire in 4 layers, r 8.25–11.45 mm, ±31.35–71.35 mm; 1.01 mH; 0.333 Ω as wound (0.27 Ω in the deck); 1.22 W each, 43 °C |
+| winding | two identical coils, start to the group's utrons, finish to the diode side; rotated copies, start leads toward the vessel |
+| bypass (PROPOSED) | 22 mF per coil, ESR 10 mΩ [RH]; LC 34 Hz; 0.65 A rms, about 0.5 V, 8 mW for the pair |
+| field | 290–308 A-turns per coil (300 mean, ±3 %; 294 as wound); top and bottom within 17 A-turns |
+| the null | at the centre; 0.113 T/m (0.111 as wound); 25 µm per A-turn of imbalance; ±0.44 mm over a cycle with the bypass, ±6.4 mm without (`sim/ah-null-findings.md`) |
+| rods | 0.121 T at 300 A-turns; 0.30 T [RH] at 743 A-turns for the AH alone |
+| 77 MnZn | µi 2000; 0.51 T at 400 A/m (25 °C); Br 0.18 T; Hc 20 A/m; 1 Ω·m; Curie above 200 °C (Fair-Rite's data sheet, as a search rendered it; to verify, `presets/hub-locked.json` AH core) |
 
 **Electrostatic pump** (per side unless stated; `sim/air-stack-sizing-findings.md` §6.5, `sim/air_stack_sizing_results.json`,
 `sim/core_field_results.json`)
@@ -545,18 +632,20 @@ and tooling.
 | beads | Ø3 mm polar (contact r 11.06, z ±22.42 mm), Ø2 mm equatorial (contact r 20.65, z ±14.08 mm) |
 | ratings used | 1 kV/mm along the glass; 5 kV/mm in the gel at a bead [RH]; 2 / 8 to qualify |
 | supply | 2 + 2 CW stages from the shaft; ring A −14.96 kV, ring B +14.96 kV; 8 diodes at 7.5 kV; 8 × 100 pF / 30 kV |
-| k | 0.2373 (kV/cm)/kV |
-| at the null | 7.10 kV/cm, 2.23 Pa; ±5 mm uniformity 4.6 % (axis) / 2.0 % (equator) |
-| fields in the insulation | glass along the gap 1.00 kV/mm; gel at the beads 4.85 / 4.36 kV/mm; glass at the beads 1.41 / 2.97 kV/mm; to the AH 1.81 kV/mm |
+| k | 0.2546 (kV/cm)/kV as built; 0.2373 for the bands alone |
+| at the null | 7.62 kV/cm, 2.57 Pa at switch-on (the bands alone 7.10); 8.20 kV/cm, 2.98 Pa settled at 25 °C; ±5 mm uniformity 4.4 % (axis) / 2.0 % (equator) |
+| fields in the insulation | glass along the gap 1.00 kV/mm on average; gel at the beads 4.98 / 4.46 kV/mm as drawn; glass at the beads 1.46 / 3.01 kV/mm; to the AH 1.81 kV/mm |
+| settled | gel at the beads 0.69 / 1.88 kV/mm; the PEEK 2.3 kV/mm across the seat; the equatorial beads hold while σ_glass ≤ 4.1 σ_gel |
 | strays | 5.1 pF to REF each, 1.1 pF between |
-| time | 95 % in 0.24 s; ripple 0.014 kV/cm p-p; one revolution 7.093–7.107 kV/cm; drift to 7.82 kV/cm in 6 h (PEEK, gel, 25 °C) |
+| time | 95 % in 0.24 s; ripple 0.014 kV/cm p-p; one revolution 7.611–7.625 kV/cm; drift to 8.20 kV/cm in 6 h (PEEK, gel, 25 °C) |
+| the hub's heat | coils 43 °C, glass 32–37 °C (32.5 °C between the rings) in a 25 °C room; the vessel 4.2e12 Ω·m there |
 | leakage | 100 GΩ per ring used (ledger 158 GΩ); 4.5 mW |
 
 **What more stages would give** (if the bench qualifies higher ratings; `sim/hub_rings_build_results.json` best_by_family)
 
-| ratings (interface / gel) | stages a side | across | at the null |
+| ratings (interface / gel) | stages a side | across | at the null (the bands alone) |
 |:--|:--|--:|--:|
-| **1 / 5 kV/mm (the record)** | **2** | **29.9 kV** | **7.10 kV/cm** |
+| **1 / 5 kV/mm (the record)** | **2** | **29.9 kV** | **7.10 kV/cm (7.62 as built)** |
 | 1 / 8 | 3 | 44.3 kV | 7.80 kV/cm |
 | 2 / 5 | 2 (wider bands) | 29.9 kV | 8.35 kV/cm |
 | 2 / 8 | 4 | 57.9 kV | 13.38 kV/cm |
@@ -567,53 +656,53 @@ and tooling.
 
 | part | status | note |
 |:--|:--|:--|
-| the 1 : −1 gear, the belt, two pumps per side | DECIDED | not designed or drawn |
+| the 1 : −1 gear, the belt, two pumps per side | DECIDED | the gear and belt: a first cut, PROPOSED (`docs/drive-gear-belt.md`) |
 | air for the first tests; full-round vanes; the 6 + 6 cap | DECIDED | |
-| 6 mm gaps, V_op = breakdown / 1.5; 22° / 22°; r 150; Ca = 1.1 C_max | PROPOSED | the cost optimum differs (§3.8) |
-| the clamps Z1 / Z4 | PROPOSED | the designer questioned them; keep them, or go to surge resistors and a brush |
+| 6 mm gaps, V_op = breakdown / 1.5; 22° / 22°; r 150; Ca = 1.1 C_max | DECIDED (10-09) | the designer kept the stack of record; the cost optimum differs (§3.8) |
+| the clamps Z1 / Z4 | DECIDED (10-09) | |
 | the HV side on the rotor; the link through one inner bearing | DECIDED | "for now"; a brush later |
-| the magnetic pick (g 0.5, 6 bridges, 1200 rpm, 200 turns) | PROPOSED | the basis of DCCREG-UTR-101 (Rev A draft) |
-| the steady cusp (22 mF bypass) | PROPOSED | answers the designer's "steady cusp"; not drawn on the schematic |
-| La / Lb, D1*–D4*, D1–D4, the clamp strings, the kick source | OPEN | parts not chosen or not designed |
+| the magnetic pick (g 0.5, 6 bridges, 1200 rpm, 200 turns) | DECIDED (10-09) | the basis of DCCREG-UTR-101 (Rev A draft) |
+| the steady cusp (22 mF bypass) | PROPOSED | drawn dashed on the schematic; it holds the null within ±0.44 mm |
+| La / Lb, D1*–D4*, D1–D4, the clamp strings, the kick source | PROPOSED (first cuts) | `sim/parts-first-cut-findings.md` |
 | the hub: layer order, sphere, wall, AH placement, symmetric pumps | DECIDED | |
 | the rings outside the glass, copper foil, the symmetric supply | DECIDED | |
-| the bands and beads | DESIGN | from the [RH] ratings |
-| the PEEK retainer, the gel, the G10 coupler | PROPOSED | |
-| the ratings, the leakage | OPEN / ESTIMATE | the bench qualifies them |
+| the bands and beads | DESIGN | from the [RH] ratings; as drawn the polar bead sits 0.4 % under its rating |
+| the PEEK retainer, the gel, the G10 coupler | DECIDED (materials, 10-09) | |
+| the grooves' full-round tops, the AH ends rounded, the coupler as a tube, the leads' path | PROPOSED | `docs/rings-design.md` §2 |
+| the retainer split at the equatorial plane | PROPOSED | |
+| the shaft's diameter and the bearings | OPEN | the designer's choice (§5.2) |
+| the ratings, the leakage, the conductivities | OPEN / ESTIMATE | the bench qualifies them |
 
 ### 5.2 Open items
-- **The bench** (`docs/bench-test-rings.md`):
-  - the hold-off ratings (phase 1), which set the stages;
-  - each ring's leakage (phase 2);
-  - the conductivities (phase 3);
-  - the field on the pump's own supply (phase 4).
-- **The hub:**
-  - the retainer's and coupler's dimensions, the equatorial split (proposed: the plane is at 0 V) and the leads' path;
-  - the AH ends facing the polar beads, to be rounded or capped;
-  - the AH seat's length;
-  - the vessel's resistivity;
-  - the magnetic null's position in the locked hub, not computed.
-- **The machine:**
-  - put the locked hub and the air stack into the layout and the 3-D model, with Ca / Cb on the rotor; rerun the shaft
-    and bearing checks;
-  - settle the shaft (d 25 or 30, non-magnetic);
-  - design the gear and belt;
-  - hold ≤ 0.05 mm runout on the four inner bearings for the 0.5 mm utron gap;
-  - work out the rotating loads (40–60 g at r 100–150; 0.86 kN per utron; banding);
-  - estimate windage.
-- **The parts:**
-  - La / Lb cores; D1*–D4*; D1–D4 and the chain diodes; the clamp strings; the kick source and its polarity;
-  - the capacitor mounts' creepage;
-  - potting and balancing;
-  - the 77 MnZn datasheet.
-- **The models:**
-  - a 3-D check of the utrons' κ (the end corrections are [RH]);
-  - a nonlinear check of the neck;
-  - real-diode start-up;
-  - the beads in the settled DC state;
-  - the bead–glass contact wedge;
-  - the tube's strays, by a field solve.
-- **The fields' purpose:** what the field at the null is for is not documented (§2.1).
+
+**For the designer to decide** (each has its numbers in this ledger):
+- **the shaft and its bearings** (§3.1): six bearings with d 40 (65 Hz, the runout at 0.027 mm), or an eighth pair
+  between the shaft and each bridge ring's outer end at d 25 (131–165 Hz, the runout at 0.05 mm; the layout +10–20 mm
+  a side; stiff seats to keep it clear of 120 Hz);
+- **the drive's first cut** (§3.1, `docs/drive-gear-belt.md`): accept it, or set the gear and belt otherwise;
+- **the bypass and the split**, both PROPOSED;
+- **the hub's first cuts** (§3.5): the grooves' full-round tops, the AH ends rounded to 1.5 mm, the coupler as a tube
+  with the flanges turned to Ø60, the leads' path;
+- **the AH's steady field:** 300 A-turns (294 as wound) against the 449 the AH was sized to; a steady 450 needs
+  240 turns or a larger pump;
+- **the parts' first cuts** (`sim/parts-first-cut-findings.md`): La / Lb, the diodes, the clamp strings, the kick
+  source and its polarity;
+- **the fields' purpose:** what the field at the null is for is not documented (§2.1).
+
+**The bench** (`docs/bench-test-rings.md`):
+- the hold-off ratings (phase 1), which set the stages;
+- each ring's leakage (phase 2);
+- the conductivities (phase 3), at 25 °C and 40 °C: the equatorial beads need σ_glass ≤ 4 σ_gel at the hub's
+  temperature;
+- the field on the pump's own supply (phase 4).
+
+**Still open in the models and parts:**
+- the model checks of §6 (items 31–34): the neck, real diodes, the tube's strays and the utrons' κ in 3-D;
+- the 77 MnZn data sheet: its values are in `presets/hub-locked.json` (AH core), as a web search rendered the sheet;
+  re-read them from the current sheet before ordering;
+- the capacitor mounts' creepage, potting and balancing: first cuts in `sim/parts-first-cut-findings.md` and
+  `sim/rotor-mechanics-findings.md` §6;
+- the gores' overlaps and joints, the fired-on coating's edges.
 
 ### 5.3 The bench test
 
@@ -629,8 +718,9 @@ Source: `docs/bench-test-rings.md`.
   1. **Hold-off on coupons and the sphere:** ±15.0 kV for 1 h, then ±18.7 kV for 1 h, under 10 pC. This sets the
      ratings and the stages.
   2. **Leakage:** at least 100 GΩ expected.
-  3. **DC drift on lab supplies for 6 h:** 7.10 → 7.82 kV/cm expected, with the return after grounding and a 40 °C
-     repeat.
+  3. **DC drift on lab supplies for 6 h:** 7.62 → 8.20 kV/cm expected, with the return after grounding and a 40 °C
+     repeat. The ratio of the glass's conductivity to the gel's, at the hub's temperature, decides the equatorial
+     beads once settled.
   4. **The pump's own supply at 1200 rpm relative:** 95 % in 0.24 s and 0.014 kV/cm ripple expected; then the AH
      powered, with the Faraday offset measured first.
 
@@ -638,28 +728,57 @@ Source: `docs/bench-test-rings.md`.
 
 ## 6. Known inconsistencies and stale records
 
-The lock records them; it does not fix them. Each is a to-do against the baseline.
+The lock recorded 18 and fixed none. The settlement (2026-10-09) resolved them against the baseline and found twelve
+more; each line says what was done and where. The model checks (31–34) run as studies of their own.
 
-| # | where | what | effect |
-|:--|:--|:--|:--|
-| 1 | the 3-D model and layout (`sim/tube_geometry.py`, `sim/stack_sizing.py`, `docs/geometry/tube/…-wound-…`) | the electrostatic stack is the old vacuum 8 + 8 (3 mm gaps), Ca / Cb sit on the counter-rotor, the stator vanes are labelled node 1 / 4, and the hub is the 120 mm placeholder (Ø90 sphere, bicone); 802 mm | the reluctance sections are current, the rest is not; no STEP of the air stack exists |
-| 2 | the shaft | d 25 in the tube, d 30 in the hub register | OPEN |
-| 3 | `docs/figures/hub-locked.png`, `sim/hub-locked-findings.md` banner | the lock-down's 3-stage, 20–53° rings shown or named as the record | superseded by DCCREG-HUB-201 |
-| 4 | `sim/core-field-findings.md` decisions 5 and 7, `sim/core-null-field-findings.md` | call the pair inside, or the 7.8 kV/cm bands, "the design of record" | superseded by the rings of record |
-| 5 | `docs/schematic-rotor-circuits` panel (a) | no 22 mF bypass drawn; it quotes the unbypassed 139–449 A-turns; its generator's docstring still mentions Dk | the bypass is in the cost sheet and the bench plan |
-| 6 | the cost sheet's BOM | the bypass is 2 × 10 mF = 20 mF per coil against the 22 mF modelled; the utron SiFe is 1.26 kg (the screen) against 0.89 kg as built; it has 4 spiders against 6 in the model | small cost effects |
-| 7 | the kick | `sim/pole_design.py` seeds a current of frac × Ψs / L but reports ½ L (frac × I_pk)²: 38 mJ against about 1.5–3.5 mJ seeded; the labels differ ("of Ψs" or "of I_pk") | the kick source is OPEN anyway |
-| 8 | A / B naming | A is the top side in the pivot's documents and the bottom in the tube build; which AH coil sits in which branch, and the winding sense that makes the pair anti-Helmholtz, are not documented | to settle before winding |
-| 9 | the magnetic gain | quoted on two bases: 1.21 (screen, linear) and 1.139 (loaded, early) | name the basis when quoting |
-| 10 | `sim/hub_rings_build_results.json` record_supply | its E_pk_kV_cm 5.99 is V/d over 50 mm (an old convention), not the null's field (7.10 = k·V) | do not read it as the field |
-| 11 | the stack of record against the cost optimum | the studies use 6 mm / 3 mm / r 150 / 6 + 6 (6,417); the sheet's cheapest is 2.5 mm / r 175 / 4 + 4 (6,001) | no designer choice between them is recorded |
-| 12 | efficiency | the η ≈ 0.45–0.50 of `README.md` and `CONVENTIONS.md` belongs to the disc spark-gap machine; the current machine has no efficiency of record (its products are static fields) | read the README as history |
-| 13 | `README.md`, `CLAUDE.md` | still frame the repository as the Bennet-doubler browser tool, with Block C-I as the task | stale frame |
-| 14 | `CONVENTIONS.md` "switch naming" | "the solver's ground is the resonator rail" | the reference is now the shaft |
-| 15 | `index.html` (frozen) | its banner still reads η ≈ 0.70 | frozen: flagged, not edited |
-| 16 | `docs/commutator-design.md`, `docs/kicad/gap-topology-of-record.md` | read as current; both are the spark-gap machine | superseded by the diode core |
-| 17 | `CHANGELOG.md` | one block, `[Unreleased]`, not dated; no entries for the design loop or netlists v2–v4 | the git history holds the dates |
-| 18 | tags | some hub documents tagged solver choices [OC] and datasheet values [IR] under a redefinition; corrected at this lock in `docs/rings-design.md` and `sim/hub-rings-build-findings.md` to `CONVENTIONS.md`'s meanings | other early hub files may carry the old reading |
+**The lock's 18**
+
+| # | what | resolution |
+|:--|:--|:--|
+| 1 | the 3-D model and layout still carried the old vacuum 8 + 8 stack, Ca / Cb on the counter-rotor and the 120 mm placeholder hub | **done:** the record in solids, `sim/tube_geometry.py --record` → `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.*` (940 mm, 153 solids, no clash); `sim/stack_sizing.py` puts the HV on the rotor |
+| 2 | the shaft: d 25 in the tube, d 30 in the hub's register | **analysed, the designer's:** two bodies on the shaft (§3.1, §5.2) |
+| 3 | `docs/figures/hub-locked.png` and its findings named the lock-down's rings as the record | **done:** retitled as the lock-down study; banner |
+| 4 | `sim/core-field-findings.md` decisions 5 / 7, `sim/core-null-field-findings.md` called superseded designs "the record" | **done:** banners; "was the design of record" |
+| 5 | the rotor schematic drew no bypass and quoted only the unbypassed A-turns | **done:** the bypass dashed (PROPOSED), both A-turn ranges, the kick box, the docstring |
+| 6 | the cost sheet's BOM: 2 × 10 mF, the screen's SiFe mass, four spiders | **done:** one 22 mF part per coil, 0.89 kg, six spiders; every total +60 |
+| 7 | the kick: 38 mJ reported against about 3.5 mJ seeded; two labels | **done:** `sim/pole_design.py` kick_seed reports the seeded energy, 3.48 mJ at 0.110 A, on one basis |
+| 8 | A / B naming; which AH coil in which branch; the winding sense | **done:** side A below in the record (naming notes); the winding rule (`sim/ah_winding.py`) |
+| 9 | the magnetic gain on two bases | **done:** named, z_lin (the screen, 1.208) and z_early (the loaded run, 1.139; 1.147 with the bypass) |
+| 10 | `record_supply` E_pk_kV_cm read as the null's field | **done:** E_null_mean / pk / pp added with the convention stated |
+| 11 | the stack of record against the cost optimum | **done:** the designer kept the stack of record (§2.3) |
+| 12 | the η ≈ 0.45–0.50 read as the current machine's | **done:** `CONVENTIONS.md` and `README.md` place it with the disc machine |
+| 13 | `README.md`, `CLAUDE.md` framed the Bennet browser tool | **done:** rewritten for the locked machine |
+| 14 | `CONVENTIONS.md` switch naming: "the resonator rail" | **done:** REF, the shaft |
+| 15 | `index.html`'s banner reads η ≈ 0.70 | **frozen:** flagged, not edited |
+| 16 | `docs/commutator-design.md`, `docs/kicad/gap-topology-of-record.md` read as current | **done:** superseded banners |
+| 17 | `CHANGELOG.md` undated; no design-loop or netlist v2–v4 entries | **done:** a dated timeline from the git history; the missing entries |
+| 18 | some hub documents' tags under a redefinition | **done:** the hub documents and `presets/hub-locked.json` |
+
+**Found and settled since**
+
+| # | what | resolution |
+|:--|:--|:--|
+| 19 | the frozen list named `charge-pump-synth-live.html` and `schematic.svg` at the root; they live in `tools/` | **done:** `README.md`, `CLAUDE.md` and §8; the check prints 0 |
+| 20 | **the field at the null was solved for the bands alone** | **corrected:** with the beads, 7.62 kV/cm at switch-on and 8.20 settled (§3.7); `sim/hub_rings_build.py --as-built`, `sim/hub_drift.py` and the figures carry it |
+| 21 | the beads' fields came from a box filled with gel; the drawing's grooves bring the PEEK within 0.5 mm | **corrected:** 4.98 / 4.46 kV/mm as drawn (`sim/hub-beads-settled-findings.md` §3) |
+| 22 | the AH coil: 160 turns in variant (a)'s window, its R scaled as bare copper | **settled:** 0.80 mm wire in 4 layers, 0.333 Ω; the deck keeps 0.27 Ω (`sim/hub-thermal-findings.md` §1) |
+| 23 | the AH rod's "about 600 A-turns" had the cone windings in series | **corrected:** 743 for the AH alone; the code's constant stays, conservative (`sim/ah-null-findings.md` §4) |
+| 24 | "all the belt's power, about 21 W" missed the windage and the bearings | **corrected:** about 39 W in all (`sim/rotor-mechanics-findings.md` §5) |
+| 25 | "the coils need banding" | **corrected:** no banding; preloaded studs and bonded joints (`sim/rotor-mechanics-findings.md` §1) |
+| 26 | the runout of "about 0.05 mm or better" | **corrected:** 0.027 mm total per inner bearing as laid out, 0.05 mm with the eighth pair (§3.1) |
+| 27 | the air-stack study took the shaft's first mode as above 30 Hz; the earlier grounded model gave 239 Hz | **corrected:** 27–29 Hz with the counter-rotor floating (§3.1) |
+| 28 | "every reaction torque goes into the gear" | **corrected:** the gear puts the same torque on both bodies; the frame takes twice it (§1) |
+| 29 | the cost sheet's six bearings; the drive makes seven, the eighth pair eight | **open:** with the shaft and the drive (§5.2) |
+| 30 | the hub's register says d 30, but a 6205 takes a 25 mm journal | **open:** with the shaft (§5.2) |
+
+**The model checks** (running when this revision was written; their findings land in `sim/`)
+
+| # | check | where it lands |
+|:--|:--|:--|
+| 31 | the neck, a nonlinear field check | `sim/neck-nonlinear-findings.md` |
+| 32 | real diodes at start-up | `sim/diodes-real-findings.md` |
+| 33 | the tube's strays, by a field solve | `sim/tube-strays-findings.md` |
+| 34 | the utrons' κ in 3-D | `sim/utron-3d-findings.md` |
 
 ## 7. Drawing register
 
@@ -679,78 +798,91 @@ redraw them (`docs/ledger/register.py`).
 | 6 | The air vane stack, 6 mm gaps, 6 + 6 vanes | `docs/figures/air-vane-stack-6mm.png` |
 | 7 | DCCREG-HUB-201: rings A and B, copper, beaded | `docs/drawings/DCCREG-HUB-201.pdf` |
 | 8 | The rings' field at the null | `docs/figures/hub-rings-field.png` |
-| 9 | Reluctance sections A and B, plan cuts | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-reluctance-plan.png` |
-| 10 | Utron A1 with bridge A1, exploded | `…-wound-g0p5-6br-3d-exploded.png` |
-| 11 | Reluctance section A, quarter cut | `…-wound-g0p5-6br-3d-reluctance.png` |
-| 12 | Reluctance section A, plan at mid-stack | `…-wound-g0p5-6br-3d-plan.png` |
+| 9 | The machine of record: section through the shaft | `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-section.png` |
+| 10 | The machine of record: quarter cutaway | `…-hub50-3d-cutaway.png` |
+| 11 | The machine of record: half section | `…-hub50-3d-half.png` |
+| 12 | The locked hub in solids | `…-hub50-hub.png` |
+| 13 | Reluctance sections A and B, plan cuts | `…-hub50-reluctance-plan.png` |
+| 14 | Utron A1 with bridge A1, exploded | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-3d-exploded.png` |
+| 15 | Reluctance section A, quarter cut | `…-n8-wound-g0p5-6br-3d-reluctance.png` |
+| 16 | Reluctance section A, plan at mid-stack | `…-n8-wound-g0p5-6br-3d-plan.png` |
 
-**Part B — supporting drawings and figures of the record (stale content flagged on the sheets)**
+**Part B — supporting drawings and figures of the record**
 
 | sheet | title | file |
 |:--|:--|:--|
-| 13 | The machine as modelled: section (stale in part) | `…-wound-g0p5-6br-section.png` |
-| 14 | The machine as modelled: quarter cutaway (stale in part) | `…-wound-g0p5-6br-3d-cutaway.png` |
-| 15 | The machine as modelled: half section (stale in part) | `…-wound-g0p5-6br-3d-half.png` |
-| 16 | The locked hub's stack-up (its rings stale) | `docs/figures/hub-locked.png` |
-| 17 | The rings as built: retainer, edges, stages | `docs/figures/hub-rings-build.png` |
-| 18 | What the bench test should see | `docs/figures/hub-bench-predictions.png` |
-| 19 | One revolution of the rotor | `docs/figures/hub-rings-revolution.png` |
-| 20 | Utron size against gain: the pick | `docs/figures/utron-size-vs-gain.png` |
-| 21 | The vane matrix: what the radius buys | `docs/figures/vane-matrix-radius.png` |
-| 22 | The vane matrix: rim corona margins | `docs/figures/vane-matrix-corona.png` |
+| 17 | The lock-down study of the hub | `docs/figures/hub-locked.png` |
+| 18 | The rings as built: retainer, edges, stages | `docs/figures/hub-rings-build.png` |
+| 19 | What the bench test should see | `docs/figures/hub-bench-predictions.png` |
+| 20 | One revolution of the rotor | `docs/figures/hub-rings-revolution.png` |
+| 21 | Utron size against gain: the pick | `docs/figures/utron-size-vs-gain.png` |
+| 22 | The vane matrix: what the radius buys | `docs/figures/vane-matrix-radius.png` |
+| 23 | The vane matrix: rim corona margins | `docs/figures/vane-matrix-corona.png` |
+| 24 | The AH's null in the locked hub | `docs/figures/ah-null.png` |
+| 25 | The reversing gear and the belt drive (PROPOSED) | `docs/figures/drive-gear-concept.svg` |
 
 **Part C — earlier phases, superseded, kept for the record**
 
 | sheets | what | files |
 |:--|:--|:--|
-| 23 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
-| 24–25 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
-| 26–28 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
-| 29–31 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
-| 32–35 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
-| 36–37 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
-| 38–40 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
-| 41–44 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
+| 26–28 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
+| 29 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
+| 30–31 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
+| 32–34 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
+| 35–37 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
+| 38–41 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
+| 42–43 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
+| 44–46 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
+| 47–50 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
 
 **CAD and DXF files** (not on sheets; `tools/step-viewer/` renders the STEP files):
 - **of the record:**
   - `docs/drawings/DCCREG-UTR-101_half-core_A.step` and `_lamination.dxf`;
-  - the machine as modelled, stale in part: `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br.step`, with its `.glb`
-    and `.parts.json`.
+  - the record in solids: `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.step`, with its `.glb` and
+    `.parts.json`.
 - **earlier phases:**
+  - the machine as modelled before the record, `tube-r150-n8-wound-g0p5-6br.step`;
   - the spark-gap tube `tube-r150-n8.step`;
   - the disc builds `freeze-v010-CaCb`, `floor-56b6cb83`, `opt-c9ac780b`, `il2-ce1a9380`, `il2f-6563b90d` (with its
     pump + motor);
   - the designer's C-EM source, the two disc DXF layouts (r0.15, r0.6) and the KiCad source.
-- **Not drawn anywhere:**
+- **Not drawn as manufacturing drawings:**
   - the bridge, the bridge ring, the carrier discs and cheeks, the NiFe strip and the coil as parts;
-  - La / Lb;
-  - the AH coil and core;
+  - La / Lb (first cut in `sim/parts-first-cut-findings.md`);
+  - the AH coil and core (in the record's solids);
   - the kick source;
-  - the gear;
-  - the retainer and the coupler.
+  - the gear (its concept is sheet 25);
+  - the retainer and the coupler (in the record's solids; first cut in `docs/rings-design.md` §2).
 
 ## 8. Files, tools and how to regenerate
 
 **The records:**
 - `presets/hub-locked.json` (the hub's spec);
-- `sim/hub_rings_build_results.json` (record, record_supply, best_by_family);
+- `sim/hub_rings_build_results.json` (record, its as-built field, record_supply, best_by_family);
 - `sim/pole_design_variants_op.json` (the magnetic pick);
 - `sim/air_stack_sizing_results.json` and `sim/core_field_results.json` (the electrostatic pump);
-- `sim/ah_steady_cusp_results.json`, `sim/hub_drift_results.json` and `sim/hub_revolution_results.json`.
+- `sim/ah_steady_cusp_results.json`, `sim/hub_drift_results.json` and `sim/hub_revolution_results.json`;
+- `sim/tube_geometry_record_results.json` and `sim/shaft_bearings_record_results.json` (the record in solids, its
+  shaft).
 
 **The findings,** one per study:
 - `sim/pole-design-findings.md`, `sim/ah-steady-cusp-findings.md`, `sim/rotor-parts-duty-findings.md`;
 - `sim/air-stack-sizing-findings.md`, `sim/vane-matrix-findings.md`, `sim/core-field-findings.md`;
 - `sim/hub-locked-findings.md`, `sim/hub-rings-build-findings.md`;
+- the settlement's: `sim/hub-beads-settled-findings.md`, `sim/hub-thermal-findings.md`, `sim/ah-null-findings.md`,
+  `sim/rotor-mechanics-findings.md`, `sim/tube-shaft-findings.md` §0, `sim/parts-first-cut-findings.md`,
+  `docs/drive-gear-belt.md`, and the model checks of §6 (31–34);
 - the design and test documents `docs/rings-design.md` and `docs/bench-test-rings.md`;
 - the cost guide `docs/cost/README.md`.
 
 **Regenerate, in order:**
 - **the studies:**
-  - `sim/hub_rings_build.py --procs 4` (the rings);
+  - `sim/hub_rings_build.py --procs 4` (the rings; its `--as-built` step alone sets the field with the beads);
   - `sim/hub_drift.py --procs 4`;
-  - `sim/hub_revolution.py`.
+  - `sim/hub_revolution.py`;
+  - `sim/hub_beads_settled.py` and `sim/hub_thermal.py` (the hub settled, its heat);
+  - `sim/ah_null.py`, `sim/rotor_mechanics.py`, `sim/drive_sizing.py --figure`, `sim/parts_first_cut.py`;
+  - `sim/tube_geometry.py --record` and `sim/shaft_bearings.py --record` (the record in solids, its shaft).
 - **the drawings and figures:**
   - `docs/make_rings_drawing.py`;
   - `docs/make_rings_field_figure.py`;
@@ -762,9 +894,10 @@ redraw them (`docs/ledger/register.py`).
 - **the cost:** `docs/make_cost_sheet.py`, then recalculate the workbook.
 - **this ledger:** `docs/ledger/make_ledger_figures.py`, then `docs/ledger/make_ledger.py`.
 
-**Frozen, unchanged at the lock:**
+**Frozen, unchanged at the lock and since:**
 - `shuttle_core.py`, `reference/`, `sim/pump_engine.py`, `sim/pump_sizing.py`, `sim/pump_synth.py`, `spice/`,
-  `index.html`, `tools/pump-calc*`, `tools/pump-synth*` and `charge-pump-synth-live.html`;
+  `index.html`, `tools/pump-calc*`, `tools/pump-synth*`, `tools/charge-pump-synth-live.html` and
+  `tools/schematic.svg`;
 - the diff against `b33baa2` is empty.
 
 ## Appendix A. Names and symbols

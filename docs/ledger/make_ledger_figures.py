@@ -51,7 +51,7 @@ def main():
     ES, ESS = "#f3f0e6", "#b9ad8a"
     # the drive and the bodies
     block(20, 90, 230, 150, "DRIVE (the frame)", ["drive motor and belt", "reversing gear 1 : −1", "end bearings, housings",
-                                                  "(not designed: placeholders)"], "#f6f6f4", "#999")
+                                                  "(a first cut, PROPOSED)"], "#f6f6f4", "#999")
     block(20, 300, 230, 132, "ROTOR, +600 rpm", ["shaft (REF), sleeve, hub", "utrons, rotor vanes", "Ca / Cb, D1–D4, Z1 / Z4",
                                                 "both pumps' circuits"], "#ffffff", "#5d6670")
     block(20, 470, 230, 116, "COUNTER-ROTOR, −600 rpm", ["stator cage, stator vanes", "(REF via one inner bearing)",
@@ -67,7 +67,7 @@ def main():
     block(590, 124, 250, 150, "Magnetic dual doubler", ["groups A / B in antiphase", "La / Lb 0.146 H, D1*–D4*",
                                                         "clamp: the NiFe neck saturates", "kick start; z 1.14–1.21"],
           MAG, MAGS)
-    block(880, 124, 220, 150, "AH coil pair", ["160 turns, one per branch", "22 mF bypass each", "300 A-turns, ±3 %",
+    block(880, 124, 220, 150, "AH coil pair", ["160 turns, one per branch", "22 mF bypass each (PROPOSED)", "300 A-turns, ±3 %",
                                                "belt 18.1 W + 1.25 W iron"], MAG, MAGS)
     arrow(550, 199, 590, 199)
     arrow(840, 199, 880, 199)
@@ -112,7 +112,7 @@ def main():
     SR.tx(1154, 530, "G10 coupler; flanges at |z| 72–80 mm", "ms")
     SR.tx(1154, 560, "at the null:", "tk")
     SR.tx(1154, 578, "B: the AH's steady cusp (the null)", "tv")
-    SR.tx(1154, 596, "E: 7.10 kV/cm from B to A, 2.23 Pa, steady", "tv")
+    SR.tx(1154, 596, "E: 7.62 kV/cm, B to A, 2.57 Pa (8.2 settled)", "tv")
     SR.tx(1154, 614, "(ripple 0.19 %, no sign change)", "ms")
     arrow(1100, 199, 1196, 262)
     arrow(1100, 449, 1196, 398)
@@ -124,12 +124,14 @@ def main():
                           "the bypass 8 mW"),
         ("electrostatic pump", "2.14 W belt, all into the clamps Z1 / Z4 (1.07 W each); the rings' leakage 4.5 mW at "
                                "100 GΩ per ring"),
+        ("the mechanics", "windage about 12 W and the bearings 5 W, so about 39 W in all from the belt; the gear puts "
+                          "the same torque on both bodies, the frame takes twice it"),
         ("the products", "two static fields at the hub's centre: the AH's cusp (300 A-turns per coil) and the DC field "
-                         "7.10 kV/cm; no electrical output is drawn"),
+                         "7.62 kV/cm (8.2 settled); no electrical output is drawn"),
         ("the reference", "the shaft (REF); the counter-rotor's stator vanes reach it through one inner bearing "
-                          "(0.41 mA rms, pure AC); every reaction torque goes into the gear"),
-        ("not yet built in", "the gear and belt, La / Lb, the HV parts, the AH and the rings are not in the 3-D model; the "
-                             "model's hub and vane stack are placeholders (see the ledger's register)"),
+                          "(0.41 mA rms, pure AC)"),
+        ("not yet built in", "the gear and belt, La / Lb and the HV parts are not in the 3-D model; the record's stacks, "
+                             "hub, AH and rings are (see the ledger's register)"),
     ]
     SR.table(36, 702, rows, w_key=150, dy=24)
     SR.tx(20, 858, "Sources: docs/ledger/DCCREG-design-ledger.md · generator: docs/ledger/make_ledger_figures.py", "n")

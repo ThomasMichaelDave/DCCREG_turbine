@@ -24,6 +24,7 @@ BUNDLE = os.path.join(HERE, "DCCREG-drawings-bundle.pdf")
 CHROMIUM = os.environ.get("CHROMIUM", "/opt/pw-browsers/chromium")
 LOCK_DATE = "2026-10-09"
 LOCK_STATE = "09243c7"                 # the last commit that changed the design; the lock freezes it
+REVISION = "revised at the settlement, 2026-10-09"   # the records settled against the lock's baseline
 
 # the register (docs/ledger/register.py): sheet, title, file, what it shows, generator, part ("A" the design of record,
 # "B" its supporting drawings, "C" earlier phases kept for the record)
@@ -102,7 +103,8 @@ nav.toc li li { margin-left: 1.4em; font-size: 8.4pt; color: #333; }
 
 HEADER = ('<div style="font-family: DejaVu Sans, sans-serif; font-size: 7pt; color: #666; width: 100%; '
           'padding: 0 17mm; display: flex; justify-content: space-between;">'
-          '<span>DCCREG turbine &middot; design ledger and fact sheet</span><span>LOCKED {date} &middot; design state {state}</span>'
+          '<span>DCCREG turbine &middot; design ledger and fact sheet</span><span>LOCKED {date} &middot; design state {state} '
+          '&middot; {revision}</span>'
           '</div>')
 FOOTER = ('<div style="font-family: DejaVu Sans, sans-serif; font-size: 7pt; color: #666; width: 100%; '
           'padding: 0 17mm; text-align: right;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>')
@@ -185,14 +187,14 @@ def build_paper():
         pg.goto("file://" + tmp)
         pg.wait_for_load_state("networkidle")
         pg.pdf(path=PAPER, format="A4", prefer_css_page_size=True, print_background=True, display_header_footer=True,
-               header_template=HEADER.format(date=LOCK_DATE, state=LOCK_STATE), footer_template=FOOTER,
+               header_template=HEADER.format(date=LOCK_DATE, state=LOCK_STATE, revision=REVISION), footer_template=FOOTER,
                margin=dict(top="19mm", bottom="19mm", left="17mm", right="17mm"), outline=True, tagged=True)
         b.close()
     os.remove(tmp)
     from pypdf import PdfWriter
     w = PdfWriter(clone_from=PAPER)                                   # the bookmarks and tags stay; the metadata added
     w.add_metadata({"/Title": "DCCREG turbine - design ledger and fact sheet (design lock)",
-                    "/Subject": f"locked {LOCK_DATE}, design state {LOCK_STATE}, built at {commit()}"})
+                    "/Subject": f"locked {LOCK_DATE}, design state {LOCK_STATE}, {REVISION}, built at {commit()}"})
     with open(PAPER, "wb") as f:
         w.write(f)
     return PAPER
@@ -219,6 +221,7 @@ th, td { border: 0.6px solid #cfcdc4; padding: 1.1mm 1.6mm; text-align: left; ve
 th { background: #eceae3; }
 h1 { font-size: 24pt; margin: 0 0 2mm; } .sub { font-size: 12pt; color: #1d3f5e; margin-bottom: 6mm; }
 .part { font-weight: bold; background: #f4f6f9; }
+.tight td, .tight th { padding: 0.75mm 1.6mm; }
 """
 PART_NAME = {"A": "Part A — the design of record (locked)", "B": "Part B — supporting drawings of the record",
              "C": "Part C — earlier phases, kept for the record (superseded)"}
@@ -232,6 +235,7 @@ def _sheet_html(r, n_total):
             f'<footer><span>{html.escape(r["file"])}' + (f' &middot; generator {html.escape(r["gen"])}' if r.get("gen")
                                                          else "") +
             f'</span><span>DCCREG turbine &middot; drawings bundle &middot; LOCKED {LOCK_DATE} &middot; design state {LOCK_STATE}'
+            f' &middot; {REVISION}'
             f'</span></footer></div>')
 
 
@@ -252,12 +256,13 @@ def _cover_html(n_total):
             '<th style="width:24%">file</th><th style="width:15%">generator</th></tr></thead><tbody>')
     cad = "".join(f'<tr><td>{p_}</td><td>{html.escape(f)}</td><td>{html.escape(w)}</td></tr>' for p_, f, w in CAD)
     page1 = (f'<div class="sheet" style="padding-top: 14mm"><h1>DCCREG turbine — technical drawings</h1>'
-             f'<div class="sub">The bundle of the design lock ({LOCK_DATE}, design state {LOCK_STATE}; built at {commit()}): '
+             f'<div class="sub">The bundle of the design lock ({LOCK_DATE}, design state {LOCK_STATE}, {REVISION}; built '
+             f'at {commit()}): '
              f'{n_total} sheets after '
              f'this register. The ledger is docs/ledger/DCCREG-design-ledger.md (and .pdf); the drawings themselves stay '
              f'in the repository at the paths below, with the scripts that redraw them.</div>'
              f'{head}{rows_for("AB")}</tbody></table></div>')
-    page2 = (f'<div class="sheet" style="padding-top: 12mm"><header><span class="t">Register, continued</span>'
+    page2 = (f'<div class="sheet tight" style="padding-top: 12mm"><header><span class="t">Register, continued</span>'
              f'<span class="n">part C and the CAD files</span></header>{head}{rows_for("C")}</tbody></table>'
              f'<h3 style="margin: 5mm 0 2mm; font-size: 11pt">CAD and DXF files (not placed on sheets)</h3>'
              f'<table><thead><tr><th style="width:4%">part</th><th style="width:40%">file</th><th>what</th></tr></thead>'
@@ -293,8 +298,6 @@ def build_bundle():
         writer.add_outline_item("Cover and register", 0)
         parent = {}
         for r in REGISTER:
-            if r["part"] not in parent:
-                parent[r["part"]] = writer.add_outline_item(PART_NAME[r["part"]], len(writer.pages))
             start = len(writer.pages)
             if r["file"].lower().endswith(".pdf"):
                 for page in PdfReader(os.path.join(ROOT, r["file"])).pages:
@@ -304,10 +307,12 @@ def build_bundle():
                 _print(pg, _sheet_html(r, n_total), out)
                 for page in PdfReader(out).pages:
                     writer.add_page(page)
+            if r["part"] not in parent:                                 # once its first page is in, so it points there
+                parent[r["part"]] = writer.add_outline_item(PART_NAME[r["part"]], start)
             writer.add_outline_item(f"{r['sheet']}. {r['title']}", start, parent=parent[r["part"]])
         b.close()
     writer.add_metadata({"/Title": "DCCREG turbine - technical drawings (design lock)", "/Subject":
-                         f"locked {LOCK_DATE}, design state {LOCK_STATE}, built at {commit()}"})
+                         f"locked {LOCK_DATE}, design state {LOCK_STATE}, {REVISION}, built at {commit()}"})
     with open(BUNDLE, "wb") as f:
         writer.write(f)
     return BUNDLE

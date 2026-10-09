@@ -1,5 +1,6 @@
-"""docs/ledger/register.py -- the drawing register of the design lock (2026-10-09): every technical drawing bundled into
-docs/ledger/DCCREG-drawings-bundle.pdf, in sheet order, and the CAD files that cannot go on a sheet.
+"""docs/ledger/register.py -- the drawing register of the design lock (2026-10-09; revised at the settlement the same
+day): every technical drawing bundled into docs/ledger/DCCREG-drawings-bundle.pdf, in sheet order, and the CAD files that
+cannot go on a sheet.
 Parts: "A" the design of record (locked); "B" supporting drawings and figures of the record (stale content flagged);
 "C" earlier phases, superseded, kept for the record.
 Each entry: part, title, file (from the repository root), what it shows (and what in it is stale), generator.
@@ -7,14 +8,15 @@ Analysis plots of the earlier phases (the repository root's *.png, sim/*.png) ar
 their findings and are not bundled.
 """
 
-_TUBE = "docs/geometry/tube/tube-r150-n8-wound-g0p5-6br"
+_TUBE = "docs/geometry/tube/tube-r150-n8-wound-g0p5-6br"         # the model before the record (vacuum stack, placeholder hub)
+_REC = "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50"   # the record in solids (sim/tube_geometry.py --record)
 _R = [
     # ------------------------------------------------------------------------------------- A: the design of record
     ("A", "The locked machine: what drives what", "docs/ledger/figures/architecture.png",
      "the drive and the two counter-rotating bodies, both pumps, the hub and its two fields; where the belt's power "
      "goes; the reference", "docs/ledger/make_ledger_figures.py"),
     ("A", "Rotor circuits: reluctance pump and electrostatic pump", "docs/schematic-rotor-circuits.svg",
-     "(a) the magnetic dual doubler driving the AH pair (the 22 mF bypass is not drawn); (b) the de Queiroz diode "
+     "(a) the magnetic dual doubler driving the AH pair (the 22 mF bypass dashed, PROPOSED); (b) the de Queiroz diode "
      "doubler, the clamps and the rings' two mirrored chains; parts and operating point", "docs/make_schematic_rotor.py"),
     ("A", "The rings' DC supply, the symmetric pair", "docs/schematic-rings-supply.svg",
      "both Cockcroft-Walton chains stage by stage, each capacitor's DC and each diode's reverse peak; the hub with its "
@@ -35,9 +37,19 @@ _R = [
     ("A", "The rings' field at the null", "docs/figures/hub-rings-field.png",
      "field drawings: the section's |E|, equipotentials and field lines; the field and the pressure along the axis "
      "and across the equator; ring B's beads", "docs/make_rings_field_figure.py"),
-    ("A", "Reluctance sections A and B, plan cuts", f"{_TUBE}-reluctance-plan.png",
+    ("A", "The machine of record: section through the shaft", f"{_REC}-section.png",
+     "the record in solids, 940 mm: the air stack of record (6 + 6 vanes, 6 mm gaps) with Ca / Cb on the rotor, the "
+     "reluctance sections and the locked hub; side A below", "sim/tube_geometry.py --record"),
+    ("A", "The machine of record: quarter cutaway", f"{_REC}-3d-cutaway.png",
+     "the same solids in 3-D, cut away", "tools/step-viewer/shoot.py"),
+    ("A", "The machine of record: half section", f"{_REC}-3d-half.png",
+     "the same solids, half-sectioned", "tools/step-viewer/shoot.py"),
+    ("A", "The locked hub in solids", f"{_REC}-hub.png",
+     "the vessel, rings A / B with their beads, the gel, the PEEK retainer, the G10 coupler, the AH cores, formers and "
+     "coils, the flanges", "sim/tube_geometry.py --record"),
+    ("A", "Reluctance sections A and B, plan cuts", f"{_REC}-reluctance-plan.png",
      "the three wound utrons per side on the rotor and the six bridges per side on the counter-rotor (B offset 30°)",
-     "sim/tube_geometry.py --rel wound"),
+     "sim/tube_geometry.py --record"),
     ("A", "Utron A1 with bridge A1, exploded", f"{_TUBE}-3d-exploded.png",
      "the parts of one wound utron and its bridge", "tools/step-viewer/shoot.py"),
     ("A", "Reluctance section A, quarter cut", f"{_TUBE}-3d-reluctance.png",
@@ -45,16 +57,9 @@ _R = [
     ("A", "Reluctance section A, plan at mid-stack", f"{_TUBE}-3d-plan.png",
      "the 0.5 mm gaps at the aligned position", "tools/step-viewer/shoot.py"),
     # ------------------------------------------------------------------------------------ B: supporting, flagged
-    ("B", "The machine as modelled: section through the shaft", f"{_TUBE}-section.png",
-     "STALE IN PART: the reluctance sections are the record; the electrostatic stack is the old vacuum 8 + 8, Ca / Cb sit "
-     "on the counter-rotor and the hub is the 120 mm placeholder (802 mm tube)", "sim/tube_geometry.py --rel wound"),
-    ("B", "The machine as modelled: quarter cutaway", f"{_TUBE}-3d-cutaway.png",
-     "STALE IN PART, as the section: placeholder hub and vacuum stack", "tools/step-viewer/shoot.py"),
-    ("B", "The machine as modelled: half section", f"{_TUBE}-3d-half.png",
-     "STALE IN PART, as the section", "tools/step-viewer/shoot.py"),
-    ("B", "The locked hub's stack-up", "docs/figures/hub-locked.png",
-     "STALE IN PART: the hub (50 mm sphere, AH cores, flanges) is the record; its rings are the lock-down's 3-stage "
-     "20–53° bands, superseded by DCCREG-HUB-201", "docs/make_hub_locked_figure.py"),
+    ("B", "The lock-down study of the hub", "docs/figures/hub-locked.png",
+     "the hub as locked (50 mm sphere, AH cores, flanges) and the lock-down's pick of rings, its 3-stage 20–53° bands "
+     "superseded by DCCREG-HUB-201", "docs/make_hub_locked_figure.py"),
     ("B", "The rings as built: retainer, edges, stages", "docs/figures/hub-rings-build.png",
      "the PEEK retainer with its gel pocket and the beads to scale; the field against the DC by supply family and "
      "rating; the polar bead against the AH; the retainer's permittivity", "docs/make_hub_rings_build_figure.py"),
@@ -70,7 +75,20 @@ _R = [
      "power, gain, stack length and aluminium against the vanes' outer radius", "docs/make_vane_matrix_figures.py"),
     ("B", "The vane matrix: rim corona margins", "docs/figures/vane-matrix-corona.png",
      "the rim's corona margin against gap and vane thickness", "docs/make_vane_matrix_figures.py"),
+    ("B", "The AH's null in the locked hub", "docs/figures/ah-null.png",
+     "the cusp's field, the null against the coils' imbalance and over the 120 Hz cycle with and without the bypass, "
+     "the rods' flux, the shaft's permeability", "sim/ah_null.py"),
+    ("B", "The reversing gear and the belt drive (PROPOSED)", "docs/figures/drive-gear-concept.svg",
+     "the first cut: a bevel reverser at side A, its carrier held by the frame, three POM-C pinions; the HTD belt and "
+     "the motor", "sim/drive_sizing.py --figure"),
     # ---------------------------------------------------------------------------------------- C: earlier phases
+    ("C", "The machine as modelled before the record: section", f"{_TUBE}-section.png",
+     "superseded by the record in solids: the old vacuum 8 + 8 stack, Ca / Cb on the counter-rotor, the 120 mm "
+     "placeholder hub (802 mm tube); its reluctance sections are the record's", "sim/tube_geometry.py --rel wound"),
+    ("C", "The machine as modelled before the record: quarter cutaway", f"{_TUBE}-3d-cutaway.png",
+     "as the section", "tools/step-viewer/shoot.py"),
+    ("C", "The machine as modelled before the record: half section", f"{_TUBE}-3d-half.png",
+     "as the section", "tools/step-viewer/shoot.py"),
     ("C", "Hub drive: the first two-pump schematic (2026-10-07)", "docs/schematic-hub-drive.svg",
      "superseded by the rotor circuits: 300 rpm each way, 3 × 1150-turn toothed C-EM iron, the doubler on the stator "
      "vanes driving the bicone, a brush", "docs/make_schematic_hub.py"),
@@ -125,9 +143,12 @@ REGISTER = [dict(sheet=i + 1, part=p, title=t, file=f, what=w, gen=g) for i, (p,
 CAD = [
     ("A", "docs/drawings/DCCREG-UTR-101_half-core_A.step", "the utron half-core stack, hand A (hand B mirrored)"),
     ("A", "docs/drawings/DCCREG-UTR-101_lamination.dxf", "the as-cut lamination profile (R12), tip face R130.20"),
-    ("B", f"{_TUBE}.step", "the machine as modelled (152 solids; stale in part, as sheet 13)"),
-    ("B", f"{_TUBE}.glb", "the same, for tools/step-viewer/"),
-    ("B", f"{_TUBE}.parts.json", "its parts and layout list"),
+    ("A", f"{_REC}.step", "the record in solids (153 solids, 940 mm)"),
+    ("A", f"{_REC}.glb", "the same, for tools/step-viewer/"),
+    ("A", f"{_REC}.parts.json", "its parts and layout list"),
+    ("C", f"{_TUBE}.step", "the machine as modelled before the record (152 solids)"),
+    ("C", f"{_TUBE}.glb", "the same, for tools/step-viewer/"),
+    ("C", f"{_TUBE}.parts.json", "its parts and layout list"),
     ("C", "docs/geometry/tube/tube-r150-n8.step", "the earlier spark-gap tube build (307 solids, 1263 mm)"),
     ("C", "docs/geometry/freeze-v010-CaCb.step", "the disc's v0.10 freeze with Ca / Cb"),
     ("C", "docs/geometry/floor-56b6cb83.step", "round-trip floor build (disc)"),
