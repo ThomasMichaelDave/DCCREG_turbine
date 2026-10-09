@@ -65,6 +65,7 @@ H_AUX = 2.0                              # the comparisons that are quoted as ra
 H_CYL = 1.4                              # the cylinder's finer mesh (it runs at H_AUX and H_CYL)
 H_AIR = (2.0, 1.4)                       # meshes of the air-cored winding (G-AIR)
 A_NEU = (1.0, 0.7)                       # pixel sizes of the Neumann integral (G-AIR), mm
+AIR_BOX = 600.0                          # the air-cored winding's box: walls about 0.5-0.6 m out, mm
 THETA_MID = (2.5, 5.0, 7.5, 10.0, 15.0, 20.0)   # intermediate rotor angles, deg (the record's grid is 0:2.5:30)
 L_LONG = (300.0, 600.0)                  # stack lengths of the gate G-LONG, mm
 FD_REFINE = ((1090, 0.05),)              # sim/pole_fd2d.solve refined: X / 1090 cells in x (its own X / 545 lands the
@@ -325,11 +326,13 @@ def mesh_par(h):
 
 
 def build_cart(sp_, theta, h, mu_r, mode="quarter", two_d=False, L=None, zfar=None, ywall=0.0, far_z="nat",
-               far_x="dir", xmax=None, far_y="nat", iron=True):
+               far_x="dir", xmax=None, far_y="nat", iron=True, hc=None):
     """(a) the record's frame: its section (sim/pole_fd2d.Design: tips y -d..0, back iron -d-b..-d, bridges g..g+t_b,
     walls 40 mm beyond) over the stack. mode 'quarter': x 0..X/2 (mirrors at the utron's centre and half way to the
     next, aligned / unaligned); 'half': x -X/2..X/2, periodic ('free') or flux-tight at both ends ('alt')."""
     m = mesh_par(h)
+    if hc:
+        m["hc"] = hc                                             # a far box: coarser cells far out [IR]
     L = sp_["L"] if L is None else L
     X = 2 * math.pi * sp_["r_g"] / 3.0
     pitch = 2 * math.pi * sp_["r_g"] / sp_["n_br"]
@@ -474,7 +477,7 @@ def case(c):
     sp_ = c["spec"]
     try:
         if c["kind"] == "cart":
-            kw = {k: c[k] for k in ("mode", "two_d", "L", "zfar", "ywall", "far_z", "far_x", "xmax", "far_y", "iron")
+            kw = {k: c[k] for k in ("mode", "two_d", "L", "zfar", "ywall", "far_z", "far_x", "xmax", "far_y", "iron", "hc")
                   if k in c}
             G, mu, tau, sym, L = build_cart(sp_, c["theta"], c["h"], c.get("mu_r", MU_REC), **kw)
             r = solve_case(G, mu, tau, sym, L, record_conv=c.get("record_conv", False))
@@ -611,8 +614,8 @@ def jobs_for(rec):
         add(f"neumann a{a}", kind="neumann", a=a)
     for h in H_AIR:
         for bc in ("nat", "dir"):
-            add(f"air h{h} {bc}", kind="cart", theta=0.0, h=h, iron=False, xmax=1000.0, ywall=900.0, zfar=1100.0,
-                far_x=bc, far_y=bc, far_z=bc)
+            add(f"air h{h} {bc}", kind="cart", theta=0.0, h=h, iron=False, xmax=AIR_BOX, ywall=AIR_BOX - 100.0,
+                zfar=AIR_BOX + 100.0, far_x=bc, far_y=bc, far_z=bc, hc=50.0)
     th13 = [float(t) for t in np.linspace(0.0, 30.0, 13)]
     for t in th13:
         add(f"fd2d {t}", kind="fd2d", design=design, theta=t)

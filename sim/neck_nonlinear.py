@@ -386,7 +386,7 @@ def characterise(job):
         res["regions"].append(region_stats(pr, A, reg, var))
         return res["phi"][-1]
 
-    if isinstance(mode, (list, tuple)):
+    if isinstance(mode, list):                          # a fixed NI list
         for NI in mode:
             step(float(NI))
     else:                                               # adaptive: flux steps, fine around the expected knee
