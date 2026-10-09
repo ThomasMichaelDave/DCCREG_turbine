@@ -1,5 +1,13 @@
 # The locked hub, and the field at the AH null — findings
 
+> **Superseded in part by the build (2026-10-09, `sim/hub-rings-build-findings.md`).**
+> - **The record:** §1's three stages at 20–53° were sized without the copper edges. Their polar beads would run at
+>   7.7 kV/mm in the gel, against 5. The rings as built hold **two stages on ring B, 28.2 kV across, bands 25.75–57.7°
+>   with beaded edges: 6.9 kV/cm at the null**. More stages need the bench's higher ratings.
+> - **The placeholders:** the retainer (now PEEK with a gel pocket, G10 outside), the leakage (now about 100 GΩ per
+>   ring) and the open items on the rings' material and the drift test are answered there.
+> - **Still the lock-down's:** the rest of this study stands (its tables use the placeholder ε 4.7, `EPS_RET_LOCKDOWN`).
+
 **Source:**
 - the hub: `presets/hub-locked.json` (the designer's stack-up and choices; every value carries its status and source);
 - the field: `sim/hub_locked.py` → `sim/hub_locked_results.json`;
@@ -131,6 +139,8 @@ Both readings of "the rings" were solved in the locked hub, at one stage (20.6 k
   - charge on the wall.
 
 ## Open
+Answered by the build (`sim/hub-rings-build-findings.md`), except the ratings, which the bench qualifies
+(`docs/bench-test-rings.md`):
 - **The glass–retainer interface's rating**, from the retainer's material and process. 1 kV/mm is the placeholder; the
   bands widen with it.
 - **The rings' material** (copper foil or a fired coating), their edges' grading, and their leads.
