@@ -774,9 +774,9 @@ def analyse(rec, R, th13):
     res = {}
     for t, tag in ((0.0, "al"), (30.0, "un")):
         r3, L2 = a3[(hp, t)], a2[(hp, t)]
-        res[tag] = dict(L3d=r3["L"], L2d=L2, k=r3["L"] / L2, lam_stack=r3["lam_stack"], lam_end=r3["lam_end"],
-                        fringe_share=(r3["lam_stack"] - L2) / r3["L"], end_share=r3["lam_end"] / r3["L"],
-                        section_share=L2 / r3["L"], K_3d=r3["L"] / L2 - 1)
+        res[tag] = dict(L3d=r3["L"], L2d=L2, k=r3["L"] / L2, K_3d=r3["L"] / L2 - 1, section_share=L2 / r3["L"],
+                        end_share=(r3["L"] - L2) / r3["L"], end_mm_per_end=0.5 * (r3["L"] - L2) / (L2 / spc["L"]),
+                        lam_within_stack=r3["lam_stack"], lam_beyond_stack=r3["lam_end"])
     out["frame_a"] = res
     # ---- sensitivity, at H_AUX, as ratios to the same-mesh reference
     ref = {t: R[f"alt3d h{H_AUX} t{t}"]["L"] for t in (0.0, 30.0)}
@@ -922,33 +922,34 @@ def figure(out):
         a.spines[s_].set_visible(False)
     a.legend(loc="upper right", fontsize=7.6, frameon=False, labelcolor=INK2)
     a.set_title("(a) L(\u03b8) over the half cycle: the record against 3-D", loc="left", fontsize=10, color=INK)
-    # (b) the 3-D L in the record's frame: the 2-D section, the stack-end fringing, the end turns (shares)
+    # (b) the 3-D L in the record's frame: the 2-D section and the 3-D end effects (shares)
     b = ax[1]
     fa, cyl = out["frame_a"], out["cylinder"]
     for i, (tag, t) in enumerate((("al", 0.0), ("un", 30.0))):
         x = fa[tag]
-        parts = [x["L2d"], x["lam_stack"] - x["L2d"], x["lam_end"]]
+        parts = [x["L2d"], x["L3d"] - x["L2d"]]
         tot = sum(parts)
         left = 0.0
-        for p, col, lab in zip(parts, (S1, S2, S3), ("2-D section (x stack)", "stack-end fringing", "end turns")):
+        for p, col, lab in zip(parts, (S1, S2), ("the 2-D section x the stack", "3-D: the stack's two ends")):
             frac = p / tot
             b.barh(i, max(frac - 0.004, 0.0), left=left, height=0.3, color=col, label=lab if i == 0 else None)
             if frac > 0.12:
-                b.text(left + frac / 2, i, f"{100 * frac:.0f} %", ha="center", va="center", fontsize=8,
-                       color="white" if col in (S1, S2) else INK)
+                b.text(left + frac / 2, i, f"{100 * frac:.0f} %", ha="center", va="center", fontsize=8, color="white")
             left += frac
         aid = cyl[t]["free_over_alt"][str(H_CYL)] * cyl[t]["alt_over_frame_a"][str(H_CYL)] - 1
-        b.text(1.03, i - 0.07, f"{tot * 1e6:.3f} \u00b5H", va="center", fontsize=8.5, color=INK)
-        b.text(1.03, i + 0.12, f"cylinder, coils aiding: {100 * aid:+.0f} %", va="center", fontsize=7.6, color=INK2)
+        b.text(1.03, i - 0.1, f"{tot * 1e6:.3f} \u00b5H", va="center", fontsize=8.5, color=INK)
+        b.text(1.03, i + 0.07, f"each end = {x['end_mm_per_end']:.0f} mm of stack", va="center", fontsize=7.6, color=INK2)
+        b.text(1.03, i + 0.22, f"cylinder, coils aiding: {100 * aid:+.0f} %", va="center", fontsize=7.6, color=INK2)
     b.set_yticks([0, 1], ["aligned", "unaligned"])
-    b.set_xlim(0, 1.45)
+    b.set_ylim(-0.45, 1.55)
+    b.set_xlim(0, 1.5)
     b.set_xticks([0, 0.25, 0.5, 0.75, 1.0], ["0", "25", "50", "75", "100 %"])
-    b.invert_yaxis()
+    b.invert_yaxis()                                             # after set_ylim: aligned on top
     for s_ in ("top", "right", "left"):
         b.spines[s_].set_visible(False)
     b.tick_params(axis="y", length=0, colors=INK2)
-    b.legend(loc="lower center", bbox_to_anchor=(0.36, -0.36), ncol=3, fontsize=7.6, frameon=False, labelcolor=INK2)
-    b.set_title("(b) the 3-D L / N\u00b2 in the record's frame, by where it is linked", loc="left", fontsize=10, color=INK)
+    b.legend(loc="lower center", bbox_to_anchor=(0.36, -0.36), ncol=2, fontsize=7.6, frameon=False, labelcolor=INK2)
+    b.set_title("(b) the 3-D L / N\u00b2 in the record's frame", loc="left", fontsize=10, color=INK)
     # (c) the pump: z_early without / with the 22 mF bypass
     c = ax[2]
     D = out["deck"]
@@ -965,7 +966,7 @@ def figure(out):
     c.invert_yaxis()
     zs = [D[k][q]["z_early"] for k, _ in keys for q in ("0mF", "22mF")]
     c.set_xlim(min(zs + [1.0]) - 0.01, max(zs) + 0.05)
-    c.set_xlabel("z_early per cycle, the loaded deck (● no bypass, ■ 22 mF)")
+    c.set_xlabel("z_early (● no bypass, ■ 22 mF)")
     c.grid(True, axis="x", color=GRID, lw=0.8)
     c.set_axisbelow(True)
     for s_ in ("top", "right", "left"):
