@@ -110,7 +110,19 @@
         "absz_mm": [
           30.7,
           72.0
-        ]
+        ],
+        "material_data": {
+          "source": "Fair-Rite's 77 material data sheet (https://www.fair-rite.com/77-material-data-sheet/), as a web search rendered it on 2026-10-09; not re-read here (the session's network policy blocks the host): verify against the current sheet before ordering",
+          "mu_i": 2000,
+          "B_T_at_400A_per_m_25C": 0.51,
+          "Br_T": 0.18,
+          "Hc_A_per_m": 20,
+          "rho_ohm_m": 1.0,
+          "curie_C": ">200",
+          "tan_delta_over_mu_i": "15e-6 at 0.1 MHz",
+          "mu_i_tempco_pc_per_K": "1.2 (20-70 C)",
+          "note": "the register's rho 5 ohm m (presets/electromagnets-RA.json AH_rod) is five times the sheet's; at 120 Hz either leaves a skin depth of metres. B_sat at 100 C is the register's 0.38 T, not on the rendered sheet"
+        }
       },
       "former": {
         "material": "G-10",
@@ -137,7 +149,7 @@
     },
     "unit": "-",
     "status": "DECIDED (placement) / REGISTER (dimensions) / DESIGN (the winding) / PROPOSED (the end's radius)",
-    "source": "designer, 2026-10-08; presets/electromagnets-RA.json AH_rod, AH_former, AH_variants (a); sim/magnetic_doubler.py AH r160; the winding: sim/hub_thermal.py (the deck keeps 0.27 ohm, the bare-copper scaling); the end: sim/hub-beads-settled-findings.md §5",
+    "source": "designer, 2026-10-08; presets/electromagnets-RA.json AH_rod, AH_former, AH_variants (a); sim/magnetic_doubler.py AH r160; the winding: sim/hub_thermal.py (the deck keeps 0.27 ohm, the bare-copper scaling); the end: sim/hub-beads-settled-findings.md §5; the core's material data: Fair-Rite's 77 data sheet (core.material_data)",
     "tag": "[IR]"
   },
   "AH_seat": {
