@@ -214,6 +214,12 @@ stage 4c). The first row is the stage-2 stack (square-cut, 24° / 22°).
 | **3 mm** | **6 + 6** | **7.47** | **1.309** | **2.14 W** | **156 mm** | **916 mm** | **2.9 / 9.5 kg** |
 | 4 mm | 6 + 6 | 6.72 | 1.287 | 2.05 W | 174 mm | 952 mm | 3.8 / 12.7 kg |
 
+- **Corrected 2026-10-09** (`sim/tube-strays-findings.md` §4–§5): the 2-D cell leaves out the vanes' rims and the
+  deck takes 20 pF a node [RH]. Solved in 3-D, the stack of record (3 mm, 6 + 6) is 128.4–450.6 pF, κ 3.51, not
+  54.9–409.9 pF and 7.47, and the node strays are 66 / 25 pF. As built its z is 1.058, not 1.309, and it gives
+  0.65 W, not 2.14. The rows above share one basis, so they compare the builds [IR], but every absolute κ, z and
+  power in them is high.
+
 **When the rims reach corona.** This is the operating peak at which the solved rim field reaches Peek's onset, for a
 smooth surface (m 1) and a handled or weathered one (m 0.85) [RH]. The design runs at 13.1 kV.
 
@@ -243,9 +249,13 @@ smooth surface (m 1) and a handled or weathered one (m 0.85) [RH]. The design ru
 - **Clamped power:** near-ideal diodes, cosine C(θ).
 - **The same-power vane counts** scale the clamped power with the working gaps at fixed geometry and V_op.
 - **κ at the inner and outer rims:** these edges are a fixed 2 pF floor, not part of the 2-D cell.
+  - **Corrected 2026-10-09** (`sim/tube-strays-findings.md` §4): for the record's 11 gaps the rims add 65 pF to C_min
+    and 37 pF to C_max. Each stator sector's inner rim sits over the rotor ring's edge, and each rotor sector's outer
+    rim under the stator ring's, edge to edge 6 mm apart.
 - **12 and 15 mm:** with today's sectors the pump didn't reach the clamp within the 24-cycle run (z 1.09 / 1.02). That
   is too little gain to count on with real losses.
 - **The cell's grid (h 0.25 mm)** makes each vane two cells thinner than drawn: 0.96 mm for 1.5 mm, 3.6 mm for 4 mm.
+  - Sized 2026-10-09 (`sim/tube-strays-findings.md` §2): for the 3 mm vane, C_min per gap +7.2 % and C_max +1.0 %.
   - At r 100, refining to h 0.0625 raises C_min per mm by 7.4 % (1.5 mm, square-cut) and 3.8 % (4 mm, round). C_max
     rises 1.5 % and 0.6 %.
   - So every κ here reads a few % high, and the 4 mm penalty of §6.1 is about 2.5 % smaller than shown.

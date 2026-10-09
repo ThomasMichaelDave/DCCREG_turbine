@@ -35,6 +35,8 @@ TUBE_DEFAULTS = dict(
     n_plates=8,                                # rotor vanes = stator vanes per varicap per side (~1.1 nF at r 150)
     dielectric="vacuum", tempC=20.0, p_hPa=1013.0, rh=50.0,    # diode core: no spark gaps, so the tube runs in vacuum (<= 1e-4 mbar)
     C_edge_pF=2.0,                             # inner + outer edge fringe floor added to C_min [IR]
+    # (the record's basis; solved in 3-D the rims add about 65 pF to C_min and 37 to C_max for the air stack's 11 gaps,
+    #  sim/tube-strays-findings.md §4, 2026-10-09)
     h_mm=0.25, n_r=5,                          # 2-D cell resolution, radii for the r integral [ME]
     rho_vane=2700.0,                           # Al, kg/m^3
     hub_mm=120.0, clock_mm=0.0, rel_mm=0.0,   # axial minimums (per side): clocking and reluctance are derived from their parts
@@ -78,6 +80,8 @@ def _cell(r, p, shift_deg):
     t, g = p["t_vaneMm"], p["g_vMm"]
     # conductor cells are fixed at their centres: the potential drops over (ng + 1) cells, so hz = g / (ng + 1)
     # makes the electrical gap exactly g; the vane is nt cells (geometric thickness (nt + 1) hz ~ t)
+    # (node to node it is (nt - 1) hz: 2.4 mm for the 3 mm vane at h 0.25, which reads C_min per gap 7 % low;
+    #  sim/tube-strays-findings.md §2, 2026-10-09)
     ng = max(4, int(round(g / h)))
     hz = g / (ng + 1)
     nt = max(1, int(round(t / hz)) - 1)
@@ -173,7 +177,8 @@ def tube_geometry(p, lad, rpm):
 def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
     """every vane / plate / section along the (vertical) shaft, z = 0 at the bottom end (A side), z up.
     From the hub outward on each side: C1 (A) / C2 (B) varicap, Cx, Ca / Cb fixed plates, clocking deck,
-    reluctance section. Stator vanes alternate with rotor vanes, starting and ending on a stator vane. [IR]"""
+    reluctance section. Stator vanes alternate with rotor vanes, starting on a stator vane at the hub's end; with
+    n + n vanes the stack ends on a rotor vane beside the first Ca plate (sim/tube-strays-findings.md, 2026-10-09). [IR]"""
     t, g, ri, ro = p["t_vaneMm"], p["g_vMm"], p["r_inMm"], p["r_outMm"]
     el = []
 

@@ -30,7 +30,7 @@ def grid(r, p):
     t, g = p["t_vaneMm"], p["g_vMm"]
     ng = max(4, int(round(g / h)))
     hz = g / (ng + 1)
-    nt = max(1, int(round(t / hz)) - 1)
+    nt = max(1, int(round(t / hz)) - 1)      # node to node (nt - 1) hz: thinner than drawn (sim/tube-strays-findings.md §2)
     return dict(period_deg=period_deg, nx=nx, hx=P / nx, ng=ng, hz=hz, nt=nt, nz=2 * (nt + ng),
                 x=(np.arange(nx) + 0.5) * (P / nx), z=(np.arange(2 * (nt + ng)) + 0.5) * hz)
 

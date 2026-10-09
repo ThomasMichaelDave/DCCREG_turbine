@@ -156,6 +156,8 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
   - the clamps Z1 / Z4 at 1.07 W each;
   - the belt at 2.14 W, the leakage at 4.5 mW;
   - the start-up gain at z 1.191, against 1.180 on the asymmetric supply.
+  - **As built** (2026-10-09, `sim/tube-strays-findings.md` §5), with the vanes' rims and the tube's strays solved: z 1.031
+    with the chains, 0.65 W, the rings at ±13.86 kV and 7.06 kV/cm at the null.
 - **Why 100 pF:** it keeps the start-up gain (z 1.18 against 1.03 at 1 nF). It still smooths the ripple to tens of
   volts.
 - **The strays:** each ring has 5.1 pF to REF and 1.1 pF to the other ring. They sit behind diodes, off the pump's

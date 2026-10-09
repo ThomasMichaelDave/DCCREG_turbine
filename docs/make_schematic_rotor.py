@@ -434,6 +434,8 @@ def panel_b(ox, N):
 def panel_b_table(ox, y, N):
     d, cf, R = N["cf"]["design"], N["cf"], N["cfr"]
     fs, nl = N["dc"], N["ring"]
+    tsr = json.load(open(os.path.join(ROOT, "sim", "tube_strays_results.json")))   # the tube's strays solved
+    ts, tb = tsr["side_best"], tsr["decks"]["table"]["as built"]
     vr = fs["VR_pk_kV"]
     zs = N["duty"]["clamp_string"]
     n_z = math.ceil(d["V_op_kV"] * 1e3 / zs["V_Z"])
@@ -441,6 +443,12 @@ def panel_b_table(ox, y, N):
         ("C1, C2", f"{d['n_plates']} + {d['n_plates']} vanes, 6 × {d['ws_deg']:g}° / {d['wr_deg']:g}°, {d['gap_mm']:g} mm "
                    f"air gaps, {d['t_vaneMm']:g} mm full rounds: {d['C_min_pF']:.0f}–{d['C_max_pF']:.0f} pF, "
                    f"κ {d['kappa']:.1f}"),
+        ("", f"as built (3-D, the rims in): {ts['unaligned']['varicap']:.0f}–{ts['aligned']['varicap']:.0f} pF, "
+             f"κ {ts['aligned']['varicap'] / ts['unaligned']['varicap']:.2f}; Ca {ts['aligned']['ca']:.0f} pF; strays "
+             f"{0.5 * (ts['aligned']['stray1'] + ts['unaligned']['stray1']):.1f} / "
+             f"{0.5 * (ts['aligned']['stray2'] + ts['unaligned']['stray2']):.1f} pF"),
+        ("", f"z {tb['z']:.3f} bare, {tb['z_rings_start']:.3f} with the chains; {tb['P_clamped_W']:.2f} W "
+             "(sim/tube-strays-findings.md)"),
         ("Ca, Cb", f"{d['Ca_pF']:.0f} pF (1.1 C_max): full-annulus plates, now on the rotor"),
         ("D1–D4", f"HV stacks, reverse peaks {vr['D1']:.1f} / {vr['D2']:.1f} / {vr['D3']:.1f} / {vr['D4']:.1f} kV; "
                   "parts not chosen"),
@@ -463,7 +471,7 @@ def panel_b_table(ox, y, N):
         ("bearing", f"one inner bearing, for now: {fs['link']['I_rms_mA']:.2f} mA rms AC "
                     f"({fs['link']['I_pk_mA']:.2f} mA pk), no DC"),
     ]
-    y = table(ox + 42, y, rows, w_key=76)
+    y = table(ox + 42, y, rows, w_key=76, dy=18.5)
     tx(ox + 42, y + 6, f"At {cf['rpm_rel']:.0f} rpm relative ({cf['F_Hz']:.0f} Hz): belt {fs['P_belt_W']:.2f} W, into "
                        f"Z1 + Z4; z at start {N['dc_free']['z']:.3f} (bare {R['free none']['z']:.3f}).", "op")
     de = json.load(open(os.path.join(ROOT, "sim", "diodes_real_results.json")))["electrostatic"]   # real HV sticks

@@ -222,6 +222,35 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
     diodes'; the pole study's "Si (0.55 V)" is a Schottky-class drop;
   - the sticks' "~1 pF and µA leakage are small" held next to 1 nF, not the record's 100 pF chains.
   - **Open, the designer's:** the electrostatic pump's seed source (tens of volts on nodes 1 / 4, a few hundred hot).
+- **Added: the tube's strays by a field solve** (`sim/tube_strays.py`, `sim/tube_strays_results.json`,
+  `sim/tube-strays-findings.md`, figure `docs/figures/tube-strays.png`; the ledger's model check 33): a 3-D
+  finite-volume solve of the record's solids (side A, a 60° wedge, three grids to 8.1 M nodes), gated on closed
+  forms, the record's own 2-D vane cell (within 1 %) and the deck with 20 pF (to 1e-8); the rims' fringe
+  cross-checked by an independent 2-D solve (11.7 pF/m per gap).
+  - **The varicap is 128.4–450.6 pF, κ 3.51, not 54.9–409.9 pF and 7.47:** each stator sector's inner rim sits over
+    the rotor ring's edge, and each rotor sector's outer rim under the stator ring's, edge to edge 6 mm apart. The
+    2-D cell took the rims as a 2 pF floor; they add 65 pF to C_min and 37 to C_max.
+  - **The node strays are 66.2 pF (nodes 1 / 4) and 24.5 pF (2 / 3), not 20 [RH]:** the rotor rings reach the shaft
+    through the G10 sleeve (40 pF), and the first Ca plate the stator vanes (15–23 pF). Ca as laid out is 480.5 pF.
+  - **As built the pump barely self-excites:** z 1.058 bare and 1.031 with the rings' chains, 0.65 W, the rings at
+    ±13.86 kV (7.06 kV/cm), 95 % in 0.63 s; conductive spacer rings on the sleeve would take z to 1.008.
+- **Corrected, from the tube's strays** (dated notes beside the record's values: the ledger §1, §2.4, §3.4, §3.6,
+  §3.7, §4, §6 items 53–60; `sim/air-stack-sizing-findings.md`, `docs/rings-design.md`,
+  `sim/parts-first-cut-findings.md` §4; comments in `sim/stack_sizing.py`, `sim/vane_cell.py`, `sim/core_field.py`,
+  `sim/bicone_drive.py`; the rotor schematic and the architecture figure). The decks keep 20 pF and the 2-D cell as
+  the record's basis.
+- **Fixed: C1 and C2 in phase in the record's solids:** every vane sat at rot 0 against the circuit's antiphase.
+  `sim/tube_geometry.py` turns side B's stator vanes half a pitch (30°), as side B's bridges are [IR];
+  `sim/tube_geometry.py --record` (153 solids, 0 clashes), `sim/step_to_glb.py` and the stills
+  (`tools/step-viewer/shoot.py`; its scene labels the offset) re-run. The layout's docstring now says each stack ends
+  on a rotor vane beside the first Ca plate.
+- **Added: the start with the utrons in 3-D** (`sim/start_3d.py`, `sim/start_3d_results.json`,
+  `sim/start-3d-findings.md`): the parts study's own runs with each 3-D utron set, La / Lb held at 0.146 H; the record's
+  set reproduces `sim/parts_first_cut_results.json` run for run.
+  - K4 still starts the pump at full speed at every phase with every set. It starts at every phase only from
+    1050–1100 rpm relative (not 1000), a running pump stops below 850 (not about 750), and the seed threshold is
+    20–25 % (not 16 %): so K4 fires at full speed, never below 550 rpm each way (dated notes in
+    `sim/parts-first-cut-findings.md` §3, `sim/utron-3d-findings.md`, `docs/drive-gear-belt.md` §4.2 and the ledger).
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the

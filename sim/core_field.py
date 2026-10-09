@@ -56,7 +56,7 @@ sys.path.insert(0, HERE)
 import bicone_drive as BD          # noqa: E402  (the cones' L / M / R and the strays of record)
 
 RPM, F = 1200.0, 120.0
-CPAR = BD.CPAR                     # 20 pF at each of nodes 1-4 [RH]
+CPAR = BD.CPAR                     # 20 pF at each of nodes 1-4 [RH]; solved 66 / 25 pF (sim/tube-strays-findings.md)
 C_CONE, C_CC = 20e-12, 10e-12      # each cone to the shaft side (flange, AH, hub), cone to cone [RH]
 D_CORE_MM, E_WANT_KV_CM = 50.0, 2.0     # the cost sheet's placeholders (docs/make_cost_sheet.py: D_CORE, E_CORE) [RH]
 R_LINK = 1.0                       # the reference link: the bearing's contact, ohm [RH]; a 0 V source stalls ngspice [IR]

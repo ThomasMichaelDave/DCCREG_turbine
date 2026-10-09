@@ -25,6 +25,8 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 F = 60.0
 CMIN, CMAX, CA, CPAR = 71.1155e-12, 1113.358e-12, 1224.694e-12, 20e-12
+# CPAR 20 pF is [RH]: for the record's air stack the tube's strays solve to 66 pF on nodes 1 / 4 and 25 pF on 2 / 3
+# (sim/tube-strays-findings.md §3, 2026-10-09); the decks keep 20 pF as the record's basis
 L_CONE, M_CONE, R_CONE, N_CONE = 89.5e-6, 25.8e-6, 0.05, 32
 V_OP = 20e3
 

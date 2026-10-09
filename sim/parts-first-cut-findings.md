@@ -71,7 +71,10 @@ changed.
 
 ### 3. The start kick: a capacitor dumped across La through an SCR, fired contactlessly at speed (PROPOSED)
 - **2026-10-09:** the start was run with the record's 2-D utrons. With the 3-D ones (`sim/utron-3d-findings.md`)
-  z_early falls to 1.07–1.09, so the threshold and the start speeds below are optimistic until re-run.
+  z_early falls to 1.07–1.09, so the threshold and the start speeds below are optimistic.
+  - **Re-run** (`sim/start-3d-findings.md`): K4 still starts the pump at full speed at every phase with every 3-D set. It
+    starts at every phase from 1050–1100 rpm relative (not 1000), a running pump stops below 850 (not about 750), and
+    the seed threshold is 20–25 % (not 16 %). So K4 fires at full speed, never below 550 rpm each way.
 - **The recommendation [IR]:** a 9 V lithium primary cell charges a 470 µF bipolar electrolytic through 10 kΩ.
   - At speed, an outside magnet closes a reed switch on the rotor, and the reed pulses an SCR's gate.
   - The SCR dumps the capacitor across La, + to node a: 19 mJ, 0.60 A peak, over 17 ms.
@@ -537,6 +540,9 @@ record's seed never exceeds the steady peak.
 - **A first cut** [RH]:
   - **the node-1 plates** (and node 4's on side B) ride on the rotor vanes' own stack: conductive spacer rings at node 1
     on the G10 sleeve (r 20.5–50 mm), like the rotor vanes;
+    - **Corrected 2026-10-09** (`sim/tube-strays-findings.md` §3): conductive spacers on the sleeve raise node 1's
+      stray from 66 to 105 pF (about 0.5 pF per mm of node-1 metal on it) and take the start-up gain with the chains
+      to 1.008. Insulating spacers, or plates carried clear of the sleeve, avoid it.
   - **the node-2 plates** (node 3's) hang on 3–6 insulating tie-rods near their outer rim, PTFE or G10 sleeved in PTFE,
     with node-2 spacers between them;
   - **the node-1 plates are notched** round the rods with ≥ 13 mm of clearance, the notches rounded like the rims;

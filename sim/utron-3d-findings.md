@@ -46,7 +46,8 @@ The run took 34 min on 4 processes (2028 s), reusing its own cache of solves.
     0.113 to 0.083–0.092 T/m (0.377 mT/m per A-turn, `sim/ah-null-findings.md`);
   - the belt pays 10–12 W instead of 18;
   - the start: the kick threshold and the speeds of `sim/parts-first-cut-findings.md` §3 were found with the record's
-    utrons, and a lower z_early starts harder. Not re-run here.
+    utrons, and a lower z_early starts harder. Not re-run here; re-run in `sim/start-3d-findings.md`: K4 still starts
+    the pump at full speed at every phase, from 1050–1100 rpm relative (not 1000), and the seed threshold is 20–25 %.
 - **What would restore 450 A-turns** at the peak: Ψs × 1.27 (the record's frame), × 1.32 (one reversed) or × 1.42
   (aiding), a neck of about 3.8–4.3 mm of NiFe against 3.0 [IR: Ψs in proportion to the neck]. The utrons' copper loss
   rises as Ψs² (`sim/pole-design-findings.md` §3), so about × 1.6–2.0.
@@ -165,5 +166,5 @@ At h 1.0 mm:
   winding current are air.
 - **[IR] the deck's L(θ)** is the record's 2-D profile scaled by the 3-D ratio, not a 3-D solve at every angle.
 - **[IR] Ψs held:** the neck's saturation in the 3-D field is model check 31's (the nonlinear neck).
-- **Not re-run:** the start (the kick's threshold and speeds), the utrons' heat at the new operating point, and the
-  variant screen of `sim/pole_design.py` with the 3-D corrections.
+- **Not re-run:** the utrons' heat at the new operating point, and the variant screen of `sim/pole_design.py` with the
+  3-D corrections. The start is re-run in `sim/start-3d-findings.md`.

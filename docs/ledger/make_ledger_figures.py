@@ -76,10 +76,10 @@ def main():
     SR.tx(300, 352, "THE ELECTROSTATIC PUMP: the de Queiroz diode doubler, HV side on the rotor", "zh")
     block(300, 366, 250, 166, "Air vane stack C1 / C2", ["6 + 6 vanes per side, Al 3 mm", "6 mm gaps, R1.5 full rounds",
                                                          "rotor vanes = nodes 1 / 4", "stator vanes = REF",
-                                                         "55 ↔ 410 pF, 120 Hz"], ES, ESS)
+                                                         "55 ↔ 410 pF (128 ↔ 451 as built)"], ES, ESS)
     block(590, 366, 250, 166, "Diode doubler", ["Ca / Cb 451 pF on the rotor", "D1–D4; a seed (≥ 17–260 V) starts it",
                                                 "clamps Z1 / Z4 at 13.1 kV", "nodes 1 / 4: −13.2 ↔ −5.7 kV",
-                                                "z 1.31 bare; belt 2.14 W"], ES, ESS)
+                                                "z 1.31 (1.06 as built); 2.14 W"], ES, ESS)
     block(880, 366, 220, 166, "Two mirrored chains", ["Cockcroft-Walton, 2 stages", "each, from the shaft",
                                                       "node 1 → ring A −15.0 kV", "node 4 → ring B +15.0 kV",
                                                       "8 diodes, 8 × 100 pF"], ES, ESS)
@@ -123,8 +123,8 @@ def main():
     rows = [
         ("magnetic pump", "18.1 W belt + 1.25 W iron: utron copper 13.5 W, AH coils 2.0 W, diodes 2.0 W, La / Lb 0.7 W; "
                           "the bypass 8 mW; with the 3-D utrons 10.2–12.3 W belt"),
-        ("electrostatic pump", "2.14 W belt, all into the clamps Z1 / Z4 (1.07 W each); the rings' leakage 4.5 mW at "
-                               "100 GΩ per ring"),
+        ("electrostatic pump", "2.14 W belt, all into the clamps Z1 / Z4 (1.07 W each), 0.65 W as built with the tube's "
+                               "strays solved; the rings' leakage 4.5 mW at 100 GΩ per ring"),
         ("the mechanics", "windage about 12 W and the bearings 5 W, so about 39 W in all from the belt; the gear puts "
                           "the same torque on both bodies, the frame takes twice it"),
         ("the products", "two static fields at the hub's centre: the AH's cusp (300 A-turns per coil; 221–245 with the "

@@ -224,6 +224,8 @@ form's 0.399, and zero for equal inertias (`selfcheck_rigid_limit` in the result
   - **Corrected 2026-10-09** (`sim/parts-first-cut-findings.md` §3): this said "above about 200 rpm". The magnetic
     pump does not start there: at 200 rpm each way the kick dies within 8 cycles. It starts at every rotor phase from
     500 rpm each way with the deck's diodes, so the kick fires at full speed, 600 rpm each way, never below 500.
+    With the utrons in 3-D (`sim/start-3d-findings.md`) it starts at every phase only from 525–550 rpm each way, so
+    never below 550; a running pump stops below 425 each way.
 
 ### 4.3 The run-up and the limit
 

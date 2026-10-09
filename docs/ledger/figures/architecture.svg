@@ -74,14 +74,14 @@
 <text x="312.0" y="424.0" class="tv" text-anchor="start" >6 mm gaps, R1.5 full rounds</text>
 <text x="312.0" y="440.0" class="tv" text-anchor="start" >rotor vanes = nodes 1 / 4</text>
 <text x="312.0" y="456.0" class="tv" text-anchor="start" >stator vanes = REF</text>
-<text x="312.0" y="472.0" class="tv" text-anchor="start" >55 ↔ 410 pF, 120 Hz</text>
+<text x="312.0" y="472.0" class="tv" text-anchor="start" >55 ↔ 410 pF (128 ↔ 451 as built)</text>
 <rect x="590" y="366" width="250" height="166" rx="6" fill="#f3f0e6" stroke="#b9ad8a" stroke-width="1.4"/>
 <text x="602.0" y="388.0" class="tk" text-anchor="start" style="fill:#111">Diode doubler</text>
 <text x="602.0" y="408.0" class="tv" text-anchor="start" >Ca / Cb 451 pF on the rotor</text>
 <text x="602.0" y="424.0" class="tv" text-anchor="start" >D1–D4; a seed (≥ 17–260 V) starts it</text>
 <text x="602.0" y="440.0" class="tv" text-anchor="start" >clamps Z1 / Z4 at 13.1 kV</text>
 <text x="602.0" y="456.0" class="tv" text-anchor="start" >nodes 1 / 4: −13.2 ↔ −5.7 kV</text>
-<text x="602.0" y="472.0" class="tv" text-anchor="start" >z 1.31 bare; belt 2.14 W</text>
+<text x="602.0" y="472.0" class="tv" text-anchor="start" >z 1.31 (1.06 as built); 2.14 W</text>
 <rect x="880" y="366" width="220" height="166" rx="6" fill="#f3f0e6" stroke="#b9ad8a" stroke-width="1.4"/>
 <text x="892.0" y="388.0" class="tk" text-anchor="start" style="fill:#111">Two mirrored chains</text>
 <text x="892.0" y="408.0" class="tv" text-anchor="start" >Cockcroft-Walton, 2 stages</text>
@@ -123,7 +123,7 @@
 <text x="36.0" y="702.0" class="tk" text-anchor="start" >magnetic pump</text>
 <text x="186.0" y="702.0" class="tv" text-anchor="start" >18.1 W belt + 1.25 W iron: utron copper 13.5 W, AH coils 2.0 W, diodes 2.0 W, La / Lb 0.7 W; the bypass 8 mW; with the 3-D utrons 10.2–12.3 W belt</text>
 <text x="36.0" y="726.0" class="tk" text-anchor="start" >electrostatic pump</text>
-<text x="186.0" y="726.0" class="tv" text-anchor="start" >2.14 W belt, all into the clamps Z1 / Z4 (1.07 W each); the rings' leakage 4.5 mW at 100 GΩ per ring</text>
+<text x="186.0" y="726.0" class="tv" text-anchor="start" >2.14 W belt, all into the clamps Z1 / Z4 (1.07 W each), 0.65 W as built with the tube's strays solved; the rings' leakage 4.5 mW at 100 GΩ per ring</text>
 <text x="36.0" y="750.0" class="tk" text-anchor="start" >the mechanics</text>
 <text x="186.0" y="750.0" class="tv" text-anchor="start" >windage about 12 W and the bearings 5 W, so about 39 W in all from the belt; the gear puts the same torque on both bodies, the frame takes twice it</text>
 <text x="36.0" y="774.0" class="tk" text-anchor="start" >the products</text>

@@ -399,29 +399,33 @@
 <text x="62.0" y="1062.5" class="op" text-anchor="start" >With the 3-D utrons: AH 221–245 A-turns mean with the bypass, z_lin 1.16–1.17 (sim/utron-3d-findings.md).</text>
 <text x="822.0" y="778.0" class="tk" text-anchor="start" >C1, C2</text>
 <text x="898.0" y="778.0" class="tv" text-anchor="start" >6 + 6 vanes, 6 × 22° / 22°, 6 mm air gaps, 3 mm full rounds: 55–410 pF, κ 7.5</text>
-<text x="822.0" y="797.5" class="tk" text-anchor="start" >Ca, Cb</text>
-<text x="898.0" y="797.5" class="tv" text-anchor="start" >451 pF (1.1 C_max): full-annulus plates, now on the rotor</text>
-<text x="822.0" y="817.0" class="tk" text-anchor="start" >D1–D4</text>
-<text x="898.0" y="817.0" class="tv" text-anchor="start" >HV stacks, reverse peaks 6.1 / 6.1 / 13.2 / 13.2 kV; parts not chosen</text>
-<text x="822.0" y="836.5" class="tk" text-anchor="start" >Z1, Z4</text>
-<text x="898.0" y="836.5" class="tv" text-anchor="start" >avalanche strings, BV 13.1 kV (e.g. 66 × 200 V), on the rotor: 1.07 W, 0.95 mA peak each</text>
-<text x="822.0" y="856.0" class="tk" text-anchor="start" >core</text>
-<text x="898.0" y="856.0" class="tv" text-anchor="start" >two rings outside the 50 mm glass: Cu foil bands 26.2–55.7°, 29.9 mm apart along it</text>
-<text x="822.0" y="875.5" class="tk" text-anchor="start" ></text>
-<text x="898.0" y="875.5" class="tv" text-anchor="start" >beaded edges Ø3 / Ø2 mm (polar / equatorial) in gel, under the PEEK retainer</text>
-<text x="822.0" y="895.0" class="tk" text-anchor="start" >supply</text>
-<text x="898.0" y="895.0" class="tv" text-anchor="start" >A: 2 CW stages on node 1, mirrored, −15.0 kV · B: 2 CW stages on node 4, +15.0 kV</text>
-<text x="822.0" y="914.5" class="tk" text-anchor="start" ></text>
-<text x="898.0" y="914.5" class="tv" text-anchor="start" >100 pF storage; Dca, Dpa, Dc, Dp ≤ 7.5 kV reverse; 4 mW leakage at 100 GΩ/ring [RH]</text>
-<text x="822.0" y="934.0" class="tk" text-anchor="start" ></text>
-<text x="898.0" y="934.0" class="tv" text-anchor="start" >29.9 kV across: 7.6 kV/cm, 2.6 Pa at the null (as connected; 8.2 settled)</text>
-<text x="822.0" y="953.5" class="tk" text-anchor="start" >strays</text>
-<text x="898.0" y="953.5" class="tv" text-anchor="start" >≈ 20 pF per node [RH]; the rings 5.1 pF each to REF, 1.1 pF between</text>
-<text x="822.0" y="973.0" class="tk" text-anchor="start" >bearing</text>
-<text x="898.0" y="973.0" class="tv" text-anchor="start" >one inner bearing, for now: 0.41 mA rms AC (0.91 mA pk), no DC</text>
-<text x="822.0" y="998.5" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): belt 2.14 W, into Z1 + Z4; z at start 1.191 (bare 1.310).</text>
-<text x="822.0" y="1016.5" class="op" text-anchor="start" >Real HV sticks: rings −14.65 / +14.67 kV, 7.47 kV/cm (sim/diodes-real-findings.md);</text>
-<text x="822.0" y="1034.5" class="op" text-anchor="start" >no self-start below about 17 V on nodes 1 / 4 (about 260 V hot): a seed is needed.</text>
+<text x="822.0" y="796.5" class="tk" text-anchor="start" ></text>
+<text x="898.0" y="796.5" class="tv" text-anchor="start" >as built (3-D, the rims in): 128–451 pF, κ 3.51; Ca 480 pF; strays 66.2 / 24.5 pF</text>
+<text x="822.0" y="815.0" class="tk" text-anchor="start" ></text>
+<text x="898.0" y="815.0" class="tv" text-anchor="start" >z 1.058 bare, 1.031 with the chains; 0.65 W (sim/tube-strays-findings.md)</text>
+<text x="822.0" y="833.5" class="tk" text-anchor="start" >Ca, Cb</text>
+<text x="898.0" y="833.5" class="tv" text-anchor="start" >451 pF (1.1 C_max): full-annulus plates, now on the rotor</text>
+<text x="822.0" y="852.0" class="tk" text-anchor="start" >D1–D4</text>
+<text x="898.0" y="852.0" class="tv" text-anchor="start" >HV stacks, reverse peaks 6.1 / 6.1 / 13.2 / 13.2 kV; parts not chosen</text>
+<text x="822.0" y="870.5" class="tk" text-anchor="start" >Z1, Z4</text>
+<text x="898.0" y="870.5" class="tv" text-anchor="start" >avalanche strings, BV 13.1 kV (e.g. 66 × 200 V), on the rotor: 1.07 W, 0.95 mA peak each</text>
+<text x="822.0" y="889.0" class="tk" text-anchor="start" >core</text>
+<text x="898.0" y="889.0" class="tv" text-anchor="start" >two rings outside the 50 mm glass: Cu foil bands 26.2–55.7°, 29.9 mm apart along it</text>
+<text x="822.0" y="907.5" class="tk" text-anchor="start" ></text>
+<text x="898.0" y="907.5" class="tv" text-anchor="start" >beaded edges Ø3 / Ø2 mm (polar / equatorial) in gel, under the PEEK retainer</text>
+<text x="822.0" y="926.0" class="tk" text-anchor="start" >supply</text>
+<text x="898.0" y="926.0" class="tv" text-anchor="start" >A: 2 CW stages on node 1, mirrored, −15.0 kV · B: 2 CW stages on node 4, +15.0 kV</text>
+<text x="822.0" y="944.5" class="tk" text-anchor="start" ></text>
+<text x="898.0" y="944.5" class="tv" text-anchor="start" >100 pF storage; Dca, Dpa, Dc, Dp ≤ 7.5 kV reverse; 4 mW leakage at 100 GΩ/ring [RH]</text>
+<text x="822.0" y="963.0" class="tk" text-anchor="start" ></text>
+<text x="898.0" y="963.0" class="tv" text-anchor="start" >29.9 kV across: 7.6 kV/cm, 2.6 Pa at the null (as connected; 8.2 settled)</text>
+<text x="822.0" y="981.5" class="tk" text-anchor="start" >strays</text>
+<text x="898.0" y="981.5" class="tv" text-anchor="start" >≈ 20 pF per node [RH]; the rings 5.1 pF each to REF, 1.1 pF between</text>
+<text x="822.0" y="1000.0" class="tk" text-anchor="start" >bearing</text>
+<text x="898.0" y="1000.0" class="tv" text-anchor="start" >one inner bearing, for now: 0.41 mA rms AC (0.91 mA pk), no DC</text>
+<text x="822.0" y="1024.5" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): belt 2.14 W, into Z1 + Z4; z at start 1.191 (bare 1.310).</text>
+<text x="822.0" y="1042.5" class="op" text-anchor="start" >Real HV sticks: rings −14.65 / +14.67 kV, 7.47 kV/cm (sim/diodes-real-findings.md);</text>
+<text x="822.0" y="1060.5" class="op" text-anchor="start" >no self-start below about 17 V on nodes 1 / 4 (about 260 V hot): a seed is needed.</text>
 <text x="20.0" y="1094.0" class="n" text-anchor="start" >Bodies. Rotor: shaft, sleeve, rotor vanes (nodes 1 / 4), Ca / Cb plates, the 6 utrons on their carrier discs, the hub (the glass vessel with the rings outside it, the AH pair, retainer and coupler).</text>
 <text x="20.0" y="1113.0" class="n" text-anchor="start" >Counter-rotor: stator cage, stator vanes (REF), bridges. Frame: end bearings, the gear.</text>
 <text x="20.0" y="1132.0" class="n" text-anchor="start" >Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, the two CW chains, the rings (all rotor);</text>

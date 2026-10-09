@@ -73,7 +73,7 @@ in opposite directions through a 1 : −1 reversing gear.
   - one AH coil sits in each group's branch, and a 22 mF bypass across it (PROPOSED) holds a steady 300 ampere-turns
     (221–245 with the 3-D utrons).
 - **The electrostatic pump:**
-  - the varicaps C1 / C2 swing 55 ↔ 410 pF in antiphase;
+  - the varicaps C1 / C2 swing 55 ↔ 410 pF in antiphase (128 ↔ 451 pF as built, with the vanes' rims, `sim/tube-strays-findings.md`);
   - the de Queiroz diode doubler multiplies its charge each cycle until the clamps Z1 / Z4 hold the nodes at their
     13.1 kV operating peak;
   - the pump's nodes 1 and 4 then feed two mirrored Cockcroft-Walton chains standing on the shaft, which pump ring A
@@ -95,12 +95,12 @@ in opposite directions through a 1 : −1 reversing gear.
 | magnetic pump, per side | 3 wound utrons (200 turns, 2.23 kg each) and 6 SiFe bridges, gap 0.5 mm | `sim/pole-design-findings.md` §8 |
 | AH | 160-turn coils on Fair-Rite 77 MnZn rods (0.80 mm wire, 0.333 Ω as wound); 22 mF bypass each (PROPOSED); 290–308 A-turns (300 mean, ±3 %; 294 as wound) with the record's 2-D utrons, 221–245 with the 3-D ones | `sim/ah-steady-cusp-findings.md`; `sim/hub-thermal-findings.md` §1; `sim/utron-3d-findings.md` §4 |
 | the AH's null | at the centre; 0.113 T/m (0.083–0.092 with the 3-D utrons); within ±0.44 mm over a cycle with the bypass, ±6.4 mm without | `sim/ah-null-findings.md`; `sim/utron-3d-findings.md` |
-| electrostatic pump, per side | 6 + 6 Al vanes 3 mm, full rounds R1.5, 6 mm air gaps; C1 / C2 55–410 pF; Ca / Cb 451 pF | `sim/air-stack-sizing-findings.md` §6.5 |
+| electrostatic pump, per side | 6 + 6 Al vanes 3 mm, full rounds R1.5, 6 mm air gaps; C1 / C2 55–410 pF; Ca / Cb 451 pF. As built (a 3-D field solve): C1 / C2 128–451 pF (κ 3.51), Ca 480.5 pF, node strays 66 / 25 pF; z 1.058 bare, 1.031 with the rings' chains | `sim/air-stack-sizing-findings.md` §6.5; `sim/tube-strays-findings.md` |
 | operating peak | 13.1 kV at the clamps (the 6 mm gap's breakdown over 1.5) | `sim/air_stack_sizing_results.json` |
 | rings | Cu foil 0.10 mm, 26.25–55.71° from the axis; beads Ø3 / Ø2 mm; 29.9 mm apart along the glass | `docs/rings-design.md` §2 |
 | rings' supply | symmetric: −14.96 / +14.96 kV on 2 + 2 Cockcroft-Walton stages from the shaft (−14.65 / +14.67 kV with real HV sticks) | `sim/hub_rings_build_results.json` record; `sim/diodes-real-findings.md` §4.3 |
-| field at the null | 7.62 kV/cm from B to A at switch-on, 2.57 Pa (the bands alone 7.10); 8.20 kV/cm once settled at 25 °C; ripple 0.014 kV/cm p-p (0.19 %); no sign change in a revolution. With real HV sticks 7.47 kV/cm at switch-on and 0.049 kV/cm p-p (6.96 kV/cm at their datasheet's maximum leakage) | `sim/hub-beads-settled-findings.md` §2; `sim/hub_drift_results.json`; `sim/hub_revolution_results.json`; `sim/diodes-real-findings.md` §4.3 |
-| power from the belt | magnetic 18.1 W + 1.25 W iron (10.2–12.3 W + iron with the 3-D utrons); electrostatic 2.14 W; windage about 12 W and bearings 5 W | `sim/ah-steady-cusp-findings.md`; `sim/utron-3d-findings.md`; `sim/core_field_results.json`; `sim/rotor-mechanics-findings.md` §5 |
+| field at the null | 7.62 kV/cm from B to A at switch-on, 2.57 Pa (the bands alone 7.10); 8.20 kV/cm once settled at 25 °C; ripple 0.014 kV/cm p-p (0.19 %); no sign change in a revolution. With real HV sticks 7.47 kV/cm at switch-on and 0.049 kV/cm p-p (6.96 kV/cm at their datasheet's maximum leakage). With the tube's strays solved, 7.06 kV/cm (±13.86 kV) | `sim/hub-beads-settled-findings.md` §2; `sim/hub_drift_results.json`; `sim/hub_revolution_results.json`; `sim/diodes-real-findings.md` §4.3; `sim/tube-strays-findings.md` §5 |
+| power from the belt | magnetic 18.1 W + 1.25 W iron (10.2–12.3 W + iron with the 3-D utrons); electrostatic 2.14 W (0.65 W as built); windage about 12 W and bearings 5 W | `sim/ah-steady-cusp-findings.md`; `sim/utron-3d-findings.md`; `sim/core_field_results.json`; `sim/tube-strays-findings.md`; `sim/rotor-mechanics-findings.md` §5 |
 | the hub's heat | the AH coils 1.22 W each: the coils at 43 °C, the glass at 32–37 °C in a 25 °C room | `sim/hub-thermal-findings.md` |
 | cost (placeholders) | the stack of record's build 6,477 EUR; the cheapest qualifying build 6,060 EUR | `docs/cost/README.md` |
 
@@ -166,6 +166,8 @@ commits' dates.
   - Interleaved vane stacks along the shaft give the capacitance without the carriers' penalty, hence the tube.
   - In air the fixed 20 pF node stray is what pulls the capped stack's z from 1.38 to 1.31
     (`sim/air-stack-sizing-findings.md` §6.5).
+  - Solved in 3-D (`sim/tube-strays-findings.md`), the strays are 66 / 25 pF a node, and the vanes' rims, which the 2-D cell
+    took as a 2 pF floor, add 65 pF to C_min: as built κ is 3.5, not 7.5, and z is 1.058, not 1.31.
 - **A pump's reaction torque must go somewhere** [OC]. The C-EMs could not counter-rotate the stator, so the drive
   is an outside belt with a 1 : −1 gear, and every reaction torque goes into the frame (`sim/spinup-findings.md`).
 - **The dual circuit works.** Inductors for capacitors, currents for voltages and flux for charge give a magnetic
@@ -295,6 +297,9 @@ commits' dates.
     A-turns and puts 2.42 W in the diodes; reverse recovery is negligible at 120 Hz.
   - **At full speed,** 600 rpm each way and never below 500: the pump starts at every rotor phase only from 1000 rpm
     relative, and a running pump stops below about 750. At 200 rpm each way the kick dies within 8 cycles.
+  - **With the 3-D utrons** (`sim/start-3d-findings.md`): K4 still starts the pump at full speed at every phase, with
+    every set. It starts at every phase only from 1050–1100 rpm relative, so never below 550 each way; a running pump
+    stops below 850; and the seed threshold is 20–25 %, so the record's 20 % seed kick starts only the record's frame.
   - **The first cut (PROPOSED):** a 9 V lithium cell charges a 470 µF bipolar capacitor, and an SCR dumps it across La
     (+ to node a) when a reed switch on the rotor passes an outside magnet: 19 mJ, 0.60 A, 17 ms, once per charge.
   - **The sign is the diodes':** a seed of the other sign starts the pump in the deck's own sign, so polarised bypass
@@ -362,13 +367,18 @@ commits' dates.
   r 50–150 mm.
 - With the sectors aligned the stack is 410 pF. With the rotor's sectors centred between the stator's it is 55 pF
   (κ 7.47).
-- C1 and C2 sit half a pitch apart, so they swing in antiphase six times a relative revolution: 120 Hz.
+  - **As built** (a 3-D field solve of the record's solids, `sim/tube-strays-findings.md` §4): 450.6 / 128.4 pF, κ 3.51.
+    Each stator sector's inner rim sits over the rotor ring's edge, and each rotor sector's outer rim under the
+    stator ring's, edge to edge 6 mm apart. The 2-D cell took these rims as a 2 pF floor on C_min; they add 65 pF to
+    it and 37 pF to C_max [OC].
+- C1 and C2 sit half a pitch apart, so they swing in antiphase six times a relative revolution: 120 Hz. (The record's
+  solids drew them in phase; corrected, §6 item 58.)
 
 **The doubler** [OC] (`sim/core_field.py`; de Queiroz's symmetrical generator, its Fig. 1 with every diode reversed:
 the same circuit at negative polarity).
 - **The circuit:**
   - C1 from node 1 and C2 from node 4 to REF;
-  - transfer capacitors Ca (1–2) and Cb (3–4) of 451 pF;
+  - transfer capacitors Ca (1–2) and Cb (3–4) of 451 pF (480.5 pF as laid out: the layout rounds the gap count up);
   - four diodes: D1 2→0, D2 3→0, D3 1→3, D4 4→2.
 - **One half cycle, step by step:**
   1. The capacitor that is shrinking keeps its charge, because its diode is blocked, so its voltage rises as Q/C. The
@@ -400,7 +410,7 @@ the same circuit at negative polarity).
   - nodes 2 and 3 swing 0 ↔ −6.1 kV.
   - D1–D4 see reverse peaks of 6.1 / 6.1 / 13.2 / 13.2 kV. First cut (PROPOSED): one 20 kV avalanche stick for D1 /
     D2 and two in series for D3 / D4, each with a 22 kΩ surge resistor (`sim/parts-first-cut-findings.md` §2.2).
-- **The power:** the belt pays 2.14 W, all of it into the clamps.
+- **The power:** the belt pays 2.14 W, all of it into the clamps (0.65 W as built, `sim/tube-strays-findings.md` §5).
 - **Without clamps** the pump runs as a relaxation oscillator: it arcs at the stack, sends 25–47 A surges through the
   diodes and 38 A through the bearing link, so the clamps stay (`sim/electrostatic-no-clamp-findings.md`).
 - **Ca / Cb:** 1.1 C_max, six full-annulus aluminium plates per side with 5 gaps of 6 mm, on the rotor. Adjacent
@@ -411,7 +421,15 @@ the same circuit at negative polarity).
 - **A vane flashover** at node 4, at its lowest point, lifts ring B from 14.96 to 19.0 kV until the leakage drains it:
   2 % past the bench's 1.25× hold-off. Before the DC settles, the polar bead's gel would then run at about 6.3 kV/mm
   (`sim/parts-first-cut-findings.md` §2.7) [IR]. OPEN for the designer (§5.2).
-- **Strays:** 20 pF per node [RH]. Each pF costs about 0.003 of z (`sim/core-field-findings.md` §4).
+- **Strays:** 20 pF per node [RH] in the deck. Each pF costs about 0.003 of z (`sim/core-field-findings.md` §4; 0.0027
+  for nodes 1 and 4 together, `sim/tube-strays-findings.md` §5).
+  - **Solved** (`sim/tube-strays-findings.md` §3): 66.2 pF on nodes 1 / 4, of which 40 pF is the rotor rings to the
+    shaft through the G10 sleeve and 15–23 pF the first Ca plate to the stator vanes through the last rotor vane's
+    openings; 24.5 pF on nodes 2 / 3, 11.5 pF of it to the utrons. Across the hub, 0.05 pF or less.
+  - **As built** (every capacitance solved, the record's deck): z 1.058 bare and 1.031 with the rings' chains,
+    0.65 W, the rings at ±13.86 kV (7.06 kV/cm at the null), 95 % in 0.63 s. The pump barely self-excites.
+  - The parts' first cut's conductive spacer rings on the sleeve would raise node 1's stray to 105 pF and take z with
+    the chains to 1.008; insulating mounts avoid it (§5.2).
 
 ### 3.5 The hub
 
@@ -519,8 +537,9 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
     and kept cool;
   - no Dk and no C_A (`sim/hub_rings_build_results.json` record_supply).
 - **Why 100 pF:** it keeps the pump's start-up gain at 1.191 (1.03 at 1 nF), and still smooths the ripple to tens of
-  volts.
-- **The strays:** 5.1 pF from each ring to REF and 1.1 pF between the rings, behind diodes.
+  volts. As built, with the tube's strays solved, the gain with the chains is 1.031 (`sim/tube-strays-findings.md` §5).
+- **The strays:** 5.1 pF from each ring to REF and 1.1 pF between the rings, behind diodes. The whole machine solved
+  gives 5.87 / 1.50 pF, and the deck ran 3 / 2 pF; none of it moves the supply (`sim/tube-strays-findings.md` §3).
 
 ### 3.7 The field at the null, in space and in time
 
@@ -554,7 +573,8 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
 ![Figure 9. One revolution of the rotor: the pump goes through its phases twelve times (C1 / C2, nodes 1 / 4, the chains' oscillating nodes), while the rings hold and the field at the null stays 7.611–7.625 kV/cm from B to A. Source: docs/figures/hub-rings-revolution.png (sim/hub_revolution.py).](../figures/hub-rings-revolution.png)
 
 **In time** (the bench test's predictions are Figure 10, §5.3):
-- **Start-up** from the pump's seed: 50 % at 0.12 s, 95 % at 0.24 s, 99 % at 0.33 s.
+- **Start-up** from the pump's seed: 50 % at 0.12 s, 95 % at 0.24 s, 99 % at 0.33 s; as built, with the tube's strays
+  solved, 95 % at 0.63 s on the deck's own start (`sim/tube-strays-findings.md` §5).
   - **Corrected 2026-10-09** (`sim/diodes-real-findings.md` §1.2, §4.2): the deck's 29 cycles start from −0.58 / −0.90
     kV, not −1 kV, because under `uic` ngspice starts its charge-defined varicaps uncharged. From a consistent −1 kV,
     95 % takes 27 cycles (0.225 s), with ideal diodes and typical sticks alike; 0.30 s with hot sticks.
@@ -650,7 +670,7 @@ and tooling.
 | La / Lb | 0.146 H DC chokes, 0.29 Ω in the deck, 0.87–1.15 A, ≤ 110 V; first cut EI-84 × 35 mm, 150 t of Ø1.40 mm, 0.276 Ω, 1.66 kg (PROPOSED) |
 | D1*–D4* | 0.54 V at 1 A in the deck (a 100 V Schottky's drop; the 200 V class drops 0.71 V); 1.9 / 2.3 A peak; reverse 113 / 104 / 58 / 60 V with the start-up; first cut Schottky 200 / 150 V, ≥ 3 A (PROPOSED); with it the AH 295 A-turns, the diodes 2.42 W (`sim/diodes-real-findings.md` §3.3) |
 | gain | z 1.21 (z_lin, the screen's linear model); 1.139 loaded early (z_early), 1.147 with the bypass; with the 3-D utrons z_lin 1.16–1.17 (under the ≥ 1.20 rule), z_early 1.07–1.09 (`sim/utron-3d-findings.md`) |
-| kick | once, at full speed (600 rpm each way, never below 500): the record's 20 % of Ψs seeds 0.110 A, 3.5 mJ; the threshold is 16 % with the deck's diodes, 17.2 % with the first-cut Schottky set, 25–28 % with silicon PN rectifiers (`sim/diodes-real-findings.md` §3.1); first cut K4, 470 µF + SCR, reed-fired (PROPOSED) |
+| kick | once, at full speed (600 rpm each way, never below 500): the record's 20 % of Ψs seeds 0.110 A, 3.5 mJ; the threshold is 16 % with the deck's diodes, 17.2 % with the first-cut Schottky set, 25–28 % with silicon PN rectifiers (`sim/diodes-real-findings.md` §3.1); first cut K4, 470 µF + SCR, reed-fired (PROPOSED); with the 3-D utrons K4 starts at every phase from 1050–1100 rpm relative, the seed threshold 20–25 % (`sim/start-3d-findings.md`) |
 | mass | 2.23 kg per utron as built (SiFe 0.89, NiFe 0.15, Cu 1.07, G10 0.12) |
 | power | belt 17.6 W (18.1 W with the bypass) + iron 1.25 W; coils 46 °C in air at a 40 °C ambient |
 
@@ -675,15 +695,15 @@ and tooling.
 | vanes | 6 stator (REF) + 6 rotor (node 1 / 4), Al 3 mm, full rounds R1.5; 11 gaps of 6 mm air |
 | sectors | 6 on a 60° pitch, 22° stator / 22° rotor; r 50–150 mm; 8° clearance each side at minimum C |
 | rings of the vanes | stator ring r 150–162 mm into the G10 cage (r 162–166); rotor ring r 20.5–50 mm on the G10 sleeve (r 12.5–20.5) |
-| C1 = C2 | 54.9–409.9 pF, κ 7.47 (4.81–37.3 pF per gap) |
-| Ca = Cb | 450.9 pF = 1.1 C_max: 6 full-annulus plates, 5 gaps of 6 mm, on the rotor |
+| C1 = C2 | 54.9–409.9 pF, κ 7.47 (4.81–37.3 pF per gap); as built 128.4–450.6 pF, κ 3.51: the rims add 65 / 37 pF (`sim/tube-strays-findings.md` §4) |
+| Ca = Cb | 450.9 pF = 1.1 C_max: 6 full-annulus plates, 5 gaps of 6 mm, on the rotor; as laid out 480.5 pF (the gap count rounded up) |
 | stack length | 102 mm of C1 + 6 mm + 48 mm of Ca = 156 mm |
 | operating peak | 13.13 kV (19.7 kV breakdown / 1.5 [RH]); face field 21.9 kV/cm; rim 44.4 kV/cm (0.80 of onset) |
-| gain | z 1.31 bare (1.3095 ngspice); 1.191 at start-up with the rings' chains, a large-signal gain: with real HV sticks below 1 under about 17 V (260 V hot), so a seed is needed (`sim/diodes-real-findings.md` §4.1) |
+| gain | z 1.31 bare (1.3095 ngspice); 1.191 at start-up with the rings' chains, a large-signal gain: with real HV sticks below 1 under about 17 V (260 V hot), so a seed is needed (`sim/diodes-real-findings.md` §4.1); as built, with the tube's strays solved, 1.058 bare and 1.031 with the chains (`sim/tube-strays-findings.md` §5) |
 | nodes | 1 / 4: −13.2 ↔ −5.7 kV (mean −8.6); 2 / 3: 0 ↔ −6.1 kV |
 | clamps | Z1 / Z4 avalanche strings, BV 13.1 kV (66 × 200 V, 1.5KE200A class, PROPOSED); 1.07 W, 0.95 mA peak each |
 | D1–D4 | reverse peaks 6.1 / 6.1 / 13.2 / 13.2 kV; first cut 20 kV sticks (one / two in series) + 22 kΩ (PROPOSED) |
-| power | belt 2.14 W, all into the clamps |
+| power | belt 2.14 W, all into the clamps; 0.65 W as built |
 | aluminium (both sides) | rotor vanes 2.9 kg + Ca / Cb plates 6.1 kg; stator vanes 3.4 kg |
 
 **Rings, supply and field** (`docs/rings-design.md`; `sim/hub_rings_build_results.json`; `sim/hub_drift_results.json`;
@@ -699,7 +719,7 @@ and tooling.
 | at the null | 7.62 kV/cm, 2.57 Pa at switch-on (the bands alone 7.10); 8.20 kV/cm, 2.98 Pa settled at 25 °C; ±5 mm uniformity 4.4 % (axis) / 2.0 % (equator) |
 | fields in the insulation | glass along the gap 1.00 kV/mm on average; gel at the beads 4.98 / 4.46 kV/mm as drawn; glass at the beads 1.46 / 3.01 kV/mm; to the AH 1.81 kV/mm |
 | settled | gel at the beads 0.69 / 1.88 kV/mm; the PEEK 2.3 kV/mm across the seat; the equatorial beads hold while σ_glass ≤ 4.1 σ_gel |
-| strays | 5.1 pF to REF each, 1.1 pF between |
+| strays | 5.1 pF to REF each, 1.1 pF between (5.87 / 1.50 pF with the whole machine solved) |
 | time | 95 % in 0.24 s (0.225 s from a consistent −1 kV seed); ripple 0.014 kV/cm p-p (0.049 with real HV sticks); one revolution 7.611–7.625 kV/cm; drift to 8.20 kV/cm in 6 h (PEEK, gel, 25 °C) |
 | the hub's heat | coils 43 °C, glass 32–37 °C (32.5 °C between the rings) in a 25 °C room; the vessel 4.2e12 Ω·m there |
 | leakage | 100 GΩ per ring used (ledger 158 GΩ); 4.5 mW |
@@ -773,7 +793,7 @@ and tooling.
 - the field on the pump's own supply (phase 4).
 
 **Still open in the models and parts:**
-- the model checks of §6 (items 31 and 33): the neck and the tube's strays;
+- the model check of §6 item 31: the neck;
 - the 77 MnZn data sheet: its values are in `presets/hub-locked.json` (AH core), as a web search rendered the sheet;
   re-read them from the current sheet before ordering;
 - the capacitor mounts' creepage, potting and balancing: first cuts in `sim/parts-first-cut-findings.md` and
@@ -854,7 +874,7 @@ more; each line says what was done and where. The model checks (31–34) run as 
 |:--|:--|:--|
 | 31 | the neck, a nonlinear field check | `sim/neck-nonlinear-findings.md` |
 | 32 | real diodes at start-up | **done, and corrections:** the magnetic pump starts on the record's 20 % kick only with Schottky rectifiers (thresholds 17.2 % for the first-cut set, 25–28 % for silicon PN); the electrostatic pump does not self-excite with real HV sticks (a seed of 17–260 V is needed, §5.2) and its rings stand at −14.65 / +14.67 kV, 7.47 kV/cm (items 46–52; `sim/diodes-real-findings.md`) |
-| 33 | the tube's strays, by a field solve | `sim/tube-strays-findings.md` |
+| 33 | the tube's strays, by a field solve | **done, and a correction:** the node strays are 66.2 / 24.5 pF, not 20, and the varicap is 128–451 pF (κ 3.51), not 55–410 (κ 7.47): the vanes' rims; as built z 1.058 bare, 1.031 with the chains, 0.65 W, 7.06 kV/cm (items 53–60; `sim/tube-strays-findings.md`) |
 | 34 | the utrons' κ in 3-D | **done, and a correction:** κ 6.70 in the record's frame (the ends +71 % unaligned against the [RH] +30 %), 5.96–6.44 with the coils' coupling round the machine; the pick's z_lin 1.16–1.17, under its ≥ 1.20 rule; the AH 221–245 A-turns with the bypass, not 300; the coils' connection not recorded: the designer's (`sim/utron-3d-findings.md`) |
 
 **Found by the parts' first cut** (`sim/parts-first-cut-findings.md`)
@@ -889,6 +909,19 @@ more; each line says what was done and where. The model checks (31–34) run as 
 | 50 | `sim/hub_rings_build.py` LEAKAGE: a 20 kV stack "leaks tens of nA at a third of its rating" | **noted:** that is a typical or selected part; the class's datasheet maximum, 2 µA, is 80 × more (a comment there; the leakage ledger's 3e11 Ω a stage holds with selected parts) |
 | 51 | "0.54 V … a Schottky-class drop"; "the threshold is 16 %" (§3.2, §4, item 37) | **corrected:** a 100 V Schottky's drop; the 200 V class that D1* / D2* need drops 0.71 V; the thresholds by class (§3.1 there) |
 | 52 | `sim/pole-design-findings.md` §4: "silicon diodes (≈ 0.55 V)", "the diode drop then costs only about 2 W"; `sim/pole_design.py`'s "Si (0.55 V @ 1 A)" | **corrected:** a silicon PN rectifier drops 0.85 V at 1 A, needs a 25 % kick, and its diodes take 3.0–3.1 W; the code's label is commented, not renamed (dated notes) |
+
+**Found by the tube-strays study** (`sim/tube-strays-findings.md`)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 53 | C1 = C2 "55–410 pF, κ 7.47" (§1, §3.4, §4; `sim/air_stack_sizing_results.json`): the 2-D cell with a 2 pF rim floor (`sim/stack_sizing.py` C_edge_pF) | **corrected beside the record's:** as built 128.4–450.6 pF, κ 3.51; the rims add 65 pF to C_min and 37 to C_max (dated notes; §4 there) |
+| 54 | the 20 pF node stray [RH] (§3.4; `sim/core_field.py`, `sim/bicone_drive.py`) | **corrected beside the record's:** 66.2 pF on nodes 1 / 4, 24.5 pF on nodes 2 / 3 (§3 there); the decks keep their 20 pF as the record's basis (comments there) |
+| 55 | Ca = Cb "451 pF = 1.1 C_max" | **corrected:** the layout rounds the gap count up, so the 5 gaps give 480.5 pF as laid out (§4 there) |
+| 56 | the 2-D cell holds the 3 mm vane as 2.4 mm node to node (`sim/stack_sizing.py`, `sim/vane_cell.py`) | **noted:** C_min per gap +7.2 % and C_max +1.0 % for the vane as drawn, the direction `sim/air-stack-sizing-findings.md` §6.5 states (comments there) |
+| 57 | the rings' supply ran with the deck's 3 / 2 pF ring strays while the record quotes the hub's 5.1 / 1.1 pF | **noted:** the whole machine gives 5.87 / 1.50 pF; none of the three moves the supply (§3 there) |
+| 58 | the record's solids draw C1 and C2 in phase (`sim/tube_geometry.py`: every vane at rot 0), against the circuit's antiphase | **done:** side B's stator vanes turned half a pitch (30°), as side B's bridges are; `sim/tube_geometry.py --record` re-run |
+| 59 | `sim/stack_sizing.py` layout: "starting and ending on a stator vane" | **corrected (docstring):** each stack ends on a rotor vane beside the first Ca plate, the path for Ca_01's 15–23 pF |
+| 60 | the parts' first cut mounts the node-1 plates on conductive spacer rings on the sleeve (`sim/parts-first-cut-findings.md` §4) | **corrected:** they would raise node 1's stray to 105 pF and take z with the chains to 1.008; insulating mounts (dated note) |
 
 ## 7. Drawing register
 
