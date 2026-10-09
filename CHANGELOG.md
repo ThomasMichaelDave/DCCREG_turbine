@@ -53,6 +53,10 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - ring A tops up as node 1 bottoms, and ring B 1.03 ms later as node 4 peaks, so their 34 / 29 V p-p ripples mostly
     add: 0.014 kV/cm p-p (0.19 %) at the null.
   - A swing from A to B would need AC on the rings: about ±1.8 kV/cm, 0.14 Pa at the peaks [OC estimate].
+  - **Over a whole revolution of the rotor** (`sim/hub_revolution.py`, `docs/figures/hub-rings-revolution.png`; the
+    designer's follow-up): 12 pump cycles in 0.1 s at 600 rpm each way.
+    - The pump's nodes and the chains' oscillating nodes swing by 7.5 kV each.
+    - The rings hold to 29 / 34 V p-p, and the field stays at 7.093 … 7.107 kV/cm from B to A, with no sign change.
 - **The bench predictions for the record:**
   - start-up: 95 % in 0.24 s;
   - drift: 7.10 → 7.78 (1 h) → 7.82 kV/cm (6 h), PEEK and gel at 25 °C, half-way at 13 min.

@@ -266,6 +266,21 @@ keeps each family's best per pair of ratings (`best_by_family`).
     - ring A tops up as node 1 bottoms (at 0.375 of the cycle), and ring B as node 4 peaks, 0.124 of a cycle
       (1.03 ms) later;
     - so the ripples mostly add: 57 V p-p across the 29.9 kV, 0.014 kV/cm p-p (0.19 %) at the null.
+  - **Over a whole revolution** (the designer's follow-up: "it does actually swing when going through its phases in
+    one revolution"; `sim/hub_revolution.py` → `sim/hub_revolution_results.json`, `docs/figures/hub-rings-revolution.png`).
+    The record's supply was settled, then recorded over one revolution: 600 rpm each way, 12 pump cycles, 0.1 s.
+    - **The pump goes through its phases twelve times.** C1 and C2 alternate. Nodes 1 and 4 swing −13.2 ↔ −5.7 kV,
+      half a cycle apart.
+    - **The chains' oscillating nodes swing a stage each:** m1 0 … +7.5, m2 +7.5 … +15.0, n1 −7.5 … 0, n2 −15.0 …
+      −7.5 kV.
+    - **The smoothing nodes and the rings hold:** b1 and a1 within 20 V; ring B +14.96 kV (29 V p-p); ring A
+      −14.96 kV (34 V p-p).
+    - **The field at the null** stays at 7.093 … 7.107 kV/cm from B to A, with no sign change in the revolution.
+    - **Why:** every diode in a chain passes charge one way only. Ring B's chain can only push ring B up, and ring
+      A's can only push ring A down. The storage capacitors hold the rings between the pump's cycles. What swings is
+      the pump and the chains' oscillating nodes, and the rings only see their small top-ups.
+    - The hub rotates with the rotor, and the rings are symmetric about the shaft, so turning them changes nothing at
+      the null either.
   - **A field that swings from A to B** needs AC on the rings: the rings on coupling capacitors, following nodes 1 and
     4, as the floating cones did (`sim/core-field-findings.md`).
     - On the record's bands that would be about ±1.8 kV/cm at 120 Hz (V(4) − V(1) swings ±7.4 kV), so the pressure

@@ -16,6 +16,7 @@ yes!"
 
 | what | file |
 |:--|:--|
+| the supply over one revolution: the pump's phases, the chains, the rings, the field | `docs/figures/hub-rings-revolution.png` |
 | the manufacturing drawing (section, beads, gore) | `docs/drawings/DCCREG-HUB-201.pdf` / `.png` |
 | the supply in full, every stage | `docs/schematic-rings-supply.svg` / `.png` |
 | the rotor's circuits, the supply in context (panel b) | `docs/schematic-rotor-circuits.svg` / `.png` |
@@ -156,6 +157,11 @@ Tags: [OC] a modelling choice, [IR] an imported reference value, [RH] a rule of 
   - The two ripples mostly add: 57 V p-p across the gap, 0.014 kV/cm p-p at the null (0.19 %).
 - **"The field from A to B swings now ... correct?" No.** The field at the null is DC, steady from B to A at
   7.10 kV/cm, and the pressure holds its maximum, 2.23 Pa, all the time.
+  - **Over one revolution of the rotor** (`sim/hub_revolution.py`, `docs/figures/hub-rings-revolution.png`): the pump
+    goes through its phases twelve times. Nodes 1 and 4 and the chains' oscillating nodes swing by 7.5 kV each.
+    The rings hold to within 29–34 V, and the field stays at 7.093 … 7.107 kV/cm from B to A, with no sign change.
+  - **Why:** each chain's diodes pass charge one way only, ring B's up and ring A's down, and the storage capacitors
+    hold the rings between cycles.
   - **A field that swings from A to B** would need AC on the rings: rings on coupling capacitors, following nodes 1 and
     4, as the floating cones did (`sim/core-field-findings.md`).
   - On these bands that gives about ±1.8 kV/cm at 120 Hz, with the pressure peaking at about 0.14 Pa twice a cycle and
