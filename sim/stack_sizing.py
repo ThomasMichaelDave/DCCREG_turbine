@@ -177,6 +177,8 @@ def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
     t, g, ri, ro = p["t_vaneMm"], p["g_vMm"], p["r_inMm"], p["r_outMm"]
     el = []
 
+    hv_rotor = bool(p.get("hv_on_rotor"))          # the record: the HV side on the rotor (sim/core-field-findings.md) [IR]
+
     def stack(z_hub_end, direction, nv, kind, nodes, side_lab, fixed=False):
         """nv vanes from the hub end outward; returns the outer end z."""
         pitch = (p["pitch_fixed_mm"] - t) if fixed else g
@@ -184,7 +186,7 @@ def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
         for k in range(nv):
             z0, z1 = (z, z + t) if direction > 0 else (z - t, z)
             if fixed:
-                body, node = "stator", nodes[k % 2]
+                body, node = ("rotor" if hv_rotor else "stator"), nodes[k % 2]
             else:
                 body = "stator" if k % 2 == 0 else "rotor"
                 node = nodes[0] if body == "stator" else nodes[1]
@@ -193,9 +195,13 @@ def layout(p, n, n_cx, n_ca, L_var, L_cx, L_ca, side, L_tot):
         return z - direction * pitch
 
     zc = side + 0.5 * p["hub_mm"]                                    # hub centre
-    el.append(dict(kind="hub", body="hub", node="R-A/R-B", side="hub", z0=side, z1=side + p["hub_mm"], r0=0.0, r1=ro))
-    for direction, lab, nodes_v, nodes_x, nodes_c in ((-1, "A", ("1", "R-A"), ("n23", "8"), ("1", "2")),
-                                                      (+1, "B", ("4", "R-B"), ("n17", "7"), ("4", "3"))):
+    el.append(dict(kind="hub", body="hub", node="REF" if hv_rotor else "R-A/R-B", side="hub", z0=side,
+                   z1=side + p["hub_mm"], r0=0.0, r1=ro))
+    # (stator, rotor) vane nodes: the record's stator vanes are REF (0) and its rotor vanes nodes 1 / 4; earlier builds
+    # put nodes 1 / 4 on the stator vanes and R-A / R-B on the rotor's
+    vane_nodes = {"A": ("0", "1"), "B": ("0", "4")} if hv_rotor else {"A": ("1", "R-A"), "B": ("4", "R-B")}
+    for direction, lab, nodes_x, nodes_c in ((-1, "A", ("n23", "8"), ("1", "2")), (+1, "B", ("n17", "7"), ("4", "3"))):
+        nodes_v = vane_nodes[lab]
         z = zc - direction * 0 + direction * 0.5 * p["hub_mm"]
 
         def bearing(z, where):

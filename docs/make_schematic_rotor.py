@@ -497,7 +497,8 @@ def main():
         "Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, " +
         ("the two CW chains, " if N["ring"].get("a_ref") == "shaft" else "Dk, the CW stage, C_A, ") +
         "the rings (all rotor);",
-        "sim/tube_geometry.py still puts Ca / Cb on the counter-rotor. Each pump's reaction torque goes into the gear.",
+        "the record's solids (sim/tube_geometry.py --record) carry Ca / Cb on the rotor, the hub and the rings. Each pump's "
+        "reaction torque goes into the gear.",
         "(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, "
         "the clamps Z1 / Z4 → the NiFe neck's saturation.",
         "A and B swap every half cycle: one group generates (L falling) while the other motors. Each branch carries its own "

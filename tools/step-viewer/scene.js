@@ -115,10 +115,19 @@ export function aim(camera, target, dir, dist, up) {
   camera.updateProjectionMatrix();
 }
 
-const SECTIONS = [[/^A_U\d_core/, "reluctance A: 3 utrons (rotor), 6 bridges (counter-rotor)"], [/^A_Ca_/, "Ca fixed plates"],
-                  [/^A_C1_/, "C1 varicap: 8 stator + 8 rotor vanes"], [/^hub_bicone/, "hub: bicone + AH (placeholder)"],
-                  [/^B_C2_/, "C2 varicap"], [/^B_Cb_/, "Cb fixed plates"],
-                  [/^B_U\d_core/, "reluctance B: bridges offset 30°"]];
+// the section labels, read from the model's own parts (the vane counts, the plates' body, which hub it carries)
+function sections(S) {
+  const n = (re) => S.parts.filter((p) => re.test(p.part)).length;
+  const onRotor = S.parts.some((p) => /^A_Ca_/.test(p.part) && p.body === "rotor");
+  const locked = n(/^hub_vessel$/) > 0;
+  return [[/^A_U\d_core/, "reluctance A: 3 utrons (rotor), 6 bridges (counter-rotor)"],
+          [/^A_Ca_/, "Ca fixed plates" + (onRotor ? " (rotor)" : "")],
+          [/^A_C1_/, `C1 varicap: ${n(/^A_C1_s/)} stator + ${n(/^A_C1_r/)} rotor vanes`],
+          locked ? [/^hub_(vessel|retainer)$/, "hub (locked): 50 mm sphere, rings, AH pair, PEEK + gel"]
+                 : [/^hub_bicone/, "hub: bicone + AH (placeholder)"],
+          [/^B_C2_/, "C2 varicap"], [/^B_Cb_/, "Cb fixed plates"],
+          [/^B_U\d_core/, "reluctance B: bridges offset 30°"]];
+}
 
 // the views (world units: metres, z up). labels: [anchor (world), text, dx px, dy px]
 export function views(S) {
@@ -126,7 +135,7 @@ export function views(S) {
   const zA = bboxOf(S, /^A_U\d_core/);
   const zc = zA.getCenter(new THREE.Vector3());
   const R = S.box.max.x;
-  const sec = (x) => SECTIONS.map(([re, t]) => {
+  const sec = (x) => sections(S).map(([re, t]) => {
     const b = bboxOf(S, re);
     return [new THREE.Vector3(x, 0, 0.5 * (b.min.z + b.max.z)), t, 70, 0];
   });

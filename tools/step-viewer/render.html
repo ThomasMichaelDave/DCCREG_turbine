@@ -6,7 +6,7 @@
 svg{position:absolute;left:0;top:0;pointer-events:none}
 svg text{font:13px system-ui,sans-serif;fill:#1d1d1f;paint-order:stroke;stroke:#f4f4f2;stroke-width:4px;stroke-linejoin:round}</style>
 <script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
-</head><body><div id="t"></div><div id="src">docs/geometry/tube/tube-r150-n8-wound-g0p5-6br.step, rendered from the STEP (sim/step_to_glb.py + three.js)</div>
+</head><body><div id="t"></div><div id="src"></div>
 <svg id="o"></svg>
 <script type="module">
 import * as THREE from "three";
@@ -15,7 +15,10 @@ const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffe
 renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xf4f4f2);
 document.body.appendChild(renderer.domElement);
 const camera = new THREE.PerspectiveCamera(26, 1, 0.005, 20);
-const S = await buildScene(renderer, new URLSearchParams(location.search).get("model") || "./model.glb");
+const MODEL = new URLSearchParams(location.search).get("model") || "./model.glb";
+document.getElementById("src").textContent =
+  `${MODEL.replace(/^\//, "").replace(/\.(glb|json)$/, ".step")}, rendered from the STEP (sim/step_to_glb.py + three.js)`;
+const S = await buildScene(renderer, MODEL);
 const V = views(S);
 window.renderView = (name) => {
   const v = V[name], [W, H] = [innerWidth, innerHeight];

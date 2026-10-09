@@ -417,7 +417,7 @@
 <text x="20.0" y="1094.0" class="n" text-anchor="start" >Bodies. Rotor: shaft, sleeve, rotor vanes (nodes 1 / 4), Ca / Cb plates, the 6 utrons on their carrier discs, the hub (the glass vessel with the rings outside it, the AH pair, retainer and coupler).</text>
 <text x="20.0" y="1113.0" class="n" text-anchor="start" >Counter-rotor: stator cage, stator vanes (REF), bridges. Frame: end bearings, the gear.</text>
 <text x="20.0" y="1132.0" class="n" text-anchor="start" >Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, the two CW chains, the rings (all rotor);</text>
-<text x="20.0" y="1151.0" class="n" text-anchor="start" >sim/tube_geometry.py still puts Ca / Cb on the counter-rotor. Each pump's reaction torque goes into the gear.</text>
+<text x="20.0" y="1151.0" class="n" text-anchor="start" >the record's solids (sim/tube_geometry.py --record) carry Ca / Cb on the rotor, the hub and the rings. Each pump's reaction torque goes into the gear.</text>
 <text x="20.0" y="1170.0" class="n" text-anchor="start" >(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, the clamps Z1 / Z4 → the NiFe neck's saturation.</text>
 <text x="20.0" y="1189.0" class="n" text-anchor="start" >A and B swap every half cycle: one group generates (L falling) while the other motors. Each branch carries its own side's AH coil (A below, B above; sim/magnetic_doubler.py's AHt / AHb date from when A was on top).</text>
 <text x="20.0" y="1208.0" class="n" text-anchor="start" >The AH coils: wound alike, start to x1 / x2, finish to d / b, mounted end over end with the start leads toward the vessel: anti-Helmholtz (sim/ah_winding.py).</text>

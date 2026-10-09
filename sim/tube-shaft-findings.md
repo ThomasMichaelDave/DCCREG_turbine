@@ -1,8 +1,59 @@
 # Tube machine — shaft, bearing hubs and reluctance radius (findings)
 
-Scope: the tube machine (r 50–150 vanes, 3 mm air, 8 + 8 vanes per side). Sources: `sim/shaft_bearings.py` →
+Scope: §0 the design of record; §1–§5 the earlier tube machine (r 50–150 vanes, 3 mm gaps, 8 + 8 vanes per side, its
+stator on the frame). Sources: `sim/shaft_bearings.py` →
 `sim/shaft_bearings_results.json`, `sim/tube_magnetic.py` → `sim/tube_magnetic_results.json`, `sim/tube_geometry.py` →
 `docs/geometry/tube/tube-r150-n8.step`.
+
+## 0. The design of record (2026-10-09): two bodies on the shaft
+**Sources:** `sim/tube_geometry.py --record` → `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.*` (STEP, GLB,
+parts, section, hub, plan, 3-D stills) and `sim/tube_geometry_record_results.json`; `sim/shaft_bearings.py --record` →
+`sim/shaft_bearings_record_results.json`.
+
+**The model of record.** The solids now carry:
+- the air stack of record: 6 + 6 vanes of 3 mm, 6 mm air gaps, 22° / 22°, r 50–150;
+- the HV side on the rotor: the stator vanes are REF, the rotor vanes nodes 1 / 4, and Ca / Cb (6 plates per side) ride
+  on the rotor;
+- the locked hub: the 50 mm vessel, rings A / B with their beads, the gel, the PEEK retainer, the G10 coupler, and the
+  AH cores, formers and coils;
+- the wound utrons and bridges as before.
+
+It is **940 mm** long: 916 with the 120 mm placeholder hub, plus the 24 mm the locked hub adds. It has 153 solids. The
+checks: 490 pairs with no clash, no sweep hit, the utron gap exact (0.5 mm aligned, 9.74 unaligned), and the STEP reads
+back. Not drawn [IR]: the vanes' full rounds, the Ca / Cb mounts, the HV parts, La / Lb, the gear.
+
+**The bearings in the record carry two bodies** [OC law / IR inputs].
+- The counter-rotor rides on the shaft through the four inner bearings, and only the two end bearings face the frame.
+  The section below (§3) checked the earlier tube, whose stator stood on the frame at every bearing.
+- The model: the shaft and the counter-rotor as two Euler–Bernoulli beams on one z grid. The four inner bearings join
+  them, and the two end bearings tie the shaft to the frame (each 2e8 N/m [RH]).
+- The masses: every solid's mass and rotary inertia at its centroid (datasheet-class densities [IR]; windings half
+  Cu). That gives a rotor of 33.4 kg (d 25) and a counter-rotor of 33.1 kg. Their heaviest parts are the two G10 bridge
+  rings (6.4 kg each, plus 3.9 kg of bridges), which overhang the inner bearings toward the ends.
+- The hub span bends as the G10 coupler plus the PEEK retainer at the equator (EI 6.4 kN·m², rigid joints [IR]),
+  against the shaft's 4.0 (d 25) or 8.4 kN·m² (d 30). A hinge there is the lower bound.
+- The utrons' magnetic pull is a negative stiffness between the bodies at each reluctance plane. Taken at 2e5 N/m per
+  plane [IR], it is negligible: the neck clamps the flux, and about 0.16 T crosses the tips.
+- The criteria [IR]: f1 ≥ 3 × the bearings' relative speed (60 Hz), and the change of the utron gap under a 1 g lateral
+  load ≤ 0.05 mm. The axis is vertical, so 1 g lateral is a stiffness yardstick, not an operating load.
+
+| bearings | shaft | f1 / f2 (Hz) | utron gap change under 1 g lateral | meets |
+|:--|:--|--:|--:|:--|
+| 6, as laid out | d 25 | 29 / 46 (hinge 28) | 123 µm | no |
+| 6, as laid out | d 30 | 40 / 64 | 64 µm | no |
+| 6, as laid out | d 35 | 53 / 84 | 39 µm | no |
+| 6, as laid out | d 40 | 65 / 105 | 25 µm | yes |
+| **8: + one at each bridge ring's outer end** | **d 25** | **165 / 247** | **3 µm** | **yes** |
+| 8: + one at each bridge ring's outer end | d 30 | 176 / 296 | 1 µm | yes |
+
+- **The first two modes** are the whole assembly rocking and bouncing on the shaft's two end spans (188 mm each, between
+  an end bearing and the Ca|reluctance bearing). The bridge rings hang on those spans.
+- **The shaft's diameter alone buys little:** d 40 just reaches 60 Hz.
+- **A bearing between the shaft and each bridge ring's outer end**, beside the end bearing, closes the overhang. f1
+  rises sixfold and the gap barely moves, even at d 25.
+- **The decision is the designer's** (the ledger's open items): the eighth bearing pair with d 25 (one 6205 class
+  throughout), or six bearings with d 40.
+- **The bridge rings could be lighter:** 25 mm of solid G10 against 6 × 0.65 kg of bridges.
 
 ## 1. Reluctance radius: the C-EMs move outward
 

@@ -44,7 +44,8 @@ RESULTS = os.path.join(HERE, "tube_geometry_results.json")
 COL = {"stator vane": (0.78, 0.57, 0.92), "rotor vane": (0.49, 0.82, 1.0), "fixed plate": (0.27, 0.77, 0.42),
        "fixed plate 2": (0.18, 0.54, 0.29), "g10": (0.55, 0.6, 0.5), "sphere": (1.0, 0.71, 0.33), "tip": (0.9, 0.3, 0.3),
        "steel": (0.42, 0.45, 0.5), "glass": (0.75, 0.85, 0.9), "hub": (0.5, 0.52, 0.55),
-       "sife": (0.33, 0.35, 0.4), "nife": (0.16, 0.56, 0.56), "cu": (0.8, 0.47, 0.22)}
+       "sife": (0.33, 0.35, 0.4), "nife": (0.16, 0.56, 0.56), "cu": (0.8, 0.47, 0.22),
+       "peek": (0.86, 0.80, 0.62), "gel": (0.62, 0.86, 0.80), "mnzn": (0.30, 0.27, 0.25), "ring": (0.85, 0.36, 0.12)}
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -233,8 +234,8 @@ class Machine:
                 self.add(nm, pr, e["body"], e["node"], f"side-{side}", join="rotor-core" if e["body"] == "rotor" else f"cage-{side}",
                          dz=e["z0"], desc=f"{k}, node {e['node']}")
             elif k.endswith("plate"):
-                self.add(f"{side}_{k.split()[0]}_{i:02d}", "fixed_plate", "stator", e["node"], f"side-{side}",
-                         dz=e["z0"], desc=f"{k}, node {e['node']} (connection not drawn)")
+                self.add(f"{side}_{k.split()[0]}_{i:02d}", "fixed_plate", e["body"], e["node"], f"side-{side}",
+                         dz=e["z0"], desc=f"{k}, node {e['node']} (connection and mounts not drawn)")
             elif k == "clk rotor disc":
                 key = f"clk_rdisc_{e['r1']:.1f}"
                 self.proto(key, lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"]), COL["g10"], "G10 rotor disc")
@@ -318,6 +319,8 @@ class Machine:
                 self.proto(key, lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"]), COL["g10"], "G10 ring flange")
                 self.add(f"{side}_ring_flange", key, "stator", "", f"rel-{side}", dz=e["z0"],
                          desc="flange: bridge ring to the stator cage at the Ca|reluctance spider")
+            elif k == "hub" and p.get("hub") == "locked":
+                self.locked_hub(e)
             elif k == "hub":
                 zc, hh = 0.5 * (e["z0"] + e["z1"]), 0.5 * (e["z1"] - e["z0"])
                 rs = min(45.0, hh - 8.0)
@@ -346,6 +349,89 @@ class Machine:
             self.add("hub_stator_cage", "cage_hub", "stator", "", "hub", join="cage-hub",
                      desc="cage across the hub: A and B stator bodies are one counter-rotor")
         return self
+
+    def locked_hub(self, e):
+        """the locked hub (presets/hub-locked.json; docs/rings-design.md; docs/drawings/DCCREG-HUB-201), centred on the hub
+        element's mid-plane, every part on the rotor: the borosilicate vessel; rings A (below) and B (above), copper foil
+        bands with their beads; the silicone gel in the 0.5 mm pocket; the PEEK retainer with its pocket, bead grooves and AH
+        bores; the G10 coupler; the AH cores, formers and coils. The shaft halves' flanges come from the layout. [IR] the
+        bands' edges are cut normal to the axis (0.1 mm foil); the grooves are the beads' own tori; the retainer is drawn
+        whole (the equatorial split is PROPOSED), the coupler a plain tube (its shape is OPEN); the leads' channels and
+        the AH ends' caps are not drawn (OPEN)."""
+        from OCP.BRepAlgoAPI import BRepAlgoAPI_Common, BRepAlgoAPI_Cut
+        from OCP.BRepPrimAPI import BRepPrimAPI_MakeTorus
+        from OCP.gp import gp_Ax2, gp_Dir, gp_Pnt
+        H = json.load(open(os.path.join(ROOT, "presets", "hub-locked.json")))
+        ves, wall = H["vessel"]["value"], H["vessel_wall"]["value"]["t_mm"]
+        rg, ah = H["rings"]["value"], H["AH"]["value"]
+        ret, gel, cpl = H["retainer"]["value"], H["interface_filler"]["value"], H["shaft_coupler"]["value"]
+        zc = 0.5 * (e["z0"] + e["z1"])
+        Ro = 0.5 * ves["od_mm"]
+        Ri, tf, Rg = Ro - wall, rg["foil_t_mm"], Ro + gel["t_mm"]
+        tp, te = math.radians(rg["polar_edge_deg"]), math.radians(rg["equatorial_edge_deg"])
+        rho = {"pol": 0.5 * rg["bead_d_mm"]["polar"], "eq": 0.5 * rg["bead_d_mm"]["equatorial"]}
+        th = {"pol": tp, "eq": te}
+        z_ret, r_ret = ret["absz_max_mm"], ret["r_max_mm"]
+        core, former, coil = ah["core"], ah["former"], ah["coil"]
+
+        def cut(a, *bs):
+            for b in bs:
+                a = BRepAlgoAPI_Cut(a, b).Shape()
+            return a
+
+        def band(sg):
+            """ring B (sg +1, above) or A (sg -1): the foil between the polar and the equatorial edge."""
+            Rm = Ro + 0.5 * tf
+            za, zb = sorted((sg * Rm * math.cos(te), sg * Rm * math.cos(tp)))
+            return BRepAlgoAPI_Common(cut(sphere(Ro + tf, (0, 0, 0)), sphere(Ro, (0, 0, 0))),
+                                      sector(0.0, Ro + tf + 1.0, za, zb)).Shape()
+
+        def bead(sg, w):
+            R_c = Ro + rho[w]                                        # the bead touches the glass at its edge [OC]
+            return BRepPrimAPI_MakeTorus(gp_Ax2(gp_Pnt(0, 0, sg * R_c * math.cos(th[w])), gp_Dir(0, 0, 1)),
+                                         R_c * math.sin(th[w]), rho[w]).Shape()
+
+        def ah_bore(sg):
+            za, zb = sorted((sg * core["absz_mm"][0], sg * z_ret))
+            return sector(0.0, coil["r_mm"][1], za, zb)
+
+        def gel_shape():
+            return cut(sphere(Rg, (0, 0, 0)), sphere(Ro, (0, 0, 0)), band(1), band(-1),
+                       *[bead(sg, w) for sg in (1, -1) for w in ("pol", "eq")])
+
+        def retainer():
+            return cut(sector(0.0, r_ret, -z_ret, z_ret), sphere(Rg, (0, 0, 0)),
+                       *[bead(sg, w) for sg in (1, -1) for w in ("pol", "eq")], ah_bore(1), ah_bore(-1))
+        self.proto("hub_vessel", lambda: cut(sphere(Ro, (0, 0, 0)), sphere(Ri, (0, 0, 0))), COL["glass"],
+                   f"borosilicate vessel, OD {2 * Ro:g} mm, wall {wall:g} mm (vacuum inside)")
+        self.proto("hub_gel", gel_shape, COL["gel"], f"silicone gel, {gel['t_mm']:g} mm, vacuum-cast")
+        self.proto("hub_retainer", retainer, COL["peek"], "PEEK retainer, unfilled")
+        self.proto("hub_coupler", lambda: sector(r_ret, r_ret + cpl["wall_mm"], -z_ret, z_ret), COL["g10"],
+                   "G10 shaft coupler (shape OPEN: a plain tube)")
+        self.add("hub_vessel", "hub_vessel", "rotor", "", "hub", join="hub-vessel", dz=zc,
+                 desc="the vessel: borosilicate sphere, vacuum inside")
+        self.add("hub_gel", "hub_gel", "rotor", "", "hub", join="hub-gel", dz=zc, desc="interface filler: silicone gel")
+        self.add("hub_retainer", "hub_retainer", "rotor", "", "hub", join="hub-retainer", dz=zc,
+                 desc="retainer: PEEK, the pocket over the glass, the bead grooves, the AH bores and seats")
+        self.add("hub_coupler", "hub_coupler", "rotor", "", "hub", join="hub-coupler", dz=zc,
+                 desc="shaft coupler: G10 around the retainer, between the flanges")
+        for sg, nm, v in ((1, "B", "+15.0 kV"), (-1, "A", "-15.0 kV")):
+            self.proto(f"hub_ring_{nm}", lambda sg=sg: band(sg), COL["ring"], f"Cu-ETP foil {tf:g} mm, a band")
+            self.add(f"hub_ring_{nm}", f"hub_ring_{nm}", "rotor", f"ring {nm}", "hub", join=f"ring-{nm}", dz=zc,
+                     desc=f"ring {nm} ({v}): the foil band, {rg['polar_edge_deg']:g}-{rg['equatorial_edge_deg']:g} deg")
+            for w, d_ in (("pol", rg["bead_d_mm"]["polar"]), ("eq", rg["bead_d_mm"]["equatorial"])):
+                self.proto(f"hub_bead_{nm}_{w}", lambda sg=sg, w=w: bead(sg, w), COL["ring"], f"Cu wire ring, {d_:g} mm")
+                self.add(f"hub_bead_{nm}_{w}", f"hub_bead_{nm}_{w}", "rotor", f"ring {nm}", "hub", join=f"ring-{nm}",
+                         dz=zc, desc=f"ring {nm}'s {'polar' if w == 'pol' else 'equatorial'} bead, soldered to the foil")
+        for sg, nm in ((1, "B"), (-1, "A")):
+            for piece, r0, r1, z_, colr, mat in (
+                    ("core", 0.0, 0.5 * core["d_mm"], core["absz_mm"], COL["mnzn"], f"{core['material']} rod ({core['part']})"),
+                    ("former", 0.5 * former["id_mm"], 0.5 * former["od_mm"], core["absz_mm"], COL["g10"], "G-10 former"),
+                    ("coil", coil["r_mm"][0], coil["r_mm"][1], coil["absz_mm"], COL["cu"], f"Cu coil, {coil['turns']} turns")):
+                za, zb = sorted((sg * z_[0], sg * z_[1]))
+                self.proto(f"ah_{piece}_{nm}", lambda r0=r0, r1=r1, za=za, zb=zb: sector(r0, r1, za, zb), colr, mat)
+                self.add(f"hub_AH_{nm}_{piece}", f"ah_{piece}_{nm}", "rotor", "REF" if piece == "core" else "",
+                         "hub", join=f"ah-{nm}", dz=zc, desc=f"AH {nm} ({'above' if sg > 0 else 'below'}): {piece}")
 
     def wound_protos(self, sp):
         """the wound utron's parts (sim/utron_profile.py), local u = x (radius along the centre line), v = y, w = z from
@@ -614,6 +700,29 @@ def read_back(path):
     return cnt
 
 
+def wound_rel(pick):
+    """the wound reluctance section of an operating point (sim/pole_design_variants_op.json, sim/utron_profile.py)."""
+    import utron_profile as U
+    op = json.load(open(os.path.join(HERE, "pole_design_variants_op.json")))["designs"][pick]
+    rows = json.load(open(os.path.join(HERE, "pole_design_variants.json")))["rows"]
+    row = [r for r in rows if r["design"] == op["design"]]
+    rel = U.spec(op["design"], op["best"], row[0] if row else None)
+    rel.update(kind="wound", pick=pick)
+    return rel
+
+
+def record_plates(pick="g 0.5 / 6 bridges / 1200 rpm"):
+    """the design of record's inputs to stack_sizing: the air stack of record (sim/air_stack_sizing_results.json, 3 mm
+    full-round vanes, 6 + 6), the HV side on the rotor, the locked hub (presets/hub-locked.json), the wound utrons."""
+    rec = [q for q in json.load(open(os.path.join(HERE, "air_stack_sizing_results.json")))["thick_vanes"]["compare"]
+           if q["t_vaneMm"] == 3.0 and q["n_plates"] == 6][0]
+    H = json.load(open(os.path.join(ROOT, "presets", "hub-locked.json")))
+    return dict(g_vMm=rec["gap_mm"], n_plates=rec["n_plates"], dielectric="air", t_vaneMm=rec["t_vaneMm"],
+                N_sec=2 * rec["sectors"], ws_deg=rec["ws_deg"], wr_deg=rec["wr_deg"], edge=rec["edge"],
+                pitch_fixed_mm=rec["gap_mm"] + rec["t_plate_mm"], hv_on_rotor=True, hub="locked",
+                hub_mm=2 * H["shaft"]["value"]["flange_absz_mm"][0], bucket=False, rel=wound_rel(pick))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-plates", type=int, default=None)
@@ -622,26 +731,35 @@ def main():
     ap.add_argument("--rel", choices=("cem", "wound"), default="cem",
                     help="reluctance section: the designer's C-EMs (default) or the wound utrons + bridges (diode build, geared 1 : -1)")
     ap.add_argument("--pick", default="g 0.5 / 6 bridges / 1200 rpm", help="operating point in sim/pole_design_variants_op.json")
+    ap.add_argument("--record", action="store_true",
+                    help="the design of record: the air stack of record (sim/air_stack_sizing_results.json: 3 mm full-round "
+                         "vanes, 6 + 6, 6 mm gaps), the HV side on the rotor (Ca / Cb on the rotor, the stator vanes REF) and "
+                         "the locked hub (presets/hub-locked.json); implies --rel wound")
     a = ap.parse_args()
+    if a.record:
+        a.rel = "wound"
     plates = {}
     if a.n_plates: plates["n_plates"] = a.n_plates
     if a.r_out: plates["r_outMm"] = a.r_out
     results = RESULTS
     if a.rel == "wound":
-        import utron_profile as U
-        op = json.load(open(os.path.join(HERE, "pole_design_variants_op.json")))["designs"][a.pick]
-        rows = json.load(open(os.path.join(HERE, "pole_design_variants.json")))["rows"]
-        row = [r for r in rows if r["design"] == op["design"]]
-        rel = U.spec(op["design"], op["best"], row[0] if row else None)
-        rel.update(kind="wound", pick=a.pick)
+        rel = wound_rel(a.pick)
         plates.update(bucket=False, rel=rel)
         results = os.path.join(HERE, "tube_geometry_wound_results.json")
+    if a.record:
+        plates.update(record_plates(a.pick))
+        rel = plates["rel"]
+        results = os.path.join(HERE, "tube_geometry_record_results.json")
     lad = S.size_stack("tube", plates)
     g = lad["tube_geometry"]
     tag = f"tube-r{lad['tube']['r_outMm']:g}-n{lad['tube']['n_plates']}"
+    if a.record:
+        tag += f"-air{lad['tube']['g_vMm']:g}"
     if a.rel == "wound":
         d = rel
         tag += f"-wound-g{str(d['g']).replace('.', 'p')}-{d['n_br']}br"
+    if a.record:
+        tag += "-hub50"
     g["tag"] = tag
     m = Machine(lad).build()
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -730,6 +848,14 @@ MAT_LEGEND = [("sife", "SiFe laminations (utron cores, bridges)"), ("nife", "80 
               ("hub", "bicone (placeholder)"), ("glass", "vacuum sphere (placeholder)")]
 
 
+def mat_legend(m):
+    """the legend for a build: the placeholder hub's, or the locked hub's materials."""
+    if m.p.get("hub") != "locked":
+        return MAT_LEGEND
+    return MAT_LEGEND[:8] + [("glass", "borosilicate vessel"), ("ring", "Cu rings + beads"), ("gel", "silicone gel"),
+                             ("peek", "PEEK retainer"), ("mnzn", "MnZn AH cores")]
+
+
 def _sections(m, parts_shapes, plane):
     """exact filled section + outline of each part in a plane: {name: (colour, triangles, polylines)}."""
     out = {}
@@ -750,6 +876,60 @@ def _draw(ax, sec, lw=0.35, edge="#222", keep=None):
             ax.add_collection(PolyCollection(tris, facecolors=[c], edgecolors=[c], linewidths=0.3, antialiaseds=False))
         for P in polys:
             ax.plot(P[:, 0], P[:, 1], color=edge, lw=lw)
+
+
+def render_hub(m, sec, out_dir, tag):
+    """the locked hub as built in the solids: the y = 0 section, enlarged, labelled."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+    hub = [e for e in m.el if e["kind"] == "hub"][0]
+    zc = 0.5 * (hub["z0"] + hub["z1"])
+    fig = plt.figure(figsize=(12.5, 11))
+    ax = fig.add_axes((0.06, 0.06, 0.52, 0.86))
+    near = lambda n: n.startswith(("hub_", "A_flange", "B_flange", "shaft_A", "shaft_B"))
+    _draw(ax, sec, lw=0.45, keep=near)
+    ax.axvline(0, color="#888", lw=0.5, ls="--")
+    ax.set_aspect("equal"); ax.set_xlim(-38, 38); ax.set_ylim(hub["z0"] - 22, hub["z1"] + 22)
+    ax.set_yticks([zc + k for k in range(-90, 91, 30)]); ax.set_yticklabels([f"{k:+d}" for k in range(-90, 91, 30)])
+    ax.set_xlabel("x [mm] (y = 0)", fontsize=8.5); ax.set_ylabel("z [mm] from the hub's mid-plane", fontsize=8.5)
+    ax.tick_params(labelsize=7.5)
+    ax.set_title("the locked hub in the solids: section y = 0 (presets/hub-locked.json)", fontsize=10, loc="left")
+    H = json.load(open(os.path.join(ROOT, "presets", "hub-locked.json")))
+    rg = H["rings"]["value"]
+    tp, te = math.radians(rg["polar_edge_deg"]), math.radians(rg["equatorial_edge_deg"])
+    lab = [((0.0, zc + 12), "vacuum"),
+           ((24.2 * math.sin(0.3), zc + 24.2 * math.cos(0.3)), "vessel: borosilicate, OD 50, wall 1.5"),
+           ((25.05 * math.sin(0.5 * (tp + te)), zc + 25.05 * math.cos(0.5 * (tp + te))),
+            f"ring B: Cu foil 0.1, {rg['polar_edge_deg']:g}-{rg['equatorial_edge_deg']:g} deg (+15.0 kV)"),
+           ((26.5 * math.sin(tp), zc + 26.5 * math.cos(tp)), "polar bead, Cu Ø3, in its groove"),
+           ((26.0 * math.sin(te), zc + 26.0 * math.cos(te)), "equatorial bead, Cu Ø2"),
+           ((25.25 * math.sin(1.35), zc + 25.25 * math.cos(1.35)), "silicone gel, 0.5 mm pocket"),
+           ((28.0, zc + 40), "PEEK retainer (r 30, |z| 72)"),
+           ((31.5, zc + 20), "G10 coupler (r 30-33)"),
+           ((3.0, zc + 50), "AH B core: 77 MnZn, Ø12.3"),
+           ((7.5, zc + 60), "G-10 former"),
+           ((9.8, zc + 45), "AH B coil: 160 turns"),
+           ((5.0, zc + 27.5), "AH seat: PEEK, 5.7 mm"),
+           ((20.0, hub["z1"] + 4), "flange B (REF), r 32 x 8"),
+           ((8.0, hub["z1"] + 16), "shaft half B (REF)"),
+           ((25.05 * math.sin(0.5 * (tp + te)), zc - 25.05 * math.cos(0.5 * (tp + te))), "ring A (-15.0 kV): the mirror"),
+           ((0.0, hub["z0"] - 12), "shaft half A, flange A, AH A: the mirror")]
+    ys = np.linspace(hub["z1"] + 16, hub["z0"] - 16, len(lab))
+    for (pt_, text), yy in zip(sorted(lab, key=lambda q: -q[0][1]), ys):
+        ax.annotate(text, pt_, (44, yy), fontsize=8, va="center", ha="left", annotation_clip=False,
+                    arrowprops=dict(arrowstyle="-", lw=0.45, color="#444", shrinkA=0, shrinkB=0))
+    leg = [("glass", "borosilicate vessel"), ("ring", "Cu rings + beads"), ("gel", "silicone gel"), ("peek", "PEEK retainer"),
+           ("g10", "G10 coupler, G-10 formers"), ("mnzn", "MnZn AH cores"), ("cu", "Cu AH coils"), ("steel", "steel shaft, flanges")]
+    fig.legend(handles=[Patch(facecolor=COL[k], label=t) for k, t in leg], loc="lower right", fontsize=8.5, frameon=False,
+               ncol=2, bbox_to_anchor=(0.99, 0.02))
+    fig.text(0.60, 0.17, "Not drawn (open): the retainer's split (the equatorial split is PROPOSED), the rings' leads and their\n"
+             "channels, the AH ends' caps, the coupler's shape (a plain tube here). The grooves are the beads' own tori.",
+             fontsize=8, va="top", color="#333")
+    fig.suptitle(f"{tag}: the hub", fontsize=12, x=0.01, ha="left")
+    f = os.path.join(out_dir, f"{tag}-hub.png"); fig.savefig(f, dpi=110, bbox_inches="tight"); plt.close(fig)
+    return f
 
 
 def renders_wound(m, out_dir, tag):
@@ -786,11 +966,14 @@ def renders_wound(m, out_dir, tag):
         r = [e for e in se if e["kind"] == "reluctance"][0]
         vn, cn = ("C1", "Ca") if side == "A" else ("C2", "Cb")
         span(min(e["z0"] for e in v), max(e["z1"] for e in v),
-             f"{vn} varicap {side}: {len(v) // 2} stator + {len(v) // 2}\nrotor vanes, {m.p['g_vMm']:g} mm vacuum gaps")
-        span(min(e["z0"] for e in c), max(e["z1"] for e in c), f"{cn} fixed plates {side}: {len(c)}")
+             f"{vn} varicap {side}: {len(v) // 2} stator + {len(v) // 2}\nrotor vanes, {m.p['g_vMm']:g} mm "
+             f"{'air' if m.p.get('dielectric') == 'air' else 'vacuum'} gaps")
+        span(min(e["z0"] for e in c), max(e["z1"] for e in c), f"{cn} fixed plates {side}: {len(c)}"
+             + (" (rotor)" if c and c[0]["body"] == "rotor" else ""))
         span(r["z0"], r["z1"], f"reluctance {side}: 3 wound utrons\n(rotor), {sp['n_br']} passive bridges\n(counter-rotor)"
              + (f", offset {180 / sp['n_br']:g} deg" if side == "B" else "") + ("\n(detail at right)" if side == "A" else ""))
-    span(hub["z0"], hub["z1"], "hub: bicone + AH / C_R\n(placeholder)")
+    span(hub["z0"], hub["z1"], "hub (locked): 50 mm sphere, rings\nA / B, AH pair, PEEK + gel, G10" if m.p.get("hub") == "locked"
+         else "hub: bicone + AH / C_R\n(placeholder)")
     for b in [e for e in el if e["kind"] == "bearing"]:
         ax.text(-R_out - 10, b["zc"], f"bearing, {b['where']}" + (" (frame)" if b["where"] == "end" else ""),
                 ha="right", va="center", fontsize=7.5, color="#555")
@@ -837,11 +1020,16 @@ def renders_wound(m, out_dir, tag):
     ad.tick_params(labelsize=7.5)
     # legend + notes
     an = fig.add_axes((0.535, 0.03, 0.455, 0.42)); an.axis("off")
-    an.legend(handles=[Patch(facecolor=COL[k], label=t) for k, t in MAT_LEGEND], loc="upper left", fontsize=8.5,
+    rec = m.p.get("hub") == "locked"
+    an.legend(handles=[Patch(facecolor=COL[k], label=t) for k, t in mat_legend(m)], loc="upper left", fontsize=8.5,
               frameon=False, ncol=2)
-    an.text(0.0, 0.32, "Bodies. Rotor: shaft halves, flanges, bicone, rotor sleeve, rotor vanes, utrons + carrier discs.\n"
-            "Counter-rotor, geared 1 : -1 (gear or reversing belt, not drawn): stator cage (one tube across the hub),\n"
-            "stator vanes, Ca / Cb plates, the hub-face and Ca|reluctance spiders, bridges + bridge rings.\n"
+    an.text(0.0, 0.32, (("Bodies. Rotor: shaft halves, flanges, the hub (vessel, rings, gel, retainer, coupler, AH pair), rotor\n"
+                        "sleeve, rotor vanes (nodes 1 / 4), Ca / Cb plates (mounts not drawn), utrons + carrier discs.\n"
+                        "Counter-rotor, geared 1 : -1 (gear not drawn): stator cage (one tube across the hub), stator vanes\n"
+                        "(REF), the hub-face and Ca|reluctance spiders, bridges + bridge rings.\n") if rec else
+            ("Bodies. Rotor: shaft halves, flanges, bicone, rotor sleeve, rotor vanes, utrons + carrier discs.\n"
+             "Counter-rotor, geared 1 : -1 (gear or reversing belt, not drawn): stator cage (one tube across the hub),\n"
+             "stator vanes, Ca / Cb plates, the hub-face and Ca|reluctance spiders, bridges + bridge rings.\n")) +
             "Frame: the two end bearings and their spiders. The inner bearings run at the relative speed.\n"
             f"At rotor angle 0: utron A1 is aligned (gap {sp['g']:g} mm), utron B1 sits between two B bridges (antiphase).\n"
             "This plane (v = 0) cuts the coil, the neck strip and the air-break spacer; the SiFe half-cores and the\n"
@@ -850,6 +1038,8 @@ def renders_wound(m, out_dir, tag):
     fig.suptitle(f"{tag}: arrangement ({sp.get('pick', '')}), {L:.0f} mm long", fontsize=12, x=0.01, ha="left")
     f = os.path.join(out_dir, f"{tag}-section.png"); fig.savefig(f, dpi=105, bbox_inches="tight"); plt.close(fig)
     files.append(f)
+    if m.p.get("hub") == "locked":
+        files.append(render_hub(m, sec, out_dir, tag))
     # 2. plan cuts: A and B at the stack mid-plane, A through the end turns and cheeks
     uB = [e for e in el if e["kind"] == "w utron" and e["side"] == "B"][0]
     cuts = ((uA["zc"], "A", f"A, stack mid-plane (z {uA['zc']:.0f}): utrons aligned"),
@@ -880,7 +1070,7 @@ def renders_wound(m, out_dir, tag):
     fig.suptitle(f"{tag}: plan cuts through the reluctance sections, rotor angle 0 (dashed: the gap radius r_g {sp['r_g']:g} mm, "
                  f"gap {sp['g']:g} mm). 3 utrons per side at 120 deg on the rotor, {sp['n_br']} bridges per side at "
                  f"{360 / sp['n_br']:g} deg on the counter-rotor.", fontsize=10, x=0.01, ha="left")
-    fig.legend(handles=[Patch(facecolor=COL[k], label=t) for k, t in MAT_LEGEND[:3] + MAT_LEGEND[6:7]], loc="lower left",
+    fig.legend(handles=[Patch(facecolor=COL[k], label=t) for k, t in mat_legend(m)[:3] + mat_legend(m)[6:7]], loc="lower left",
                fontsize=8, frameon=False, ncol=4)
     f = os.path.join(out_dir, f"{tag}-reluctance-plan.png"); fig.tight_layout(rect=(0, 0.04, 1, 0.95)); fig.savefig(f, dpi=100)
     plt.close(fig); files.append(f)

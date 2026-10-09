@@ -67,7 +67,7 @@
     "unit": "-",
     "status": "DECIDED (rings outside the glass; copper foil with rounded edges for the prototype; the symmetric supply) / DESIGN (edges, beads: sim/hub_rings_build.py)",
     "source": "designer, 2026-10-09 (the rings; then the symmetric supply, 'if it pumps against the core centre, yes'); the design from sim/hub-rings-build-findings.md: the most field at the null with the gap holding the interface rating along the glass and both beads the gel's rating (ratings below), in the mirror family. Supersedes the asymmetric 25.75-57.7 deg on ring B's 2 stages and Dk (6.93 kV/cm), and the lock-down's 20-53 deg on three stages, whose edges were not checked. Drawing: docs/drawings/DCCREG-HUB-201; design: docs/rings-design.md.",
-    "tag": "[RH] the ratings; [OC] the field solves"
+    "tag": "[RH] the ratings; [IR] the field solves (a modelling choice); [OC] the electrostatics they solve"
   },
   "ratings": {
     "value": {
