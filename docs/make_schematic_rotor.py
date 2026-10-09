@@ -5,19 +5,21 @@
     counter-rotor's passive bridges make L(theta); no wire crosses between the bodies.
 (b) ELECTROSTATIC: the de Queiroz diode doubler with its HV side on the rotor (sim/core_field.py netlist; the air
     build's capped stack) -- C1 / C2 between the rotor vanes (nodes 1 / 4) and the counter-rotor's stator vanes, which
-    are the reference; Ca / Cb, D1-D4 and the clamps Z1 / Z4 on the rotor; two Rogowski electrodes in the vacuum on the
-    AH null, A peak-charged from node 1 through Dk and B on one Cockcroft-Walton stage on node 4, so the null sees a
-    steady field (sim/core-null-field-findings.md); the stator vanes joined to the shaft through one inner bearing for
-    now (a brush later).
+    are the reference; Ca / Cb, D1-D4 and the clamps Z1 / Z4 on the rotor; two rings outside the hub's glass vessel
+    (the designer's choice; presets/hub-locked.json), ring A peak-charged from node 1 through Dk and ring B on three
+    Cockcroft-Walton stages on node 4, so the AH null sees a steady field (sim/hub-locked-findings.md); the stator vanes
+    joined to the shaft through one inner bearing for now (a brush later).
 Values: sim/pole_design_variants_op.json (the pick), sim/utron_profile.py, sim/rotor_parts_duty_results.json (La / Lb,
-D1*-D4* at the pick), sim/core_field_results.json (the electrostatic pump, the supply and the link: 'dc1 0.1nF'),
-sim/core_null_field_results.json (the electrodes).
+D1*-D4* at the pick), sim/core_field_results.json (the electrostatic pump, the supply and the link: 'dc3 0.1nF'),
+sim/hub_locked_results.json (the rings).
 Usage: python3 docs/make_schematic_rotor.py   (the PNG needs playwright + chromium)
 """
 import json
 import math
 import os
 import sys
+
+import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -26,7 +28,7 @@ import magnetic_doubler as MDm     # noqa: E402  (the dual's constants: AH rewin
 import utron_profile as U          # noqa: E402
 
 PICK = "g 0.5 / 6 bridges / 1200 rpm"
-SUPPLY = "dc1 0.1nF"                               # the null's supply of record (sim/core-null-field-findings.md)
+SUPPLY = "dc3 0.1nF"                               # the rings' supply of record (sim/hub-locked-findings.md)
 LA_RATIO, TAU_FIXED, AH_KEY = 0.6, 0.5, "r160"     # as sim/pole_design.size_op runs the pick
 OUT = os.path.join(HERE, "schematic-rotor-circuits")
 o = []
@@ -137,9 +139,9 @@ def numbers():
     duty = json.load(open(os.path.join(ROOT, "sim", "rotor_parts_duty_results.json")))
     cf = json.load(open(os.path.join(ROOT, "sim", "core_field_results.json")))
     cfr = {r["name"]: r for r in cf["rows"]}
-    nf = json.load(open(os.path.join(ROOT, "sim", "core_null_field_results.json")))
+    hl = json.load(open(os.path.join(ROOT, "sim", "hub_locked_results.json")))
     return dict(op=op, b=b, sp=sp, Lg=Lg, ah=ah, F=F, csn=csn, rsn=rsn, la=LA_RATIO * Lg, lp=MDm.R_PAR * Lg, duty=duty,
-                cf=cf, cfr=cfr, nf=nf, dc=cfr[SUPPLY], dc_free=cfr["free " + SUPPLY], null=nf["design"]["dc1"])
+                cf=cf, cfr=cfr, hl=hl, dc=cfr[SUPPLY], dc_free=cfr["free " + SUPPLY], ring=hl["record"])
 
 
 # ------------------------------------------------------------------------------------------------ (a) reluctance
@@ -251,15 +253,23 @@ def panel_a_table(ox, y, N):
 
 
 # ------------------------------------------------------------------------------------------------ (b) electrostatic
-def null_core(xc, yc, rv=40, hw=23, g=12, t=7):
-    """the vacuum vessel with the two electrodes on the AH null: B (upper) and A (lower), not to scale; the field
-    points down, from B (+) to A (-). Returns the vessel's top and bottom."""
+def ring_core(xc, yc, th0, th1, rv=40):
+    """the glass vessel with the two rings outside it: B on the upper hemisphere, A on the lower, each a band from th0
+    to th1 (deg from the axis), drawn on both sides of the section; E at the null points down, from B (+) to A (-).
+    Returns the points where B's and A's leads leave (the upper left and lower right bands' middles)."""
     o.append(f'<circle cx="{xc:.1f}" cy="{yc:.1f}" r="{rv:.1f}" class="glass"/>')
-    for y0, cl in ((yc - g / 2 - t, "cone_b"), (yc + g / 2, "cone_a")):
-        o.append(f'<rect x="{xc - hw:.1f}" y="{y0:.1f}" width="{2 * hw:.1f}" height="{t:.1f}" rx="3.5" class="{cl}"/>')
-    ln(xc, yc - g / 2 - t, xc, yc - rv, "w"); ln(xc, yc + g / 2 + t, xc, yc + rv, "w")          # the stems
-    o.append(f'<circle cx="{xc:.1f}" cy="{yc:.1f}" r="2.2" fill="#1d3f5e"/>')                   # the null
-    return yc - rv, yc + rv
+    for top, col in ((1, "#1f6fb2"), (-1, "#c0392b")):
+        for side in (-1, 1):
+            pts = [(xc + side * (rv + 2.5) * math.sin(math.radians(t)), yc - top * (rv + 2.5) * math.cos(math.radians(t)))
+                   for t in np.linspace(th0, th1, 24)]
+            o.append('<polyline points="' + " ".join(f"{x:.1f},{y:.1f}" for x, y in pts) +
+                     f'" fill="none" stroke="{col}" stroke-width="5" stroke-linecap="round"/>')
+    ln(xc, yc - 13, xc, yc + 6, "ef")
+    o.append(f'<polygon points="{xc:.1f},{yc + 15:.1f} {xc - 4.5:.1f},{yc + 6:.1f} {xc + 4.5:.1f},{yc + 6:.1f}" fill="#1d3f5e"/>')
+    tx(xc - 7, yc + 4, "E", "te", "end")
+    tm = math.radians(0.5 * (th0 + th1))
+    return ((xc - (rv + 2.5) * math.sin(tm), yc - (rv + 2.5) * math.cos(tm)),
+            (xc + (rv + 2.5) * math.sin(tm), yc + (rv + 2.5) * math.cos(tm)))
 
 
 def panel_b(ox, N):
@@ -304,22 +314,22 @@ def panel_b(ox, N):
     for x, xz, nm in ((x1, x1z, "Z1"), (x4, x4z, "Z4")):
         dot(x, y_z); pl([(x, y_z), (xz, y_z), (xz, 392)], "lim"); diode(xz, 392, "down", "#7d3c98", zener=True)
         ln(xz, 410, xz, y_sh, "lim"); tx(xz + (14 if x == x1 else -14), 406, nm, "tl", "start" if x == x1 else "end")
-    # the core: two electrodes in the vacuum on the AH null. A on node 1's negative peak (Dk, C_A); B on one
-    # Cockcroft-Walton stage on node 4's swing (Co, Dc, Dp, Cs); all storage 100 pF to the shaft
-    dc, nl = N["dc"], N["null"]
+    # the core: two rings outside the glass. A on node 1's negative peak (Dk, C_A); B on three Cockcroft-Walton stages
+    # on node 4's swing (Co, Dc, Dp, Cs each, drawn once); all storage 100 pF to the shaft
+    dc, nl = N["dc"], N["ring"]
     xk, yc, y_cw, xl = ox + 105, 345, 536, ox + 48
     ln(x1, y_n, x1, y_k); dot(x1, y_k)
     ln(x4, y_z, x4, y_cw); dot(x4, y_cw)
-    yt, ybm = null_core(xk, yc)
-    # A: the stem down to the Dk lead; C_A to the shaft
-    ln(xk, ybm, xk, y_k)
+    (xbl, ybl), (xar, yar) = ring_core(xk, yc, nl["theta_p"], nl["theta_e"])
+    # A: from the lower ring down to the Dk lead; C_A to the shaft
+    pl([(xar, yar), (xar, y_k), (xk, y_k)])
     ln(xk, y_k, ox + 170, y_k); diode(ox + 170, y_k, "right"); ln(ox + 188, y_k, x1, y_k)
     tx(ox + 179, y_k - 15, "Dk", "t", "middle", 'font-weight="bold"')
     dot(ox + 132, y_k); ln(ox + 132, y_k, ox + 132, y_k + 18); cap_v(ox + 132, y_k + 18, 14)
     ln(ox + 132, y_k + 28, ox + 132, y_k + 44); ground(ox + 132, y_k + 44)
     tx(ox + 152, y_k + 27, "C_A", "t", "start", 'font-weight="bold"')
-    # B: the stem up and round to the multiplier's output; Cs to the shaft
-    pl([(xk, yt), (xk, 270), (xl, 270), (xl, y_cw), (ox + 100, y_cw)])
+    # B: from the upper ring up and round to the multiplier's output; Cs to the shaft
+    pl([(xbl, ybl), (xbl, 270), (xl, 270), (xl, y_cw), (ox + 100, y_cw)])
     dot(xl, y_cw); ln(xl, y_cw, xl, y_cw + 30); cap_v(xl, y_cw + 30, 14); ln(xl, y_cw + 40, xl, y_cw + 58)
     ground(xl, y_cw + 58)
     tx(xl + 20, y_cw + 39, "Cs", "t", "start", 'font-weight="bold"')
@@ -331,14 +341,17 @@ def panel_b(ox, N):
     tx(ox + 166, y_cw + 31, "Dc", "t", "start", 'font-weight="bold"')
     ln(ox + 150, y_cw, ox + 190, y_cw); cap_h(ox + 190, y_cw, 10); ln(ox + 200, y_cw, x4, y_cw)   # Co: node 4 -> m
     tx(ox + 195, y_cw - 16, "Co", "t", "middle", 'font-weight="bold"')
+    o.append(f'<rect x="{ox + 36:.1f}" y="{y_cw - 34:.1f}" width="{ox + 222 - (ox + 36):.1f}" height="104" '
+             'fill="none" stroke="#7f8c8d" stroke-width="1.2" stroke-dasharray="5 4"/>')
+    tx(ox + 228, y_cw - 38, "× 3 stages", "t", "end", 'font-weight="bold"')
     tx(ox + 42, y_cw + 90, "C_A, Co, Cs 100 pF · ground = the shaft", "ms", "start")
-    tx(xk + 47, yc - 21, f"B +{nl['V_B_kV']:.1f} kV", "tu", "start", 'font-weight="bold"')
-    tx(xk + 47, yc - 3, f"gap {nl['g_min_mm']:.2f} mm", "ms")
-    tx(xk + 47, yc + 11, f"{nl['E0_kV_cm']:.1f} kV/cm ↓", "ms")
-    tx(xk + 47, yc + 25, f"{nl['p0_Pa']:.0f} Pa", "ms")
-    tx(xk + 47, yc + 45, f"A {kv(nl['V_A_kV'])} kV", "ta", "start", 'font-weight="bold"')
+    tx(xk + 50, yc - 23, f"B +{nl['V_B_kV']:.1f} kV", "tu", "start", 'font-weight="bold"')
+    tx(xk + 50, yc - 5, f"rings {nl['theta_p']:.0f}–{nl['theta_e']:.0f}°", "ms")
+    tx(xk + 50, yc + 9, f"{nl['E_dc_kV_cm']:.1f} kV/cm ↓", "ms")
+    tx(xk + 50, yc + 23, f"{nl['p_dc_Pa']:.1f} Pa", "ms")
+    tx(xk + 50, yc + 43, f"A {kv(nl['V_A_kV'])} kV", "ta", "start", 'font-weight="bold"')
     tx(ox + 42, 226, "THE CORE (hub)", "zh")
-    tx(ox + 42, 242, "electrodes on the AH null", "ms")
+    tx(ox + 42, 242, "rings outside the glass", "ms")
     # the one rotating contact: an inner bearing (outer ring on the counter-rotor, inner ring on the shaft)
     ln(xb, y_s, xb, y_bd - 10)
     ln(xb - 17, y_bd - 10, xb + 17, y_bd - 10, "ring"); ln(xb - 17, y_bd + 10, xb + 17, y_bd + 10, "ring")
@@ -358,7 +371,7 @@ def panel_b(ox, N):
 
 def panel_b_table(ox, y, N):
     d, cf, R = N["cf"]["design"], N["cf"], N["cfr"]
-    fs, nl = N["dc"], N["null"]
+    fs, nl = N["dc"], N["ring"]
     vr = fs["VR_pk_kV"]
     zs = N["duty"]["clamp_string"]
     n_z = math.ceil(d["V_op_kV"] * 1e3 / zs["V_Z"])
@@ -371,24 +384,26 @@ def panel_b_table(ox, y, N):
                   "parts not chosen"),
         ("Z1, Z4", f"avalanche strings, BV {d['V_op_kV']:.1f} kV (e.g. {n_z} × {zs['V_Z']:.0f} V), on the rotor: "
                    f"{fs['Z1']['P_W']:.2f} W, {fs['Z1']['I_pk_mA']:.2f} mA peak each"),
-        ("core", f"two Rogowski electrodes (Ti [RH]) on the null: {nl['g_min_mm']:.2f} mm gap, "
-                 f"{2 * nl['R_max_mm']:.1f} mm across"),
-        ("supply", f"A: Dk + C_A on node 1's peak, {kv(nl['V_A_kV'])} kV · B: one CW stage on node 4, "
+        ("core", f"two rings outside the 50 mm glass: bands {nl['theta_p']:.0f}–{nl['theta_e']:.0f}°, "
+                 f"{nl['gap_mm']:.1f} mm apart along it"),
+        ("supply", f"A: Dk + C_A on node 1's peak, {kv(nl['V_A_kV'])} kV · B: three CW stages on node 4, "
                    f"+{nl['V_B_kV']:.1f} kV"),
-        ("", f"C_A, Co, Cs 100 pF; Dk, Dc, Dp see ≤ {max(vr['Dk'], vr['Dc1'], vr['Dp1']):.1f} kV reverse"),
-        ("", f"{nl['V_gap_kV']:.1f} kV across: {nl['E0_kV_cm']:.1f} kV/cm, {nl['p0_Pa']:.0f} Pa at the null; the "
-             f"surface at {N['nf']['E_op_kV_mm']:.2f} kV/mm (the rule)"),
-        ("strays", f"≈ {cf['CPAR_pF']:.0f} pF per node [RH]; the electrodes {nl['C_gap_pF']:.1f} pF across, "
-                   f"{nl['C_A_ref_pF']:.1f} pF each to REF"),
+        ("", f"C_A, Co, Cs 100 pF; Dk, Dc, Dp see ≤ "
+             f"{max(v for k, v in vr.items() if k[:2] in ('Dk', 'Dc', 'Dp')):.1f} kV reverse"),
+        ("", f"{nl['V_gap_kV']:.1f} kV across: {nl['E_dc_kV_cm']:.1f} kV/cm, {nl['p_dc_Pa']:.1f} Pa at the null "
+             f"(as connected; {nl['E_settled_kV_cm']:.1f} settled)"),
+        ("strays", f"≈ {cf['CPAR_pF']:.0f} pF per node [RH]; the rings {nl['C_ring_ref_pF']:.1f} pF each to REF, "
+                   f"{nl['C_ring_ring_pF']:.1f} pF between"),
         ("bearing", f"one inner bearing, for now: {fs['link']['I_rms_mA']:.2f} mA rms AC "
                     f"({fs['link']['I_pk_mA']:.2f} mA pk), no DC"),
     ]
     y = table(ox + 42, y, rows, w_key=76)
-    D = N["nf"]["design"]
+    ex = {x["supply"]: x for x in N["hl"]["exact"]}
     tx(ox + 42, y + 6, f"At {cf['rpm_rel']:.0f} rpm relative ({cf['F_Hz']:.0f} Hz): belt {fs['P_belt_W']:.2f} W, into "
                        f"Z1 + Z4; z at start {N['dc_free']['z']:.3f} (bare {R['free none']['z']:.3f}).", "op")
-    tx(ox + 42, y + 24, f"Leakage only ({1e3 * fs['P_leak_W']:.0f} mW at 10 GΩ [RH]); 0 / 2 / 3 stages: the same field over "
-                        f"{D['dc0']['g_min_mm']:.1f} / {D['dc2']['g_min_mm']:.1f} / {D['dc3']['g_min_mm']:.1f} mm.", "op")
+    tx(ox + 42, y + 24, f"Leakage only ({1e3 * fs['P_leak_W']:.0f} mW at 10 GΩ [RH]); 1 / 2 stages give "
+                        f"{ex['dc1']['E_dc_kV_cm']:.1f} / {ex['dc2']['E_dc_kV_cm']:.1f} kV/cm: sim/hub-locked-findings.md.",
+       "op")
 
 
 # ------------------------------------------------------------------------------------------------ sheet
@@ -418,7 +433,7 @@ def main():
   </style>""")
     b = N["b"]
     tx(20, 30, "DCCREG turbine: the rotor's two circuits as built (tube, wound utrons; rotor and counter-rotor geared 1 : −1)", "h")
-    tx(20, 52, f"(a) the reluctance pump drives the AH pair · (b) the electrostatic pump holds a DC field on the AH null; only C1 / C2 "
+    tx(20, 52, f"(a) the reluctance pump drives the AH pair · (b) the electrostatic pump's rings hold a DC field on the AH null; only C1 / C2 "
                f"straddle the bodies · operating point {PICK} relative · only diodes switch", "m")
     for ox, w, title in ((20, 760, "(a) RELUCTANCE: magnetic dual doubler → AH pair"),
                          (800, 620, "(b) ELECTROSTATIC: de Queiroz diode doubler → DC field on the null")):
@@ -430,21 +445,21 @@ def main():
     panel_b_table(780, 778, N)
     notes = [
         "Bodies. Rotor: shaft, sleeve, rotor vanes (nodes 1 / 4), Ca / Cb plates, the 6 utrons on their carrier discs, the hub "
-        "(vessel and its electrodes, AH pair, cones).",
+        "(the glass vessel with the rings outside it, the AH pair, retainer and coupler).",
         "Counter-rotor: stator cage, stator vanes (REF), bridges. Frame: end bearings, the gear.",
         "Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, Dk, the CW stage, "
-        "C_A, the electrodes (all rotor);",
+        "C_A, the rings (all rotor);",
         "sim/tube_geometry.py still puts Ca / Cb on the counter-rotor. Each pump's reaction torque goes into the gear.",
         "(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, "
         "the clamps Z1 / Z4 → the NiFe neck's saturation.",
         "A and B swap every half cycle: one group generates (L falling) while the other motors. The AH coils are named by branch; "
         "sim/magnetic_doubler.py calls them AH top / bottom (A was then the upper side).",
-        "Polarity: (b) runs negative; A takes node 1's negative peak and B one CW stage positive: E at the null is steady, "
-        "B to A. de Queiroz's Fig. 1 "
+        "Polarity: (b) runs negative; ring A takes node 1's negative peak and ring B three CW stages positive: E at the null "
+        "is steady, B to A. de Queiroz's Fig. 1 "
         "draws the core positive, all four diodes the other way (sim/queiroz_fig1_check.py).",
         f"Numbers: sim/pole_design_variants_op.json ({PICK}), sim/utron_profile.py, sim/rotor_parts_duty_results.json, "
-        "sim/core_field_results.json, sim/core_null_field_results.json (b: the air build's capped stack)",
-        "Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/core-null-field-findings.md "
+        "sim/core_field_results.json, sim/hub_locked_results.json (b: the air build's capped stack)",
+        "Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/hub-locked-findings.md "
         "· generator: docs/make_schematic_rotor.py",
     ]
     y = 1034
