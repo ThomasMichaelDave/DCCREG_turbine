@@ -197,6 +197,31 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
   - **Open, the designer's:** accept 221–245 A-turns, or restore 450 at the peak by a thicker neck (Ψs × 1.27–1.42,
     about 3.8–4.3 mm of NiFe against 3.0), a longer stack (κ about 7.8 at 150 mm) or a larger pump; and the coils'
     connection.
+- **Added: real diodes in both pumps** (`sim/diodes_real.py`, `sim/diodes_real_results.json`,
+  `sim/diodes-real-findings.md`, figure `docs/figures/diodes-real.png`; the ledger's model check 32): the two decks of
+  record with datasheet-class rectifiers, HV sticks and avalanche strings in place of the near-ideal ND; 29 gates,
+  the record reproduced to 8e-5.
+  - **The magnetic pump** starts on the record's 20 % kick only with Schottky rectifiers: the threshold is 17.2 % for
+    the first-cut set (16.4 % with the bypass), 20.8 % for a 200 V Schottky in all four, 25–28 % for silicon PN
+    rectifiers. Running, the first-cut set gives 295 A-turns per coil and 2.42 W in the diodes; reverse recovery is
+    negligible at 120 Hz.
+  - **The electrostatic pump** does not self-excite with real HV sticks: it decays below about 17 V on nodes 1 / 4
+    (typical leakage), 64 V (maximum) or 260 V (hot). From −1 kV it starts as recorded.
+  - **The rings** stand at −14.65 / +14.67 kV with typical sticks, 7.47 kV/cm at the null and 0.049 kV/cm p-p: the
+    sticks' junction capacitance passes the pump's swing. At the datasheet's maximum leakage 6.96 kV/cm, hot 6.20; so
+    the chain diodes are selected (≤ 25 nA at 7.5 kV) and kept cool.
+- **Corrected, from real diodes** (dated notes: the ledger §3.2, §3.4, §3.6, §3.7, §4, §5;
+  `sim/hub-rings-build-findings.md`, `docs/rings-design.md`, `docs/bench-test-rings.md` phase 4,
+  `sim/diode-stack-findings.md`, `sim/parts-first-cut-findings.md`, `sim/pole-design-findings.md` §4; comments in
+  `sim/hub_rings_build.py` LEAKAGE and `sim/pole_design.py` DIODES; the rotor schematic and the architecture figure):
+  - self-excitation "from any seed" holds for ideal diodes only;
+  - the start-up's 29 cycles (0.24 s) carry the deck's `uic` start: ngspice starts its charge-defined varicaps
+    uncharged (checked on a lone capacitor), so the −1 kV seed acts as −0.58 / −0.90 kV. From a consistent −1 kV,
+    27 cycles (0.225 s). The record's deck is unchanged;
+  - the deck's 0.54 V is a 100 V Schottky's drop, not the 200 V class's (0.71 V); the 16 % threshold is the deck's
+    diodes'; the pole study's "Si (0.55 V)" is a Schottky-class drop;
+  - the sticks' "~1 pF and µA leakage are small" held next to 1 nF, not the record's 100 pF chains.
+  - **Open, the designer's:** the electrostatic pump's seed source (tens of volts on nodes 1 / 4, a few hundred hot).
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the

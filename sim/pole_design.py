@@ -288,6 +288,8 @@ def final():
     json.dump(out, open(os.path.join(HERE, "pole_design_final.json"), "w"), indent=1, default=float)
 
 
+# "Si" here is a Schottky-class drop (0.55 V at 1 A); a silicon PN rectifier drops 0.85 V at 1 A and needs a 25 % kick
+# at the pick (sim/diodes-real-findings.md §3, 2026-10-09). The labels are kept: they name this study's results.
 DIODES = {"Si (0.55 V @ 1 A)": 1.0, "Schottky (0.35 V @ 1 A)": 0.65}
 
 

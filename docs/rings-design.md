@@ -40,9 +40,9 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
 | gap between the rings | 29.9 mm along the glass, across the equator |
 | beads | Cu wire rings soldered along the edges: Ø3 mm polar, Ø2 mm equatorial |
 | insulation | 0.5 mm of silicone gel over the glass, in a pocket of an unfilled PEEK retainer; G10 coupler outside |
-| supply | symmetric: ring A −15.0 kV, ring B +15.0 kV, 2 + 2 Cockcroft-Walton stages from the shaft; 29.9 kV across |
+| supply | symmetric: ring A −15.0 kV, ring B +15.0 kV, 2 + 2 Cockcroft-Walton stages from the shaft; 29.9 kV across (29.3 kV with real HV sticks, `sim/diodes-real-findings.md` §4.3) |
 | at the null | **7.62 kV/cm, 2.57 Pa, DC from B to A** as connected, with the beads (the bands alone 7.10); the null at the shaft's potential (0 V) |
-| ripple | 0.014 kV/cm p-p at 120 Hz (0.19 %): no swing |
+| ripple | 0.014 kV/cm p-p at 120 Hz (0.19 %): no swing; 0.049 kV/cm p-p with real HV sticks |
 | drift | 7.62 at switch-on → 8.20 kV/cm settled (+7.6 %, half-way at 7.6 min), PEEK and gel at 25 °C [IR] |
 | limits used | 1 kV/mm along the glass between the rings; 5 kV/mm in the gel at a bead [RH] |
 
@@ -196,10 +196,16 @@ datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing 
 
 ## 6. In time: start-up, ripple, drift (`sim/hub_drift.py`)
 - **The start-up** from the pump's seed: 50 % at 0.12 s, 95 % at 0.24 s (29 cycles), 99 % at 0.33 s.
+  - **Corrected 2026-10-09** (`sim/diodes-real-findings.md` §4.2): the 29 cycles carry the deck's `uic` start, a −1 kV
+    seed acting as −0.58 / −0.90 kV. From a consistent −1 kV, 95 % takes 27 cycles (0.225 s).
+  - With real HV sticks the pump does not self-excite: it needs a seed of at least about 17 V on nodes 1 and 4
+    (260 V hot) (§4.1 there).
 - **The ripple at 120 Hz:** ring A 34 V p-p, ring B 29 V p-p.
   - Ring A tops up as node 1 bottoms (at 0.375 of the cycle). Ring B tops up as node 4 peaks, 0.124 of a cycle
     (1.03 ms) later.
   - The two ripples mostly add: 57 V p-p across the gap, 0.014 kV/cm p-p at the null (0.19 %).
+  - With real HV sticks, whose junction capacitance passes the pump's swing, 193 V p-p and 0.049 kV/cm p-p
+    (`sim/diodes-real-findings.md` §4.3).
 - **"The field from A to B swings now ... correct?" No.** The field at the null is DC, steady from B to A at
   7.62 kV/cm, and the pressure holds its maximum, 2.57 Pa, all the time.
   - **Over one revolution of the rotor** (`sim/hub_revolution.py`, `docs/figures/hub-rings-revolution.png`): the pump

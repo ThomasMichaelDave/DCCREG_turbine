@@ -154,9 +154,15 @@ The test measures them in that order. The ratings come first because they decide
 ### Phase 4: with the pump's supply
 - **(a) The rings on the rotor's own supply:** ring A on its two-stage chain at node 1, ring B on the mirror chain at
   node 4, the pump at 1200 rpm relative (120 Hz). Expect:
-  - **the start-up from the seed:** 50 % at 0.12 s, 95 % at 0.24 s (29 cycles), 99 % at 0.33 s;
-  - **the 120 Hz ripple on the field at the null:** 0.014 kV/cm p-p on 7.62 (0.19 %). The field stays DC from B to A;
-    it does not swing from A to B. The probe needs a resolution of about 5e-4.
+  - **the start-up from the seed:** 50 % at 0.12 s, 95 % at 0.24 s (29 cycles), 99 % at 0.33 s. From a consistent −1
+    kV seed it is 27 cycles, 0.225 s (`sim/diodes-real-findings.md` §4.2: the deck's `uic` start). The pump needs that
+    seed: with real sticks it does not grow from below about 17 V on nodes 1 and 4 (260 V hot; §4.1 there);
+  - **the field and its 120 Hz ripple at the null:** with real HV sticks 7.47 kV/cm and 0.049 kV/cm p-p (0.66 %),
+    as the sticks' junction capacitance passes the pump's swing (`sim/diodes-real-findings.md` §4.3); with ideal diodes
+    7.62 and 0.014 kV/cm p-p (0.19 %). The field stays DC from B to A; it does not swing from A to B. The probe needs a
+    resolution of about 5e-4.
+  - **if the field reads low:** the chain diodes' leakage. At their datasheet maximum (2 µA) the gap is 27.3 kV and
+    the field 6.96 kV/cm; hot (5 µA) 6.20. Select them for ≤ 25 nA at 7.5 kV and keep them cool (§4.3 there);
   - **the rings' ripple** (non-contact voltmeters): about 29 V p-p on ring B and 34 V on ring A. Ring A tops up as
     node 1 bottoms, 1.03 ms before ring B tops up as node 4 peaks, so the ripples mostly add across the gap (57 V
     p-p);

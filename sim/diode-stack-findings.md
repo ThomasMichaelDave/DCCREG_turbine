@@ -43,6 +43,9 @@ For comparison, the Goldie two-section machine with diodes (`goldie-tube-finding
    - Ratings: the nodes reach 20 kV, and D3 / D4 see up to about the sum of two node swings, so use stacks rated
      ≥ 40 kV. HV rectifier sticks at 30–100 kV / few mA are stock. Their ~1 pF and µA leakage are small next to the
      1 nF-class capacitors.
+     - **Corrected 2026-10-09** (`sim/diodes-real-findings.md` §4.3): not next to the record's 100 pF chains. There
+       each stick's junction capacitance (0.2–0.4 pF) takes 0.57 kV off the rings' 29.9 kV, and 1 pF of body
+       capacitance or 2 µA of leakage each take about 2.6 kV.
 
 ## Diode parts for the stack (default tube: 3 mm vacuum, diode core, highest node 20 kV)
 

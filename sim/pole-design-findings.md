@@ -97,6 +97,10 @@ converged to 0.5 %.
   - From the same small seed you need ≥ 1000 turns with Si, or ≥ 800 with Schottky. That costs 59–94 W.
 - **Once kicked to ≥ 8–10 % of Ψ_s, the low-turn designs run with Si diodes.** The diode drop then costs only about
   2 W. A kick of 0.23 A in the utron group (about 35 mJ on the old basis, §7) is enough.
+  - **Corrected 2026-10-09** (`sim/diodes-real-findings.md` §3, §5): this study's "Si" model (`sim/pole_design.py`
+    DIODES, 0.55 V at 1 A) is a Schottky-class drop. A silicon PN rectifier drops 0.85 V at 1 A: at the pick it needs
+    a 25 % kick (more than the record's 20 %), and its diodes take 3.0–3.1 W. The first-cut Schottky set starts from
+    17.2 % (16.4 % with the bypass).
 - **The kick source is open.** Options: a one-time start pulse (a capacitor or battery with a push-button, the only
   switch and used only at start-up), a small PM bias in the utron back iron (untested), or a pulse from the
   electrostatic side.

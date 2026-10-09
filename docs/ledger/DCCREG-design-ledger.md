@@ -98,8 +98,8 @@ in opposite directions through a 1 : −1 reversing gear.
 | electrostatic pump, per side | 6 + 6 Al vanes 3 mm, full rounds R1.5, 6 mm air gaps; C1 / C2 55–410 pF; Ca / Cb 451 pF | `sim/air-stack-sizing-findings.md` §6.5 |
 | operating peak | 13.1 kV at the clamps (the 6 mm gap's breakdown over 1.5) | `sim/air_stack_sizing_results.json` |
 | rings | Cu foil 0.10 mm, 26.25–55.71° from the axis; beads Ø3 / Ø2 mm; 29.9 mm apart along the glass | `docs/rings-design.md` §2 |
-| rings' supply | symmetric: −14.96 / +14.96 kV on 2 + 2 Cockcroft-Walton stages from the shaft | `sim/hub_rings_build_results.json` record |
-| field at the null | 7.62 kV/cm from B to A at switch-on, 2.57 Pa (the bands alone 7.10); 8.20 kV/cm once settled at 25 °C; ripple 0.014 kV/cm p-p (0.19 %); no sign change in a revolution | `sim/hub-beads-settled-findings.md` §2; `sim/hub_drift_results.json`; `sim/hub_revolution_results.json` |
+| rings' supply | symmetric: −14.96 / +14.96 kV on 2 + 2 Cockcroft-Walton stages from the shaft (−14.65 / +14.67 kV with real HV sticks) | `sim/hub_rings_build_results.json` record; `sim/diodes-real-findings.md` §4.3 |
+| field at the null | 7.62 kV/cm from B to A at switch-on, 2.57 Pa (the bands alone 7.10); 8.20 kV/cm once settled at 25 °C; ripple 0.014 kV/cm p-p (0.19 %); no sign change in a revolution. With real HV sticks 7.47 kV/cm at switch-on and 0.049 kV/cm p-p (6.96 kV/cm at their datasheet's maximum leakage) | `sim/hub-beads-settled-findings.md` §2; `sim/hub_drift_results.json`; `sim/hub_revolution_results.json`; `sim/diodes-real-findings.md` §4.3 |
 | power from the belt | magnetic 18.1 W + 1.25 W iron (10.2–12.3 W + iron with the 3-D utrons); electrostatic 2.14 W; windage about 12 W and bearings 5 W | `sim/ah-steady-cusp-findings.md`; `sim/utron-3d-findings.md`; `sim/core_field_results.json`; `sim/rotor-mechanics-findings.md` §5 |
 | the hub's heat | the AH coils 1.22 W each: the coils at 43 °C, the glass at 32–37 °C in a 25 °C room | `sim/hub-thermal-findings.md` |
 | cost (placeholders) | the stack of record's build 6,477 EUR; the cheapest qualifying build 6,060 EUR | `docs/cost/README.md` |
@@ -285,9 +285,14 @@ commits' dates.
   utron's back iron saturates at Ψs 0.134 Wb-turns per group, and the current then stops growing. The law
   i = Ψ/L·(1 + (Ψ/Ψs)⁶) is a fit [IR]. The neck is sized to the AH's need and no larger, because heat goes as Ψs²
   (`sim/pole-design-findings.md` §3, §8).
-- **The start.** With the deck's diodes (0.54 V at 1 A, a Schottky-class drop) a small seed does not grow, because the
-  winding voltage while growing is only a few volts. A one-time kick starts it: the record's 20 % of Ψs seeds 0.110 A
-  and 3.5 mJ (`sim/pole-design-findings.md` §7); the threshold is 16 %, 2.2 mJ (`sim/parts-first-cut-findings.md` §3).
+- **The start.** With the deck's diodes (0.54 V at 1 A, a 100 V Schottky's drop) a small seed does not grow, because
+  the winding voltage while growing is only a few volts. A one-time kick starts it: the record's 20 % of Ψs seeds
+  0.110 A and 3.5 mJ (`sim/pole-design-findings.md` §7); the threshold is 16 %, 2.2 mJ, with the deck's diodes
+  (`sim/parts-first-cut-findings.md` §3).
+  - **With real rectifiers** (`sim/diodes-real-findings.md` §3) the threshold follows the drop: 17.2 % (16.4 % with the
+    bypass) for the first-cut Schottky set, 20.8 % for a 200 V Schottky in all four, 25–28 % for silicon PN
+    rectifiers, which the record's 20 % kick does not start. Running, the first-cut set costs the AH 300 → 295
+    A-turns and puts 2.42 W in the diodes; reverse recovery is negligible at 120 Hz.
   - **At full speed,** 600 rpm each way and never below 500: the pump starts at every rotor phase only from 1000 rpm
     relative, and a running pump stops below about 750. At 200 rpm each way the kick dies within 8 cycles.
   - **The first cut (PROPOSED):** a 9 V lithium cell charges a 470 µF bipolar capacitor, and an SCR dumps it across La
@@ -371,9 +376,16 @@ the same circuit at negative polarity).
   2. Through Ca or Cb that lift pulls the next node until a diode conducts.
   3. The charge then pours onto the other varicap while it is large, so it accepts the charge at low voltage.
 - **The gain.** Charge is collected while a capacitor is large and lifted while it is small, so it grows each cycle
-  by a fixed factor: z 1.31 bare (1.3095 in ngspice). With the rings' chains attached, z is 1.191 at start-up.
-- **Self-excitation.** Between diode events the circuit is linear and scale-free, so any seed in the growing mode (a
-  contact potential, a triboelectric charge) multiplies by z every cycle [OC].
+  by a fixed factor: z 1.31 bare (1.3095 in ngspice). With the rings' chains attached, z is 1.191 at start-up: a
+  large-signal gain, which real HV sticks keep from about 1 kV up (1.14–1.19; `sim/diodes-real-findings.md` §4.1).
+- **Self-excitation, with ideal diodes only.** Between diode events the ideal circuit is linear and scale-free, so
+  any seed in the growing mode multiplies by z every cycle [OC].
+  - **Corrected 2026-10-09** (`sim/diodes-real-findings.md` §4.1): a real HV stick drops volts even at nA (3.8 V at 1
+    nA, 10 V at 1 µA), and its capacitance and leakage take z below 1 at small amplitudes. The free pump decays below
+    about 17 V on nodes 1 and 4 (typical leakage), 64 V (the datasheet's maximum) or 260 V (hot), so a contact
+    potential or a triboelectric charge does not start it.
+  - It needs a seed of tens of volts, a few hundred hot. The deck's −1 kV seed is enough at every leakage level;
+    the machine's seed source is not designed (§5.2).
 
 **The clamps and the operating point.**
 - z > 1 at every amplitude, so something must stop the growth. The clamps Z1 (node 1) and Z4 (node 4) are avalanche
@@ -501,6 +513,10 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
   - 8 capacitors of 100 pF / 30 kV, each holding a stage's 7.5 kV DC, except Co1 at 13.2 kV and Coa1 at 5.7 kV
     (nodes 4 and 1 sit at −8.6 kV mean);
   - the levels: b1 +7.49 kV, ring B +14.96 kV, a1 −7.49 kV, ring A −14.96 kV; about 27 mJ stored;
+  - **with real HV sticks** (`sim/diodes-real-findings.md` §4.3) the rings stand at −14.65 / +14.67 kV: the sticks'
+    0.2–0.4 pF of junction capacitance across each chain diode takes 0.57 kV off the gap. At the datasheet's maximum
+    leakage (2 µA) the gap is 27.3 kV, hot (5 µA) 24.3 kV, so the chain diodes are selected for ≤ 25 nA at 7.5 kV
+    and kept cool;
   - no Dk and no C_A (`sim/hub_rings_build_results.json` record_supply).
 - **Why 100 pF:** it keeps the pump's start-up gain at 1.191 (1.03 at 1 nF), and still smooths the ripple to tens of
   volts.
@@ -539,10 +555,15 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
 
 **In time** (the bench test's predictions are Figure 10, §5.3):
 - **Start-up** from the pump's seed: 50 % at 0.12 s, 95 % at 0.24 s, 99 % at 0.33 s.
+  - **Corrected 2026-10-09** (`sim/diodes-real-findings.md` §1.2, §4.2): the deck's 29 cycles start from −0.58 / −0.90
+    kV, not −1 kV, because under `uic` ngspice starts its charge-defined varicaps uncharged. From a consistent −1 kV,
+    95 % takes 27 cycles (0.225 s), with ideal diodes and typical sticks alike; 0.30 s with hot sticks.
 - **The ripple:**
   - ring A carries 34 V p-p and ring B 29 V p-p at 120 Hz;
   - ring A tops up as node 1 bottoms; ring B tops up 1.03 ms later, as node 4 peaks;
-  - so the two mostly add: 57 V p-p across the gap, 0.014 kV/cm p-p (0.19 %) at the null.
+  - so the two mostly add: 57 V p-p across the gap, 0.014 kV/cm p-p (0.19 %) at the null;
+  - with real HV sticks their capacitance triples it: 193 V p-p, 0.049 kV/cm p-p (0.66 %)
+    (`sim/diodes-real-findings.md` §4.3).
 - **No swing.** Over a whole revolution (12 pump cycles in 0.1 s) the field never changes sign.
   - Each chain's diodes pass charge one way only, and the storage capacitors hold the rings between cycles.
   - The hub turns with the rotor and the rings are symmetric about the shaft, so the rotation changes nothing at the
@@ -627,9 +648,9 @@ and tooling.
 | gap | 0.500 mm aligned, 9.74 mm unaligned; 0 clashes in 457 pairs |
 | group | 3 utrons in series: 0.243 H; 0.87–2.81 A per branch; 101 V peak |
 | La / Lb | 0.146 H DC chokes, 0.29 Ω in the deck, 0.87–1.15 A, ≤ 110 V; first cut EI-84 × 35 mm, 150 t of Ø1.40 mm, 0.276 Ω, 1.66 kg (PROPOSED) |
-| D1*–D4* | 0.54 V at 1 A in the deck (a Schottky-class drop); 1.9 / 2.3 A peak; reverse 113 / 104 / 58 / 60 V with the start-up; first cut Schottky 200 / 150 V, ≥ 3 A (PROPOSED) |
+| D1*–D4* | 0.54 V at 1 A in the deck (a 100 V Schottky's drop; the 200 V class drops 0.71 V); 1.9 / 2.3 A peak; reverse 113 / 104 / 58 / 60 V with the start-up; first cut Schottky 200 / 150 V, ≥ 3 A (PROPOSED); with it the AH 295 A-turns, the diodes 2.42 W (`sim/diodes-real-findings.md` §3.3) |
 | gain | z 1.21 (z_lin, the screen's linear model); 1.139 loaded early (z_early), 1.147 with the bypass; with the 3-D utrons z_lin 1.16–1.17 (under the ≥ 1.20 rule), z_early 1.07–1.09 (`sim/utron-3d-findings.md`) |
-| kick | once, at full speed (600 rpm each way, never below 500): the record's 20 % of Ψs seeds 0.110 A, 3.5 mJ; the threshold is 16 %; first cut K4, 470 µF + SCR, reed-fired (PROPOSED) |
+| kick | once, at full speed (600 rpm each way, never below 500): the record's 20 % of Ψs seeds 0.110 A, 3.5 mJ; the threshold is 16 % with the deck's diodes, 17.2 % with the first-cut Schottky set, 25–28 % with silicon PN rectifiers (`sim/diodes-real-findings.md` §3.1); first cut K4, 470 µF + SCR, reed-fired (PROPOSED) |
 | mass | 2.23 kg per utron as built (SiFe 0.89, NiFe 0.15, Cu 1.07, G10 0.12) |
 | power | belt 17.6 W (18.1 W with the bypass) + iron 1.25 W; coils 46 °C in air at a 40 °C ambient |
 
@@ -658,7 +679,7 @@ and tooling.
 | Ca = Cb | 450.9 pF = 1.1 C_max: 6 full-annulus plates, 5 gaps of 6 mm, on the rotor |
 | stack length | 102 mm of C1 + 6 mm + 48 mm of Ca = 156 mm |
 | operating peak | 13.13 kV (19.7 kV breakdown / 1.5 [RH]); face field 21.9 kV/cm; rim 44.4 kV/cm (0.80 of onset) |
-| gain | z 1.31 bare (1.3095 ngspice); 1.191 at start-up with the rings' chains |
+| gain | z 1.31 bare (1.3095 ngspice); 1.191 at start-up with the rings' chains, a large-signal gain: with real HV sticks below 1 under about 17 V (260 V hot), so a seed is needed (`sim/diodes-real-findings.md` §4.1) |
 | nodes | 1 / 4: −13.2 ↔ −5.7 kV (mean −8.6); 2 / 3: 0 ↔ −6.1 kV |
 | clamps | Z1 / Z4 avalanche strings, BV 13.1 kV (66 × 200 V, 1.5KE200A class, PROPOSED); 1.07 W, 0.95 mA peak each |
 | D1–D4 | reverse peaks 6.1 / 6.1 / 13.2 / 13.2 kV; first cut 20 kV sticks (one / two in series) + 22 kΩ (PROPOSED) |
@@ -673,13 +694,13 @@ and tooling.
 | bands | 26.25–55.71°; 12.85 mm along the glass, 13.1 cm² each; gap 29.92 mm; Cu-ETP 0.10 mm, 12 gores per band, the laps' free edges filleted (PROPOSED) |
 | beads | Ø3 mm polar (contact r 11.06, z ±22.42 mm), Ø2 mm equatorial (contact r 20.65, z ±14.08 mm) |
 | ratings used | 1 kV/mm along the glass; 5 kV/mm in the gel at a bead [RH]; 2 / 8 to qualify |
-| supply | 2 + 2 CW stages from the shaft; ring A −14.96 kV, ring B +14.96 kV; 8 diodes at 7.5 kV; 8 × 100 pF / 30 kV |
+| supply | 2 + 2 CW stages from the shaft; ring A −14.96 kV, ring B +14.96 kV (−14.65 / +14.67 with real HV sticks); 8 diodes at 7.5 kV, selected for ≤ 25 nA; 8 × 100 pF / 30 kV |
 | k | 0.2546 (kV/cm)/kV as built; 0.2373 for the bands alone |
 | at the null | 7.62 kV/cm, 2.57 Pa at switch-on (the bands alone 7.10); 8.20 kV/cm, 2.98 Pa settled at 25 °C; ±5 mm uniformity 4.4 % (axis) / 2.0 % (equator) |
 | fields in the insulation | glass along the gap 1.00 kV/mm on average; gel at the beads 4.98 / 4.46 kV/mm as drawn; glass at the beads 1.46 / 3.01 kV/mm; to the AH 1.81 kV/mm |
 | settled | gel at the beads 0.69 / 1.88 kV/mm; the PEEK 2.3 kV/mm across the seat; the equatorial beads hold while σ_glass ≤ 4.1 σ_gel |
 | strays | 5.1 pF to REF each, 1.1 pF between |
-| time | 95 % in 0.24 s; ripple 0.014 kV/cm p-p; one revolution 7.611–7.625 kV/cm; drift to 8.20 kV/cm in 6 h (PEEK, gel, 25 °C) |
+| time | 95 % in 0.24 s (0.225 s from a consistent −1 kV seed); ripple 0.014 kV/cm p-p (0.049 with real HV sticks); one revolution 7.611–7.625 kV/cm; drift to 8.20 kV/cm in 6 h (PEEK, gel, 25 °C) |
 | the hub's heat | coils 43 °C, glass 32–37 °C (32.5 °C between the rings) in a 25 °C room; the vessel 4.2e12 Ω·m there |
 | leakage | 100 GΩ per ring used (ledger 158 GΩ); 4.5 mW |
 
@@ -735,8 +756,11 @@ and tooling.
   200 mm) or a larger pump; and set how each group's three coils are connected (one reversed: κ 6.44, against 5.96
   aiding);
 - **the parts' first cuts** (`sim/parts-first-cut-findings.md`): La / Lb (EI-84 × 35), Schottky D1*–D4*, the HV
-  sticks and their surge resistors, the clamp strings, the chains' parts, the K4 kick fired at full speed, the
-  creepage and the potting;
+  sticks and their surge resistors, the clamp strings, the chains' parts (their diodes selected for ≤ 25 nA at
+  7.5 kV and kept cool), the K4 kick fired at full speed, the creepage and the potting;
+- **the electrostatic pump's seed** (§3.4, `sim/diodes-real-findings.md` §4.1): with real HV sticks it does not
+  self-excite. It needs tens of volts on nodes 1 / 4, a few hundred hot, and no seed source is designed. Candidates: a
+  one-shot HV seed fired with the magnetic pump's kick, or a tap from a charged part through an HV diode;
 - **a vane flashover** (§3.4): ring B rises to 19.0 kV. Qualify the rings to ±20 kV (1.33×) on the bench, limit ring B
   (a spark gap near 17 kV), or rely on the vanes' 1.5 margin to keep flashovers rare;
 - **the fields' purpose:** what the field at the null is for is not documented (§2.1).
@@ -749,7 +773,7 @@ and tooling.
 - the field on the pump's own supply (phase 4).
 
 **Still open in the models and parts:**
-- the model checks of §6 (items 31–34): the neck, real diodes, the tube's strays and the utrons' κ in 3-D;
+- the model checks of §6 (items 31 and 33): the neck and the tube's strays;
 - the 77 MnZn data sheet: its values are in `presets/hub-locked.json` (AH core), as a web search rendered the sheet;
   re-read them from the current sheet before ordering;
 - the capacitor mounts' creepage, potting and balancing: first cuts in `sim/parts-first-cut-findings.md` and
@@ -773,8 +797,9 @@ Source: `docs/bench-test-rings.md`.
   3. **DC drift on lab supplies for 6 h:** 7.62 → 8.20 kV/cm expected, with the return after grounding and a 40 °C
      repeat. The ratio of the glass's conductivity to the gel's, at the hub's temperature, decides the equatorial
      beads once settled.
-  4. **The pump's own supply at 1200 rpm relative:** 95 % in 0.24 s and 0.014 kV/cm ripple expected; then the AH
-     powered, with the Faraday offset measured first.
+  4. **The pump's own supply at 1200 rpm relative:** with real HV sticks 7.47 kV/cm, 95 % in about 0.225 s from a
+     −1 kV seed and 0.049 kV/cm ripple expected (0.014 with ideal diodes); then the AH powered, with the Faraday
+     offset measured first.
 
 ![Figure 10. What the bench test should see: the start-up, the 120 Hz ripple (the pump's nodes, the rings, the field), the 6 h drift by material, and the test's phases. Source: docs/figures/hub-bench-predictions.png (docs/make_hub_bench_figure.py).](../figures/hub-bench-predictions.png)
 
@@ -828,7 +853,7 @@ more; each line says what was done and where. The model checks (31–34) run as 
 | # | check | where it lands |
 |:--|:--|:--|
 | 31 | the neck, a nonlinear field check | `sim/neck-nonlinear-findings.md` |
-| 32 | real diodes at start-up | `sim/diodes-real-findings.md` |
+| 32 | real diodes at start-up | **done, and corrections:** the magnetic pump starts on the record's 20 % kick only with Schottky rectifiers (thresholds 17.2 % for the first-cut set, 25–28 % for silicon PN); the electrostatic pump does not self-excite with real HV sticks (a seed of 17–260 V is needed, §5.2) and its rings stand at −14.65 / +14.67 kV, 7.47 kV/cm (items 46–52; `sim/diodes-real-findings.md`) |
 | 33 | the tube's strays, by a field solve | `sim/tube-strays-findings.md` |
 | 34 | the utrons' κ in 3-D | **done, and a correction:** κ 6.70 in the record's frame (the ends +71 % unaligned against the [RH] +30 %), 5.96–6.44 with the coils' coupling round the machine; the pick's z_lin 1.16–1.17, under its ≥ 1.20 rule; the AH 221–245 A-turns with the bypass, not 300; the coils' connection not recorded: the designer's (`sim/utron-3d-findings.md`) |
 
@@ -838,7 +863,7 @@ more; each line says what was done and where. The model checks (31–34) run as 
 |:--|:--|:--|
 | 35 | "kick above about 200 rpm" (§3.2; `docs/drive-gear-belt.md` §4.2) | **corrected:** the pump starts at every rotor phase only from 500 rpm each way; the kick fires at full speed (`sim/parts-first-cut-findings.md` §3) |
 | 36 | "seeded the other way, the pump runs mirrored" (`sim/ah-steady-cusp-findings.md`) | **corrected:** the diodes set the sign; polarised bypass parts go + to nodes d / b (§3 there) |
-| 37 | D1*–D4* "silicon, 0.55 V, 2.8 A peak, reverse 112 / 101 / 43 / 45 V" | **corrected:** 0.54 V is a Schottky-class drop; 1.9 / 2.3 A per diode; 113 / 104 / 58 / 60 V with the start-up (§2.1 there) |
+| 37 | D1*–D4* "silicon, 0.55 V, 2.8 A peak, reverse 112 / 101 / 43 / 45 V" | **corrected:** 0.54 V is a 100 V Schottky's drop (item 51); 1.9 / 2.3 A per diode; 113 / 104 / 58 / 60 V with the start-up (§2.1 there) |
 | 38 | the Ca / Cb mounts "need 5.7–7.5 kV of creepage" | **corrected:** creepage is a length, 40 mm on PTFE or 80 mm on G10; no mount bridges two adjacent plates (§4 there) |
 | 39 | La / Lb "not designed", 2.82 kg; their iron loss "negligible" | **settled:** the EI-84 × 35 first cut, 3.3 kg for the pair; 0.12–0.21 W of iron each (§1 there) |
 | 40 | a kick "with a push-button" (`sim/pole-design-findings.md` §4; the cost sheet) | **corrected:** it fires at speed, so contactlessly: the K4 first cut (§3 there) |
@@ -852,6 +877,18 @@ more; each line says what was done and where. The model checks (31–34) run as 
 | 43 | the gores' overlaps and joints, not modelled | **settled:** the laps hold with deburred, filleted edges and no void under them (§2 there) |
 | 44 | the bead rings' closing joints: the polar beads sit 0.3–0.4 % under their rating | **settled:** the polar rings seamless, or the AH ends rounded (2.3–2.4 %); the equatorial joints dressed within δ / w 0.03 (§3 there) |
 | 45 | the record's solids labelled the shaft halves and flanges "steel" against the preset's non-magnetic | **done:** "austenitic stainless, non-magnetic" (μ_r ≤ 1.05, `sim/ah-null-findings.md` §5); `sim/tube_geometry.py --record` and its GLB regenerated, the geometry unchanged |
+
+**Found by the real-diode study** (`sim/diodes-real-findings.md`)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 46 | "any seed (a contact potential, a triboelectric charge) multiplies by z" (§3.4) | **corrected:** for ideal diodes only; with real HV sticks the free pump decays below about 17 V (typical leakage), 64 V (maximum) or 260 V (hot); the seed source is **open** (§5.2) |
+| 47 | "95 % at 0.24 s (29 cycles)" (§3.7, §4, §5.3; `sim/hub-rings-build-findings.md` §5, `docs/rings-design.md` §6, `docs/bench-test-rings.md` phase 4) | **corrected:** the deck's `uic` start (its charge-defined varicaps start uncharged, so the −1 kV seed acts as −0.58 / −0.90 kV); 27 cycles, 0.225 s, from a consistent −1 kV (§4.2 there) |
+| 48 | the rings ±14.96 kV, 57 V and 0.014 kV/cm p-p, with ideal diodes | **corrected beside the record's:** with real HV sticks −14.65 / +14.67 kV, 7.47 kV/cm and 0.049 kV/cm p-p; at the datasheet's maximum leakage 6.96 kV/cm, hot 6.20; the chain diodes selected for ≤ 25 nA and kept cool (§4.3 there) |
+| 49 | `sim/diode-stack-findings.md`: the sticks' "~1 pF and µA leakage are small next to the 1 nF-class capacitors" | **corrected:** the record's chains are 100 pF; there 1 pF of body capacitance or 2 µA of leakage each cost about 2.6 kV across the gap (dated note) |
+| 50 | `sim/hub_rings_build.py` LEAKAGE: a 20 kV stack "leaks tens of nA at a third of its rating" | **noted:** that is a typical or selected part; the class's datasheet maximum, 2 µA, is 80 × more (a comment there; the leakage ledger's 3e11 Ω a stage holds with selected parts) |
+| 51 | "0.54 V … a Schottky-class drop"; "the threshold is 16 %" (§3.2, §4, item 37) | **corrected:** a 100 V Schottky's drop; the 200 V class that D1* / D2* need drops 0.71 V; the thresholds by class (§3.1 there) |
+| 52 | `sim/pole-design-findings.md` §4: "silicon diodes (≈ 0.55 V)", "the diode drop then costs only about 2 W"; `sim/pole_design.py`'s "Si (0.55 V @ 1 A)" | **corrected:** a silicon PN rectifier drops 0.85 V at 1 A, needs a 25 % kick, and its diodes take 3.0–3.1 W; the code's label is commented, not renamed (dated notes) |
 
 ## 7. Drawing register
 

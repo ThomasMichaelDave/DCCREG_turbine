@@ -77,7 +77,7 @@ def main():
     block(300, 366, 250, 166, "Air vane stack C1 / C2", ["6 + 6 vanes per side, Al 3 mm", "6 mm gaps, R1.5 full rounds",
                                                          "rotor vanes = nodes 1 / 4", "stator vanes = REF",
                                                          "55 ↔ 410 pF, 120 Hz"], ES, ESS)
-    block(590, 366, 250, 166, "Diode doubler", ["Ca / Cb 451 pF on the rotor", "D1–D4, self-exciting from a seed",
+    block(590, 366, 250, 166, "Diode doubler", ["Ca / Cb 451 pF on the rotor", "D1–D4; a seed (≥ 17–260 V) starts it",
                                                 "clamps Z1 / Z4 at 13.1 kV", "nodes 1 / 4: −13.2 ↔ −5.7 kV",
                                                 "z 1.31 bare; belt 2.14 W"], ES, ESS)
     block(880, 366, 220, 166, "Two mirrored chains", ["Cockcroft-Walton, 2 stages", "each, from the shaft",

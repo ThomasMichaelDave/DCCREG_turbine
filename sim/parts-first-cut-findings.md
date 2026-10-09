@@ -66,6 +66,8 @@ changed.
   3.04 W instead of 2.01 W, and the kick must seed 25 % of Ψs instead of 16 %.
 - **With Schottky parts** (200 V on D1* / D2*, 100–150 V on D3* / D4*) the pump is as modelled: z 1.142, AH 444,
   2.29 W in the diodes, a 16 % threshold.
+  - With datasheet-class models (`sim/diodes-real-findings.md` §3.3): z_early 1.135, AH 442 A-turns, 2.36 W in the
+    diodes and a 17.2 % threshold without the bypass; 1.141, 295 A-turns per coil, 2.42 W and 16.4 % with it.
 
 ### 3. The start kick: a capacitor dumped across La through an SCR, fired contactlessly at speed (PROPOSED)
 - **2026-10-09:** the start was run with the record's 2-D utrons. With the 3-D ones (`sim/utron-3d-findings.md`)
@@ -368,6 +370,11 @@ record's seed never exceeds the steady peak.
 | 1N540x-class Si in all four | 20 % | 25 % | 5.4 mJ |
 | Si D1* / D2*, Schottky D3* / D4* | — | 20 % | 3.5 mJ |
 | Schottky in all four | 14 % | 16 % | 2.2 mJ |
+
+- **Note 2026-10-09** (`sim/diodes-real-findings.md` §3.1): "Schottky in all four" here has a 100 V-class drop, which
+  D1* / D2* (113 / 104 V reverse) cannot use. A 200 V Schottky in all four needs 20.8 % (19.9 % with the bypass), the
+  first-cut set (200 V on D1* / D2*, 100–150 V on D3* / D4*) 17.2 % (16.4 %): the record's 20 % kick starts it, and
+  the K4 dump far more so.
 
 - **Which coils need it:**
   - a seed in loop A alone (L1, the A coil of the AH, La) starts it; in loop B alone it does not;

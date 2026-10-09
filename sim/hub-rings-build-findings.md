@@ -272,6 +272,9 @@ keeps each family's best per pair of ratings (`best_by_family`).
     - ring A tops up as node 1 bottoms (at 0.375 of the cycle), and ring B as node 4 peaks, 0.124 of a cycle
       (1.03 ms) later;
     - so the ripples mostly add: 57 V p-p across the 29.9 kV, 0.014 kV/cm p-p (0.19 %) at the null.
+    - **With real HV sticks** (2026-10-09, `sim/diodes-real-findings.md` §4.3) the rings stand at −14.65 / +14.67 kV
+      and the ripple triples, 193 V p-p, 0.049 kV/cm p-p: each chain diode's 0.2–0.4 pF of junction capacitance
+      passes the pump's swing. At the sticks' datasheet maximum leakage the gap is 27.3 kV (6.96 kV/cm at the null).
   - **Over a whole revolution** (the designer's follow-up: "it does actually swing when going through its phases in
     one revolution"; `sim/hub_revolution.py` → `sim/hub_revolution_results.json`, `docs/figures/hub-rings-revolution.png`).
     The record's supply was settled, then recorded over one revolution: 600 rpm each way, 12 pump cycles, 0.1 s.
@@ -302,9 +305,12 @@ keeps each family's best per pair of ratings (`best_by_family`).
   - (4) the rings on the pump's own supply.
 - **The probe:** an electro-optic BGO sensor on a fibre, along the axis through a pumping tube at one pole.
 - **What the field at the null should do** (`sim/hub_drift.py`, the record: the symmetric supply):
-  - **the start-up:** 95 % in 0.24 s (29 cycles) from the seed;
+  - **the start-up:** 95 % in 0.24 s (29 cycles) from the seed. **Corrected 2026-10-09** (`sim/diodes-real-findings.md`
+    §1.2, §4.2): the deck's charge-defined varicaps start uncharged under `uic`, so its −1 kV seed acts as −0.58 /
+    −0.90 kV; from a consistent −1 kV it is 27 cycles, 0.225 s, with ideal diodes and typical sticks alike;
   - **the 120 Hz ripple:** 0.014 kV/cm p-p on 7.62 (0.19 %). With the DC supply, the chains smooth the pump's swing
-    almost completely. The AH's ampere-turns swing 5.9 % p-p with 22 mF across each coil.
+    almost completely (with real HV sticks 0.049 kV/cm p-p on 7.47, above). The AH's ampere-turns swing 5.9 % p-p with
+    22 mF across each coil.
   - **the drift:** with the rings held at their DC, 7.62 kV/cm at switch-on, 7.95 at 10 min, 8.18 at 1 h and 8.20 at
     6 h (+7.6 %), half-way at 7.6 min (with the beads; the bands alone ran 7.10 → 7.82). The leakage moves the
     potential along the glass and through the gel and the PEEK, from the electrostatic toward the conduction-settled

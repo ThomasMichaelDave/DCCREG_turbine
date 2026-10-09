@@ -420,6 +420,8 @@
 <text x="822.0" y="973.0" class="tk" text-anchor="start" >bearing</text>
 <text x="898.0" y="973.0" class="tv" text-anchor="start" >one inner bearing, for now: 0.41 mA rms AC (0.91 mA pk), no DC</text>
 <text x="822.0" y="998.5" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): belt 2.14 W, into Z1 + Z4; z at start 1.191 (bare 1.310).</text>
+<text x="822.0" y="1016.5" class="op" text-anchor="start" >Real HV sticks: rings −14.65 / +14.67 kV, 7.47 kV/cm (sim/diodes-real-findings.md);</text>
+<text x="822.0" y="1034.5" class="op" text-anchor="start" >no self-start below about 17 V on nodes 1 / 4 (about 260 V hot): a seed is needed.</text>
 <text x="20.0" y="1094.0" class="n" text-anchor="start" >Bodies. Rotor: shaft, sleeve, rotor vanes (nodes 1 / 4), Ca / Cb plates, the 6 utrons on their carrier discs, the hub (the glass vessel with the rings outside it, the AH pair, retainer and coupler).</text>
 <text x="20.0" y="1113.0" class="n" text-anchor="start" >Counter-rotor: stator cage, stator vanes (REF), bridges. Frame: end bearings, the gear.</text>
 <text x="20.0" y="1132.0" class="n" text-anchor="start" >Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, the two CW chains, the rings (all rotor);</text>

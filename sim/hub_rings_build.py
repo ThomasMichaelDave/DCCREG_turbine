@@ -249,6 +249,8 @@ LEAKAGE = [  # (path, resistance per ring [ohm], basis) at the record's DC
     ("along the glass to the other ring", 1.6e15, "borosilicate 1e13 ohm m [IR], the 1.5 mm shell across the 32 mm gap"),
     ("through the silicone gel along the interface", 1e15, "rho about 1e13 ohm m [IR], 0.5 mm x 32 mm across the band"),
     ("the lead: PTFE-insulated wire to the rotor's pump, about 0.3 m", 1e15, "insulation resistance [IR]"),
+    # tens of nA is a typical or selected part: the class's datasheet maximum, 2 uA, is 80 x more and costs the rings
+    # 2.6 kV across the gap (sim/diodes-real-findings.md §4.3, 2026-10-09); so the chain diodes are selected
     ("the multiplier's diodes in reverse (2 per stage, about 7 kV each)", 3e11,
      "a 20 kV stack leaks tens of nA at a third of its rating [IR datasheet-class]; per stage, as a load on ring B"),
     ("the multiplier's 100 pF ceramic capacitors' insulation", 5e11, "IR above 1e11 ohm each [IR]; per stage"),

@@ -466,6 +466,14 @@ def panel_b_table(ox, y, N):
     y = table(ox + 42, y, rows, w_key=76)
     tx(ox + 42, y + 6, f"At {cf['rpm_rel']:.0f} rpm relative ({cf['F_Hz']:.0f} Hz): belt {fs['P_belt_W']:.2f} W, into "
                        f"Z1 + Z4; z at start {N['dc_free']['z']:.3f} (bare {R['free none']['z']:.3f}).", "op")
+    de = json.load(open(os.path.join(ROOT, "sim", "diodes_real_results.json")))["electrostatic"]   # real HV sticks
+    ht, th = de["runs"]["HV-typ"]["clamped"], de["thresholds"]
+    k_null = nl["E_dc_kV_cm"] / nl["V_gap_kV"]                      # (kV/cm)/kV as connected [OC: linear]
+    va, vb = abs(ht["V_ea_mean_samples_kV"]), ht["V_eb_mean_samples_kV"]
+    tx(ox + 42, y + 24, f"Real HV sticks: rings −{va:.2f} / +{vb:.2f} kV, "
+                        f"{k_null * ht['V_gap_kV']['mean']:.2f} kV/cm (sim/diodes-real-findings.md);", "op")
+    tx(ox + 42, y + 42, f"no self-start below about {th['HV-typ']['v_grows_V']:.0f} V on nodes 1 / 4 "
+                        f"(about {round(th['HV-hot']['v_grows_V'], -1):.0f} V hot): a seed is needed.", "op")
 
 
 # ------------------------------------------------------------------------------------------------ sheet
