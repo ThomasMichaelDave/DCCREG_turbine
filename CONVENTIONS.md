@@ -58,10 +58,11 @@ Non-numeric controls (no `-r`/`-n` pair; serialise into the hash manually): `pdi
 ### Switch naming
 
 `solveDoubler4`'s ideal diodes **`D1–D4`** (`D1:2→0  D2:3→0  D3:1→3  D4:4→2`) are the
-**canonical** switch names. The physical spark-gap commutator aliases them as **SG1–SG4**
-(SG1↔D1 … SG4↔D4); see `docs/commutator-design.md §2`. Use `D1–D4` in engine/solver
-contexts and SG1–4 only when discussing the physical commutator. The solver's ground (0) is
-the physical resonator rail (5–6); it is a near-short at PRF (L1-short argument).
+**canonical** switch names. They are the same four diodes in the design of record, the de Queiroz diode doubler
+(`sim/core_field.py`; its node 0 is **REF, the rotor's shaft**). The magnetic dual doubler's diodes are **D1*–D4***.
+History (the disc spark-gap machine): its physical commutator aliased them as **SG1–SG4** (SG1↔D1 … SG4↔D4; see
+`docs/commutator-design.md §2`), and there the solver's ground (0) was the physical resonator rail (5–6), a
+near-short at PRF (L1-short argument).
 
 ---
 
@@ -165,5 +166,7 @@ demEnergyJ, demCapPerGroupUF                               [outputs]
 Established by: `doubler-resonant` (diode α_max 0.28 ceiling) + `ngspice-s3` (the static either/or) +
 `seq-stat-commutation` (the sequenced-statistical conservation arbiter). The corollary for design: resonant
 recovery (Lx) belongs on **sinks** (the island Cx/Lx, validated S2), **not** on the rectifying pump transfers
-(Ca/Cb). Authoritative record: `docs/efficiency-resolution.md`. The machine's operating η is **≈ 0.45–0.50**
-(direct 0.386 + island sink), **not** 0.70.
+(Ca/Cb). Authoritative record: `docs/efficiency-resolution.md`. The disc spark-gap machine's operating η was
+**≈ 0.45–0.50** (direct 0.386 + island sink), **not** 0.70. The design of record (the tube with the diode core, locked
+2026-10-09) has no efficiency of record: its products are static fields, and the belt's power ends as heat
+(`docs/ledger/DCCREG-design-ledger.md` §3).

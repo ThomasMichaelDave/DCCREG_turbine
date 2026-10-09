@@ -313,7 +313,8 @@ keeps each family's best per pair of ratings (`best_by_family`).
 - **`presets/hub-locked.json`:**
   - **rings:** the record (bands, beads, supply, foil);
   - **new entries:** ratings, rings_leakage, interface_filler;
-  - **retainer:** PEEK, PROPOSED; **coupler:** G10 outside;
+  - **retainer:** PEEK, PROPOSED; **coupler:** G10 outside (both, and the gel, accepted by the designer on
+    2026-10-09);
   - **the open list.**
   - `sim/hub_rings_build.py` reads its materials, ratings and leakage from it.
 - **`sim/hub_locked.py`:** keeps the lock-down's placeholder ε 4.7 (`EPS_RET_LOCKDOWN`), so its results stand as the

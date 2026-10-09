@@ -156,8 +156,8 @@
       "absz_max_mm": 72.0
     },
     "unit": "-",
-    "status": "DECIDED (role) / PROPOSED (material: the designer's to accept) / OPEN (dimensions)",
-    "source": "designer, 2026-10-08 (role); the material from sim/hub-rings-build-findings.md: non-magnetic and non-conducting (no effect on the AH), low eps (the field at the null moves under 1 % from eps 2.1 to 4.7), low moisture, machines and holds size; the dimensions a placeholder that encloses the AH coils",
+    "status": "DECIDED (role; material: the designer, 2026-10-09) / OPEN (dimensions)",
+    "source": "designer, 2026-10-08 (role), 2026-10-09 (accepted PEEK, the gel and the G10 coupler); the material from sim/hub-rings-build-findings.md: non-magnetic and non-conducting (no effect on the AH), low eps (the field at the null moves under 1 % from eps 2.1 to 4.7), low moisture, machines and holds size; the dimensions a placeholder that encloses the AH coils",
     "tag": "[IR] datasheet-class"
   },
   "interface_filler": {
@@ -168,8 +168,8 @@
       "role": "fills the glass-retainer interface without voids, beds the beads, and takes the PEEK-glass expansion mismatch"
     },
     "unit": "-",
-    "status": "PROPOSED",
-    "source": "sim/hub-rings-build-findings.md; eps datasheet-class",
+    "status": "DECIDED (the designer, 2026-10-09)",
+    "source": "sim/hub-rings-build-findings.md; accepted by the designer 2026-10-09; eps datasheet-class",
     "tag": "[IR] eps; [RH] the rating (ratings)"
   },
   "shaft_coupler": {
@@ -181,8 +181,8 @@
       "shape": "OPEN (the tube's bicone is a placeholder)"
     },
     "unit": "-",
-    "status": "DECIDED (role) / PROPOSED (G10 outside the PEEK) / OPEN (shape, dimensions)",
-    "source": "designer, 2026-10-08; G10's fibres would give a tracking path at the rings, so PEEK takes the inside",
+    "status": "DECIDED (role; G10 outside the PEEK: the designer, 2026-10-09) / OPEN (shape, dimensions)",
+    "source": "designer, 2026-10-08 and 2026-10-09; G10's fibres would give a tracking path at the rings, so PEEK takes the inside",
     "tag": "[RH]"
   },
   "shaft": {
