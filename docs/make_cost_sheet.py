@@ -349,8 +349,9 @@ def build():
     put(bm, "E6", '="unit price ("&CUR&")"', F_HEAD, fill=FILL_HEAD)
     put(bm, "F6", '="extended ("&CUR&")"', F_HEAD, fill=FILL_HEAD)
     bom = [
-        ("Magnetic pump", "Utron SiFe core, M235-35A, laser-cut + bonded (1.26 kg each)", 6, 35.0,
-         "Quantity: 3 utrons per side; mass from pole_design_variants.json. Placeholder price."),
+        ("Magnetic pump", "Utron SiFe core, M235-35A, laser-cut + bonded (0.89 kg each as built)", 6, 35.0,
+         "Quantity: 3 utrons per side; mass as built, sim/pole-design-findings.md §8 (the screen's 1.26 kg was its "
+         "simpler outline). Placeholder price."),
         ("Magnetic pump", "Utron winding copper, 1.89 mm², 200 turns (1.07 kg each)", 6, 18.0,
          "15 /kg wire + former. Placeholder."),
         ("Magnetic pump", "Utron NiFe neck strip, cheeks, slot cover, air-break spacer", 6, 25.0, "Placeholder."),
@@ -362,10 +363,12 @@ def build():
          "First cut, rotor_parts_duty_results.json. Placeholder."),
         ("Magnetic pump", "D1*-D4* power diodes", 4, 3.0, "Low-voltage, high-current. Placeholder."),
         ("Magnetic pump", "Node snubbers (RC)", 8, 1.5, "Placeholder."),
-        ("Magnetic pump", "Start-kick source (capacitor + push-button)", 1, 30.0, "Open item: 15-20 % of Psi_s, tens of mJ."),
+        ("Magnetic pump", "Start-kick source (capacitor + push-button)", 1, 30.0,
+         "Open item: 20 % of Psi_s once, about 3.5 mJ at 0.11 A seeded (sim/pole-design-findings.md §7)."),
         ("AH (hub)", "AH coils, 160 turns, on the former", 2, 15.0, "Placeholder."),
-        ("AH (hub)", "AH bypass capacitors, 10 mF / 6.3 V (2 per coil = 20 mF)", 4, 8.0,
-         "The steady cusp (sim/ah-steady-cusp-findings.md). Bipolar parts if the kick polarity is free."),
+        ("AH (hub)", "AH bypass capacitors, 22 mF / 6.3 V (1 per coil), PROPOSED", 2, 12.0,
+         "The steady cusp, as modelled (sim/ah-steady-cusp-findings.md); not yet accepted by the designer. Bipolar "
+         "parts if the kick polarity is free."),
         ("AH (hub)", "MnZn rod (the AH core), Fair-Rite 77, d 12.3 x 41.3 mm", 2, 30.0,
          "One per AH coil, top and bottom on the z axis (presets/hub-locked.json). Placeholder price."),
         ("Hub", "Shaft coupler, G10, around the PEEK retainer (two halves; shape open)", 2, 40.0,
@@ -402,7 +405,8 @@ def build():
         ("Electrostatic (fixed)", "HV wiring, insulation, standoffs (on the rotor)", 1, 60.0, "Placeholder."),
         ("Electrostatic (fixed)", "Reference link (brush or bearing strap)", 1, 20.0, "Placeholder."),
         ("Mechanics", "Bearings, 6205-class", 6, 12.0, "4 inner + 2 end. Placeholder."),
-        ("Mechanics", "G10 bearing spiders", 4, 30.0, "Placeholder."),
+        ("Mechanics", "G10 bearing spiders", 6, 30.0, "One per bearing: 4 inner + 2 end (sim/tube-shaft-findings.md). "
+                                                       "Placeholder."),
         ("Mechanics", "Shaft-half flanges", 2, 40.0, "Placeholder."),
         ("Mechanics", "1 : -1 reversing gear", 1, 250.0, "Placeholder."),
         ("Mechanics", "Drive motor and belt", 1, 250.0, "Placeholder."),

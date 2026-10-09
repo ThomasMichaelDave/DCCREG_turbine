@@ -62,29 +62,34 @@ on the z axis, the PEEK retainer (in every option; 120 + contingency, missing be
 - at most 6 + 6 vanes, corona-safe rims;
 - 300 steady A-turns at the AH.
 
+**The BOM, corrected (2026-10-09):** the bypass is one 22 mF part per coil, as modelled (was 2 × 10 mF = 20 mF); six
+G10 bearing spiders, one per bearing (was four); the utron's SiFe mass as built, 0.89 kg (the screen's 1.26 kg). The
+fixed parts rise by 52, so every total below rises by 60 with the contingency; the cheapest and the best-per-watt
+picks stay the same.
+
 **81 designs meet them:**
 
 | objective | design | operating peak | across the rings | power | stack per side | stack cost | total |
 |:--|:--|--:|--:|--:|--:|--:|--:|
-| lowest total cost | 6 mm gaps, 2.5 mm vanes, r 175 mm, 22°, 4 + 4 | 13.1 kV | 30.0 kV | 2.01 W | 105 mm | 1,516 | 6,001 |
-| lowest cost per watt | 8 mm gaps, 4 mm vanes, r 300 mm, 26°, 6 + 6 | 16.9 kV | 39.6 kV | 16.4 W | 220 mm | 3,523 | 8,308 (506 per W) |
+| lowest total cost | 6 mm gaps, 2.5 mm vanes, r 175 mm, 22°, 4 + 4 | 13.1 kV | 30.0 kV | 2.01 W | 105 mm | 1,516 | 6,060 |
+| lowest cost per watt | 8 mm gaps, 4 mm vanes, r 300 mm, 26°, 6 + 6 | 16.9 kV | 39.6 kV | 16.4 W | 220 mm | 3,523 | 8,368 (510 per W) |
 
 - **The stages cost little; the ratings decide them.** The same cheapest stack carries more stages wherever the bench
   qualifies them:
 
 | ratings (interface / gel at a bead) | stages (symmetric supply) | field wanted (k) | across | total |
 |:--|:--|:--|--:|--:|
-| 1 / 5 kV/mm, below the record | 1 + 1 | 4.3 kV/cm (0.2892) | 15.1 kV | 5,934 |
-| **1 / 5 kV/mm (the record)** | **2 + 2** | **6.5 kV/cm (0.2373)** | **30.0 kV** | **6,001** |
-| 1 / 8 | 3 + 3 | 7.7 kV/cm (0.1758) | 44.5 kV | 6,067 |
-| 2 / 5 | 2 + 2, wider bands | 8.3 kV/cm (0.2791) | 30.0 kV | 6,001 |
-| 2 / 8 | 4 + 4 | 13.3 kV/cm (0.2311) | 58.1 kV | 6,134 |
-| 1 / 5, the asymmetric record (feed 1) | ring B on 2, ring A on Dk | 6.5 kV/cm (0.2460) | 28.1 kV | 5,951 |
+| 1 / 5 kV/mm, below the record | 1 + 1 | 4.3 kV/cm (0.2892) | 15.1 kV | 5,994 |
+| **1 / 5 kV/mm (the record)** | **2 + 2** | **6.5 kV/cm (0.2373)** | **30.0 kV** | **6,060** |
+| 1 / 8 | 3 + 3 | 7.7 kV/cm (0.1758) | 44.5 kV | 6,127 |
+| 2 / 5 | 2 + 2, wider bands | 8.3 kV/cm (0.2791) | 30.0 kV | 6,060 |
+| 2 / 8 | 4 + 4 | 13.3 kV/cm (0.2311) | 58.1 kV | 6,194 |
+| 1 / 5, the asymmetric record (feed 1) | ring B on 2, ring A on Dk | 6.5 kV/cm (0.2460) | 28.1 kV | 6,011 |
 
 - **The symmetric supply costs 50 more** than the asymmetric record: three more diode stacks and three more 100 pF
   capacitors, for 7.10 kV/cm against 6.93 at the null.
-- **The stack of record** (6 mm, 3 mm, r 150, 6 + 6) also qualifies, at 6,417.
-- **The fixed parts** with the rings are 3,702:
+- **The stack of record** (6 mm, 3 mm, r 150, 6 + 6; the designer kept it, 2026-10-09) also qualifies, at 6,477.
+- **The fixed parts** with the rings are 3,754:
   - the PEEK retainer (120) and the gel (30);
   - the two ring electrodes (2 × 25);
   - eight 100 pF capacitors.
@@ -95,8 +100,8 @@ on the z axis, the PEEK retainer (in every option; 120 + contingency, missing be
 
 | objective | design | operating peak | across the null | power | stack per side | stack cost | total |
 |:--|:--|--:|--:|--:|--:|--:|--:|
-| lowest total cost | 6 mm gaps, 2.5 mm vanes, r 175 mm, 22°, 4 + 4 | 13.1 kV | 20.7 kV | 2.01 W | 105 mm | 1,503 | 6,285 |
-| lowest cost per watt | 8 mm gaps, 4 mm vanes, r 300 mm, 26°, 6 + 6 | 16.9 kV | 26.9 kV | 16.4 W | 220 mm | 3,498 | 8,579 (523 per W) |
+| lowest total cost | 6 mm gaps, 2.5 mm vanes, r 175 mm, 22°, 4 + 4 | 13.1 kV | 20.7 kV | 2.01 W | 105 mm | 1,503 | 6,345 |
+| lowest cost per watt | 8 mm gaps, 4 mm vanes, r 300 mm, 26°, 6 + 6 | 16.9 kV | 26.9 kV | 16.4 W | 220 mm | 3,498 | 8,639 (526 per W) |
 
 **At the earlier placeholders** (2 kV/cm over 50 mm, i.e. 10 kV), for the cones' modes:
 
@@ -109,19 +114,19 @@ on the z axis, the PEEK retainer (in every option; 120 + contingency, missing be
 
 | swing wanted | cheapest design | its swing | z | power | total |
 |:--|:--|--:|--:|--:|--:|
-| ≥ 6 kV | 5 mm gaps, 2 mm vanes, r 200 mm, 18°, 4 + 4 | 6.2 kV | 1.362 | 2.06 W | 5,835 |
-| ≥ 7 kV | 6 mm gaps, 2.5 mm vanes, r 200 mm, 22°, 4 + 4 | 7.2 kV | 1.313 | 2.58 W | 6,031 |
-| ≥ 8 or 9 kV | 8 mm gaps, 4 mm vanes, r 250 mm, 22°, 4 + 4 | 9.2 kV | 1.301 | 5.04 W | 6,618 |
+| ≥ 6 kV | 5 mm gaps, 2 mm vanes, r 200 mm, 18°, 4 + 4 | 6.2 kV | 1.362 | 2.06 W | 5,895 |
+| ≥ 7 kV | 6 mm gaps, 2.5 mm vanes, r 200 mm, 22°, 4 + 4 | 7.2 kV | 1.313 | 2.58 W | 6,091 |
+| ≥ 8 or 9 kV | 8 mm gaps, 4 mm vanes, r 250 mm, 22°, 4 + 4 | 9.2 kV | 1.301 | 5.04 W | 6,678 |
 
-The best per watt with a swinging core is 6 mm gaps, 2.5 mm vanes at r 300 mm, 26°, 6 + 6: 7.4 kV, 14.7 W, 515 per W.
+The best per watt with a swinging core is 6 mm gaps, 2.5 mm vanes at r 300 mm, 26°, 6 + 6: 7.4 kV, 14.7 W, 519 per W.
 
 **With the steady core, 177 designs meet them:**
 
 | objective | design | operating peak | power | stack per side | stack cost | total |
 |:--|:--|--:|--:|--:|--:|--:|
-| lowest total cost | 5 mm gaps, 2 mm vanes, r 200 mm, 18°, 4 + 4 | 11.2 kV | 2.35 W | 79 mm | 1,441 | 5,809 |
-| lowest cost per watt | 8 mm gaps, 4 mm vanes, r 300 mm, 26°, 6 + 6 | 16.9 kV | 16.4 W | 220 mm | 3,488 | 8,164 (497 per W) |
-| (within 0.4 %) | 6 mm gaps, 2.5 mm vanes, r 300 mm, 26°, 6 + 6 | 13.1 kV | 15.2 W | 156 mm | 2,969 | 7,567 (499 per W) |
+| lowest total cost | 5 mm gaps, 2 mm vanes, r 200 mm, 18°, 4 + 4 | 11.2 kV | 2.35 W | 79 mm | 1,441 | 5,869 |
+| lowest cost per watt | 8 mm gaps, 4 mm vanes, r 300 mm, 26°, 6 + 6 | 16.9 kV | 16.4 W | 220 mm | 3,488 | 8,224 (501 per W) |
+| (within 0.2 %) | 6 mm gaps, 2.5 mm vanes, r 300 mm, 26°, 6 + 6 | 13.1 kV | 15.2 W | 156 mm | 2,969 | 7,627 (502 per W) |
 
 **Either way:**
 - **Material: aluminium.**
@@ -130,13 +135,13 @@ The best per watt with a swinging core is 6 mm gaps, 2.5 mm vanes at r 300 mm, 2
   - Al 5083 or 6082 take a polished full round. Al 1050 is a little cheaper but soft.
 - **What drives the stack's cost is per-part work:** assembly 22 %, the full rounds 19 %, polishing 13 %, G10 and the
   shaft 12 % each. So the cheapest stack has the fewest, largest vanes.
-- **The fixed parts** (3,702 with the rings on two stages a side, 3,636 swinging, 3,611 steady) are about 70 % of the
+- **The fixed parts** (3,754 with the rings on two stages a side, 3,688 swinging, 3,663 steady) are about 70 % of the
   cheapest build, so extra watts are cheap at the margin.
   - The rings: 8 mm gaps at r 300 mm, 6 + 6 give 8× the power for 40 % more.
   - Steady core: at 300 mm, 6 + 6 vanes give 6.5× the power for 31 % more (6 mm gaps), or 7× for 42 % more (8 mm).
   - The pair inside would add its electrodes (2 × 80) and two non-magnetic feedthroughs (2 × 120) instead of the rings
     (placeholders).
-- **The AH's steady cusp is met:** 300 A-turns per coil with the 22 mF bypass. Above that, the AH or the pump must be
+- **The AH's steady cusp is met:** 300 A-turns per coil with the 22 mF bypass (PROPOSED). Above that, the AH or the pump must be
   re-sized, which is not costed.
 
 ## Open
