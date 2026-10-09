@@ -15,13 +15,13 @@ sim/utron_3d.py replaces them [IR], and La / Lb held at the record's 0.146 H: th
 (sim/parts-first-cut-findings.md §1) [IR]. The utron's own copper R stays (tau = L_al / R_per_n2, R_per_n2 the
 record's).
 "It starts": the AH coil reaches half of its own utron set's steady peak [IR]. The parts study's 225 A-turns is half
-of the 450 the pick was sized to, and a 3-D set's steady peak with the bypass is 227-251 A-turns. A pump that does not
-start dies to about 0, so the verdicts do not hang on the half [from the runs]. Below full speed, "it runs" is the
-parts study's own (> 50 A-turns over the last 4 of 80 cycles).
+of the 450 the pick was sized to, and a 3-D set's steady peak with the bypass is 226-251 A-turns. A pump that does not
+start dies to about 0, except one slow start at a set's edge (sim/start-3d-findings.md §1). Below full speed, "it
+runs" is the parts study's own (> 50 A-turns over the last 4 of 80 cycles).
 The gate: the record's own set reproduces sim/parts_first_cut_results.json (its threshold pair, K4 at two phases, the
 speed rows at 950 and 1000 rpm relative, and the hold at 700 and 800).
 Tags (CONVENTIONS.md §1): [OC] derivable physics; [IR] a modelling choice; [RH] heuristic, not load-bearing.
-Usage: python3 sim/start_3d.py [--procs 4] [--cache FILE]   (needs ngspice; about 40 minutes on one idle core)
+Usage: python3 sim/start_3d.py [--procs 4] [--cache FILE]   (needs ngspice; about 20 minutes on 2 processes)
 --cache: a JSON-lines file of finished runs, appended as they finish and read instead of re-running them.
 """
 import argparse
