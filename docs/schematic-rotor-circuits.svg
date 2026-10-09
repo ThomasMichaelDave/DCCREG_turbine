@@ -259,14 +259,14 @@
 <line x1="1315.0" y1="372.0" x2="1315.0" y2="536.0" class="w"/>
 <circle cx="1315.0" cy="536.0" r="3.6" class="dot"/>
 <circle cx="885.0" cy="345.0" r="40.0" class="glass"/>
-<polyline points="870.5,305.1 869.5,305.4 868.5,305.8 867.5,306.3 866.5,306.7 865.6,307.2 864.6,307.7 863.7,308.2 862.8,308.8 861.9,309.3 861.0,309.9 860.1,310.5 859.3,311.2 858.4,311.8 857.6,312.5 856.8,313.2 856.0,313.9 855.2,314.7 854.5,315.4 853.8,316.2 853.0,317.0 852.3,317.8 851.7,318.6 851.0,319.5" fill="none" stroke="#1f6fb2" stroke-width="5" stroke-linecap="round"/>
-<polyline points="899.5,305.1 900.5,305.4 901.5,305.8 902.5,306.3 903.5,306.7 904.4,307.2 905.4,307.7 906.3,308.2 907.2,308.8 908.1,309.3 909.0,309.9 909.9,310.5 910.7,311.2 911.6,311.8 912.4,312.5 913.2,313.2 914.0,313.9 914.8,314.7 915.5,315.4 916.2,316.2 917.0,317.0 917.7,317.8 918.3,318.6 919.0,319.5" fill="none" stroke="#1f6fb2" stroke-width="5" stroke-linecap="round"/>
-<polyline points="870.5,384.9 869.5,384.6 868.5,384.2 867.5,383.7 866.5,383.3 865.6,382.8 864.6,382.3 863.7,381.8 862.8,381.2 861.9,380.7 861.0,380.1 860.1,379.5 859.3,378.8 858.4,378.2 857.6,377.5 856.8,376.8 856.0,376.1 855.2,375.3 854.5,374.6 853.8,373.8 853.0,373.0 852.3,372.2 851.7,371.4 851.0,370.5" fill="none" stroke="#c0392b" stroke-width="5" stroke-linecap="round"/>
-<polyline points="899.5,384.9 900.5,384.6 901.5,384.2 902.5,383.7 903.5,383.3 904.4,382.8 905.4,382.3 906.3,381.8 907.2,381.2 908.1,380.7 909.0,380.1 909.9,379.5 910.7,378.8 911.6,378.2 912.4,377.5 913.2,376.8 914.0,376.1 914.8,375.3 915.5,374.6 916.2,373.8 917.0,373.0 917.7,372.2 918.3,371.4 919.0,370.5" fill="none" stroke="#c0392b" stroke-width="5" stroke-linecap="round"/>
+<polyline points="866.5,306.7 865.6,307.2 864.7,307.7 863.8,308.2 862.9,308.7 862.0,309.2 861.2,309.8 860.3,310.4 859.5,311.0 858.7,311.6 857.9,312.3 857.1,312.9 856.3,313.6 855.6,314.3 854.8,315.1 854.1,315.8 853.4,316.6 852.7,317.3 852.1,318.1 851.4,318.9 850.8,319.7 850.2,320.6 849.6,321.4 849.1,322.3" fill="none" stroke="#1f6fb2" stroke-width="5" stroke-linecap="round"/>
+<polyline points="903.5,306.7 904.4,307.2 905.3,307.7 906.2,308.2 907.1,308.7 908.0,309.2 908.8,309.8 909.7,310.4 910.5,311.0 911.3,311.6 912.1,312.3 912.9,312.9 913.7,313.6 914.4,314.3 915.2,315.1 915.9,315.8 916.6,316.6 917.3,317.3 917.9,318.1 918.6,318.9 919.2,319.7 919.8,320.6 920.4,321.4 920.9,322.3" fill="none" stroke="#1f6fb2" stroke-width="5" stroke-linecap="round"/>
+<polyline points="866.5,383.3 865.6,382.8 864.7,382.3 863.8,381.8 862.9,381.3 862.0,380.8 861.2,380.2 860.3,379.6 859.5,379.0 858.7,378.4 857.9,377.7 857.1,377.1 856.3,376.4 855.6,375.7 854.8,374.9 854.1,374.2 853.4,373.4 852.7,372.7 852.1,371.9 851.4,371.1 850.8,370.3 850.2,369.4 849.6,368.6 849.1,367.7" fill="none" stroke="#c0392b" stroke-width="5" stroke-linecap="round"/>
+<polyline points="903.5,383.3 904.4,382.8 905.3,382.3 906.2,381.8 907.1,381.3 908.0,380.8 908.8,380.2 909.7,379.6 910.5,379.0 911.3,378.4 912.1,377.7 912.9,377.1 913.7,376.4 914.4,375.7 915.2,374.9 915.9,374.2 916.6,373.4 917.3,372.7 917.9,371.9 918.6,371.1 919.2,370.3 919.8,369.4 920.4,368.6 920.9,367.7" fill="none" stroke="#c0392b" stroke-width="5" stroke-linecap="round"/>
 <line x1="885.0" y1="332.0" x2="885.0" y2="351.0" class="ef"/>
 <polygon points="885.0,360.0 880.5,351.0 889.5,351.0" fill="#1d3f5e"/>
 <text x="878.0" y="349.0" class="te" text-anchor="end" >E</text>
-<polyline points="910.3,379.1 910.3,448.0 885.0,448.0" class="w"/>
+<polyline points="913.3,376.7 913.3,448.0 885.0,448.0" class="w"/>
 <line x1="885.0" y1="448.0" x2="950.0" y2="448.0" class="w"/>
 <polygon points="950.0,459.0 950.0,437.0 968.0,448.0" fill="none" stroke="#111" stroke-width="2"/>
 <line x1="968.0" y1="459.0" x2="968.0" y2="437.0" stroke="#111" stroke-width="2"/>
@@ -281,7 +281,7 @@
 <line x1="905.0" y1="497.0" x2="919.0" y2="497.0" class="w"/>
 <line x1="909.0" y1="502.0" x2="915.0" y2="502.0" class="w"/>
 <text x="932.0" y="475.0" class="t" text-anchor="start" font-weight="bold">C_A</text>
-<polyline points="859.7,310.9 859.7,270.0 828.0,270.0 828.0,536.0 880.0,536.0" class="w"/>
+<polyline points="856.7,313.3 856.7,270.0 828.0,270.0 828.0,536.0 880.0,536.0" class="w"/>
 <circle cx="828.0" cy="536.0" r="3.6" class="dot"/>
 <line x1="828.0" y1="536.0" x2="828.0" y2="566.0" class="w"/>
 <line x1="814.0" y1="566.0" x2="842.0" y2="566.0" class="pl"/>
@@ -311,12 +311,12 @@
 <line x1="980.0" y1="536.0" x2="1315.0" y2="536.0" class="w"/>
 <text x="975.0" y="520.0" class="t" text-anchor="middle" font-weight="bold">Co</text>
 <rect x="816.0" y="502.0" width="186.0" height="104" fill="none" stroke="#7f8c8d" stroke-width="1.2" stroke-dasharray="5 4"/>
-<text x="1008.0" y="498.0" class="t" text-anchor="end" font-weight="bold">× 3 stages</text>
+<text x="1008.0" y="498.0" class="t" text-anchor="end" font-weight="bold">× 2 stages</text>
 <text x="822.0" y="626.0" class="ms" text-anchor="start" >C_A, Co, Cs 100 pF · ground = the shaft</text>
-<text x="935.0" y="322.0" class="tu" text-anchor="start" font-weight="bold">B +19.0 kV</text>
-<text x="935.0" y="340.0" class="ms" text-anchor="start" >rings 20–53°</text>
-<text x="935.0" y="354.0" class="ms" text-anchor="start" >7.8 kV/cm ↓</text>
-<text x="935.0" y="368.0" class="ms" text-anchor="start" >2.7 Pa</text>
+<text x="935.0" y="322.0" class="tu" text-anchor="start" font-weight="bold">B +15.0 kV</text>
+<text x="935.0" y="340.0" class="ms" text-anchor="start" >rings 26–58°</text>
+<text x="935.0" y="354.0" class="ms" text-anchor="start" >6.9 kV/cm ↓</text>
+<text x="935.0" y="368.0" class="ms" text-anchor="start" >2.1 Pa</text>
 <text x="935.0" y="388.0" class="ta" text-anchor="start" font-weight="bold">A −13.2 kV</text>
 <text x="822.0" y="226.0" class="zh" text-anchor="start" >THE CORE (hub)</text>
 <text x="822.0" y="242.0" class="ms" text-anchor="start" >rings outside the glass</text>
@@ -330,7 +330,7 @@
 <text x="1377.0" y="560.0" class="t" text-anchor="end" font-weight="bold">inner bearing</text>
 <text x="1377.0" y="575.0" class="ms" text-anchor="end" >(6205), for now;</text>
 <text x="1377.0" y="590.0" class="ms" text-anchor="end" >a brush later</text>
-<text x="1377.0" y="605.0" class="ms" text-anchor="end" >0.40 mA rms AC</text>
+<text x="1377.0" y="605.0" class="ms" text-anchor="end" >0.41 mA rms AC</text>
 <text x="1377.0" y="620.0" class="ms" text-anchor="end" >no DC</text>
 <line x1="1060.0" y1="700.0" x2="1397.0" y2="700.0" class="rail"/>
 <circle cx="1078.0" cy="700.0" r="3.6" class="dot"/>
@@ -362,30 +362,31 @@
 <text x="822.0" y="797.5" class="tk" text-anchor="start" >Ca, Cb</text>
 <text x="898.0" y="797.5" class="tv" text-anchor="start" >451 pF (1.1 C_max): full-annulus plates, now on the rotor</text>
 <text x="822.0" y="817.0" class="tk" text-anchor="start" >D1–D4</text>
-<text x="898.0" y="817.0" class="tv" text-anchor="start" >HV stacks, reverse peaks 6.2 / 6.1 / 13.2 / 13.2 kV; parts not chosen</text>
+<text x="898.0" y="817.0" class="tv" text-anchor="start" >HV stacks, reverse peaks 6.1 / 6.1 / 13.2 / 13.2 kV; parts not chosen</text>
 <text x="822.0" y="836.5" class="tk" text-anchor="start" >Z1, Z4</text>
-<text x="898.0" y="836.5" class="tv" text-anchor="start" >avalanche strings, BV 13.1 kV (e.g. 66 × 200 V), on the rotor: 1.04 W, 0.93 mA peak each</text>
+<text x="898.0" y="836.5" class="tv" text-anchor="start" >avalanche strings, BV 13.1 kV (e.g. 66 × 200 V), on the rotor: 1.07 W, 0.95 mA peak each</text>
 <text x="822.0" y="856.0" class="tk" text-anchor="start" >core</text>
-<text x="898.0" y="856.0" class="tv" text-anchor="start" >two rings outside the 50 mm glass: bands 20–53°, 32.2 mm apart along it</text>
-<text x="822.0" y="875.5" class="tk" text-anchor="start" >supply</text>
-<text x="898.0" y="875.5" class="tv" text-anchor="start" >A: Dk + C_A on node 1's peak, −13.2 kV · B: three CW stages on node 4, +19.0 kV</text>
-<text x="822.0" y="895.0" class="tk" text-anchor="start" ></text>
-<text x="898.0" y="895.0" class="tv" text-anchor="start" >C_A, Co, Cs 100 pF; Dk, Dc, Dp see ≤ 7.5 kV reverse</text>
+<text x="898.0" y="856.0" class="tv" text-anchor="start" >two rings outside the 50 mm glass: Cu foil bands 25.8–57.7°, 28.2 mm apart along it</text>
+<text x="822.0" y="875.5" class="tk" text-anchor="start" ></text>
+<text x="898.0" y="875.5" class="tv" text-anchor="start" >beaded edges Ø3 / Ø2 mm (polar / equatorial) in gel, under the PEEK retainer</text>
+<text x="822.0" y="895.0" class="tk" text-anchor="start" >supply</text>
+<text x="898.0" y="895.0" class="tv" text-anchor="start" >A: Dk + C_A on node 1's peak, −13.2 kV · B: 2 CW stages on node 4, +15.0 kV</text>
 <text x="822.0" y="914.5" class="tk" text-anchor="start" ></text>
-<text x="898.0" y="914.5" class="tv" text-anchor="start" >32.2 kV across: 7.8 kV/cm, 2.7 Pa at the null (as connected; 8.9 settled)</text>
-<text x="822.0" y="934.0" class="tk" text-anchor="start" >strays</text>
-<text x="898.0" y="934.0" class="tv" text-anchor="start" >≈ 20 pF per node [RH]; the rings 7.4 pF each to REF, 1.3 pF between</text>
-<text x="822.0" y="953.5" class="tk" text-anchor="start" >bearing</text>
-<text x="898.0" y="953.5" class="tv" text-anchor="start" >one inner bearing, for now: 0.40 mA rms AC (0.90 mA pk), no DC</text>
-<text x="822.0" y="979.0" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): belt 2.15 W, into Z1 + Z4; z at start 1.178 (bare 1.310).</text>
-<text x="822.0" y="997.0" class="op" text-anchor="start" >Leakage only (54 mW at 10 GΩ [RH]); 1 / 2 stages give 5.7 / 7.1 kV/cm: sim/hub-locked-findings.md.</text>
+<text x="898.0" y="914.5" class="tv" text-anchor="start" >100 pF storage; Dk, Dc, Dp ≤ 7.5 kV reverse; 4 mW leakage at 100 GΩ per ring [RH]</text>
+<text x="822.0" y="934.0" class="tk" text-anchor="start" ></text>
+<text x="898.0" y="934.0" class="tv" text-anchor="start" >28.2 kV across: 6.9 kV/cm, 2.1 Pa at the null (as connected; 7.6 settled)</text>
+<text x="822.0" y="953.5" class="tk" text-anchor="start" >strays</text>
+<text x="898.0" y="953.5" class="tv" text-anchor="start" >≈ 20 pF per node [RH]; the rings 5.3 pF each to REF, 1.3 pF between</text>
+<text x="822.0" y="973.0" class="tk" text-anchor="start" >bearing</text>
+<text x="898.0" y="973.0" class="tv" text-anchor="start" >one inner bearing, for now: 0.41 mA rms AC (0.91 mA pk), no DC</text>
+<text x="822.0" y="998.5" class="op" text-anchor="start" >At 1200 rpm relative (120 Hz): belt 2.14 W, into Z1 + Z4; z at start 1.180 (bare 1.310).</text>
 <text x="20.0" y="1034.0" class="n" text-anchor="start" >Bodies. Rotor: shaft, sleeve, rotor vanes (nodes 1 / 4), Ca / Cb plates, the 6 utrons on their carrier discs, the hub (the glass vessel with the rings outside it, the AH pair, retainer and coupler).</text>
 <text x="20.0" y="1053.0" class="n" text-anchor="start" >Counter-rotor: stator cage, stator vanes (REF), bridges. Frame: end bearings, the gear.</text>
 <text x="20.0" y="1072.0" class="n" text-anchor="start" >Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, Dk, the CW stage, C_A, the rings (all rotor);</text>
 <text x="20.0" y="1091.0" class="n" text-anchor="start" >sim/tube_geometry.py still puts Ca / Cb on the counter-rotor. Each pump's reaction torque goes into the gear.</text>
 <text x="20.0" y="1110.0" class="n" text-anchor="start" >(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, the clamps Z1 / Z4 → the NiFe neck's saturation.</text>
 <text x="20.0" y="1129.0" class="n" text-anchor="start" >A and B swap every half cycle: one group generates (L falling) while the other motors. The AH coils are named by branch; sim/magnetic_doubler.py calls them AH top / bottom (A was then the upper side).</text>
-<text x="20.0" y="1148.0" class="n" text-anchor="start" >Polarity: (b) runs negative; ring A takes node 1's negative peak and ring B three CW stages positive: E at the null is steady, B to A. de Queiroz's Fig. 1 draws the core positive, all four diodes the other way (sim/queiroz_fig1_check.py).</text>
-<text x="20.0" y="1167.0" class="n" text-anchor="start" >Numbers: sim/pole_design_variants_op.json (g 0.5 / 6 bridges / 1200 rpm), sim/utron_profile.py, sim/rotor_parts_duty_results.json, sim/core_field_results.json, sim/hub_locked_results.json (b: the air build's capped stack)</text>
-<text x="20.0" y="1186.0" class="n" text-anchor="start" >Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/hub-locked-findings.md · generator: docs/make_schematic_rotor.py</text>
+<text x="20.0" y="1148.0" class="n" text-anchor="start" >Polarity: (b) runs negative; ring A takes node 1's negative peak and ring B 2 CW stages positive: E at the null is steady, B to A. de Queiroz's Fig. 1 draws the core positive, all four diodes the other way (sim/queiroz_fig1_check.py).</text>
+<text x="20.0" y="1167.0" class="n" text-anchor="start" >Numbers: sim/pole_design_variants_op.json (g 0.5 / 6 bridges / 1200 rpm), sim/utron_profile.py, sim/rotor_parts_duty_results.json, sim/core_field_results.json, sim/hub_rings_build_results.json (b: the air build's capped stack)</text>
+<text x="20.0" y="1186.0" class="n" text-anchor="start" >Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/hub-rings-build-findings.md · generator: docs/make_schematic_rotor.py</text>
 </svg>

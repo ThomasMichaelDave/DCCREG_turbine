@@ -6,12 +6,12 @@
 (b) ELECTROSTATIC: the de Queiroz diode doubler with its HV side on the rotor (sim/core_field.py netlist; the air
     build's capped stack) -- C1 / C2 between the rotor vanes (nodes 1 / 4) and the counter-rotor's stator vanes, which
     are the reference; Ca / Cb, D1-D4 and the clamps Z1 / Z4 on the rotor; two rings outside the hub's glass vessel
-    (the designer's choice; presets/hub-locked.json), ring A peak-charged from node 1 through Dk and ring B on three
-    Cockcroft-Walton stages on node 4, so the AH null sees a steady field (sim/hub-locked-findings.md); the stator vanes
-    joined to the shaft through one inner bearing for now (a brush later).
+    (the designer's choice; presets/hub-locked.json), ring A peak-charged from node 1 through Dk and ring B on the
+    record's Cockcroft-Walton stages on node 4 (two), so the AH null sees a steady field (sim/hub-rings-build-findings.md);
+    the stator vanes joined to the shaft through one inner bearing for now (a brush later).
 Values: sim/pole_design_variants_op.json (the pick), sim/utron_profile.py, sim/rotor_parts_duty_results.json (La / Lb,
-D1*-D4* at the pick), sim/core_field_results.json (the electrostatic pump, the supply and the link: 'dc3 0.1nF'),
-sim/hub_locked_results.json (the rings).
+D1*-D4* at the pick), sim/core_field_results.json (the electrostatic pump), sim/hub_rings_build_results.json (the rings
+as built and their supply in full: the clamps, the link), sim/hub_drift_results.json (the settled field).
 Usage: python3 docs/make_schematic_rotor.py   (the PNG needs playwright + chromium)
 """
 import json
@@ -28,7 +28,6 @@ import magnetic_doubler as MDm     # noqa: E402  (the dual's constants: AH rewin
 import utron_profile as U          # noqa: E402
 
 PICK = "g 0.5 / 6 bridges / 1200 rpm"
-SUPPLY = "dc3 0.1nF"                               # the rings' supply of record (sim/hub-locked-findings.md)
 LA_RATIO, TAU_FIXED, AH_KEY = 0.6, 0.5, "r160"     # as sim/pole_design.size_op runs the pick
 OUT = os.path.join(HERE, "schematic-rotor-circuits")
 o = []
@@ -139,9 +138,12 @@ def numbers():
     duty = json.load(open(os.path.join(ROOT, "sim", "rotor_parts_duty_results.json")))
     cf = json.load(open(os.path.join(ROOT, "sim", "core_field_results.json")))
     cfr = {r["name"]: r for r in cf["rows"]}
-    hl = json.load(open(os.path.join(ROOT, "sim", "hub_locked_results.json")))
+    hb = json.load(open(os.path.join(ROOT, "sim", "hub_rings_build_results.json")))       # the rings as built
+    dr = json.load(open(os.path.join(ROOT, "sim", "hub_drift_results.json")))
+    ring = dict(hb["record"], E_dc_kV_cm=hb["record"]["E_null_kV_cm"], p_dc_Pa=hb["record"]["p_null_Pa"],
+                E_settled_kV_cm=dr["drift"][0]["E_kV_cm"][-1])                            # PEEK, gel, 25 C at 6 h
     return dict(op=op, b=b, sp=sp, Lg=Lg, ah=ah, F=F, csn=csn, rsn=rsn, la=LA_RATIO * Lg, lp=MDm.R_PAR * Lg, duty=duty,
-                cf=cf, cfr=cfr, hl=hl, dc=cfr[SUPPLY], dc_free=cfr["free " + SUPPLY], ring=hl["record"])
+                cf=cf, cfr=cfr, hb=hb, dc=hb["record_supply"], dc_free=hb["record_supply_free"], ring=ring)
 
 
 # ------------------------------------------------------------------------------------------------ (a) reluctance
@@ -314,8 +316,8 @@ def panel_b(ox, N):
     for x, xz, nm in ((x1, x1z, "Z1"), (x4, x4z, "Z4")):
         dot(x, y_z); pl([(x, y_z), (xz, y_z), (xz, 392)], "lim"); diode(xz, 392, "down", "#7d3c98", zener=True)
         ln(xz, 410, xz, y_sh, "lim"); tx(xz + (14 if x == x1 else -14), 406, nm, "tl", "start" if x == x1 else "end")
-    # the core: two rings outside the glass. A on node 1's negative peak (Dk, C_A); B on three Cockcroft-Walton stages
-    # on node 4's swing (Co, Dc, Dp, Cs each, drawn once); all storage 100 pF to the shaft
+    # the core: two rings outside the glass. A on node 1's negative peak (Dk, C_A); B on the record's Cockcroft-Walton
+    # stages on node 4's swing (Co, Dc, Dp, Cs each, drawn once); all storage 100 pF to the shaft
     dc, nl = N["dc"], N["ring"]
     xk, yc, y_cw, xl = ox + 105, 345, 536, ox + 48
     ln(x1, y_n, x1, y_k); dot(x1, y_k)
@@ -343,7 +345,7 @@ def panel_b(ox, N):
     tx(ox + 195, y_cw - 16, "Co", "t", "middle", 'font-weight="bold"')
     o.append(f'<rect x="{ox + 36:.1f}" y="{y_cw - 34:.1f}" width="{ox + 222 - (ox + 36):.1f}" height="104" '
              'fill="none" stroke="#7f8c8d" stroke-width="1.2" stroke-dasharray="5 4"/>')
-    tx(ox + 228, y_cw - 38, "× 3 stages", "t", "end", 'font-weight="bold"')
+    tx(ox + 228, y_cw - 38, f"× {nl['n_cw']} stages", "t", "end", 'font-weight="bold"')
     tx(ox + 42, y_cw + 90, "C_A, Co, Cs 100 pF · ground = the shaft", "ms", "start")
     tx(xk + 50, yc - 23, f"B +{nl['V_B_kV']:.1f} kV", "tu", "start", 'font-weight="bold"')
     tx(xk + 50, yc - 5, f"rings {nl['theta_p']:.0f}–{nl['theta_e']:.0f}°", "ms")
@@ -384,12 +386,14 @@ def panel_b_table(ox, y, N):
                   "parts not chosen"),
         ("Z1, Z4", f"avalanche strings, BV {d['V_op_kV']:.1f} kV (e.g. {n_z} × {zs['V_Z']:.0f} V), on the rotor: "
                    f"{fs['Z1']['P_W']:.2f} W, {fs['Z1']['I_pk_mA']:.2f} mA peak each"),
-        ("core", f"two rings outside the 50 mm glass: bands {nl['theta_p']:.0f}–{nl['theta_e']:.0f}°, "
+        ("core", f"two rings outside the 50 mm glass: Cu foil bands {nl['theta_p']:.1f}–{nl['theta_e']:.1f}°, "
                  f"{nl['gap_mm']:.1f} mm apart along it"),
-        ("supply", f"A: Dk + C_A on node 1's peak, {kv(nl['V_A_kV'])} kV · B: three CW stages on node 4, "
+        ("", f"beaded edges Ø{2 * nl['rho_pol_mm']:g} / Ø{2 * nl['rho_eq_mm']:g} mm (polar / equatorial) in gel, "
+             "under the PEEK retainer"),
+        ("supply", f"A: Dk + C_A on node 1's peak, {kv(nl['V_A_kV'])} kV · B: {nl['n_cw']} CW stages on node 4, "
                    f"+{nl['V_B_kV']:.1f} kV"),
-        ("", f"C_A, Co, Cs 100 pF; Dk, Dc, Dp see ≤ "
-             f"{max(v for k, v in vr.items() if k[:2] in ('Dk', 'Dc', 'Dp')):.1f} kV reverse"),
+        ("", f"100 pF storage; Dk, Dc, Dp ≤ {max(v for k, v in vr.items() if k[:2] in ('Dk', 'Dc', 'Dp')):.1f} kV "
+             f"reverse; {1e3 * fs['P_leak_W']:.0f} mW leakage at 100 GΩ per ring [RH]"),
         ("", f"{nl['V_gap_kV']:.1f} kV across: {nl['E_dc_kV_cm']:.1f} kV/cm, {nl['p_dc_Pa']:.1f} Pa at the null "
              f"(as connected; {nl['E_settled_kV_cm']:.1f} settled)"),
         ("strays", f"≈ {cf['CPAR_pF']:.0f} pF per node [RH]; the rings {nl['C_ring_ref_pF']:.1f} pF each to REF, "
@@ -398,12 +402,8 @@ def panel_b_table(ox, y, N):
                     f"({fs['link']['I_pk_mA']:.2f} mA pk), no DC"),
     ]
     y = table(ox + 42, y, rows, w_key=76)
-    ex = {x["supply"]: x for x in N["hl"]["exact"]}
     tx(ox + 42, y + 6, f"At {cf['rpm_rel']:.0f} rpm relative ({cf['F_Hz']:.0f} Hz): belt {fs['P_belt_W']:.2f} W, into "
                        f"Z1 + Z4; z at start {N['dc_free']['z']:.3f} (bare {R['free none']['z']:.3f}).", "op")
-    tx(ox + 42, y + 24, f"Leakage only ({1e3 * fs['P_leak_W']:.0f} mW at 10 GΩ [RH]); 1 / 2 stages give "
-                        f"{ex['dc1']['E_dc_kV_cm']:.1f} / {ex['dc2']['E_dc_kV_cm']:.1f} kV/cm: sim/hub-locked-findings.md.",
-       "op")
 
 
 # ------------------------------------------------------------------------------------------------ sheet
@@ -454,12 +454,13 @@ def main():
         "the clamps Z1 / Z4 → the NiFe neck's saturation.",
         "A and B swap every half cycle: one group generates (L falling) while the other motors. The AH coils are named by branch; "
         "sim/magnetic_doubler.py calls them AH top / bottom (A was then the upper side).",
-        "Polarity: (b) runs negative; ring A takes node 1's negative peak and ring B three CW stages positive: E at the null "
+        f"Polarity: (b) runs negative; ring A takes node 1's negative peak and ring B {N['ring']['n_cw']} CW stages positive: "
+        "E at the null "
         "is steady, B to A. de Queiroz's Fig. 1 "
         "draws the core positive, all four diodes the other way (sim/queiroz_fig1_check.py).",
         f"Numbers: sim/pole_design_variants_op.json ({PICK}), sim/utron_profile.py, sim/rotor_parts_duty_results.json, "
-        "sim/core_field_results.json, sim/hub_locked_results.json (b: the air build's capped stack)",
-        "Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/hub-locked-findings.md "
+        "sim/core_field_results.json, sim/hub_rings_build_results.json (b: the air build's capped stack)",
+        "Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/hub-rings-build-findings.md "
         "· generator: docs/make_schematic_rotor.py",
     ]
     y = 1034
