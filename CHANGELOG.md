@@ -251,6 +251,20 @@ each of the lock's 18 inconsistencies and the 12 found since, with its resolutio
     1050–1100 rpm relative (not 1000), a running pump stops below 850 (not about 750), and the seed threshold is
     20–25 % (not 16 %): so K4 fires at full speed, never below 550 rpm each way (dated notes in
     `sim/parts-first-cut-findings.md` §3, `sim/utron-3d-findings.md`, `docs/drive-gear-belt.md` §4.2 and the ledger).
+- **Added: the neck's nonlinear field check** (`sim/neck_nonlinear.py`, `sim/neck_nonlinear_results.json`,
+  `sim/neck-nonlinear-findings.md`, figure `docs/figures/neck-nonlinear.png`; the ledger's model check 31): the pick's
+  utron against its bridge in 2-D with the back iron as built (the NiFe strip, the break, the laps, the stud holes)
+  and datasheet-class B–H curves, solved by Newton on the magnetic energy; then the field map's law in the deck. Its
+  gates: an exact slab, `sim/pole_fd2d.py`'s linear limit (+0.5 %), the mesh, and the record's deck reproduced.
+  - **Ψs is 0.1268 Wb-turns, 5 % below the design:** 30 foils of 0.1 mm stack at about 0.90 [RH], not 1.
+  - **The aligned L is 10 % lower below the knee** (72.8 mH, κ 7.78, z_lin 1.187): the foils lie across the radius,
+    so at the laps the flux crosses them.
+  - **Past the knee it is sharper than the ^6 fit** (12.8 % / 52 % of the low-field L), so the pump drives the AH
+    harder: 323 A-turns per coil with the bypass (+8 %), 21.0 W on the belt (+2.8 W), z_early 1.112.
+- **Corrected, from the neck check** (dated notes: `sim/pole-design-findings.md` §8 and its open checks,
+  `sim/utron_profile.py`, `sim/rotor-mechanics-findings.md` §3, the ledger §3.2, §4, §5.2, §6 items 31 and 61–64).
+  DCCREG-UTR-101's data row ("Φs +1.1 %") stays until the designer settles the strip.
+  - **Open, the designer's:** keep the strip, stack its foils axially, or thicken it to about 3.2–3.3 mm.
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the

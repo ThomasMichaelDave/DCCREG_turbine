@@ -287,6 +287,12 @@ commits' dates.
   utron's back iron saturates at Ψs 0.134 Wb-turns per group, and the current then stops growing. The law
   i = Ψ/L·(1 + (Ψ/Ψs)⁶) is a fit [IR]. The neck is sized to the AH's need and no larger, because heat goes as Ψs²
   (`sim/pole-design-findings.md` §3, §8).
+  - **The neck in a nonlinear field solve** (`sim/neck-nonlinear-findings.md`, model check 31): the strip saturates at
+    Ψs 0.1268 Wb-turns, 5 % below the design, because 30 foils of 0.1 mm stack at about 0.90 [RH], not 1. Its foils
+    lie across the radius, so at the laps the flux crosses them: the aligned L falls 10 % below the knee (72.8 mH,
+    κ 7.78, z_lin 1.187 in the 2-D frame). Past it the knee is sharper than the ^6 fit, so the pump drives the AH
+    harder: 323 A-turns per coil with the bypass (+8 %) for 21.0 W on the belt. Foils stacked axially would keep the
+    record's gain (322 A-turns, z_early 1.147); a 3.2–3.3 mm strip would restore Ψs: the designer's.
 - **The start.** With the deck's diodes (0.54 V at 1 A, a 100 V Schottky's drop) a small seed does not grow, because
   the winding voltage while growing is only a few volts. A one-time kick starts it: the record's 20 % of Ψs seeds
   0.110 A and 3.5 mJ (`sim/pole-design-findings.md` §7); the threshold is 16 %, 2.2 mJ, with the deck's diodes
@@ -663,7 +669,7 @@ and tooling.
 |:--|:--|
 | utrons | 3 at 0 / 120 / 240° on two 12 mm G10 carrier discs; r 57–130 mm; tips 14 mm; slot 30 × 30 mm; stack 100 mm of M235-35A 0.35 mm |
 | coil | 200 turns of 1.89 mm² (Ø1.55 mm), 50 % fill, mean turn 319 mm; R 0.58 Ω; L 81.0 / 9.4 mH (κ 8.6, the 2-D screen); in 3-D 83.3 / 12.4 mH (κ 6.70; 5.96–6.44 with the coils coupled); τ 0.140 s |
-| neck (clamp) | 80 % NiFe, 3.0 × 100 mm; Ψs 0.134 Wb-turns per group |
+| neck (clamp) | 80 % NiFe, 3.0 × 100 mm; Ψs 0.134 Wb-turns per group; as built (a stacking factor of 0.90 [RH]) 0.1268, with the aligned L 10 % lower at the laps (`sim/neck-nonlinear-findings.md`) |
 | bridges | 6 M235-35A sectors, r 130.5–144.5 mm, 25.5° face, 0.65 kg each, in a G10 ring r 131.5–156.5 mm; side B offset 30° |
 | gap | 0.500 mm aligned, 9.74 mm unaligned; 0 clashes in 457 pairs |
 | group | 3 utrons in series: 0.243 H; 0.87–2.81 A per branch; 101 V peak |
@@ -775,6 +781,14 @@ and tooling.
   1.42, about 3.8–4.3 mm of NiFe, the utrons' copper loss × 1.6–2.0), a longer stack (κ about 7.8 at 150 mm, 8.4 at
   200 mm) or a larger pump; and set how each group's three coils are connected (one reversed: κ 6.44, against 5.96
   aiding);
+- **the neck strip** (§3.2, `sim/neck-nonlinear-findings.md`): as drawn it saturates 5 % low (a stacking factor of
+  0.90 [RH]) and its foils, stacked across the radius, cost 10 % of the aligned L at the laps. Keep it; stack the
+  foils axially (the record's gain back, 322 A-turns at z_early 1.147 in the 2-D frame); or thicken it to about
+  3.2–3.3 mm (Ψs back). DCCREG-UTR-101 (Rev A draft) follows the choice;
+- **the electrostatic pump as built** (§3.4, `sim/tube-strays-findings.md`): z 1.031 with the rings' chains, 0.65 W,
+  7.06 kV/cm at the null, 95 % in 0.63 s. Accept it, or win the margin back: a radial clearance at the vanes' rims
+  (κ per gap 3.70 → 4.94 at 12 mm), a PTFE sleeve (the shaft's share of node 1's stray × 0.49), insulating mounts
+  for the Ca plates, or more or larger vanes;
 - **the parts' first cuts** (`sim/parts-first-cut-findings.md`): La / Lb (EI-84 × 35), Schottky D1*–D4*, the HV
   sticks and their surge resistors, the clamp strings, the chains' parts (their diodes selected for ≤ 25 nA at
   7.5 kV and kept cool), the K4 kick fired at full speed, the creepage and the potting;
@@ -793,7 +807,6 @@ and tooling.
 - the field on the pump's own supply (phase 4).
 
 **Still open in the models and parts:**
-- the model check of §6 item 31: the neck;
 - the 77 MnZn data sheet: its values are in `presets/hub-locked.json` (AH core), as a web search rendered the sheet;
   re-read them from the current sheet before ordering;
 - the capacitor mounts' creepage, potting and balancing: first cuts in `sim/parts-first-cut-findings.md` and
@@ -872,7 +885,7 @@ more; each line says what was done and where. The model checks (31–34) run as 
 
 | # | check | where it lands |
 |:--|:--|:--|
-| 31 | the neck, a nonlinear field check | `sim/neck-nonlinear-findings.md` |
+| 31 | the neck, a nonlinear field check | **done, and corrections:** Ψs 0.1268 Wb-turns as built (5 % low at a stacking factor of 0.90 [RH]); the aligned L 10 % lower at the laps (the foils lie across the radius); the knee sharper than the ^6 fit, so the AH gets 323 A-turns with the bypass (+8 %) for 21.0 W, in the 2-D frame (items 61–64; `sim/neck-nonlinear-findings.md`) |
 | 32 | real diodes at start-up | **done, and corrections:** the magnetic pump starts on the record's 20 % kick only with Schottky rectifiers (thresholds 17.2 % for the first-cut set, 25–28 % for silicon PN); the electrostatic pump does not self-excite with real HV sticks (a seed of 17–260 V is needed, §5.2) and its rings stand at −14.65 / +14.67 kV, 7.47 kV/cm (items 46–52; `sim/diodes-real-findings.md`) |
 | 33 | the tube's strays, by a field solve | **done, and a correction:** the node strays are 66.2 / 24.5 pF, not 20, and the varicap is 128–451 pF (κ 3.51), not 55–410 (κ 7.47): the vanes' rims; as built z 1.058 bare, 1.031 with the chains, 0.65 W, 7.06 kV/cm (items 53–60; `sim/tube-strays-findings.md`) |
 | 34 | the utrons' κ in 3-D | **done, and a correction:** κ 6.70 in the record's frame (the ends +71 % unaligned against the [RH] +30 %), 5.96–6.44 with the coils' coupling round the machine; the pick's z_lin 1.16–1.17, under its ≥ 1.20 rule; the AH 221–245 A-turns with the bypass, not 300; the coils' connection not recorded: the designer's (`sim/utron-3d-findings.md`) |
@@ -922,6 +935,15 @@ more; each line says what was done and where. The model checks (31–34) run as 
 | 58 | the record's solids draw C1 and C2 in phase (`sim/tube_geometry.py`: every vane at rot 0), against the circuit's antiphase | **done:** side B's stator vanes turned half a pitch (30°), as side B's bridges are; `sim/tube_geometry.py --record` re-run |
 | 59 | `sim/stack_sizing.py` layout: "starting and ending on a stator vane" | **corrected (docstring):** each stack ends on a rotor vane beside the first Ca plate, the path for Ca_01's 15–23 pF |
 | 60 | the parts' first cut mounts the node-1 plates on conductive spacer rings on the sleeve (`sim/parts-first-cut-findings.md` §4) | **corrected:** they would raise node 1's stray to 105 pF and take z with the chains to 1.008; insulating mounts (dated note) |
+
+**Found by the neck check** (`sim/neck-nonlinear-findings.md`)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 61 | the neck's "0.225 mWb at 0.75 T, 1.1 % above the operating point" (`sim/pole-design-findings.md` §8; DCCREG-UTR-101's data row) | **corrected (dated note):** that takes a stacking factor of 1; at 0.90 the knee is 0.211 mWb, 5 % below. The drawing's row stays until the designer settles the strip (Rev A draft) |
+| 62 | "the flux crosses the strip edge-on, in the plane of the laminations" (`sim/utron_profile.py`, `sim/pole-design-findings.md`) | **corrected:** under the break only; at the laps it crosses the foils, which costs 10 % of the aligned L |
+| 63 | the laps "~3 %", the knee "~5 % / ~30 %" [RH] | **corrected:** 11 %, and 12.8 % / 52 % past the knee (dated notes) |
+| 64 | the pull at the clamp, 28.2 N per utron (`sim/rotor-mechanics-findings.md` §3) | **noted:** about 31 N with the field map's law (0.232 mWb aligned), against the 834 N the studs carry at 600 rpm (`sim/rotor-mechanics-findings.md` §2) |
 
 ## 7. Drawing register
 

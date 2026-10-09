@@ -182,6 +182,8 @@ The record's "so the coils need banding or a retaining ring" (`sim/pole-design-f
 **The force** [OC: Maxwell stress, fringing ignored — an upper bound].
 - At the clamp, 0.223 mWb crosses each 14 × 100 mm tip face, **0.159 T**. That is the record's `B_body_T`.
 - So 14.1 N per face, **28.2 N per utron**, pulling the utron outward and the bridge inward.
+  - **2026-10-09** (`sim/neck-nonlinear-findings.md`, notes against the record): with the field map's neck law the aligned
+    flux reaches about 0.232 mWb, so about 31 N per utron.
 - The record's law i = Ψ/L (1 + (Ψ/Ψs)⁶) at the branch's 2.81 A peak gives Ψ = 1.21 Ψs, i.e. 41.5 N. That is a bound:
   aligned, the branch current is near its minimum.
 

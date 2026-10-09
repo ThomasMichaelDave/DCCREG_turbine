@@ -358,6 +358,10 @@ by §7.*
     1.5 T). The 1.1 % is well inside the uncertainty of B_sat at 60 °C; the operating point was not re-solved for it;
   - the half-cores sit on the strip, parted by a 12 mm G10-filled air break, so the flux crosses the strip edge-on,
     in the plane of the laminations;
+  - **Corrected 2026-10-09** (`sim/neck-nonlinear-findings.md`): the 0.225 mWb takes a stacking factor of 1. At 0.90 [RH], with
+    J_s 0.78 T at 60 °C, the strip saturates at 0.211 mWb, 5 % below the operating point's 0.223. The flux runs in the
+    plane of the foils under the break only: at the laps it crosses them, normal to the foils (they are stacked
+    across the radius), which costs 10 % of the aligned L below the knee;
   - it replaces §3's necked laminations over part of the stack: there the flux would cross between laminations,
     normal to the sheets (low permeability, eddy loss) [RH].
 - **Coil:**
@@ -417,6 +421,9 @@ by §7.*
 - **The neck needs a nonlinear field check.** The knee (saturated incremental L ≈ 5 % of aligned, ≈ 30 % of unaligned
   with the 12 mm break) and the lap joints (≈ 3 % on the aligned reluctance) are estimates [RH]. The 2-D model is
   linear SiFe without the neck.
+  - **Done 2026-10-09** (`sim/neck-nonlinear-findings.md`): past the knee the incremental L is 12.8 % aligned and 52 %
+    unaligned; the laps cost 11 % of the aligned L. With the field map's law in the deck the AH gets 323 A-turns per
+    coil with the bypass, not 300.
 - **The 0.5 mm gap** needs runout of about 0.05 mm or better between two counter-rotating bodies on four inner
   bearings [RH]. The bearing arrangement for that is not designed.
   > **Since budgeted (2026-10-09):** as laid out, each inner bearing's total runout must stay within 0.027 mm for the

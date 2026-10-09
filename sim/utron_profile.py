@@ -12,7 +12,9 @@ first-cut choices [IR/RH]:
     saturation flux at B_NIFE, rounded to whole 0.1 mm NiFe laminations (the saturation flux follows the built strip)
     [RH: B_sat 0.75 T at ~60 C; the two lap joints add ~3 % to the aligned reluctance; with a
     12 mm break the saturated incremental L is ~5 % of aligned and ~30 % of unaligned. The 2-D model has linear SiFe and
-    the ^6 law at Psi_s instead, so this needs a nonlinear field check];
+    the ^6 law at Psi_s instead, so this needs a nonlinear field check]. The check (sim/neck-nonlinear-findings.md,
+    2026-10-09): the built flux takes a stacking factor of 1 (at 0.90 the knee is 5 % lower), the laps cost 11 % of the
+    aligned L (the foils lie across the radius), and past the knee the incremental L is 12.8 % / 52 %;
   * coil: one coil on the back iron between the tips (+ side in the slot, - side under the core) with rounded-rectangle
     turns (inner corner radius clr, outer clr + h_c) at 50 % fill, wound on a 1 mm G10 former (the clearance clr);
   * slot cover: G10 between the tips' inner faces, its flat bottom 0.1 mm above the coil, its top on the gap arc less
