@@ -355,8 +355,9 @@ def build():
          "The steady cusp (sim/ah-steady-cusp-findings.md). Bipolar parts if the kick polarity is free."),
         ("AH (hub)", "MnZn rod (the AH core), Fair-Rite 77, d 12.3 x 41.3 mm", 2, 30.0,
          "One per AH coil, top and bottom on the z axis (presets/hub-locked.json). Placeholder price."),
-        ("Hub", "Shaft-coupling cones, non-conducting non-magnetic composite (probably G10; material open)", 2, 40.0,
-         "Over the field coils and their insulation; no electrodes on them (sim/core-field-findings.md). Placeholder."),
+        ("Hub", "Shaft coupler, G10, around the PEEK retainer (two halves; shape open)", 2, 40.0,
+         "Encapsulates the retainer, not against the glass or the rings (presets/hub-locked.json shaft_coupler). "
+         "Placeholder."),
         ("Hub", "Vacuum sphere, borosilicate, 50 mm OD", 1, 250.0,
          "The locked hub (presets/hub-locked.json); 1.5 mm wall (decided). Placeholder price."),
         ("Hub", "Retainer: unfilled PEEK, machined from annealed stock (the pocket over the glass, the bead grooves, the "
