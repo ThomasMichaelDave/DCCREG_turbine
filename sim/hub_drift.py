@@ -134,11 +134,12 @@ def drift(args):
                 E_kV_cm=(k_kv * rec["V_gap_kV"]).tolist(), run_s=time.time() - t0)
 
 
-def swing(rec, n_cyc=200, steps=5000):
-    """the record's supply (its stages, 100 pF) re-run for its waveforms: the last two cycles of ring A and B, and the
-    field at the null they give (as connected); and the start-up, cycle by cycle."""
+def swing(rec, n_cyc=None, steps=5000):
+    """the record's supply (its stages, 100 pF) re-run for its waveforms: the last two cycles of ring A and B and of the
+    pump's nodes 1 and 4, and the field at the null they give (as connected); and the start-up, cycle by cycle."""
+    n_cyc = n_cyc or 120 + 80 * max(rec["n_cw"], rec["n_a"])            # as the build's stage runs: settled
     kw = dict(opt="dc", n_cw=rec["n_cw"], n_cw_a=rec["n_a"], n_cyc=n_cyc, steps=steps, c_core=0.1e-9, c_cw=0.1e-9,
-              r_leak=B.R_LEAK_EST)
+              r_leak=B.R_LEAK_EST, **({"a_ref": rec["a_ref"]} if rec.get("a_ref", "dk") != "dk" else {}))
     txt, vecs, _ = CF.deck(**kw)
     with tempfile.TemporaryDirectory() as d:
         open(os.path.join(d, "x.cir"), "w").write(txt)
@@ -149,11 +150,13 @@ def swing(rec, n_cyc=200, steps=5000):
     T = 1.0 / CF.F
     tu = (n_cyc - 2) * T + np.arange(2000) * 2 * T / 2000
     va, vb = np.interp(tu, t, c["v(ea)"]), np.interp(tu, t, c["v(eb)"])
+    v1, v4 = np.interp(tu, t, c["v(1)"]), np.interp(tu, t, c["v(4)"])
     per_cyc = [float(-(c["v(eb)"][(t >= k * T) & (t < (k + 1) * T)] - c["v(ea)"][(t >= k * T) & (t < (k + 1) * T)]).max())
                for k in range(n_cyc)]
     k = rec["k_kV_cm_per_kV"]
     e = k * (vb - va) / 1e3
     return dict(t_ms=((tu - tu[0]) * 1e3).tolist(), V_A_kV=(va / 1e3).tolist(), V_B_kV=(vb / 1e3).tolist(),
+                V1_kV=(v1 / 1e3).tolist(), V4_kV=(v4 / 1e3).tolist(), n_cyc=n_cyc,
                 E_kV_cm=e.tolist(), E_mean_kV_cm=float(e.mean()), E_pp_kV_cm=float(np.ptp(e)),
                 startup_E_kV_cm=[-k * x / 1e3 for x in per_cyc], startup_t_s=[(i + 0.5) * T for i in range(n_cyc)])
 

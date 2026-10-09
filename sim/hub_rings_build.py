@@ -16,12 +16,14 @@ What is solved here [OC unless tagged]:
   stages     ring B on 1-6 Cockcroft-Walton stages (ngspice, 100 pF, the leakage estimate) and, for each, the bands
              sized so the gap along the glass holds the DC at the interface rating (1 and 2 kV/mm) and ring B clears
              the AH (5 kV/mm average); the field at the null for each;
-  the edges  set the bands (phase 5): every supply -- ring B's chain alone, or both rings' chains (ring A on 1-2
-             negative stages, sim/core_field.py n_cw_a) -- at each pair of ratings (the interface along the glass;
+  the edges  set the bands (phase 5): every supply -- ring B's chain alone, both rings' chains (ring A on 1-2
+             negative stages stacked on Dk, sim/core_field.py n_cw_a), or the mirror pair (each ring on its own chain
+             from the shaft, 1-4 stages a side, a_ref "shaft") -- at each pair of ratings (the interface along the glass;
              the gel at a bead: 1 / 5 the design, 2 / 8 to qualify): the equatorial edge where the gap holds the DC,
              the polar edge the nearest the pole where its bead holds against the AH coil's end, the smallest
              equatorial bead that holds; from tables of the field at the null and of both edges, solved per mode and
-             superposed per supply; the best of each pair solved again directly. The record: the best at 1 / 5;
+             superposed per supply; each family's best at each pair solved again directly. The record: the mirror
+             pair's best at 1 / 5 (the designer chose the symmetric supply, 2026-10-09);
              its beads' local solve checked with the cell halved and the box enlarged; its supply run in full.
 Inputs from presets/hub-locked.json: the retainer system, the foil, the ratings, the leakage estimate.
 Usage: python3 sim/hub_rings_build.py [--procs 4] [--resume]   (writes sim/hub_rings_build_results.json; --resume keeps
@@ -309,6 +311,8 @@ def _size_case(args):
 # mode); a supply superposes the two, and ring A's edge is the mirror (cm, -dm) [OC]. The bands' edges then follow from
 # three limits: the gap along the glass at the interface rating, and both beads at the gel's rating.
 SUPPLIES_AB = [(1, n) for n in range(1, 7)] + [(2, n) for n in range(2, 7)]   # (A's negative stages, B's stages)
+SUPPLIES_SYM = (1, 2, 3, 4)        # the mirror pair: ring A's chain from the shaft, n stages a side (a_ref "shaft")
+RECORD_FAMILY = "mirror"           # the designer's choice (2026-10-09): the symmetric supply
 TAB_TP = (20.0, 25.0, 30.0, 35.0, 40.0, 45.0)
 TAB_TE = (35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0)
 POL_TE = (40.0, 50.0, 60.0, 70.0, 80.0)      # the polar edges' table: TAB_TP x these
@@ -438,8 +442,15 @@ def _conv_case(args):
                 E_glass_kV_mm=q["E_glass_kV_mm"])
 
 
+def family(q):
+    """a supply's family: 'mirror' (ring A on its own chain from the shaft) or 'stacked' (ring A on Dk, with or without
+    its own negative stages)."""
+    return "mirror" if q.get("a_ref") == "shaft" else "stacked"
+
+
 def phase5(stages, procs, rec):
-    """the tables, every supply's design at each pair of ratings, and the best of each pair solved directly."""
+    """the tables, every supply's design at each pair of ratings, and each family's best at each pair solved
+    directly: {family: {pair: design}}."""
     t0 = time.time()
     est = [dict(q, n_a=q.get("n_a", 0)) for q in stages if q["r_leak"] == R_LEAK_EST]
     kjobs = [(tp, te) for tp in TAB_TP for te in TAB_TE]
@@ -452,14 +463,18 @@ def phase5(stages, procs, rec):
     print(f"tables: {len(K)} fields, {len(POL)} polar and {len(EQ)} equatorial edges ({time.time() - t0:.0f} s)", flush=True)
     designs = [design(st, e_t, e_g, K, POL, EQ) for e_t in E_T for e_g in E_GEL for st in est]
     best = {}
-    for e_t in E_T:
-        for e_g in E_GEL:
-            ok = [q for q in designs if q["E_t_kV_mm"] == e_t and q["E_gel_kV_mm"] == e_g and q["feasible"]]
-            if ok:
-                best[f"{e_t:g}/{e_g:g}"] = max(ok, key=lambda q: q["E_null_kV_cm"])
+    for fam in sorted({family(q) for q in designs}):
+        for e_t in E_T:
+            for e_g in E_GEL:
+                ok = [q for q in designs if family(q) == fam and q["E_t_kV_mm"] == e_t and q["E_gel_kV_mm"] == e_g
+                      and q["feasible"]]
+                if ok:
+                    best[(fam, f"{e_t:g}/{e_g:g}")] = max(ok, key=lambda q: q["E_null_kV_cm"])
     with Pool(procs) as pool:
         ver = list(pool.imap(_verify, [(b, b["E_gel_kV_mm"]) for b in best.values()]))
-    best_v = dict(zip(best, ver))
+    best_v = {}
+    for (fam, key), v in zip(best, ver):
+        best_v.setdefault(fam, {})[key] = v
     tables = dict(k=list(K.values()),
                   polar_at_record=[dict(theta_p=k_[0], theta_e=k_[1], rho_e_mm=k_[2],
                                         **edge_eval(b, rec["V_A_kV"], rec["V_B_kV"])) for k_, b in POL.items()])
@@ -529,14 +544,26 @@ def main():
     for q in ab:
         print(f"A on {q['n_a']}, B on {q['n_cw']} stages: A {q['V_A_kV']:.2f}, B {q['V_B_kV']:.2f} kV, z {q['z_start']:.3f}, "
               f"settled {q['settled']}", flush=True)
-    designs, best_v, tables, t5 = phase5(out["stages"] + ab, a.procs, rec)
-    for k, b in best_v.items():
-        print(f"best at {k} kV/mm: A{b['n_a']} B{b['n_cw']}, {b['V_gap_kV']:.1f} kV, bands {b['theta_p']:.2f}-"
-              f"{b['theta_e']:.2f}, beads {b['rho_pol_mm']:.1f} / {b['rho_eq_mm']:.1f} mm: {b['E_null_kV_cm']:.2f} kV/cm "
-              f"({b['p_null_Pa']:.2f} Pa); direct: polar {b['E_pol']['gel']:.2f}, eq {b['E_eq']['gel']:.2f} kV/mm, "
-              f"verified {b['verified']}", flush=True)
-    # the local solve's convergence at the record's beads (ring B, the higher): the cell halved; the box 1.5x
-    rb, conv = best_v.get("1/5"), []
+    # the mirror pair: each ring on its own chain from the shaft
+    with Pool(a.procs) as pool:
+        sym = list(pool.imap(_stage_run, [(n, R_LEAK_EST, n, "shaft") for n in sorted(SUPPLIES_SYM, reverse=True)]))
+    sym.sort(key=lambda x: x["n_cw"])
+    for q in sym:
+        print(f"mirror, {q['n_cw']} + {q['n_cw']} stages: A {q['V_A_kV']:.2f}, B {q['V_B_kV']:.2f} kV, z {q['z_start']:.3f}, "
+              f"settled {q['settled']}", flush=True)
+    designs, best_fam, tables, t5 = phase5(out["stages"] + ab + sym, a.procs, rec)
+    for fam, rows in best_fam.items():
+        for k, b in rows.items():
+            print(f"best {fam} at {k} kV/mm: A{b['n_a']} B{b['n_cw']}, {b['V_gap_kV']:.1f} kV, bands {b['theta_p']:.2f}-"
+                  f"{b['theta_e']:.2f}, beads {b['rho_pol_mm']:.1f} / {b['rho_eq_mm']:.1f} mm: {b['E_null_kV_cm']:.2f} "
+                  f"kV/cm ({b['p_null_Pa']:.2f} Pa); direct: polar {b['E_pol']['gel']:.2f}, eq {b['E_eq']['gel']:.2f} "
+                  f"kV/mm, verified {b['verified']}", flush=True)
+    keys = sorted({k for rows in best_fam.values() for k in rows})
+    best_v = {k: max((rows[k] for rows in best_fam.values() if k in rows), key=lambda q: q["E_null_kV_cm"]) for k in keys}
+    # the record: the designer's family at the design ratings
+    rb, conv = best_fam.get(RECORD_FAMILY, {}).get("1/5"), []
+    # the local solve's convergence at the record's beads (ring B; the mirror pair's rings are alike): the cell halved;
+    # the box 1.5x
     if rb:
         jobs = [(rb, rb["rho_pol_mm"] if w == "pol" else rb["rho_eq_mm"], w, h_, hf) for w in ("pol", "eq")
                 for h_, hf in ((0.025, 4.0), (0.0125, 4.0), (0.025, 6.0))]
@@ -548,17 +575,20 @@ def main():
     # the record's supply in full (the clamps, the link, the diodes), as sim/core_field.py's cases run
     sup = fr = None
     if rb:
-        kw = dict(opt="dc", n_cw=rb["n_cw"], n_cw_a=rb["n_a"], c_core=0.1e-9, c_cw=0.1e-9, r_leak=R_LEAK_EST)
-        nm = (f"A{rb['n_a']} " if rb["n_a"] else "") + f"B{rb['n_cw']} {R_LEAK_EST:.0e}"
+        kw = dict(opt="dc", n_cw=rb["n_cw"], n_cw_a=rb["n_a"], c_core=0.1e-9, c_cw=0.1e-9, r_leak=R_LEAK_EST,
+                  **({"a_ref": rb["a_ref"]} if rb.get("a_ref", "dk") != "dk" else {}))
+        nm = (f"A{rb['n_a']}{'s' if rb.get('a_ref') == 'shaft' else ''} " if rb["n_a"] else "") + \
+            f"B{rb['n_cw']} {R_LEAK_EST:.0e}"
         with Pool(2) as pool:
             sup, fr = pool.map(CF.run, [(f"record {nm}", dict(kw, n_cyc=120 + 80 * max(rb["n_cw"], rb["n_a"]),
                                                               steps=10000)),
                                         (f"free record {nm}", dict(kw, clamp=False, n_cyc=12, v0=-10.0))])
         print(f"the record's supply: A {sup['V_ea_kV']['mean']:.2f}, B {sup['V_eb_kV']['mean']:.2f} kV, belt "
               f"{sup['P_belt_W']:.3f} W (waves {sup['P_belt_wave_W']:.3f}), z {fr['z']:.3f}", flush=True)
-    out.update(stages_ab=ab, supplies_ab=SUPPLIES_AB, E_gel_kV_mm=E_GEL, tables=tables, designs=designs,
-               best_edges=best_v, record=best_v.get("1/5"), record_supply=sup, record_supply_free=fr, convergence=conv,
-               phase5_s=t5, run_s=time.time() - t0)
+    out.update(stages_ab=ab, supplies_ab=SUPPLIES_AB, stages_sym=sym, supplies_sym=SUPPLIES_SYM, E_gel_kV_mm=E_GEL,
+               tables=tables, designs=designs, best_edges=best_v, best_by_family=best_fam, record_family=RECORD_FAMILY,
+               record=rb, record_supply=sup, record_supply_free=fr, convergence=conv, phase5_s=t5,
+               run_s=time.time() - t0)
     json.dump(out, open(path, "w"), indent=1, default=float)
     print(f"done in {time.time() - t0:.0f} s")
 
