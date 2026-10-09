@@ -253,6 +253,10 @@ cycles.
 | the varicap as solved, 20 pF elsewhere | 1.1307 | 1.0802 | 1.206 W | ±14.27 kV | 7.27 | 0.36 s |
 | **as built (every capacitance solved)** | **1.0579** | **1.0310** | **0.646 W** | **±13.86 kV** | **7.06** | **0.63 s** |
 
+- **With real HV sticks** (2026-10-09, `sim/diodes-real-findings.md` §6): these rows are the record's near-ideal diodes. As built
+  with real sticks the pump does not self-excite: it starts from 122 V (typical leakage), 1.0 kV (the datasheet's
+  maximum) or 3.65 kV (hot), and holds −13.38 / +13.40 kV, 6.82 kV/cm with typical sticks (95 % at 0.575 s from a
+  consistent −1 kV).
 - **The field at the null** is k (V_B − V_A), with k = 0.2546 (kV/cm)/kV, the record's bands with their beads
   (`sim/hub_rings_build_results.json` record) [OC: linear].
 - **The start-up times** run from the deck's own start (`uic`, −1 kV); on it the record's 0.24 s
@@ -266,6 +270,48 @@ cycles.
   - nodes 1 and 4 together cost 0.0027 of z per pF;
   - nodes 2 and 3 together cost 0.0018.
   - This agrees with the record's "about 0.003" (`sim/core-field-findings.md`:237) for the 1 / 4 pair.
+
+## 6. The remedies, for the designer (not the record)
+**[RH]: options, not the record.**
+- **Source:** `python3 sim/tube_strays.py --remedies` → `sim/tube_strays_results.json` remedies (its solves under
+  remedy_solves).
+- **The grid:** the side model at level 1, 3.9–5.1 M nodes, against the record as built at the same level. The remedy
+  builder at c 0 reproduces the record's model node for node (G-REMEDY).
+- **The clearance c** is the periodic cell's (§4): the rotor ring's edge to r 50 − c, the rotor sectors' outer rims to
+  r 150 − c, the stator sectors' inner rims to r 50 + c, the stator ring's edge kept at r 150.
+- **The PTFE sleeve:** ε 2.1 in place of G10's 4.7.
+- **Everything else as built:** Ca / Cb as laid out (6 plates, 5 gaps, 480.5 pF), the utrons at REF, the bridges
+  floating.
+- **The pump:** the §5 "as built" deck set, with the record's couplings across the hub and the rings' solved strays.
+
+| case (level 1, per side) | C1 aligned / unaligned | κ | node 1 in all, κ | stray 1 / 4 | stray 2 / 3 | z, bare | z with the rings' chains | clamped power | the rings | at the null | 95 % at |
+|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+| as built, the record | 450.2 / 128.1 pF | 3.51 | 512.2 / 199.4, 2.57 | 66.7 pF | 24.5 pF | 1.0576 | 1.0308 | 0.643 W | ±13.86 kV | 7.06 kV/cm | 0.63 s |
+| c 12 mm | 347.2 / 74.6 | 4.66 | 411.9 / 147.7, 2.79 | 68.9 | 24.6 | 1.0771 | 1.0407 | 0.715 W | ±13.91 | 7.08 | 0.51 s |
+| PTFE sleeve | 450.2 / 128.1 | 3.51 | 491.8 / 179.0, 2.75 | 46.3 | 24.3 | 1.0789 | 1.0453 | 0.826 W | ±13.99 | 7.12 | 0.49 s |
+| c 12 mm + PTFE sleeve | 347.2 / 74.6 | 4.66 | 391.5 / 127.3, 3.08 | 48.5 | 24.5 | 1.1053 | 1.0587 | 0.906 W | ±14.04 | 7.15 | 0.41 s |
+| c 6 mm | 397.6 / 92.4 | 4.30 | 461.0 / 164.9, 2.80 | 67.9 | 24.6 | 1.0821 | 1.0463 | 0.816 W | ±13.99 | 7.12 | 0.48 s |
+| (the record: 20 pF, 2-D C1) | 409.9 / 54.9 | 7.47 | 429.9 / 74.9, 5.74 | 20 | 20 | 1.3095 | 1.1907 | 2.142 W | ±14.96 | 7.62 | 0.24 s |
+
+- **None of them brings the pump back to the record's numbers** [OC: the deck]. Both together do best: z 1.105 bare and
+  1.059 with the chains, 0.91 W, 0.41 s.
+- **The clearance doubles C1's swing ratio but costs C_max.**
+  - κ goes 3.51 → 4.30 at 6 mm and 4.66 at 12 mm. C_max falls 450 → 398 → 347 pF, and the fixed strays stay.
+  - So node 1's swing in all rises only to 2.80 / 2.79, and 6 mm gives slightly more z and power than 12 mm.
+  - With the shorter rotor sectors, Ca_01 reaches the stator vanes a little more: 15.9–17.1 / 24.2–24.8 pF, against
+    14.6 / 23.1.
+- **The PTFE sleeve halves the rotor vanes' coupling to the shaft** (40.8 → 20.5 pF) and leaves C1 as it is.
+  - Node 1 / 4's stray drops to 46.3 pF. Node 2 / 3's does not move (24.3 pF): its strays are the bottom Ca plate's, not
+    the sleeve's.
+- **Ca under the record's rule** (Ca = 1.1 C_max, gaps = ceil(Ca / 92.8 pF), `sim/stack_sizing.py`:154), with each
+  case's solved C_max:
+  - **6 gaps (7 plates)** for the record as built and for the PTFE sleeve: 1.1 × 450 = 495 pF. The plates as laid out,
+    5 gaps and 480.5 pF, are 1.07 C_max.
+  - **5 gaps (6 plates, as laid out)** for c 12 mm and c 6 mm, alone or with PTFE: 382 / 437 pF needed.
+  - The deck keeps the 5 gaps throughout, as asked.
+- **Not done:** level 2 for these cases (the record's level 1 → 2 step moved z by 0.0003, §2); intermediate clearances;
+  other sleeve materials or thicknesses; the stator ring's edge moved as well (at c 12 mm it would vanish into the
+  cage). The figure is not extended: these rows are this table.
 
 ## Notes against the record
 - `sim/stack_sizing.py`:37, `C_edge_pF=2.0` "inner + outer edge fringe floor added to C_min [IR]" (also
