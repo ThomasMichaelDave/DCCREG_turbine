@@ -3,10 +3,11 @@
 and the stages the rings' hold-off allows.
   (a) the record's rings to scale: the bands and their beads under the gel and the retainer, DC equipotentials;
   (b) the field at the null against the DC across the rings, each supply at its edge-limited bands, for the four pairs
-      of ratings (the interface along the glass; the gel at the beads);
-  (c) the polar bead against the AH: its peak field per kV of the ring, and the ring potential it holds;
+      of ratings (the interface along the glass; the gel at the beads), by family: the symmetric (mirror) pair, and
+      the stacked supplies (ring A on Dk, with or without its own stages);
+  (c) the polar bead against the AH: its peak field per kV of the ring, and where it holds 5 kV/mm at a ring potential;
   (d) the retainer's permittivity: the field at the null barely moves, the strays do;
-  (e) the best design of each pair of ratings, solved directly.
+  (e) the best symmetric design of each pair of ratings, solved directly, against the stacked family's best.
 Usage: python3 docs/make_hub_rings_build_figure.py
 """
 import json
@@ -56,7 +57,15 @@ def style(ax, title, ylabel, xlabel=None):
 
 
 def supply_name(d):
-    return (f"A on {d['n_a']} + B on {d['n_cw']}" if d["n_a"] else f"B on {d['n_cw']}") + " stages"
+    if d.get("a_ref") == "shaft":
+        return f"s A and B on {d['n_cw']} stages each, symmetric"
+    return " " + (f"A on {d['n_a']} + B on {d['n_cw']}" if d["n_a"] else f"B on {d['n_cw']}") + " stages"
+
+
+def family(d):
+    """the supply's family: 'mirror' (each ring on its own chain from the shaft), 'stacked' (ring A on Dk, with its own
+    stages) or 'B' (ring A on Dk, the stages all on ring B)."""
+    return "mirror" if d.get("a_ref") == "shaft" else ("stacked" if d["n_a"] else "B")
 
 
 def section(ax, rec, R):
@@ -133,7 +142,8 @@ def section(ax, rec, R):
     ax.annotate("glass 1.5 mm", (Rin * math.sin(1.0), -Rin * math.cos(1.0)), (6.0, -16.0), arrowprops=arr, **lab)
     ax.text(0.6, 0.0, f"{rec['E_null_kV_cm']:.1f} kV/cm\nat the null", fontsize=7.4, color="#0d366b", ha="left",
             va="center", zorder=8, bbox=dict(fc="white", ec="none", pad=0.6, alpha=0.85))
-    ax.set_title(f"(a) the rings as built, to scale (ring {supply_name(rec)});\nDC equipotentials every 2 kV",
+    ax.set_title("(a) the rings as built, to scale " + ("(the symmetric supply)" if rec.get("a_ref") == "shaft" else
+                 f"(ring{supply_name(rec)})") + ";\nDC equipotentials every 2 kV",
                  fontsize=9.6, loc="left", color=INK)
 
 
@@ -143,40 +153,53 @@ def main():
     fig = plt.figure(figsize=(16.5, 10.6), facecolor="white")
     gs = fig.add_gridspec(2, 3, width_ratios=(0.72, 1, 1), height_ratios=(1, 1), hspace=0.38, wspace=0.3, left=0.045,
                           right=0.96, top=0.875, bottom=0.06)
-    fig.suptitle(f"The rings as built: the edges set the stages — ring {supply_name(rec)}, {rec['V_gap_kV']:.1f} kV across, "
+    fig.suptitle(f"The rings as built: the edges set the stages — ring{supply_name(rec)}, {rec['V_gap_kV']:.1f} kV across, "
                  f"{rec['E_null_kV_cm']:.1f} kV/cm at the null", fontsize=11.8, x=0.01, ha="left", color=INK)
     fig.text(0.01, 0.92, "The retainer: unfilled PEEK with a 0.5 mm pocket over the glass, filled void-free with silicone "
              "gel; G10 coupler outside. The rings: 0.1 mm copper foil, beaded edges. Leakage 100 GΩ per ring (estimate). "
              "Limits: the gap along the glass, and both beads in the gel.", fontsize=8.3, color=INK2)
     section(fig.add_subplot(gs[:, 0]), rec, R)
 
-    # (b) the field at the null against the DC across the rings, each supply at its edge-limited bands
+    # (b) the field at the null against the DC across the rings, each supply at its edge-limited bands, by family
     axB = fig.add_subplot(gs[0, 1])
+    FAM = (("mirror", "-", "D", 1.7), ("stacked", (0, (1, 1.2)), "s", 1.2), ("B", (0, (4, 2)), "o", 1.1))
     for col, key in zip(RAMP4, PAIRS):
         e_t, e_g = (float(x) for x in key.split("/"))
-        for fam, mk in ((0, "o"), (1, "s")):
+        for fam, ls, mk, lw in FAM:
             q = sorted([d for d in R["designs"] if d["E_t_kV_mm"] == e_t and d["E_gel_kV_mm"] == e_g and d["feasible"]
-                        and (d["n_a"] > 0) == bool(fam)], key=lambda d: d["V_gap_kV"])
+                        and d["E_null_kV_cm"] > 0 and family(d) == fam], key=lambda d: d["V_gap_kV"])
             if q:
-                axB.plot([d["V_gap_kV"] for d in q], [d["E_null_kV_cm"] for d in q], color=col, lw=1.5 if fam else 1.1,
-                         ls="-" if fam else (0, (3, 2)), marker=mk, ms=4, mec=SURF)
-        axB.plot([], [], color=col, lw=1.5, label=f"interface {e_t:g}, gel {e_g:g} kV/mm" + (" (design)" if key == "1/5"
-                                                                                           else ""))
-        bv = R["best_edges"].get(key)
-        if bv:
-            axB.plot([bv["V_gap_kV"]], [bv["E_null_kV_cm"]], "o", ms=9, mfc="none", mec=col, mew=1.4, zorder=6)
+                axB.plot([d["V_gap_kV"] for d in q], [d["E_null_kV_cm"] for d in q], color=col, lw=lw, ls=ls, marker=mk,
+                         ms=4, mec=SURF)
+        bm = R["best_by_family"]["mirror"].get(key)
+        if bm:
+            axB.plot([bm["V_gap_kV"]], [bm["E_null_kV_cm"]], "o", ms=9, mfc="none", mec=col, mew=1.4, zorder=6)
+    h_pairs = [axB.plot([], [], color=col, lw=1.7, label=f"interface {k_.split('/')[0]}, gel {k_.split('/')[1]} kV/mm" +
+                        (" (design)" if k_ == "1/5" else ""))[0] for col, k_ in zip(RAMP4, PAIRS)]
+    h_fams = [axB.plot([], [], color=INK2, lw=lw, ls=ls, marker=mk, ms=4, mec=SURF, label=lab)[0]
+              for (fam, ls, mk, lw), lab in zip(FAM, ("symmetric: A and B each on their own chain (the record's)",
+                                                      "ring A on Dk plus its own stages", "ring A on Dk, stages on B"))]
     axB.plot([rec["V_gap_kV"]], [rec["E_null_kV_cm"]], "o", ms=12, mfc="none", mec=INK, mew=1.4, zorder=7)
-    axB.annotate(f"the record: {rec['E_null_kV_cm']:.1f} kV/cm", (rec["V_gap_kV"], rec["E_null_kV_cm"]), (6, -58),
-                 textcoords="offset points", fontsize=7.4, color=INK, ha="center",
+    axB.annotate(f"the record: {rec['E_null_kV_cm']:.2f} kV/cm", (rec["V_gap_kV"], rec["E_null_kV_cm"]), (31.5, 5.0),
+                 textcoords="data", fontsize=7.4, color=INK, ha="left",
                  arrowprops=dict(arrowstyle="-", lw=0.5, color=INK2))
+    old = R["best_by_family"]["stacked"].get("1/5")
+    if old:
+        axB.plot([old["V_gap_kV"]], [old["E_null_kV_cm"]], "+", ms=9, color=MUTED, mew=1.4, zorder=6)
+        axB.annotate("the asymmetric\nrecord", (old["V_gap_kV"], old["E_null_kV_cm"]), (14.0, 7.4), textcoords="data",
+                     fontsize=7.0, color=MUTED, ha="left", arrowprops=dict(arrowstyle="-", lw=0.5, color=MUTED))
     lock = R["record_in"]
     axB.plot([lock["V_gap_kV"]], [lock["E_dc_kV_cm"]], "x", ms=7, color=MUTED, mew=1.4, zorder=6)
-    axB.annotate("the lock-down's record\n(edges not checked)", (lock["V_gap_kV"], lock["E_dc_kV_cm"]), (60, -62),
-                 textcoords="offset points", fontsize=7.0, color=MUTED, ha="left",
+    axB.annotate("the lock-down's record\n(edges not checked)", (lock["V_gap_kV"], lock["E_dc_kV_cm"]), (46.5, 6.0),
+                 textcoords="data", fontsize=7.0, color=MUTED, ha="left",
                  arrowprops=dict(arrowstyle="-", lw=0.5, color=MUTED))
-    style(axB, "(b) the field at the null against the DC across the rings, each supply at\nits edge-limited bands "
-               "(dashed: ring B's chain only; solid: both rings' chains)", "kV/cm", "DC across the rings (kV)")
-    axB.legend(fontsize=7.0, frameon=True, facecolor="white", edgecolor="none", framealpha=0.92, loc="upper left")
+    style(axB, "(b) the field at the null against the DC across the rings\n(each supply at its edge-limited bands; "
+               "colour: the ratings, line: the family)", "kV/cm", "DC across the rings (kV)")
+    lg = axB.legend(handles=h_pairs, fontsize=6.8, frameon=True, facecolor="white", edgecolor="none", framealpha=0.92,
+                    loc="upper left")
+    axB.add_artist(lg)
+    axB.legend(handles=h_fams, fontsize=6.6, frameon=True, facecolor="white", edgecolor="none", framealpha=0.92,
+               loc="lower right")
     axB.set_ylim(0, None)
 
     # (c) the polar bead against the AH: per kV of the ring, and the ring potential it holds
@@ -192,17 +215,13 @@ def main():
     style(axC, "(c) the polar bead faces the AH coil's end: its peak field in the gel per\n10 kV on the ring "
                "(bands to 50°; the other ring adds little)", "kV/mm per 10 kV", "the bands' polar edge (deg from the axis)")
     axC.legend(fontsize=7.0, frameon=False, loc="upper right")
-    ax2 = axC.twinx()
-    lo, hi = axC.get_ylim()
-    ax2.set_ylim(lo, hi)
-    vs = [v for v in range(10, 31, 2) if lo < 50.0 / v < hi]
-    ax2.set_yticks([50.0 / v for v in vs])
-    ax2.set_yticklabels([f"{v}" for v in vs], fontsize=7.6, color=INK2)
-    ax2.set_ylabel("the ring potential it holds at 5 kV/mm (kV)", fontsize=8.0, color=INK2)
-    for s in ("top",):
-        ax2.spines[s].set_visible(False)
-    ax2.spines["right"].set_color(AXIS)
-    ax2.tick_params(colors=INK2)
+    for v_, ls in ((15.0, (0, (4, 2))), (20.0, (0, (1, 1.5))), (25.0, (0, (6, 2, 1, 2)))):
+        axC.axhline(10 * B.E_FILL_DESIGN / v_, color=MUTED, lw=0.9, ls=ls, zorder=1)
+        axC.text(19.3, 10 * B.E_FILL_DESIGN / v_ + 0.04, f"{B.E_FILL_DESIGN:g} kV/mm on a {v_:.0f} kV ring", fontsize=6.9,
+                 color=INK2, ha="left", va="bottom")
+    axC.axvline(rec["theta_p"], color=INK, lw=0.8, zorder=1)
+    axC.text(rec["theta_p"] + 0.3, 0.03, f"the record's polar edge, {rec['theta_p']:.2f}° (±15 kV)", fontsize=6.9,
+             color=INK, rotation=90, va="bottom", transform=axC.get_xaxis_transform())
 
     # (d) the retainer's permittivity
     axD = fig.add_subplot(gs[1, 1])
@@ -225,25 +244,27 @@ def main():
                "follow ε (0.5 mm gel pocket, G10 coupler)", "change from PEEK (%)", "the retainer's ε_r")
     axD.legend(fontsize=7.0, frameon=True, facecolor="white", edgecolor="none", framealpha=0.92, loc="center right")
 
-    # (e) the best design of each pair of ratings, solved directly
+    # (e) the best symmetric design of each pair of ratings, solved directly; the stacked family's best beside it
     axT = fig.add_subplot(gs[1, 2]); axT.axis("off")
-    axT.set_title("(e) the best design at each pair of ratings, solved directly", fontsize=9.6, loc="left", color=INK)
-    xs = (0.0, 0.17, 0.39, 0.55, 0.69, 0.83)
-    for x_, h_ in zip(xs, ("ratings\n(kV/mm)", "stages", "bands,\nbeads", "gel, polar /\neq. bead", "at the\nnull",
-                           "rings A / B")):
+    axT.set_title("(e) the best symmetric design at each pair of ratings, solved directly", fontsize=9.6, loc="left",
+                  color=INK)
+    xs = (0.0, 0.15, 0.33, 0.52, 0.68, 0.84)
+    for x_, h_ in zip(xs, ("ratings\n(kV/mm)", "stages,\nrings A / B", "bands,\nbeads", "gel, polar /\neq. bead",
+                           "at the\nnull", "stacked\nfamily's best")):
         axT.text(x_, 0.97, h_, fontsize=7.6, color=INK, weight="bold", va="top", transform=axT.transAxes)
     y = 0.83
     for i, key in enumerate(PAIRS):
-        b = R["best_edges"].get(key)
+        b = R["best_by_family"]["mirror"].get(key)
+        o_ = R["best_by_family"]["stacked"].get(key)
         if not b:
             continue
         e_t, e_g = key.split("/")
-        stages = f"A {b['n_a']} + B {b['n_cw']}" if b["n_a"] else f"B {b['n_cw']}"
-        row = (f"glass {e_t}\ngel {e_g}", stages,
-               f"{b['theta_p']:.1f}–{b['theta_e']:.1f}°\nØ{2 * b['rho_pol_mm']:g} / Ø{2 * b['rho_eq_mm']:g} mm",
-               f"{b['E_pol']['gel']:.1f} / {b['E_eq']['gel']:.1f}",
-               f"{b['E_null_kV_cm']:.1f} kV/cm\n{b['p_null_Pa']:.1f} Pa",
-               f"{kv(b['V_A_kV'])} /\n{kv(b['V_B_kV'], '+{:.1f}')} kV")
+        row = (f"glass {e_t}\ngel {e_g}", f"{b['n_a']} + {b['n_cw']}\n±{0.5 * (b['V_B_kV'] - b['V_A_kV']):.1f} kV",
+               f"{b['theta_p']:.2f}–{b['theta_e']:.1f}°\nØ{2 * b['rho_pol_mm']:g} / Ø{2 * b['rho_eq_mm']:g} mm",
+               f"{b['E_pol']['gel']:.2f} / {b['E_eq']['gel']:.2f}",
+               f"{b['E_null_kV_cm']:.2f} kV/cm\n{b['p_null_Pa']:.2f} Pa",
+               (f"{o_['E_null_kV_cm']:.2f} kV/cm\n" + (f"A {o_['n_a']} + B {o_['n_cw']}" if o_["n_a"] else
+                                                       f"B {o_['n_cw']}")) if o_ else "")
         for x_, c in zip(xs, row):
             axT.text(x_, y, c, fontsize=7.4, color=INK if i == 0 else INK2, weight="bold" if i == 0 else "normal",
                      va="top", transform=axT.transAxes, linespacing=1.25)
@@ -251,8 +272,8 @@ def main():
     notes = [
         "The rings' separation is not the only limit: each ring's polar bead faces the AH coil's end (REF) across the "
         "PEEK seat, and holds 5 kV/mm in the gel only away from the pole; the equatorial bead's field grows with the DC even "
-        "at a fixed field along the glass. Chains on both rings (A negative, B positive) share the DC, so neither ring "
-        "carries most of it.",
+        "at a fixed field along the glass. On the symmetric supply each ring has its own chain from the shaft (A negative "
+        "on node 1, B positive on node 4): each holds half the DC, and the null sits at the shaft's potential.",
         "Bold: the design ratings (1 kV/mm along the glass [RH]; 5 kV/mm in the gel at a bead [RH]). The others need the "
         "bench test's qualification (docs/bench-test-rings.md).",
     ]

@@ -1,7 +1,8 @@
 """docs/make_hub_bench_figure.py -- writes docs/figures/hub-bench-predictions.png: what the bench test of the rings should
 see (sim/hub_drift.py -> sim/hub_drift_results.json), for the rings as built (sim/hub_rings_build.py's record).
   (a) the start-up: the field at the null, cycle by cycle, as the pump charges the rings through the multiplier;
-  (b) the 120 Hz swing: the field at the null and the rings over two cycles of the pump;
+  (b) the 120 Hz ripple over two cycles of the pump: its nodes 1 and 4, the rings about their DC, the field at the
+      null (three charts on one time axis);
   (c) the drift: the field at the null over six hours as the glass, the gel, the retainer and the coupler leak;
   (d) the test's phases and what each should read.
 Usage: python3 docs/make_hub_bench_figure.py
@@ -58,7 +59,11 @@ def main():
     fig = plt.figure(figsize=(16.5, 10.2), facecolor="white")
     gs = fig.add_gridspec(2, 3, width_ratios=(1, 1, 1.15), height_ratios=(1, 1.05), hspace=0.42, wspace=0.27,
                           left=0.045, right=0.985, top=0.87, bottom=0.06)
-    sup = (f"ring A on {rec['n_a']} and ring B on {rec['n_cw']}" if rec["n_a"] else f"ring B on {rec['n_cw']}") + " stages"
+    if rec.get("a_ref") == "shaft":
+        sup = f"the symmetric supply, {rec['n_a']} + {rec['n_cw']} stages"
+    else:
+        sup = (f"ring A on {rec['n_a']} and ring B on {rec['n_cw']}" if rec["n_a"] else f"ring B on {rec['n_cw']}") + \
+            " stages"
     fig.suptitle(f"The bench test of the rings: what the field at the null should do ({sup}, {rec['V_gap_kV']:.1f} kV "
                  f"across, bands {rec['theta_p']:.1f}–{rec['theta_e']:.1f}°)", fontsize=11.8, x=0.01, ha="left", color=INK)
     fig.text(0.01, 0.915, "sim/hub_drift.py: the pump's supply in ngspice (100 pF storage, 100 GΩ per ring), the hub's finite "
@@ -79,31 +84,47 @@ def main():
                "each cycle)", "kV/cm at the null", "time from the seed (s)")
     axA.set_ylim(0, None)
 
-    # (b) the 120 Hz swing
-    axB = fig.add_subplot(gs[0, 1])
+    # (b) the 120 Hz ripple, in three charts on one time axis (no twin axes): the pump's nodes, the rings, the field
+    sub = gs[0, 1].subgridspec(3, 1, hspace=0.16)
     tm = np.array(sw["t_ms"])
-    axB.plot(tm, sw["E_kV_cm"], color="#0d366b", lw=1.8, label="the field at the null")
-    axB.set_ylim(sw["E_mean_kV_cm"] - 1.5 * sw["E_pp_kV_cm"] - 0.05, sw["E_mean_kV_cm"] + 1.5 * sw["E_pp_kV_cm"] + 0.05)
-    style(axB, f"(b) the 120 Hz swing: {sw['E_pp_kV_cm']:.3f} kV/cm p-p on {sw['E_mean_kV_cm']:.2f} "
-               f"({100 * sw['E_pp_kV_cm'] / sw['E_mean_kV_cm']:.1f} %);\nthe AH's ampere-turns swing "
-               f"{100 * (D['ah_ripple']['AT_max'] - D['ah_ripple']['AT_min']) / D['ah_ripple']['AT_mean']:.1f} % p-p "
-               "(22 mF across each coil)", "kV/cm at the null", "time over two cycles (ms)")
-    ax2 = axB.twinx()
-    ax2.plot(tm, 1e3 * (np.array(sw["V_B_kV"]) - np.mean(sw["V_B_kV"])), color=C_B, lw=1.0, ls=(0, (3, 1.5)),
-             label=f"ring B about its {kv(np.mean(sw['V_B_kV']), '+{:.1f}')} kV")
-    ax2.plot(tm, 1e3 * (np.array(sw["V_A_kV"]) - np.mean(sw["V_A_kV"])), color=C_A, lw=1.0, ls=(0, (3, 1.5)),
-             label=f"ring A about its {kv(np.mean(sw['V_A_kV']))} kV")
-    lim = 1e3 * max(np.ptp(sw["V_B_kV"]), np.ptp(sw["V_A_kV"]))
-    ax2.set_ylim(-1.6 * lim, 1.6 * lim)
-    ax2.set_ylabel("V about the mean", fontsize=8.0, color=INK2)
-    ax2.tick_params(colors=INK2, labelsize=7.6)
-    for s in ("top",):
-        ax2.spines[s].set_visible(False)
-    ax2.spines["right"].set_color(AXIS)
-    h1, l1 = axB.get_legend_handles_labels()
-    h2, l2 = ax2.get_legend_handles_labels()
-    axB.legend(h1 + h2, l1 + l2, fontsize=7.0, frameon=True, facecolor="white", edgecolor="none", framealpha=0.92,
-               loc="upper right")
+    v1, v4 = np.array(sw["V1_kV"]), np.array(sw["V4_kV"])
+    va, vb = np.array(sw["V_A_kV"]), np.array(sw["V_B_kV"])
+    T_ms = 1e3 / 120.0
+    i_a = [int(np.argmin(np.where((tm >= k * T_ms) & (tm < (k + 1) * T_ms), va, np.inf))) for k in (0, 1)]
+    i_b = [int(np.argmax(np.where((tm >= k * T_ms) & (tm < (k + 1) * T_ms), vb, -np.inf))) for k in (0, 1)]
+    axN = fig.add_subplot(sub[0])
+    axN.plot(tm, v4, color=C_B, lw=1.5, label="node 4 (drives ring B's chain)")
+    axN.plot(tm, v1, color=C_A, lw=1.5, label="node 1 (drives ring A's chain)")
+    style(axN, f"(b) the 120 Hz ripple: {sw['E_pp_kV_cm']:.3f} kV/cm p-p on {sw['E_mean_kV_cm']:.2f} "
+               f"({100 * sw['E_pp_kV_cm'] / sw['E_mean_kV_cm']:.1f} %), no swing from A to B", "kV")
+    axN.legend(fontsize=6.8, frameon=True, facecolor="white", edgecolor="none", framealpha=0.92, loc="upper right",
+               ncol=2)
+    axN.set_ylim(min(v1.min(), v4.min()) - 1.0, max(v1.max(), v4.max()) + 3.2)
+    axR = fig.add_subplot(sub[1], sharex=axN)
+    axR.plot(tm, 1e3 * (vb - vb.mean()), color=C_B, lw=1.5, label=f"ring B about {kv(vb.mean(), '+{:.2f}')} kV")
+    axR.plot(tm, 1e3 * (va - va.mean()), color=C_A, lw=1.5, label=f"ring A about {kv(va.mean(), '{:.2f}')} kV")
+    style(axR, "", "V")
+    axR.legend(fontsize=6.8, frameon=True, facecolor="white", edgecolor="none", framealpha=0.92, loc="upper right",
+               ncol=2)
+    lim = 1e3 * max(np.ptp(va), np.ptp(vb))
+    axR.set_ylim(-1.0 * lim, 1.25 * lim)
+    axE = fig.add_subplot(sub[2], sharex=axN)
+    axE.plot(tm, sw["E_kV_cm"], color="#0d366b", lw=1.6)
+    style(axE, "", "kV/cm", "time over two cycles of the pump (ms)")
+    axE.set_ylim(sw["E_mean_kV_cm"] - 1.4 * sw["E_pp_kV_cm"], sw["E_mean_kV_cm"] + 1.4 * sw["E_pp_kV_cm"])
+    for k in (0, 1):                                                   # the top-ups: ring A at node 1's low, B at node 4's high
+        for ax_ in (axN, axR, axE):
+            ax_.axvline(tm[i_a[k]], color=C_A, lw=0.7, ls=(0, (2, 2)))
+            ax_.axvline(tm[i_b[k]], color=C_B, lw=0.7, ls=(0, (2, 2)))
+    axE.annotate(f"ring A tops up, then ring B {abs(tm[i_b[0]] - tm[i_a[0]]):.2f} ms later: the ripples add",
+                 (tm[i_b[0]], float(np.interp(tm[i_b[0]], tm, sw["E_kV_cm"]))), (tm[i_b[0]] + 0.6,
+                 sw["E_mean_kV_cm"] + 1.05 * sw["E_pp_kV_cm"]), fontsize=6.9, color=INK2, va="center")
+    for ax_ in (axN, axR):
+        plt.setp(ax_.get_xticklabels(), visible=False)
+    axE.set_xlim(tm[0], tm[-1])
+    axE.text(1.0, -0.62, f"the AH's ampere-turns ripple "
+             f"{100 * (D['ah_ripple']['AT_max'] - D['ah_ripple']['AT_min']) / D['ah_ripple']['AT_mean']:.1f} % p-p "
+             "(22 mF across each coil)", transform=axE.transAxes, ha="right", fontsize=7.0, color=INK2)
 
     # (c) the drift
     axC = fig.add_subplot(gs[1, :2])
@@ -132,7 +153,8 @@ def main():
          f"{d0['E_kV_cm'][0]:.2f} kV/cm at switch-on, {at(d0, 600):.2f} at 10 min, {at(d0, 3600):.2f} at 1 h, "
          f"{d0['E_kV_cm'][-1]:.2f} at 6 h (PEEK, gel, 25 °C)"),
         ("4. the pump", "the rings on the rotor's supply: start-up, ripple, then the drift again",
-         f"95 % in {t[hit]:.2f} s; {sw['E_pp_kV_cm']:.3f} kV/cm p-p at 120 Hz on {sw['E_mean_kV_cm']:.2f}"),
+         f"95 % in {t[hit]:.2f} s; {sw['E_pp_kV_cm']:.3f} kV/cm p-p at 120 Hz on {sw['E_mean_kV_cm']:.2f}: a "
+         "steady field from B to A, no swing"),
     ]
     y, dl = 0.96, 0.0165                                           # dl: one line of 7.5 pt text on this axis
     for ph, how, exp in rows:
