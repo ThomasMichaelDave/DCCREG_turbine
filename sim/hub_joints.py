@@ -435,12 +435,12 @@ def polar_margin(rec):
     for label, sig in S.STATES:
         out[label] = []
         for rc in (0.0, 1.5, 2.5):
-            hq = hub_ah_rounded(rec, sig, rc)
-            row = dict(rc_mm=rc, E_null_kV_cm=hq["E_null_kV_cm"])
-            for g in ("rect", S.REC_GROOVE):
+            row = dict(rc_mm=rc)
+            for g in ("rect", S.REC_GROOVE):              # the hub and the bead's box with the same grooves
+                hq = hub_ah_rounded(rec, sig, rc, groove=g)
                 q = S.bead_state(rec, "pol", sig, hq, groove=g, wedge=False)
                 row[g] = dict(E_gel_kV_mm=q["E_gel_kV_mm"], E_glass_kV_mm=q["E_glass_kV_mm"],
-                              margin=E_GEL_RATING / q["E_gel_kV_mm"] - 1)
+                              margin=E_GEL_RATING / q["E_gel_kV_mm"] - 1, E_null_kV_cm=hq["E_null_kV_cm"])
             out[label].append(row)
     return out
 
