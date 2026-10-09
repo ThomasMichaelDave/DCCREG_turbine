@@ -152,7 +152,8 @@
 ## Open questions for the designer
 **Update, 2026-10-08:** the designer locked the hub (`presets/hub-locked.json`, `sim/hub-locked-findings.md`). The AH
 sits on the axis (question 2), so the stems enter from the side. The pair fits the 50 mm vessel with 12 mm to spare.
-Whether the field comes from it or from rings outside the glass is open there.
+On 2026-10-09 the designer chose the rings outside the glass instead (7.8 kV/cm at the null on three multiplier
+stages), so the pair inside is not the design; this study stays as the comparison.
 
 1. **How much free gap do you need at the null?** The field is the rule's whatever the supply; the gap picks the supply:
    - up to 2.0 mm: dc0;

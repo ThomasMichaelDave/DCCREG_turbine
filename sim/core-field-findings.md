@@ -41,6 +41,12 @@
 6. **The hub locked (designer, 2026-10-08):** a 50 mm borosilicate sphere with the rings around it, the AH cores with
    their coils on the z axis, a retainer, the shaft coupler over it, and the shaft halves with their pumps
    (`presets/hub-locked.json`, `sim/hub-locked-findings.md`). §4's rings sat on the 90 mm placeholder.
+7. **The designer's choices (2026-10-09):**
+   - the rings outside the glass make the field;
+   - the wall is 1.5 mm;
+   - the AH flanges sit outside the vessel.
+   - **Now the design of record:** bands from 20° to 53° on the glass, on three multiplier stages (32.2 kV across):
+     7.8 kV/cm at the null (`sim/hub-locked-findings.md` §1).
 
 **The design.** The air build's capped stack (`sim/air_stack_sizing.py` stage 4c): 3 mm full-round vanes, 6 + 6 per
 varicap per side, 6 × 22° / 22°, 6 mm gaps, r 150. That gives C 55–410 pF, Ca = Cb 451 pF and V_op 13.1 kV, at 1200 rpm

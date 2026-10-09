@@ -27,6 +27,19 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **The rings outside the glass make the field at the AH null** (designer's choice, 2026-10-09; `sim/hub_locked.py`,
+  `sim/hub-locked-findings.md`, `docs/figures/hub-locked.png`, `presets/hub-locked.json`).
+  - **The choices:** the rings, a 1.5 mm wall, the AH flanges outside the vessel (outboard of the 160-turn coil, at
+    |z| 72–80).
+  - **The rings of record:** bands on the glass from 20° to 53°, on three multiplier stages. Ring A sits at −13.2 kV
+    and ring B at +19.0 kV, 32.2 kV across.
+    - At the null: 7.8 kV/cm (2.7 Pa) as connected, settling toward 8.9 kV/cm.
+    - The gap between the rings holds the DC at 1 kV/mm along the glass [RH].
+  - **The supply is the limit,** not the vacuum: more stages need a wider gap, yet still gain. 0 / 1 / 2 / 3 stages
+    give 3.8 / 5.7 / 7.1 / 7.8 kV/cm. A better interface rating reaches 9.2 (2 kV/mm) or 9.6 (5 kV/mm).
+  - **The schematic** now draws the rings and the stage × 3. **The cost sheet** gains core field 4 (DC on the rings,
+    the default). It carries the multiplier's simulated sag. 81 designs qualify at 7.5 kV/cm; the cheapest is 5,812.
+  - **Three stages are the cheapest route.** With one or two, the stack must make the voltage itself (6,282 / 6,321).
 - **The hub, locked by the designer** (`presets/hub-locked.json`, `sim/hub_locked.py`, `sim/hub-locked-findings.md`,
   `docs/figures/hub-locked.png`).
   - **The stack-up, inside out:**
