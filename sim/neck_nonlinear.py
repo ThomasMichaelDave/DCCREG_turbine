@@ -19,7 +19,7 @@ The deck: sim/rotor_parts_duty._kw (the pick as sim/pole_design.size_op runs it)
 22 mF bypass inserted as sim/ah_steady_cusp.run does; the utron groups' law replaced (text substitution, the files are
 not edited) by the FE's: i = Psi / L(theta) + i_neck(Psi), the neck in series with the rest of the path [IR, checked
 against the FE map along the deck's own trajectory].
-Usage: python3 sim/neck_nonlinear.py   (about 25 minutes on 4 cores)
+Usage: python3 sim/neck_nonlinear.py   (NECK_PROCS worker processes, default 2; about 40 minutes with 2)
 """
 import json
 import math
@@ -70,6 +70,7 @@ SF_SIFE = 0.95            # M235-35A stack (docs/make_core_drawing.py SF: "a sta
 SF_NIFE = 0.90            # 0.1 mm NiFe foils with their coating [RH: typical for 0.1 mm laminations]
 G_J = 0.02                # mm, contact gap at each lap joint (half-core on strip; datum A flat to 0.02) [RH]
 MU_KNEE = 100.0           # an iron counts as saturated where its differential mu_r falls below this [IR]
+PROCS = int(os.environ.get("NECK_PROCS", "2"))   # worker processes
 
 # ------------------------------------------------------------------------------------------------ the field solver
 
@@ -224,6 +225,7 @@ class Problem:
         for it in range(1, maxit + 1):
             R, E, K = self.assemble(A)
             lu = spla.splu(K, permc_spec="MMD_AT_PLUS_A", options=dict(SymmetricMode=True))
+            self.lu = lu
             dA = np.zeros(m.nnode)
             dA[fr] = lu.solve(-R[fr])
             dec = -float(R[fr] @ dA[fr])
@@ -369,16 +371,15 @@ def characterise(job):
     hist = []
 
     def step(NI):
-        if len(hist) >= 2:
-            (n0, a0), (n1, a1) = hist[-2], hist[-1]
-            A0 = a1 + (NI - n1) / (n1 - n0) * (a1 - a0)
-        elif hist:
-            A0 = hist[-1][1] * NI / hist[-1][0]
-        else:
-            A0 = None
+        A0 = None
+        if hist:                                        # the tangent dA/dNI of the last point (its factorisation)
+            n1, a1, tg = hist[-1]
+            A0 = a1 + (NI - n1) * tg
         pr = Problem(m, mat, J1 * NI, mats, L_stk)
         A, it, ok = pr.solve(A0)
-        hist.append((NI, A))
+        tg = np.zeros(m.nnode)
+        tg[m.free] = pr.lu.solve(pr.f[m.free] / NI)
+        hist[:] = [(NI, A, tg)]
         res["NI"].append(NI)
         res["phi"].append(pr.flux(A, NI))
         res["its"].append(it)
@@ -733,8 +734,8 @@ def main():
     slab = gate_slab()
     print(f"  max rel error {slab['max_rel_err']:.2e}", flush=True)
     jobs = jobs_list()
-    print(f"FE: {len(jobs)} jobs on 4 processes", flush=True)
-    with Pool(4) as pool:
+    print(f"FE: {len(jobs)} jobs on {PROCS} processes", flush=True)
+    with Pool(PROCS) as pool:
         fe = pool.map(characterise, jobs, chunksize=1)
     print(f"FE done in {time.time() - t_start:.0f} s", flush=True)
     post(fe, slab, t_start)
@@ -886,7 +887,7 @@ def post(fe, slab, t_start):
     djobs = [(name, law, c) for name, law in laws.items() for c in (0.0, 22.0)]
     zjobs = [("record", list(row["prof"]), row["tau"]), ("C (FE L(theta))", list(prof_C), L3[0] / row["R_per_n2"])]
     print(f"deck: {len(djobs)} ngspice runs", flush=True)
-    with Pool(4) as pool:
+    with Pool(PROCS) as pool:
         zl = pool.map_async(zlin_job, zjobs)
         runs = pool.map(run_deck, djobs, chunksize=1)
         zl = zl.get()

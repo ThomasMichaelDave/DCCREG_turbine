@@ -426,7 +426,7 @@ def mag_job(job):
     diss = cu_ut + cu_fx + p_ah + P["snub"] + sum(p_d.values()) + p_esr
     out.update(P_belt_W=mech, P_cu_utron_W=cu_ut, P_cu_fixed_W=cu_fx, P_AH_W=p_ah, P_snub_W=P["snub"],
                P_diodes_W=sum(p_d.values()), P_esr_W=p_esr, dW_stored_W=dW,
-               balance=dict(residual_W=mech - diss - dW, residual_frac=(mech - diss - dW) / mech,
+               balance=dict(residual_W=mech - diss - dW, residual_frac=(mech - diss - dW) / mech if mech else None,
                             note="belt - (copper + AH + snubbers + diodes + ESR) - dW/dt over the last 4 cycles"))
     for nm, i in (("top", iA), ("bottom", iB)):                        # AHt / AHb (sim/ah-steady-cusp-findings.md)
         a = np.abs(i[sel]) * h["N"]
@@ -1037,7 +1037,7 @@ def gates(out):
                               record="sim/ah_steady_cusp_results.json" + (", sim/rotor_parts_duty_results.json" if key == "none" else "")))
         for m, rows in mg.get("steady", {}).items():
             for key, r in rows.items():
-                if r.get("done"):
+                if r.get("done") and r["balance"]["residual_frac"] is not None:
                     b = r["balance"]
                     g.append(dict(gate=f"G-ENERGY magnetic {m} {key}", ok=abs(b["residual_frac"]) < 5e-3,
                                   residual_W=b["residual_W"], residual_frac=b["residual_frac"], P_belt_W=r["P_belt_W"]))

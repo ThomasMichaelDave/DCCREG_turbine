@@ -955,8 +955,10 @@ def stray_sets(res):
     sets["as built"] = built(best, "the best estimate")
     for nm, b in res.get("side_variants", {}).items():
         sets[f"as built, {nm}"] = built(b, nm)
-    for lev, b in res.get("side_levels", {}).items():
-        sets[f"as built, level {lev}"] = built(b, f"level {lev}")
+    lv = res.get("side_levels", {})
+    for lev, b in lv.items():
+        if lev != max(lv):                               # the coarser levels: the mesh's effect on z
+            sets[f"as built, level {lev}"] = built(b, f"level {lev}")
     return sets
 
 
@@ -1049,6 +1051,152 @@ def _t95(r):
     fin = vk[-3:].mean()
     hit = np.nonzero(vk <= 0.95 * fin)[0]
     return float((hit[0] + 1) / CF.F) if len(hit) else None
+
+
+def analyse(res, levels, log=print):
+    """the solves into the record's terms: the periodic cell, the side model per level (and extrapolated), the
+    variants, the couplings across the hub, the rings."""
+    S = res["solves"]
+    rec = inputs()["rec"]
+    key = lambda kind, **kw: kind + ":" + ",".join(f"{k}={v}" for k, v in sorted(kw.items()))
+    # ---- the periodic cell
+    cell = dict(record=dict(per_gap_max_pF=rec["per_gap_max_pF"], per_gap_min_pF=rec["per_gap_min_pF"],
+                            C_edge_pF=rec["C_min_pF"] - rec["n_gap"] * rec["per_gap_min_pF"], n_gap=rec["n_gap"]))
+    for rims in (False, True):
+        rows = []
+        for h in CELL_H:
+            row = dict(h_mm=h)
+            for un in (False, True):
+                s = S.get(key("cell", h=h, unaligned=un, rims=rims))
+                if not s:
+                    continue
+                C, nm = matrix(s)
+                tag = "unaligned" if un else "aligned"
+                row[tag] = -12 * C[nm.index("SA"), nm.index("N1v")]
+                if rims:
+                    row[f"{tag}_rotor_vane_shaft_pF"] = -24 * C[nm.index("SHAFT"), nm.index("N1v")]
+                    row[f"{tag}_rotor_vane_wall_pF"] = -24 * C[nm.index("W"), nm.index("N1v")]
+            rows.append(row)
+        cell["with_rims" if rims else "no_rims"] = rows
+    clr = []
+    for c in (0.0, 3.0, 6.0, 12.0):
+        row = dict(clear_mm=c)
+        for un in (False, True):
+            s = S.get(key("cell", h=0.5, unaligned=un, rims=True)) if c == 0 else \
+                S.get(key("cell", h=0.5, unaligned=un, rims=True, clear=c))
+            if s:
+                C, nm = matrix(s)
+                row["unaligned" if un else "aligned"] = -12 * C[nm.index("SA"), nm.index("N1v")]
+        if "aligned" in row and "unaligned" in row:
+            row["kappa_gap"] = row["aligned"] / row["unaligned"]
+        clr.append(row)
+    cell["clearance"] = clr
+    s = S.get(key("cell", h=0.5, unaligned=False, rims=True, sleeve_eps=2.1))
+    if s:
+        C, nm = matrix(s)
+        cell["sleeve_ptfe"] = dict(eps=2.1, rotor_vane_shaft_pF=-24 * C[nm.index("SHAFT"), nm.index("N1v")],
+                                   per_gap_aligned_pF=-12 * C[nm.index("SA"), nm.index("N1v")])
+    res["cell"] = cell
+    # ---- the side model per level, and extrapolated
+    lv = {}
+    for lev in levels:
+        caps = {}
+        for un in (False, True):
+            s = S.get(key("side", level=lev, unaligned=un))
+            if s:
+                caps["unaligned" if un else "aligned"] = side_caps(s)
+        if len(caps) == 2:
+            lv[lev] = caps
+    res["side_levels"] = lv
+    hs = [_hs(l) for l in sorted(lv)]
+    best, ext = {"aligned": {}, "unaligned": {}}, {"aligned": {}, "unaligned": {}}
+    for ang in ("aligned", "unaligned"):
+        for k in ("varicap", "ca", "stray_12", "node1_ref", "node2_ref", "stray1", "stray2", "internal_N1v_N1c",
+                  "node1_ring", "node2_ring"):
+            xs = [lv[l][ang][k] for l in sorted(lv)]
+            v, p = richardson(xs, hs)
+            best[ang][k] = xs[-1]                        # the deck takes the finest level; the extrapolation is the gate
+            ext[ang][k] = dict(levels=xs, h_mm=hs, value=v, order=p,
+                               last_step=(xs[-1] / xs[-2] - 1) if len(xs) > 1 and xs[-2] else None)
+        for grp in ("items1", "items2"):
+            best[ang][grp] = dict(lv[max(lv)][ang][grp])
+    res["side_best"], res["side_extrapolation"] = best, ext
+    # ---- variants, at level 1 (or the finest below it)
+    lvv = max([l for l in lv if l <= 1] or [max(lv)])
+    var = {}
+    s_a, s_u = S.get(key("side", level=lvv, unaligned=False)), S.get(key("side", level=lvv, unaligned=True))
+    if s_a and s_u and "UT" in s_a["driven"] and "W" in s_a["driven"]:
+        for nm, fl, extra in (("the room floating", ("BRa", "BRb", "W"), ()), ("the utrons floating", ("BRa", "BRb", "UT"), ()),
+                              ("the bridges at REF", (), ("BRa", "BRb"))):
+            ref = tuple(x for x in REF_PARTS if x not in fl) + extra
+            var[nm] = {"aligned": side_caps(s_a, floating=fl, ref=ref), "unaligned": side_caps(s_u, floating=fl, ref=ref)}
+    sp_a, sp_u = (S.get(key("side", level=lvv, unaligned=u, spacers=True)) for u in (False, True))
+    if sp_a and sp_u:
+        var["node-1 spacers on the sleeve [RH]"] = {"aligned": side_caps(sp_a), "unaligned": side_caps(sp_u)}
+    res["side_variants"], res["side_variants_level"] = var, lvv
+    # ---- across the hub: the odd mode against the even, unreduced (level lvv) [OC]
+    ac = dict(level=lvv)
+    grp = lambda C, nm, A, B: sum(C[nm.index(a), nm.index(b)] for a in A for b in B)
+    n1, n2 = ("N1v", "N1c"), ("N2",)
+    for un in (False, True):
+        se, so = S.get(key("side", level=lvv, unaligned=un)), S.get(key("side", level=lvv, unaligned=un, mid="zero"))
+        if se and so:
+            (Ce, ne), (Co, no) = matrix(se), matrix(so)
+            ac["unaligned" if un else "aligned"] = dict(
+                C14_pF=3.0 * (grp(Co, no, n1, n1) - grp(Ce, ne, n1, n1)), C23_pF=3.0 * (grp(Co, no, n2, n2) - grp(Ce, ne, n2, n2)),
+                C13_pF=3.0 * (grp(Co, no, n2, n1) - grp(Ce, ne, n2, n1)))
+    for k in ("C14_pF", "C23_pF", "C13_pF"):
+        v = [ac[t][k] for t in ("aligned", "unaligned") if t in ac]
+        ac[k] = float(np.mean(v)) if v else 0.0
+    res["across"] = ac
+    # ---- the axisymmetric whole machine: the rings, and the bound
+    sa = S.get(key("axi", h=0.5, h_hub=0.25))
+    if sa:
+        C, nm = matrix(sa)
+        g = lambda a, b: -360.0 * C[nm.index(a), nm.index(b)]
+        refs = ("STA", "REF", "W")
+        rr = _rings_record()
+        res["rings_axi"] = dict(C_ring_ref_pF=sum(g("RA", b) for b in refs), C_ring_ring_pF=g("RA", "RB"),
+                                C_node1_ringA_pF=g("N1", "RA"), C_node1_ringB_pF=g("N1", "RB"), C_node2_ringA_pF=g("N2", "RA"),
+                                C14_axi_pF=g("N1", "N4"), C13_axi_pF=g("N1", "N3"), C23_axi_pF=g("N2", "N3"),
+                                node1_ref_axi_pF=sum(g("N1", b) for b in refs), node2_ref_axi_pF=sum(g("N2", b) for b in refs),
+                                varicap_axi_pF=g("N1", "STA"), ca_axi_pF=g("N1", "N2"),
+                                record_hub_solve=dict(C_ring_ref_pF=rr["C_ring_ref_pF"], C_ring_ring_pF=rr["C_ring_ring_pF"],
+                                                      source=SRC["rings"] + " record"))
+    return res
+
+
+def _rings_record():
+    return json.load(open(os.path.join(ROOT, SRC["rings"])))["record"]
+
+
+def record_deck():
+    """the record's deck inputs: the node strays (sim/core_field.py CPAR), the rings' strays as record_supply ran them
+    (the deck's defaults c_e / c_gap: sim/hub_rings_build.py passes neither), the record_supply case and its results."""
+    import inspect
+    dflt = {k: v.default for k, v in inspect.signature(_DECK).parameters.items()}
+    rb = json.load(open(os.path.join(ROOT, SRC["rings"])))
+    rs = rb["record_supply"]
+    core = {r["name"]: r for r in json.load(open(os.path.join(ROOT, SRC["core"])))["rows"]}
+    return dict(CPAR_pF=CF.CPAR * 1e12, c_e_pF=dflt["c_e"] * 1e12, c_gap_pF=dflt["c_gap"] * 1e12,
+                rings_kw={k: rs[k] for k in ("opt", "n_cw", "n_cw_a", "c_core", "c_cw", "r_leak", "a_ref", "n_cyc", "steps")},
+                z_free=core["free none"]["z"], P_clamped_W=core["none"]["P_belt_W"], z_rings=rb["record_supply_free"]["z"],
+                rings_P_belt_W=rs["P_belt_W"], V_A_kV=rs["V_ea_kV"]["mean"], V_B_kV=rs["V_eb_kV"]["mean"],
+                E_null_kV_cm=rs.get("E_null_mean_kV_cm"))
+
+
+def sensitivity(procs, log=print):
+    """the deck's own price of a pF (the record's caps): z against Cp on nodes 1 / 4 and on nodes 2 / 3."""
+    pF = 1e-12
+    cases = [(f"sens|{c1}|{c2}", dict(opt="none", clamp=False, n_cyc=12,
+                                      strays=dict(Cp={"1": c1 * pF, "4": c1 * pF, "2": c2 * pF, "3": c2 * pF}, Cx={})))
+             for c1, c2 in ((20, 20), (30, 20), (20, 30))]
+    with Pool(procs) as pool:
+        r = dict(pool.map(_run, cases))
+    z = lambda a, b: r[f"sens|{a}|{b}"]["z"]
+    return dict(dz_per_pF_nodes14=(z(30, 20) - z(20, 20)) / 10.0, dz_per_pF_nodes23=(z(20, 30) - z(20, 20)) / 10.0,
+                z_at=dict(cp20_20=z(20, 20), cp30_20=z(30, 20), cp20_30=z(20, 30)),
+                note="each pair of nodes raised together (1 and 4, or 2 and 3), the record's C1 / C2 / Ca / Cb")
 
 
 # ================================================================================================ the figure
