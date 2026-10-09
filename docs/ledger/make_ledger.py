@@ -164,6 +164,9 @@ def build_paper():
     m = re.search(r'<div class="landpage"><h2|<h2', body)
     i = m.start() if m else len(body)
     title, rest = body[:i], body[i:]
+    # the title's two parts on two lines (the bookmark then reads the name, not a wrapped line)
+    title = re.sub(r"<h1>(.*?) — (.*?)</h1>", lambda m: f'<h1>{m.group(1)}</h1><div class="sub">'
+                   f'{m.group(2)[:1].upper()}{m.group(2)[1:]}</div>', title, count=1)
     j = title.find("<p><strong>Reading notes.</strong></p>")
     title, notes = (title[:j], title[j:]) if j >= 0 else (title, "")
     for sec in ("the-components-and-how-they-work", "fact-sheet", "known-inconsistencies"):  # each on a fresh page
@@ -183,9 +186,15 @@ def build_paper():
         pg.wait_for_load_state("networkidle")
         pg.pdf(path=PAPER, format="A4", prefer_css_page_size=True, print_background=True, display_header_footer=True,
                header_template=HEADER.format(date=LOCK_DATE, state=LOCK_STATE), footer_template=FOOTER,
-               margin=dict(top="19mm", bottom="19mm", left="17mm", right="17mm"))
+               margin=dict(top="19mm", bottom="19mm", left="17mm", right="17mm"), outline=True, tagged=True)
         b.close()
     os.remove(tmp)
+    from pypdf import PdfWriter
+    w = PdfWriter(clone_from=PAPER)                                   # the bookmarks and tags stay; the metadata added
+    w.add_metadata({"/Title": "DCCREG turbine - design ledger and fact sheet (design lock)",
+                    "/Subject": f"locked {LOCK_DATE}, design state {LOCK_STATE}, built at {commit()}"})
+    with open(PAPER, "wb") as f:
+        w.write(f)
     return PAPER
 
 
