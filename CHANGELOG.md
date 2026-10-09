@@ -62,8 +62,29 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
   `docs/ledger/make_ledger_figures.py`): what drives what, and where the belt's power goes.
 
 ### Settling the open points (2026-10-09)
-The designer: "Let's go over all inconsistencies and settle all open points as much as possible." Recorded here as it
-lands; the ledger's revision closes it.
+The designer: "Let's go over all inconsistencies and settle all open points as much as possible." The ledger's §6 lists
+each of the lock's 18 inconsistencies and the 12 found since, with its resolution.
+
+- **The designer's decisions (2026-10-09):** the stack of record (6 mm gaps, V_op = breakdown / 1.5, 22° / 22°, r 150,
+  Ca = 1.1 C_max) and the clamps Z1 / Z4 kept; the magnetic pick and the retainer's materials (PEEK, the gel, the G10
+  coupler outside) accepted; the 22 mF bypass and the equatorial split stay PROPOSED. `README.md` and `CLAUDE.md`
+  rewritten for the locked machine; `CONVENTIONS.md`'s switch naming and efficiency note corrected.
+- **The superseded records marked** (`sim/hub-locked-findings.md`, `sim/core-field-findings.md`,
+  `sim/core-null-field-findings.md`, `docs/commutator-design.md`, `docs/kicad/gap-topology-of-record.md`); the
+  lock-down figure retitled.
+- **This file:** a dated timeline from the git history, and the design loop's and netlists v2–v4's entries.
+- **Fixed: the rings' supply record** carries the field at the null (`E_null_*`, k (V_B − V_A)) beside its old 50 mm
+  convention.
+- **Fixed: the start kick's energy:** `sim/pole_design.py` kick_seed reports what it seeds, 3.48 mJ at 0.110 A for the
+  pick, not ½ L (frac × I_pk)² (38 mJ).
+- **The rotor schematic** draws the bypass dashed (PROPOSED), both A-turn ranges and the kick.
+- **Fixed: the cost sheet's BOM:** one 22 mF part per coil, six spiders, the utron's SiFe as built; every total +60.
+- **The AH pair's winding sense** (`sim/ah_winding.py`): each branch carries its own side's coil, both currents
+  unipolar and of the same sign; identical coils as rotated copies make the pair anti-Helmholtz. Side A is below in the
+  record; the gain's two bases are named (z_lin 1.208, z_early 1.139).
+- **The record in solids** (`sim/tube_geometry.py --record`, 940 mm, 153 solids) and its shaft as two bodies
+  (`sim/shaft_bearings.py --record`, `sim/tube-shaft-findings.md` §0): the counter-rotor floats on the inner bearings,
+  so f1 is 29 Hz at d 25 as laid out.
 
 - **Fixed: the field at the null as built is 7.62 kV/cm, not 7.10** (`sim/hub-beads-settled-findings.md` §2).
   - **The cause:** `sim/hub_rings_build.py` solved the null for the bands alone; the beads were sized afterwards in
@@ -98,6 +119,22 @@ lands; the ledger's revision closes it.
 - **Added: a first cut of the retainer, coupler and leads** (`docs/rings-design.md` §2, PROPOSED): a straight G10 tube
   Ø60 / Ø66 over the retainer and both flanges (turned to Ø60), and each lead out along its equatorial bead's normal.
   The air outside the coupler sees at most 0.55 kV/mm.
+- **Added: the AH's null in the locked hub** (`sim/ah_null.py`, `sim/ah-null-findings.md`): at the centre when
+  balanced, 0.113 T/m; 25 µm per A-turn of imbalance; ±0.44 mm over a cycle with the bypass, ±6.4 mm without. The rods
+  reach 0.30 T at 743 A-turns for the AH alone (the record's 600 had the cone windings in series). A non-magnetic shaft
+  at μ_r ≤ 1.05.
+- **Added: the drive's first cut** (`docs/drive-gear-belt.md`, `sim/drive_sizing.py`, PROPOSED): a bevel reverser at
+  side A with POM-C pinions, an HTD 5M belt and a 200 W motor; 0.48 / 0.52 N·m on the bodies, 1.00 N·m into the frame,
+  1,066 EUR against the sheet's 800.
+- **Added: the rotating mechanics** (`sim/rotor_mechanics.py`, `sim/rotor-mechanics-findings.md`): no banding; the gap
+  budget (runout ≤ 0.027 mm per inner bearing as laid out, 0.05 mm with the eighth pair); windage about 12 W and the
+  bearings 5 W, so the belt delivers about 39 W; balance G2.5. It reproduces the two-body shaft model on its inputs,
+  and finds the eighth pair's f1 at 131 Hz on realistic seats.
+- **Corrected in the findings they contradict** (dated notes): the rod limit, banding, windage, the runout, the shaft's
+  first mode against the 30 Hz criterion, and the hub-drive study's first operating point.
+- **The ledger revised** (`docs/ledger/DCCREG-design-ledger.md` and `.pdf`), the register and the drawings bundle
+  (50 sheets: the record in solids in part A, the AH null and the drive in part B, the model before the record in part
+  C), and the architecture figure.
 
 ### Fixed
 - **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the
