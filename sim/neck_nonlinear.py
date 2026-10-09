@@ -19,7 +19,7 @@ The deck: sim/rotor_parts_duty._kw (the pick as sim/pole_design.size_op runs it)
 22 mF bypass inserted as sim/ah_steady_cusp.run does; the utron groups' law replaced (text substitution, the files are
 not edited) by the FE's: i = Psi / L(theta) + i_neck(Psi), the neck in series with the rest of the path [IR, checked
 against the FE map along the deck's own trajectory].
-Usage: python3 sim/neck_nonlinear.py   (NECK_PROCS worker processes, default 2; about 40 minutes with 2)
+Usage: python3 sim/neck_nonlinear.py   (NECK_PROCS worker processes, default 2; about 30 minutes with 2 on an idle machine)
 """
 import json
 import math
@@ -471,12 +471,20 @@ def gate_linear(lin_res):
 
 
 # ------------------------------------------------------------------------------------------------ analysis of a sweep
+PHI_REF = 0.10e-3        # Wb per turn: the working-flux secant that stands for 'below the knee' [IR]
+
+
+def l_ref(res):
+    """the secant inductance per turn^2 at PHI_REF (the first point's if the sweep stops short of it)."""
+    return PHI_REF / interp_NI(res, PHI_REF) if res["phi"][-1] >= PHI_REF else res["phi"][0] / res["NI"][0]
+
+
 def knee(res, tail=0.06e-3):
-    """the low-field L (first point), the post-knee asymptote (a line through the sweep's last 0.06 mWb, if the sweep has
-    passed a knee) and their intersection (the knee flux) [IR: the definition]."""
+    """the line below the knee (the secant at PHI_REF), the post-knee asymptote (a line through the sweep's last
+    0.06 mWb, if the sweep has passed a knee) and their intersection (the knee flux) [IR: the definitions]."""
     NI, phi = np.array(res["NI"]), np.array(res["phi"])
-    L0 = phi[0] / NI[0]
-    out = dict(L_low_H=float(L0))
+    L0 = l_ref(res)
+    out = dict(L_low_H=float(L0), L_NI5_H=float(phi[0] / NI[0]))
     hi = phi >= phi[-1] - tail
     if hi.sum() >= 2 and (phi[-1] - phi[-2]) / (NI[-1] - NI[-2]) < 0.8 * L0:
         c = np.polyfit(NI[hi], phi[hi], 1)
@@ -612,6 +620,8 @@ def run_deck(args):
         except (OSError, ValueError):
             return dict(name=name, c_mf=c_mf, error=(r.stdout + r.stderr)[-400:])
     t = raw[:, 0]
+    if raw.ndim != 2 or t[-1] < 0.99 * kw["n_cyc"] / kw["F"]:
+        return dict(name=name, c_mf=c_mf, error=f"transient stopped at {t[-1]:.4f} s: " + (r.stdout + r.stderr)[-300:])
     c = {v: raw[:, 2 * j + 1] for j, v in enumerate(vecs)}
     out = dict(name=name, c_mf=c_mf, wall_s=time.time() - t0)
     if law["kind"] == "record" and law.get("psi_s") is None:
@@ -671,8 +681,8 @@ def make_law(fe_al, L2d_theta, thetas, use_fe_L=True, name="fe"):
     N = best["N_u"]
     kw = _kw()
     NI, phi = np.array(fe_al["NI"]), np.array(fe_al["phi"])
-    L0 = phi[0] / NI[0]
-    Fn = np.maximum.accumulate(np.maximum(NI - phi / L0, 0.0))      # monotone [IR: removes round-off]
+    L0 = l_ref(fe_al)
+    Fn = NI - phi / L0                                               # signed: below PHI_REF the SiFe's rising mu
     th = np.asarray(thetas)
     L2 = np.asarray(L2d_theta)
     L3 = L2 * (1 + end_k(L2, L2[0], L2[-1]))
@@ -745,7 +755,7 @@ def half_knee(res):
     """the knee's centre: the flux (Wb) and NI where the incremental L first falls to the mean of the low-field L and the
     post-knee asymptote (half the low-field L if the sweep has no asymptote) [IR: the definition]."""
     NI, phi = np.r_[0.0, res["NI"]], np.r_[0.0, res["phi"]]
-    L0 = phi[1] / NI[1]
+    L0 = l_ref(res)
     k_ = knee(res)
     lev = 0.5 * (L0 + k_["L_inc_H"]) if "L_inc_H" in k_ else 0.5 * L0
     inc = np.diff(phi) / np.diff(NI)
@@ -824,12 +834,14 @@ def post(fe, slab, t_start):
     lin = [by[("linear", th)] for th in THETAS]
     g_lin = gate_linear(lin)
     # -- low-field L(theta): 2-D, with pole_fd2d's end factors, and the record's
-    L2 = np.array([base[th]["phi"][0] / base[th]["NI"][0] for th in THETAS])
+    L2 = np.array([l_ref(base[th]) for th in THETAS])
+    L5 = np.array([base[th]["phi"][0] / base[th]["NI"][0] for th in THETAS])
     Llin = np.array([q["phi"][0] / q["NI"][0] for q in lin])
     L3 = L2 * (1 + end_k(L2, L2[0], L2[-1]))
     Lrec = np.array(row["L_per_n2"])
     prof_C, err_C = PD.fit_cos(THETAS, L3, 60.0)
-    lowfield = dict(theta_deg=THETAS, L2d_fe_H=list(L2), L2d_linear_H=list(Llin), L3d_fe_H=list(L3),
+    lowfield = dict(theta_deg=THETAS, phi_ref_Wb=PHI_REF, L2d_fe_H=list(L2), L2d_fe_NI5_H=list(L5),
+                    L2d_linear_H=list(Llin), L3d_fe_H=list(L3),
                     L3d_record_H=list(Lrec), ratio_fe_record=list(L3 / Lrec),
                     L_al_coil_fe_mH=N ** 2 * L3[0] * 1e3, L_un_coil_fe_mH=N ** 2 * L3[-1] * 1e3,
                     L_al_coil_record_mH=N ** 2 * row["L_al"] * 1e3, L_un_coil_record_mH=N ** 2 * row["L_un"] * 1e3,
@@ -877,13 +889,19 @@ def post(fe, slab, t_start):
     law_A = dict(kind="record", psi_s=sat["psi_s_fe_group"])
     law_B = make_law(base[0.0], L2, THETAS, use_fe_L=False, name="B")
     law_C = make_law(base[0.0], L2, THETAS, use_fe_L=True, name="C")
-    laws = {"record": law_rec, "A": law_A, "B": law_B, "C": law_C}
+    law_Cp = make_law(base[7.5], L2, THETAS, use_fe_L=True, name="C'")   # the bracket: the 7.5 deg sweep's excess
+    laws = {"record": law_rec, "A": law_A, "B": law_B, "C": law_C, "C'": law_Cp}
+    series_check = {}
     for name in SENS:
-        L2s = L2.copy()
-        for j, th in enumerate(THETAS[:4]):
-            q = by[("sens", name, th)]
-            L2s[j] = q["phi"][0] / q["NI"][0]
+        # the variant's neck in series with the base's external path: 1/L = 1/L_base + its change of neck reluctance,
+        # from the aligned sweeps [IR: the series model]; its NI 5 points at 2.5-7.5 deg check it
+        dR = 1 / l_ref(by[("sens", name, 0.0)]) - 1 / L2[0]
+        L2s = 1 / (1 / L2 + dR)
         laws["C, " + name] = make_law(by[("sens", name, 0.0)], L2s, THETAS, use_fe_L=True, name="C, " + name)
+        dR5 = 1 / by[("sens", name, 0.0)]["phi"][0] * by[("sens", name, 0.0)]["NI"][0] - 1 / L5[0]
+        series_check[name] = [dict(theta=th, dR_NI5_this_angle=float(by[("sens", name, th)]["NI"][0] /
+                                                                     by[("sens", name, th)]["phi"][0] - 1 / L5[j]),
+                                   dR_NI5_aligned=float(dR5)) for j, th in enumerate(THETAS[:4]) if j > 0]
     djobs = [(name, law, c) for name, law in laws.items() for c in (0.0, 22.0)]
     zjobs = [("record", list(row["prof"]), row["tau"]), ("C (FE L(theta))", list(prof_C), L3[0] / row["R_per_n2"])]
     print(f"deck: {len(djobs)} ngspice runs", flush=True)
@@ -893,7 +911,11 @@ def post(fe, slab, t_start):
         zl = zl.get()
     deck = {}
     for (name, law, c), r in zip(djobs, runs):
-        r["fidelity_vs_FE"] = fidelity(r, law, base, L2, L3)
+        if "error" in r:
+            deck.setdefault(name, {})["bypass_22mF" if c else "no_bypass"] = r
+            continue
+        # the base map is the truth only for the base's laws; a sensitivity variant's map was not solved at every angle
+        r["fidelity_vs_FE"] = fidelity(r, law, base, L2, L3) if name in ("record", "A", "B", "C", "C'") else None
         deck.setdefault(name, {})["bypass_22mF" if c else "no_bypass"] = r
     # -- the record's aligned operating point (its own run, with the bypass): the flux and current at alignment
     tr = deck["record"]["bypass_22mF"]["traj"]
@@ -911,10 +933,11 @@ def post(fe, slab, t_start):
     def summ(res):
         k = knee(res)
         k["phi_half_Wb"], k["NI_half"] = half_knee(res)
-        return dict(L_low_H=k["L_low_H"], phi_knee_Wb=k.get("phi_knee_Wb"), L_inc_frac=k.get("L_inc_frac"),
+        return dict(L_low_H=k["L_low_H"], L_NI5_H=k["L_NI5_H"], phi_knee_Wb=k.get("phi_knee_Wb"),
+                    L_inc_frac=k.get("L_inc_frac"),
                     phi0_Wb=k.get("phi0_Wb"), phi_half_Wb=k["phi_half_Wb"],
                     NI_at_record_aligned_flux=interp_NI(res, ra["phi_u_Wb"]))
-    attrib = {"V0 pole_fd2d section, linear mu_r 3000": dict(L_low_H=float(Llin[0]))}
+    attrib = {"V0 pole_fd2d section, linear mu_r 3000": dict(L_low_H=float(Llin[0]), L_NI5_H=float(Llin[0]))}
     for name in ATTRIB:
         attrib[name] = summ(by[("attrib", name)])
     attrib["V6 + stud holes = the built utron"] = summ(base[0.0])
@@ -967,7 +990,7 @@ def post(fe, slab, t_start):
         gates=dict(G_SLAB=slab, G_LIN=g_lin, G_MESH=g_mesh, G_DECK=g_deck),
         record_aligned=ra, lowfield=lowfield, knees=knees, saturation=sat, saturation_order=order,
         buildup_aligned=attrib,
-        sensitivity_aligned=sens, laws={k: {kk: vv for kk, vv in v.items()} for k, v in laws.items()},
+        sensitivity_aligned=sens, sensitivity_series_check=series_check, laws={k: {kk: vv for kk, vv in v.items()} for k, v in laws.items()},
         z_lin=zl, operating_point=op,
         trajectories={name: deck[name]["bypass_22mF"]["traj"] for name in ("record", "C")},
         fe_sweeps={f"{q['key'][0]} | " + " | ".join(str(x) for x in q["key"][1:]): dict(NI=q["NI"], phi_Wb=q["phi"],
@@ -1055,7 +1078,7 @@ def figure(out, base, L2, L3):
     ax.axhline(psr, color=MUTED, lw=0.8)
     ax.text(0.2, psr * 1.015, f"record's Ψs {psr:.4f} Wb-t", color=INK2, fontsize=7.8, va="bottom")
     ax.set_xlim(0, 6.0)
-    ax.set_ylim(0, 0.22)
+    ax.set_ylim(0, 0.24)
     ax.set_xlabel("group current i (A; 3 utrons × 200 turns)")
     ax.set_ylabel("group flux Ψ (Wb-turns, with the deck's stray Lp)")
     ax.set_title("(a) Ψ(i) at four rotor angles: the FE (solid) and the record's ^6 law (dashed)", loc="left",
@@ -1063,13 +1086,15 @@ def figure(out, base, L2, L3):
     ax.legend(ncol=2, fontsize=7.4, frameon=False, labelcolor=INK2, loc="lower right")
     # (b) the incremental inductance against the flux, aligned and unaligned
     ax = axs[0, 1]
+    lp = M.R_PAR * kw["L_max"]
     for c, j, lab in ((SERIES[0], 0, "aligned"), (SERIES[3], 12, "unaligned")):
         res = base[THETAS[j]]
-        NI = np.linspace(1.0, max(res["NI"]), 1500)
-        q = fe_group(base, L2, L3, j, NI)
-        inc = np.gradient(q, NI / N)
-        L0 = inc[1]
-        ax.plot(q / psr, inc / L0, color=c, lw=2.0, label=f"FE, {lab}")
+        ph = np.r_[0.0, res["phi"]]
+        ni3 = np.r_[0.0, np.array(res["NI"]) - np.array(res["phi"]) * (1 / L2[j] - 1 / L3[j])]
+        q = 3 * N * ph + lp * ni3 / N                     # the sweep's own points, group terms (option S)
+        inc = np.diff(q) / np.diff(ni3 / N)
+        ax.plot(0.5 * (q[1:] + q[:-1]) / psr, inc / inc[0], color=c, lw=2.0, marker="o", ms=3.5,
+                mec=SURF, mew=0.8, label=f"FE, {lab} (between sweep points)")
         ii = np.linspace(0.01, 6.0, 600)
         qq = np.array([record_law_group(x, THETAS[j]) for x in ii])
         ir = np.gradient(qq, ii)
@@ -1124,7 +1149,7 @@ def figure(out, base, L2, L3):
     cb.outline.set_edgecolor(BASEL)
     ax.set_xlabel("tangential, from the utron's centre (mm)")
     ax.set_ylabel("radial, from the tip face (mm)")
-    ax.set_title(f"(c) aligned, {ra['NI']:.0f} A-turns per utron (the record's aligned operating current): flux lines",
+    ax.set_title(f"(c) aligned, {ra['NI']:.0f} A-t per utron (the record's aligned current):\niron B and flux lines",
                  loc="left", color=INK, fontsize=9.5)
     # (d) the trajectory over one cycle: the record and the corrected law, both with the bypass
     ax = axs[1, 1]
@@ -1140,7 +1165,7 @@ def figure(out, base, L2, L3):
     ax.set_ylim(0.3, 1.1)
     ax.set_xlabel("rotor phase of group A (0 and 1 aligned, 0.5 unaligned)")
     ax.set_ylabel("|Ψ| / Ψs (record)")
-    ax.set_title("(d) group A's flux over one 120 Hz cycle, with the 22 mF bypass", loc="left", color=INK, fontsize=9.5)
+    ax.set_title("(d) group A's flux over one 120 Hz cycle,\nwith the 22 mF bypass", loc="left", color=INK, fontsize=9.5)
     ax.legend(fontsize=7.6, frameon=False, labelcolor=INK2, loc="lower center")
     fig.suptitle("The neck's nonlinear check: the pick's utron with its 3.0 mm NiFe neck (sim/neck_nonlinear.py)",
                  x=0.01, ha="left", color=INK, fontsize=11.5)

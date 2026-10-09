@@ -215,8 +215,13 @@ Sources of the record's column: `sim/core_field.py`:59; `sim/air_stack_sizing_re
   of the 2-D cell". Line 248 says the cell's grid "makes each vane two cells thinner than drawn", so "every κ here reads
   a few % high". The 3-D solve puts numbers on both: the rims +37 / +65 pF, the thickness +1.0 / +7.2 % per gap.
 - **What a radial clearance would buy** (the periodic cell, h 0.5) [RH: a design option, not the record's; the
-  designer's call]. The rotor ring's edge and the rotor sectors' outer rims are pulled in by c, and the stator sectors'
-  inner rims and the stator ring's edge pushed out by c:
+  designer's call; on the whole side in the next section]:
+  - the rotor ring's edge is pulled in to r 50 − c and the rotor sectors' outer rims to r 150 − c;
+  - the stator sectors' inner rims are pushed out to r 50 + c;
+  - the stator ring's inner edge stays at r 150. That makes 2c of clearance at the inner rim and c at the outer, and the
+    overlap r 50 + c … 150 − c.
+  - `build_cell`'s docstring (`sim/tube_strays.py`:531) says the stator ring's edge moves too. The code keeps it at
+    r 150, and the table below is the code's.
 
 | clearance c | per gap aligned | unaligned | κ per gap |
 |--:|--:|--:|--:|

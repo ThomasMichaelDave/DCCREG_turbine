@@ -36,13 +36,20 @@ sim/diodes-real-findings.md.
    4 for them: the -1 kV seed relaxes in the first step) [OC, checked here]. The real-diode runs need a consistent
    start, so each varicap is split into a linear capacitor at its t = 0 value (it takes the .ic) and a charge-defined
    part (C(t) - C(0)) V that is zero at t = 0 [IR]; the record's ND is run both ways.
+2b. The same deck as built (--only ab; the results' key electrostatic_as_built): the tube-strays study's §5 set (every
+   capacitance solved: C1v between the solved totals, Ca, the node strays, the couplings, the rings' strays; read from
+   sim/tube_strays_results.json decks.sets["as built"] and applied as its deck_strays does) with the record's ND,
+   typical, maximum and hot leakage: the free gain from -10 V and -1 kV, the smallest seed that grows (to 10 kV), and
+   the clamped runs where it starts (from -1 kV, and from twice the threshold where that is above 1 kV / 2), each long
+   enough to reach the clamp at the gain at its seed and doubled until the rings settle, as sim/tube_strays.py
+   run_decks does. Gate: the as-built set with ND (the deck as is, and split) reproduces that study's z and rings.
 3. Gates: the wrapped decks with the record's ND reproduce the record (magnetic: sim/ah_steady_cusp_results.json and
    sim/rotor_parts_duty_results.json; electrostatic: sim/hub_rings_build_results.json record_supply and
    record_supply_free); the energy balance of every new steady run (the belt against every dissipation and the change
    in stored energy); a step-size check of one new run per pump.
 Tags (CONVENTIONS.md §1): [OC] derivable physics; [IR] a modelling or engineering choice, datasheet-class device
 parameters included; [RH] heuristic, not load-bearing. Never a bare d: g for a gap, "diameter" spelled out.
-Usage: python3 sim/diodes_real.py [--procs 4] [--only mag|es] [--figure-only] [--cache FILE]
+Usage: python3 sim/diodes_real.py [--procs 4] [--only mag|es|ab] [--figure-only] [--cache FILE]
        (needs ngspice; a few CPU-hours; --cache keeps every finished run in FILE, a JSON-lines file outside the
        repository, and a rerun skips them)
 """
@@ -81,6 +88,9 @@ SRC = {
     "sticks": "sim/diode-stack-findings.md (20 kV / 5 mA avalanche stick class: I_R 2 uA at 25 C, 5 uA at 100 C); "
               "sim/hub_rings_build.py LEAKAGE (tens of nA at a third of the rating)",
     "clamps": "docs/ledger/DCCREG-design-ledger.md §3.4 (66 x 200 V); sim/core_field.py DZ",
+    "as_built": "sim/tube_strays_results.json (decks.sets['as built'], decks.table['as built']); sim/tube_strays.py "
+                "deck_strays, _cycles, _settled, _t95; sim/tube-strays-findings.md §5",
+    "k_null": "sim/hub_rings_build_results.json record.k_kV_cm_per_kV",
 }
 VT = 8.617333262e-5 * 300.15       # kT/q at ngspice's 27 C (TNOM = TEMP) [OC]
 RETRY_RELTOL = (3e-5, 1e-4)        # a run that stops early ("timestep too small") is redone looser [IR]
@@ -595,17 +605,71 @@ def diode_line(name, p):
             f"vj={p.get('Vj', 0.7):g} tt={p.get('Tt', 0.0):.6g} bv={p['BV']:.8g} ibv={p['IBV']:g} nbv={p['NBV']:.8g})")
 
 
+# ------------------------------------------------------------------------------- 2b. the as-built set (--only ab)
+# [OC: the tube-strays study's field solve; IR: its cosine C(theta) between the two solved angles, as the record does]
+_TS = json.load(open(os.path.join(HERE, "tube_strays_results.json")))
+AB_NAME = "as built"
+AB_SET = _TS["decks"]["sets"][AB_NAME]           # F: cmin / cmax / ca, Cp per node, the couplings, the rings' strays
+AB_REC = _TS["decks"]["table"][AB_NAME]           # its ND runs: z bare / with the rings' chains, the rings, the 95 %
+K_NULL = _HRB["record"]["k_kV_cm_per_kV"]         # (kV/cm)/kV: the field at the null per kV of the rings' gap
+AB_MODELS = ("ND", "HV-typ", "HV-max", "HV-hot")
+AB_V_HI = 10e3          # V: the threshold search's top seed, below the clamp's 13.2 kV [IR]
+AB_DOUBLE = 2           # the clamped runs doubled at most twice until the rings settle [IR, as sim/tube_strays.py]
+
+
+def apply_strays(txt, strays):
+    """sim/tube_strays.py deck_strays on a built deck: Cp1-Cp4 set to strays['Cp'][node] (F) and the couplings
+    strays['Cx'] {'a b': F} added before the .model ND line, the same lines that function writes [OC]. Not imported:
+    that module rebinds sim/core_field.py's deck at import (`CF.deck = deck_strays`)."""
+    lines = txt.split("\n")
+    for i, ln in enumerate(lines):
+        mt = re.match(r"^Cp([1-4]) ([1-4]) 0 ", ln)
+        if mt and mt.group(1) in strays.get("Cp", {}):
+            lines[i] = f"Cp{mt.group(1)} {mt.group(2)} 0 {strays['Cp'][mt.group(1)]:.6e}"
+    j = [i for i, ln in enumerate(lines) if ln.startswith(".model ND")][0]
+    lines[j:j] = [f"Cx{k.replace(' ', '_')} {k} {v:.6e}" for k, v in strays.get("Cx", {}).items() if v > 0]
+    return "\n".join(lines)
+
+
+def ab_kw(bare=False):
+    """the deck's arguments on the as-built set, as sim/tube_strays.py run_decks passes them: bare (opt none, no rings)
+    with the pump's couplings; with the rings' chains, the rings' couplings and strays too."""
+    s = AB_SET
+    kw = dict(cmin=s["cmin"], cmax=s["cmax"], ca=s["ca"])
+    if bare:
+        return dict(kw, opt="none", strays=dict(Cp=s["Cp"], Cx=dict(s["Cx"])))
+    return dict(kw, strays=dict(Cp=s["Cp"], Cx=dict(s["Cx"], **s["Cx_rings"])), c_e=s["c_e"], c_gap=s["c_gap"])
+
+
+def ab_cycles(z, v0, extra=ES_NCYC, floor=ES_NCYC):
+    """sim/tube_strays.py _cycles from the seed's own amplitude: 1.3 x the cycles to grow from |v0| to the clamp at
+    gain z, plus extra to settle and measure, never fewer than floor; None where z <= 1."""
+    if not z or z <= 1.0:
+        return None
+    return max(floor, int(math.ceil(extra + 1.3 * math.log(CF.V_OP / abs(v0)) / math.log(z))))
+
+
+def settled(vk):
+    """sim/tube_strays.py _settled: the rings' last ten cycles within 0.3 %."""
+    return bool(vk and len(vk) > 10 and abs(vk[-1] - vk[-10]) < 0.003 * abs(vk[-1]))
+
+
 def es_deck(model, kw_over, steps=ES_STEPS):
     """the record's dc deck (sim/core_field.py, the record_supply settings) for one variant."""
     spec = ES_MODELS[model]
     kw = dict(ES_KW, **kw_over)
     kw.setdefault("steps", steps)
+    strays = kw.pop("strays", None)
     txt, vecs, pk = CF.deck(**kw)
+    if strays:                                                       # the as-built set (§2b)
+        txt = apply_strays(txt, strays)
     n, F = kw["n_cyc"], CF.F
     T = 1.0 / F
     clamp = kw.get("clamp", True)
+    rings = kw.get("opt") == "dc"
     if spec.get("exact"):                                            # the gate: the deck as the record runs it
-        out = ["v(1)", "v(4)", "v(ea)", "v(eb)"] + [f"v(e_{k})" for k in pk] + (["i(Vz1)", "i(Vz4)"] if clamp else [])
+        out = ["v(1)", "v(4)"] + (["v(ea)", "v(eb)"] if rings else []) + [f"v(e_{k})" for k in pk] + \
+            (["i(Vz1)", "i(Vz4)"] if clamp else [])
         return set_output(txt, out), kw, pk, []
     if spec.get("split", spec["real"]):                              # every real-diode deck is split (§ the docstring)
         txt = split_varicaps(txt)
@@ -664,7 +728,7 @@ def es_deck(model, kw_over, steps=ES_STEPS):
     new_ic["e_link"] = 0.0
     txt = add_lines(txt, list(models.values()) + lines)
     txt = add_ic(txt, new_ic)
-    nodes = ["1", "2", "3", "4", "s", "ea", "eb", "m1", "m2", "b1", "n1", "n2", "a1"]
+    nodes = ["1", "2", "3", "4", "s"] + (["ea", "eb", "m1", "m2", "b1", "n1", "n2", "a1"] if rings else [])
     out = [f"v({x})" for x in nodes] + (["i(Vz1)", "i(Vz4)"] if clamp else []) + [f"v(e_{k})" for k in pk] + ["v(e_link)"]
     out += ([f"i(Vam_{nm})" for nm, _, _ in dio] + [f"v(e_pd_{nm})" for nm, _, _ in dio]) if real else []
     # the same maximum step as the deck (T / steps), the output interpolated to OUT_PER_CYCLE points a cycle [IR]
@@ -681,18 +745,20 @@ def es_caps(txt):
             if not m[0].startswith("Cp_")]
 
 
-def es_stored(c, txt, tk, alias=None):
-    """the energy stored at time tk in the deck's capacitors and the two varicaps (C(t) at tk) [OC]; alias maps an
-    ammeter's node to the node it follows (the 0 V source)."""
+def es_stored(c, txt, tk, alias=None, cmin=None, cmax=None):
+    """the energy stored at time tk in the deck's capacitors and the two varicaps (C(t) at tk; the record's swing
+    unless cmin / cmax are given) [OC]; alias maps an ammeter's node to the node it follows (the 0 V source)."""
     alias = alias or {}
+    cmin = CF.CMIN if cmin is None else cmin
+    cmax = CF.CMAX if cmax is None else cmax
 
     def g(node):
         node = alias.get(node.lower(), node.lower())
         return 0.0 if node == "0" else float(np.interp(tk, c["time"], c[f"v({node})"]))
     w = sum(0.5 * C * (g(a) - g(b)) ** 2 for nm, a, b, C in es_caps(txt) if not nm.startswith(("C1v0", "C2v0")))
     w_ = 2 * math.pi * CF.F
-    c1 = CF.CMIN + (CF.CMAX - CF.CMIN) * 0.5 * (1 + math.cos(w_ * tk))
-    c2 = CF.CMIN + (CF.CMAX - CF.CMIN) * 0.5 * (1 - math.cos(w_ * tk))
+    c1 = cmin + (cmax - cmin) * 0.5 * (1 + math.cos(w_ * tk))
+    c2 = cmin + (cmax - cmin) * 0.5 * (1 - math.cos(w_ * tk))
     return w + 0.5 * c1 * (g("1") - g("s")) ** 2 + 0.5 * c2 * (g("4") - g("s")) ** 2
 
 
@@ -701,8 +767,10 @@ def es_job(job):
     t_start = time.time()
     model = job["model"]
     over = dict(ES_FREE) if job["case"] == "free" else dict(n_cyc=ES_NCYC)
+    if job.get("set") == AB_NAME:                                   # §2b: the as-built set
+        over.update(ab_kw(job.get("bare", False)))
     over["v0"] = job.get("v0", over.get("v0", V0_CLAMPED))
-    if job["case"] == "free" and job.get("n_cyc"):
+    if job.get("n_cyc"):                                            # (the record's clamped runs carry none: 280)
         over["n_cyc"] = job["n_cyc"]
     txt, kw, pk, dio = es_deck(model, over, steps=job.get("steps", 20000 if job["case"] == "free" else ES_STEPS))
     n, F = kw["n_cyc"], CF.F
@@ -716,8 +784,8 @@ def es_job(job):
     cyc = [(t >= k * T) & (t < (k + 1) * T) for k in range(n)]
     pk1 = [float(np.abs(c["v(1)"][m]).max()) for m in cyc]
     out["V1_peak_per_cycle_kV"] = [p / 1e3 for p in pk1]
-    vk = [float(-(c["v(eb)"][m] - c["v(ea)"][m]).max() / 1e3) for m in cyc]   # as sim/core_field.py run
-    out["Vk_per_cycle_kV"] = vk
+    vk = [float(-(c["v(eb)"][m] - c["v(ea)"][m]).max() / 1e3) for m in cyc] if "v(ea)" in c else None   # as
+    out["Vk_per_cycle_kV"] = vk                                     # sim/core_field.py run (None: bare, no rings)
     out["z_per_cycle"] = [pk1[k + 1] / pk1[k] for k in range(n - 1)]
     if job["case"] == "free":                                       # the gain per cycle, as sim/core_field.py run
         k = np.arange(3, n)
@@ -736,6 +804,8 @@ def es_job(job):
                t_to_95pc_s=(int(hit[0]) + 1) / F if len(hit) else None)
     clamp_on = next((k for k in range(n) if pk1[k] >= 0.99 * max(pk1)), None)
     out["z_min_before_clamp"] = float(min(out["z_per_cycle"][1:max(2, clamp_on - 1)])) if clamp_on else None
+    if job.get("set"):                                              # §2b: as sim/tube_strays.py run_decks reads it
+        out.update(reached_clamp=bool(pk1[-1] > 0.97 * CF.V_OP), settled=settled(vk))
     s = t >= (n - 8) * T
     t0, t1 = (n - 8) * T, float(t[-1])
     exact = ES_MODELS[model].get("exact", False)
@@ -758,7 +828,8 @@ def es_job(job):
     real = ES_MODELS[model]["real"]
     p_st = {nm: window_power(c, f"pd_{nm}", t0, t1) for nm, _, _ in dio} if real else {}
     alias = {f"{nm}_a".lower(): a for nm, a, _ in dio} if real else {}
-    dW = (es_stored(c, txt, t1, alias) - es_stored(c, txt, t0, alias)) / (t1 - t0)
+    cm = (kw.get("cmin"), kw.get("cmax"))
+    dW = (es_stored(c, txt, t1, alias, *cm) - es_stored(c, txt, t0, alias, *cm)) / (t1 - t0)
     other = P["belt"] - P["limit"] - P["leak"] - P["link"] - dW
     out.update(P_link_W=P["link"], dW_stored_W=dW, P_other_W=other)
     if real:                                                        # every dissipation integrated: a closed balance
@@ -791,11 +862,16 @@ def es_threshold(model):
     """the smallest seed |v0| (nodes 1 and 4) from which the pump grows: free runs of N_THR cycles, 'grows' when the
     node-1 peak of the last cycle exceeds that of cycle 5 (the first cycles carry the seed's own transient; a large
     seed's run ends at the sticks' avalanche, where a late fit reads 1) [IR]; bisection in log |v0| between 1 V and
-    1 kV to 10 %."""
+    1 kV to 10 %. model: a name (the record's set) or dict(model, set, v_hi): the as-built set (§2b), where a pump that
+    does not grow from 1 kV is tried at v_hi and, if it grows there, bisected between 1 kV and v_hi."""
     trials = []
+    if isinstance(model, dict):
+        extra, v_hi, model = dict(set=model["set"]), model.get("v_hi", 1000.0), model["model"]
+    else:
+        extra, v_hi = {}, 1000.0
 
     def grows(v):
-        r = cached("es", dict(model=model, case="free", v0=-v, n_cyc=N_THR, steps=ES_STEPS), es_job)
+        r = cached("es", dict(model=model, case="free", v0=-v, n_cyc=N_THR, steps=ES_STEPS, **extra), es_job)
         pk = r.get("V1_peak_per_cycle_kV") or [0.0] * 6
         g = bool(r.get("done")) and pk[-1] > pk[5]
         trials.append(dict(v0_V=-v, z=r.get("z"), z_late=r.get("z_late"), grows=g, done=r.get("done"),
@@ -803,16 +879,19 @@ def es_threshold(model):
         return g
     lo, hi = 1.0, 1000.0
     if grows(lo):
-        return dict(model=model, v_grows_V=lo, v_fails_V=None, n_cyc=N_THR, trials=trials)
+        return dict(model=model, v_grows_V=lo, v_fails_V=None, n_cyc=N_THR, trials=trials, **extra)
     if not grows(hi):
-        return dict(model=model, v_grows_V=None, v_fails_V=hi, n_cyc=N_THR, trials=trials)
+        if v_hi <= hi or not grows(v_hi):
+            return dict(model=model, v_grows_V=None, v_fails_V=max(hi, v_hi), n_cyc=N_THR, trials=trials, **extra)
+        lo, hi = hi, v_hi
     while hi / lo > 1.1:
         mid = math.sqrt(lo * hi)
         if grows(mid):
             hi = mid
         else:
             lo = mid
-    return dict(model=model, v_grows_V=hi, v_fails_V=lo, n_cyc=N_THR, trials=sorted(trials, key=lambda q: -q["v0_V"]))
+    return dict(model=model, v_grows_V=hi, v_fails_V=lo, n_cyc=N_THR, trials=sorted(trials, key=lambda q: -q["v0_V"]),
+                **extra)
 
 
 # ===================================================================================================== the jobs

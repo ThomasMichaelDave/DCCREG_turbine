@@ -37,6 +37,8 @@ Usage: python3 sim/tube_strays.py [--resume] [--procs 3] [--levels 0 1 2]
        (several hours on 4 cores: the level-2 solves are 6-7 M nodes each; --resume reuses the solves already in the
        results file; --merge FILE reuses another run's; --only KEY runs only those solves; --solves-only stops after
        them)
+       python3 sim/tube_strays.py --remedies   ([RH] the designer's options at level 1, after the run above: about two
+       hours on 2 processes; their own key "remedies" in the results file)
 """
 import os
 os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")      # one BLAS thread per process: the solves run side by side
@@ -673,6 +675,9 @@ def _solve(job):
     elif kind == "cell":
         P = build_cell(log=log, **kw)
         names = SIDE
+    elif kind == "remedy":
+        P = build_side_remedy(log=log, **kw)
+        names = SIDE
     else:
         P = build_axi(log=log, **kw)
         names = AXI
@@ -729,6 +734,164 @@ def signature():
                            levels=LEVELS, cell=CELL_H, box=R_BOX, zlo=Z_LO, wedge=WEDGE, code=physics_hash()),
                       sort_keys=True, default=float)
     return hashlib.sha1(blob.encode()).hexdigest()[:16]
+
+
+# ================================================================================ the remedies (options, not the record)
+# [RH] Options for the designer, not the record. This section is outside the physics hash on purpose: the record's cached
+# solves stay valid; the remedies carry their own signature (remedy_signature).
+REMEDY_LEVEL = 1
+REMEDIES = {"c 12 mm": dict(clear=12.0), "PTFE sleeve": dict(sleeve_eps=2.1),
+            "c 12 mm + PTFE sleeve": dict(clear=12.0, sleeve_eps=2.1), "c 6 mm": dict(clear=6.0)}
+
+
+def build_side_remedy(level=1, unaligned=False, clear=0.0, sleeve_eps=None, log=print):
+    """build_side with two remedies [RH, not the record]; at clear 0 and no sleeve_eps it reproduces build_side node for
+    node (the gate G-REMEDY). clear: the radial clearance at the rims exactly as the periodic cell's table
+    (build_cell): the rotor ring's edge to r 50 - c and the rotor sectors' outer rims to r 150 - c, the stator sectors'
+    inner rims out to r 50 + c; the stator ring's inner edge stays at r 150 (so 2c at the inner rim, c at the outer);
+    the overlap r 50 + c .. 150 - c; the Ca plates as laid out. sleeve_eps: the sleeve's permittivity in place of G10's."""
+    I = inputs()
+    rec, lay, hub, sp_ = I["rec"], I["lay"], I["hub"], I["sp"]
+    Lv = LEVELS[level]
+    half = 0.5 * rec["wr_deg"]
+    els = lay["elements"]
+    A = [e for e in els if e["side"] == "A"]
+    hubel = [e for e in els if e["kind"] == "hub"][0]
+    zc = 0.5 * (hubel["z0"] + hubel["z1"])
+    vanes = [e for e in A if e["kind"] == "C1 vane"]
+    plates = [e for e in A if e["kind"] == "Ca plate"]
+    brg = [e for e in A if e["kind"] == "bearing"]
+    fl = [e for e in A if e["kind"] == "flange"][0]
+    wu = [e for e in A if e["kind"] == "w utron"][0]
+    wb = [e for e in A if e["kind"] == "w bridge"][0]
+    wr = [e for e in A if e["kind"] == "w ring"][0]
+    wd = [e for e in A if e["kind"] == "w disc"]
+    B = SS.BEARING
+    ri, ro = SS.TUBE_DEFAULTS["r_inMm"], SS.TUBE_DEFAULTS["r_outMm"]
+    c = float(clear)
+    ah = hub["AH"]["value"]
+    core, former, coil = ah["core"], ah["former"], ah["coil"]
+    zf = [Z_LO, zc] + [x for e in vanes + plates for x in (e["z0"], e["z1"])]
+    for b in brg:
+        zf += [b["zc"] + s_ * 0.5 * B["width"] for s_ in (-1, 1)] + [b["zc"] + s_ * 0.5 * B["spider_t"] for s_ in (-1, 1)]
+        zf += [b["z0"], b["z1"]]
+    zf += [fl["z0"], fl["z1"], wu["zs1"], wu["z1"], wb["z1"], wr["z1"], zc - core["absz_mm"][1], zc - core["absz_mm"][0]]
+    zf += [x for dsk in wd for x in (dsk["z0"], dsk["z1"])]
+    z0s, z1s = min(e["z0"] for e in plates) - 4.0, max(e["z1"] for e in vanes) + 5.0
+    z = axis(Z_LO, zc, zf, [(z0s, z1s, Lv["hz"]), (z0s - 24, z0s, 1.5 * Lv["hz"]), (z1s, z1s + 30, 1.5 * Lv["hz"])],
+             h_far=6.0, grow=1.15)
+    rims = [ri - c, ri + c, ro - c, ro]                  # the rotor ring's edge, the stator rims, the rotor rims, the ring
+    rf = [3.0, 0.5 * core["d_mm"], 0.5 * former["id_mm"], 0.5 * former["od_mm"], coil["r_mm"][1], SS.SHAFT_R, SS.SLEEVE_R,
+          0.5 * B["od"], SS.FLANGE_R, 30.0, 33.0, 23.5, 25.0, 25.5, wu["r0"], sp_["r_g"], wb["r0"], wr["r0"], wb["r1"],
+          wr["r1"], ro + 12.0, ro + 16.0, R_BOX] + [x + d_ for x in rims for d_ in (-1.5, 0.0, 1.5)]
+    r = axis(3.0, R_BOX, rf, [(ri - c - 5, ri + c + 5, Lv["hrf"]), (ro - c - 5, ro + 5, Lv["hrf"]), (12.5, ri - c - 5, Lv["hr"]),
+                              (155, 170, Lv["hr"]), (ri + c + 5, ro - c - 5, 2 * Lv["hr"]), (128, 133, 0.5), (3, 12.5, 3.0)],
+             h_far=30.0, grow=1.18)
+    ctr = 30.0 if unaligned else 0.0
+    edges = sorted({half, WEDGE - half} | ({ctr - half, ctr + half} if unaligned else set()))
+    bh = 0.5 * wb["width_deg"]
+    tf = [0.0, WEDGE] + ([ctr - bh, ctr + bh] if unaligned else [bh, WEDGE - bh]) + edges
+    th = axis(0.0, WEDGE, tf, [(e - 2.0, e + 2.0, Lv["htf"]) for e in edges] + [(0, WEDGE, Lv["ht"])], h_far=Lv["ht"],
+              grow=1.2)
+    P = Problem(r, np.radians(th), z, eps_bg=I["eps_air"])
+    log(f"    remedy (clear {c:g} mm, sleeve eps {sleeve_eps or 'G10'}), level {level}, "
+        f"{'unaligned' if unaligned else 'aligned'}: r {len(r)} x theta {len(th)} x z {len(z)} = {P.cid.size / 1e6:.2f} M nodes")
+    T0, T1 = -1.0, math.radians(WEDGE) + 1.0
+    g10 = hub["shaft_coupler"]["value"]["eps_r"]
+    for b in brg:
+        P.add_dielectric(g10, ann_c(0.5 * B["od"], ro + 12, b["zc"] - 0.5 * B["spider_t"], b["zc"] + 0.5 * B["spider_t"]),
+                         (0.5 * B["od"], ro + 12, T0, T1, b["zc"] - 5, b["zc"] + 5))
+    bz = sorted(brg, key=lambda e: e["z0"])
+    for b0, b1 in zip(bz[:-1], bz[1:]):
+        P.add_dielectric(sleeve_eps or g10, ann_c(SS.SHAFT_R, SS.SLEEVE_R, b0["z1"], b1["z0"]),
+                         (SS.SHAFT_R, SS.SLEEVE_R, T0, T1, b0["z1"], b1["z0"]))
+    zc0 = min(b["z0"] for b in brg if b["where"] != "end")
+    P.add_dielectric(g10, ann_c(ro + 12, ro + 16, zc0, zc + 1), (ro + 12, ro + 16, T0, T1, zc0, zc + 1))
+    P.add_dielectric(g10, ann_c(wr["r0"], wr["r1"], Z_LO - 1, wr["z1"]), (wr["r0"], wr["r1"], T0, T1, Z_LO - 1, wr["z1"]))
+    for dsk in wd:
+        P.add_dielectric(g10, ann_c(dsk["r0"], dsk["r1"], dsk["z0"], dsk["z1"]), (dsk["r0"], dsk["r1"], T0, T1, dsk["z0"], dsk["z1"]))
+    ves, wall = hub["vessel"]["value"], hub["vessel_wall"]["value"]["t_mm"]
+    Ro = 0.5 * ves["od_mm"]
+    gel = hub["interface_filler"]["value"]
+    Rg = Ro + gel["t_mm"]
+    ret, cpl = hub["retainer"]["value"], hub["shaft_coupler"]["value"]
+    zr0 = zc - ret["absz_max_mm"]
+    rs = lambda R, Z: np.hypot(R, Z - zc)
+    bore = lambda R, Z: (R < coil["r_mm"][1]) & (Z < zc - core["absz_mm"][0])
+    P.add_dielectric(ret["eps_r"], lambda R, T, Z: (R < ret["r_max_mm"]) & (Z > zr0) & (rs(R, Z) > Rg) & ~bore(R, Z),
+                     (0, ret["r_max_mm"], T0, T1, zr0, zc))
+    P.add_dielectric(gel["eps_r"], lambda R, T, Z: (rs(R, Z) > Ro) & (rs(R, Z) < Rg), (0, Rg, T0, T1, zc - Rg, zc))
+    P.add_dielectric(ves["eps_r"], lambda R, T, Z: (rs(R, Z) > Ro - wall) & (rs(R, Z) < Ro), (0, Ro, T0, T1, zc - Ro, zc))
+    P.add_dielectric(g10, ann_c(0.5 * former["id_mm"], 0.5 * former["od_mm"], zc - core["absz_mm"][1], zc - core["absz_mm"][0]),
+                     (0, 9, T0, T1, zr0, zc))
+    P.add_dielectric(cpl["eps_r"], ann_c(ret["r_max_mm"], ret["r_max_mm"] + cpl["wall_mm"], zr0, zc + 1),
+                     (ret["r_max_mm"], 34, T0, T1, zr0, zc + 1))
+    for e in vanes:
+        if e["body"] == "rotor":
+            v = Vane("rotor", e["z0"], e["z1"], 0.0, half, ri - c, ro - c, SS.SLEEVE_R, ro + 12.0)
+        else:
+            v = Vane("stator", e["z0"], e["z1"], ctr, half, ri + c, ro, SS.SLEEVE_R, ro + 12.0)
+        P.add_conductor(SID["N1v" if e["body"] == "rotor" else "SA"], "N1v" if e["body"] == "rotor" else "SA", v.inside, v.bbox(T0, T1))
+    for e in plates:
+        v = Vane("plate", e["z0"], e["z1"], r_in=ri, r_out=ro)
+        nm = "N1c" if e["node"] == "1" else "N2"
+        P.add_conductor(SID[nm], nm, v.inside, v.bbox(T0, T1))
+    P.add_conductor(SID["SHAFT"], "SHAFT", lambda R, T, Z: (R <= SS.SHAFT_R + TOL) & (Z <= fl["z0"] + TOL),
+                    (0, SS.SHAFT_R, T0, T1, Z_LO - 1, fl["z0"]))
+    P.add_conductor(SID["SHAFT"], "SHAFT", ann(0, SS.FLANGE_R, fl["z0"], fl["z1"]), (0, SS.FLANGE_R, T0, T1, fl["z0"], fl["z1"]))
+    for (r0_, r1_), zz in (((0.0, 0.5 * core["d_mm"]), core["absz_mm"]), (tuple(coil["r_mm"]), coil["absz_mm"])):
+        P.add_conductor(SID["SHAFT"], "SHAFT", ann(r0_, r1_, zc - zz[1], zc - zz[0]), (r0_, r1_, T0, T1, zc - zz[1], zc - zz[0]))
+    for b in brg:
+        zb0, zb1 = b["zc"] - 0.5 * B["width"], b["zc"] + 0.5 * B["width"]
+        P.add_conductor(SID["BRG"], "BRG", ann(SS.SHAFT_R, 0.5 * B["od"], zb0, zb1), (SS.SHAFT_R, 0.5 * B["od"], T0, T1, zb0, zb1))
+    for a in wu["angles"]:
+        if a <= WEDGE + 20.0:
+            P.add_conductor(SID["UT"], "UT", utron_inside(sp_, wu["zs0"], a), (wu["r0"] - 2, sp_["r_g"] + 3, T0, T1, wu["z0"], wu["z1"]))
+    for a, nm in ([(ctr, "BRa")] if unaligned else [(0.0, "BRa"), (WEDGE, "BRb")]):
+        P.add_conductor(SID[nm], nm, sector_inside(wb["r0"], wb["r1"], wb["z0"], wb["z1"], a, bh), (wb["r0"], wb["r1"], T0, T1, wb["z0"], wb["z1"]))
+    rg = hub["rings"]["value"]
+    tp, te = math.radians(rg["polar_edge_deg"]), math.radians(rg["equatorial_edge_deg"])
+
+    def ring_a(R, T, Z):
+        rr, ang = rs(R, Z), np.arctan2(R, zc - Z)
+        out = (rr >= Ro - TOL) & (rr <= Rg + TOL) & (ang >= tp - 1e-9) & (ang <= te + 1e-9)
+        for th_, d_ in ((tp, rg["bead_d_mm"]["polar"]), (te, rg["bead_d_mm"]["equatorial"])):
+            Rc = Ro + 0.5 * d_
+            out = out | ((R - Rc * math.sin(th_)) ** 2 + (Z - (zc - Rc * math.cos(th_))) ** 2 <= 0.25 * d_ * d_ + TOL)
+        return out
+    P.add_conductor(SID["RA"], "RA", ring_a, (0, Rg + 2, T0, T1, zc - Rg - 2, zc))
+    P.cid[-1, :, :] = SID["W"]; P.names[SID["W"]] = "W"
+    return P
+
+
+def remedy_jobs():
+    out = []
+    for nm, kw in REMEDIES.items():
+        for un in (False, True):
+            j = dict(kind="remedy", kw=dict(level=REMEDY_LEVEL, unaligned=un, **kw), drive=["N1v", "N1c", "N2", "SA", "BRa", "BRb"])
+            j["key"] = "remedy:" + ",".join(f"{k}={v}" for k, v in sorted(j["kw"].items()))
+            out.append(j)
+    return out
+
+
+def remedy_signature():
+    src = open(__file__, "rb").read()
+    a = src.index(b"# " + b"=" * 80 + b" the remedies")
+    b = src.index(b"# ==== the analysis")
+    return hashlib.sha1((signature() + src[a:b].decode()).encode()).hexdigest()[:16]
+
+
+def gate_remedy_builder(log=print):
+    """G-REMEDY: the remedy builder at c 0, G10 sleeve, against build_side at level 0, both angles: the same grid,
+    conductors and permittivities node for node."""
+    out = {}
+    for un in (False, True):
+        P0 = build_side(level=0, unaligned=un, log=lambda s_: None)
+        P1 = build_side_remedy(level=0, unaligned=un, log=lambda s_: None)
+        same = all(np.array_equal(getattr(P0, k), getattr(P1, k)) for k in ("r", "th", "z", "cid", "eps"))
+        out["unaligned" if un else "aligned"] = bool(same)
+    log(f"  G-REMEDY: the remedy builder at c 0 reproduces build_side: {out}")
+    return out
 
 
 # ==== the analysis ===============================================================================================
@@ -1199,6 +1362,60 @@ def sensitivity(procs, log=print):
                 note="each pair of nodes raised together (1 and 4, or 2 and 3), the record's C1 / C2 / Ca / Cb")
 
 
+def _built_set(b, res, label):
+    """the §5 'as built' deck set from a side's capacitances b (aligned / unaligned), the couplings across the hub and the
+    rings' solved strays of res (as stray_sets does)."""
+    pF = 1e-12
+    ac, rings = res["across"], res["rings_axi"]
+    cxp = {"1 4": ac["C14_pF"] * pF, "2 3": ac["C23_pF"] * pF, "1 3": ac["C13_pF"] * pF, "2 4": ac["C13_pF"] * pF}
+    cxr = {"1 ea": rings["C_node1_ringA_pF"] * pF, "4 eb": rings["C_node1_ringA_pF"] * pF,
+           "1 eb": rings["C_node1_ringB_pF"] * pF, "4 ea": rings["C_node1_ringB_pF"] * pF}
+    cp1 = 0.5 * (b["aligned"]["stray1"] + b["unaligned"]["stray1"])
+    cp2 = 0.5 * (b["aligned"]["stray2"] + b["unaligned"]["stray2"])
+    ca = 0.5 * sum(b[t]["ca"] + b[t]["stray_12"] for t in ("aligned", "unaligned"))
+    return dict(cmin=(b["unaligned"]["node1_ref"] - cp1) * pF, cmax=(b["aligned"]["node1_ref"] - cp1) * pF, ca=ca * pF,
+                Cp={"1": cp1 * pF, "4": cp1 * pF, "2": cp2 * pF, "3": cp2 * pF}, Cx=cxp, Cx_rings=cxr,
+                c_e=rings["C_ring_ref_pF"] * pF, c_gap=rings["C_ring_ring_pF"] * pF, label=label)
+
+
+def remedies(res, procs, log=print):
+    """the remedies [RH, options]: their capacitances at REMEDY_LEVEL against the record as built at the same level,
+    the Ca rule's plate count, and the pump on the §5 'as built' deck."""
+    S = res["remedy_solves"]
+    lvl = res["side_levels"].get(REMEDY_LEVEL, res["side_levels"].get(str(REMEDY_LEVEL)))
+    I = inputs()
+    g = I["rec"]["gap_mm"]
+    c_gap1 = EPS0_MM * I["eps_air"] * math.pi * (150 ** 2 - 50 ** 2) / g * 1e12      # one Ca gap, full annulus [OC]
+    rows, sets = {}, {}
+    cases = [("as built, the record", lvl)]
+    for nm, kw in REMEDIES.items():
+        ks = ["remedy:" + ",".join(f"{k}={v}" for k, v in sorted(dict(level=REMEDY_LEVEL, unaligned=un, **kw).items()))
+              for un in (False, True)]
+        if all(k in S for k in ks):
+            cases.append((nm, {"aligned": side_caps(S[ks[0]]), "unaligned": side_caps(S[ks[1]])}))
+    for nm, b in cases:
+        al, un = b["aligned"], b["unaligned"]
+        rows[nm] = dict(C_max_pF=al["varicap"], C_min_pF=un["varicap"], kappa=al["varicap"] / un["varicap"],
+                        node1_ref_pF=[al["node1_ref"], un["node1_ref"]], kappa_node1=al["node1_ref"] / un["node1_ref"],
+                        stray1_pF=[al["stray1"], un["stray1"]], stray1_mean_pF=0.5 * (al["stray1"] + un["stray1"]),
+                        stray2_mean_pF=0.5 * (al["stray2"] + un["stray2"]), Ca_pF=0.5 * (al["ca"] + un["ca"]),
+                        rotor_vanes_to_shaft_pF=0.5 * (al["items1"]["N1v-SHAFT"] + un["items1"]["N1v-SHAFT"]),
+                        Ca1_to_stator_pF=[al["items1"]["N1c-SA"], un["items1"]["N1c-SA"]],
+                        Ca_rule_gaps=int(math.ceil(1.1 * al["varicap"] / c_gap1)), Ca_rule_pF=1.1 * al["varicap"])
+        sets[nm] = _built_set(b, res, nm)
+    table = run_decks(sets, res["record_deck"]["rings_kw"], procs, log=log)
+    for nm in rows:
+        rows[nm]["pump"] = table.get(nm)
+    return dict(level=REMEDY_LEVEL, tag="[RH] options for the designer, not the record",
+                definition="clear c: the rotor ring's edge to r 50 - c and the rotor sectors' outer rims to r 150 - c, the "
+                           "stator sectors' inner rims to r 50 + c, the stator ring's inner edge kept at r 150 (2c at the "
+                           "inner rim, c at the outer: the periodic cell's table); PTFE sleeve: eps 2.1 in place of G10's 4.7; "
+                           "the Ca plates as laid out (6 plates, 5 gaps); everything else as built",
+                Ca_rule=dict(one_gap_pF=c_gap1, note="the record's rule (sim/stack_sizing.py tube_geometry): Ca = 1.1 C_max, "
+                                                     "gaps = ceil(Ca / one gap); here with each case's solved C_max"),
+                rows=rows, sets={k: {kk: vv for kk, vv in v.items()} for k, v in sets.items()})
+
+
 # ================================================================================================ the figure
 INK, INK2, MUTED, GRID, BASE, SURF = "#0b0b0b", "#52514e", "#898781", "#e1e0d9", "#c3c2b7", "#fcfcfb"
 SERIES = ["#2a78d6", "#eb6834", "#1baf7a", "#eda100", "#e87ba4", "#008300", "#4a3aa7", "#e34948"]   # fixed order
@@ -1346,9 +1563,33 @@ def main():
     ap.add_argument("--merge", nargs="*", default=[], help="other results files whose solves to reuse (same signature)")
     ap.add_argument("--only", nargs="*", default=None, help="run only these solves (their keys)")
     ap.add_argument("--figure-only", action="store_true", help="redraw the figure from the results file")
+    ap.add_argument("--remedies", action="store_true", help="[RH] the designer's options, from the results file's solves")
     a = ap.parse_args()
     if a.figure_only:
         return figure(json.load(open(a.results)))
+    if a.remedies:                                       # [RH] the options, into the results file's own keys only
+        res = json.load(open(a.results))
+        assert res.get("signature") == signature(), "the record's solves do not match this code"
+        rsig = remedy_signature()
+        rc = res.get("remedy_solves", {}) if res.get("remedy_signature") == rsig else {}
+        res["remedy_solves"], res["remedy_signature"] = rc, rsig
+        gate = gate_remedy_builder()
+        todo = [j for j in remedy_jobs() if j["key"] not in rc]
+        print(f"{len(todo)} remedy solves to run ({len(rc)} cached)", flush=True)
+        if todo:
+            with Pool(max(1, min(a.procs, 2)), maxtasksperchild=1) as pool:
+                for s_ in pool.imap(_solve, todo):
+                    rc[s_["key"]] = s_
+                    json.dump(res, open(a.results, "w"), indent=1, default=float)
+                    print(f"solved {s_['key']} in {s_['run_s']:.0f} s", flush=True)
+        if a.solves_only:
+            return
+        out = remedies(res, max(1, min(a.procs, 2)))
+        out["gate_builder"] = gate
+        res["remedies"] = out
+        json.dump(res, open(a.results, "w"), indent=1, default=float)
+        print("the remedies: done", flush=True)
+        return
     t0 = time.time()
     sig = signature()
     old = json.load(open(a.results)) if a.resume and os.path.exists(a.results) else {}
