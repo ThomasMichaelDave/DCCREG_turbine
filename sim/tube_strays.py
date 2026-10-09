@@ -522,12 +522,13 @@ def build_side(level=1, unaligned=False, mid="mirror", spacers=False, log=print)
     return P
 
 
-def build_cell(h=0.5, unaligned=False, rims=True, clear=0.0, log=print):
+def build_cell(h=0.5, unaligned=False, rims=True, clear=0.0, sleeve_eps=None, log=print):
     """one gap of the infinite periodic stack: mirrors at a stator vane's and the next rotor vane's mid-planes, the
     30 deg mirror wedge. rims=False: the record's 2-D cell in 3-D (Neumann at r 50 / 150, the sectors only, no rims).
     rims=True: the real radial build (shaft, sleeve, the rotor ring, the stator ring, the cage, the REF wall).
     clear > 0 [RH, not the record]: the rotor ring's edge and the rotor sectors' outer rims pulled back by clear, the
-    stator sectors' inner rims and the stator ring's edge pushed out by clear (the overlap shrinks to r 50+c..150-c)."""
+    stator sectors' inner rims and the stator ring's edge pushed out by clear (the overlap shrinks to r 50+c..150-c).
+    sleeve_eps [RH, not the record]: the sleeve's permittivity in place of G10's."""
     I = inputs()
     rec = I["rec"]
     t, g, half = rec["t_vaneMm"], rec["gap_mm"], 0.5 * rec["wr_deg"]
@@ -550,7 +551,7 @@ def build_cell(h=0.5, unaligned=False, rims=True, clear=0.0, log=print):
         st = Vane("stator", zs - 0.5 * t, zs + 0.5 * t, ctr, half, ri + clear, ro, ro + clear, ro + 12.0)
         rt = Vane("rotor", zr - 0.5 * t, zr + 0.5 * t, 0.0, half, ri - clear, ro - clear, SS.SLEEVE_R, ro + 12.0)
         g10 = I["hub"]["shaft_coupler"]["value"]["eps_r"]
-        P.add_dielectric(g10, ann_c(SS.SHAFT_R, SS.SLEEVE_R, -1, zr + 1), (SS.SHAFT_R, SS.SLEEVE_R, T0, T1, -1, zr + 1))
+        P.add_dielectric(sleeve_eps or g10, ann_c(SS.SHAFT_R, SS.SLEEVE_R, -1, zr + 1), (SS.SHAFT_R, SS.SLEEVE_R, T0, T1, -1, zr + 1))
         P.add_dielectric(g10, ann_c(ro + 12, ro + 16, -1, zr + 1), (ro + 12, ro + 16, T0, T1, -1, zr + 1))
         P.add_conductor(SID["SHAFT"], "SHAFT", lambda R, T, Z: R <= SS.SHAFT_R + TOL, (0, SS.SHAFT_R, T0, T1, -1, zr + 1))
         P.cid[-1, :, :] = SID["W"]; P.names[SID["W"]] = "W"
@@ -704,6 +705,7 @@ def jobs(levels):
     for c in (3.0, 6.0, 12.0):
         for un in (False, True):
             out.append(dict(kind="cell", kw=dict(h=0.5, unaligned=un, rims=True, clear=c), drive=["N1v", "SA"]))
+    out.append(dict(kind="cell", kw=dict(h=0.5, unaligned=False, rims=True, sleeve_eps=2.1), drive=["N1v", "SA"]))
     out.append(dict(kind="axi", kw=dict(h=0.5, h_hub=0.25), drive=["N1", "N2", "N3", "N4", "RA", "RB"]))
     for j in out:
         j["key"] = j["kind"] + ":" + ",".join(f"{k}={v}" for k, v in sorted(j["kw"].items()))
@@ -1031,6 +1033,11 @@ def analyse(res, levels, log=print):
             row["kappa_gap"] = row["aligned"] / row["unaligned"]
         clr.append(row)
     cell["clearance"] = clr
+    s = S.get(key("cell", h=0.5, unaligned=False, rims=True, sleeve_eps=2.1))
+    if s:
+        C, nm = matrix(s)
+        cell["sleeve_ptfe"] = dict(eps=2.1, rotor_vane_shaft_pF=-24 * C[nm.index("SHAFT"), nm.index("N1v")],
+                                   per_gap_aligned_pF=-12 * C[nm.index("SA"), nm.index("N1v")])
     res["cell"] = cell
     # ---- the side model per level
     lv = {}
