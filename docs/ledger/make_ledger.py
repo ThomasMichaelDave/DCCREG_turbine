@@ -3,13 +3,13 @@
   - the drawings bundle: every technical drawing in the register below, one sheet each, behind a cover and a register
     -> docs/ledger/DCCREG-drawings-bundle.pdf (A3 landscape). The vector drawings (PDF) go in as they are; the
     schematics and figures are placed on titled sheets.
-Needs python-markdown and pypdf (pip install markdown pypdf cffi) and playwright with chromium.
+Needs markdown-it-py, mdit-py-plugins and pypdf (pip install markdown-it-py mdit-py-plugins pypdf cffi) and
+playwright with chromium.
 Usage: python3 docs/ledger/make_ledger.py [--paper] [--bundle]   (both by default)
 """
 import argparse
-import datetime
+import functools
 import html
-import io
 import os
 import re
 import subprocess
@@ -23,16 +23,23 @@ PAPER = os.path.join(HERE, "DCCREG-design-ledger.pdf")
 BUNDLE = os.path.join(HERE, "DCCREG-drawings-bundle.pdf")
 CHROMIUM = os.environ.get("CHROMIUM", "/opt/pw-browsers/chromium")
 LOCK_DATE = "2026-10-09"
+LOCK_STATE = "09243c7"                 # the last commit that changed the design; the lock freezes it
 
 # the register (docs/ledger/register.py): sheet, title, file, what it shows, generator, part ("A" the design of record,
 # "B" its supporting drawings, "C" earlier phases kept for the record)
 sys.path.insert(0, HERE)
-from register import REGISTER  # noqa: E402
+from register import CAD, REGISTER  # noqa: E402
 
 
+@functools.lru_cache(maxsize=None)
 def commit():
+    """the commit the build reads from, marked when the tree differs from it (the two outputs aside)."""
+    def git(*a):
+        return subprocess.run(["git", "-C", ROOT, *a], capture_output=True, text=True).stdout.strip()
     try:
-        return subprocess.run(["git", "-C", ROOT, "log", "-1", "--format=%h"], capture_output=True, text=True).stdout.strip()
+        dirty = git("status", "--porcelain", "--", ".", ":!" + os.path.relpath(PAPER, ROOT),
+                    ":!" + os.path.relpath(BUNDLE, ROOT))
+        return git("log", "-1", "--format=%h") + (" + uncommitted changes" if dirty else "")
     except OSError:
         return "?"
 
@@ -48,9 +55,9 @@ h2 { font-size: 13.5pt; margin: 1.6em 0 0.5em; padding-top: 0.3em; border-top: 1
 h2.newpage { break-before: page; }
 h3 { font-size: 11pt; margin: 1.2em 0 0.35em; color: #1d3f5e; }
 h4 { font-size: 9.8pt; margin: 0.9em 0 0.25em; }
-p { margin: 0.35em 0 0.55em; text-align: justify; hyphens: auto; }
+p { margin: 0.35em 0 0.55em; }
 ul, ol { margin: 0.25em 0 0.6em; padding-left: 1.35em; }
-li { margin: 0.12em 0; }
+li { margin: 0.12em 0; break-inside: avoid; }
 li > ul, li > ol { margin: 0.1em 0 0.15em; }
 strong { color: #0b0b0b; }
 code { font-family: 'DejaVu Sans Mono', monospace; font-size: 0.86em; background: #f3f2ee; padding: 0 0.18em;
@@ -66,19 +73,26 @@ tr { break-inside: avoid; }
 tbody tr:nth-child(even) td { background: #fbfaf7; }
 figure { margin: 0.8em 0 1.1em; text-align: center; break-inside: avoid; }
 figure img { max-width: 100%; max-height: 205mm; }
+@page land { size: A4 landscape; }
+figure.landscape, div.landpage { page: land; margin: 0; }
+figure.landscape img { max-height: 150mm; }
+div.landpage h2, div.landpage h3 { margin-top: 0; }
+div.landpage figure.landscape img { max-height: 136mm; }
+nav.toc + .notes { font-size: 9pt; margin-top: 8mm; }
 figcaption { font-family: 'DejaVu Sans', sans-serif; font-size: 7.8pt; color: #3c3b38; text-align: left;
              margin-top: 0.35em; line-height: 1.35; }
 blockquote { margin: 0.6em 0; padding: 0.4em 0.9em; border-left: 3px solid #1d3f5e; background: #f4f6f9;
              font-size: 0.95em; }
 hr { border: none; border-top: 0.8px solid #cfcdc4; margin: 1.2em 0; }
 a { color: #1d3f5e; text-decoration: none; }
-section.title { height: 252mm; display: flex; flex-direction: column; break-after: page; }
+section.title { min-height: 252mm; display: flex; flex-direction: column; break-after: page; }
 section.title h1 { font-size: 23pt; margin: 30mm 0 4mm; line-height: 1.15; border: none; }
 section.title .sub { font-family: 'DejaVu Sans', sans-serif; font-size: 12pt; color: #1d3f5e; margin-bottom: 14mm; }
 section.title table { font-size: 8.6pt; width: 100%; }
 section.title .abstract { margin-top: 10mm; font-size: 9.6pt; }
 section.title .foot { margin-top: auto; font-family: 'DejaVu Sans', sans-serif; font-size: 7.6pt; color: #555; }
-nav.toc { break-after: page; font-family: 'DejaVu Sans', sans-serif; font-size: 9pt; }
+nav.toc { font-family: 'DejaVu Sans', sans-serif; font-size: 9pt; }
+.notes { break-after: page; }
 nav.toc h2 { border-top: none; margin-top: 0; }
 nav.toc ul { list-style: none; padding-left: 0; }
 nav.toc li { margin: 0.25em 0; }
@@ -88,48 +102,55 @@ nav.toc li li { margin-left: 1.4em; font-size: 8.4pt; color: #333; }
 
 HEADER = ('<div style="font-family: DejaVu Sans, sans-serif; font-size: 7pt; color: #666; width: 100%; '
           'padding: 0 17mm; display: flex; justify-content: space-between;">'
-          '<span>DCCREG turbine &middot; design ledger and fact sheet</span><span>LOCKED {date} &middot; {commit}</span>'
+          '<span>DCCREG turbine &middot; design ledger and fact sheet</span><span>LOCKED {date} &middot; design state {state}</span>'
           '</div>')
 FOOTER = ('<div style="font-family: DejaVu Sans, sans-serif; font-size: 7pt; color: #666; width: 100%; '
           'padding: 0 17mm; text-align: right;"><span class="pageNumber"></span> / <span class="totalPages"></span></div>')
 
 
+# figures the paper sets on a page of their own, turned to landscape: the wide schematics and the A3 drawing
+LANDSCAPE = ("figures/architecture.png", "../schematic-rings-supply.png", "../drawings/DCCREG-HUB-201.png",
+             "../figures/hub-bench-predictions.png")
+
+
 def md_to_html(text):
-    import markdown
-    md = markdown.Markdown(extensions=["tables", "fenced_code", "sane_lists", "attr_list", "toc", "md_in_html"],
-                           extension_configs={"toc": {"toc_depth": "2-3"}})
-    body = md.convert(text)
-    # images alone in a paragraph become figures, their alt text the caption
+    """CommonMark with tables (as GitHub reads the markdown), ids on the h2 / h3; returns the body and the contents."""
+    from markdown_it import MarkdownIt
+    from mdit_py_plugins.anchors import anchors_plugin
+    md = MarkdownIt("commonmark", {"html": True}).enable("table").use(anchors_plugin, min_level=2, max_level=3)
+    tokens = md.parse(text)
+    toc = [dict(level=int(t.tag[1]), id=t.attrGet("id"),
+                name=md.renderer.renderInline(tokens[i + 1].children, md.options, {}))
+           for i, t in enumerate(tokens) if t.type == "heading_open" and t.tag in ("h2", "h3")]
+    body = md.renderer.render(tokens, md.options, {})
+
+    # an image alone in a paragraph becomes a figure, its alt text the caption
     def fig(m):
         attrs = dict(re.findall(r'(\w+)="([^"]*)"', m.group(1)))
-        cap = attrs.get("alt", "")
-        return (f'<figure><img src="{attrs.get("src", "")}" alt=""/>'
-                + (f"<figcaption>{cap}</figcaption>" if cap else "") + "</figure>")
+        src, cap = attrs.get("src", ""), attrs.get("alt", "")
+        cls = ' class="landscape"' if src in LANDSCAPE else ""
+        return (f'<figure{cls}><img src="{src}" alt=""/>' + (f"<figcaption>{cap}</figcaption>" if cap else "")
+                + "</figure>")
     body = re.sub(r"<p>\s*<img ([^>]*?)/?>\s*</p>", fig, body)
-    return body, md.toc_tokens
+    # a heading straight before a landscape figure goes onto its page
+    body = re.sub(r'(<h([23])[^>]*>(?:(?!</?h[1-6]).)*</h\2>)\s*(<figure class="landscape">.*?</figure>)',
+                  r'<div class="landpage">\1\3</div>', body, flags=re.S)
+    # a table whose header row is empty (the front matter's) prints without it
+    body = re.sub(r"<thead>\s*<tr>\s*(?:<th[^>]*>\s*</th>\s*)+</tr>\s*</thead>\s*", "", body)
+    return body, toc
 
 
-def toc_html(tokens):
-    flat = []
-
-    def walk(ts):
-        for t in ts:
-            flat.append(t)
-            walk(t.get("children", []))
-    walk(tokens)
+def toc_html(toc):
     out = ['<nav class="toc"><h2>Contents</h2><ul>']
     open_sub = False
-    for t in flat:
-        if t["level"] == 2:
-            if open_sub:
-                out.append("</ul>")
-                open_sub = False
-            out.append(f'<li><a href="#{t["id"]}">{t["name"]}</a></li>')
-        elif t["level"] == 3:
-            if not open_sub:
-                out.append("<ul>")
-                open_sub = True
-            out.append(f'<li><a href="#{t["id"]}">{t["name"]}</a></li>')
+    for t in toc:
+        if t["level"] == 2 and open_sub:
+            out.append("</ul>")
+            open_sub = False
+        elif t["level"] == 3 and not open_sub:
+            out.append("<ul>")
+            open_sub = True
+        out.append(f'<li><a href="#{t["id"]}">{t["name"]}</a></li>')
     if open_sub:
         out.append("</ul>")
     out.append("</ul></nav>")
@@ -139,18 +160,19 @@ def toc_html(tokens):
 def build_paper():
     text = open(MD, encoding="utf-8").read()
     body, tokens = md_to_html(text)
-    # the title block: everything before the first h2 goes on the title page
-    i = body.find("<h2")
+    # the title page: everything before the first h2, the reading notes aside (they go under the contents)
+    m = re.search(r'<div class="landpage"><h2|<h2', body)
+    i = m.start() if m else len(body)
     title, rest = body[:i], body[i:]
-    rest = rest.replace('<h2 id="', '<h2 class="newpage" id="', 1)
-    for sec in ("the-machine-at-a-glance", "how-the-design-got-here", "the-components-and-how-they-work",
-                "fact-sheet", "drawing-register"):                    # each part on a fresh page
+    j = title.find("<p><strong>Reading notes.</strong></p>")
+    title, notes = (title[:j], title[j:]) if j >= 0 else (title, "")
+    for sec in ("the-components-and-how-they-work", "fact-sheet", "known-inconsistencies"):  # each on a fresh page
         rest = re.sub(rf'<h2 id="([^"]*{sec}[^"]*)"', r'<h2 class="newpage" id="\1"', rest)
     doc = (f'<!doctype html><html><head><meta charset="utf-8"><title>DCCREG turbine design ledger</title>'
            f'<style>{PAPER_CSS}</style></head><body><section class="title">{title}'
-           f'<div class="foot">Generated from docs/ledger/DCCREG-design-ledger.md by docs/ledger/make_ledger.py at commit '
-           f'{commit()}. The markdown is the source; this PDF is its print form.</div></section>'
-           f'{toc_html(tokens)}{rest}</body></html>')
+           f'<div class="foot">Generated from docs/ledger/DCCREG-design-ledger.md by docs/ledger/make_ledger.py, built at '
+           f'commit {commit()}. The markdown is the source; this PDF is its print form.</div></section>'
+           f'{toc_html(tokens)}<div class="notes">{notes}</div>{rest}</body></html>')
     tmp = os.path.join(HERE, "_paper.html")
     open(tmp, "w", encoding="utf-8").write(doc)
     from playwright.sync_api import sync_playwright
@@ -159,8 +181,8 @@ def build_paper():
         pg = b.new_page()
         pg.goto("file://" + tmp)
         pg.wait_for_load_state("networkidle")
-        pg.pdf(path=PAPER, format="A4", print_background=True, display_header_footer=True,
-               header_template=HEADER.format(date=LOCK_DATE, commit=commit()), footer_template=FOOTER,
+        pg.pdf(path=PAPER, format="A4", prefer_css_page_size=True, print_background=True, display_header_footer=True,
+               header_template=HEADER.format(date=LOCK_DATE, state=LOCK_STATE), footer_template=FOOTER,
                margin=dict(top="19mm", bottom="19mm", left="17mm", right="17mm"))
         b.close()
     os.remove(tmp)
@@ -200,24 +222,40 @@ def _sheet_html(r, n_total):
             f'</header><div class="what">{html.escape(r["what"])}</div><div class="img"><img src="file://{src}"/></div>'
             f'<footer><span>{html.escape(r["file"])}' + (f' &middot; generator {html.escape(r["gen"])}' if r.get("gen")
                                                          else "") +
-            f'</span><span>DCCREG turbine &middot; drawings bundle &middot; LOCKED {LOCK_DATE} &middot; {commit()}'
+            f'</span><span>DCCREG turbine &middot; drawings bundle &middot; LOCKED {LOCK_DATE} &middot; design state {LOCK_STATE}'
             f'</span></footer></div>')
 
 
 def _cover_html(n_total):
-    rows = []
-    last = None
-    for r in REGISTER:
-        if r["part"] != last:
-            rows.append(f'<tr><td class="part" colspan="5">{PART_NAME[r["part"]]}</td></tr>')
-            last = r["part"]
-        rows.append(f'<tr><td>{r["sheet"]}</td><td>{html.escape(r["title"])}</td><td>{html.escape(r["what"])}</td>'
-                    f'<td>{html.escape(r["file"])}</td><td>{html.escape(r.get("gen") or "")}</td></tr>')
-    return (f'<div class="sheet" style="padding-top: 14mm"><h1>DCCREG turbine — technical drawings</h1>'
-            f'<div class="sub">The bundle of the design lock ({LOCK_DATE}, commit {commit()}): {n_total} sheets. '
-            f'The ledger is docs/ledger/DCCREG-design-ledger.md (and .pdf).</div>'
-            f'<table><thead><tr><th>sheet</th><th>title</th><th>what it shows</th><th>file</th><th>generator</th></tr>'
-            f'</thead><tbody>{"".join(rows)}</tbody></table></div>')
+    """two register pages: the title with parts A and B; then part C and the CAD files."""
+    def rows_for(parts):
+        out, last = [], None
+        for r in REGISTER:
+            if r["part"] not in parts:
+                continue
+            if r["part"] != last:
+                out.append(f'<tr><td class="part" colspan="5">{PART_NAME[r["part"]]}</td></tr>')
+                last = r["part"]
+            out.append(f'<tr><td>{r["sheet"]}</td><td>{html.escape(r["title"])}</td><td>{html.escape(r["what"])}</td>'
+                       f'<td>{html.escape(r["file"])}</td><td>{html.escape(r.get("gen") or "")}</td></tr>')
+        return "".join(out)
+    head = ('<table><thead><tr><th style="width:4%">sheet</th><th style="width:20%">title</th><th>what it shows</th>'
+            '<th style="width:24%">file</th><th style="width:15%">generator</th></tr></thead><tbody>')
+    cad = "".join(f'<tr><td>{p_}</td><td>{html.escape(f)}</td><td>{html.escape(w)}</td></tr>' for p_, f, w in CAD)
+    page1 = (f'<div class="sheet" style="padding-top: 14mm"><h1>DCCREG turbine — technical drawings</h1>'
+             f'<div class="sub">The bundle of the design lock ({LOCK_DATE}, design state {LOCK_STATE}; built at {commit()}): '
+             f'{n_total} sheets after '
+             f'this register. The ledger is docs/ledger/DCCREG-design-ledger.md (and .pdf); the drawings themselves stay '
+             f'in the repository at the paths below, with the scripts that redraw them.</div>'
+             f'{head}{rows_for("AB")}</tbody></table></div>')
+    page2 = (f'<div class="sheet" style="padding-top: 12mm"><header><span class="t">Register, continued</span>'
+             f'<span class="n">part C and the CAD files</span></header>{head}{rows_for("C")}</tbody></table>'
+             f'<h3 style="margin: 5mm 0 2mm; font-size: 11pt">CAD and DXF files (not placed on sheets)</h3>'
+             f'<table><thead><tr><th style="width:4%">part</th><th style="width:40%">file</th><th>what</th></tr></thead>'
+             f'<tbody>{cad}</tbody></table>'
+             f'<p style="font-size: 8pt; color: #444; margin-top: 4mm">Analysis plots of the earlier phases (the '
+             f'repository root\'s *.png and sim/*.png) are data, not drawings; they stay with their findings.</p></div>')
+    return page1 + page2
 
 
 def _print(pg, html_text, out):
@@ -260,7 +298,7 @@ def build_bundle():
             writer.add_outline_item(f"{r['sheet']}. {r['title']}", start, parent=parent[r["part"]])
         b.close()
     writer.add_metadata({"/Title": "DCCREG turbine - technical drawings (design lock)", "/Subject":
-                         f"locked {LOCK_DATE}, commit {commit()}"})
+                         f"locked {LOCK_DATE}, design state {LOCK_STATE}, built at {commit()}"})
     with open(BUNDLE, "wb") as f:
         writer.write(f)
     return BUNDLE
