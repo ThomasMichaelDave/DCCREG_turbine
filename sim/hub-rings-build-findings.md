@@ -286,7 +286,7 @@ keeps each family's best per pair of ratings (`best_by_family`).
     - On the record's bands that would be about ±1.8 kV/cm at 120 Hz (V(4) − V(1) swings ±7.4 kV), so the pressure
       peaks at about 0.14 Pa twice a cycle and falls to zero between.
     - Floating electrodes also cost the pump gain: z 1.23 with the floating cones, against 1.31 bare.
-    - [OC] estimate: the record's k on the pump's swing; not simulated with the rings.
+    - [IR] estimate: the record's k on the pump's swing; not simulated with the rings.
 
 ## 5. The bench test, and what the field should do
 - **The plan:** `docs/bench-test-rings.md`:
@@ -342,10 +342,10 @@ keeps each family's best per pair of ratings (`best_by_family`).
   - the conductivities (datasheet-class, uncertain by an order of magnitude: the drift's size and times follow
     them);
   - the foil's thickness.
-- **[OC]:**
+- **[IR]** (modelling choices, `CONVENTIONS.md` §1):
   - the finite volumes and the local solves at the beads (§2 convergence);
-  - the superposition of the modes (exact for the linear problem);
   - the tables' bilinear interpolation (each pair's best re-solved directly).
+- **[OC]:** the superposition of the modes, exact for the linear problem.
 - **Not modelled:**
   - **the contact wedge** where a bead touches the glass. It is skipped in the sampling; the void-free gel is what keeps
     it benign, and the coupons test it.

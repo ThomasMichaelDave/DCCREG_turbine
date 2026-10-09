@@ -28,7 +28,8 @@ yes!"
 | the numbers | `sim/hub_rings_build_results.json` (record, record_supply), `sim/hub_drift_results.json` |
 | the cost | `docs/cost/README.md` (core field 4, ring A's feed 2) |
 
-Tags: [OC] a modelling choice, [IR] an imported reference value, [RH] a rule of thumb or placeholder to qualify.
+Tags (`CONVENTIONS.md` §1): [OC] standard, derivable physics; [IR] a modelling or engineering choice, including the
+datasheet-class values taken; [RH] a heuristic or placeholder, not load-bearing until qualified.
 
 ## 1. At a glance
 
@@ -146,7 +147,7 @@ Tags: [OC] a modelling choice, [IR] an imported reference value, [RH] a rule of 
   - **each ring to the AH cores:** 1.81 kV/mm on average, through the PEEK.
 - **The equatorial plane is at 0 V** with the symmetric supply. No voltage runs along it, so a joint in it carries
   only the normal field (§7) [OC].
-- **The solves** [OC]: the hub's finite volumes with 0.25 mm cells; the beads by local solves with 0.025 mm cells,
+- **The solves** [IR]: the hub's finite volumes with 0.25 mm cells; the beads by local solves with 0.025 mm cells,
   bounded by the hub's solution. The convergence is in `sim/hub_rings_build_results.json` convergence.
 
 ## 6. In time: start-up, ripple, drift (`sim/hub_drift.py`)
@@ -165,7 +166,7 @@ Tags: [OC] a modelling choice, [IR] an imported reference value, [RH] a rule of 
   - **A field that swings from A to B** would need AC on the rings: rings on coupling capacitors, following nodes 1 and
     4, as the floating cones did (`sim/core-field-findings.md`).
   - On these bands that gives about ±1.8 kV/cm at 120 Hz, with the pressure peaking at about 0.14 Pa twice a cycle and
-    zero between. The pump would also lose gain [OC estimate; not simulated with the rings].
+    zero between. The pump would also lose gain [IR estimate; not simulated with the rings].
 - **The drift** with the rings held at their DC: the leakage moves the potential along the glass and through the gel
   and PEEK, from the electrostatic toward the conduction-settled state [OC].
   - PEEK and gel at 25 °C: 7.10 → 7.41 (10 min) → 7.78 (1 h) → 7.82 kV/cm (6 h), half-way at 13 min.
@@ -193,7 +194,7 @@ Tags: [OC] a modelling choice, [IR] an imported reference value, [RH] a rule of 
 - **6. The retainer:**
   - machine the PEEK from annealed stock: the pocket 0.5 mm over the glass, the grooves 3.5 / 2.5 mm deep, the AH
     seats;
-  - **split it at the equatorial plane** (proposed) [OC]. With the symmetric supply that plane is at 0 V, so the joint
+  - **split it at the equatorial plane** (proposed) [IR]. With the symmetric supply that plane is at 0 V [OC], so the joint
     sees no voltage along it, only the normal field. A split through the axis would put the full 1 kV/mm along its
     joint.
   - Fill the joint void-free with the gel.
@@ -223,6 +224,6 @@ Tags: [OC] a modelling choice, [IR] an imported reference value, [RH] a rule of 
 - **The fired-on coating's edges** for the later build: beaded the same way, or graded by a resistive layer toward the
   pole.
 - **The beads in the settled DC state:** conduction then shares the DC by the conductivities, not the permittivities.
-  This was not checked; it should ease the beads [IR].
+  This was not checked; it should ease the beads [RH].
 - **The tube layout and its 3-D model** still carry the 120 mm placeholder hub (`sim/stack_sizing.py`,
   `sim/tube_geometry.py`).
