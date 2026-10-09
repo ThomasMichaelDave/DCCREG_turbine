@@ -1,7 +1,7 @@
 {
   "schema": "hub-register/1",
-  "generation": "locked 2026-10-08, decisions 2026-10-09",
-  "note": "The hub as the designer locked it, inside out. Every value carries its status word and source: DECIDED (the designer), REGISTER (carried from presets/electromagnets-RA.json), OPEN (a placeholder [RH] until the designer sets it). Read by sim/hub_locked.py.",
+  "generation": "locked 2026-10-08, decisions 2026-10-09, build 2026-10-09",
+  "note": "The hub as the designer locked it, inside out. Every value carries its status word and source: DECIDED (the designer), REGISTER (carried from presets/electromagnets-RA.json), DESIGN / PROPOSED (sized or proposed here, the designer's to accept), ESTIMATE, OPEN (a placeholder [RH] until the designer sets it). Read by sim/hub_locked.py and sim/hub_rings_build.py.",
   "layer_order": {
     "value": [
       "vessel (vacuum inside)",
@@ -52,16 +52,48 @@
       "count": 2,
       "role": "the field's electrodes: the rings outside the glass (not electrodes inside the vacuum)",
       "where": "on the vessel's outer surface, one on each hemisphere, mirror-symmetric about the equator",
-      "form": "bands, 0.5 mm, a conductive layer on the glass under the retainer (copper foil or a fired coating: OPEN)",
-      "polar_edge_deg": 20.0,
-      "equatorial_edge_deg": 53.1,
-      "equatorial_gap_mm": 32.2,
-      "supply": "DC: ring A on node 1's peak (Dk, -13.2 kV), ring B on three Cockcroft-Walton stages on node 4 (+19.0 kV); 32.2 kV across"
+      "form": "prototype: bands of 0.1 mm annealed copper foil on the glass (cut as gores to fit the sphere, overlapped and soldered), each edge beaded with a soldered copper wire ring; a fired-on coating later (its edges beaded or graded the same way)",
+      "foil_t_mm": 0.1,
+      "polar_edge_deg": 25.75,
+      "equatorial_edge_deg": 57.7,
+      "equatorial_gap_mm": 28.2,
+      "bead_d_mm": {
+        "polar": 3.0,
+        "equatorial": 2.0
+      },
+      "supply": "DC: ring A on node 1's peak (Dk, -13.2 kV), ring B on 2 Cockcroft-Walton stages on node 4 (+15.0 kV); 28.2 kV across; storage 100 pF",
+      "field_at_null_kV_cm": 6.93
     },
     "unit": "-",
-    "status": "DECIDED (rings outside the glass) / DESIGN (edges, supply: sim/hub_locked.py)",
-    "source": "designer, 2026-10-09; edges and supply from sim/hub-locked-findings.md (the most field at the null with 1 kV/mm along the glass between the rings)",
-    "tag": "[RH] the 1 kV/mm interface rating"
+    "status": "DECIDED (rings outside the glass; copper foil with rounded edges for the prototype) / DESIGN (edges, beads, supply: sim/hub_rings_build.py)",
+    "source": "designer, 2026-10-09; the design from sim/hub-rings-build-findings.md: the most field at the null with the gap holding the interface rating along the glass and both beads the gel's rating (ratings below). Supersedes the lock-down's 20-53 deg on three stages, whose edges were not checked.",
+    "tag": "[RH] the ratings; [OC] the field solves"
+  },
+  "ratings": {
+    "value": {
+      "interface_kV_mm": 1.0,
+      "gel_at_bead_kV_mm": 5.0,
+      "to_qualify": {
+        "interface_kV_mm": 2.0,
+        "gel_at_bead_kV_mm": 8.0
+      }
+    },
+    "unit": "kV/mm",
+    "status": "DESIGN (the record's) / OPEN until the bench qualifies them",
+    "source": "interface: the average DC along the glass between the rings, under the gel and the retainer; gel: the peak DC field at a bead in void-free silicone gel, about a third of its short-term strength. The bench test qualifies both (docs/bench-test-rings.md phase 1); they set the stages (sim/hub-rings-build-findings.md).",
+    "tag": "[RH]"
+  },
+  "rings_leakage": {
+    "value": {
+      "R_ohm_per_ring": 100000000000.0,
+      "ledger_ohm": 158000000000.0,
+      "field_side_ohm": 220000000000000.0,
+      "dominated_by": "the multiplier's diodes and capacitors and the HV assembly's surface; the rings' own insulation leaks about a thousand times less"
+    },
+    "unit": "ohm",
+    "status": "ESTIMATE (to measure: docs/bench-test-rings.md phase 2)",
+    "source": "sim/hub_rings_build.py LEAKAGE (datasheet-class parts); replaces the 10 G placeholder",
+    "tag": "[RH]"
   },
   "AH": {
     "value": {
@@ -116,27 +148,41 @@
   "retainer": {
     "value": {
       "holds": "the vessel, the rings, the AH cores and coils",
-      "material": "non-magnetic composite (OPEN)",
-      "eps_r": 4.7,
+      "material": "PEEK, unfilled (natural grade; no carbon or glass fill), machined from annealed stock",
+      "eps_r": 3.2,
+      "pocket": "0.5 mm over the glass with grooves for the rings' beads, filled with the interface filler",
+      "alternative": "PEI (Ultem 1000), eps 3.15: higher resistivity and strength, slower to settle, more moisture",
       "r_max_mm": 30.0,
       "absz_max_mm": 72.0
     },
     "unit": "-",
-    "status": "DECIDED (role) / OPEN (material, dimensions)",
-    "source": "designer, 2026-10-08; dimensions a placeholder that just encloses the AH coils",
-    "tag": "[RH]"
+    "status": "DECIDED (role) / PROPOSED (material: the designer's to accept) / OPEN (dimensions)",
+    "source": "designer, 2026-10-08 (role); the material from sim/hub-rings-build-findings.md: non-magnetic and non-conducting (no effect on the AH), low eps (the field at the null moves under 1 % from eps 2.1 to 4.7), low moisture, machines and holds size; the dimensions a placeholder that encloses the AH coils",
+    "tag": "[IR] datasheet-class"
+  },
+  "interface_filler": {
+    "value": {
+      "material": "silicone gel, two-part, degassed and vacuum-cast into the retainer's pocket",
+      "eps_r": 2.9,
+      "t_mm": 0.5,
+      "role": "fills the glass-retainer interface without voids, beds the beads, and takes the PEEK-glass expansion mismatch"
+    },
+    "unit": "-",
+    "status": "PROPOSED",
+    "source": "sim/hub-rings-build-findings.md; eps datasheet-class",
+    "tag": "[IR] eps; [RH] the rating (ratings)"
   },
   "shaft_coupler": {
     "value": {
       "encapsulates": "the retainer",
-      "material": "non-metallic, non-magnetic (G10 probably)",
+      "material": "G10, outside the retainer (not against the glass or the rings)",
       "eps_r": 4.7,
       "wall_mm": 3.0,
       "shape": "OPEN (the tube's bicone is a placeholder)"
     },
     "unit": "-",
-    "status": "DECIDED (role) / OPEN (shape, dimensions)",
-    "source": "designer, 2026-10-08",
+    "status": "DECIDED (role) / PROPOSED (G10 outside the PEEK) / OPEN (shape, dimensions)",
+    "source": "designer, 2026-10-08; G10's fibres would give a tracking path at the rings, so PEEK takes the inside",
     "tag": "[RH]"
   },
   "shaft": {
@@ -165,14 +211,16 @@
   },
   "open": {
     "value": [
-      "the retainer's and coupler's materials and dimensions",
-      "the rings' material and leads; the glass-retainer interface's rating (1 kV/mm placeholder sets the rings' gap)",
-      "the electrodes' leakage (10 G placeholder per ring sets the multiplier's sag)",
+      "the ratings: the interface along the glass and the gel at the beads (they set the stages: bench test phase 1)",
+      "each ring's leakage (100 G estimate: bench test phase 2)",
+      "the retainer's and coupler's dimensions; the rings' leads through them",
+      "the AH ends facing the polar beads (the coil's end turns and former: rounded or capped); the AH seat's length, which sets how near the pole the bands may start",
+      "the fired-on coating's edges (beaded, or graded by a resistive layer toward the pole)",
       "the tube layout and its 3-D model still carry the 120 mm placeholder hub (sim/stack_sizing.py hub_mm, sim/tube_geometry.py)"
     ],
     "unit": "-",
     "status": "OPEN",
-    "source": "sim/hub-locked-findings.md",
+    "source": "sim/hub-locked-findings.md, sim/hub-rings-build-findings.md",
     "tag": "-"
   }
 }

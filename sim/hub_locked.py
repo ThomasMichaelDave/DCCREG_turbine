@@ -6,8 +6,8 @@ The hub, inside out (designer, 2026-10-08):
   rings     two electrode rings around the vessel, one on each hemisphere;
   AH        the cores with their coils on the z axis, top and bottom: the register's MnZn rods and the 160-turn coil in
             variant (a)'s window (one REF envelope here: r <= 11.45 mm, |z| 30.7-72);
-  retainer  holds the vessel, the rings and the AH; the shaft coupler encapsulates it (both eps 4.7 [RH], r <= 33 mm,
-            |z| <= 72 here);
+  retainer  holds the vessel, the rings and the AH; the shaft coupler encapsulates it (both eps 4.7 here, the
+            lock-down's placeholder [RH]; r <= 33 mm, |z| <= 72);
   shaft     the same shaft top and bottom (REF): a flange r 32 at |z| 72-80 [RH: moved out to clear the coil], the
             shaft r 15 beyond; each half carries its side's electrostatic and magnetic pump.
 The rings, three ways [OC]:
@@ -50,8 +50,10 @@ def V(key):
 
 
 _ves, _ah, _ret, _cpl, _sh = V("vessel"), V("AH"), V("retainer"), V("shaft_coupler"), V("shaft")
+EPS_RET_LOCKDOWN = 4.7       # the lock-down's placeholder for the retainer and the coupler together [RH]; the build's
+                             # PEEK / gel / G10 system is sim/hub_rings_build.py's (from the spec)
 HUB = dict(R_v=0.5 * _ves["od_mm"], R_in=0.5 * _ves["od_mm"] - V("vessel_wall")["t_mm"], eps_glass=_ves["eps_r"],
-           eps_ret=_ret["eps_r"], ret_r=_ret["r_max_mm"] + _cpl["wall_mm"], ret_z=_ret["absz_max_mm"],
+           eps_ret=EPS_RET_LOCKDOWN, ret_r=_ret["r_max_mm"] + _cpl["wall_mm"], ret_z=_ret["absz_max_mm"],
            ah_r=_ah["coil"]["r_mm"][1], ah_z=tuple(_ah["core"]["absz_mm"]), fl_r=_sh["flange_r_mm"],
            fl_z=tuple(_sh["flange_absz_mm"]), sh_r=0.5 * _sh["d_mm"], R_box=162.0, Z_box=110.0)
 RINGS = {"wire 1.5 mm": dict(kind="wire", d=1.5), "band 4 mm": dict(kind="band", w=4.0, t=0.5),
@@ -79,7 +81,12 @@ def maps(ring, theta, coils, h, hub=HUB):
     R, Z = np.meshgrid(r, z, indexing="ij")
     rho = np.hypot(R, Z)
     eps = np.ones((nr, nz))
-    eps[(R <= hub["ret_r"]) & (Z <= hub["ret_z"]) & (rho >= hub["R_v"])] = hub["eps_ret"]   # retainer + coupler
+    ret = (R <= hub["ret_r"]) & (Z <= hub["ret_z"]) & (rho >= hub["R_v"])
+    eps[ret] = hub["eps_ret"]                                          # the retainer (and coupler, unless split)
+    if hub.get("cpl_t"):                                               # the coupler's shell outside the retainer
+        eps[ret & (R > hub["ret_r"] - hub["cpl_t"])] = hub["eps_cpl"]
+    if hub.get("fill_t"):                                              # the interface filler on the glass
+        eps[ret & (rho < hub["R_v"] + hub["fill_t"])] = hub["eps_fill"]
     eps[(rho >= hub["R_in"]) & (rho < hub["R_v"])] = hub["eps_glass"]
     cond = np.zeros((nr, nz), dtype=np.int8)
     if coils:                                                          # the AH core and its coil: one REF envelope
