@@ -615,7 +615,7 @@ K_NULL = _HRB["record"]["k_kV_cm_per_kV"]         # (kV/cm)/kV: the field at the
 AB_MODELS = ("ND", "HV-typ", "HV-max", "HV-hot")
 AB_V_HI = 10e3          # V: the threshold search's top seed, below the clamp's 13.2 kV [IR]
 AB_DOUBLE = 2           # the clamped runs doubled at most twice until the rings settle [IR, as sim/tube_strays.py]
-N_THR_AB = 120          # cycles of an as-built threshold trial: the rings' chains take about 75 to charge [IR]
+AB_THR_N = (120, 960)   # cycles of an as-built start trial: first, and at most (doubled while undecided) [IR]
 
 
 def apply_strays(txt, strays):
@@ -859,47 +859,36 @@ def es_job(job):
     return out
 
 
-def _grows(pk, late=False):
-    """a free run's verdict: the node-1 peak of the last cycle exceeds that of cycle 5 (the first cycles carry the
-    seed's own transient) [IR]; late: and the last five cycles grow too, unless the sticks' avalanche holds the
-    amplitude (above 1.5 V_OP: the free runs have no clamps) -- on the as-built set the rings' chains charge for tens of
-    cycles while their sticks' leakage rises, so a seed near the threshold grows at first and then decays [IR]."""
-    g = bool(pk) and len(pk) > 6 and pk[-1] > pk[5]
-    if late:
-        g = g and (pk[-1] > pk[-6] or max(pk) > 1.5 * CF.V_OP / 1e3)
-    return bool(g)
-
-
 def es_threshold(model):
-    """the smallest seed |v0| (nodes 1 and 4) from which the pump grows: free runs of N_THR cycles, 'grows' as _grows
-    (a large seed's run ends at the sticks' avalanche, where a late fit reads 1) [IR]; bisection in log |v0| between
-    1 V and 1 kV to 10 %. model: a name (the record's set) or dict(model, set, v_hi[, n_cyc, late]): the as-built set
-    (§2b), where a pump that does not grow from 1 kV is tried at v_hi and, if it grows there, bisected between 1 kV and
-    v_hi; n_cyc the trials' length, late the late criterion of _grows."""
+    """the smallest seed |v0| (nodes 1 and 4) from which the pump grows: free runs of N_THR cycles, 'grows' when the
+    node-1 peak of the last cycle exceeds that of cycle 5 (the first cycles carry the seed's own transient; a large
+    seed's run ends at the sticks' avalanche, where a late fit reads 1) [IR]; bisection in log |v0| between 1 V and
+    1 kV to 10 %. model: a name (the record's set) or dict(model, set, v_hi): the as-built set (§2b), where a pump that
+    does not grow from 1 kV is tried at v_hi and, if it grows there, bisected between 1 kV and v_hi."""
     trials = []
     if isinstance(model, dict):
-        extra, v_hi = dict(set=model["set"]), model.get("v_hi", 1000.0)
-        n_thr, late, model = model.get("n_cyc", N_THR), bool(model.get("late")), model["model"]
+        extra, v_hi, model = dict(set=model["set"]), model.get("v_hi", 1000.0), model["model"]
     else:
-        extra, v_hi, n_thr, late = {}, 1000.0, N_THR, False
+        extra, v_hi = {}, 1000.0
 
     def grows(v):
-        r = cached("es", dict(model=model, case="free", v0=-v, n_cyc=n_thr, steps=ES_STEPS, **extra), es_job)
+        r = cached("es", dict(model=model, case="free", v0=-v, n_cyc=N_THR, steps=ES_STEPS, **extra), es_job)
         pk = r.get("V1_peak_per_cycle_kV") or [0.0] * 6
-        g = bool(r.get("done")) and _grows(pk, late)
-        q = dict(v0_V=-v, z=r.get("z"), z_late=r.get("z_late"), grows=g, done=r.get("done"), reltol=r.get("reltol"),
-                 V1_peak_per_cycle_kV=pk)
-        if late:
-            q["gain_last5"] = (pk[-1] / pk[-6]) ** 0.2 if pk[-6] > 0 else None
-        trials.append(q)
+        g = bool(r.get("done")) and pk[-1] > pk[5]
+        trials.append(dict(v0_V=-v, z=r.get("z"), z_late=r.get("z_late"), grows=g, done=r.get("done"),
+                           reltol=r.get("reltol"), V1_peak_per_cycle_kV=pk))
         return g
-    tag = dict(extra, criterion="late") if late else extra
+    return _bisect(grows, v_hi, dict(model=model, n_cyc=N_THR, **extra), trials)
+
+
+def _bisect(grows, v_hi, head, trials):
+    """the seed's bisection in log |v0| to 10 %: 1 V - 1 kV, or 1 kV - v_hi where it does not grow from 1 kV."""
     lo, hi = 1.0, 1000.0
     if grows(lo):
-        return dict(model=model, v_grows_V=lo, v_fails_V=None, n_cyc=n_thr, trials=trials, **tag)
+        return dict(head, v_grows_V=lo, v_fails_V=None, trials=trials)
     if not grows(hi):
         if v_hi <= hi or not grows(v_hi):
-            return dict(model=model, v_grows_V=None, v_fails_V=max(hi, v_hi), n_cyc=n_thr, trials=trials, **tag)
+            return dict(head, v_grows_V=None, v_fails_V=max(hi, v_hi), trials=trials)
         lo, hi = hi, v_hi
     while hi / lo > 1.1:
         mid = math.sqrt(lo * hi)
@@ -907,11 +896,55 @@ def es_threshold(model):
             hi = mid
         else:
             lo = mid
-    return dict(model=model, v_grows_V=hi, v_fails_V=lo, n_cyc=n_thr, trials=sorted(trials, key=lambda q: -q["v0_V"]),
-                **tag)
+    return dict(head, v_grows_V=hi, v_fails_V=lo, trials=sorted(trials, key=lambda q: -q["v0_V"]))
 
 
-# ===================================================================================================== the jobs
+def ab_verdict(r):
+    """(grows, decided) of an as-built start trial (§2b: the clamped deck, the machine as it stands, clamps' leakage
+    included) [IR]: it grows once it reaches the clamp, or while its gain over the last five cycles is above 1 and not
+    falling (against the five cycles twenty earlier); it fails once it has decayed 100 x from its peak, or while that
+    gain is below 1 and not rising. Otherwise it is undecided: the rings' chains charge for tens of cycles while their
+    sticks' leakage rises, so a seed near the threshold grows at first and then decays."""
+    pk = np.array(r.get("V1_peak_per_cycle_kV") or [0.0])
+    if not r.get("done") or len(pk) < 30:
+        return False, False
+    if pk.max() >= 0.97 * CF.V_OP / 1e3:
+        return True, True
+    if pk[-1] < 0.01 * pk.max():
+        return False, True
+    gain = lambda k: (pk[k] / pk[k - 5]) ** 0.2
+    g_end, g_before = gain(len(pk) - 1), gain(len(pk) - 21)
+    if g_end > 1.0 and g_end >= g_before:
+        return True, True
+    if g_end < 1.0 and g_end <= g_before:
+        return False, True
+    return bool(g_end > 1.0), False
+
+
+def ab_threshold(arg):
+    """§2b: the smallest seed |v0| from which the as-built machine starts: the clamped deck from v0, AB_THR_N[0] cycles
+    doubled while the trial is undecided (ab_verdict), up to AB_THR_N[1]; bisection as _bisect [IR]."""
+    model, v_hi, steps = arg["model"], arg.get("v_hi", AB_V_HI), arg.get("steps", ES_STEPS)
+    trials = []
+
+    def grows(v):
+        n = AB_THR_N[0]
+        while True:
+            r = cached("es", dict(model=model, case="clamped", v0=-v, n_cyc=n, steps=steps, set=AB_NAME, tag="trial"),
+                       es_job)
+            g, decided = ab_verdict(r)
+            if decided or n >= AB_THR_N[1]:
+                break
+            n *= 2
+        pk = r.get("V1_peak_per_cycle_kV") or [0.0] * 6
+        trials.append(dict(v0_V=-v, n_cyc=n, grows=g, decided=decided, done=r.get("done"), reltol=r.get("reltol"),
+                           reached_clamp=bool(max(pk) >= 0.97 * CF.V_OP / 1e3),
+                           gain_last5=(pk[-1] / pk[-6]) ** 0.2 if len(pk) > 6 and pk[-6] > 0 else None,
+                           V1_peak_per_cycle_kV=pk))
+        return g
+    return _bisect(grows, v_hi, dict(model=model, set=AB_NAME, steps=steps, rule="ab_verdict"), trials)
+
+
 def uic_check(_=None):
     """[OC, checked] how ngspice-42 starts a capacitor under uic: a linear one and a charge-defined one (Q = C V, as the
     deck's varicaps), each with .ic -1000 V across 1 GOhm; and the record's deck (dc, the record's settings) over its
@@ -946,6 +979,8 @@ def _dispatch(job):
         return job, es_job(job[1])
     if kind == "es_thr":
         return job, es_threshold(job[1])
+    if kind == "ab_thr":
+        return job, ab_threshold(job[1])
     raise ValueError(kind)
 
 
@@ -1010,7 +1045,7 @@ def ab_jobs():
         for v0 in (ES_FREE["v0"], V0_CLAMPED):
             jobs.append(("es", dict(model=m, case="free", v0=v0, n_cyc=ES_FREE["n_cyc"], **S)))
         jobs.append(("es_thr", dict(model=m, set=AB_NAME, v_hi=AB_V_HI)))      # the record set's 40-cycle rule
-        jobs.append(("es_thr", dict(model=m, set=AB_NAME, v_hi=AB_V_HI, n_cyc=N_THR_AB, late=True)))
+        jobs.append(("ab_thr", dict(model=m, set=AB_NAME, v_hi=AB_V_HI)))      # the machine's start
     return _uniq(jobs)
 
 
@@ -1023,7 +1058,7 @@ def _ab_find(res, **match):
 def ab_seeds(res):
     """per model, the clamped runs' seeds: the deck's -1 kV, and twice the threshold (rounded up to 0.5 kV) where that
     is above 1 kV [IR]."""
-    thr = {r["model"]: r for j, r in res if j[0] == "es_thr" and _is_ab(j) and j[1].get("late")}
+    thr = {r["model"]: r for j, r in res if j[0] == "ab_thr"}
     seeds = {}
     for m in AB_MODELS:
         vg = (thr.get(m) or {}).get("v_grows_V")
@@ -1041,10 +1076,10 @@ def ab_second(res):
         for v0 in vs[1:]:
             jobs.append(("es", dict(model=m, case="free", v0=v0, n_cyc=ES_FREE["n_cyc"], **S)))
         q = thr.get(m) or {}
-        for v in (q.get("v_grows_V"), q.get("v_fails_V")):
-            if v and m != "ND":
-                jobs.append(("es", dict(model=m, case="free", v0=-v, n_cyc=N_THR_AB, steps=2 * ES_STEPS, tag="steps",
-                                        **S)))
+        for t in q.get("trials", []):                                # the bracketing trials, as long as they ran
+            if m != "ND" and -t["v0_V"] in (q.get("v_grows_V"), q.get("v_fails_V")):
+                jobs.append(("es", dict(model=m, case="clamped", v0=t["v0_V"], n_cyc=t["n_cyc"], steps=2 * ES_STEPS,
+                                        tag="trial steps x2", **S)))
     return _uniq(jobs)
 
 
@@ -1071,7 +1106,8 @@ def ab_redo(res):
     growing below it (as sim/tube_strays.py run_decks doubles its rings' runs)."""
     longest = {}
     for j, r in res:
-        if j[0] == "es" and _is_ab(j) and j[1]["case"] == "clamped" and j[1]["model"] != "ND-deck":
+        if j[0] == "es" and _is_ab(j) and j[1]["case"] == "clamped" and j[1]["model"] != "ND-deck" \
+                and not j[1].get("tag"):
             k = (j[1]["model"], j[1]["v0"])
             if k not in longest or j[1]["n_cyc"] > longest[k][0][1]["n_cyc"]:
                 longest[k] = (j, r)
@@ -1093,7 +1129,9 @@ def _cost(job):
     if kind == "mag_thr":
         return 8 * N_START * 2.5
     if kind == "es_thr":
-        return 9 * (j.get("n_cyc", N_THR) if isinstance(j, dict) else N_THR)
+        return 9 * N_THR
+    if kind == "ab_thr":
+        return 9 * 2 * 2 * AB_THR_N[0]
     if kind == "uic":
         return 0
     if kind == "es":
@@ -1311,6 +1349,8 @@ def gates(out):
 
 
 def _run_name(j):
+    if (j.get("tag") or "").startswith("trial"):                     # a start trial's step check
+        return f"trial {abs(j['v0']):g} V, {j['n_cyc']} cycles" + (", steps x2" if "steps" in j["tag"] else "")
     return (f"{j['case']} {abs(j['v0']):g} V" + (" bare" if j.get("bare") else "") + f", {j['n_cyc']} cycles"
             + (", steps x2" if j.get("tag") == "steps" else ""))
 
@@ -1332,15 +1372,17 @@ def summarise_ab(res):
                           Cp={k: v * pF for k, v in s["Cp"].items()}, Cx={k: v * pF for k, v in s["Cx"].items()},
                           Cx_rings={k: v * pF for k, v in s["Cx_rings"].items()}, c_e=s["c_e"] * pF,
                           c_gap=s["c_gap"] * pF, label=s.get("label")),
-              record=AB_REC, k_null_kV_cm_per_kV=K_NULL, v_hi_V=AB_V_HI, n_thr=N_THR_AB,
+              record=AB_REC, k_null_kV_cm_per_kV=K_NULL, v_hi_V=AB_V_HI, trial_cycles=AB_THR_N,
               rules=dict(free="12 cycles at 20000 steps a cycle, z fitted over cycles 3-11 (sim/core_field.py run); "
                               "with the rings' chains unless 'bare' (opt none, as the tube-strays study's z bare)",
-                         threshold=f"free runs of {N_THR_AB} cycles at {ES_STEPS} steps; grows when the node-1 peak "
-                                   "of the last cycle exceeds that of cycle 5 and the last five cycles grow (or the "
-                                   "sticks' avalanche holds it above 1.5 V_OP); bisection in log |v0| to 10 %, 1 V - "
-                                   f"1 kV, or 1 kV - {AB_V_HI / 1e3:g} kV when it does not grow from 1 kV [IR]. "
-                                   f"thresholds_40: the record set's rule ({N_THR} cycles, the first condition only), "
-                                   "for comparison",
+                         threshold=f"the machine's start: the clamped deck from v0 at {ES_STEPS} steps, "
+                                   f"{AB_THR_N[0]} cycles doubled while undecided up to {AB_THR_N[1]}; it grows once it "
+                                   "reaches the clamp or while its gain over the last five cycles is above 1 and not "
+                                   "falling, fails once decayed 100 x or while that gain is below 1 and not rising "
+                                   "(ab_verdict); bisection in log |v0| to 10 %, 1 V - 1 kV, or 1 kV - "
+                                   f"{AB_V_HI / 1e3:g} kV when it does not grow from 1 kV [IR]. thresholds_40: the "
+                                   f"record set's rule of §4.1 (free runs, {N_THR} cycles, the last cycle's peak above "
+                                   "cycle 5's), for comparison",
                          seeds="the deck's -1 kV; and twice the threshold, rounded up to 0.5 kV, where that is above "
                                "1 kV [IR]",
                          cycles="sim/tube_strays.py _cycles from the seed: 280 + 1.3 ln(V_OP / |v0|) / ln z at the "
@@ -1353,8 +1395,8 @@ def summarise_ab(res):
               thresholds_40={}, table={})
     for job, r in res:
         kind, j = job
-        if kind == "es_thr":
-            ab["thresholds" if j.get("late") else "thresholds_40"][r["model"]] = r
+        if kind in ("es_thr", "ab_thr"):
+            ab["thresholds" if kind == "ab_thr" else "thresholds_40"][r["model"]] = r
             continue
         pk = r.get("V1_peak_per_cycle_kV")
         if j["case"] == "free" and r.get("done") and pk:              # one criterion for every free run
@@ -1447,11 +1489,12 @@ def gates_ab(out):
         for q in thr.get("trials", []):
             if q["v0_V"] not in [-(thr.get("v_grows_V") or 0), -(thr.get("v_fails_V") or 0)]:
                 continue
-            r2 = R.get(m, {}).get(f"free {abs(q['v0_V']):g} V, {N_THR_AB} cycles, steps x2")
+            r2 = R.get(m, {}).get(f"trial {abs(q['v0_V']):g} V, {q['n_cyc']} cycles, steps x2")
             if r2 and r2.get("done"):
                 pk2 = r2["V1_peak_per_cycle_kV"]
-                rows_.append(dict(v0_V=q["v0_V"], grows=q["grows"], grows_steps_x2=_grows(pk2, True),
-                                  gain_last5=q.get("gain_last5"), gain_last5_steps_x2=(pk2[-1] / pk2[-6]) ** 0.2))
+                rows_.append(dict(v0_V=q["v0_V"], n_cyc=q["n_cyc"], grows=q["grows"], grows_steps_x2=ab_verdict(r2)[0],
+                                  gain_last5=q.get("gain_last5"),
+                                  gain_last5_steps_x2=(pk2[-1] / pk2[-6]) ** 0.2 if pk2[-6] > 0 else None))
         if rows_:
             g.append(dict(gate=f"G-STEP as built {m}: the threshold's bracketing trials at {2 * ES_STEPS} steps a cycle",
                           ok=all(x["grows"] == x["grows_steps_x2"] for x in rows_), rows=rows_))
