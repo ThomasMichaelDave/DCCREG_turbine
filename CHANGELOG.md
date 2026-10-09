@@ -4,7 +4,31 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
 
 ## [Unreleased]
 
+### Design lock (2026-10-09)
+- **The design is locked for now** (the designer, 2026-10-09: "Let's lock the design for now."). The baseline is the
+  design state at `09243c7`; later changes are recorded against it. What is PROPOSED or OPEN keeps its status.
+- **The ledger** (`docs/ledger/DCCREG-design-ledger.md`; its print form `.pdf`, built by `docs/ledger/make_ledger.py`):
+  - the machine at a glance, and the design in numbers;
+  - how the design got here: the ten steps, the designer's decisions and what was learned;
+  - the working principle of every component, with the figures of record;
+  - the fact sheet, every number with its source;
+  - the status by part, the open items and the bench test;
+  - 18 known inconsistencies and stale records, recorded and not fixed;
+  - the drawing register, and how to regenerate everything.
+- **The drawings bundle** (`docs/ledger/DCCREG-drawings-bundle.pdf`, A3 landscape, bookmarked): 44 sheets behind a
+  two-page register (`docs/ledger/register.py`), in three parts:
+  - part A: the design of record (12 sheets);
+  - part B: its supporting drawings, with the stale content flagged (10);
+  - part C: the earlier phases, kept for the record (22).
+  - The CAD and DXF files are listed, not placed.
+- **The architecture figure** (`docs/ledger/figures/architecture.svg` / `.png`, generator
+  `docs/ledger/make_ledger_figures.py`): what drives what, and where the belt's power goes.
+
 ### Fixed
+- **The tags in two hub documents** (`docs/rings-design.md`, `sim/hub-rings-build-findings.md`): they had tagged the
+  solver's choices [OC] and datasheet values [IR] under a redefinition. They now carry `CONVENTIONS.md` §1's meanings:
+  [OC] derivable physics, [IR] a modelling or engineering choice, [RH] a heuristic. Other early hub files may still
+  carry the old reading (ledger §6, item 18).
 - **The lock-down's ring record overstated what the rings hold** (`sim/hub-locked-findings.md` §1, superseded by
   `sim/hub-rings-build-findings.md`).
   - **What was missed:** three stages at 20–53° were sized by the gap between the rings alone. The copper edges were
