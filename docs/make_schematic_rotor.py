@@ -6,12 +6,15 @@
 (b) ELECTROSTATIC: the de Queiroz diode doubler with its HV side on the rotor (sim/core_field.py netlist; the air
     build's capped stack) -- C1 / C2 between the rotor vanes (nodes 1 / 4) and the counter-rotor's stator vanes, which
     are the reference; Ca / Cb, D1-D4 and the clamps Z1 / Z4 on the rotor; two rings outside the hub's glass vessel
-    (the designer's choice; presets/hub-locked.json), ring A peak-charged from node 1 through Dk and ring B on the
-    record's Cockcroft-Walton stages on node 4 (two), so the AH null sees a steady field (sim/hub-rings-build-findings.md);
+    (the designer's choice; presets/hub-locked.json), each on its own two-stage Cockcroft-Walton chain from the shaft,
+    ring A on node 1 and ring B on node 4 (the symmetric supply of record), so the AH null sees a steady field
+    (sim/hub-rings-build-findings.md; the drawing also handles the earlier Dk supply);
     the stator vanes joined to the shaft through one inner bearing for now (a brush later).
+(a) also draws the 22 mF bypass across each AH coil (PROPOSED; sim/ah-steady-cusp-findings.md), dashed.
 Values: sim/pole_design_variants_op.json (the pick), sim/utron_profile.py, sim/rotor_parts_duty_results.json (La / Lb,
 D1*-D4* at the pick), sim/core_field_results.json (the electrostatic pump), sim/hub_rings_build_results.json (the rings
-as built and their supply in full: the clamps, the link), sim/hub_drift_results.json (the settled field).
+as built and their supply in full: the clamps, the link), sim/hub_drift_results.json (the settled field),
+sim/ah_steady_cusp_results.json (the bypass).
 Usage: python3 docs/make_schematic_rotor.py   (the PNG needs playwright + chromium)
 """
 import json
@@ -142,7 +145,9 @@ def numbers():
     dr = json.load(open(os.path.join(ROOT, "sim", "hub_drift_results.json")))
     ring = dict(hb["record"], E_dc_kV_cm=hb["record"]["E_null_kV_cm"], p_dc_Pa=hb["record"]["p_null_Pa"],
                 E_settled_kV_cm=dr["drift"][0]["E_kV_cm"][-1])                            # PEEK, gel, 25 C at 6 h
-    return dict(op=op, b=b, sp=sp, Lg=Lg, ah=ah, F=F, csn=csn, rsn=rsn, la=LA_RATIO * Lg, lp=MDm.R_PAR * Lg, duty=duty,
+    cusp = [r for r in json.load(open(os.path.join(ROOT, "sim", "ah_steady_cusp_results.json")))["rows"]
+            if r["C_byp_mF"] == 22.0][0]                                           # the bypass (PROPOSED)
+    return dict(op=op, b=b, sp=sp, Lg=Lg, ah=ah, F=F, csn=csn, rsn=rsn, la=LA_RATIO * Lg, lp=MDm.R_PAR * Lg, duty=duty, cusp=cusp,
                 cf=cf, cfr=cfr, hb=hb, dc=hb["record_supply"], dc_free=hb["record_supply_free"], ring=ring)
 
 
@@ -182,6 +187,11 @@ def panel_a(ox, N):
         xe = coil_h(x, yt, 3, "ah")
         tx((x + xe) / 2, yt + 22, "AH", "ta", "middle", 'font-weight="bold"')
         ln(xe, yt, x1n, yt)
+        # the 22 mF bypass across the coil (PROPOSED): dashed
+        xm, yb = 0.5 * (x + xe), yt - 34
+        pl([(x - 4, yt), (x - 4, yb), (xm - 5, yb)], "prop"); pl([(xm + 5, yb), (xe + 4, yb), (xe + 4, yt)], "prop")
+        ln(xm - 5, yb - 9, xm - 5, yb + 9, "propc"); ln(xm + 5, yb - 9, xm + 5, yb + 9, "propc")
+        tx(xm, yb - 14, f"{N['cusp']['C_byp_mF']:.0f} mF (PROPOSED)", "tp", "middle")
         tx(x0 + 14, yt + 46, f"{grp} group  L{1 if grp == 'A' else 2}(θ)", "tu", "start", 'font-weight="bold"')
         tx(x0 + 14, yt + 62, "3 utrons + AH coil" + ("" if grp == "A" else ", antiphase"), "ms")
     # La: ref -> a ; Lb: c -> ref
@@ -212,10 +222,11 @@ def panel_a(ox, N):
         dot(x, REF)
     tx(xa - 30, REF + 20, "REF = shaft (rotor), shared with (b)", "m")
     # start kick: not designed (no connection drawn)
-    box(xa + 60, 520, 190, 66, "kick")
-    tx(xa + 70, 540, "START KICK: source open", "tk2")
-    tx(xa + 70, 557, f"once, ≥ {100 * b['kick_frac']:.0f} % of I_pk ({b['kick_mJ']:.0f} mJ)", "ms")
-    tx(xa + 70, 573, "into the utron loop at start-up", "ms")
+    box(xa + 60, 514, 200, 80, "kick")
+    tx(xa + 70, 534, "START KICK: source open", "tk2")
+    tx(xa + 70, 551, f"once, ≥ {100 * b['kick_frac']:.0f} % of Ψs at start-up:", "ms")
+    tx(xa + 70, 567, f"{b['kick_I_A']:.2f} A, {b['kick_mJ']:.1f} mJ seeded", "ms")
+    tx(xa + 70, 583, "into the utron loop", "ms")
     # the node snubber, drawn once
     xs, ys = xc + 70, 528
     dot(xs, ys); tx(xs + 10, ys + 4, "any node", "ms")
@@ -237,6 +248,7 @@ def panel_a_table(ox, y, N):
         ("bridges", f"a passing bridge closes the utron's flux path: L(θ) {sp['n_br']} × per rev; B row half a pitch on"),
         ("AH", f"anti-Helmholtz pair at the hub, one coil per branch: {ah['N']} t, {ah['L'] * 1e3:.2f} mH, "
                f"{ah['R']:.2f} Ω each [RH]"),
+        ("", f"bypass {N['cusp']['C_byp_mF']:.0f} mF across each coil, ESR {1e3 * 0.01:.0f} mΩ [RH] (PROPOSED)"),
         ("La, Lb", f"{N['la']:.3f} H DC chokes: {la['I_min_A']:.2f}–{la['I_max_A']:.2f} A, ≤ {la['V_pk_V']:.0f} V, "
                    f"{N['la'] / TAU_FIXED:.2f} Ω (τ {TAU_FIXED:g} s [RH]); not designed"),
         ("", f"first cut [RH]: gapped EI of M235-35A, {ch['a_mm']:.0f} mm leg, {ch['turns']} t, {ch['gap_mm']:.2f} mm gap, "
@@ -247,11 +259,17 @@ def panel_a_table(ox, y, N):
     ]
     y = table(ox + 42, y, rows)
     I_min = b["AT_min"] / ah["N"]
-    tx(ox + 42, y + 6, f"At {b['rpm']:.0f} rpm relative ({N['F']:.0f} Hz): {I_min:.2f}–{b['I_pk']:.2f} A in each branch, "
-                       f"{b['V_pk']:.0f} V peak per group; AH {b['AT_min']:.0f}–{b['AT_pk']:.0f} A-turns.", "op")
+    cu = N["cusp"]
+    tx(ox + 42, y + 6, f"At {b['rpm']:.0f} rpm relative ({N['F']:.0f} Hz): {I_min:.2f}–{b['I_pk']:.2f} A per branch, "
+                       f"{b['V_pk']:.0f} V peak per group; AH {b['AT_min']:.0f}–{b['AT_pk']:.0f} A-turns unbypassed.", "op")
+    y += 18
+    tx(ox + 42, y + 6, f"With the bypass (PROPOSED): {cu['top']['AT_min']:.0f}–{cu['top']['AT_max']:.0f} A-turns per coil "
+                       f"({cu['top']['AT_mean']:.0f} mean), top and bottom within {cu['dAT_max']:.0f}.", "op")
     tx(ox + 42, y + 24, f"Belt {b['P_belt_el_W']:.1f} W = utron Cu 6 × {b['P_utron_coil_W']:.2f} + La / Lb {b['P_fixed_W']:.2f} "
                         f"+ AH {b['P_AH_W']:.2f} + diodes {b['P_diode_W']:.2f} W; + iron {2 * b['P_fe_side_W']:.2f} W "
                         f"= {b['P_total_W']:.1f} W.", "op")
+    tx(ox + 42, y + 42, f"With the bypass the belt reads {cu['P_belt_W']:.1f} W + iron {2 * b['P_fe_side_W']:.2f} W "
+                        "(sim/ah-steady-cusp-findings.md).", "op")
 
 
 # ------------------------------------------------------------------------------------------------ (b) electrostatic
@@ -436,7 +454,7 @@ def panel_b_table(ox, y, N):
 # ------------------------------------------------------------------------------------------------ sheet
 def main():
     N = numbers()
-    W, H = 1440, 1228
+    W, H = 1440, 1288
     o.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
              'font-family="DejaVu Sans, Arial, sans-serif" font-size="13">')
     o.append("<title>Rotor circuits</title>")
@@ -450,6 +468,8 @@ def main():
     .ring{stroke:#111;stroke-width:4} .ball{fill:#fff;stroke:#111;stroke-width:1.6} .dot{fill:#111}
     .zone_cr{fill:#f3f0e6;stroke:#b9ad8a;stroke-width:1;stroke-dasharray:6 4} .zone_r{fill:#eef3f8;stroke:#9fb3c8;stroke-width:1;stroke-dasharray:6 4}
     .kick{fill:#fff7ec;stroke:#d68910;stroke-width:1.4;stroke-dasharray:5 4} .frame{fill:none;stroke:#999;stroke-width:1}
+    .prop{stroke:#9c640c;stroke-width:1.6;fill:none;stroke-dasharray:5 3} .propc{stroke:#9c640c;stroke-width:2.4}
+    .tp{fill:#9c640c;font-size:10.5px}
     .t{fill:#111} .tu{fill:#1f6fb2} .ta{fill:#c0392b} .tl{fill:#7d3c98} .nd{fill:#111;font-size:12.5px}
     .m{fill:#444;font-size:12px} .ms{fill:#555;font-size:11px} .zh{fill:#333;font-size:12.5px;font-weight:bold;letter-spacing:0.06em}
     .tk{fill:#111;font-size:11.5px;font-weight:bold} .tk2{fill:#9c640c;font-size:11.5px;font-weight:bold} .tv{fill:#333;font-size:11.5px}
@@ -464,7 +484,7 @@ def main():
                f"straddle the bodies · operating point {PICK} relative · only diodes switch", "m")
     for ox, w, title in ((20, 760, "(a) RELUCTANCE: magnetic dual doubler → AH pair"),
                          (800, 620, "(b) ELECTROSTATIC: de Queiroz diode doubler → DC field on the null")):
-        box(ox, 70, w, 940, "frame")
+        box(ox, 70, w, 1000, "frame")
         tx(ox + 12, 94, title, "h2")
     panel_a(20, N)
     panel_b(780, N)
@@ -493,7 +513,7 @@ def main():
         "Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/hub-rings-build-findings.md "
         "· generator: docs/make_schematic_rotor.py",
     ]
-    y = 1034
+    y = 1094
     for s in notes:
         tx(20, y, s, "n"); y += 19
     o.append("</svg>")
