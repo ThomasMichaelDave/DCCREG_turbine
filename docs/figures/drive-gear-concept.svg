@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="780" viewBox="0 0 1100 780" font-family="Helvetica, Arial, sans-serif" font-size="12" fill="none" stroke="#1a1a1a" stroke-width="1.4">
+<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#ffffff" stroke="none"/><line x1="0" y1="0" x2="0" y2="6" stroke="#4d4d4d" stroke-width="1"/></pattern></defs>
+<rect x="0" y="0" width="1100" height="780" fill="#ffffff" stroke="none"/>
+<text x="20.0" y="30.0" text-anchor="start" font-size="17" fill="#1a1a1a" stroke="none" font-weight="bold">The 1 : -1 bevel reverser at the frame end (side A, below), and the belt drive</text>
+<text x="20.0" y="52.0" text-anchor="start" font-size="12" fill="#4d4d4d" stroke="none">PROPOSED. Kinematic section through the axis, drawn by sim/drive_sizing.py --figure. Heights to scale; radii to scale out to r 80 mm and compressed beyond (right half); the left half is broken at r 80.</text>
+<text x="20.0" y="70.0" text-anchor="start" font-size="12" fill="#4d4d4d" stroke="none">Fills: rotor light grey; counter-rotor white; frame hatched; bearings crossed. The motor's offset is drawn shortened.</text>
+<polygon points="641.6,112.0 667.6,112.0 667.6,177.0 641.6,177.0" fill="#ffffff" stroke-width="1.4"/>
+<polygon points="458.0,177.0 667.6,177.0 667.6,203.0 458.0,203.0" fill="#ffffff" stroke-width="1.4"/>
+<polygon points="414.1,203.0 484.0,203.0 484.0,249.8 414.1,249.8" fill="#ffffff" stroke-width="1.4"/>
+<polygon points="412.5,203.0 447.6,203.0 447.6,242.0 412.5,242.0" fill="#bfbfbf" stroke-width="1.0"/>
+<line x1="412.5" y1="203.0" x2="447.6" y2="242.0" stroke="#1a1a1a" stroke-width="0.8"/>
+<line x1="447.6" y1="203.0" x2="412.5" y2="242.0" stroke="#1a1a1a" stroke-width="0.8"/>
+<polygon points="416.4,249.8 463.2,249.8 463.2,270.6 432.0,287.9 416.4,287.9" fill="#ffffff" stroke-width="1.4"/>
+<polygon points="412.5,426.6 432.0,426.6 432.0,395.4 463.2,395.4 463.2,374.6 432.0,357.3 412.5,357.3" fill="#d9d9d9" stroke-width="1.4"/>
+<polygon points="432.0,287.9 458.0,270.6 478.8,270.6 478.8,374.6 458.0,374.6 432.0,357.3" fill="#ffffff" stroke-width="2.0"/>
+<line x1="432.0" y1="322.6" x2="562.0" y2="322.6" stroke="#1a1a1a" stroke-width="2.4"/>
+<polygon points="484.0,305.7 504.8,305.7 504.8,339.5 484.0,339.5" fill="#bfbfbf" stroke-width="1.0"/>
+<line x1="484.0" y1="305.7" x2="504.8" y2="339.5" stroke="#1a1a1a" stroke-width="0.8"/>
+<line x1="504.8" y1="305.7" x2="484.0" y2="339.5" stroke="#1a1a1a" stroke-width="0.8"/>
+<polygon points="515.2,305.7 536.0,305.7 536.0,339.5 515.2,339.5" fill="#bfbfbf" stroke-width="1.0"/>
+<line x1="515.2" y1="305.7" x2="536.0" y2="339.5" stroke="#1a1a1a" stroke-width="0.8"/>
+<line x1="536.0" y1="305.7" x2="515.2" y2="339.5" stroke="#1a1a1a" stroke-width="0.8"/>
+<polygon points="481.4,299.2 546.4,299.2 546.4,304.4 481.4,304.4" fill="url(#hatch)" stroke-width="0.8"/>
+<polygon points="481.4,340.8 546.4,340.8 546.4,346.0 481.4,346.0" fill="url(#hatch)" stroke-width="0.8"/>
+<polygon points="546.4,234.2 567.2,234.2 567.2,478.6 546.4,478.6" fill="url(#hatch)" stroke-width="1.4"/>
+<polygon points="494.4,234.2 546.4,234.2 546.4,249.8 494.4,249.8" fill="url(#hatch)" stroke-width="1.4"/>
+<polygon points="447.6,434.4 546.4,434.4 546.4,478.6 447.6,478.6" fill="url(#hatch)" stroke-width="1.4"/>
+<polygon points="412.5,434.4 447.6,434.4 447.6,473.4 412.5,473.4" fill="#bfbfbf" stroke-width="1.0"/>
+<line x1="412.5" y1="434.4" x2="447.6" y2="473.4" stroke="#1a1a1a" stroke-width="0.8"/>
+<line x1="447.6" y1="434.4" x2="412.5" y2="473.4" stroke="#1a1a1a" stroke-width="0.8"/>
+<polygon points="546.4,478.6 567.2,478.6 567.2,582.6 546.4,582.6" fill="url(#hatch)" stroke-width="1.0" stroke-dasharray="5,3"/>
+<polygon points="412.5,494.2 545.5,494.2 545.5,556.6 412.5,556.6" fill="#d9d9d9" stroke-width="1.4"/>
+<polygon points="172.0,177.0 302.0,177.0 302.0,203.0 172.0,203.0" fill="#ffffff" stroke-width="1.4"/>
+<polyline points="172.0,177.0 168.0,180.2 176.0,186.8 168.0,193.2 176.0,199.8 172.0,203.0" fill="none" stroke="#1a1a1a" stroke-width="1.0"/>
+<polygon points="276.0,203.0 345.9,203.0 345.9,249.8 276.0,249.8" fill="#ffffff" stroke-width="1.4"/>
+<polygon points="312.4,203.0 347.5,203.0 347.5,242.0 312.4,242.0" fill="#bfbfbf" stroke-width="1.0"/>
+<line x1="347.5" y1="203.0" x2="312.4" y2="242.0" stroke="#1a1a1a" stroke-width="0.8"/>
+<line x1="312.4" y1="203.0" x2="347.5" y2="242.0" stroke="#1a1a1a" stroke-width="0.8"/>
+<polygon points="343.6,249.8 296.8,249.8 296.8,270.6 328.0,287.9 343.6,287.9" fill="#ffffff" stroke-width="1.4"/>
+<polygon points="347.5,426.6 328.0,426.6 328.0,395.4 296.8,395.4 296.8,374.6 328.0,357.3 347.5,357.3" fill="#d9d9d9" stroke-width="1.4"/>
+<polygon points="328.0,287.9 302.0,270.6 281.2,270.6 281.2,374.6 302.0,374.6 328.0,357.3" fill="#ffffff" stroke-width="2.0"/>
+<line x1="328.0" y1="322.6" x2="198.0" y2="322.6" stroke="#1a1a1a" stroke-width="2.4"/>
+<polygon points="255.2,305.7 276.0,305.7 276.0,339.5 255.2,339.5" fill="#bfbfbf" stroke-width="1.0"/>
+<line x1="276.0" y1="305.7" x2="255.2" y2="339.5" stroke="#1a1a1a" stroke-width="0.8"/>
+<line x1="255.2" y1="305.7" x2="276.0" y2="339.5" stroke="#1a1a1a" stroke-width="0.8"/>
+<polygon points="224.0,305.7 244.8,305.7 244.8,339.5 224.0,339.5" fill="#bfbfbf" stroke-width="1.0"/>
+<line x1="244.8" y1="305.7" x2="224.0" y2="339.5" stroke="#1a1a1a" stroke-width="0.8"/>
+<line x1="224.0" y1="305.7" x2="244.8" y2="339.5" stroke="#1a1a1a" stroke-width="0.8"/>
+<polygon points="213.6,299.2 278.6,299.2 278.6,304.4 213.6,304.4" fill="url(#hatch)" stroke-width="0.8"/>
+<polygon points="213.6,340.8 278.6,340.8 278.6,346.0 213.6,346.0" fill="url(#hatch)" stroke-width="0.8"/>
+<polygon points="192.8,234.2 213.6,234.2 213.6,478.6 192.8,478.6" fill="url(#hatch)" stroke-width="1.4"/>
+<polygon points="213.6,234.2 265.6,234.2 265.6,249.8 213.6,249.8" fill="url(#hatch)" stroke-width="1.4"/>
+<polygon points="213.6,434.4 312.4,434.4 312.4,478.6 213.6,478.6" fill="url(#hatch)" stroke-width="1.4"/>
+<polygon points="312.4,434.4 347.5,434.4 347.5,473.4 312.4,473.4" fill="#bfbfbf" stroke-width="1.0"/>
+<line x1="347.5" y1="434.4" x2="312.4" y2="473.4" stroke="#1a1a1a" stroke-width="0.8"/>
+<line x1="312.4" y1="434.4" x2="347.5" y2="473.4" stroke="#1a1a1a" stroke-width="0.8"/>
+<polygon points="192.8,478.6 213.6,478.6 213.6,582.6 192.8,582.6" fill="url(#hatch)" stroke-width="1.0" stroke-dasharray="5,3"/>
+<polygon points="214.5,494.2 347.5,494.2 347.5,556.6 214.5,556.6" fill="#d9d9d9" stroke-width="1.4"/>
+<polygon points="380.0,112.0 412.5,112.0 412.5,572.2 380.0,572.2" fill="#d9d9d9" stroke-width="1.2"/>
+<polygon points="347.5,112.0 380.0,112.0 380.0,572.2 347.5,572.2" fill="#d9d9d9" stroke-width="1.2"/>
+<polygon points="380.0,556.6 426.8,556.6 426.8,572.2 380.0,572.2" fill="#d9d9d9" stroke-width="1.0"/>
+<polygon points="333.2,556.6 380.0,556.6 380.0,572.2 333.2,572.2" fill="#d9d9d9" stroke-width="1.0"/>
+<line x1="380.0" y1="104.2" x2="380.0" y2="650.2" stroke="#4d4d4d" stroke-width="0.8" stroke-dasharray="12,4,2,4"/>
+<polygon points="162.0,582.6 1080.0,582.6 1080.0,634.6 162.0,634.6" fill="url(#hatch)" stroke-width="1.4"/>
+<line x1="545.5" y1="507.2" x2="958.6" y2="507.2" stroke="#1a1a1a" stroke-width="2.0" stroke-dasharray="8,4"/>
+<line x1="545.5" y1="543.6" x2="958.6" y2="543.6" stroke="#1a1a1a" stroke-width="2.0" stroke-dasharray="8,4"/>
+<polygon points="958.6,494.2 1041.4,494.2 1041.4,556.6 958.6,556.6" fill="#d9d9d9" stroke-width="1.4"/>
+<polygon points="964.0,416.2 1036.0,416.2 1036.0,484.2 964.0,484.2" fill="#ffffff" stroke-width="1.4"/>
+<polygon points="946.0,484.2 1054.0,484.2 1054.0,492.2 946.0,492.2" fill="url(#hatch)" stroke-width="1.0"/>
+<line x1="1000.0" y1="492.2" x2="1000.0" y2="494.2" stroke="#1a1a1a" stroke-width="2.0"/>
+<text x="1000.0" y="442.2" text-anchor="middle" font-size="12" fill="#1a1a1a" stroke="none" font-weight="bold">BLDC</text>
+<text x="1000.0" y="458.2" text-anchor="middle" font-size="12" fill="#1a1a1a" stroke="none">200 W</text>
+<text x="1000.0" y="474.2" text-anchor="middle" font-size="12" fill="#1a1a1a" stroke="none">2400 rpm</text>
+<text x="1000.0" y="572.6" text-anchor="middle" font-size="12" fill="#1a1a1a" stroke="none">20T</text>
+<text x="772.8" y="499.2" text-anchor="middle" font-size="12" fill="#1a1a1a" stroke="none">HTD 5M belt, 15 mm, 750 mm; ratio 4 : 1; centres 245 mm</text>
+<text x="772.8" y="561.6" text-anchor="middle" font-size="12" fill="#4d4d4d" stroke="none">motor plate slotted for the tension</text>
+<text x="681.6" y="122.0" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none" font-weight="bold">counter-rotor, -600 rpm</text>
+<text x="681.6" y="137.0" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">bridge ring A (G10); the bridges</text>
+<text x="681.6" y="152.0" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">and the reluctance section above</text>
+<line x1="629.6" y1="190.0" x2="677.6" y2="210.0" stroke="#4d4d4d" stroke-width="0.8"/>
+<text x="681.6" y="214.0" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">end disc, G10 10 mm: the bottom</text>
+<text x="681.6" y="229.0" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">spider re-purposed (new role)</text>
+<line x1="478.8" y1="218.6" x2="677.6" y2="276.6" stroke="#4d4d4d" stroke-width="0.8"/>
+<text x="681.6" y="280.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">hub with the gear-end inner bearing</text>
+<text x="681.6" y="295.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">6205-2Z (1200 rpm relative)</text>
+<line x1="460.6" y1="268.0" x2="677.6" y2="350.0" stroke="#4d4d4d" stroke-width="0.8"/>
+<text x="681.6" y="354.0" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">side gear z 30, m 2, stainless</text>
+<text x="681.6" y="369.0" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">(the counter-rotor's)</text>
+<line x1="468.4" y1="291.4" x2="677.6" y2="400.6" stroke="#4d4d4d" stroke-width="0.8"/>
+<text x="681.6" y="404.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">POM pinion z 20, x 3 at 120 deg,</text>
+<text x="681.6" y="419.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">on a stub shaft in 2 x 6000-2Z</text>
+<line x1="567.2" y1="385.0" x2="677.6" y2="455.0" stroke="#4d4d4d" stroke-width="0.8"/>
+<text x="681.6" y="459.0" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">gear case = the carrier (frame),</text>
+<text x="681.6" y="474.0" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">Al 6082: takes 1.0 N m steady</text>
+<text x="154.0" y="122.0" text-anchor="end" font-size="12" fill="#1a1a1a" stroke="none" font-weight="bold">shaft (rotor), +600 rpm</text>
+<text x="154.0" y="137.0" text-anchor="end" font-size="12" fill="#1a1a1a" stroke="none">journal Ø 25 at the gear end</text>
+<line x1="158.0" y1="118.0" x2="347.5" y2="118.0" stroke="#4d4d4d" stroke-width="0.8"/>
+<line x1="307.2" y1="400.6" x2="154.0" y2="400.6" stroke="#4d4d4d" stroke-width="0.8"/>
+<text x="150.0" y="404.6" text-anchor="end" font-size="12" fill="#1a1a1a" stroke="none">rotor side gear z 30,</text>
+<text x="150.0" y="419.6" text-anchor="end" font-size="12" fill="#1a1a1a" stroke="none">keyed in its hub</text>
+<line x1="328.0" y1="455.2" x2="154.0" y2="455.2" stroke="#4d4d4d" stroke-width="0.8"/>
+<text x="150.0" y="459.2" text-anchor="end" font-size="12" fill="#1a1a1a" stroke="none">locating end bearing</text>
+<text x="150.0" y="474.2" text-anchor="end" font-size="12" fill="#1a1a1a" stroke="none">6205-2Z (frame)</text>
+<line x1="234.4" y1="525.4" x2="154.0" y2="525.4" stroke="#4d4d4d" stroke-width="0.8"/>
+<text x="150.0" y="529.4" text-anchor="end" font-size="12" fill="#1a1a1a" stroke="none">pulley HTD 5M 80T</text>
+<text x="150.0" y="544.4" text-anchor="end" font-size="12" fill="#1a1a1a" stroke="none">(rotor)</text>
+<text x="162.0" y="652.6" text-anchor="start" font-size="12" fill="#4d4d4d" stroke="none">base plate (frame); the columns up to the top end bearing are not drawn</text>
+<text x="20.0" y="678.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none" font-weight="bold">Steady, 600 rpm each way</text>
+<text x="20.0" y="696.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">pumps between the bodies 0.171 N m (1200 rpm relative)</text>
+<text x="20.0" y="714.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">  swinging -0.71 .. 1.45 N m at 120 / 240 Hz</text>
+<text x="20.0" y="732.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">with bearings and 25 W of windage 0.40 N m</text>
+<text x="20.0" y="750.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">gear on each body 0.48 N m; frame (carrier) 1.00 N m</text>
+<text x="560.0" y="678.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none" font-weight="bold">Drive</text>
+<text x="560.0" y="696.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">belt at the shaft 0.94 N m, 59 W; motor 61 W</text>
+<text x="560.0" y="714.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">run-up to 600 rpm 32 s at the motor's rated torque</text>
+<text x="560.0" y="732.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">gear peak 1.6 N m (run-up); ripple 0.06 N m p-p</text>
+<text x="560.0" y="750.6" text-anchor="start" font-size="12" fill="#1a1a1a" stroke="none">the ripple stays in the bodies: the gear-path mode is 20 Hz</text>
+</svg>

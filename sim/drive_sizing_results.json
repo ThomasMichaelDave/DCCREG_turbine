@@ -1,0 +1,1886 @@
+{
+ "status": "PROPOSED (the designer accepts it)",
+ "sources": [
+  {
+   "name": "speed of each body",
+   "value": 600.0,
+   "unit": "rpm",
+   "source": "sim/pole-design-findings.md section 6 (recommendation); docs/ledger/DCCREG-design-ledger.md section 1 (600 rpm each way, 1200 relative)",
+   "tag": "[IR] decided",
+   "note": ""
+  },
+  {
+   "name": "magnetic pump, belt power (22 mF bypass)",
+   "value": 18.12623509128243,
+   "unit": "W",
+   "source": "sim/ah_steady_cusp_results.json rows[C_byp_mF=22].P_belt_W",
+   "tag": "[OC] ngspice record",
+   "note": ""
+  },
+  {
+   "name": "magnetic pump, iron loss (both sides)",
+   "value": 1.2495825789153812,
+   "unit": "W",
+   "source": "sim/pole_design_variants_op.json designs[pick].best.P_fe_side_W x 2",
+   "tag": "[RH] M235-35A rating scaled",
+   "note": ""
+  },
+  {
+   "name": "electrostatic pump, belt power",
+   "value": 2.142320444624311,
+   "unit": "W",
+   "source": "sim/core_field_results.json rows[name='none'].P_belt_W",
+   "tag": "[OC] ngspice record",
+   "note": ""
+  },
+  {
+   "name": "earlier electrostatic pump's reaction torque",
+   "value": 0.078,
+   "unit": "N m",
+   "source": "sim/spinup-findings.md (T_pump)",
+   "tag": "[OC] for an earlier pump",
+   "note": ""
+  },
+  {
+   "name": "rotor vanes, both sides (12)",
+   "value": 2.874405539109492,
+   "unit": "kg",
+   "source": "sim/air_stack_sizing_results.json thick_vanes.compare[t 3, 6 + 6]",
+   "tag": "[OC] geometry",
+   "note": ""
+  },
+  {
+   "name": "stator vanes, both sides (12)",
+   "value": 3.382605588876711,
+   "unit": "kg",
+   "source": "same row",
+   "tag": "[OC] geometry",
+   "note": ""
+  },
+  {
+   "name": "Ca / Cb plates, both sides (12), on the rotor",
+   "value": 6.107256118578559,
+   "unit": "kg",
+   "source": "same row; on the rotor per sim/core-field-findings.md (HV side on the rotor)",
+   "tag": "[OC] geometry",
+   "note": ""
+  },
+  {
+   "name": "tube length with the air stack of record",
+   "value": 916.0,
+   "unit": "mm",
+   "source": "same row",
+   "tag": "[IR] layout",
+   "note": ""
+  },
+  {
+   "name": "electrostatic stacks per side (C1 + Ca)",
+   "value": 156.0,
+   "unit": "mm",
+   "source": "same row",
+   "tag": "[IR] layout",
+   "note": ""
+  },
+  {
+   "name": "growth of the tube for the locked hub",
+   "value": 24.0,
+   "unit": "mm",
+   "source": "sim/hub-locked-findings.md section 4",
+   "tag": "[IR]",
+   "note": ""
+  },
+  {
+   "name": "machine length of record (rotating parts, end slots included)",
+   "value": 940.0,
+   "unit": "mm",
+   "source": "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.parts.json (= 916 + 24: sim/tube-shaft-findings.md section 0)",
+   "tag": "[IR] layout",
+   "note": ""
+  },
+  {
+   "name": "G10 bridge ring length",
+   "value": 174.0,
+   "unit": "mm",
+   "source": "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.parts.json (w ring A)",
+   "tag": "[IR] as modelled",
+   "note": ""
+  },
+  {
+   "name": "cage starts at the Ca|reluctance bearing slot",
+   "value": 188.0,
+   "unit": "mm",
+   "source": "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.parts.json (bearing A Ca|reluctance)",
+   "tag": "[IR] as modelled",
+   "note": ""
+  },
+  {
+   "name": "shaft diameter, tube model / hub register",
+   "value": [
+    25.0,
+    30.0
+   ],
+   "unit": "mm",
+   "source": "sim/stack_sizing.py SHAFT_R; presets/hub-locked.json shaft.d_mm",
+   "tag": "[IR] OPEN",
+   "note": ""
+  },
+  {
+   "name": "La / Lb first-cut choke, each",
+   "value": 1.405304881381282,
+   "unit": "kg",
+   "source": "sim/rotor_parts_duty_results.json la_core[tau 0.5]",
+   "tag": "[RH] first cut, not designed",
+   "note": ""
+  },
+  {
+   "name": "windage allowance at 600 rpm each way",
+   "value": 25.0,
+   "unit": "W",
+   "source": "this study: a stated margin, pending the separate windage estimate",
+   "tag": "[RH]",
+   "note": ""
+  }
+ ],
+ "speeds": {
+  "rpm_body": 600.0,
+  "rpm_rel": 1200.0,
+  "w_body": 62.83185307179586,
+  "w_rel": 125.66370614359172,
+  "f_pump_Hz": 120.0
+ },
+ "pumps": {
+  "P_mag_W": 18.12623509128243,
+  "P_fe_W": 1.2495825789153812,
+  "P_es_W": 2.142320444624311,
+  "P_total_W": 21.518138114822122,
+  "T_rel_Nm": 0.17123590235540295,
+  "T_mag_Nm": 0.15418785793296363,
+  "T_es_Nm": 0.017048044422439308,
+  "T_old_pump_Nm": 0.078,
+  "per_body_Nm_at_600": 0.17123590235540295,
+  "note": "the pumps' torque acts between the bodies at 1200 rpm relative; each body sees it against its own 600 rpm, so each body's share of the power is half [OC]"
+ },
+ "bodies": {
+  "rotor_kg": 35.312228177213036,
+  "counter_rotor_kg": 34.87670353072273,
+  "J_rotor": 0.28803350094068864,
+  "J_counter_rotor": 0.6704483658107853,
+  "utron": {
+   "m_kg": 2.2325431691899142,
+   "J_kgm2": 0.022656579435464126,
+   "parts": {
+    "sife": {
+     "m_kg": 0.889678765875128,
+     "J_kgm2": 0.010645561495708588
+    },
+    "nife": {
+     "m_kg": 0.15138000000000001,
+     "J_kgm2": 0.00120155352
+    },
+    "g10": {
+     "m_kg": 0.11794736916378942,
+     "J_kgm2": 0.0010506734664675608
+    },
+    "cu": {
+     "m_kg": 1.0735370341509969,
+     "J_kgm2": 0.009758790953287974
+    }
+   }
+  },
+  "parts": [
+   {
+    "name": "utrons (3 + 3) A",
+    "body": "rotor",
+    "station": "RA",
+    "z_mm": 101.0,
+    "m_kg": 6.697629507569743,
+    "J_kgm2": 0.06796973830639239,
+    "tag": "[OC] geometry of the pick"
+   },
+   {
+    "name": "utrons (3 + 3) B",
+    "body": "rotor",
+    "station": "RB",
+    "z_mm": 839.0,
+    "m_kg": 6.697629507569743,
+    "J_kgm2": 0.06796973830639239,
+    "tag": "[OC] geometry of the pick"
+   },
+   {
+    "name": "utron carrier discs (2 + 2) A",
+    "body": "rotor",
+    "station": "RA",
+    "z_mm": 101.0,
+    "m_kg": 0.3945730417165904,
+    "J_kgm2": 0.0007238935666592999,
+    "tag": "[OC] geometry"
+   },
+   {
+    "name": "utron carrier discs (2 + 2) B",
+    "body": "rotor",
+    "station": "RB",
+    "z_mm": 839.0,
+    "m_kg": 0.3945730417165904,
+    "J_kgm2": 0.0007238935666592999,
+    "tag": "[OC] geometry"
+   },
+   {
+    "name": "rotor vanes (6 + 6) A",
+    "body": "rotor",
+    "station": "RA",
+    "z_mm": 314.5,
+    "m_kg": 1.437202769554746,
+    "J_kgm2": 0.014459442119946403,
+    "tag": "[OC] geometry"
+   },
+   {
+    "name": "rotor vanes (6 + 6) B",
+    "body": "rotor",
+    "station": "RB",
+    "z_mm": 625.5,
+    "m_kg": 1.437202769554746,
+    "J_kgm2": 0.014459442119946403,
+    "tag": "[OC] geometry"
+   },
+   {
+    "name": "Ca / Cb plates (6 + 6) A",
+    "body": "rotor",
+    "station": "RA",
+    "z_mm": 238.0,
+    "m_kg": 3.0536280592892795,
+    "J_kgm2": 0.038170350741116,
+    "tag": "[OC] geometry"
+   },
+   {
+    "name": "Ca / Cb plates (6 + 6) B",
+    "body": "rotor",
+    "station": "RB",
+    "z_mm": 702.0,
+    "m_kg": 3.0536280592892795,
+    "J_kgm2": 0.038170350741116,
+    "tag": "[OC] geometry"
+   },
+   {
+    "name": "La / Lb chokes (1 + 1) A",
+    "body": "rotor",
+    "station": "RA",
+    "z_mm": 200.0,
+    "m_kg": 1.405304881381282,
+    "J_kgm2": 0.011382969539188385,
+    "tag": "[RH] placement at r 90 mm (not drawn)"
+   },
+   {
+    "name": "La / Lb chokes (1 + 1) B",
+    "body": "rotor",
+    "station": "RB",
+    "z_mm": 740.0,
+    "m_kg": 1.405304881381282,
+    "J_kgm2": 0.011382969539188385,
+    "tag": "[RH] placement at r 90 mm (not drawn)"
+   },
+   {
+    "name": "rotor electronics, wiring, potting (1 + 1 kg) A",
+    "body": "rotor",
+    "station": "RA",
+    "z_mm": 300.0,
+    "m_kg": 1.0,
+    "J_kgm2": 0.010000000000000002,
+    "tag": "[RH] lump at r 100 mm: D1-D4, Z1 / Z4, the chains, the AH bypass, snubbers"
+   },
+   {
+    "name": "rotor electronics, wiring, potting (1 + 1 kg) B",
+    "body": "rotor",
+    "station": "RB",
+    "z_mm": 640.0,
+    "m_kg": 1.0,
+    "J_kgm2": 0.010000000000000002,
+    "tag": "[RH] lump at r 100 mm: D1-D4, Z1 / Z4, the chains, the AH bypass, snubbers"
+   },
+   {
+    "name": "G10 rotor sleeve A",
+    "body": "rotor",
+    "station": "RA",
+    "z_mm": 200.0,
+    "m_kg": 0.5677109252449044,
+    "J_kgm2": 0.00016364267420184366,
+    "tag": "[IR] between the end slot and the flanges"
+   },
+   {
+    "name": "G10 rotor sleeve B",
+    "body": "rotor",
+    "station": "RB",
+    "z_mm": 740.0,
+    "m_kg": 0.5677109252449044,
+    "J_kgm2": 0.00016364267420184366,
+    "tag": "[IR] between the end slot and the flanges"
+   },
+   {
+    "name": "hub: vessel, retainer, coupler, AH, flanges A",
+    "body": "rotor",
+    "station": "RA",
+    "z_mm": 430.0,
+    "m_kg": 0.5827296301008793,
+    "J_kgm2": 0.0002941508527243412,
+    "tag": "[IR] presets/hub-locked.json extents"
+   },
+   {
+    "name": "hub: vessel, retainer, coupler, AH, flanges B",
+    "body": "rotor",
+    "station": "RB",
+    "z_mm": 510.0,
+    "m_kg": 0.5827296301008793,
+    "J_kgm2": 0.0002941508527243412,
+    "tag": "[IR] presets/hub-locked.json extents"
+   },
+   {
+    "name": "shaft, gear end (below z 20)",
+    "body": "rotor",
+    "station": "R0",
+    "z_mm": -56.0,
+    "m_kg": 0.5894413216297851,
+    "J_kgm2": 4.605010325232698e-05,
+    "tag": "[IR] \u00d8 25"
+   },
+   {
+    "name": "shaft A",
+    "body": "rotor",
+    "station": "RA",
+    "z_mm": 245.0,
+    "m_kg": 1.822614612934204,
+    "J_kgm2": 0.00014239176663548474,
+    "tag": "[IR] \u00d8 25"
+   },
+   {
+    "name": "shaft B",
+    "body": "rotor",
+    "station": "RB",
+    "z_mm": 715.0,
+    "m_kg": 1.822614612934204,
+    "J_kgm2": 0.00014239176663548474,
+    "tag": "[IR] \u00d8 25"
+   },
+   {
+    "name": "rotor side gear (z 30, stainless)",
+    "body": "rotor",
+    "station": "R0",
+    "z_mm": -58.0,
+    "m_kg": 0.3,
+    "J_kgm2": 0.00015843749999999997,
+    "tag": "[IR] this design"
+   },
+   {
+    "name": "machine pulley HTD 5M 80T",
+    "body": "rotor",
+    "station": "R0",
+    "z_mm": -114.0,
+    "m_kg": 0.5,
+    "J_kgm2": 0.0012158542037080534,
+    "tag": "[IR] this design"
+   },
+   {
+    "name": "counter-rotor side gear + hub",
+    "body": "counter",
+    "station": "C0",
+    "z_mm": -14.0,
+    "m_kg": 0.55,
+    "J_kgm2": 0.00037796874999999994,
+    "tag": "[IR] this design"
+   },
+   {
+    "name": "counter-rotor end disc (G10 10 mm)",
+    "body": "counter",
+    "station": "C0",
+    "z_mm": 15.0,
+    "m_kg": 1.3711689267105953,
+    "J_kgm2": 0.017408532089633555,
+    "tag": "[IR] this design, solid"
+   },
+   {
+    "name": "stator vanes (6 + 6) A",
+    "body": "counter",
+    "station": "CA",
+    "z_mm": 323.5,
+    "m_kg": 1.6913027944383554,
+    "J_kgm2": 0.02792778518876141,
+    "tag": "[OC] geometry"
+   },
+   {
+    "name": "stator vanes (6 + 6) B",
+    "body": "counter",
+    "station": "CB",
+    "z_mm": 616.5,
+    "m_kg": 1.6913027944383554,
+    "J_kgm2": 0.02792778518876141,
+    "tag": "[OC] geometry"
+   },
+   {
+    "name": "bridges (6 + 6) A",
+    "body": "counter",
+    "station": "CA",
+    "z_mm": 101.0,
+    "m_kg": 3.9270000000000005,
+    "J_kgm2": 0.07443726675000001,
+    "tag": "[OC] geometry of the pick"
+   },
+   {
+    "name": "bridges (6 + 6) B",
+    "body": "counter",
+    "station": "CB",
+    "z_mm": 839.0,
+    "m_kg": 3.9270000000000005,
+    "J_kgm2": 0.07443726675000001,
+    "tag": "[OC] geometry of the pick"
+   },
+   {
+    "name": "G10 bridge rings (1 + 1, less the pockets) A",
+    "body": "counter",
+    "station": "CA",
+    "z_mm": 107.0,
+    "m_kg": 6.331539794705325,
+    "J_kgm2": 0.13411961660926566,
+    "tag": "[IR] as modelled (25 mm wall)"
+   },
+   {
+    "name": "G10 bridge rings (1 + 1, less the pockets) B",
+    "body": "counter",
+    "station": "CB",
+    "z_mm": 833.0,
+    "m_kg": 6.331539794705325,
+    "J_kgm2": 0.13411961660926566,
+    "tag": "[IR] as modelled (25 mm wall)"
+   },
+   {
+    "name": "G10 bearing spiders (2 + 2), solid A",
+    "body": "counter",
+    "station": "CA",
+    "z_mm": 289.0,
+    "m_kg": 2.377597532622721,
+    "J_kgm2": 0.032002462789101835,
+    "tag": "[IR] as modelled (solid discs)"
+   },
+   {
+    "name": "G10 bearing spiders (2 + 2), solid B",
+    "body": "counter",
+    "station": "CB",
+    "z_mm": 651.0,
+    "m_kg": 2.377597532622721,
+    "J_kgm2": 0.032002462789101835,
+    "tag": "[IR] as modelled (solid discs)"
+   },
+   {
+    "name": "G10 stator cage A",
+    "body": "counter",
+    "station": "CA",
+    "z_mm": 329.0,
+    "m_kg": 2.150327180239667,
+    "J_kgm2": 0.057843801148447054,
+    "tag": "[IR] as modelled"
+   },
+   {
+    "name": "G10 stator cage B",
+    "body": "counter",
+    "station": "CB",
+    "z_mm": 611.0,
+    "m_kg": 2.150327180239667,
+    "J_kgm2": 0.057843801148447054,
+    "tag": "[IR] as modelled"
+   }
+  ],
+  "E_kinetic_J": 1891.967370090938
+ },
+ "steady": {
+  "T_pump": 0.17123590235540295,
+  "T_brg_inner": 0.06955461472084228,
+  "T_wind_rel": 0.15915494309189535,
+  "T_rel": 0.3999454601681406,
+  "D_c": 0.07957747154594766,
+  "D_r": 0.0222093332371558,
+  "T_pinion_brg": 0.010622159005173867,
+  "tau_gear_cr": 0.4795229317140882,
+  "tau_gear_rotor": 0.5202649815305094,
+  "T_carrier": 0.9997879132445976,
+  "T_belt": 0.9424197749358058,
+  "P_belt": 59.213980830721475,
+  "P_motor_shaft": 61.04534106259946,
+  "P_elec": 76.30667632824932,
+  "P_split": {
+   "pumps": 21.518138114822122,
+   "inner_bearings": 8.740490665210663,
+   "windage": 25.0,
+   "end_bearings": 1.3954535627795255,
+   "gear": 2.5598984879091615
+  }
+ },
+ "windage_sensitivity": [
+  {
+   "P_wind_W": 0,
+   "T_pump": 0.17123590235540295,
+   "T_brg_inner": 0.06955461472084228,
+   "T_wind_rel": 0.0,
+   "T_rel": 0.24079051707624521,
+   "D_c": 0.0,
+   "D_r": 0.0222093332371558,
+   "T_pinion_brg": 0.010622159005173867,
+   "tau_gear_cr": 0.24079051707624521,
+   "tau_gear_rotor": 0.26653725845914905,
+   "T_carrier": 0.5073277755353942,
+   "T_belt": 0.52953710877255,
+   "P_belt": 33.27179781446045,
+   "P_motor_shaft": 34.30082248913448,
+   "P_elec": 42.8760281114181,
+   "t_runup_s": 30.189999999998278,
+   "motor_load_of_rated": 0.21324786918997665
+  },
+  {
+   "P_wind_W": 25,
+   "T_pump": 0.17123590235540295,
+   "T_brg_inner": 0.06955461472084228,
+   "T_wind_rel": 0.15915494309189535,
+   "T_rel": 0.3999454601681406,
+   "D_c": 0.07957747154594766,
+   "D_r": 0.0222093332371558,
+   "T_pinion_brg": 0.010622159005173867,
+   "tau_gear_cr": 0.4795229317140882,
+   "tau_gear_rotor": 0.5202649815305094,
+   "T_carrier": 0.9997879132445976,
+   "T_belt": 0.9424197749358058,
+   "P_belt": 59.213980830721475,
+   "P_motor_shaft": 61.04534106259946,
+   "P_elec": 76.30667632824932,
+   "t_runup_s": 32.48999999999817,
+   "motor_load_of_rated": 0.3795182727673187
+  },
+  {
+   "P_wind_W": 50,
+   "T_pump": 0.17123590235540295,
+   "T_brg_inner": 0.06955461472084228,
+   "T_wind_rel": 0.3183098861837907,
+   "T_rel": 0.559100403260036,
+   "D_c": 0.15915494309189532,
+   "D_r": 0.0222093332371558,
+   "T_pinion_brg": 0.010622159005173867,
+   "tau_gear_cr": 0.7182553463519312,
+   "tau_gear_rotor": 0.7739927046018699,
+   "T_carrier": 1.4922480509538012,
+   "T_belt": 1.3553024410990617,
+   "P_belt": 85.15616384698251,
+   "P_motor_shaft": 87.78985963606445,
+   "P_elec": 109.73732454508055,
+   "t_runup_s": 35.79499999999986,
+   "motor_load_of_rated": 0.5457886763446609
+  },
+  {
+   "P_wind_W": 100,
+   "T_pump": 0.17123590235540295,
+   "T_brg_inner": 0.06955461472084228,
+   "T_wind_rel": 0.6366197723675814,
+   "T_rel": 0.8774102894438266,
+   "D_c": 0.31830988618379064,
+   "D_r": 0.0222093332371558,
+   "T_pinion_brg": 0.010622159005173867,
+   "tau_gear_cr": 1.1957201756276172,
+   "tau_gear_rotor": 1.2814481507445907,
+   "T_carrier": 2.477168326372208,
+   "T_belt": 2.181067773425573,
+   "P_belt": 137.04052987950456,
+   "P_motor_shaft": 141.2788967829944,
+   "P_elec": 176.59862097874299,
+   "t_runup_s": 51.65500000000797,
+   "motor_load_of_rated": 0.8783294834993449
+  }
+ ],
+ "pulsation": {
+  "electrostatic": {
+   "source": "sim/hub_revolution_results.json (C1, C2, V1, V4 over one revolution)",
+   "mean_W": 2.1430783366604422,
+   "mean_A": 0.008527507688791928,
+   "mean_B": 0.008526567846841394,
+   "total_max": 0.05634798103865729,
+   "total_min": -0.020133661401094342,
+   "A_max": 0.07243113158669497,
+   "A_min": -0.029362045047021442,
+   "amp_total": [
+    5.200369036815287e-07,
+    0.03659345843203746,
+    4.00746972442675e-07,
+    0.003370045318457728,
+    5.059029918345057e-07,
+    0.0026565976818497443,
+    1.650808637271409e-07,
+    0.00028698462853419263,
+    2.2203744947753082e-07,
+    0.00027614867867937695,
+    2.6509923092269673e-07,
+    0.00029412900852505074
+   ],
+   "amp_diff": [
+    0.07868263682885603,
+    1.265925200291872e-06,
+    0.01694613072771679,
+    4.3584865089172373e-07,
+    0.0012916611890353153,
+    5.582465862339453e-07,
+    0.0013758846194986917,
+    5.683575529431923e-07,
+    0.00010036454454656981,
+    2.879013201686461e-07,
+    0.00035615118849888417,
+    2.87670699004039e-07
+   ]
+  },
+  "magnetic": {
+   "source": "ngspice: the pick (sim/rotor_parts_duty.py _kw) + 22 mF bypass (sim/ah_steady_cusp.py)",
+   "P_belt_W": 18.12623509128243,
+   "z_early": 1.1465549038669214,
+   "mean_A": 0.07220351197756728,
+   "mean_B": 0.0720413165508094,
+   "total_max": 1.3772617767308317,
+   "total_min": -0.6794354664336962,
+   "A_max": 1.3598280481007348,
+   "A_min": -0.6546471472316019,
+   "B_max": 1.3573476620331264,
+   "B_min": -0.6627718623218564,
+   "harmonics_A": [
+    [
+     0.06867901971410582,
+     -0.36796865997289374
+    ],
+    [
+     -0.03764082523036317,
+     -0.33464848132168173
+    ],
+    [
+     -0.0664845307358852,
+     -0.19187833543264843
+    ],
+    [
+     -0.062038755816434525,
+     -0.06957417471943056
+    ],
+    [
+     -0.04548941679730312,
+     0.05422319971386756
+    ],
+    [
+     0.01295735459186462,
+     0.16659658117454323
+    ],
+    [
+     0.05283991896487586,
+     0.037607091838475756
+    ],
+    [
+     0.02753188101510514,
+     -0.042948758890089554
+    ],
+    [
+     -0.001410460317972043,
+     -0.03767611691059221
+    ],
+    [
+     -0.012543465532227602,
+     -0.012462474539643557
+    ],
+    [
+     -0.012290861978582418,
+     0.0068459501923199065
+    ],
+    [
+     -0.004555146665641438,
+     0.014778789924746679
+    ]
+   ],
+   "harmonics_B": [
+    [
+     -0.06839651389944058,
+     0.36765687647662776
+    ],
+    [
+     -0.03763863743295745,
+     -0.3342667702420409
+    ],
+    [
+     0.06629048659522162,
+     0.1915214279994456
+    ],
+    [
+     -0.06169944642961646,
+     -0.06934711384964376
+    ],
+    [
+     0.045279532460554724,
+     -0.05434469410116643
+    ],
+    [
+     0.012947551368179374,
+     0.16656323085368427
+    ],
+    [
+     -0.05259417647028396,
+     -0.03758602087959013
+    ],
+    [
+     0.0271855343486428,
+     -0.04301549315499602
+    ],
+    [
+     0.0016427071086436082,
+     0.03782411918767631
+    ],
+    [
+     -0.012543532757957837,
+     -0.01265709474322735
+    ],
+    [
+     0.012032225466036722,
+     -0.006647833028109763
+    ],
+    [
+     -0.004177796333441347,
+     0.014697607750246228
+    ]
+   ],
+   "amp_total": [
+    0.00042073564605760606,
+    0.6731378842952138,
+    0.00040624628539999804,
+    0.1860383485004547,
+    0.00024251251711497282,
+    0.3341654148823343,
+    0.00024664419505962635,
+    0.10190116865747868,
+    0.0002753965246681965,
+    0.035501411861624865,
+    0.0003257963418709133,
+    0.030742841659800357
+   ],
+   "amp_diff": [
+    0.7482878001090788,
+    0.0003817173493281077,
+    0.40573955171644455,
+    0.0004082738034348887,
+    0.14151321393003574,
+    3.4761287318207185e-05,
+    0.12950039644905398,
+    0.00035271727414769777,
+    0.0755619446694514,
+    0.00019462021519435233,
+    0.027815369284597654,
+    0.0003859842207502026
+   ]
+  },
+  "pumps_between_bodies": {
+   "phase_deg": 70,
+   "total_max": 1.4476637384237554,
+   "total_min": -0.707120864920209,
+   "A_max": 1.4340898031100384,
+   "A_min": -0.6465966164195247,
+   "mean": 0.17123590235540298
+  },
+  "drive": {
+   "POM-C": {
+    "k_mesh_N_per_m": 5919170.984455958,
+    "k_gear_Nm_per_rad": 5552.640861344799,
+    "springs": {
+     "belt": 2526.045184626278,
+     "shaft_gear_to_A": 12318.492248661765,
+     "shaft_A_to_B_with_hub": 5733.559668016331,
+     "hub_joint": 30000.0,
+     "cr_end_disc_and_ring": 573184.3017811258,
+     "cage_A_to_B": 960323.1239678928,
+     "gear": 5552.640861344799
+    },
+    "J_station": {
+     "M": 0.00056,
+     "R0": 0.0014203418069603803,
+     "RA": 0.14330657956686416,
+     "RB": 0.14330657956686416,
+     "C0": 0.017786500839633554,
+     "CA": 0.326330932485576,
+     "CB": 0.326330932485576
+    },
+    "z_station_mm": {
+     "M": 0.0,
+     "R0": -58.0,
+     "RA": 181.71383486486772,
+     "RB": 758.3060374629856,
+     "C0": -14.0,
+     "CA": 181.35860827110275,
+     "CB": 758.6413917288971
+    },
+    "modes": [
+     {
+      "f_Hz": 19.929298644493997,
+      "shape": {
+       "M": -0.316,
+       "R0": -0.315,
+       "RA": -0.608,
+       "RB": -1.0,
+       "C0": -0.338,
+       "CA": -0.344,
+       "CB": -0.346
+      },
+      "energy_share": {
+       "belt": 0.0,
+       "shaft_gear_to_A": 0.245,
+       "shaft_A_to_B_with_hub": 0.203,
+       "cr_end_disc_and_ring": 0.005,
+       "cage_A_to_B": 0.001,
+       "gear": 0.546
+      },
+      "mainly": "gear"
+     },
+     {
+      "f_Hz": 49.340116160522015,
+      "shape": {
+       "M": 0.694,
+       "R0": 0.679,
+       "RA": 1.0,
+       "RB": -0.713,
+       "C0": 0.056,
+       "CA": 0.062,
+       "CB": 0.065
+      },
+      "energy_share": {
+       "belt": 0.0,
+       "shaft_gear_to_A": 0.06,
+       "shaft_A_to_B_with_hub": 0.797,
+       "cr_end_disc_and_ring": 0.001,
+       "cage_A_to_B": 0.0,
+       "gear": 0.142
+      },
+      "mainly": "shaft_A_to_B_with_hub"
+     },
+     {
+      "f_Hz": 308.7986079396541,
+      "shape": {
+       "M": 1.0,
+       "R0": 0.165,
+       "RA": -0.004,
+       "RB": 0.0,
+       "C0": -0.002,
+       "CA": -0.0,
+       "CB": 0.001
+      },
+      "energy_share": {
+       "belt": 0.777,
+       "shaft_gear_to_A": 0.156,
+       "shaft_A_to_B_with_hub": 0.0,
+       "cr_end_disc_and_ring": 0.001,
+       "cage_A_to_B": 0.001,
+       "gear": 0.065
+      },
+      "mainly": "belt"
+     },
+     {
+      "f_Hz": 380.3506728320952,
+      "shape": {
+       "M": -0.95,
+       "R0": 0.253,
+       "RA": -0.004,
+       "RB": 0.0,
+       "C0": -1.0,
+       "CA": -0.83,
+       "CB": 0.882
+      },
+      "energy_share": {
+       "belt": 0.001,
+       "shaft_gear_to_A": 0.0,
+       "shaft_A_to_B_with_hub": 0.0,
+       "cr_end_disc_and_ring": 0.006,
+       "cage_A_to_B": 0.992,
+       "gear": 0.001
+      },
+      "mainly": "cage_A_to_B"
+     },
+     {
+      "f_Hz": 618.7540263478404,
+      "shape": {
+       "M": 0.425,
+       "R0": -1.0,
+       "RA": 0.006,
+       "RB": -0.0,
+       "C0": 0.013,
+       "CA": -0.002,
+       "CB": 0.001
+      },
+      "energy_share": {
+       "belt": 0.222,
+       "shaft_gear_to_A": 0.538,
+       "shaft_A_to_B_with_hub": 0.0,
+       "cr_end_disc_and_ring": 0.006,
+       "cage_A_to_B": 0.0,
+       "gear": 0.233
+      },
+      "mainly": "shaft_gear_to_A"
+     },
+     {
+      "f_Hz": 935.0328785449638,
+      "shape": {
+       "M": 0.03,
+       "R0": -0.197,
+       "RA": 0.0,
+       "RB": -0.0,
+       "C0": -1.0,
+       "CA": 0.059,
+       "CB": -0.006
+      },
+      "energy_share": {
+       "belt": 0.0,
+       "shaft_gear_to_A": 0.001,
+       "shaft_A_to_B_with_hub": 0.0,
+       "cr_end_disc_and_ring": 0.981,
+       "cage_A_to_B": 0.006,
+       "gear": 0.012
+      },
+      "mainly": "cr_end_disc_and_ring"
+     }
+    ],
+    "at_phase_0": {
+     "phase_deg": 0,
+     "gear_osc_max": 0.025905139402937497,
+     "gear_osc_min": -0.03353599975885595,
+     "gear_pp": 0.059441139161793444,
+     "hub_pp": 0.13388678561572556,
+     "cage_pp": 4.306822764020224,
+     "belt_pp": 0.010879003088338137,
+     "gear_by_harmonic": [
+      0.026165711184678277,
+      0.0041304513050751755,
+      0.005730064482301975,
+      0.00039703716178781685,
+      0.0021340387156856843,
+      0.0010101175139758858,
+      0.00036025132665706,
+      0.00039990398781556563,
+      4.069191123188747e-05,
+      5.745608315023784e-06,
+      2.5129025821825665e-06,
+      1.3710788861507724e-06
+     ]
+    },
+    "worst": {
+     "phase_deg": 60,
+     "gear_osc_max": 0.026316941101845275,
+     "gear_osc_min": -0.03473826405172022,
+     "gear_pp": 0.061055205153565495,
+     "hub_pp": 0.1346679632344847,
+     "cage_pp": 4.283447221354912,
+     "belt_pp": 0.011222986491053827,
+     "gear_by_harmonic": [
+      0.025741643508844645,
+      0.004536728970705823,
+      0.00562811935576176,
+      0.00038517877600650847,
+      0.002138447425421498,
+      0.0010101175139758858,
+      0.00036210843495521435,
+      0.00039970723771057823,
+      4.079959392517297e-05,
+      5.82083049940416e-06,
+      2.5425413425405074e-06,
+      1.3710788861507724e-06
+     ]
+    },
+    "tau_mean_on_each_body": -0.4795229317140882,
+    "flank_reversal": false,
+    "rigid_gear_share": 0.39897975969664706,
+    "gear_mode_Hz": [
+     19.929298644493997
+    ],
+    "gear_path_mode_Hz": 19.929298644493997,
+    "cage_vs_G10": [
+     {
+      "G_GPa": 3.0,
+      "cage_mode_Hz": 294.38759153283206,
+      "cage_pp_Nm": 1.7058864021160278,
+      "gear_pp_Nm": 0.0629646843018247
+     },
+     {
+      "G_GPa": 5.0,
+      "cage_mode_Hz": 380.3506728320952,
+      "cage_pp_Nm": 4.283447221354912,
+      "gear_pp_Nm": 0.061055205153565495
+     },
+     {
+      "G_GPa": 10.0,
+      "cage_mode_Hz": 537.5184244197357,
+      "cage_pp_Nm": 1.3910447116617761,
+      "gear_pp_Nm": 0.05520282121658249
+     }
+    ]
+   },
+   "stainless": {
+    "k_mesh_N_per_m": 204000000.0,
+    "k_gear_Nm_per_rad": 191367.80111420472,
+    "springs": {
+     "belt": 2526.045184626278,
+     "shaft_gear_to_A": 12318.492248661765,
+     "shaft_A_to_B_with_hub": 5733.559668016331,
+     "hub_joint": 30000.0,
+     "cr_end_disc_and_ring": 573184.3017811258,
+     "cage_A_to_B": 960323.1239678928,
+     "gear": 191367.80111420472
+    },
+    "J_station": {
+     "M": 0.00056,
+     "R0": 0.0014203418069603803,
+     "RA": 0.14330657956686416,
+     "RB": 0.14330657956686416,
+     "C0": 0.017786500839633554,
+     "CA": 0.326330932485576,
+     "CB": 0.326330932485576
+    },
+    "z_station_mm": {
+     "M": 0.0,
+     "R0": -58.0,
+     "RA": 181.71383486486772,
+     "RB": 758.3060374629856,
+     "C0": -14.0,
+     "CA": 181.35860827110275,
+     "CB": 758.6413917288971
+    },
+    "modes": [
+     {
+      "f_Hz": 28.095500505740272,
+      "shape": {
+       "M": -0.223,
+       "R0": -0.222,
+       "RA": 0.221,
+       "RB": 1.0,
+       "C0": 0.25,
+       "CA": 0.259,
+       "CB": 0.262
+      },
+      "energy_share": {
+       "belt": 0.0,
+       "shaft_gear_to_A": 0.396,
+       "shaft_A_to_B_with_hub": 0.57,
+       "cr_end_disc_and_ring": 0.008,
+       "cage_A_to_B": 0.001,
+       "gear": 0.025
+      },
+      "mainly": "shaft_A_to_B_with_hub"
+     },
+     {
+      "f_Hz": 60.54911002551813,
+      "shape": {
+       "M": -0.042,
+       "R0": -0.041,
+       "RA": 1.0,
+       "RB": -0.382,
+       "C0": 0.107,
+       "CA": 0.129,
+       "CB": 0.136
+      },
+      "energy_share": {
+       "belt": 0.0,
+       "shaft_gear_to_A": 0.524,
+       "shaft_A_to_B_with_hub": 0.43,
+       "cr_end_disc_and_ring": 0.011,
+       "cage_A_to_B": 0.002,
+       "gear": 0.034
+      },
+      "mainly": "shaft_gear_to_A"
+     },
+     {
+      "f_Hz": 334.7220715265647,
+      "shape": {
+       "M": -1.0,
+       "R0": -0.019,
+       "RA": 0.0,
+       "RB": -0.0,
+       "C0": 0.007,
+       "CA": 0.002,
+       "CB": -0.004
+      },
+      "energy_share": {
+       "belt": 0.966,
+       "shaft_gear_to_A": 0.002,
+       "shaft_A_to_B_with_hub": 0.0,
+       "cr_end_disc_and_ring": 0.006,
+       "cage_A_to_B": 0.014,
+       "gear": 0.012
+      },
+      "mainly": "belt"
+     },
+     {
+      "f_Hz": 381.0620260981039,
+      "shape": {
+       "M": -1.0,
+       "R0": 0.271,
+       "RA": -0.004,
+       "RB": 0.0,
+       "C0": -0.294,
+       "CA": -0.249,
+       "CB": 0.263
+      },
+      "energy_share": {
+       "belt": 0.016,
+       "shaft_gear_to_A": 0.004,
+       "shaft_A_to_B_with_hub": 0.0,
+       "cr_end_disc_and_ring": 0.004,
+       "cage_A_to_B": 0.976,
+       "gear": 0.0
+      },
+      "mainly": "cage_A_to_B"
+     },
+     {
+      "f_Hz": 903.9588463446865,
+      "shape": {
+       "M": -0.163,
+       "R0": 1.0,
+       "RA": -0.003,
+       "RB": 0.0,
+       "C0": -0.84,
+       "CA": 0.054,
+       "CB": -0.005
+      },
+      "energy_share": {
+       "belt": 0.007,
+       "shaft_gear_to_A": 0.026,
+       "shaft_A_to_B_with_hub": 0.0,
+       "cr_end_disc_and_ring": 0.95,
+       "cage_A_to_B": 0.007,
+       "gear": 0.01
+      },
+      "mainly": "cr_end_disc_and_ring"
+     },
+     {
+      "f_Hz": 1999.8989267398333,
+      "shape": {
+       "M": -0.029,
+       "R0": 1.0,
+       "RA": -0.001,
+       "RB": 0.0,
+       "C0": 0.094,
+       "CA": -0.001,
+       "CB": 0.0
+      },
+      "energy_share": {
+       "belt": 0.011,
+       "shaft_gear_to_A": 0.049,
+       "shaft_A_to_B_with_hub": 0.0,
+       "cr_end_disc_and_ring": 0.021,
+       "cage_A_to_B": 0.0,
+       "gear": 0.919
+      },
+      "mainly": "gear"
+     }
+    ],
+    "at_phase_0": {
+     "phase_deg": 0,
+     "gear_osc_max": 0.08731908487248544,
+     "gear_osc_min": -0.10675166599899072,
+     "gear_pp": 0.19407075087147616,
+     "hub_pp": 0.1442026376578136,
+     "cage_pp": 4.036248274567825,
+     "belt_pp": 0.038401943563697506,
+     "gear_by_harmonic": [
+      0.08457844774270863,
+      0.00897535409955814,
+      0.02637765164854573,
+      0.0007038376314222707,
+      0.0006246090702670716,
+      0.0016927244615453185,
+      0.0018756064248455738,
+      0.0012437274003403512,
+      0.00033041205516013024,
+      7.527448488219158e-05,
+      4.9442946404582034e-05,
+      3.98996384561897e-05
+     ]
+    },
+    "worst": {
+     "phase_deg": 75,
+     "gear_osc_max": 0.08953049121939374,
+     "gear_osc_min": -0.11105777595229958,
+     "gear_pp": 0.2005882671716933,
+     "hub_pp": 0.14282485106416262,
+     "cage_pp": 4.118208674945986,
+     "belt_pp": 0.03910940998051589,
+     "gear_by_harmonic": [
+      0.08174146528775837,
+      0.00991411953916715,
+      0.026724429263599313,
+      0.0006917019182057553,
+      0.0006234702698532245,
+      0.0016933429571334305,
+      0.0019150066916576046,
+      0.001238208641410342,
+      0.0003305787255193987,
+      7.528207247672227e-05,
+      4.972109693558744e-05,
+      3.9274854180962734e-05
+     ]
+    },
+    "tau_mean_on_each_body": -0.4795229317140882,
+    "flank_reversal": false,
+    "rigid_gear_share": 0.39897975969664706,
+    "gear_mode_Hz": [
+     1999.8989267398333
+    ],
+    "gear_path_mode_Hz": 60.54911002551813,
+    "cage_vs_G10": [
+     {
+      "G_GPa": 3.0,
+      "cage_mode_Hz": 294.3879517458933,
+      "cage_pp_Nm": 1.6554101121184588,
+      "gear_pp_Nm": 0.19026733370957027
+     },
+     {
+      "G_GPa": 5.0,
+      "cage_mode_Hz": 381.0620260981039,
+      "cage_pp_Nm": 4.118208674945986,
+      "gear_pp_Nm": 0.2005882671716933
+     },
+     {
+      "G_GPa": 10.0,
+      "cage_mode_Hz": 537.5196116027195,
+      "cage_pp_Nm": 1.379967653842613,
+      "gear_pp_Nm": 0.1678594324647199
+     }
+    ]
+   }
+  }
+ },
+ "runup": {
+  "pumps_on": {
+   "t_s": 32.48999999999817,
+   "reached": true,
+   "t_target_s": 30.0,
+   "torque_limited": true,
+   "peak_gear_Nm": 1.6293610190383452,
+   "peak_belt_Nm": 2.482300312691618,
+   "peak_motor_Nm": 0.640070405656948,
+   "peak_motor_shaft_W": 160.84927809427768,
+   "mag_on": true,
+   "limit_x_rated": 1.0
+  },
+  "es_only": {
+   "t_s": 30.199999999998276,
+   "reached": true,
+   "t_target_s": 30.0,
+   "torque_limited": true,
+   "peak_gear_Nm": 1.6463982344773713,
+   "peak_belt_Nm": 2.4821145661914086,
+   "peak_motor_Nm": 0.6400225328476157,
+   "peak_motor_shaft_W": 160.84171841413368,
+   "mag_on": false,
+   "limit_x_rated": 1.0
+  },
+  "at_limit": {
+   "t_s": 19.335000000000438,
+   "reached": true,
+   "t_target_s": 5.0,
+   "torque_limited": true,
+   "peak_gear_Nm": 2.520943160870124,
+   "peak_belt_Nm": 3.723175287558655,
+   "peak_motor_Nm": 0.9613949626553341,
+   "peak_motor_shaft_W": 241.25858046006968,
+   "mag_on": true,
+   "limit_x_rated": 1.5
+  },
+  "slow_60s": {
+   "t_s": 60.005000000012245,
+   "reached": true,
+   "t_target_s": 60.0,
+   "torque_limited": false,
+   "peak_gear_Nm": 1.181614818594831,
+   "peak_belt_Nm": 1.9461396386641632,
+   "peak_motor_Nm": 0.5017335230136168,
+   "peak_motor_shaft_W": 126.09938799672693,
+   "mag_on": true,
+   "limit_x_rated": 1.0
+  }
+ },
+ "fault": {
+  "T_belt_Nm": 3.7247999999999997,
+  "alpha": 3.4976675034305993,
+  "tau_gear_Nm": 2.520943160870124,
+  "tau_gear_braking_Nm": 2.7832437727100627,
+  "note": "the driver's current limit (1.5 x rated) at the shaft: the most the belt can push or brake; the gear's share is the counter-rotor's inertia share [OC; IR the limit]"
+ },
+ "windage_crosscheck": {
+  "Re_vane": 188495.5592153876,
+  "C_M": 0.006176709291925668,
+  "P_vanes_W": 6.701554370714675,
+  "P_cage_outside_W": 2.254855622617072,
+  "P_total_W": 8.956409993331746,
+  "allowance_over_estimate": 2.791296961462581,
+  "note": "crude [RH]: the sectors' churning, the utron cavities and the Ca / Cb plates are not in it"
+ },
+ "selfcheck_rigid_limit": [
+  {
+   "J_r": 0.5,
+   "J_c": 0.5,
+   "gear_share": 4.4238685362080395e-07,
+   "closed_form": 0.0
+  },
+  {
+   "J_r": 0.288,
+   "J_c": 0.67,
+   "gear_share": 0.40096097194800706,
+   "closed_form": 0.3987473903966598
+  }
+ ],
+ "gear": {
+  "spec": {
+   "m": 2.0,
+   "z_s": 30,
+   "z_p": 20,
+   "N_p": 3,
+   "b": 12.0,
+   "alpha_deg": 20.0,
+   "side_mat": "austenitic stainless 1.4305",
+   "pinion_mat": "POM-C",
+   "r_disc0": 30.0,
+   "t_disc": 10.0,
+   "m_side_kg": 0.3,
+   "m_hub_kg": 0.25,
+   "m_pinion_kg": 0.035,
+   "J_side": 0.00015843749999999997,
+   "J_hub": 0.00021953125,
+   "z_rotor_gear": -58.0,
+   "z_cr_gear": -14.0,
+   "z_pulley": -114.0
+  },
+  "geometry": {
+   "dia_side": 60.0,
+   "dia_pinion": 40.0,
+   "delta_side_deg": 56.309932474020215,
+   "delta_pinion_deg": 33.690067525979785,
+   "R_e": 36.05551275463989,
+   "R_m": 30.055512754639892,
+   "m_m": 1.6671798822648625,
+   "dia_m_side": 50.01539646794588,
+   "dia_m_pinion": 33.34359764529725,
+   "r_m_side": 25.00769823397294,
+   "z_v_side": 54.08326913195984,
+   "z_v_pinion": 24.03700850309326,
+   "dia_v_side": 90.16653826391968,
+   "dia_v_pinion": 40.07401700618652,
+   "u_v": 2.25,
+   "eps_alpha": 1.6851367376798154,
+   "tip_dia_side": 62.218800784900914,
+   "tip_dia_pinion": 43.328201177351374,
+   "b_over_Re": 0.3328201177351375,
+   "assembly_ok": true,
+   "ratio_side_to_pinion": 1.5,
+   "pinion_rpm": 900.0,
+   "mesh_Hz": 300.0,
+   "apex_to_side_pitch_circle": 20.0,
+   "apex_to_pinion_pitch_circle": 30.0
+  },
+  "checks": [
+   {
+    "case": "steady + pulsation (10^9 cycles)",
+    "tau_Nm": 0.5507925841072921,
+    "F_t_per_mesh_N": 8.809968497765073,
+    "K_v": 1.1513146119753457,
+    "sigma_F_pinion_MPa": 2.443506863687208,
+    "S_F_pinion": 5.7294702986322905,
+    "sigma_F_side_MPa": 1.9885405388595951,
+    "S_F_side": 42.242035482049076,
+    "sigma_H_MPa": 13.109116594104728,
+    "S_H_pinion": 2.746180472312641,
+    "S_H_side": 26.698976814150676,
+    "Z_E": 31.63129563352077,
+    "limits_pinion": [
+     14.0,
+     36.0
+    ],
+    "limits_side": [
+     84.0,
+     350.0
+    ],
+    "fatigue": true
+   },
+   {
+    "case": "run-up peak (10^4 cycles a start)",
+    "tau_Nm": 1.6293610190383452,
+    "F_t_per_mesh_N": 26.061751126296933,
+    "K_v": 1.1513146119753457,
+    "sigma_F_pinion_MPa": 7.228410382281088,
+    "S_F_pinion": 6.225435139973228,
+    "sigma_F_side_MPa": 5.882523716339981,
+    "S_F_side": 42.49876618526347,
+    "sigma_H_MPa": 22.546962629804842,
+    "S_H_pinion": 2.6611123185473313,
+    "S_H_side": 26.611123185473314,
+    "Z_E": 31.63129563352077,
+    "limits_pinion": [
+     45.0,
+     60.0
+    ],
+    "limits_side": [
+     250.0,
+     600.0
+    ],
+    "fatigue": false
+   },
+   {
+    "case": "driver current limit (fault)",
+    "tau_Nm": 2.7832437727100627,
+    "F_t_per_mesh_N": 44.51819190506751,
+    "K_v": 1.1513146119753457,
+    "sigma_F_pinion_MPa": 12.347434330392028,
+    "S_F_pinion": 3.6444818247979507,
+    "sigma_F_side_MPa": 10.048416103010501,
+    "S_F_side": 24.879542948574763,
+    "sigma_H_MPa": 29.468294878911244,
+    "S_H_pinion": 2.036086588876187,
+    "S_H_side": 20.360865888761868,
+    "Z_E": 31.63129563352077,
+    "limits_pinion": [
+     45.0,
+     60.0
+    ],
+    "limits_side": [
+     250.0,
+     600.0
+    ],
+    "fatigue": false
+   }
+  ],
+  "pinion_loads_fault": {
+   "F_t": 40.32267403875539,
+   "F_net_N": 80.64534807751077,
+   "F_axial_N": 16.281840966731902,
+   "R_inner_N": 141.12935913564385,
+   "R_outer_N": 60.48401105813308,
+   "side_gear_thrust_N": 36.63414217514679,
+   "M_axle_Nm": 0.9677441769301293,
+   "sigma_axle_MPa": 9.857361242036978
+  },
+  "pinion_loads_steady": {
+   "F_t": 8.321677215757983,
+   "F_net_N": 16.643354431515966,
+   "F_axial_N": 3.3601993973222606,
+   "R_inner_N": 29.12587025515294,
+   "R_outer_N": 12.482515823636975,
+   "side_gear_thrust_N": 7.5604486439750875,
+   "M_axle_Nm": 0.19972025317819161,
+   "sigma_axle_MPa": 2.034333793847937
+  },
+  "backlash": {
+   "j_n_mm": [
+    0.1,
+    0.15
+   ],
+   "note": "set by shims under the pinion cartridges and the rotor gear's spacer; the pumps do not see it (both pumps' A / B phases are internal to each body) [OC]"
+  }
+ },
+ "belt": {
+  "dia_motor_mm": 31.830988618379067,
+  "dia_machine_mm": 127.32395447351627,
+  "ratio": 4.0,
+  "motor_rpm": 2400.0,
+  "centre_mm": 245.3542134037014,
+  "wrap_small_deg": 157.55702137274773,
+  "teeth_in_mesh": 8,
+  "v_mps": 4.0,
+  "span_mm": 240.6635896910799,
+  "EA_N": 75000.0,
+  "n_teeth": 150,
+  "journal_arm_mm": 26.5,
+  "journal_sigma_MPa": 1.5624329383053837,
+  "journal_sigma_max_MPa": 2.634907742839046,
+  "F_tsp": 0.5,
+  "service_factor": 1.6,
+  "z_m_rated": 8,
+  "F_e_steady_N": 15.261335265649866,
+  "F_e_max_N": 60.31857894892403,
+  "width_needed_steady_mm": 6.104534106259947,
+  "width_needed_at_limit_mm": 15.079644737231007,
+  "width_mm": 15.0,
+  "T_static_per_strand_N": 46.10293421169302,
+  "hub_load_N": 90.44309848000641,
+  "T_tight_max_N": 76.26222368615504,
+  "T_allow_N": 375.0,
+  "f_span_Hz": 60.70535701442138,
+  "mesh_Hz_motor": 800.0
+ },
+ "motor": {
+  "kind": "brushless DC servo-class, 48 V, with a speed-loop driver",
+  "P_rated": 200.0,
+  "n_rated": 3000.0,
+  "T_rated": 0.64,
+  "T_peak_factor": 3.0,
+  "I_lim_factor": 1.5,
+  "J": 3.5e-05,
+  "eta": 0.8
+ },
+ "bearings": {
+  "gear_end_inner": {
+   "part": "6205-2Z",
+   "rpm_rel": 1200.0,
+   "F_axial_N": 349.70091028036506,
+   "F_radial_N": 10.478419779677386,
+   "P_N": 639.838083450639,
+   "L10_h": 171886.74678737353,
+   "note": "locates the counter-rotor axially (carries its weight); it is the bearing at bridge ring A's outer end that sim/tube-shaft-findings.md section 0 proposes"
+  },
+  "bottom_end_locating": {
+   "part": "6205-2Z",
+   "rpm": 600.0,
+   "F_axial_N": 688.5534200548499,
+   "F_radial_N": 95.98993031117736,
+   "P_N": 1113.1976559800182,
+   "L10_h": 65277.843065242145,
+   "note": "carries both bodies' weight and the belt's hub load"
+  },
+  "pinion_inner_steady": {
+   "part": "6000-2Z",
+   "rpm": 900.0,
+   "F_N": 29.12587025515294,
+   "L10_h": 70599837.01692726
+  },
+  "pinion_inner_fault": {
+   "part": "6000-2Z",
+   "F_N": 141.12935913564385,
+   "static_ratio": 13.88796783322868
+  },
+  "unbalance_N": {
+   "rotor": 5.546831831170948,
+   "counter_rotor": 5.478419779677386
+  }
+ },
+ "frame": {
+  "weight_on_locating_bearing_N": 688.5534200548499,
+  "carrier_torque_Nm": {
+   "steady": 0.9997879132445976,
+   "run_up": 3.36106579004307,
+   "fault": 5.200232310482329
+  },
+  "motor_mount_torque_Nm": {
+   "steady": 0.24289169457108398,
+   "limit": 0.96
+  },
+  "belt_hub_load_N": 90.44309848000641,
+  "belt_hub_load_max_N": 152.52444737231008,
+  "pulsation_into_frame_pp_Nm": 0.12211041030713099,
+  "note": "the carrier torque and the motor mount's reaction close through the base plate; about the axis the frame's net load is the drags only [OC]"
+ },
+ "envelope": {
+  "rows": [
+   {
+    "part": "counter-rotor end disc (G10 10 mm, bolted to bridge ring A; the bottom spider re-purposed)",
+    "z0": 10.0,
+    "z1": 20.0
+   },
+   {
+    "part": "counter-rotor hub with the gear-end inner bearing 6205-2Z",
+    "z0": -8.0,
+    "z1": 10.0
+   },
+   {
+    "part": "counter-rotor side gear z 30 (bolted under the hub)",
+    "z0": -23.8,
+    "z1": -8.0
+   },
+   {
+    "part": "pinion plane: 3 x POM pinion z 20 on radial axes (envelope of the tips)",
+    "z0": -57.7,
+    "z1": -14.3
+   },
+   {
+    "part": "rotor side gear z 30 with its hub (keyed in the hub, \u00d8 25 journal)",
+    "z0": -76.0,
+    "z1": -48.2
+   },
+   {
+    "part": "gear case floor with the locating end bearing 6205-2Z (frame)",
+    "z0": -96.0,
+    "z1": -79.0
+   },
+   {
+    "part": "machine pulley HTD 5M 80T, 15 mm belt (24 mm over flanges)",
+    "z0": -126.0,
+    "z1": -102.0
+   },
+   {
+    "part": "shaft end with lock nut",
+    "z0": -132.0,
+    "z1": -126.0
+   },
+   {
+    "part": "base plate (20 mm) under the case's bell",
+    "z0": -156.0,
+    "z1": -136.0
+   }
+  ],
+  "z_apex": -36.0,
+  "z_rotor_gear": -58.0,
+  "z_cr_gear": -14.0,
+  "z_pulley": -114.0,
+  "z_base_bottom": -156.0,
+  "case_outer_r": 72.0,
+  "pinion_back_r": 38.0,
+  "added_below_slot_mm": 156.0,
+  "overall_height_mm": 1116.0,
+  "note": "z from the record's bottom end-bearing slot (z 0..20, now the counter-rotor's end disc and hub); the tube's top end bearing at z 920..940 with a 20 mm top plate above it"
+ },
+ "concepts": [
+  {
+   "key": "a",
+   "name": "bevel reverser, carrier = frame (recommended)",
+   "kinematics": "exact 1 : -1 (equal side gears, positive drive) [OC]",
+   "axial_mm": 156,
+   "radial_dia_mm": 144,
+   "radial_load_on_bodies": "none net from the gear (3 pinions at 120 deg) [OC]; belt hub load into the locating end bearing only",
+   "backlash": "one stage, two meshes in series; does not matter to the pumps [OC]",
+   "pulsation_share": "POM pinions: gear-path mode 20 Hz, the gear's ripple +/-6 % of its mean; stainless: 61 Hz, +/-21 %; no flank reversal either way",
+   "noise": "low with POM pinions (mesh 300 Hz)",
+   "cost_EUR": "~330-460 (BOM below)",
+   "reaction": "pinion cartridges -> gear case -> base: 2 x the gear torque [OC]",
+   "risks": "the side gears' axial setting (shims); POM creep under the bores (steel hubs)"
+  },
+  {
+   "key": "b",
+   "name": "star gear with stepped planets, carrier = frame",
+   "kinematics": "1 : -1 only for z_s z_p2 = z_p1 z_r, e.g. sun 45 / planets 15 + 30 / ring 90 at m 1.5 [OC]",
+   "axial_mm": 90,
+   "radial_dia_mm": 170,
+   "radial_load_on_bodies": "none net (3 planets)",
+   "backlash": "two stages in series; the stepped planets must be timed",
+   "pulsation_share": "as (a) for the same materials",
+   "noise": "moderate: internal gear, 6 meshes",
+   "cost_EUR": "~600-900 (internal ring and stepped planets made one-off) [RH]",
+   "reaction": "planet pins -> carrier -> frame: 2 x the gear torque",
+   "risks": "cost, the ring's bell must reach round the planets from the counter-rotor"
+  },
+  {
+   "key": "c",
+   "name": "two belts, the second reversed (double-sided belt on its back, or an idler pair)",
+   "kinematics": "1 : -1 on average (equal tooth counts); elastic phase wobble [OC]",
+   "axial_mm": 110,
+   "radial_dia_mm": 260,
+   "radial_load_on_bodies": "the counter-rotor's pulley pulls ~120 N on its overhung end unless it gets its own frame bearing (then the counter-rotor is frame-supported)",
+   "backlash": "belt compliance; soft",
+   "pulsation_share": "small (soft belts, the bodies' inertia)",
+   "noise": "low",
+   "cost_EUR": "~300-400",
+   "reaction": "two hub loads and the motor mount",
+   "risks": "back-side drive (double-sided belt, short wrap), tooth jump in a run-up, two tensioners"
+  },
+  {
+   "key": "d1",
+   "name": "two motors, one per body, phase-locked (an electric gear)",
+   "kinematics": "1 : -1 by control; not one belt",
+   "axial_mm": 60,
+   "radial_dia_mm": 300,
+   "radial_load_on_bodies": "a hub load on each body's end",
+   "backlash": "none (control)",
+   "pulsation_share": "none through a gear; each loop sees its body's share",
+   "noise": "low",
+   "cost_EUR": "~550-700 (two drives + controller) [RH]",
+   "reaction": "each motor mount",
+   "risks": "departs from the decided single belt; a drive trip unbalances"
+  },
+  {
+   "key": "d2",
+   "name": "spur layshaft with an internal ring on the counter-rotor",
+   "kinematics": "1 : -1 for z1 z3 = z2 z4",
+   "axial_mm": 80,
+   "radial_dia_mm": 220,
+   "radial_load_on_bodies": "unbalanced: one layshaft pushes both bodies sideways (~2 F_t)",
+   "backlash": "two meshes",
+   "pulsation_share": "as (a)",
+   "noise": "moderate",
+   "cost_EUR": "~400-600",
+   "reaction": "layshaft bearings -> frame",
+   "risks": "side loads at the 0.5 mm utron gap's end"
+  },
+  {
+   "key": "d3",
+   "name": "friction (traction) bevel reverser",
+   "kinematics": "not exact: 0.5-3 % slip [RH]",
+   "axial_mm": 90,
+   "radial_dia_mm": 160,
+   "radial_load_on_bodies": "none net",
+   "backlash": "none",
+   "pulsation_share": "slip absorbs it",
+   "noise": "very low",
+   "cost_EUR": "~200-300",
+   "reaction": "roller axles -> frame",
+   "risks": "the speed split drifts; wear; the designer's 1 : -1 is not held"
+  }
+ ],
+ "bom": {
+  "rows": [
+   {
+    "group": "gear",
+    "item": "side gears, stainless 1.4305, m 2, z 30, b 12 (the wheel of a 1.5 : 1 bevel set), keyed in the hub / bolted",
+    "qty": 2,
+    "unit_EUR": 45.0,
+    "extended_EUR": 90.0,
+    "economy_EUR": 50.0,
+    "note": "economy: C45 stock gears, if the non-magnetic rule is waived this far from the utrons"
+   },
+   {
+    "group": "gear",
+    "item": "pinions, POM-C, m 2, z 20, b 12, pressed on stainless stub shafts",
+    "qty": 3,
+    "unit_EUR": 20.0,
+    "extended_EUR": 60.0,
+    "economy_EUR": 36.0,
+    "note": "catalogue or cut from rod"
+   },
+   {
+    "group": "gear",
+    "item": "pinion cartridges: stub shaft \u00d8 10, 2 x 6000-2Z, sleeve, shims",
+    "qty": 3,
+    "unit_EUR": 18.0,
+    "extended_EUR": 54.0,
+    "economy_EUR": 45.0,
+    "note": ""
+   },
+   {
+    "group": "gear",
+    "item": "gear case and bell, Al 6082, machined: 3 pinion bores at 120 deg, the locating 6205 seat, belt windows",
+    "qty": 1,
+    "unit_EUR": 140.0,
+    "extended_EUR": 140.0,
+    "economy_EUR": 80.0,
+    "note": "it is also the frame's bottom end-bearing housing; economy: a bolted plate case"
+   },
+   {
+    "group": "gear",
+    "item": "counter-rotor gear hub, Al 6082 (bolts under the re-purposed bottom spider)",
+    "qty": 1,
+    "unit_EUR": 35.0,
+    "extended_EUR": 35.0,
+    "economy_EUR": 30.0,
+    "note": "the sheet's bottom G10 spider becomes the counter-rotor's end disc (no new part)"
+   },
+   {
+    "group": "gear",
+    "item": "gear-end inner bearing 6205-2Z, at bridge ring A's outer end",
+    "qty": 1,
+    "unit_EUR": 12.0,
+    "extended_EUR": 12.0,
+    "economy_EUR": 12.0,
+    "note": "the bottom one of the bearing pair sim/tube-shaft-findings.md section 0 proposes (8 bearings); with the six-bearing option it is a seventh"
+   },
+   {
+    "group": "gear",
+    "item": "grease (POM-compatible), keys, circlips, fasteners",
+    "qty": 1,
+    "unit_EUR": 20.0,
+    "extended_EUR": 20.0,
+    "economy_EUR": 15.0,
+    "note": ""
+   },
+   {
+    "group": "drive",
+    "item": "brushless DC motor 200 W, 3000 rpm, 48 V, with driver (speed loop, ramps, current limit)",
+    "qty": 1,
+    "unit_EUR": 190.0,
+    "extended_EUR": 190.0,
+    "economy_EUR": 130.0,
+    "note": "economy: a 0.25 kW 4-pole induction motor on a 0.4 kW VFD (pulleys 24T / 56T), no DC supply"
+   },
+   {
+    "group": "drive",
+    "item": "48 V DC supply, 300 W",
+    "qty": 1,
+    "unit_EUR": 45.0,
+    "extended_EUR": 45.0,
+    "economy_EUR": 0.0,
+    "note": "none with the VFD"
+   },
+   {
+    "group": "drive",
+    "item": "HTD 5M belt, 15 mm, 750 mm (150 teeth)",
+    "qty": 1,
+    "unit_EUR": 15.0,
+    "extended_EUR": 15.0,
+    "economy_EUR": 15.0,
+    "note": ""
+   },
+   {
+    "group": "drive",
+    "item": "pulleys HTD 5M: 20T (motor) and 80T (machine, taper bush)",
+    "qty": 1,
+    "unit_EUR": 60.0,
+    "extended_EUR": 60.0,
+    "economy_EUR": 50.0,
+    "note": "15 + 45"
+   },
+   {
+    "group": "drive",
+    "item": "motor plate with tensioning slots",
+    "qty": 1,
+    "unit_EUR": 30.0,
+    "extended_EUR": 30.0,
+    "economy_EUR": 20.0,
+    "note": ""
+   },
+   {
+    "group": "frame",
+    "item": "base plate, 20 mm, machined seats for the case and the motor plate",
+    "qty": 1,
+    "unit_EUR": 120.0,
+    "extended_EUR": 120.0,
+    "economy_EUR": 80.0,
+    "note": ""
+   },
+   {
+    "group": "frame",
+    "item": "three columns, aluminium extrusion 45 x 45, ~1.2 m",
+    "qty": 3,
+    "unit_EUR": 25.0,
+    "extended_EUR": 75.0,
+    "economy_EUR": 60.0,
+    "note": ""
+   },
+   {
+    "group": "frame",
+    "item": "top plate with the floating top end-bearing housing (6205)",
+    "qty": 1,
+    "unit_EUR": 90.0,
+    "extended_EUR": 90.0,
+    "economy_EUR": 60.0,
+    "note": ""
+   },
+   {
+    "group": "frame",
+    "item": "levelling feet, brackets, fasteners",
+    "qty": 1,
+    "unit_EUR": 30.0,
+    "extended_EUR": 30.0,
+    "economy_EUR": 20.0,
+    "note": ""
+   }
+  ],
+  "options": [
+   {
+    "group": "gear",
+    "item": "friction torque limiter (slip hub) under the counter-rotor's side gear, set ~6 N m",
+    "qty": 1,
+    "unit_EUR": 80.0,
+    "note": "protects the gear and the bodies in a rub at the 0.5 mm gap"
+   }
+  ],
+  "totals_EUR": {
+   "gear": 411.0,
+   "drive": 340.0,
+   "frame": 315.0
+  },
+  "total_EUR": 1066.0,
+  "economy_totals_EUR": {
+   "gear": 268.0,
+   "drive": 215.0,
+   "frame": 220.0
+  },
+  "economy_total_EUR": 703.0,
+  "sheet_EUR": {
+   "gear": 250.0,
+   "drive": 250.0,
+   "frame": 300.0
+  },
+  "sheet_total_EUR": 800.0,
+  "extra_elsewhere": "~150 mm more shaft below the old end slot (+18 at the sheet's 120 /m); the sheet's six G10 spiders stay six (the bottom one becomes the counter-rotor's end disc)"
+ }
+}
