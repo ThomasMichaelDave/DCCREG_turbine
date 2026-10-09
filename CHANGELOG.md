@@ -33,6 +33,29 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - **Unchanged:** C, κ, z, the clamped powers, and the sector search's ranking (`finish()` checks it).
 
 ### Physics
+- **The rings' record is the symmetric supply** (the designer's choice, 2026-10-09: "if it pumps against the core
+  centre, yes"; `sim/hub_rings_build.py`, `sim/hub-rings-build-findings.md` §4, `docs/rings-design.md`).
+  - **The supply:** each ring on its own two-stage Cockcroft-Walton chain from the shaft, ring A on node 1 (−14.96 kV)
+    and ring B on node 4 (+14.96 kV). There is no Dk and no C_A; the null sits at the shaft's potential by symmetry.
+  - **The bands:** 26.25–55.71° (were 25.75–57.7°), beads Ø3 / Ø2 mm, 29.9 mm apart along the glass at 1.00 kV/mm.
+  - **At the null:** 7.10 kV/cm and 2.23 Pa (were 6.93 kV/cm and 2.13 Pa).
+  - **The beads in the gel:** 4.85 / 4.36 kV/mm against 5. The equatorial bead reads 4.46 at half the cell.
+  - **The parts:** eight chain diodes at 7.5 kV reverse; eight 100 pF capacitors, Co1 at 13.2 kV and Coa1 at 5.7 kV DC.
+  - **The pump:** start-up gain z 1.191 (was 1.180), belt 2.14 W.
+  - **The search:** the build searches both families, `mirror` (one to four stages a side) and `stacked`. It takes the
+    record from the designer's family (`RECORD_FAMILY`) and keeps each family's best per pair of ratings
+    (`best_by_family`).
+    - At 2 / 8 kV/mm, 4 + 4 reaches 13.38 kV/cm. At 1 / 8 the stacked family still gives a little more (7.97 against
+      7.80).
+- **The field does not swing from A to B** (the designer's question; `sim/hub_drift.py` swing, now with the pump's
+  nodes):
+  - it is DC from B to A, and the pressure holds its maximum all the time;
+  - ring A tops up as node 1 bottoms, and ring B 1.03 ms later as node 4 peaks, so their 34 / 29 V p-p ripples mostly
+    add: 0.014 kV/cm p-p (0.19 %) at the null.
+  - A swing from A to B would need AC on the rings: about ±1.8 kV/cm, 0.14 Pa at the peaks [OC estimate].
+- **The bench predictions for the record:**
+  - start-up: 95 % in 0.24 s;
+  - drift: 7.10 → 7.78 (1 h) → 7.82 kV/cm (6 h), PEEK and gel at 25 °C, half-way at 13 min.
 - **The rings' supply, symmetric against asymmetric** (the designer's question, 2026-10-09; `sim/hub_rings_symmetric.py`,
   `sim/hub-rings-build-findings.md` §4).
   - **Why the record is asymmetric:** the pump's nodes 1 and 4 are twins, both between −13.2 and −5.7 kV.
@@ -44,8 +67,8 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
       capacitors.
     - **Why:** both rings sit at the 15 kV the polar beads hold, where the record's ring A stays at 13.2.
     - **With the gel qualified to 8 kV/mm,** the record's stacked kind wins.
-  - **The record is unchanged** pending the designer's choice. I had written that a mirror circuit gives less; it gives
-    less per part, not less field.
+  - **The record was left unchanged** pending the designer's choice, since made (the entry above). I had written that a
+    mirror circuit gives less; it gives less per part, not less field.
 - **The rings as built: the edges set the stages** (designer's brief 2026-10-09; `sim/hub_rings_build.py`,
   `sim/hub-rings-build-findings.md`, `docs/figures/hub-rings-build.png`, `presets/hub-locked.json`).
   - **The retainer:** unfilled PEEK, machined with a 0.5 mm pocket over the glass, filled void-free with silicone gel;
@@ -306,6 +329,38 @@ Format adapted from [Keep a Changelog](https://keepachangelog.com/). Git holds t
   - that is fine for diodes only, but not for the spark-gap dump: its 21 A pulses need a brush.
 
 ### Docs
+- **The rings' design documentation** (`docs/rings-design.md`): the geometry and dimensions, the materials, the
+  supply and its parts with ratings, the fields, the start-up, ripple and drift, the build steps, and the open items.
+  - It proposes splitting the retainer at the equatorial plane, which the symmetric supply holds at 0 V [OC].
+- **The rings' manufacturing drawing DCCREG-HUB-201** (`docs/drawings/`, generator `docs/make_rings_drawing.py`):
+  - A: the half-section at 2:1;
+  - B, C: the polar and equatorial beads in their grooves at 5:1;
+  - D: one gore flat at 4:1;
+  - the feature table and the build notes, all from the record.
+- **The field drawings** (`docs/figures/hub-rings-field.png`, generator `docs/make_rings_field_figure.py`):
+  - the section with the field's magnitude, the equipotentials and the field lines;
+  - the field and the pressure along the axis and across the equator;
+  - ring B's beads from the local solves.
+- **The supply's schematic** (`docs/schematic-rings-supply.svg` / `.png`, generator
+  `docs/make_rings_supply_schematic.py`): both mirrored chains stage by stage, each capacitor's DC and each diode's
+  reverse peak, the hub with the AH cores at REF, and the parts.
+- **The rotor schematic's panel (b)** draws ring A's mirrored chain (Coa, Dca, Dpa, Csa) in place of Dk and C_A. The
+  bearing's label moves clear of ring B's chain.
+- **The bench figure's ripple panel** (`docs/make_hub_bench_figure.py`) is three charts on one time axis, with no twin
+  axis: the pump's nodes 1 and 4, the rings about their DC, and the field, with the top-ups marked.
+- **The build figure** (`docs/make_hub_rings_build_figure.py`):
+  - (b) by family: symmetric, stacked, ring B only;
+  - (c) without its twin axis: reference lines where a 15 / 20 / 25 kV ring holds 5 kV/mm;
+  - (e) the symmetric family's best against the stacked family's.
+- **The cost sheet takes ring A's feed** (Inputs `A_FEED`: 2, its own chain, the default; 1, Dk) (`docs/cost/README.md`):
+  - **feed 2:** the voltage is the two chains' outputs, with no V_op term, no Dk and no C_A; ring A takes 0–6 stages
+    with ring B's factors;
+  - **feed 1:** ring A takes 0–2 stages. Inputs checks the count, and no design qualifies outside it;
+  - **the field per kV** is the record's 0.2373.
+  - **The cheapest build** is 6,001 against 5,951 on the asymmetric supply (three more diodes and capacitors); the
+    best per watt is 506 per W.
+- **`presets/hub-locked.json` rings:** the symmetric record, DECIDED (designer, 2026-10-09).
+  `docs/bench-test-rings.md` carries its numbers.
 - **The rotor schematic's panel (b) shows the floating cones:** Cca / Ccb from nodes 1 / 4, no path from the core to
   REF, and the swinging E.
 - **The cost sheet takes a core field mode** (Inputs: 2 swinging, the default, or 1 steady):

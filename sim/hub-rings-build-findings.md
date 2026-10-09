@@ -4,7 +4,10 @@
 - **the build:** `sim/hub_rings_build.py` → `sim/hub_rings_build_results.json`;
 - **the supply:** `sim/core_field.py` dc, now with ring A's own negative chain (`n_cw_a`);
 - **the bench predictions:** `sim/hub_drift.py` → `sim/hub_drift_results.json`;
-- **the figures:** `docs/figures/hub-rings-build.png` and `docs/figures/hub-bench-predictions.png`;
+- **the figures:** `docs/figures/hub-rings-build.png`, `docs/figures/hub-bench-predictions.png` and the record's
+  field, `docs/figures/hub-rings-field.png`;
+- **the design documentation:** `docs/rings-design.md`, the drawing `docs/drawings/DCCREG-HUB-201` and the supply's
+  schematic `docs/schematic-rings-supply`;
 - **the test plan:** `docs/bench-test-rings.md`;
 - **the spec:** `presets/hub-locked.json`, now carrying the build's record and materials.
 
@@ -15,7 +18,10 @@
 3. the leakage: "no idea how to judge";
 4. "set up the bench test if possible. I expect the field to swing, with the power supplies";
 5. and: "the multipliers can be added accordingly. we can go multistage as long as the rings's separation can hold it
-   before breaking down onto eachother".
+   before breaking down onto eachother";
+6. then, on the symmetric supply (§4): "Do I want to symmetric situation? If it "pumps" against the core centre, yes!
+   Create the design documentation and the field drawings and schematics. The field from A to B side swings now if I'm
+   not mistaken. correct? The maximum pressure but at the swing of the pump from A to B."
 
 **In short:**
 - **The retainer:** unfilled PEEK, with a 0.5 mm pocket over the glass filled void-free with silicone gel, and the G10
@@ -23,10 +29,16 @@
 - **The copper:** beads at the foil's edges, Ø3 mm at the polar edges and Ø2 mm at the equatorial edges.
 - **The leakage:** about 100 GΩ per ring, set by the multiplier's own parts.
 - **The stages:** the rings' separation is not what limits them; the beads in the gel are. Each polar bead faces the
-  AH coil's end across the PEEK seat. At the design ratings this gives **two stages on ring B: 28.2 kV across, 6.9 kV/cm
-  at the null**.
-- **More stages:** they pay only if the bench qualifies higher ratings. Six stages (two on ring A, four on ring B)
-  reach 13.3 kV/cm at 2 kV/mm along the glass and 8 kV/mm in the gel.
+  AH coil's end across the PEEK seat.
+- **The record: the symmetric supply** (the designer's choice, 2026-10-09). Each ring sits on its own two-stage chain
+  from the shaft, ring A on node 1 and ring B on node 4. That gives **−15.0 / +15.0 kV, 29.9 kV across, 7.10 kV/cm and
+  2.23 Pa at the null**, with the null at the shaft's potential.
+  - The bands run 26.25–55.71°, with Ø3 / Ø2 mm beads (§4, the record).
+  - It replaces the asymmetric record: ring A on node 1's peak through Dk, ring B on two stages (28.2 kV, 6.93 kV/cm).
+- **The field does not swing from A to B.** It is DC from B to A, and the pressure holds its maximum all the time. The
+  pump's 120 Hz ripple moves it 0.19 % p-p (§4, §5).
+- **More stages:** they pay only if the bench qualifies higher ratings. Eight stages (four a side) reach 13.4 kV/cm at
+  2 kV/mm along the glass and 8 kV/mm in the gel.
 - **A correction:** the lock-down's record (three stages, 20–53°, 7.8 kV/cm) never had its edges checked. Its polar
   beads would run at 7.7 kV/mm in the gel.
 
@@ -88,15 +100,15 @@
   and a bigger bead comes closer to it. Its peak sits on the bead's top, toward the AH.
   - At 20° from the axis it runs about 4.1 kV/mm in the gel per 10 kV on the ring (Ø2 mm bead), falling to 2.6 at
     40°.
-  - So a ring at 15 kV needs its polar edge at 25.75° or more, with a Ø3 mm bead.
+  - So a ring at 15 kV needs its polar edge at about 26° or more, with a Ø3 mm bead (26.25° on the record).
 - **The lock-down's record is therefore not buildable** at 5 kV/mm in the gel: its polar beads would run at 7.75 kV/mm.
-- **The beads of record:**
-  - **Ø3 mm at the polar edges:** 4.99 kV/mm in the gel, at the limit by design;
-  - **Ø2 mm at the equatorial edges:** 4.23 kV/mm, about 4.4 converged.
-- **The local solve's convergence** (`convergence` in the results):
-  - **Ø3 mm beads:** converged (no change at half the cell, −0.6 % with the box 1.5× as large);
-  - **Ø2 mm beads:** read about 2.5 % low at the base cell. This affects the record's equatorial bead (13 % under its
-    limit) and the qualified designs' Ø2 mm beads.
+- **The beads of record** (the symmetric supply; both rings alike, mirrored):
+  - **Ø3 mm at the polar edges:** 4.85 kV/mm in the gel, under the limit by 3 %;
+  - **Ø2 mm at the equatorial edges:** 4.36 kV/mm, 4.46 at half the cell.
+- **The local solve's convergence** (`convergence` in the results, at the record's beads):
+  - **Ø3 mm beads:** converged (no change at half the cell, +0.2 % with the box 1.5× as large);
+  - **Ø2 mm beads:** read 2.4 % low at the base cell (−0.3 % with the box 1.5×). The record's equatorial bead is still
+    11 % under its limit; the qualified designs' Ø2 mm beads carry the same small bias.
 - **The fired-on coating later:** a fired film's edge is thin too. It needs the same beads (a wire ring soldered or
   fired on), or a resistive grading toward the pole (§ Open).
 
@@ -131,7 +143,10 @@
 | 6 stages | +19.97 | +40.07 | +44.58 |
 
 - **At 10 GΩ** more stages stop helping above four. **At the estimate** each stage adds 5–7.5 kV up to six.
-- **The diodes stay at 7.5 kV reverse at most**, and the pump's start-up gain at 1.180.
+- **The mirror pair's chains,** at the estimate: ±7.52 / ±14.96 / ±22.17 / ±28.94 kV on one to four stages a side. That
+  is ring B's own sag on each side.
+- **The diodes stay at 7.5 kV reverse at most.** The pump's start-up gain is 1.180 on ring B's chain alone and 1.191
+  on the mirror pair of record.
 
 ## 4. How many stages the rings hold
 - **The limits** [RH: the ratings, presets ratings]:
@@ -149,12 +164,13 @@
   - **the bands:** each design's bands from tables of the field at the null and of both edges.
   - **The edge tables:** the hub solved per mode and superposed per supply; ring A's edge is ring B's mirror.
   - **The check:** the best of each pair solved again directly, with the polar edge stepped out where needed.
-- **At the design ratings** (1 kV/mm along the glass, 5 kV/mm in the gel):
+- **At the design ratings** (1 kV/mm along the glass, 5 kV/mm in the gel), the stacked family (ring A on node 1's
+  peak through Dk, chains on top; the asymmetric supply, the record until the symmetric one below):
 
 | supply | across | bands | beads (polar / eq.) | at the null |
 |:--|--:|:--|:--|--:|
 | ring B on 1 | 20.7 kV | 22.5–66.2° | Ø2 / Ø2 mm | 5.6 kV/cm |
-| **ring B on 2 (the record)** | **28.2 kV** | **25.75–57.7°** | **Ø3 / Ø2 mm** | **6.9 kV/cm** |
+| **ring B on 2 (the asymmetric record)** | **28.2 kV** | **25.75–57.7°** | **Ø3 / Ø2 mm** | **6.9 kV/cm** |
 | ring A on 1 + B on 1 | 28.2 kV | 34.0–57.7° | Ø3 / Ø3 mm | 6.3 kV/cm |
 | ring B on 3 | 35.4 kV | 39.0–49.4° | Ø3 / Ø3 mm | 6.3 kV/cm |
 | ring A on 1 + B on 2 | 35.7 kV | 35.0–49.1° | Ø3 / Ø3 mm | 6.85 kV/cm |
@@ -162,28 +178,22 @@
 
 - **More stages lose at the design ratings:** each needs the polar beads further from the pole and a longer gap,
   and the bands left between them shrink faster than the DC grows.
-- **The ratings to qualify** (best_edges; solved directly):
+- **The ratings to qualify,** the stacked family (`best_by_family`; solved directly):
 
 | ratings (interface / gel at a bead) | supply | across | bands | beads | at the null |
 |:--|:--|--:|:--|:--|--:|
-| **1 / 5 kV/mm (the record)** | **ring B on 2** | **28.2 kV** | **25.75–57.7°** | **Ø3 / Ø2 mm** | **6.93 kV/cm, 2.1 Pa** |
+| **1 / 5 kV/mm** | **ring B on 2 (the asymmetric record)** | **28.2 kV** | **25.75–57.7°** | **Ø3 / Ø2 mm** | **6.93 kV/cm, 2.1 Pa** |
 | 1 / 8 | ring A on 1 + B on 2 | 35.7 kV | 22.0–49.1° | Ø2 / Ø2 mm | 7.97 kV/cm, 2.8 Pa |
 | 2 / 5 | ring B on 2 | 28.2 kV | 25.5–73.9° | Ø3 / Ø4 mm | 7.91 kV/cm, 2.8 Pa |
 | 2 / 8 | ring A on 2 + B on 4 | 56.9 kV | 30.75–57.4° | Ø3 / Ø3 mm | 13.25 kV/cm, 7.8 Pa |
 
 - **The answer to "go multistage as long as the separation holds":**
-  - **Today:** at the ratings that can be designed to, the rings hold two stages, on ring B. Ring A stays on node 1's
-    peak, as before.
-  - **Six stages** (13.3 kV/cm, 1.9× the record) need both ratings qualified higher: 2 kV/mm along the glass and
-    8 kV/mm in the gel.
-  - **One higher rating alone** gains about 15 %.
+  - **Today:** at the ratings that can be designed to, the rings hold two stages a side on the symmetric supply (the
+    record, below). On the asymmetric supply they held two, on ring B.
+  - **Eight stages, four a side** (13.4 kV/cm, 1.9× the record), need both ratings qualified higher: 2 kV/mm along the
+    glass and 8 kV/mm in the gel.
+  - **One higher rating alone** gains 10–18 %.
   - The bench's first phase settles which row is built (`docs/bench-test-rings.md`).
-- **The record's checks:**
-  - **the AH:** ring B's average field to the AH cores is 1.8 kV/mm;
-  - **the diodes:** 7.5 kV reverse at most;
-  - **the strays:** 5.3 pF to REF and 1.3 pF between the rings;
-  - **the start-up:** z 1.180;
-  - **the ripple:** ring B 29 V p-p.
 
 ### Why the supply is asymmetric, and the symmetric one (the designer's question, 2026-10-09)
 `sim/hub_rings_symmetric.py` → `sim/hub_rings_symmetric_results.json`.
@@ -207,7 +217,7 @@
 | **1 / 5 kV/mm (design)** | **ring B on 2: −13.2 / +15.0 kV, 28.2 kV across, 6.93 kV/cm; 5 diodes, 5 capacitors** | **2 + 2: ±15.0 kV, 29.9 kV across, bands 26.25–55.7°, beads Ø3 / Ø2 mm: 7.10 kV/cm; 8 diodes, 8 capacitors** |
 | 2 / 5 | ring B on 2: 7.91 kV/cm | 2 + 2: 8.35 kV/cm (beads Ø3 / Ø4 mm) |
 | 1 / 8 | ring A on 1 + B on 2: 7.97 kV/cm | 3 + 3: 7.80 kV/cm |
-| 2 / 8 | ring A on 2 + B on 4: 13.25 kV/cm | 3 + 3: 11.84 kV/cm (the mirror pair was run to three a side) |
+| 2 / 8 | ring A on 2 + B on 4: 13.25 kV/cm | 3 + 3: 11.84 kV/cm (this study ran the mirror pair to three a side; the build runs it to four: 4 + 4, 13.38 kV/cm) |
 
 - **At the gel's design rating the mirror pair wins, by 2.5 % (5.6 % at 2 / 5):** the polar beads hold each ring to
   about 15 kV from the shaft. The mirror pair puts both rings at 15.0 kV; the record's ring A sits at 13.2 kV, under
@@ -216,7 +226,52 @@
     gain rises to 1.191 (record 1.180).
 - **With the gel qualified higher, the record's kind wins:** Dk's free 13.2 kV lets the stacked supplies reach more
   voltage per part.
-- **The record stays as it is** until the designer chooses.
+- **The designer chose the symmetric supply** (2026-10-09): "if it pumps against the core centre, yes". It is the
+  record now (below).
+
+### The record: the symmetric supply (2026-10-09)
+`sim/hub_rings_build.py` searches both families: `stacked` (Dk and chains) and `mirror` (`a_ref="shaft"`, one to
+four stages a side). It takes the record from the designer's family (`RECORD_FAMILY`) at the design ratings, and
+keeps each family's best per pair of ratings (`best_by_family`).
+
+| ratings (interface / gel at a bead) | the mirror pair | across | bands | beads | at the null |
+|:--|:--|--:|:--|:--|--:|
+| **1 / 5 kV/mm (the record)** | **2 + 2** | **29.9 kV** | **26.25–55.71°** | **Ø3 / Ø2 mm** | **7.10 kV/cm, 2.23 Pa** |
+| 1 / 8 | 3 + 3 | 44.3 kV | 24.0–39.2° | Ø3 / Ø2 mm | 7.80 kV/cm, 2.69 Pa |
+| 2 / 5 | 2 + 2 | 29.9 kV | 25.5–72.9° | Ø3 / Ø4 mm | 8.35 kV/cm, 3.09 Pa |
+| 2 / 8 | 4 + 4 | 57.9 kV | 30.75–56.8° | Ø3 / Ø3 mm | 13.38 kV/cm, 7.92 Pa |
+
+- **At the design ratings:**
+  - one stage a side gives ±7.5 kV and about 4.4 kV/cm (bands 20–73°);
+  - three or more a side leave no band between the polar beads and the gap.
+- **"It pumps against the core centre":** yes.
+  - The null sits at the shaft's potential, 0 V. No wire holds it there: the hub is mirror-symmetric, and ring A is
+    ring B's negative [OC].
+  - Each chain stands on the shaft and pumps its ring 15 kV away from it: ring B up on node 4's swing, ring A down on
+    node 1's.
+  - So each ring is as far from the AH cores (at REF) as the polar beads allow, and neither carries more than half
+    the DC.
+- **The record's checks** (`record`, `record_supply`):
+  - **the AH:** each ring's average field to the AH cores is 1.81 kV/mm;
+  - **the diodes:** all eight chain diodes at 7.5 kV reverse, and the pump's D3 / D4 at 13.2 kV as before;
+  - **the capacitors:** eight, 100 pF / 30 kV. Each holds a stage's 7.5 kV, except Co1 at 13.2 kV and Coa1 at 5.7 kV,
+    because nodes 4 and 1 sit at −8.6 kV mean;
+  - **the strays:** 5.1 pF to REF and 1.1 pF between the rings;
+  - **the pump:** start-up gain z 1.191, belt 2.14 W, leakage 4.5 mW;
+  - **the parts:** no Dk and no C_A.
+- **"The field from A to B swings now ... correct?":** no. The field at the null is DC and points from B to A at
+  7.10 kV/cm, and the pressure holds its maximum, 2.23 Pa, all the time.
+  - **The ripple** (`sim/hub_drift.py` swing):
+    - ring A 34 V and ring B 29 V p-p at 120 Hz;
+    - ring A tops up as node 1 bottoms (at 0.375 of the cycle), and ring B as node 4 peaks, 0.124 of a cycle
+      (1.03 ms) later;
+    - so the ripples mostly add: 57 V p-p across the 29.9 kV, 0.014 kV/cm p-p (0.19 %) at the null.
+  - **A field that swings from A to B** needs AC on the rings: the rings on coupling capacitors, following nodes 1 and
+    4, as the floating cones did (`sim/core-field-findings.md`).
+    - On the record's bands that would be about ±1.8 kV/cm at 120 Hz (V(4) − V(1) swings ±7.4 kV), so the pressure
+      peaks at about 0.14 Pa twice a cycle and falls to zero between.
+    - Floating electrodes also cost the pump gain: z 1.23 with the floating cones, against 1.31 bare.
+    - [OC] estimate: the record's k on the pump's swing; not simulated with the rings.
 
 ## 5. The bench test, and what the field should do
 - **The plan:** `docs/bench-test-rings.md`:
@@ -225,16 +280,19 @@
   - (3) the DC drift on lab supplies;
   - (4) the rings on the pump's own supply.
 - **The probe:** an electro-optic BGO sensor on a fibre, along the axis through a pumping tube at one pole.
-- **What the field at the null should do** (`sim/hub_drift.py`, the record):
-  - **the start-up:** 95 % in 0.22 s (27 cycles) from the seed;
-  - **the 120 Hz swing:** 0.009 kV/cm p-p on 6.93 (0.13 %). With the DC supply, the multiplier smooths the pump's
-    swing almost completely. The AH's ampere-turns swing 5.9 % p-p with 22 mF across each coil.
-  - **the drift:** with the rings held at their DC, 6.93 kV/cm at switch-on, 7.54 at 1 h, 7.57 at 6 h (+9 %),
-    half-way at 12 min. The leakage moves the potential along the glass and through the gel and the PEEK, from the
-    electrostatic toward the conduction-settled state [OC]. The other materials bracket it: PEI +14 %, G10 +1 %
-    (its σ/ε matches the glass's), PEEK at 40 °C +12 % in a quarter of the time.
+- **What the field at the null should do** (`sim/hub_drift.py`, the record: the symmetric supply):
+  - **the start-up:** 95 % in 0.24 s (29 cycles) from the seed;
+  - **the 120 Hz ripple:** 0.014 kV/cm p-p on 7.10 (0.19 %). With the DC supply, the chains smooth the pump's swing
+    almost completely. The AH's ampere-turns swing 5.9 % p-p with 22 mF across each coil.
+  - **the drift:** with the rings held at their DC, 7.10 kV/cm at switch-on, 7.41 at 10 min, 7.78 at 1 h and 7.82 at
+    6 h (+10 %), half-way at 13 min. The leakage moves the potential along the glass and through the gel and the
+    PEEK, from the electrostatic toward the conduction-settled state [OC].
+    - The other materials bracket it: PEI +16 %, G10 +1 % (its σ/ε matches the glass's), and PEEK at 40 °C +14 % in
+      a quarter of the time.
+    - Without the gel (air gaps): 6.99 → 7.65.
+  - The asymmetric record read 6.93 → 7.57 kV/cm, 0.009 kV/cm p-p.
 - **"I expect the field to swing, with the power supplies":** the designer meant the ripple on the DC (2026-10-09).
-  With the DC on the rings it is 0.13 %: 0.009 kV/cm p-p on 6.93 at 120 Hz. The bench's phase 4 measures it.
+  On the symmetric supply it is 0.19 %: 0.014 kV/cm p-p on 7.10 at 120 Hz. The bench's phase 4 measures it.
 
 ## 6. What changes
 - **`presets/hub-locked.json`:**
@@ -245,12 +303,21 @@
   - `sim/hub_rings_build.py` reads its materials, ratings and leakage from it.
 - **`sim/hub_locked.py`:** keeps the lock-down's placeholder ε 4.7 (`EPS_RET_LOCKDOWN`), so its results stand as the
   lock-down's study.
-- **`sim/core_field.py`:** ring A's negative chain (`n_cw_a`); every earlier deck is unchanged.
-- **The schematic's panel (b):** ring B on two stages.
+- **`sim/core_field.py`:** ring A's negative chain (`n_cw_a`), and with `a_ref="shaft"` its own chain from the shaft
+  (the mirror pair); every earlier deck is unchanged.
+- **`sim/hub_rings_build.py`:** the mirror family alongside the stacked one, and the record from the designer's
+  family. **`sim/hub_drift.py`:** the record's supply as built, and the pump's nodes in the ripple run.
+- **The schematics:**
+  - panel (b) of `docs/schematic-rotor-circuits`: the two mirrored chains;
+  - `docs/schematic-rings-supply`: the supply in full, every stage with its DC and its diodes' reverse peaks.
+- **The drawings:**
+  - `docs/drawings/DCCREG-HUB-201`, the rings for manufacture;
+  - `docs/figures/hub-rings-field.png`, the record's field.
+- **The design documentation:** `docs/rings-design.md`.
 - **The cost sheet:**
-  - the multiplier's stages and ring A's chain;
+  - the multiplier's stages and ring A's chain, with ring A's feed (2: its own chain, the record; 1: Dk);
   - the sag factors at 100 GΩ;
-  - the rings' field per kV;
+  - the rings' field per kV (0.2373);
   - the retainer and the gel in the BOM.
 
 ## Caveats

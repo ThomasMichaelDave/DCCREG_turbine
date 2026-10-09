@@ -13,16 +13,17 @@ The test measures them in that order. The ratings come first because they decide
 **Sources of the predictions:**
 - `sim/hub_drift.py` → `sim/hub_drift_results.json` (the drift, the swing, the start-up);
 - `sim/hub_rings_build.py` → `sim/hub_rings_build_results.json` (the record and the alternatives);
-- the figure: `docs/figures/hub-bench-predictions.png`;
+- the figures: `docs/figures/hub-bench-predictions.png` and the record's field, `docs/figures/hub-rings-field.png`;
+- the design and the drawing: `docs/rings-design.md`, `docs/drawings/DCCREG-HUB-201`;
 - the findings: `sim/hub-rings-build-findings.md`.
 
 **The record under test** (`presets/hub-locked.json` rings):
-- **the bands:** 0.1 mm copper foil on the glass, 25.75–57.7° from the axis, 28.2 mm apart along the glass;
+- **the bands:** 0.1 mm copper foil on the glass, 26.25–55.71° from the axis, 29.9 mm apart along the glass;
 - **the beads:** Ø3 mm at the polar edges, Ø2 mm at the equatorial edges;
 - **the retainer:** unfilled PEEK with a 0.5 mm gel-filled pocket, and the G10 coupler outside;
-- **the supply:** ring A at −13.2 kV (node 1's peak through Dk) and ring B at +15.0 kV (two Cockcroft-Walton stages
-  on node 4), 28.2 kV across;
-- **at the null:** 6.93 kV/cm as connected.
+- **the supply, symmetric:** ring A at −15.0 kV on its own two-stage Cockcroft-Walton chain from the shaft on node
+  1, ring B at +15.0 kV on the mirror chain on node 4; 29.9 kV across, the null at the shaft's potential;
+- **at the null:** 7.10 kV/cm and 2.23 Pa as connected, DC from B to A.
 
 ## 1. The test hub
 - **The vessel:**
@@ -76,17 +77,18 @@ The test measures them in that order. The ratings come first because they decide
   - **the test:** ramp to breakdown;
   - **the gel's rating at a bead:** half the lowest [RH].
 - **(c) The sphere:**
-  - Hold the record's DC (−13.2 / +15.0 kV) for 1 h, then 1.25× it (−16.5 / +18.7 kV) for 1 h.
+  - Hold the record's DC (−15.0 / +15.0 kV) for 1 h, then 1.25× it (−18.7 / +18.7 kV) for 1 h.
   - Partial discharge must stay below the 10 pC threshold.
   - On a sacrificial build, optionally ramp to flashover.
-- **What it decides** (`sim/hub_rings_build_results.json` best_edges):
+- **What it decides** (`sim/hub_rings_build_results.json` best_by_family; the symmetric supply, the designer's
+  family, with the asymmetric family's best for comparison):
 
-| ratings qualified (interface / gel at a bead) | stages | across the rings | bands | beads (polar / eq.) | at the null |
-|:--|:--|--:|:--|:--|--:|
-| **1 / 5 kV/mm (the record)** | **ring B on 2** | **28.2 kV** | **25.8–57.7°** | **Ø3 / Ø2 mm** | **6.9 kV/cm** |
-| 1 / 8 | ring A on 1 (negative) + ring B on 2 | 35.7 kV | 22.0–49.1° | Ø2 / Ø2 mm | 8.0 kV/cm |
-| 2 / 5 | ring B on 2 | 28.2 kV | 25.5–73.9° | Ø3 / Ø4 mm | 7.9 kV/cm |
-| 2 / 8 | ring A on 2 (negative) + ring B on 4 | 56.9 kV | 30.8–57.4° | Ø3 / Ø3 mm | 13.3 kV/cm |
+| ratings qualified (interface / gel at a bead) | stages a side | across the rings | bands | beads (polar / eq.) | at the null | asymmetric best |
+|:--|:--|--:|:--|:--|--:|--:|
+| **1 / 5 kV/mm (the record)** | **2 + 2** | **29.9 kV** | **26.25–55.7°** | **Ø3 / Ø2 mm** | **7.10 kV/cm** | 6.93 |
+| 1 / 8 | 3 + 3 | 44.3 kV | 24.0–39.2° | Ø3 / Ø2 mm | 7.80 kV/cm | 7.97 |
+| 2 / 5 | 2 + 2 | 29.9 kV | 25.5–72.9° | Ø3 / Ø4 mm | 8.35 kV/cm | 7.91 |
+| 2 / 8 | 4 + 4 | 57.9 kV | 30.75–56.8° | Ø3 / Ø3 mm | 13.38 kV/cm | 13.25 |
 
 - **Then:** set the measured ratings in `presets/hub-locked.json` (ratings) and re-run `sim/hub_rings_build.py`. The
   table above is that run at the four pairs.
@@ -102,34 +104,34 @@ The test measures them in that order. The ratings come first because they decide
   - **the rings' own insulation:** about 200 TΩ, under 0.1 nA at 15 kV;
   - **the parts:** about 3e11 Ω per stage in the diodes and 5e11 Ω in the capacitors;
   - **in all:** 158 GΩ per ring, and at least the 100 GΩ estimate.
-- **If less:** the multiplier sags. At 10 GΩ the two stages give +14.2 kV instead of +15.0, and more stages stop
-  helping above four.
+- **If less:** the chains sag. At 10 GΩ two stages give about ±14.2 kV instead of ±15.0 (ring B's chain), and more
+  stages stop helping above four.
   - Set the measured value in `presets/hub-locked.json` (rings_leakage) and re-run.
 
 ### Phase 3: the DC drift on lab supplies
 - **The run:**
-  - switch both rings on together (within a second) to −13.2 / +15.0 kV;
+  - switch both rings on together (within a second) to −15.0 / +15.0 kV;
   - record the field at the null for 6 h at 25 °C;
   - ground both rings and record the return;
   - repeat at 40 °C.
 - **Expect** (sim/hub_drift.py; PEEK retainer, gel, 25 °C):
-  - **the rise:** 6.93 kV/cm at switch-on, 7.22 at 10 min, 7.54 at 1 h, 7.57 at 6 h (+9 %);
-  - **the times:** half-way at 12 min and 90 % at 47 min; two exponentials fit it, τ ≈ 8 and 23 min;
-  - **the return:** grounding the settled rings leaves the field at the null at +0.64 kV/cm (the settled minus the
+  - **the rise:** 7.10 kV/cm at switch-on, 7.41 at 10 min, 7.78 at 1 h, 7.82 at 6 h (+10 %);
+  - **the times:** half-way at 13 min and 90 % at 48 min; two exponentials fit it, τ ≈ 8 and 23 min;
+  - **the return:** grounding the settled rings leaves the field at the null at +0.72 kV/cm (the settled minus the
     connected field), decaying with the same times. This checks that the drift is linear charging of the insulators.
-  - **At 40 °C** (the glass five times as conductive): 7.78 kV/cm, half-way at 3.4 min.
+  - **At 40 °C** (the glass five times as conductive): 8.08 kV/cm, half-way at 3.5 min.
 - **The other cases bracket the materials:**
 
 | case | switch-on | 10 min | 1 h | 6 h | half-way |
 |:--|--:|--:|--:|--:|--:|
-| **PEEK retainer, gel, 25 °C (the design)** | **6.93** | **7.22** | **7.54** | **7.57 kV/cm** | **12 min** |
-| PEI retainer, gel, 25 °C | 6.93 | 7.26 | 7.79 | 7.91 | 19 min |
-| G10 retainer, gel, 25 °C | 6.93 | 6.99 | 7.01 | 7.01 | 5 min |
-| PEEK retainer, gel, 40 °C glass | 6.93 | 7.63 | 7.78 | 7.78 | 3.4 min |
-| PEEK retainer, no gel (air in the pocket), 25 °C | 6.83 | 7.07 | 7.38 | 7.42 | 14 min |
+| **PEEK retainer, gel, 25 °C (the design)** | **7.10** | **7.41** | **7.78** | **7.82 kV/cm** | **13 min** |
+| PEI retainer, gel, 25 °C | 7.10 | 7.45 | 8.07 | 8.23 | 20 min |
+| G10 retainer, gel, 25 °C | 7.10 | 7.16 | 7.18 | 7.18 | 5 min |
+| PEEK retainer, gel, 40 °C glass | 7.10 | 7.89 | 8.07 | 8.08 | 3.5 min |
+| PEEK retainer, no gel (air in the pocket), 25 °C | 6.99 | 7.25 | 7.59 | 7.65 | 15 min |
 
 - **Analysis:** fit E(t) = E∞ − Σ aᵢ exp(−t/τᵢ) with one or two terms, then compare:
-  - **E(0)** checks the electrostatics (k = 0.246 (kV/cm)/kV) and the probe's calibration;
+  - **E(0)** checks the electrostatics (k = 0.2373 (kV/cm)/kV) and the probe's calibration;
   - **E∞ / E(0)** checks the ratios of the conductivities;
   - **the τᵢ** check the conductivities themselves.
   - Then set the measured conductivities in `sim/hub_drift.py` SIG.
@@ -137,12 +139,14 @@ The test measures them in that order. The ratings come first because they decide
   interfaces. PEEK leaks ten times less, so its interfaces charge and the field at the null rises.
 
 ### Phase 4: with the pump's supply
-- **(a) The rings on the rotor's own supply:** ring A on Dk at node 1, ring B on the two stages at node 4, the pump at
-  1200 rpm relative (120 Hz). Expect:
-  - **the start-up from the seed:** 50 % at 0.10 s, 95 % at 0.22 s (27 cycles), 99 % at 0.31 s;
-  - **the 120 Hz ripple on the field at the null:** 0.009 kV/cm p-p on 6.93 (0.13 %). The probe needs a resolution of
-    about 1e-3.
-  - **the rings' ripple** (non-contact voltmeters): about 30 V p-p on ring B and 11 V on ring A;
+- **(a) The rings on the rotor's own supply:** ring A on its two-stage chain at node 1, ring B on the mirror chain at
+  node 4, the pump at 1200 rpm relative (120 Hz). Expect:
+  - **the start-up from the seed:** 50 % at 0.12 s, 95 % at 0.24 s (29 cycles), 99 % at 0.33 s;
+  - **the 120 Hz ripple on the field at the null:** 0.014 kV/cm p-p on 7.10 (0.19 %). The field stays DC from B to A;
+    it does not swing from A to B. The probe needs a resolution of about 5e-4.
+  - **the rings' ripple** (non-contact voltmeters): about 29 V p-p on ring B and 34 V on ring A. Ring A tops up as
+    node 1 bottoms, 1.03 ms before ring B tops up as node 4 peaks, so the ripples mostly add across the gap (57 V
+    p-p);
   - **then the drift of phase 3 again.** The multiplier's sag adds nothing at 100 GΩ.
 - **(b) The AH powered:** its ampere-turns ripple 5.9 % p-p with 22 mF across each coil
   (`sim/ah-steady-cusp-findings.md`).
@@ -152,8 +156,8 @@ The test measures them in that order. The ratings come first because they decide
 ## 4. Safety
 - **High voltage:** up to ±19 kV on the sphere in phase 1(c), and to flashover on the coupons (40 kV class supplies).
   - Use an interlocked, grounded enclosure and ground sticks; each supply's output goes through its 100 MΩ.
-- **Stored energy:** a 100 pF capacitor holds 2.8 mJ at a stage's 7.5 kV and 8.7 mJ at ring A's 13.2 kV, about 20 mJ in
-  the record's supply. Ground it through 10 MΩ before touching.
+- **Stored energy:** a 100 pF capacitor holds 2.8 mJ at a stage's 7.5 kV, and Co1 holds 8.7 mJ at its 13.2 kV. That
+  makes about 27 mJ in the record's eight capacitors. Ground them through 10 MΩ before touching.
 - **The vacuum sphere:** small, but borosilicate under vacuum can implode. Keep a polycarbonate shield around it.
 - **The spinning pump (phase 4):** its own guards.
 - **X-rays:** none are expected, since the electrodes are outside the vacuum and below 30 kV. Check with a survey meter
