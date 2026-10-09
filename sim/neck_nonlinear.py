@@ -870,22 +870,6 @@ def post(fe, slab, t_start):
                L_inc_aligned_frac_3d_P=k0.get("L_inc_3d_P_frac"), L_inc_unaligned_frac_3d_P=k30.get("L_inc_3d_P_frac"),
                record_estimate=dict(aligned=0.05, unaligned=0.30, source="sim/utron_profile.py docstring [RH]"),
                record_law_dpsi_di_frac=dict(at_psi_s=1 / 8.0, at_1p21_psi_s=1 / (1 + 7 * 1.21 ** 6)))
-    order = dict(aligned=saturation_order(base[0.0]), unaligned=saturation_order(base[30.0]),
-                 at_knee_aligned=regions_at(base[0.0], k0["phi_knee_Wb"]),
-                 at_record_aligned_flux=regions_at(base[0.0], 0.2108e-3))
-    # -- the build-up from pole_fd2d's section, and the sensitivities (aligned)
-    def summ(res):
-        k = knee(res)
-        k["phi_half_Wb"], k["NI_half"] = half_knee(res)
-        return dict(L_low_H=k["L_low_H"], phi_knee_Wb=k.get("phi_knee_Wb"), L_inc_frac=k.get("L_inc_frac"),
-                    phi_half_Wb=k["phi_half_Wb"], NI_at_record_flux=interp_NI(res, 0.2108e-3))
-    attrib = {"V0 pole_fd2d (linear mu_r 3000)": dict(L_low_H=float(Llin[0]))}
-    for name in ATTRIB:
-        attrib[name] = summ(by[("attrib", name)])
-    attrib["V6 + stud holes = the built utron"] = summ(base[0.0])
-    sens = {"baseline": summ(base[0.0])}
-    for name in SENS:
-        sens[name] = summ(by[("sens", name, 0.0)])
     # -- mesh halving
     mrows = []
     for th in (0.0, 30.0):
@@ -922,6 +906,32 @@ def post(fe, slab, t_start):
     for (name, law, c), r in zip(djobs, runs):
         r["fidelity_vs_FE"] = fidelity(r, law, base, L2, L3)
         deck.setdefault(name, {})["bypass_22mF" if c else "no_bypass"] = r
+    # -- the record's aligned operating point (its own run, with the bypass): the flux and current at alignment
+    tr = deck["record"]["bypass_22mF"]["traj"]
+    ph = np.array(tr["phase"])
+    k_al = int(np.argmin(np.minimum(ph, 1 - ph)))
+    lp = M.R_PAR * REC["L_max"]
+    psi_a, i_a = abs(tr["psi"][k_al]), abs(tr["i"][k_al])
+    ra = dict(phase=float(ph[k_al]), psi_group_Wb=psi_a, i_A=i_a, NI=i_a * N, phi_u_Wb=(psi_a - lp * i_a) / (3 * N),
+              psi_over_psi_s=psi_a / best["psi_s"])
+    order = dict(aligned=saturation_order(base[0.0]), unaligned=saturation_order(base[30.0]),
+                 at_knee_aligned=regions_at(base[0.0], k0["phi_knee_Wb"]),
+                 at_record_aligned_flux=regions_at(base[0.0], ra["phi_u_Wb"]))
+
+    # -- the build-up from pole_fd2d's section, and the sensitivities (aligned)
+    def summ(res):
+        k = knee(res)
+        k["phi_half_Wb"], k["NI_half"] = half_knee(res)
+        return dict(L_low_H=k["L_low_H"], phi_knee_Wb=k.get("phi_knee_Wb"), L_inc_frac=k.get("L_inc_frac"),
+                    phi0_Wb=k.get("phi0_Wb"), phi_half_Wb=k["phi_half_Wb"],
+                    NI_at_record_aligned_flux=interp_NI(res, ra["phi_u_Wb"]))
+    attrib = {"V0 pole_fd2d section, linear mu_r 3000": dict(L_low_H=float(Llin[0]))}
+    for name in ATTRIB:
+        attrib[name] = summ(by[("attrib", name)])
+    attrib["V6 + stud holes = the built utron"] = summ(base[0.0])
+    sens = {"baseline": summ(base[0.0])}
+    for name in SENS:
+        sens[name] = summ(by[("sens", name, 0.0)])
     # -- G-DECK: the record's pick (sim/ah_steady_cusp_results.json; sim/ah-steady-cusp-findings.md)
     ref = {r_["C_byp_mF"]: r_ for r_ in json.load(open(os.path.join(HERE, "ah_steady_cusp_results.json")))["rows"]}
     gd = []
@@ -966,9 +976,11 @@ def post(fe, slab, t_start):
                                    source_class="80 % NiFe-Mo annealed, Permalloy-80 / Mumetall / HyMu 80 class, DC [IR]"),
                        lap_gap_mm=G_J, mu_knee=MU_KNEE),
         gates=dict(G_SLAB=slab, G_LIN=g_lin, G_MESH=g_mesh, G_DECK=g_deck),
-        lowfield=lowfield, knees=knees, saturation=sat, saturation_order=order, buildup_aligned=attrib,
+        record_aligned=ra, lowfield=lowfield, knees=knees, saturation=sat, saturation_order=order,
+        buildup_aligned=attrib,
         sensitivity_aligned=sens, laws={k: {kk: vv for kk, vv in v.items()} for k, v in laws.items()},
         z_lin=zl, operating_point=op,
+        trajectories={name: deck[name]["bypass_22mF"]["traj"] for name in ("record", "C")},
         fe_sweeps={f"{q['key'][0]} | " + " | ".join(str(x) for x in q["key"][1:]): dict(NI=q["NI"], phi_Wb=q["phi"],
                                                                                        newton_its=q["its"], ok=q["ok"],
                                                                                        nodes=q["nodes"])
@@ -1127,7 +1139,7 @@ def figure(out, base, L2, L3):
     # (d) the trajectory over one cycle: the record and the corrected law, both with the bypass
     ax = axs[1, 1]
     for c, name, lab in ((SERIES[0], "record", "record's law (the pick)"), (SERIES[1], "C", "FE law (case C)")):
-        r = out["_deck_traj"][name]
+        r = out["trajectories"][name]
         ph = np.array(r["phase"])
         o = np.argsort(ph)
         ax.plot(ph[o], np.abs(np.array(r["psi"]))[o] / psr, color=c, lw=2.0, label=lab)

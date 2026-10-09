@@ -82,6 +82,41 @@ SRC = {
 }
 VT = 8.617333262e-5 * 300.15       # kT/q at ngspice's 27 C (TNOM = TEMP) [OC]
 RETRY_RELTOL = (3e-5, 1e-4)        # a run that stops early ("timestep too small") is redone looser [IR]
+CACHE = None                       # --cache: a JSON-lines file of finished runs, threshold trials included
+
+
+def _key(job):
+    return json.dumps(job, sort_keys=True, default=float)
+
+
+def _cache_get(key):
+    if not CACHE or not os.path.exists(CACHE):
+        return None
+    with open(CACHE) as fh:
+        for ln in fh:
+            q = json.loads(ln)
+            if q["key"] == key:
+                return q["result"]
+    return None
+
+
+def _cache_put(key, r):
+    """one write() with O_APPEND: whole lines from concurrent workers."""
+    if CACHE:
+        fd = os.open(CACHE, os.O_WRONLY | os.O_APPEND | os.O_CREAT, 0o644)
+        try:
+            os.write(fd, (json.dumps(dict(key=key, result=r), default=float) + "\n").encode())
+        finally:
+            os.close(fd)
+
+
+def cached(kind, job, fn):
+    key = _key([kind, job])
+    r = _cache_get(key)
+    if r is None:
+        r = json.loads(json.dumps(fn(job), default=float))
+        _cache_put(key, r)
+    return r
 
 
 # ======================================================================================================== ngspice
@@ -178,7 +213,7 @@ PICK = RP.PICK
 _OP = json.load(open(os.path.join(HERE, "pole_design_variants_op.json")))["designs"][PICK]["best"]
 KICK_REC = _OP["kick_frac"]                       # 0.2: the record's kick (sim/pole_design_variants_op.json)
 SEED_OP = RP.SEED_FRAC                            # 0.3: the record's operating runs' seed (sim/rotor_parts_duty.py)
-N_START, N_RUN, N_KICK = 40, RP.N_CYC, 80
+N_START, N_RUN, N_KICK = 40, RP.N_CYC, RP.N_CYC
 START_AT = 0.5 * PD.AT_TARGET                     # 225 A-turns: the record's start criterion (sim/pole_design.py)
 C_BYP = 22.0                                      # mF per coil, PROPOSED (sim/ah-steady-cusp-findings.md)
 ESR = AS.ESR                                      # ohm [RH] (sim/ah_steady_cusp.py)
@@ -416,7 +451,7 @@ def mag_job(job):
 
 
 def mag_threshold(args):
-    """the smallest kick (fraction of Psi_s) that passes the record's criterion, by bisection to 0.005; each trial
+    """the smallest kick (fraction of Psi_s) that passes the record's criterion, by bisection to 0.01; each trial
     keeps the ratio of its last four cycles' branch peak to its first four's (below 1: it decays, not a slow start)."""
     model, byp = args
     trials = {}
@@ -424,18 +459,18 @@ def mag_threshold(args):
     def starts(f):
         f = round(f, 5)
         if f not in trials:
-            r = mag_job(dict(model=model, seed=f, n_cyc=N_START, byp=byp, light=True))
+            r = cached("mag", dict(model=model, seed=f, n_cyc=N_START, byp=byp, light=True), mag_job)
             y = r.get("branch_AT_per_cycle") or [float("nan")] * 4
             trials[f] = dict(frac=f, starts=r.get("starts"), AH_AT_pk=r.get("AH_AT_pk"), z_early=r.get("z_early"),
                              growth_last_over_first=float(np.mean(y[-4:]) / np.mean(y[1:5])), done=r.get("done"),
                              reltol=r.get("reltol"))
         return bool(trials[f]["starts"])
-    lo, hi = 0.10, 0.42
+    lo, hi = 0.12, 0.40
     while not starts(hi) and hi < 1.5:
         lo, hi = hi, hi * 1.5
     while starts(lo) and lo > 0.005:
         hi, lo = lo, lo / 2
-    while hi - lo > 0.005:
+    while hi - lo > 0.01:
         mid = round(0.5 * (lo + hi), 5)
         if starts(mid):
             hi = mid
@@ -455,6 +490,7 @@ ES_NCYC, ES_STEPS = REC_SUP["n_cyc"], REC_SUP["steps"]           # 280 cycles, 1
 ES_FREE = dict(clamp=False, n_cyc=REC_FREE["n_cyc"], v0=REC_FREE["v0"])   # 12 cycles from -10 V
 V0_CLAMPED = -1000.0                                             # sim/core_field.py deck's default seed (nodes 1, 4)
 OUT_PER_CYCLE = 1000                                             # interpolated output points a cycle [IR]
+N_THR = 40                                                       # cycles of a threshold trial (free) [IR]
 STICK_KV = 20.0                                                  # one stick's V_RRM (the class)
 STICK = dict(label="HV rectifier stick, 20 kV / 5 mA avalanche class, fast recovery",
              n_j=20, n_per_j=1.8, vf=((1e-3, 17.0), (5e-3, 20.0)), cj0_j=30e-12, m=0.33, vj_j=0.7, tt=100e-9,
@@ -472,6 +508,8 @@ CLAMP = dict(label="66 avalanche (Zener) diodes of the 200 V / 5 W class in seri
                    "0 V; I_R <= 0.5 uA at 0.76 V_Z (typ 10 nA); the string trimmed by whole parts so its voltage at the "
                    "record's clamp peak current is the record's node peak")
 C_BODY = 1e-12                                                   # F per stick, the body / lead capacitance [RH]
+R_SURGE = 22e3       # ohm per D1-D4 position: the parts' first cut (sim/parts-first-cut-findings.md, the middle of
+#                      sim/diode-stack-findings.md's 10-47 kOhm) [IR]
 TT_SLOW = 3e-6                                                   # s, a standard-recovery stick [IR]
 ES_MODELS = {
     "ND-deck": dict(label="the record's deck as is: ND (n 0.005) and DZ", real=False, split=False, exact=True),
@@ -491,6 +529,8 @@ ES_MODELS = {
     "HV-body": dict(label="typical leakage + 1 pF body capacitance a stick", real=True, cj=True, tt=STICK["tt"],
                     leak="typ", c_body=C_BODY),
     "HV-slow": dict(label="typical leakage, a slow stick (Tt 3 us)", real=True, cj=True, tt=TT_SLOW, leak="typ"),
+    "HV-Rs": dict(label="typical leakage + a 22 kOhm surge resistor in series with each of D1-D4", real=True, cj=True,
+                  tt=STICK["tt"], leak="typ", r_surge=R_SURGE),
 }
 
 
@@ -591,7 +631,8 @@ def es_deck(model, kw_over, steps=ES_STEPS):
         p["Tt"] = spec["tt"]
         mname = f"DS{ns}"
         models[mname] = diode_line(mname, p)
-        rep += [f"R_{nm} {nm}_a {nm}_j {p['Rs']:.6g}", f"{nm} {nm}_j {k} {mname} ic={vd0:.10g}"]
+        r_ser = p["Rs"] + (spec.get("r_surge", 0.0) if key in ("D1", "D2", "D3", "D4") else 0.0)
+        rep += [f"R_{nm} {nm}_a {nm}_j {r_ser:.6g}", f"{nm} {nm}_j {k} {mname} ic={vd0:.10g}"]
         new_ic[f"{nm}_j"] = icv(a)
         if leak:
             models[f"DL{ns}"] = f".model DL{ns} D(is={LEAK[leak]:.6g} n={V_LEAK / VT:.8g} rs=0 cjo=0)"
@@ -659,6 +700,8 @@ def es_job(job):
     model = job["model"]
     over = dict(ES_FREE) if job["case"] == "free" else dict(n_cyc=ES_NCYC)
     over["v0"] = job.get("v0", over.get("v0", V0_CLAMPED))
+    if job["case"] == "free" and job.get("n_cyc"):
+        over["n_cyc"] = job["n_cyc"]
     txt, kw, pk, dio = es_deck(model, over, steps=job.get("steps", 20000 if job["case"] == "free" else ES_STEPS))
     n, F = kw["n_cyc"], CF.F
     T = 1.0 / F
@@ -677,7 +720,10 @@ def es_job(job):
     if job["case"] == "free":                                       # the gain per cycle, as sim/core_field.py run
         k = np.arange(3, n)
         out["z"] = float(math.exp(np.polyfit(k, np.log(np.array(pk1[3:n])), 1)[0]))
-        out["grows"] = bool(out["z"] > 1.0)
+        m_ = max(5, n // 4)                                         # the last quarter: the growth once the mode has
+        kl = np.arange(n - m_, n)                                   # settled [IR]
+        out["z_late"] = float(math.exp(np.polyfit(kl, np.log(np.array(pk1[n - m_:n])), 1)[0]))
+        out["grows"] = bool(out["z_late"] > 1.0)
         out["run_s"] = time.time() - t_start
         return out
     vka = np.array(vk)
@@ -739,32 +785,57 @@ def es_job(job):
 
 
 def es_threshold(model):
-    """the smallest seed |v0| (nodes 1 and 4) from which the free run grows (z > 1, the record's fit), by bisection
-    in log |v0| between 1 V and 1 kV to 3 %."""
+    """the smallest seed |v0| (nodes 1 and 4) from which the pump grows: free runs of N_THR cycles, 'grows' when the
+    fit over the last quarter exceeds 1 (the first cycles carry the seed's own transient) [IR]; bisection in log |v0|
+    between 1 V and 1 kV to 10 %."""
     trials = []
 
     def grows(v):
-        r = es_job(dict(model=model, case="free", v0=-v))
-        trials.append(dict(v0_V=-v, z=r.get("z"), grows=r.get("grows"), done=r.get("done"), reltol=r.get("reltol"),
-                           V1_peak_per_cycle_kV=r.get("V1_peak_per_cycle_kV")))
+        r = cached("es", dict(model=model, case="free", v0=-v, n_cyc=N_THR, steps=ES_STEPS), es_job)
+        trials.append(dict(v0_V=-v, z=r.get("z"), z_late=r.get("z_late"), grows=r.get("grows"), done=r.get("done"),
+                           reltol=r.get("reltol"), V1_peak_per_cycle_kV=r.get("V1_peak_per_cycle_kV")))
         return bool(r.get("grows"))
     lo, hi = 1.0, 1000.0
     if grows(lo):
-        return dict(model=model, v_grows_V=lo, v_fails_V=None, trials=trials)
+        return dict(model=model, v_grows_V=lo, v_fails_V=None, n_cyc=N_THR, trials=trials)
     if not grows(hi):
-        return dict(model=model, v_grows_V=None, v_fails_V=hi, trials=trials)
-    while hi / lo > 1.03:
+        return dict(model=model, v_grows_V=None, v_fails_V=hi, n_cyc=N_THR, trials=trials)
+    while hi / lo > 1.1:
         mid = math.sqrt(lo * hi)
         if grows(mid):
             hi = mid
         else:
             lo = mid
-    return dict(model=model, v_grows_V=hi, v_fails_V=lo, trials=sorted(trials, key=lambda q: -q["v0_V"]))
+    return dict(model=model, v_grows_V=hi, v_fails_V=lo, n_cyc=N_THR, trials=sorted(trials, key=lambda q: -q["v0_V"]))
 
 
 # ===================================================================================================== the jobs
+def uic_check(_=None):
+    """[OC, checked] how ngspice-42 starts a capacitor under uic: a linear one and a charge-defined one (Q = C V, as the
+    deck's varicaps), each with .ic -1000 V across 1 GOhm; and the record's deck (dc, the record's settings) over its
+    first microsecond: where its -1 kV seed on nodes 1 and 4 has gone."""
+    txt = "\n".join(["* uic check", "Cl a 0 1e-9", "Rl a 0 1e9", "Cq b 0 Q='1e-9*V(b)'", "Rq b 0 1e9",
+                     ".ic v(a)=-1000 v(b)=-1000", ".control", "tran 1e-8 1e-6 uic", "set filetype=binary",
+                     "write out.raw v(a) v(b)", ".endc", ".end"]) + "\n"
+    c, err = spice(txt)
+    lone = dict(t_s=float(c["time"][1]), V_linear_V=float(c["v(a)"][1]), V_charge_defined_V=float(c["v(b)"][1]))
+    kw = dict(ES_KW, n_cyc=1, steps=ES_STEPS, v0=V0_CLAMPED)
+    d, _, _ = CF.deck(**kw)
+    d = re.sub(r"^tran (\S+) \S+ uic$", lambda m: f"tran {m.group(1)} {1e-5:g} uic", d, flags=re.M)   # the deck's step
+    c2, err2 = spice(set_output(d, ["v(1)", "v(2)", "v(3)", "v(4)", "v(m1)", "v(n1)"]))
+    t2 = c2["time"]
+    at = lambda k: {n: float(c2[f"v({n})"][k]) for n in ("1", "2", "3", "4", "m1", "n1")} | {"t_s": float(t2[k])}
+    deck = dict(first_point=at(1), at_1us=at(int(np.searchsorted(t2, 1e-6))))
+    return dict(lone_capacitors=lone, record_deck_start=deck, err=err + err2,
+                note="under uic ngspice takes a linear capacitor's .ic but starts a charge-defined one uncharged; the "
+                     "record's varicaps are charge-defined, so the deck's -1 kV seed on nodes 1 / 4 is redistributed "
+                     "over the other capacitors in the first step")
+
+
 def _dispatch(job):
     kind = job[0]
+    if kind == "uic":
+        return job, uic_check()
     if kind == "mag":
         return job, mag_job(job[1])
     if kind == "mag_thr":
@@ -785,22 +856,25 @@ def mag_jobs_first():
             jobs.append(("mag_thr", (m, byp)))
             jobs.append(("mag", dict(model=m, seed=KICK_REC, n_cyc=N_KICK, byp=byp, tag="kick")))
         for m in ("GP", "FR"):                                       # the cost of Tt: the same diodes without it
-            if m in MAG_MODELS:
+            if m in MAG_MODELS and byp:
                 jobs.append(("mag", dict(model=m, seed=SEED_OP, n_cyc=N_RUN, byp=byp, tt0=True, tag="tt0")))
     jobs.append(("mag", dict(model="GP", seed=SEED_OP, n_cyc=N_RUN, byp=C_BYP, steps=4000, tag="steps")))
     return jobs
 
 
 def es_jobs():
-    jobs = [("es", dict(model="ND-deck", case="clamped")), ("es", dict(model="ND-deck", case="free")),
+    jobs = [("uic", dict(check="uic")),
+            ("es", dict(model="ND-deck", case="clamped")), ("es", dict(model="ND-deck", case="free")),
             ("es", dict(model="ND-ic", case="clamped")), ("es", dict(model="ND-ic", case="free"))]
     for m in ES_MODELS:
         if m in ("ND-deck", "ND-ic"):
             continue
         jobs.append(("es", dict(model=m, case="clamped")))
+        if m in ("HV-body", "HV-slow", "HV-Rs"):                    # sensitivities: the clamped run only
+            continue
         jobs.append(("es", dict(model=m, case="free", v0=ES_FREE["v0"])))
         jobs.append(("es", dict(model=m, case="free", v0=V0_CLAMPED)))
-        if m in ("HV-fwd", "HV-typ", "HV-max", "HV-hot", "HV-VF2"):
+        if m in ("HV-typ", "HV-max", "HV-hot"):                     # the leakage family
             jobs.append(("es_thr", m))
     jobs.append(("es", dict(model="HV-typ", case="clamped", steps=2 * ES_STEPS, tag="steps")))
     return jobs
@@ -812,40 +886,57 @@ def _cost(job):
     if kind == "mag_thr":
         return 8 * N_START * 2.5
     if kind == "es_thr":
-        return 700
+        return 9 * N_THR
+    if kind == "uic":
+        return 0
     if kind == "es":
         return (2 if j.get("model", "").startswith("HV") else 1) * (ES_NCYC if j["case"] == "clamped" else 12) * \
             j.get("steps", ES_STEPS) / ES_STEPS
     return j["n_cyc"] * j.get("steps", 2000) / 2000 * (1 if j["model"] == "ND" else 2.5)
 
 
-def run_all(procs, only=None):
+def _pool_run(procs, jobs, res, cache):
+    """runs the jobs (the longest first), skipping those in the cache file; appends each result to it."""
+    done = {}
+    if cache and os.path.exists(cache):
+        for ln in open(cache):
+            q = json.loads(ln)
+            done[q["key"]] = q["result"]
+    todo = []
+    for j in jobs:
+        if _key(j) in done:
+            res.append((j, done[_key(j)]))
+        else:
+            todo.append(j)
+    todo.sort(key=lambda j: -_cost(j))
+    with Pool(procs) as pool:
+        for job, r in pool.imap_unordered(_dispatch, todo):
+            job = json.loads(json.dumps(job, default=float))
+            r = json.loads(json.dumps(r, default=float))
+            res.append((job, r))
+            _cache_put(_key(job), r)
+            brief = {k: r.get(k) for k in ("done", "starts", "z_early", "AH_AT_pk", "z", "t_to_95pc_s", "frac_starts",
+                                            "frac_fails", "v_grows_V", "v_fails_V", "P_belt_W", "run_s") if k in r}
+            print(job[0], job[1], json.dumps(brief, default=float)[:400], flush=True)
+
+
+def run_all(procs, only=None, cache=None):
     jobs = []
     if only in (None, "mag"):
         jobs += mag_jobs_first()
     if only in (None, "es"):
         jobs += es_jobs()
-    jobs.sort(key=lambda j: -_cost(j))
+    jobs = [json.loads(json.dumps(j, default=float)) for j in jobs]      # tuples -> lists, as the cache holds them
     res = []
-    with Pool(procs) as pool:
-        for job, r in pool.imap_unordered(_dispatch, jobs):
-            res.append((job, r))
-            tag = job[1]
-            brief = {k: r.get(k) for k in ("done", "starts", "z_early", "AH_AT_pk", "z", "t_to_95pc_s", "frac_starts",
-                                            "frac_fails", "v_grows_V", "v_fails_V", "P_belt_W", "run_s") if k in r}
-            print(job[0], tag, json.dumps(brief, default=float)[:400], flush=True)
+    _pool_run(procs, jobs, res, cache)
     # the steady states need the thresholds: seed max(SEED_OP, 1.25 x threshold)
     if only in (None, "mag"):
         thr = {(r["model"], r["byp_mF"]): r for job, r in res if job[0] == "mag_thr"}
         steady = []
         for (m, byp), q in thr.items():
             seed = max(SEED_OP, round(1.25 * q["frac_starts"], 3))
-            steady.append(("mag", dict(model=m, seed=seed, n_cyc=N_RUN, byp=byp, tag="steady")))
-        with Pool(procs) as pool:
-            for job, r in pool.imap_unordered(_dispatch, steady):
-                res.append((job, r))
-                print(job[0], job[1], json.dumps({k: r.get(k) for k in ("done", "z_early", "AH_AT_pk", "P_belt_W")},
-                                                 default=float), flush=True)
+            steady.append(["mag", dict(model=m, seed=seed, n_cyc=N_RUN, byp=byp, tag="steady")])
+        _pool_run(procs, json.loads(json.dumps(steady, default=float)), res, cache)
     return res
 
 
@@ -906,6 +997,8 @@ def summarise(res, old=None):
                 es["runs"].setdefault(j["model"], {})[name] = r
             elif job[0] == "es_thr":
                 es["thresholds"][r["model"]] = r
+            elif job[0] == "uic":
+                es["uic_check"] = r
         out["electrostatic"] = es
     out["gates"] = gates(out)
     return out
@@ -957,18 +1050,22 @@ def gates(out):
             cl, fr = R.get(m, {}).get("clamped"), R.get(m, {}).get(f"free {abs(ES_FREE['v0']):g} V") or R.get(m, {}).get("free")
             if not (cl and cl.get("done")):
                 continue
-            pairs = [("ring A mean kV", cl["V_ea_kV"]["mean"], REC_SUP["V_ea_kV"]["mean"], 1e-3),
-                     ("ring B mean kV", cl["V_eb_kV"]["mean"], REC_SUP["V_eb_kV"]["mean"], 1e-3),
-                     ("cycles to 95 %", cl["cycles_to_95pc"], int(round(REC_SUP_T95 * CF.F)), 0.0)] if m != "ND-deck" else \
-                [("ring A mean kV (samples)", cl["V_ea_mean_samples_kV"], REC_SUP["V_ea_kV"]["mean"], 1e-4),
-                 ("ring B mean kV (samples)", cl["V_eb_mean_samples_kV"], REC_SUP["V_eb_kV"]["mean"], 1e-4),
-                 ("cycles to 95 %", cl["cycles_to_95pc"], int(round(REC_SUP_T95 * CF.F)), 0.0),
-                 ("P_belt_W", cl["P_belt_W"], REC_SUP["P_belt_W"], 1e-3)]
+            # (quantity, run, record, tolerance; None: reported, not gated -- the split varicaps start from a
+            # consistent seed, so the start-up's cycles and the fitted z differ from the record by design)
+            info = m == "ND"
+            pairs = [("ring A mean kV (samples)", cl["V_ea_mean_samples_kV"], REC_SUP["V_ea_kV"]["mean"], 1e-3),
+                     ("ring B mean kV (samples)", cl["V_eb_mean_samples_kV"], REC_SUP["V_eb_kV"]["mean"], 1e-3),
+                     ("P_belt_W", cl["P_belt_W"], REC_SUP["P_belt_W"], 2e-3),
+                     ("Z1 P_W", cl["Z1"]["P_W"], REC_SUP["Z1"]["P_W"], 2e-3),
+                     ("cycles to 95 %", cl["cycles_to_95pc"], int(round(REC_SUP_T95 * CF.F)), None if info else 0.0)]
             if fr and fr.get("done"):
-                pairs.append(("z (free, 10 V)", fr["z"], REC_FREE["z"], 2e-3 if m != "ND-deck" else 1e-5))
-            rows_ = [dict(q=q, run=a, record=b, rel=(a - b) / b if b else None,
-                          ok=(abs((a - b) / b) <= tol) if tol else (a == b)) for q, a, b, tol in pairs]
-            g.append(dict(gate=f"G-ES {m}", ok=all(x["ok"] for x in rows_), rows=rows_,
+                pairs.append(("z (free, 10 V)", fr["z"], REC_FREE["z"], None if info else 1e-5))
+            rows_ = []
+            for q, a_, b_, tol in pairs:
+                rel = (a_ - b_) / b_ if b_ else None
+                ok = None if tol is None else ((abs(rel) <= tol) if tol else (a_ == b_))
+                rows_.append(dict(q=q, run=a_, record=b_, rel=rel, tol=tol, ok=ok))
+            g.append(dict(gate=f"G-ES {m}", ok=all(x["ok"] for x in rows_ if x["ok"] is not None), rows=rows_,
                           record="sim/hub_rings_build_results.json record_supply / record_supply_free"))
         for m, rows in R.items():
             for name, r in rows.items():
@@ -1000,10 +1097,32 @@ SERIES = ("#2a78d6", "#eb6834", "#1baf7a", "#eda100")        # categorical slots
 BASE = "#8a8f99"                                             # the record's ND: a neutral reference
 
 
+def _z_points(es, m):
+    """(node-1 amplitude, the gain over the next cycle) from every run of a model: the free runs and the threshold
+    trials once their seed's transient has passed (cycle 5 on), the clamped run up to the clamp [OC: ratios of the
+    runs' own peaks]."""
+    pts = []
+    runs = list(es["runs"].get(m, {}).items())
+    for q in es["thresholds"].get(m, {}).get("trials", []):
+        runs.append(("free trial", q))
+    for name, r in runs:
+        pk = r.get("V1_peak_per_cycle_kV")
+        if not pk:
+            continue
+        pk = np.array(pk) * 1e3
+        if name.startswith("clamped"):
+            top = 0.97 * pk.max()
+            pts += [(pk[k], pk[k + 1] / pk[k]) for k in range(2, len(pk) - 1) if pk[k + 1] < top]
+        else:
+            pts += [(pk[k], pk[k + 1] / pk[k]) for k in range(5, len(pk) - 1)]
+    return sorted(pts)
+
+
 def figure(out, path):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
 
     def style(ax, title, ylabel, xlabel):
         ax.set_facecolor(SURF)
@@ -1019,35 +1138,35 @@ def figure(out, path):
         ax.tick_params(colors=INK2, labelsize=7.8)
 
     mg, es = out["magnetic"], out["electrostatic"]
-    fig, axs = plt.subplots(2, 2, figsize=(13.0, 9.0), facecolor=SURF)
-    fig.subplots_adjust(left=0.065, right=0.975, top=0.9, bottom=0.075, wspace=0.22, hspace=0.38)
-    fig.suptitle("Real diodes in both pumps of record: the magnetic pump's start kick and start-up, the electrostatic "
-                 "pump's start-up gain and the rings' rise (sim/diodes_real.py)", fontsize=11.0, color=INK, x=0.065,
-                 ha="left")
+    fig, axs = plt.subplots(2, 2, figsize=(13.0, 9.2), facecolor=SURF)
+    fig.subplots_adjust(left=0.065, right=0.975, top=0.9, bottom=0.075, wspace=0.22, hspace=0.4)
+    fig.suptitle("Both pumps of record with real diodes: the start kick, the start-up and the gain against the seed "
+                 "(sim/diodes_real.py)", fontsize=11.0, color=INK, x=0.065, ha="left")
     cols = {"ND": BASE, "GP": SERIES[0], "FR": SERIES[1], "SB": SERIES[2], "SBM": SERIES[3]}
     names = {"ND": "the record's ND", "GP": "1N54xx class", "FR": "fast recovery", "SB": "Schottky 200 V",
              "SBM": "Schottky 200 / 100 V"}
 
-    # (a) the threshold kick per model, without / with the bypass
+    # (a) the smallest start kick per model, without / with the bypass
     ax = axs[0, 0]
     ms = [m for m in MAG_MODELS if m in mg["thresholds"]]
     x = np.arange(len(ms))
     wbar = 0.34
-    for j, (key, lab, hatch) in enumerate((("none", "no bypass", None), ("22mF", "22 mF bypass (PROPOSED)", "////"))):
+    for j, (key, hatch) in enumerate((("none", None), ("22mF", "////"))):
+        xs = x + (j - 0.5) * (wbar + 0.04)
         vals = [100 * mg["thresholds"][m][key]["frac_starts"] for m in ms]
-        bars = ax.bar(x + (j - 0.5) * (wbar + 0.03), vals, width=wbar, color=[cols[m] for m in ms], hatch=hatch,
-                      edgecolor=SURF, linewidth=0.0, label=lab)
-        for xi, v in zip(x + (j - 0.5) * (wbar + 0.03), vals):
-            ax.text(xi, v + 0.6, f"{v:.1f}", ha="center", va="bottom", fontsize=7.2, color=INK)
+        ax.bar(xs, vals, width=wbar, color=[cols[m] for m in ms], hatch=hatch, edgecolor=SURF, linewidth=0.0)
+        for xi, v in zip(xs, vals):
+            ax.text(xi, v + 0.5, f"{v:.1f}", ha="center", va="bottom", fontsize=7.2, color=INK)
     ax.axhline(100 * KICK_REC, color=INK2, lw=0.9, ls="--")
-    ax.text(len(ms) - 0.5, 100 * KICK_REC + 0.6, f"the record's kick, {100 * KICK_REC:.0f} %", ha="right", va="bottom",
+    ax.text(-0.45, 100 * KICK_REC + 0.5, f"the record's kick, {100 * KICK_REC:.0f} % of Ψs", ha="left", va="bottom",
             fontsize=7.4, color=INK2)
     ax.set_xticks(x, [names[m] for m in ms], fontsize=7.8, color=INK2)
-    style(ax, "(a) The smallest start kick (% of Ψs) by the record's criterion", "kick, % of Ψs", "")
-    from matplotlib.patches import Patch
-    ax.legend(handles=[Patch(facecolor=AXIS, label="no bypass"), Patch(facecolor=AXIS, hatch="////", edgecolor=SURF,
-                                                                         label="22 mF bypass")],
-              fontsize=7.2, frameon=False, labelcolor=INK, loc="upper left")
+    top = max(100 * mg["thresholds"][m][k]["frac_starts"] for m in ms for k in ("none", "22mF"))
+    ax.set_ylim(0, 1.25 * top)
+    style(ax, "(a) The smallest start kick, by the record's criterion (225 A-turns within 40 cycles)", "kick, % of Ψs", "")
+    ax.legend(handles=[Patch(facecolor=AXIS, label="no bypass (left bar)"),
+                       Patch(facecolor=AXIS, hatch="////", edgecolor=SURF, label="22 mF bypass (right bar)")],
+              fontsize=7.2, frameon=False, labelcolor=INK, loc="upper right", ncol=2)
 
     # (b) the start-up from the record's 20 % kick, with the bypass: the branch peak per cycle
     ax = axs[0, 1]
@@ -1061,40 +1180,34 @@ def figure(out, path):
         ax.semilogy(tt, y, color=cols[m], lw=2.0 if m != "ND" else 1.6, ls="-" if m != "ND" else "--",
                     label=names[m] + ("" if r.get("starts") else ": does not start"))
     ax.axhline(START_AT, color=INK2, lw=0.8, ls=":")
-    ax.text(0.01, START_AT * 1.07, f"the record's start criterion, {START_AT:.0f} A-turns", fontsize=7.2, color=INK2)
-    style(ax, f"(b) Start-up from the record's {100 * KICK_REC:.0f} % kick, 22 mF bypass: the branch peak per cycle",
+    ax.text(0.003, START_AT * 1.08, f"the start criterion, {START_AT:.0f} A-turns", fontsize=7.2, color=INK2)
+    style(ax, f"(b) From the record's {100 * KICK_REC:.0f} % kick, with the 22 mF bypass: the branch peak per cycle",
           "N_AH × peak branch current, A-turns", "time, s")
     ax.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right")
 
-    # (c) the electrostatic gain per cycle against the seed (free runs)
+    # (c) the electrostatic gain per cycle against the amplitude, from every run of each model
     ax = axs[1, 0]
     ecols = {"ND": BASE, "HV-typ": SERIES[0], "HV-max": SERIES[1], "HV-hot": SERIES[2], "HV-VF2": SERIES[3]}
-    enames = {"ND": "the record's ND", "HV-typ": "sticks, typical leakage", "HV-max": "max leakage (25 °C)",
-              "HV-hot": "hot leakage (100 °C)", "HV-VF2": "typical, V_F × 2"}
+    enames = {"ND": "the record's ND", "HV-typ": "sticks, typical leakage", "HV-max": "maximum leakage (25 °C)",
+              "HV-hot": "hot leakage (100 °C)", "HV-VF2": "typical leakage, V_F × 2"}
     for m in ecols:
-        pts = []
-        for name, r in es["runs"].get(m, {}).items():
-            if name.startswith("free") and r.get("done"):
-                pts.append((abs(r["job"].get("v0", ES_FREE["v0"])), r["z"]))
-        for q in es["thresholds"].get(m, {}).get("trials", []):
-            if q.get("z") is not None:
-                pts.append((abs(q["v0_V"]), q["z"]))
+        pts = _z_points(es, m)
         if not pts:
             continue
-        pts = sorted(set(pts))
-        ax.semilogx([p[0] for p in pts], [p[1] for p in pts], color=ecols[m], lw=2.0 if m != "ND" else 1.6,
-                    ls="-" if m != "ND" else "--", marker="o", ms=4, mec=SURF, mew=1.0, label=enames[m])
+        ax.semilogx([p_[0] for p_ in pts], [p_[1] for p_ in pts], color=ecols[m], lw=0, marker="o", ms=2.6,
+                    alpha=0.85, label=enames[m])
     ax.axhline(1.0, color=INK2, lw=0.8, ls=":")
-    for v, lab in ((abs(ES_FREE["v0"]), "the record's free-run seed"), (abs(V0_CLAMPED), "the clamped run's seed")):
+    for v, lab in ((abs(ES_FREE["v0"]), "the record's free-run seed"), (abs(V0_CLAMPED), "its clamped run's seed")):
         ax.axvline(v, color=AXIS, lw=0.8)
-        ax.text(v * 1.05, 0.955, lab, fontsize=7.0, color=INK2, rotation=90, va="bottom")
-    style(ax, "(c) The electrostatic pump's gain per cycle against its seed (free runs, 12 cycles)",
-          "z per cycle (the record's fit)", "seed on nodes 1 and 4, |V|")
-    ax.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right")
+        ax.text(v * 1.06, 0.905, lab, fontsize=7.0, color=INK2, rotation=90, va="bottom")
+    ax.set_ylim(0.9, 1.22)
+    style(ax, "(c) The electrostatic pump's gain over a cycle against its node-1 amplitude (every run)",
+          "V1 peak ratio, next cycle / this cycle", "node 1's peak, |V|")
+    ax.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right", markerscale=2)
 
-    # (d) the rings' gap per cycle in the record's clamped run
+    # (d) the rings' DC in the record's clamped run
     ax = axs[1, 1]
-    for m in ("ND", "HV-typ", "HV-max", "HV-hot", "HV-VF2"):
+    for m in ecols:
         r = es["runs"].get(m, {}).get("clamped")
         if not r or not r.get("done"):
             continue
@@ -1102,7 +1215,7 @@ def figure(out, path):
         tt = (np.arange(len(y)) + 1) / CF.F
         ax.plot(tt, y, color=ecols[m], lw=2.0 if m != "ND" else 1.6, ls="-" if m != "ND" else "--", label=enames[m])
     ax.set_xlim(0, 1.0)
-    style(ax, "(d) The rings' DC across the gap, from the clamped run's −1 kV seed", "V_B − V_A (least in the cycle), kV",
+    style(ax, "(d) The rings' DC from the clamped run's −1 kV seed", "V_B − V_A, the least in each cycle, kV",
           "time, s")
     ax.legend(fontsize=7.2, frameon=False, labelcolor=INK, loc="lower right")
     fig.savefig(path, dpi=150, facecolor=SURF)
@@ -1114,14 +1227,17 @@ def main():
     ap.add_argument("--procs", type=int, default=4)
     ap.add_argument("--only", choices=("mag", "es"), default=None)
     ap.add_argument("--figure-only", action="store_true", help="redraw the figure from the results file")
+    ap.add_argument("--cache", default=None, help="a JSON-lines file of finished runs: kept, and skipped on a rerun")
     a = ap.parse_args()
+    global CACHE
+    CACHE = a.cache
     if a.figure_only:
         out = json.load(open(OUT_JSON))
         figure(out, OUT_FIG)
         return
     t0 = time.time()
     old = json.load(open(OUT_JSON)) if (a.only and os.path.exists(OUT_JSON)) else None
-    res = run_all(a.procs, a.only)
+    res = run_all(a.procs, a.only, a.cache)
     out = summarise(res, old)
     out["run_s"] = time.time() - t0
     json.dump(out, open(OUT_JSON, "w"), indent=1, default=float)
