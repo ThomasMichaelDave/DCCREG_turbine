@@ -6,7 +6,7 @@ temporary documentation ledger and the current fact sheet of the exercise.
 | | |
 |:--|:--|
 | status | **LOCKED for now** — the designer, 2026-10-09: "Let's lock the design for now." |
-| design state | the lock's baseline is commit `09243c7` on branch `claude/new-session-0az7f9`. The settlement (2026-10-09; §2.3, §6) brought the records into line with it, corrected two computed values (the field at the null with the beads; the beads as drawn) and added first cuts, which stay PROPOSED until the designer accepts them |
+| design state | the lock's baseline is commit `09243c7` on branch `claude/new-session-0az7f9`. The settlement (2026-10-09; §2.3, §6) brought the records into line with it, corrected computed values (the field at the null with the beads; the beads as drawn), added first cuts, which stay PROPOSED until the designer accepts them, and ran four model checks (§6 items 31–34). Those correct both pumps' numbers: the record's values stay as its basis, with the corrected ones beside them, dated, until the designer decides (§5.2) |
 | what the lock means | the design of record below is the baseline; later changes are recorded against it. The lock does not settle what is still PROPOSED or OPEN (§5): those keep their status |
 | this ledger | `docs/ledger/DCCREG-design-ledger.md` (the source) and `.pdf` (its print form) |
 | the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 54 sheets behind a two-page register (§7) |
@@ -20,12 +20,20 @@ in opposite directions through a 1 : −1 reversing gear.
   - **the electrostatic pump:** an air vane stack in a de Queiroz diode doubler drives two copper rings on the
     outside of a 50 mm glass vacuum sphere, through two mirrored Cockcroft-Walton chains.
 - **Two static fields at the sphere's centre:**
-  - the AH's steady magnetic cusp (300 ampere-turns per coil), with its null at the centre;
+  - the AH's steady magnetic cusp (300 ampere-turns per coil as recorded, about 250–270 in the best estimate, §3.3),
+    with its null at the centre;
   - a DC electric field of 7.62 kV/cm (2.57 Pa) at switch-on, settling to 8.2 kV/cm as the insulators leak. It points
-    from ring B to ring A and is steady to 0.19 %.
-- **Where the power goes:** the pumps take about 21.5 W from the belt, and the windage and the bearings about 17 W more,
-  about 39 W in all. All of it ends as heat in the clamps, the copper, the iron, the air and the bearings. The products
-  are the fields.
+    from ring B to ring A and is steady to 0.19 %. As built, with the tube's strays and real HV diodes solved, it is
+    about 6.8 kV/cm, and the pump needs a seed to start (§3.4).
+- **Where the power goes:** the pumps take about 21.5 W from the belt as recorded (about 15–17 W in the best
+  estimate), and the windage and the bearings about 17 W more: about 39 W in all (32–34 W). All of it ends as heat in
+  the clamps, the copper, the iron, the air and the bearings. The products are the fields.
+- **What the model checks found:** both pumps are weaker than recorded.
+  - The magnetic pump's early gain falls to 1.03–1.05 with the utrons in 3-D and the neck's field map, and its kick
+    must fire at full speed.
+  - The electrostatic pump as built, its vanes' rims and the tube's strays solved, gains only 1.03 a cycle with ideal
+    diodes; with real ones it does not self-excite.
+  - The remedies are the designer's (§5.2).
 - **What is still open:** the physics is mainstream throughout [OC]. The ratings, the leakage and several parts are
   placeholders that the bench test must qualify.
 
@@ -73,7 +81,8 @@ in opposite directions through a 1 : −1 reversing gear.
   - one AH coil sits in each group's branch, and a 22 mF bypass across it (PROPOSED) holds a steady 300 ampere-turns
     (221–245 with the 3-D utrons; 249–272 with the neck's field map as well, the best estimate).
 - **The electrostatic pump:**
-  - the varicaps C1 / C2 swing 55 ↔ 410 pF in antiphase (128 ↔ 451 pF as built, with the vanes' rims, `sim/tube-strays-findings.md`);
+  - the varicaps C1 / C2 swing 55 ↔ 410 pF in antiphase (128 ↔ 451 pF as built, with the vanes' rims,
+    `sim/tube-strays-findings.md`);
   - the de Queiroz diode doubler multiplies its charge each cycle until the clamps Z1 / Z4 hold the nodes at their
     13.1 kV operating peak;
   - the pump's nodes 1 and 4 then feed two mirrored Cockcroft-Walton chains standing on the shaft, which pump ring A
@@ -166,8 +175,8 @@ commits' dates.
   - Interleaved vane stacks along the shaft give the capacitance without the carriers' penalty, hence the tube.
   - In air the fixed 20 pF node stray is what pulls the capped stack's z from 1.38 to 1.31
     (`sim/air-stack-sizing-findings.md` §6.5).
-  - Solved in 3-D (`sim/tube-strays-findings.md`), the strays are 66 / 25 pF a node, and the vanes' rims, which the 2-D cell
-    took as a 2 pF floor, add 65 pF to C_min: as built κ is 3.5, not 7.5, and z is 1.058, not 1.31.
+  - Solved in 3-D (`sim/tube-strays-findings.md`), the strays are 66 / 25 pF a node, and the vanes' rims, which the
+    2-D cell took as a 2 pF floor, add 65 pF to C_min: as built κ is 3.5, not 7.5, and z is 1.058, not 1.31.
 - **A pump's reaction torque must go somewhere** [OC]. The C-EMs could not counter-rotate the stator, so the drive
   is an outside belt with a 1 : −1 gear, and every reaction torque goes into the frame (`sim/spinup-findings.md`).
 - **The dual circuit works.** Inductors for capacitors, currents for voltages and flux for charge give a magnetic
@@ -275,10 +284,10 @@ commits' dates.
   rule of ≥ 1.20. The loaded transient run reads 1.139 early on, and 1.147 with the AH bypass
   (`sim/pole_design_variants_op.json`; `sim/ah-steady-cusp-findings.md`).
 - **With the 3-D utrons** the pick reads z_lin 1.16–1.17, under its own rule, and z_early 1.07–1.09. The AH gets
-  221–245 A-turns with the bypass instead of 300 (249–272 with the neck's field map as well, `sim/neck-nonlinear-findings.md` §6),
-  and the belt pays 10–12 W (12.7–15.0 W) instead of 18
-  (`sim/utron-3d-findings.md` §4). Restoring 450 A-turns at the peak takes Ψs × 1.27–1.42 (a neck of about
-  3.8–4.3 mm), or a longer stack: the designer's (§5.2).
+  221–245 A-turns with the bypass instead of 300 (249–272 with the neck's field map as well,
+  `sim/neck-nonlinear-findings.md` §6), and the belt pays 10–12 W (12.7–15.0 W) instead of 18
+  (`sim/utron-3d-findings.md` §4). Restoring 450 A-turns at the peak takes Ψs × 1.27–1.42 (a neck of about 3.8–4.3
+  mm), or a longer stack: the designer's (§5.2).
 - Its duality check against the electrostatic doubler gave z 1.528 against 1.512 (`sim/hub-drive-findings.md`).
 
 ![Figure 3. The wound utron against a bridge: the 200-turn coil on the split U-core, the 3.0 mm NiFe neck, the bonded slot cover, the studs; the solved 2-D flux. Source: docs/figures/utron-core-detail.png (docs/make_utron_drawing.py). The half-core's manufacturing drawing is DCCREG-UTR-101 (bundle sheet 4).](../figures/utron-core-detail.png)
@@ -310,9 +319,9 @@ commits' dates.
   - **With the 3-D utrons** (`sim/start-3d-findings.md`): K4 still starts the pump at full speed at every phase, with
     every set. It starts at every phase only from 1050–1100 rpm relative, so never below 550 each way; a running pump
     stops below 850; and the seed threshold is 20–25 %, so the record's 20 % seed kick starts only the record's frame.
-  - **With the neck's field map as well** (the best estimate, `sim/neck-nonlinear-findings.md` §7): K4 still starts it at full speed at
-    every phase, but starts every phase only from 1150 rpm relative (the record's frame) or at full speed (the coils
-    aiding), and the seed threshold is 25–30 %. So K4 fires at full speed, 600 rpm each way.
+  - **With the neck's field map as well** (the best estimate, `sim/neck-nonlinear-findings.md` §7): K4 still starts it
+    at full speed at every phase, but starts every phase only from 1150 rpm relative (the record's frame) or at full
+    speed (the coils aiding), and the seed threshold is 25–30 %. So K4 fires at full speed, 600 rpm each way.
   - **The first cut (PROPOSED):** a 9 V lithium cell charges a 470 µF bipolar capacitor, and an SCR dumps it across La
     (+ to node a) when a reed switch on the rotor passes an outside magnet: 19 mJ, 0.60 A, 17 ms, once per charge.
   - **The sign is the diodes':** a seed of the other sign starts the pump in the deck's own sign, so polarised bypass
@@ -407,10 +416,10 @@ the same circuit at negative polarity).
     nA, 10 V at 1 µA), and its capacitance and leakage take z below 1 at small amplitudes. The free pump decays below
     about 17 V on nodes 1 and 4 (typical leakage), 64 V (the datasheet's maximum) or 260 V (hot), so a contact
     potential or a triboelectric charge does not start it.
-  - On the record's capacitances it needs a seed of tens of volts, a few hundred hot, and the deck's −1 kV is enough at
-    every leakage level. **As built** (the tube's strays solved, `sim/diodes-real-findings.md` §6) it needs 122 V with typical
-    leakage, 1.0 kV at the datasheet's maximum and 3.65 kV hot, so the deck's −1 kV starts it only just at the maximum
-    and not at all hot. The machine's seed source is not designed (§5.2).
+  - On the record's capacitances it needs a seed of tens of volts, a few hundred hot, and the deck's −1 kV is enough
+    at every leakage level. **As built** (the tube's strays solved, `sim/diodes-real-findings.md` §6) it needs 122 V
+    with typical leakage, 1.0 kV at the datasheet's maximum and 3.65 kV hot, so the deck's −1 kV starts it only just
+    at the maximum and not at all hot. The machine's seed source is not designed (§5.2).
 
 **The clamps and the operating point.**
 - z > 1 at every amplitude, so something must stop the growth. The clamps Z1 (node 1) and Z4 (node 4) are avalanche
@@ -444,9 +453,9 @@ the same circuit at negative polarity).
   - **As built** (every capacitance solved, the record's deck): z 1.058 bare and 1.031 with the rings' chains,
     0.65 W, the rings at ±13.86 kV (7.06 kV/cm at the null), 95 % in 0.63 s: with ideal diodes it barely
     self-excites.
-  - **As built with real HV sticks** (`sim/diodes-real-findings.md` §6): it does not self-excite. It starts from 122 V (typical
-    leakage), 1.0 kV (the datasheet's maximum) or 3.65 kV (hot), and holds −13.38 / +13.40 kV and 6.82 kV/cm with
-    typical sticks (95 % at 0.575 s from −1 kV), 6.31 kV/cm at the maximum leakage. The clamps' own leakage helps
+  - **As built with real HV sticks** (`sim/diodes-real-findings.md` §6): it does not self-excite. It starts from 122 V
+    (typical leakage), 1.0 kV (the datasheet's maximum) or 3.65 kV (hot), and holds −13.38 / +13.40 kV and 6.82 kV/cm
+    with typical sticks (95 % at 0.575 s from −1 kV), 6.31 kV/cm at the maximum leakage. The clamps' own leakage helps
     decide it: their hot 5 µA a string is [RH] and sets the 3.65 kV.
   - The parts' first cut's conductive spacer rings on the sleeve would raise node 1's stray to 105 pF and take z with
     the chains to 1.008; insulating mounts avoid it (§5.2).
@@ -594,8 +603,9 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
 
 **In time** (the bench test's predictions are Figure 10, §5.3):
 - **Start-up** from the pump's seed: 50 % at 0.12 s, 95 % at 0.24 s, 99 % at 0.33 s; as built, with the tube's strays
-  solved, 95 % at 0.63 s on the deck's own start (`sim/tube-strays-findings.md` §5); with real HV sticks as well, 0.575 s
-  from a consistent −1 kV, 1.49 s at their maximum leakage, and hot no start from −1 kV (`sim/diodes-real-findings.md` §6.4).
+  solved, 95 % at 0.63 s on the deck's own start (`sim/tube-strays-findings.md` §5); with real HV sticks as well,
+  0.575 s from a consistent −1 kV, 1.49 s at their maximum leakage, and hot no start from −1 kV
+  (`sim/diodes-real-findings.md` §6.4).
   - **Corrected 2026-10-09** (`sim/diodes-real-findings.md` §1.2, §4.2): the deck's 29 cycles start from −0.58 / −0.90
     kV, not −1 kV, because under `uic` ngspice starts its charge-defined varicaps uncharged. From a consistent −1 kV,
     95 % takes 27 cycles (0.225 s), with ideal diodes and typical sticks alike; 0.30 s with hot sticks.
@@ -801,14 +811,14 @@ and tooling.
   0.90 [RH]) and its foils, stacked across the radius, cost 10 % of the aligned L at the laps. Keep it; stack the
   foils axially (the record's gain back, 322 A-turns at z_early 1.147 in the 2-D frame); or thicken it to about
   3.2–3.3 mm (Ψs back). DCCREG-UTR-101 (Rev A draft) follows the choice;
-- **the electrostatic pump as built** (§3.4, `sim/tube-strays-findings.md`, `sim/diodes-real-findings.md` §6): z 1.031 with the
-  rings' chains, 0.65 W; with real HV sticks 6.82 kV/cm at the null and no self-excitation. Accepting it means the
-  selected, cool chain parts and a seed of at least about 1 kV, or 3.65 kV for hot leakage. Or win the margin
-  back. The cheap remedies, solved (`sim/tube-strays-findings.md` §6, [RH] options): a 6 or 12 mm radial clearance at the
-  vanes' rims gives z 1.046 / 1.041 with the chains; a PTFE sleeve, which halves the rotor vanes' coupling to the
-  shaft, 1.045; both, 1.059, 0.91 W and 7.15 kV/cm with ideal diodes. None comes near the record's 1.191, so the
-  larger levers are the stack itself: more or larger vanes (the 6 + 6 cap is the designer's), insulating mounts
-  for the Ca plates in any case;
+- **the electrostatic pump as built** (§3.4, `sim/tube-strays-findings.md`, `sim/diodes-real-findings.md` §6): z 1.031
+  with the rings' chains, 0.65 W; with real HV sticks 6.82 kV/cm at the null and no self-excitation. Accepting it
+  means the selected, cool chain parts and a seed of at least about 1 kV, or 3.65 kV for hot leakage. Or win the
+  margin back. The cheap remedies, solved (`sim/tube-strays-findings.md` §6, [RH] options): a 6 or 12 mm radial
+  clearance at the vanes' rims gives z 1.046 / 1.041 with the chains; a PTFE sleeve, which halves the rotor vanes'
+  coupling to the shaft, 1.045; both, 1.059, 0.91 W and 7.15 kV/cm with ideal diodes. None comes near the record's
+  1.191, so the larger levers are the stack itself: more or larger vanes (the 6 + 6 cap is the designer's), insulating
+  mounts for the Ca plates in any case;
 - **the parts' first cuts** (`sim/parts-first-cut-findings.md`): La / Lb (EI-84 × 35), Schottky D1*–D4*, the HV
   sticks and their surge resistors, the clamp strings, the chains' parts (their diodes selected for ≤ 25 nA at
   7.5 kV and kept cool), the K4 kick fired at full speed, the creepage and the potting;
