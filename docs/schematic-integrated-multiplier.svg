@@ -1,0 +1,304 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 1030" width="1440" height="1030" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">
+<title>Integrated multiplier</title>
+<rect width="1440" height="1030" fill="#ffffff"/>
+<style>
+    .w{stroke:#111;stroke-width:2;fill:none} .ut{stroke:#1f6fb2;stroke-width:2.4;fill:none} .ah{stroke:#c0392b;stroke-width:2.6;fill:none}
+    .st{stroke:#8a8a8a;stroke-width:2;fill:none} .lim{stroke:#7d3c98;stroke-width:2.2;fill:none}
+    .zl{stroke:#7d3c98;stroke-width:2;fill:none} .va{stroke:#111;stroke-width:1.6}
+    .pl{stroke:#111;stroke-width:2.6} .rail{stroke:#111;stroke-width:3} .mag{stroke:#7f8c8d;stroke-width:1.4;stroke-dasharray:3 4}
+    .br{fill:#9aa3ad;stroke:#5d6670;stroke-width:1} .brush{fill:#444;stroke:#111;stroke-width:1}
+    .ring{stroke:#111;stroke-width:4} .ball{fill:#fff;stroke:#111;stroke-width:1.6} .dot{fill:#111}
+    .zone_cr{fill:#f3f0e6;stroke:#b9ad8a;stroke-width:1;stroke-dasharray:6 4} .zone_r{fill:#eef3f8;stroke:#9fb3c8;stroke-width:1;stroke-dasharray:6 4}
+    .kick{fill:#fff7ec;stroke:#d68910;stroke-width:1.4;stroke-dasharray:5 4} .frame{fill:none;stroke:#999;stroke-width:1}
+    .prop{stroke:#9c640c;stroke-width:1.6;fill:none;stroke-dasharray:5 3} .propc{stroke:#9c640c;stroke-width:2.4}
+    .tp{fill:#9c640c;font-size:10.5px}
+    .t{fill:#111} .tu{fill:#1f6fb2} .ta{fill:#c0392b} .tl{fill:#7d3c98} .nd{fill:#111;font-size:12.5px}
+    .m{fill:#444;font-size:12px} .ms{fill:#555;font-size:11px} .zh{fill:#333;font-size:12.5px;font-weight:bold;letter-spacing:0.06em}
+    .tk{fill:#111;font-size:11.5px;font-weight:bold} .tk2{fill:#9c640c;font-size:11.5px;font-weight:bold} .tv{fill:#333;font-size:11.5px}
+    .op{fill:#1d3f5e;font-size:11.5px} .h{font-size:17px;font-weight:bold;fill:#111} .h2{font-size:14px;font-weight:bold;fill:#111}
+    .n{fill:#444;font-size:11.5px} .te{fill:#1d3f5e;font-size:12px;font-weight:bold} .ef{stroke:#1d3f5e;stroke-width:1.8}
+    .cone_a{fill:#f6d5d1;stroke:#c0392b;stroke-width:2.6} .cone_b{fill:#dbe7f3;stroke:#1f6fb2;stroke-width:2.6}
+    .glass{fill:#eaf3f8;fill-opacity:0.92;stroke:#6f8ea6;stroke-width:1.3}
+  </style>
+<text x="20.0" y="30.0" class="h" text-anchor="start" >DCCREG turbine: the multiplier stacked into the doubler, run bipolar, feeding the rings — PROPOSED (2026-10-10)</text>
+<text x="20.0" y="52.0" class="m" text-anchor="start" >The designer's ladder C3–C6 / D5–D8 as sketched; chain 2 reversed (D2, D4, D5, D8): side A negative, side B positive; C1 / C2 in phase; one stage past each varicap node to its ring. As built, ideal diodes.</text>
+<rect x="20.0" y="70.0" width="1400.0" height="720.0" class="frame"/>
+<text x="40.0" y="92.0" class="ms" text-anchor="start" >blue: the chain that charges ring B (side B, positive) · red: the chain that charges ring A (side A, negative) · rev.: reversed against the sketch · new: added for the rings</text>
+<line x1="200.0" y1="620.0" x2="200.0" y2="676.0" class="w"/>
+<line x1="200.0" y1="686.0" x2="200.0" y2="742.0" class="w"/>
+<line x1="181.0" y1="676.0" x2="219.0" y2="676.0" class="pl"/>
+<line x1="181.0" y1="686.0" x2="219.0" y2="686.0" class="pl"/>
+<line x1="181.0" y1="698.0" x2="219.0" y2="664.0" class="va"/>
+<polygon points="219.0,664.0 215.0,672.1 210.5,667.1" fill="#111"/>
+<text x="226.0" y="677.0" class="t" text-anchor="start" font-weight="bold">C1</text>
+<text x="226.0" y="691.0" class="ms" text-anchor="start" >133–446 pF</text>
+<line x1="900.0" y1="620.0" x2="900.0" y2="676.0" class="w"/>
+<line x1="900.0" y1="686.0" x2="900.0" y2="742.0" class="w"/>
+<line x1="881.0" y1="676.0" x2="919.0" y2="676.0" class="pl"/>
+<line x1="881.0" y1="686.0" x2="919.0" y2="686.0" class="pl"/>
+<line x1="881.0" y1="698.0" x2="919.0" y2="664.0" class="va"/>
+<polygon points="919.0,664.0 915.0,672.1 910.5,667.1" fill="#111"/>
+<text x="874.0" y="677.0" class="t" text-anchor="end" font-weight="bold">C2</text>
+<text x="874.0" y="691.0" class="ms" text-anchor="end" >133–446 pF</text>
+<text x="226.0" y="705.0" class="ms" text-anchor="start" >side A</text>
+<text x="874.0" y="705.0" class="ms" text-anchor="end" >side B, in phase with C1</text>
+<line x1="200.0" y1="742.0" x2="900.0" y2="742.0" class="w"/>
+<text x="550.0" y="759.0" class="ms" text-anchor="middle" >REF: the counter-rotor's stator vanes; one inner bearing to the shaft carries 0.02 µA rms (the record's 165 µA)</text>
+<line x1="200.0" y1="620.0" x2="315.0" y2="620.0" class="w"/>
+<line x1="325.0" y1="620.0" x2="440.0" y2="620.0" class="w"/>
+<line x1="315.0" y1="608.0" x2="315.0" y2="632.0" class="pl"/>
+<line x1="325.0" y1="608.0" x2="325.0" y2="632.0" class="pl"/>
+<text x="320.0" y="600.0" class="t" text-anchor="middle" ><tspan font-weight='bold'>Ca</tspan> 482 pF · 13.2 kV</text>
+<line x1="660.0" y1="620.0" x2="775.0" y2="620.0" class="w"/>
+<line x1="785.0" y1="620.0" x2="900.0" y2="620.0" class="w"/>
+<line x1="775.0" y1="608.0" x2="775.0" y2="632.0" class="pl"/>
+<line x1="785.0" y1="608.0" x2="785.0" y2="632.0" class="pl"/>
+<text x="780.0" y="600.0" class="t" text-anchor="middle" ><tspan font-weight='bold'>Cb</tspan> 482 pF · 13.2 kV</text>
+<circle cx="200.0" cy="620.0" r="3.6" class="dot"/>
+<circle cx="440.0" cy="620.0" r="3.6" class="dot"/>
+<circle cx="660.0" cy="620.0" r="3.6" class="dot"/>
+<circle cx="900.0" cy="620.0" r="3.6" class="dot"/>
+<line x1="440.0" y1="684.0" x2="440.0" y2="661.0" stroke="#1f6fb2" stroke-width="1.8"/>
+<line x1="440.0" y1="643.0" x2="440.0" y2="620.0" stroke="#1f6fb2" stroke-width="1.8"/>
+<g transform="rotate(-90.00 440.0 661.0)">
+<polygon points="440.0,672.0 440.0,650.0 458.0,661.0" fill="none" stroke="#1f6fb2" stroke-width="2"/>
+<line x1="458.0" y1="672.0" x2="458.0" y2="650.0" stroke="#1f6fb2" stroke-width="2"/>
+</g>
+<line x1="428.0" y1="684.0" x2="452.0" y2="684.0" class="w"/>
+<line x1="433.0" y1="689.0" x2="447.0" y2="689.0" class="w"/>
+<line x1="437.0" y1="694.0" x2="443.0" y2="694.0" class="w"/>
+<text x="426.0" y="666.0" class="t" text-anchor="end"><tspan font-weight="bold" fill="#1f6fb2">D1</tspan> <tspan class="ms" font-size="12">4.5 kV</tspan></text>
+<line x1="660.0" y1="620.0" x2="660.0" y2="643.0" stroke="#c0392b" stroke-width="1.8"/>
+<line x1="660.0" y1="661.0" x2="660.0" y2="684.0" stroke="#c0392b" stroke-width="1.8"/>
+<g transform="rotate(90.00 660.0 643.0)">
+<polygon points="660.0,654.0 660.0,632.0 678.0,643.0" fill="none" stroke="#c0392b" stroke-width="2"/>
+<line x1="678.0" y1="654.0" x2="678.0" y2="632.0" stroke="#c0392b" stroke-width="2"/>
+</g>
+<line x1="648.0" y1="684.0" x2="672.0" y2="684.0" class="w"/>
+<line x1="653.0" y1="689.0" x2="667.0" y2="689.0" class="w"/>
+<line x1="657.0" y1="694.0" x2="663.0" y2="694.0" class="w"/>
+<text x="674.0" y="666.0" class="t" text-anchor="start"><tspan font-weight="bold" fill="#c0392b">D2 rev.</tspan> <tspan class="ms" font-size="12">4.5 kV</tspan></text>
+<polyline points="200.0,620.0 120.0,620.0 120.0,642.0" class="w"/>
+<polygon points="109.0,642.0 131.0,642.0 120.0,660.0" fill="none" stroke="#111" stroke-width="2"/>
+<polyline points="109.0,655.0 109.0,660.0 131.0,660.0 131.0,665.0" class="zl"/>
+<line x1="120.0" y1="660.0" x2="120.0" y2="684.0" class="w"/>
+<line x1="108.0" y1="684.0" x2="132.0" y2="684.0" class="w"/>
+<line x1="113.0" y1="689.0" x2="127.0" y2="689.0" class="w"/>
+<line x1="117.0" y1="694.0" x2="123.0" y2="694.0" class="w"/>
+<text x="106.0" y="650.0" class="t" text-anchor="end" font-weight="bold">Z1</text>
+<text x="106.0" y="664.0" class="ms" text-anchor="end" >−13.1 kV</text>
+<polyline points="900.0,620.0 980.0,620.0 980.0,642.0" class="w"/>
+<polygon points="991.0,660.0 969.0,660.0 980.0,642.0" fill="none" stroke="#111" stroke-width="2"/>
+<polyline points="991.0,647.0 991.0,642.0 969.0,642.0 969.0,637.0" class="zl"/>
+<line x1="980.0" y1="660.0" x2="980.0" y2="684.0" class="w"/>
+<line x1="968.0" y1="684.0" x2="992.0" y2="684.0" class="w"/>
+<line x1="973.0" y1="689.0" x2="987.0" y2="689.0" class="w"/>
+<line x1="977.0" y1="694.0" x2="983.0" y2="694.0" class="w"/>
+<text x="994.0" y="650.0" class="t" text-anchor="start" font-weight="bold">Z4</text>
+<text x="994.0" y="664.0" class="ms" text-anchor="start" >+13.1 kV</text>
+<text x="188.0" y="608.0" class="ms" text-anchor="end"><tspan font-weight="bold">1</tspan> −13.2 ↔ −7.0 kV</text>
+<text x="428.0" y="640.0" class="ms" text-anchor="end"><tspan font-weight="bold">2</tspan> 0.0 ↔ +4.5 kV</text>
+<text x="672.0" y="640.0" class="ms" text-anchor="start"><tspan font-weight="bold">3</tspan> −4.5 ↔ 0.0 kV</text>
+<text x="912.0" y="608.0" class="ms" text-anchor="start"><tspan font-weight="bold">4</tspan> +7.0 ↔ +13.2 kV</text>
+<line x1="440.0" y1="620.0" x2="440.0" y2="557.5" class="w"/>
+<line x1="440.0" y1="567.5" x2="440.0" y2="505.0" class="w"/>
+<line x1="421.0" y1="557.5" x2="459.0" y2="557.5" class="pl"/>
+<line x1="421.0" y1="567.5" x2="459.0" y2="567.5" class="pl"/>
+<text x="414.0" y="558.5" class="t" text-anchor="end" font-weight="bold">C3</text>
+<text x="414.0" y="572.5" class="ms" text-anchor="end" >180 pF · 9.0 kV</text>
+<line x1="440.0" y1="505.0" x2="440.0" y2="443.5" class="w"/>
+<line x1="440.0" y1="453.5" x2="440.0" y2="392.0" class="w"/>
+<line x1="421.0" y1="443.5" x2="459.0" y2="443.5" class="pl"/>
+<line x1="421.0" y1="453.5" x2="459.0" y2="453.5" class="pl"/>
+<text x="414.0" y="444.5" class="t" text-anchor="end" font-weight="bold">C5</text>
+<text x="414.0" y="458.5" class="ms" text-anchor="end" >180 pF · 12.8 kV</text>
+<line x1="660.0" y1="620.0" x2="660.0" y2="557.5" class="w"/>
+<line x1="660.0" y1="567.5" x2="660.0" y2="505.0" class="w"/>
+<line x1="641.0" y1="557.5" x2="679.0" y2="557.5" class="pl"/>
+<line x1="641.0" y1="567.5" x2="679.0" y2="567.5" class="pl"/>
+<text x="686.0" y="558.5" class="t" text-anchor="start" font-weight="bold">C4</text>
+<text x="686.0" y="572.5" class="ms" text-anchor="start" >180 pF · 9.0 kV</text>
+<line x1="660.0" y1="505.0" x2="660.0" y2="443.5" class="w"/>
+<line x1="660.0" y1="453.5" x2="660.0" y2="392.0" class="w"/>
+<line x1="641.0" y1="443.5" x2="679.0" y2="443.5" class="pl"/>
+<line x1="641.0" y1="453.5" x2="679.0" y2="453.5" class="pl"/>
+<text x="686.0" y="444.5" class="t" text-anchor="start" font-weight="bold">C6</text>
+<text x="686.0" y="458.5" class="ms" text-anchor="start" >180 pF · 12.8 kV</text>
+<circle cx="440.0" cy="505.0" r="3.6" class="dot"/>
+<circle cx="660.0" cy="505.0" r="3.6" class="dot"/>
+<circle cx="440.0" cy="392.0" r="3.6" class="dot"/>
+<circle cx="660.0" cy="392.0" r="3.6" class="dot"/>
+<text x="428.0" y="497.0" class="ms" text-anchor="end"><tspan font-weight="bold">l1</tspan> −6.4 ↔ −3.7 kV</text>
+<text x="672.0" y="497.0" class="ms" text-anchor="start"><tspan font-weight="bold">r1</tspan> +3.7 ↔ +6.4 kV</text>
+<text x="428.0" y="412.0" class="ms" text-anchor="end"><tspan font-weight="bold">l2</tspan> +5.9 ↔ +8.6 kV</text>
+<text x="672.0" y="412.0" class="ms" text-anchor="start"><tspan font-weight="bold">r2</tspan> −8.6 ↔ −5.9 kV</text>
+<line x1="440.0" y1="620.0" x2="480.4" y2="598.9" stroke="#1f6fb2" stroke-width="1.8"/>
+<line x1="496.4" y1="590.5" x2="660.0" y2="505.0" stroke="#1f6fb2" stroke-width="1.8"/>
+<g transform="rotate(-27.60 480.4 598.9)">
+<polygon points="480.4,609.9 480.4,587.9 498.4,598.9" fill="none" stroke="#1f6fb2" stroke-width="2"/>
+<line x1="498.4" y1="609.9" x2="498.4" y2="587.9" stroke="#1f6fb2" stroke-width="2"/>
+</g>
+<path d="M543.8 559.3 A7 7 0 0 1 556.2 565.7" fill="none" stroke="#c0392b" stroke-width="1.8"/>
+<line x1="440.0" y1="505.0" x2="543.8" y2="559.3" stroke="#c0392b" stroke-width="1.8"/>
+<line x1="556.2" y1="565.7" x2="603.6" y2="590.5" stroke="#c0392b" stroke-width="1.8"/>
+<line x1="619.6" y1="598.9" x2="660.0" y2="620.0" stroke="#c0392b" stroke-width="1.8"/>
+<g transform="rotate(27.60 603.6 590.5)">
+<polygon points="603.6,601.5 603.6,579.5 621.6,590.5" fill="none" stroke="#c0392b" stroke-width="2"/>
+<line x1="621.6" y1="601.5" x2="621.6" y2="579.5" stroke="#c0392b" stroke-width="2"/>
+</g>
+<text x="488.4" y="640.0" class="t" text-anchor="middle"><tspan font-weight="bold" fill="#1f6fb2">D3</tspan> <tspan class="ms" font-size="12">6.4 kV</tspan></text>
+<text x="611.6" y="640.0" class="t" text-anchor="middle"><tspan font-weight="bold" fill="#c0392b">D4 rev.</tspan> <tspan class="ms" font-size="12">6.4 kV</tspan></text>
+<line x1="660.0" y1="505.0" x2="619.6" y2="484.3" stroke="#1f6fb2" stroke-width="1.8"/>
+<line x1="603.6" y1="476.0" x2="440.0" y2="392.0" stroke="#1f6fb2" stroke-width="1.8"/>
+<g transform="rotate(-152.81 619.6 484.3)">
+<polygon points="619.6,495.3 619.6,473.3 637.6,484.3" fill="none" stroke="#1f6fb2" stroke-width="2"/>
+<line x1="637.6" y1="495.3" x2="637.6" y2="473.3" stroke="#1f6fb2" stroke-width="2"/>
+</g>
+<path d="M556.2 445.3 A7 7 0 0 0 543.8 451.7" fill="none" stroke="#c0392b" stroke-width="1.8"/>
+<line x1="660.0" y1="392.0" x2="556.2" y2="445.3" stroke="#c0392b" stroke-width="1.8"/>
+<line x1="543.8" y1="451.7" x2="496.4" y2="476.0" stroke="#c0392b" stroke-width="1.8"/>
+<line x1="480.4" y1="484.3" x2="440.0" y2="505.0" stroke="#c0392b" stroke-width="1.8"/>
+<g transform="rotate(152.81 496.4 476.0)">
+<polygon points="496.4,487.0 496.4,465.0 514.4,476.0" fill="none" stroke="#c0392b" stroke-width="2"/>
+<line x1="514.4" y1="487.0" x2="514.4" y2="465.0" stroke="#c0392b" stroke-width="2"/>
+</g>
+<text x="544.0" y="509.0" class="t" text-anchor="end"><tspan font-weight="bold" fill="#c0392b">D5 rev.</tspan> <tspan class="ms" font-size="12">4.9 kV</tspan></text>
+<text x="556.0" y="509.0" class="t" text-anchor="start"><tspan font-weight="bold" fill="#1f6fb2">D6</tspan> <tspan class="ms" font-size="12">4.9 kV</tspan></text>
+<line x1="440.0" y1="392.0" x2="440.0" y2="366.0" class="w"/>
+<line x1="660.0" y1="392.0" x2="660.0" y2="366.0" class="w"/>
+<line x1="440.0" y1="366.0" x2="770.0" y2="278.0" class="w"/>
+<line x1="660.0" y1="366.0" x2="556.8" y2="338.5" class="w"/>
+<line x1="543.2" y1="334.9" x2="330.0" y2="278.0" class="w"/>
+<path d="M556.8 338.5 A7 7 0 0 0 543.2 334.9" fill="none" stroke="#111" stroke-width="1.8"/>
+<line x1="900.0" y1="620.0" x2="900.0" y2="196.0" class="w"/>
+<line x1="200.0" y1="620.0" x2="200.0" y2="196.0" class="w"/>
+<line x1="770.0" y1="278.0" x2="826.0" y2="278.0" stroke="#1f6fb2" stroke-width="1.8"/>
+<line x1="844.0" y1="278.0" x2="900.0" y2="278.0" stroke="#1f6fb2" stroke-width="1.8"/>
+<g transform="rotate(0.00 826.0 278.0)">
+<polygon points="826.0,289.0 826.0,267.0 844.0,278.0" fill="none" stroke="#1f6fb2" stroke-width="2"/>
+<line x1="844.0" y1="289.0" x2="844.0" y2="267.0" stroke="#1f6fb2" stroke-width="2"/>
+</g>
+<text x="835.0" y="264.0" class="t" text-anchor="middle"><tspan font-weight="bold" fill="#1f6fb2">D7</tspan> <tspan class="ms" font-size="12">6.8 kV</tspan></text>
+<line x1="770.0" y1="278.0" x2="770.0" y2="232.0" class="w"/>
+<line x1="770.0" y1="242.0" x2="770.0" y2="196.0" class="w"/>
+<line x1="751.0" y1="232.0" x2="789.0" y2="232.0" class="pl"/>
+<line x1="751.0" y1="242.0" x2="789.0" y2="242.0" class="pl"/>
+<text x="796.0" y="233.0" class="t" text-anchor="start" font-weight="bold">C7 new</text>
+<text x="796.0" y="247.0" class="ms" text-anchor="start" >100 pF · 6.9 kV</text>
+<line x1="900.0" y1="196.0" x2="844.0" y2="196.0" stroke="#1f6fb2" stroke-width="1.8"/>
+<line x1="826.0" y1="196.0" x2="770.0" y2="196.0" stroke="#1f6fb2" stroke-width="1.8"/>
+<g transform="rotate(180.00 844.0 196.0)">
+<polygon points="844.0,207.0 844.0,185.0 862.0,196.0" fill="none" stroke="#1f6fb2" stroke-width="2"/>
+<line x1="862.0" y1="207.0" x2="862.0" y2="185.0" stroke="#1f6fb2" stroke-width="2"/>
+</g>
+<text x="835.0" y="182.0" class="t" text-anchor="middle"><tspan font-weight="bold" fill="#1f6fb2">D9 new</tspan> <tspan class="ms" font-size="12">6.6 kV</tspan></text>
+<line x1="200.0" y1="278.0" x2="256.0" y2="278.0" stroke="#c0392b" stroke-width="1.8"/>
+<line x1="274.0" y1="278.0" x2="330.0" y2="278.0" stroke="#c0392b" stroke-width="1.8"/>
+<g transform="rotate(0.00 256.0 278.0)">
+<polygon points="256.0,289.0 256.0,267.0 274.0,278.0" fill="none" stroke="#c0392b" stroke-width="2"/>
+<line x1="274.0" y1="289.0" x2="274.0" y2="267.0" stroke="#c0392b" stroke-width="2"/>
+</g>
+<text x="265.0" y="264.0" class="t" text-anchor="middle"><tspan font-weight="bold" fill="#c0392b">D8 rev.</tspan> <tspan class="ms" font-size="12">6.8 kV</tspan></text>
+<line x1="330.0" y1="278.0" x2="330.0" y2="232.0" class="w"/>
+<line x1="330.0" y1="242.0" x2="330.0" y2="196.0" class="w"/>
+<line x1="311.0" y1="232.0" x2="349.0" y2="232.0" class="pl"/>
+<line x1="311.0" y1="242.0" x2="349.0" y2="242.0" class="pl"/>
+<text x="304.0" y="233.0" class="t" text-anchor="end" font-weight="bold">C8 new</text>
+<text x="304.0" y="247.0" class="ms" text-anchor="end" >100 pF · 6.9 kV</text>
+<line x1="330.0" y1="196.0" x2="274.0" y2="196.0" stroke="#c0392b" stroke-width="1.8"/>
+<line x1="256.0" y1="196.0" x2="200.0" y2="196.0" stroke="#c0392b" stroke-width="1.8"/>
+<g transform="rotate(180.00 274.0 196.0)">
+<polygon points="274.0,207.0 274.0,185.0 292.0,196.0" fill="none" stroke="#c0392b" stroke-width="2"/>
+<line x1="292.0" y1="207.0" x2="292.0" y2="185.0" stroke="#c0392b" stroke-width="2"/>
+</g>
+<text x="265.0" y="182.0" class="t" text-anchor="middle"><tspan font-weight="bold" fill="#c0392b">D11 new</tspan> <tspan class="ms" font-size="12">6.6 kV</tspan></text>
+<circle cx="770.0" cy="278.0" r="3.6" class="dot"/>
+<circle cx="330.0" cy="278.0" r="3.6" class="dot"/>
+<circle cx="900.0" cy="278.0" r="3.6" class="dot"/>
+<circle cx="200.0" cy="278.0" r="3.6" class="dot"/>
+<circle cx="900.0" cy="196.0" r="3.6" class="dot"/>
+<circle cx="200.0" cy="196.0" r="3.6" class="dot"/>
+<circle cx="770.0" cy="196.0" r="3.6" class="dot"/>
+<circle cx="330.0" cy="196.0" r="3.6" class="dot"/>
+<text x="758.0" y="218.0" class="ms" text-anchor="end"><tspan font-weight="bold">xb</tspan> +12.8 ↔ +14.9 kV</text>
+<text x="342.0" y="218.0" class="ms" text-anchor="start"><tspan font-weight="bold">xa</tspan> −14.9 ↔ −12.8 kV</text>
+<line x1="770.0" y1="196.0" x2="770.0" y2="171.0" stroke="#1f6fb2" stroke-width="1.8"/>
+<line x1="770.0" y1="153.0" x2="770.0" y2="128.0" stroke="#1f6fb2" stroke-width="1.8"/>
+<g transform="rotate(-90.00 770.0 171.0)">
+<polygon points="770.0,182.0 770.0,160.0 788.0,171.0" fill="none" stroke="#1f6fb2" stroke-width="2"/>
+<line x1="788.0" y1="182.0" x2="788.0" y2="160.0" stroke="#1f6fb2" stroke-width="2"/>
+</g>
+<text x="756.0" y="166.0" class="t" text-anchor="end"><tspan font-weight="bold" fill="#1f6fb2">D10 new</tspan> <tspan class="ms" font-size="12">2.2 kV</tspan></text>
+<line x1="330.0" y1="128.0" x2="330.0" y2="153.0" stroke="#c0392b" stroke-width="1.8"/>
+<line x1="330.0" y1="171.0" x2="330.0" y2="196.0" stroke="#c0392b" stroke-width="1.8"/>
+<g transform="rotate(90.00 330.0 153.0)">
+<polygon points="330.0,164.0 330.0,142.0 348.0,153.0" fill="none" stroke="#c0392b" stroke-width="2"/>
+<line x1="348.0" y1="164.0" x2="348.0" y2="142.0" stroke="#c0392b" stroke-width="2"/>
+</g>
+<text x="344.0" y="166.0" class="t" text-anchor="start"><tspan font-weight="bold" fill="#c0392b">D12 new</tspan> <tspan class="ms" font-size="12">2.2 kV</tspan></text>
+<circle cx="1225.0" cy="452.0" r="78.0" class="glass"/>
+<polyline points="1189.2,379.4 1187.6,380.2 1186.0,381.0 1184.4,381.9 1182.8,382.8 1181.3,383.8 1179.8,384.8 1178.3,385.8 1176.8,386.9 1175.4,388.0 1174.0,389.1 1172.6,390.3 1171.2,391.4 1169.9,392.7 1168.5,393.9 1167.3,395.2 1166.0,396.5 1164.8,397.8 1163.6,399.2 1162.4,400.6 1161.3,402.0 1160.2,403.4 1159.1,404.9 1158.1,406.4" fill="none" stroke="#1f6fb2" stroke-width="6" stroke-linecap="round"/>
+<polyline points="1260.8,379.4 1262.4,380.2 1264.0,381.0 1265.6,381.9 1267.2,382.8 1268.7,383.8 1270.2,384.8 1271.7,385.8 1273.2,386.9 1274.6,388.0 1276.0,389.1 1277.4,390.3 1278.8,391.4 1280.1,392.7 1281.5,393.9 1282.7,395.2 1284.0,396.5 1285.2,397.8 1286.4,399.2 1287.6,400.6 1288.7,402.0 1289.8,403.4 1290.9,404.9 1291.9,406.4" fill="none" stroke="#1f6fb2" stroke-width="6" stroke-linecap="round"/>
+<polyline points="1189.2,524.6 1187.6,523.8 1186.0,523.0 1184.4,522.1 1182.8,521.2 1181.3,520.2 1179.8,519.2 1178.3,518.2 1176.8,517.1 1175.4,516.0 1174.0,514.9 1172.6,513.7 1171.2,512.6 1169.9,511.3 1168.5,510.1 1167.3,508.8 1166.0,507.5 1164.8,506.2 1163.6,504.8 1162.4,503.4 1161.3,502.0 1160.2,500.6 1159.1,499.1 1158.1,497.6" fill="none" stroke="#c0392b" stroke-width="6" stroke-linecap="round"/>
+<polyline points="1260.8,524.6 1262.4,523.8 1264.0,523.0 1265.6,522.1 1267.2,521.2 1268.7,520.2 1270.2,519.2 1271.7,518.2 1273.2,517.1 1274.6,516.0 1276.0,514.9 1277.4,513.7 1278.8,512.6 1280.1,511.3 1281.5,510.1 1282.7,508.8 1284.0,507.5 1285.2,506.2 1286.4,504.8 1287.6,503.4 1288.7,502.0 1289.8,500.6 1290.9,499.1 1291.9,497.6" fill="none" stroke="#c0392b" stroke-width="6" stroke-linecap="round"/>
+<rect x="1189.3" y="308.5" width="71.4" height="47.7" fill="#9aa3ad" stroke="#5d6670" stroke-width="1"/>
+<line x1="1260.7" y1="332.3" x2="1282.7" y2="332.3" class="w"/>
+<line x1="1282.7" y1="332.3" x2="1282.7" y2="340.3" class="w"/>
+<line x1="1270.7" y1="340.3" x2="1294.7" y2="340.3" class="w"/>
+<line x1="1275.7" y1="345.3" x2="1289.7" y2="345.3" class="w"/>
+<line x1="1279.7" y1="350.3" x2="1285.7" y2="350.3" class="w"/>
+<text x="1298.7" y="336.3" class="ms" text-anchor="start" >AH core, REF</text>
+<rect x="1189.3" y="547.8" width="71.4" height="47.7" fill="#9aa3ad" stroke="#5d6670" stroke-width="1"/>
+<line x1="1260.7" y1="571.7" x2="1282.7" y2="571.7" class="w"/>
+<line x1="1282.7" y1="571.7" x2="1282.7" y2="579.7" class="w"/>
+<line x1="1270.7" y1="579.7" x2="1294.7" y2="579.7" class="w"/>
+<line x1="1275.7" y1="584.7" x2="1289.7" y2="584.7" class="w"/>
+<line x1="1279.7" y1="589.7" x2="1285.7" y2="589.7" class="w"/>
+<text x="1298.7" y="575.7" class="ms" text-anchor="start" >AH core, REF</text>
+<line x1="1225.0" y1="426.0" x2="1225.0" y2="464.0" class="ef"/>
+<polygon points="1225.0,476.0 1219.0,464.0 1231.0,464.0" fill="#1d3f5e"/>
+<text x="1235.0" y="456.0" class="te" text-anchor="start" >E</text>
+<polyline points="770.0,128.0 1080.0,128.0 1080.0,390.8 1171.9,390.8" class="w"/>
+<polyline points="330.0,128.0 330.0,108.0 1405.0,108.0 1405.0,513.2 1278.1,513.2" class="w"/>
+<circle cx="770.0" cy="128.0" r="3.6" class="dot"/>
+<circle cx="330.0" cy="128.0" r="3.6" class="dot"/>
+<line x1="1080.0" y1="214.0" x2="1100.0" y2="214.0" class="w"/>
+<line x1="1100.0" y1="203.0" x2="1100.0" y2="225.0" class="pl"/>
+<line x1="1110.0" y1="203.0" x2="1110.0" y2="225.0" class="pl"/>
+<polyline points="1110.0,214.0 1130.0,214.0 1130.0,226.0" class="w"/>
+<line x1="1118.0" y1="226.0" x2="1142.0" y2="226.0" class="w"/>
+<line x1="1123.0" y1="231.0" x2="1137.0" y2="231.0" class="w"/>
+<line x1="1127.0" y1="236.0" x2="1133.0" y2="236.0" class="w"/>
+<circle cx="1080.0" cy="214.0" r="3.6" class="dot"/>
+<text x="1105.0" y="196.0" class="ms" text-anchor="middle" ><tspan font-weight='bold'>Csb</tspan> 100 pF · 14.9 kV</text>
+<line x1="1405.0" y1="172.0" x2="1385.0" y2="172.0" class="w"/>
+<line x1="1375.0" y1="161.0" x2="1375.0" y2="183.0" class="pl"/>
+<line x1="1385.0" y1="161.0" x2="1385.0" y2="183.0" class="pl"/>
+<polyline points="1375.0,172.0 1355.0,172.0 1355.0,184.0" class="w"/>
+<line x1="1343.0" y1="184.0" x2="1367.0" y2="184.0" class="w"/>
+<line x1="1348.0" y1="189.0" x2="1362.0" y2="189.0" class="w"/>
+<line x1="1352.0" y1="194.0" x2="1358.0" y2="194.0" class="w"/>
+<circle cx="1405.0" cy="172.0" r="3.6" class="dot"/>
+<text x="1340.0" y="154.0" class="ms" text-anchor="end" ><tspan font-weight='bold'>Csa</tspan> 100 pF · 14.9 kV</text>
+<text x="1225.0" y="284.0" class="zh" text-anchor="middle" >THE HUB (untouched)</text>
+<text x="1090.0" y="360.8" class="tu" text-anchor="start" font-weight="bold">ring B +14.93 kV</text>
+<text x="1290.0" y="533.2" class="ta" text-anchor="start" font-weight="bold">ring A −14.93 kV</text>
+<text x="1225.0" y="620.0" class="te" text-anchor="middle" >7.60 kV/cm at the null, B to A</text>
+<text x="1225.0" y="637.0" class="ms" text-anchor="middle" >ripple 0.006 kV/cm p-p · the null at 0 V by symmetry</text>
+<text x="1225.0" y="654.0" class="ms" text-anchor="middle" >the record as built: 7.06 kV/cm (±13.86 kV)</text>
+<text x="42.0" y="818.0" class="tk" text-anchor="start" >circuit</text>
+<text x="146.0" y="818.0" class="tv" text-anchor="start" >the designer's ladder (C3–C6 180 pF, D5–D8), bipolar: chain 2 reversed; C1 / C2 in phase (in antiphase it does not pump); each chain one stage past its varicap node to its ring</text>
+<text x="42.0" y="839.0" class="tk" text-anchor="start" >levels</text>
+<text x="146.0" y="839.0" class="tv" text-anchor="start" >nodes 1 / 4 at the clamps' −13.2 / +13.2 kV (V_op of record); the rings −14.93 / +14.93 kV, 7.60 kV/cm at the null (the record as built ±13.86 kV, 7.06 kV/cm)</text>
+<text x="42.0" y="860.0" class="tk" text-anchor="start" >diodes</text>
+<text x="146.0" y="860.0" class="tv" text-anchor="start" >12 HV sticks, one a position, reverse ≤ 6.8 kV (the record: 14, its D3 / D4 13.2 kV on two each)</text>
+<text x="42.0" y="881.0" class="tk" text-anchor="start" >capacitors</text>
+<text x="146.0" y="881.0" class="tv" text-anchor="start" >Ca / Cb now hold 13.2 kV (the record's 6.9); C5 / C6 12.8, C3 / C4 9.0, C7 / C8 6.9, Csa / Csb 14.9 kV</text>
+<text x="42.0" y="902.0" class="tk" text-anchor="start" >pump</text>
+<text x="146.0" y="902.0" class="tv" text-anchor="start" >z 1.0142 as built (the record with its chains 1.0322); the clamps 630 mW; 95 % in 1.45 s; the counter-rotor can float (Q1 = −Q2)</text>
+<text x="42.0" y="923.0" class="tk" text-anchor="start" >real sticks</text>
+<text x="146.0" y="923.0" class="tv" text-anchor="start" >seeds 51 V / 947 V / 4870 V (typical / maximum / hot; the record 122 V / 1.0 kV / 3.65 kV); the rings ±14.67 / ±14.40 / ±13.95 kV, 7.47 / 7.33 / 7.10 kV/cm</text>
+<text x="42.0" y="944.0" class="tk" text-anchor="start" >open</text>
+<text x="146.0" y="944.0" class="tv" text-anchor="start" >the new nodes' strays (24.5 pF each assumed) set the rings: with none they reach ±16.3 kV; trim the clamp strings on the bench before the hub sees it</text>
+<text x="20.0" y="1012.0" class="n" text-anchor="start" >Numbers: sim/integrated_multiplier_results.json (pick, as_built, real) · findings: sim/integrated-multiplier-findings.md · generator: docs/make_integrated_multiplier_schematic.py</text>
+</svg>
