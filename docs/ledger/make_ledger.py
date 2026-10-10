@@ -112,7 +112,7 @@ FOOTER = ('<div style="font-family: DejaVu Sans, sans-serif; font-size: 7pt; col
 
 # figures the paper sets on a page of their own, turned to landscape: the wide schematics and the A3 drawing
 LANDSCAPE = ("figures/architecture.png", "../schematic-rings-supply.png", "../drawings/DCCREG-HUB-201.png",
-             "../figures/hub-bench-predictions.png")
+             "../figures/hub-bench-predictions.png", "../schematic-integrated-multiplier.png")
 
 
 def md_to_html(text):

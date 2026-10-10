@@ -27,6 +27,9 @@ fields come from charge pumps driven by the relative rotation of the machine's t
   (120 Hz), wired as the planar dual of a diode charge doubler. It drives the AH coil pair.
 - **The electrostatic pump:** an air vane stack per side (6 + 6 aluminium vanes, 6 mm gaps) in a de Queiroz diode
   doubler, clamped at 13.1 kV. Two mirrored Cockcroft-Walton chains lift two copper rings on the sphere to ±15.0 kV.
+  - **Being redesigned (2026-10-10):** the designer is stacking the multipliers into the doubler. The proposal runs
+    it bipolar with the varicaps in phase and feeds each ring from one stage past its varicap node: ±14.93 kV as
+    built (`sim/integrated-multiplier-findings.md`; the ledger's §3.9). PROPOSED.
 - **The hub:** a 50 mm borosilicate vacuum sphere in a PEEK retainer with a silicone-gel interface, the AH's MnZn
   cores on the axis. At its centre: the AH's null and 7.62 kV/cm from ring B to ring A, steady (8.2 once settled).
 - **The model checks** (2026-10-09; the ledger's §6 items 31–34) found both pumps weaker than recorded: the AH holds

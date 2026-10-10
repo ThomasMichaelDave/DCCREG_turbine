@@ -93,6 +93,11 @@ _R = [
     ("B", "The tube's strays by a field solve", "docs/figures/tube-strays.png",
      "the strays per node and where they come from, the varicap with its rims, and the pump as built (model check 33)",
      "sim/tube_strays.py"),
+    ("B", "The multiplier stacked into the doubler (PROPOSED, the redesign of 2026-10-10)",
+     "docs/schematic-integrated-multiplier.svg",
+     "the designer's ladder C3-C6 / D5-D8 run bipolar with C1 / C2 in phase, each chain one stage past its varicap "
+     "node to its ring; every node's swing, reverse peak and DC as built; against the record's supply",
+     "docs/make_integrated_multiplier_schematic.py"),
     # ---------------------------------------------------------------------------------------- C: earlier phases
     ("C", "The machine as modelled before the record: section", f"{_TUBE}-section.png",
      "superseded by the record in solids: the old vacuum 8 + 8 stack, Ca / Cb on the counter-rotor, the 120 mm "

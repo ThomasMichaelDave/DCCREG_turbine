@@ -8,8 +8,9 @@ temporary documentation ledger and the current fact sheet of the exercise.
 | status | **LOCKED for now** — the designer, 2026-10-09: "Let's lock the design for now." |
 | design state | the lock's baseline is commit `09243c7` on branch `claude/new-session-0az7f9`. The settlement (2026-10-09; §2.3, §6) brought the records into line with it, corrected computed values (the field at the null with the beads; the beads as drawn), added first cuts, which stay PROPOSED until the designer accepts them, and ran four model checks (§6 items 31–34). Those correct both pumps' numbers: the record's values stay as its basis, with the corrected ones beside them, dated, until the designer decides (§5.2) |
 | what the lock means | the design of record below is the baseline; later changes are recorded against it. The lock does not settle what is still PROPOSED or OPEN (§5): those keep their status |
+| the redesign (2026-10-10) | the designer is redesigning the electrostatic pump's multipliers: stacked into the doubler, not a separate circuit tapping nodes 1 and 4. The turbine's stack will change; the magnetic pump, the sphere, its AH and the field interface stay for now. The worked proposal is §3.9 (PROPOSED); the record below stays the baseline until the designer accepts it |
 | this ledger | `docs/ledger/DCCREG-design-ledger.md` (the source) and `.pdf` (its print form) |
-| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 54 sheets behind a two-page register (§7) |
+| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 55 sheets behind a two-page register (§7) |
 | how it is built | `python3 docs/ledger/make_ledger.py` (needs markdown-it-py, mdit-py-plugins, pypdf and playwright with Chromium) |
 
 **Abstract.** As locked, the DCCREG turbine is a belt-driven tube machine. Its rotor and counter-rotor turn at 600 rpm
@@ -34,6 +35,11 @@ in opposite directions through a 1 : −1 reversing gear.
   - The electrostatic pump as built, its vanes' rims and the tube's strays solved, gains only 1.03 a cycle with ideal
     diodes; with real ones it does not self-excite.
   - The remedies are the designer's (§5.2).
+- **The redesign (2026-10-10, §3.9):** the designer is stacking the multipliers into the doubler.
+  - The worked proposal (PROPOSED) runs the pump bipolar, with C1 / C2 in phase, and continues each chain one stage
+    past its varicap node to its ring.
+  - As built it holds the rings at ±14.93 kV (±14.67 kV with typical HV sticks; the record ±13.86 / ±13.39 kV) on 12
+    single sticks, at a lower ideal gain (1.014 against 1.032).
 - **What is still open:** the physics is mainstream throughout [OC]. The ratings, the leakage and several parts are
   placeholders that the bench test must qualify.
 
@@ -93,6 +99,12 @@ in opposite directions through a 1 : −1 reversing gear.
 - The two copper-foil rings lie on the glass, under 0.5 mm of silicone gel in a PEEK retainer, with a G10 coupler
   outside.
 - At its centre the AH's null and the rings' field coincide.
+
+**The redesign in progress** (2026-10-10, §3.9).
+- The designer has decided to stack the charge-pump multipliers into the doubler.
+- The proposal (PROPOSED) runs the pump bipolar, with C1 / C2 in phase, and feeds each ring from one stage past its
+  varicap node.
+- The numbers below are the record's.
 
 **The design in numbers**
 
@@ -162,6 +174,8 @@ commits' dates.
 | 10-09 (the settlement) | keep the stack of record (6 mm gaps, V_op = breakdown / 1.5, 22° / 22°, r 150, Ca = 1.1 C_max) and the clamps Z1 / Z4 | §5.1 |
 | 10-09 (the settlement) | accept the magnetic pick and the retainer's materials (PEEK, the silicone gel, the G10 coupler outside); the 22 mF bypass and the equatorial split stay PROPOSED | `presets/hub-locked.json`; §5.1 |
 | 10-09 (the settlement) | rewrite `README.md` and `CLAUDE.md` for the locked machine | `README.md`, `CLAUDE.md` |
+| 10-10 | redesign the charge-pump multipliers so they stack into the doubler, not "a separate circuit tapping on node 1 and 4"; the design stack of the whole turbine will change; the magnetic pump, the sphere, its AH and the field interface untouched for now | §3.9 |
+| 10-10 | the sketch: C3–C6 and D5–D8 are the new parts (read back and confirmed); the clamps Z1 / Z4 stay on nodes 1 / 4; C3–C6 to be sized; the polarity free; the rings' supply to be worked out; the doubler, the rings and the magnetic pump's Schottky circuit on one revolving body | §3.9; `sim/integrated-multiplier-findings.md` |
 
 ### 2.4 What was learned, and what it superseded
 - **Charge pumps pay their equalisation tax inside the core** [OC].
@@ -601,7 +615,7 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
 
 ![Figure 9. One revolution of the rotor: the pump goes through its phases twelve times (C1 / C2, nodes 1 / 4, the chains' oscillating nodes), while the rings hold and the field at the null stays 7.611–7.625 kV/cm from B to A. Source: docs/figures/hub-rings-revolution.png (sim/hub_revolution.py).](../figures/hub-rings-revolution.png)
 
-**In time** (the bench test's predictions are Figure 10, §5.3):
+**In time** (the bench test's predictions are Figure 11, §5.3):
 - **Start-up** from the pump's seed: 50 % at 0.12 s, 95 % at 0.24 s, 99 % at 0.33 s; as built, with the tube's strays
   solved, 95 % at 0.63 s on the deck's own start (`sim/tube-strays-findings.md` §5); with real HV sticks as well,
   0.575 s from a consistent −1 kV, 1.49 s at their maximum leakage, and hot no start from −1 kV
@@ -669,6 +683,64 @@ settlement: one 22 mF part per coil, six spiders, the utron's SiFe as built):
 
 **Not costed:** re-sizing the AH or the pumps, the shaft for larger radii, design, test equipment, the vacuum system
 and tooling.
+
+### 3.9 The redesign: the multiplier stacked into the doubler (2026-10-10, PROPOSED)
+
+![Figure 10. The multiplier stacked into the doubler, as proposed: the designer's ladder (C3–C6, D5–D8) as sketched, run bipolar (chain 2 reversed) with C1 / C2 in phase, each chain continued one stage past its varicap node to its ring; every node's swing, each diode's reverse peak and each capacitor's DC as built. Source: docs/schematic-integrated-multiplier.svg (docs/make_integrated_multiplier_schematic.py).](../schematic-integrated-multiplier.png)
+
+**The brief** (the designer, 2026-10-10; §2.3). The record's multipliers are "a separate circuit tapping on node 1
+and 4. It's no good this way." They are to stack into the doubler; the turbine's stack will change, and the magnetic
+pump, the sphere, its AH and the field interface stay as they are for now.
+
+**The designer's circuit** (the sketch, read back and confirmed) [OC]:
+- the record's doubler with each cross diode replaced by a three-diode chain through a two-stage capacitor ladder:
+  C3 (2–l1) and C5 (l1–l2) stand on node 2, C4 (3–r1) and C6 (r1–r2) on node 3;
+- the chains 0 → D1 → 2 → D3 → r1 → D6 → l2 → D7 → 4 and 0 → D2 → 3 → D4 → l1 → D5 → r2 → D8 → 1, positive as drawn.
+
+**As drawn** (`sim/integrated-multiplier-findings.md` §1) [OC]:
+- it pumps: z falls from 1.31 to 1.00 as C3–C6 grow from 1 pF to 10 nF (2-D), and with small ladder capacitors it
+  is the record's doubler;
+- it splits the record's 13.2 kV cross diodes into 4–7 kV steps;
+- but it cannot feed the rings: every node sits on one side of the shaft, and none rises above nodes 1 / 4, which the
+  clamps hold at V_op.
+
+**How it can work** (PROPOSED; §2–§4 there):
+- **bipolar:** chain 2 reversed (D2, D4, D5, D8). Side A runs negative, side B positive, and the null stays at the
+  shaft's potential;
+- **C1 / C2 in phase:** C2's rotor sectors aligned with C1's, not half a pitch apart.
+  - With opposite charges the nodes swing against each other only so; in antiphase it does not pump (z 1.000 as
+    built).
+  - Every mirror-symmetric four-diode doubler peaks at 1.098 in phase (2-D), against the record's unipolar 1.31: a
+    bipolar pump's clamp diodes give back part of each transfer;
+- **one stage past each varicap node to its ring:**
+  - ring B on C7 (from l2), D9 (4 → xb) and D10 (xb → ring B); ring A on the mirror image, C8 (from r2), D11, D12;
+  - each ring on 100 pF to the shaft;
+- **C3–C6 at 180 pF:** the largest whose rings stay at the record's ±14.96 kV as built (§4 there).
+
+**As built** (the solved strays, the record's V_op; ideal diodes unless stated):
+
+| | the record's supply | the proposal |
+|:--|--:|--:|
+| gain z at start-up | 1.0322 | 1.0142 |
+| the rings; the field at the null | ±13.86 kV; 7.06 kV/cm | ±14.93 kV; 7.60 kV/cm |
+| typical sticks: z from 1 kV, seed, rings | 1.0244, 122 V, ±13.39 kV | 1.0129, 51 V, ±14.67 kV |
+| maximum leakage | 1.0038, 1.0 kV, ±12.38 kV | 1.0039, 947 V, ±14.40 kV |
+| hot | 0.9672, 3.65 kV, ±10.80 kV | 0.9870, 4.87 kV, ±13.95 kV |
+| HV sticks | 14 (D3 / D4 two each, 13.2 kV) | 12, one each, ≤ 6.8 kV |
+| Ca / Cb's DC | 6.9 kV | 13.2 kV |
+| the reference link | 0.165 mA rms | 0.02 µA rms |
+| the varicaps' 120 Hz torque | 63 mN·m p-p | 191 mN·m p-p |
+| 95 % of the rings, from 1 kV | 0.53 s | 1.45 s |
+
+**What it gives and costs:**
+- the rings at the record's level as built, and higher than the record's with real HV sticks at every leakage. The
+  gain from 1 kV is lower at typical leakage, level at the maximum and ahead hot;
+- no current through the bearing link: Q1 = −Q2, so the counter-rotor can float (on 100 pF it pumps the same);
+- Ca / Cb at 13.2 kV DC, so their mounts' creepage roughly doubles (§3.4);
+- the rings' level rests on the new nodes' strays, 24.5 pF assumed [RH]: with none the rings reach ±16.3 kV. Set the
+  clamp strings on the bench (each 200 V part moves V_op 1.5 %) before the hub sees them;
+- in phase, the stacks' pulls add: the varicaps' torque ripple triples;
+- not run: a vane flashover with the ring stages, the torque's share at the gear, the redesigned stack itself.
 
 ## 4. Fact sheet: the numbers of record, with their sources
 
@@ -787,10 +859,19 @@ and tooling.
 | the retainer split at the equatorial plane | PROPOSED | |
 | the shaft's diameter and the bearings | OPEN | the designer's choice (§5.2) |
 | the ratings, the leakage, the conductivities | OPEN / ESTIMATE | the bench qualifies them |
+| the multipliers stacked into the doubler (the sketch: C3–C6, D5–D8); the clamps on nodes 1 / 4; one revolving body | DECIDED (10-10) | the redesign, §3.9 |
+| the redesign's circuit: bipolar, C1 / C2 in phase, the ring stages (C7 / C8, D9–D12, Csa / Csb), C3–C6 180 pF | PROPOSED | `sim/integrated-multiplier-findings.md` |
 
 ### 5.2 Open items
 
 **For the designer to decide** (each has its numbers in this ledger):
+- **the redesign** (§3.9, `sim/integrated-multiplier-findings.md`): accept the proposal (bipolar, C1 / C2 in phase,
+  the ring stages, C3–C6 180 pF) or set it otherwise.
+  - With it: Ca / Cb at 13.2 kV; the rings' level set on the bench by the clamp strings until a drawn stack fixes the
+    new nodes' strays; the varicaps' torque ripple tripled; no bearing link needed.
+  - Its seed is 51 V / 947 V / 4.87 kV (typical / maximum / hot), against the record's 122 V / 1.0 kV / 3.65 kV
+    below.
+  - Still to run: a vane flashover with the ring stages, the torque at the gear, the redesigned stack;
 - **the shaft and its bearings** (§3.1): six bearings with d 40 (65 Hz, the runout at 0.027 mm), or an eighth pair
   between the shaft and each bridge ring's outer end at d 25 (131–165 Hz, the runout at 0.05 mm; the layout +10–20 mm
   a side; stiff seats to keep it clear of 120 Hz);
@@ -866,7 +947,7 @@ Source: `docs/bench-test-rings.md`.
      record's capacitances, 7.62 with ideal diodes); a low reading points at the sticks' leakage. Then the AH
      powered, with the Faraday offset measured first.
 
-![Figure 10. What the bench test should see: the start-up, the 120 Hz ripple (the pump's nodes, the rings, the field), the 6 h drift by material, and the test's phases. Source: docs/figures/hub-bench-predictions.png (docs/make_hub_bench_figure.py).](../figures/hub-bench-predictions.png)
+![Figure 11. What the bench test should see: the start-up, the 120 Hz ripple (the pump's nodes, the rings, the field), the 6 h drift by material, and the test's phases. Source: docs/figures/hub-bench-predictions.png (docs/make_hub_bench_figure.py).](../figures/hub-bench-predictions.png)
 
 ## 6. Known inconsistencies and stale records
 
@@ -1029,20 +1110,21 @@ redraw them (`docs/ledger/register.py`).
 | 27 | The neck in a nonlinear field solve | `docs/figures/neck-nonlinear.png` |
 | 28 | Real diodes in both pumps | `docs/figures/diodes-real.png` |
 | 29 | The tube's strays by a field solve | `docs/figures/tube-strays.png` |
+| 30 | The multiplier stacked into the doubler (PROPOSED, the redesign of 10-10) | `docs/schematic-integrated-multiplier.svg` |
 
 **Part C — earlier phases, superseded, kept for the record**
 
 | sheets | what | files |
 |:--|:--|:--|
-| 30–32 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
-| 33 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
-| 34–35 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
-| 36–38 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
-| 39–41 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
-| 42–45 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
-| 46–47 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
-| 48–50 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
-| 51–54 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
+| 31–33 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
+| 34 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
+| 35–36 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
+| 37–39 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
+| 40–42 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
+| 43–46 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
+| 47–48 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
+| 49–51 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
+| 52–55 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
 
 **CAD and DXF files** (not on sheets; `tools/step-viewer/` renders the STEP files):
 - **of the record:**
@@ -1072,7 +1154,8 @@ redraw them (`docs/ledger/register.py`).
 - `sim/air_stack_sizing_results.json` and `sim/core_field_results.json` (the electrostatic pump);
 - `sim/ah_steady_cusp_results.json`, `sim/hub_drift_results.json` and `sim/hub_revolution_results.json`;
 - `sim/tube_geometry_record_results.json` and `sim/shaft_bearings_record_results.json` (the record in solids, its
-  shaft).
+  shaft);
+- `sim/integrated_multiplier_results.json` (the redesign's proposal, §3.9).
 
 **The findings,** one per study:
 - `sim/pole-design-findings.md`, `sim/ah-steady-cusp-findings.md`, `sim/rotor-parts-duty-findings.md`;
@@ -1081,6 +1164,7 @@ redraw them (`docs/ledger/register.py`).
 - the settlement's: `sim/hub-beads-settled-findings.md`, `sim/hub-thermal-findings.md`, `sim/ah-null-findings.md`,
   `sim/rotor-mechanics-findings.md`, `sim/tube-shaft-findings.md` §0, `sim/parts-first-cut-findings.md`,
   `docs/drive-gear-belt.md`, and the model checks of §6 (31–34);
+- the redesign's: `sim/integrated-multiplier-findings.md` (§3.9);
 - the design and test documents `docs/rings-design.md` and `docs/bench-test-rings.md`;
 - the cost guide `docs/cost/README.md`.
 
@@ -1091,11 +1175,12 @@ redraw them (`docs/ledger/register.py`).
   - `sim/hub_revolution.py`;
   - `sim/hub_beads_settled.py` and `sim/hub_thermal.py` (the hub settled, its heat);
   - `sim/ah_null.py`, `sim/rotor_mechanics.py`, `sim/drive_sizing.py --figure`, `sim/parts_first_cut.py`;
-  - `sim/tube_geometry.py --record` and `sim/shaft_bearings.py --record` (the record in solids, its shaft).
+  - `sim/tube_geometry.py --record` and `sim/shaft_bearings.py --record` (the record in solids, its shaft);
+  - `sim/integrated_multiplier.py --procs 4` (the redesign's proposal).
 - **the drawings and figures:**
   - `docs/make_rings_drawing.py`;
   - `docs/make_rings_field_figure.py`;
-  - `docs/make_rings_supply_schematic.py`;
+  - `docs/make_rings_supply_schematic.py` and `docs/make_integrated_multiplier_schematic.py`;
   - `docs/make_schematic_rotor.py`;
   - `docs/make_hub_rings_build_figure.py`, `docs/make_hub_bench_figure.py` and `docs/make_hub_revolution_figure.py`;
   - `docs/make_core_drawing.py` and `docs/make_utron_drawing.py`;
@@ -1126,6 +1211,9 @@ redraw them (`docs/ledger/register.py`).
 | ring A, ring B | the copper bands on the vessel, A below (−15.0 kV), B above (+15.0 kV) |
 | Co / Cs, Dc / Dp; Coa / Csa, Dca / Dpa | ring B's and ring A's Cockcroft-Walton parts |
 | m1, m2, b1; n1, n2, a1 | the chains' oscillating and smoothing nodes |
+| C3–C6; l1, l2, r1, r2 | the redesign (§3.9): the ladder's capacitors and nodes, C3 / C5 on node 2, C4 / C6 on node 3 |
+| D1–D8; D9–D12, C7 / C8, xa / xb | the redesign's chains: as sketched, D1–D4 at the doubler's places and D5–D8 on the ladder; the ring stages and their nodes |
+| Csa / Csb | the redesign's smoothing capacitor of ring A / B to the shaft (the record's chains number theirs Csa1, Csa2) |
 | z | gain per pump cycle (the growth of the stored charge or flux) |
 | κ | the swing ratio C_max / C_min or L_max / L_min |
 | V_op | the electrostatic pump's operating peak, set by the clamps |

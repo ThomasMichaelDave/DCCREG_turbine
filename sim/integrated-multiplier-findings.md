@@ -70,8 +70,9 @@ unlabelled dots):
 - **What it gives:**
   - the record's ring level as built: ±14.93 kV with ideal diodes and ±14.67 kV with typical sticks, where the record
     reaches ±13.86 / ±13.39 kV. So the field at the null is 7.60 / 7.47 kV/cm, not 7.06 / 6.82;
-  - with real sticks it holds better than the record at every leakage. Their margins at 1 kV meet at the datasheet's
-    maximum (1.004 both), the proposal is ahead hot, and its typical seed is 51 V, not 122 V;
+  - with real sticks its rings stand higher than the record's at every leakage. Its gain from 1 kV is lower at
+    typical leakage (1.013 against 1.024), level at the datasheet's maximum (1.004 both) and ahead hot (0.987
+    against 0.967). Its typical seed is 51 V, not 122 V, but hot it needs 4.87 kV, not 3.65 kV;
   - 12 single sticks instead of 14, with no position above 6.8 kV;
   - no current through the bearing link: Q1 = −Q2, so the counter-rotor pumps the same floating on 100 pF to the shaft
     (z 1.0142), where the record stops (1.0001).

@@ -41,6 +41,35 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The multiplier stacked into the doubler (2026-10-10)
+The designer: "We will redesign the charge pump multipliers so they stack integrated in the doubler circuit. Now it's a
+separate circuit tapping on node 1 and 4. It's no good this way." The turbine's stack will change; the magnetic pump,
+the sphere, its AH and the field interface stay for now.
+
+- **The designer's decisions (2026-10-10):**
+  - the sketch, read back and confirmed: C3–C6 and D5–D8 are the new parts, D3 / D4 rerouted onto the ladder;
+  - the clamps Z1 / Z4 stay on nodes 1 / 4; C3–C6 to be sized; the polarity free; the rings' supply to be worked out;
+  - the doubler, the rings and the magnetic pump's Schottky circuit stay on one revolving body.
+- **The study** (`sim/integrated_multiplier.py`, its results and `sim/integrated-multiplier-findings.md`):
+  - **as sketched** the circuit pumps (z 1.31 → 1.00 as C3–C6 grow, 2-D), but it runs at one polarity and no node
+    rises above the clamped nodes 1 / 4, so it cannot feed the rings, which need ±14.96 kV about the shaft;
+  - **proposed** (PROPOSED): chain 2 reversed so side A runs negative; C1 / C2 in phase (in antiphase it does not
+    pump, and no mirror-symmetric four-diode doubler beats 1.098 in phase); each chain one stage past its varicap
+    node to its ring (C7 / C8, D9–D12, 100 pF smoothing); C3–C6 180 pF;
+  - **as built:** the rings at ±14.93 kV with ideal diodes (the record ±13.86), ±14.67 / 14.40 / 13.95 kV with
+    typical / maximum / hot sticks (the record ±13.39 / 12.38 / 10.80), seeds of 51 V / 947 V / 4.87 kV; 12 single
+    sticks (the record 14); the link current about 0, so the counter-rotor can float;
+  - **costs:** the ideal gain 1.014 against 1.032; Ca / Cb at 13.2 kV DC; the rings' level rests on the new nodes'
+    strays (24.5 pF assumed, ±16.3 kV with none), to be trimmed on the bench; the varicaps' torque ripple triples;
+  - **gates:** the record's 2-D and as-built decks, its rings as built (±13.860 / 13.862 kV) and its real-stick gain
+    reproduced.
+- **The schematic** `docs/schematic-integrated-multiplier.{svg,png}` (`docs/make_integrated_multiplier_schematic.py`).
+  It is sheet 30 of the bundle, which now has 55.
+- **The ledger:** §3.9 (new), the header, the abstract, §1, §2.3, §5.1, §5.2, the register, §8 and the names. The
+  bench figure is now Figure 11.
+- **`presets/hub-locked.json`:** supply_redesign. The rings' supply of record stays the baseline until the designer
+  accepts the circuit.
+
 ### Design lock (2026-10-09)
 - **The design is locked for now** (the designer, 2026-10-09: "Let's lock the design for now."). The baseline is the
   design state at `09243c7`; later changes are recorded against it. What is PROPOSED or OPEN keeps its status.

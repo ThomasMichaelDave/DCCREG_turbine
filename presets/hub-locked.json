@@ -1,6 +1,6 @@
 {
   "schema": "hub-register/1",
-  "generation": "locked 2026-10-08, decisions 2026-10-09, build 2026-10-09, open points 2026-10-09",
+  "generation": "locked 2026-10-08, decisions 2026-10-09, build 2026-10-09, open points 2026-10-09, the supply's redesign 2026-10-10",
   "note": "The hub as the designer locked it, inside out. Every value carries its status word and source: DECIDED (the designer), REGISTER (carried from presets/electromagnets-RA.json), DESIGN / PROPOSED (sized or proposed here, the designer's to accept), ESTIMATE, OPEN (a placeholder [RH] until the designer sets it). Read by sim/hub_locked.py and sim/hub_rings_build.py.",
   "layer_order": {
     "value": [
@@ -239,6 +239,18 @@
     "status": "DECIDED",
     "source": "designer, 2026-10-08",
     "tag": "[IR]"
+  },
+  "supply_redesign": {
+    "value": {
+      "decision": "the charge-pump multipliers stacked into the doubler, not a separate circuit tapping nodes 1 and 4 (the designer's sketch: C3-C6 and D5-D8 the new parts, D3 / D4 rerouted onto the ladder); the clamps Z1 / Z4 stay on nodes 1 / 4; C3-C6 to be sized; the polarity free; the rings' supply to be worked out; the doubler, the rings and the magnetic pump's Schottky circuit on one revolving body; the turbine's stack will change, the magnetic pump, the sphere, its AH and the field interface untouched for now",
+      "proposal": "bipolar: chain 2 reversed (D2, D4, D5, D8), C1 / C2 in phase; each chain one stage past its varicap node to its ring (ring B: C7 from l2, D9, D10; ring A: C8 from r2, D11, D12), each ring on 100 pF to the shaft; C3-C6 180 pF. As built at the record's V_op: the rings -14.93 / +14.93 kV, 7.60 kV/cm at the null (-14.67 / +14.67 kV, 7.47 kV/cm with typical HV sticks); 12 sticks, one each; z 1.014",
+      "open": "the new nodes' strays (24.5 pF each assumed [RH]) set the rings' level: trim the clamp strings on the bench before the hub sees the rings; a vane flashover with the ring stages; the torque at the gear; the redesigned stack",
+      "schematic": "docs/schematic-integrated-multiplier.svg"
+    },
+    "unit": "-",
+    "status": "DECIDED (the redesign, 2026-10-10) / PROPOSED (the circuit)",
+    "source": "designer, 2026-10-10 (the sketch and its answers); sim/integrated-multiplier-findings.md; docs/ledger/DCCREG-design-ledger.md \u00a73.9. The rings' supply of record (rings.value.supply) stays the baseline until the designer accepts the circuit",
+    "tag": "[OC] / [IR]"
   },
   "open": {
     "value": [
