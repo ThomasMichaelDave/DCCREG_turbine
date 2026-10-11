@@ -701,6 +701,42 @@
   },
   {
    "sheet": 59,
+   "dwg": "DCCREG-REL-720",
+   "title": "La / Lb choke, EI-84 \u00d7 35, 150 turns",
+   "system": "the magnetic pump: La / Lb",
+   "kind": "assembly",
+   "status": "PROPOSED",
+   "qty": 2,
+   "used_in": "",
+   "file": "docs/drawings/set/DCCREG-REL-720.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 60,
+   "dwg": "DCCREG-REL-721",
+   "title": "La / Lb winding, 150 turns of \u00d81.40",
+   "system": "the magnetic pump: La / Lb",
+   "kind": "block",
+   "status": "PROPOSED",
+   "qty": 2,
+   "used_in": "REL-720",
+   "file": "docs/drawings/set/DCCREG-REL-721.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 61,
+   "dwg": "DCCREG-REL-730",
+   "title": "Start kick K4, module",
+   "system": "the magnetic pump: the start",
+   "kind": "bought",
+   "status": "PROPOSED",
+   "qty": 1,
+   "used_in": "the rotor (place OPEN)",
+   "file": "docs/drawings/set/DCCREG-REL-730.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 62,
    "dwg": "DCCREG-BRG-800",
    "title": "Bearing hub, Ca|reluctance, side A",
    "system": "the bearings",
@@ -712,7 +748,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 60,
+   "sheet": 63,
    "dwg": "DCCREG-BRG-801",
    "title": "Bearing hub, end (frame), side A",
    "system": "the bearings",
@@ -724,7 +760,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 61,
+   "sheet": 64,
    "dwg": "DCCREG-BRG-802",
    "title": "Bearing hub, the bridge ring's, side A",
    "system": "the bearings",
@@ -736,7 +772,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 62,
+   "sheet": 65,
    "dwg": "DCCREG-BRG-810",
    "title": "Spider, Ca|reluctance, G10, \u00d8364",
    "system": "the bearings",
@@ -748,7 +784,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 63,
+   "sheet": 66,
    "dwg": "DCCREG-BRG-811",
    "title": "Spider, end (frame), G10, \u00d8324",
    "system": "the bearings",
@@ -760,7 +796,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 64,
+   "sheet": 67,
    "dwg": "DCCREG-BRG-812",
    "title": "Spider, the bridge ring's bearing, G10",
    "system": "the bearings",
@@ -772,7 +808,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 65,
+   "sheet": 68,
    "dwg": "DCCREG-BRG-813",
    "title": "Ring adapter, G10, spider to bridge ring",
    "system": "the bearings",
@@ -784,7 +820,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 66,
+   "sheet": 69,
    "dwg": "DCCREG-BRG-814",
    "title": "Cartridge, the bridge-ring bearing's (-01 A; -02 B the mirror)",
    "system": "the bearings",
@@ -796,7 +832,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 67,
+   "sheet": 70,
    "dwg": "DCCREG-CGE-900",
    "title": "Counter-rotor: the cage, the stator stacks, the spiders, the bridges",
    "system": "the counter-rotor",
@@ -808,7 +844,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 68,
+   "sheet": 71,
    "dwg": "DCCREG-CGE-901",
    "title": "Cage tube, G10, \u00d8364 / 372",
    "system": "the counter-rotor",
@@ -820,7 +856,163 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 69,
+   "sheet": 72,
+   "dwg": "DCCREG-DRV-100",
+   "title": "The 1 : \u22121 bevel reverser, side A",
+   "system": "the drive",
+   "kind": "assembly",
+   "status": "PROPOSED",
+   "qty": 1,
+   "used_in": "",
+   "file": "docs/drawings/set/DCCREG-DRV-100.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 73,
+   "dwg": "DCCREG-DRV-101",
+   "title": "Side gear, the rotor's, z 30 m 2, keyed",
+   "system": "the drive: the reverser",
+   "kind": "turned",
+   "status": "PROPOSED",
+   "qty": 1,
+   "used_in": "DRV-100",
+   "file": "docs/drawings/set/DCCREG-DRV-101.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 74,
+   "dwg": "DCCREG-DRV-102",
+   "title": "Side gear, the counter-rotor's, z 30 m 2, flanged",
+   "system": "the drive: the reverser",
+   "kind": "turned",
+   "status": "PROPOSED",
+   "qty": 1,
+   "used_in": "DRV-100",
+   "file": "docs/drawings/set/DCCREG-DRV-102.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 75,
+   "dwg": "DCCREG-DRV-103",
+   "title": "Pinion, POM-C, z 20 m 2",
+   "system": "the drive: the reverser",
+   "kind": "turned",
+   "status": "PROPOSED",
+   "qty": 3,
+   "used_in": "DRV-100",
+   "file": "docs/drawings/set/DCCREG-DRV-103.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 76,
+   "dwg": "DCCREG-DRV-104",
+   "title": "Stub shaft, \u00d810, the pinion's",
+   "system": "the drive: the reverser",
+   "kind": "turned",
+   "status": "PROPOSED",
+   "qty": 3,
+   "used_in": "DRV-100",
+   "file": "docs/drawings/set/DCCREG-DRV-104.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 77,
+   "dwg": "DCCREG-DRV-105",
+   "title": "Cartridge sleeve, the pinion's two 6000-2Z",
+   "system": "the drive: the reverser",
+   "kind": "turned",
+   "status": "PROPOSED",
+   "qty": 3,
+   "used_in": "DRV-100",
+   "file": "docs/drawings/set/DCCREG-DRV-105.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 78,
+   "dwg": "DCCREG-DRV-106",
+   "title": "Gear case, the carrier and end-bearing housing",
+   "system": "the drive: the reverser",
+   "kind": "turned",
+   "status": "PROPOSED",
+   "qty": 1,
+   "used_in": "DRV-100",
+   "file": "docs/drawings/set/DCCREG-DRV-106.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 79,
+   "dwg": "DCCREG-DRV-107",
+   "title": "Bell, a C under the case floor",
+   "system": "the drive: the reverser",
+   "kind": "turned",
+   "status": "PROPOSED",
+   "qty": 1,
+   "used_in": "DRV-100",
+   "file": "docs/drawings/set/DCCREG-DRV-107.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 80,
+   "dwg": "DCCREG-DRV-108",
+   "title": "Counter-rotor hub, the gear-end bearing's",
+   "system": "the drive: the reverser",
+   "kind": "turned",
+   "status": "PROPOSED",
+   "qty": 1,
+   "used_in": "DRV-100",
+   "file": "docs/drawings/set/DCCREG-DRV-108.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 81,
+   "dwg": "DCCREG-DRV-109",
+   "title": "End disc, G10, the counter-rotor's",
+   "system": "the drive: the reverser",
+   "kind": "turned",
+   "status": "PROPOSED",
+   "qty": 1,
+   "used_in": "DRV-100",
+   "file": "docs/drawings/set/DCCREG-DRV-109.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 82,
+   "dwg": "DCCREG-DRV-120",
+   "title": "The belt drive: pulleys, belt, motor on its plate",
+   "system": "the drive",
+   "kind": "assembly",
+   "status": "PROPOSED",
+   "qty": 1,
+   "used_in": "",
+   "file": "docs/drawings/set/DCCREG-DRV-120.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 83,
+   "dwg": "DCCREG-DRV-121",
+   "title": "Motor plate, tensioning slots",
+   "system": "the drive: the belt",
+   "kind": "block",
+   "status": "PROPOSED",
+   "qty": 1,
+   "used_in": "DRV-120",
+   "file": "docs/drawings/set/DCCREG-DRV-121.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 84,
+   "dwg": "DCCREG-DRV-190",
+   "title": "The drive's spacers, rings, keys and fasteners",
+   "system": "the drive",
+   "kind": "list",
+   "status": "PROPOSED",
+   "qty": null,
+   "used_in": "DRV-100, DRV-120",
+   "file": "docs/drawings/set/DCCREG-DRV-190.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 85,
    "dwg": "DCCREG-P-001",
    "title": "Bearing, SKF 6205-2Z",
    "system": "bought parts",
@@ -832,7 +1024,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 70,
+   "sheet": 86,
    "dwg": "DCCREG-P-002",
    "title": "HV rectifier stick, 20 kV, 5 mA (XCH 2CL77)",
    "system": "bought parts",
@@ -844,7 +1036,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 71,
+   "sheet": 87,
    "dwg": "DCCREG-P-003",
    "title": "HV capacitor, 190 pF / 30 kV, N4700 (Vishay 715C30KTT19)",
    "system": "bought parts",
@@ -856,7 +1048,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 72,
+   "sheet": 88,
    "dwg": "DCCREG-P-004",
    "title": "HV capacitor, 100 pF / 40 kV, N4700 (Vishay 715C40KTT10)",
    "system": "bought parts",
@@ -868,7 +1060,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 73,
+   "sheet": 89,
    "dwg": "DCCREG-P-005",
    "title": "Surge resistor, 22 k\u03a9, \u2265 15 kV, \u2265 1 W",
    "system": "bought parts",
@@ -880,7 +1072,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 74,
+   "sheet": 90,
    "dwg": "DCCREG-P-006",
    "title": "TVS diode 1.5KE200A (the clamp strings)",
    "system": "bought parts",
@@ -892,7 +1084,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 75,
+   "sheet": 91,
    "dwg": "DCCREG-P-007",
    "title": "MnZn ferrite rod, Fair-Rite 4077484611 (77)",
    "system": "bought parts",
@@ -904,7 +1096,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 76,
+   "sheet": 92,
    "dwg": "DCCREG-P-008",
    "title": "Threaded rod M8 and nuts, glass-epoxy",
    "system": "bought parts",
@@ -916,7 +1108,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 77,
+   "sheet": 93,
    "dwg": "DCCREG-P-009",
    "title": "HV wire, FEP, 20 kV, 18 AWG (UL3239)",
    "system": "bought parts",
@@ -928,7 +1120,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 78,
+   "sheet": 94,
    "dwg": "DCCREG-P-010",
    "title": "LV cable, the magnetic pump's leads",
    "system": "bought parts",
@@ -940,7 +1132,7 @@
    "gen": "docs/make_drawing_set.py"
   },
   {
-   "sheet": 79,
+   "sheet": 95,
    "dwg": "DCCREG-P-011",
    "title": "Fasteners, inserts and stock",
    "system": "bought parts",
@@ -949,6 +1141,102 @@
    "qty": null,
    "used_in": "all",
    "file": "docs/drawings/set/DCCREG-P-011.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 96,
+   "dwg": "DCCREG-P-012",
+   "title": "Bearing, SKF 6000-2Z",
+   "system": "bought parts",
+   "kind": "bought",
+   "status": "BOUGHT",
+   "qty": 6,
+   "used_in": "DRV-105, DRV-100",
+   "file": "docs/drawings/set/DCCREG-P-012.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 97,
+   "dwg": "DCCREG-P-013",
+   "title": "Timing belt, Gates 750-5M-15 (HTD 5M)",
+   "system": "bought parts",
+   "kind": "bought",
+   "status": "BOUGHT",
+   "qty": 1,
+   "used_in": "DRV-120",
+   "file": "docs/drawings/set/DCCREG-P-013.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 98,
+   "dwg": "DCCREG-P-014",
+   "title": "Pulleys HTD 5M: 80T taper-bush, 20T flanged",
+   "system": "bought parts",
+   "kind": "bought",
+   "status": "BOUGHT",
+   "qty": "1 + 1",
+   "used_in": "DRV-120",
+   "file": "docs/drawings/set/DCCREG-P-014.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 99,
+   "dwg": "DCCREG-P-015",
+   "title": "Motor, BLDC 200 W 48 V (APBA60M048030-E), with driver",
+   "system": "bought parts",
+   "kind": "bought",
+   "status": "BOUGHT",
+   "qty": 1,
+   "used_in": "DRV-120",
+   "file": "docs/drawings/set/DCCREG-P-015.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 100,
+   "dwg": "DCCREG-P-016",
+   "title": "Schottky rectifiers D1*\u2013D4*, DO-201AD",
+   "system": "bought parts",
+   "kind": "bought",
+   "status": "BOUGHT",
+   "qty": "2 + 2",
+   "used_in": "the rotor (place OPEN)",
+   "file": "docs/drawings/set/DCCREG-P-016.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 101,
+   "dwg": "DCCREG-P-017",
+   "title": "Node snubbers: 22 nF PP film + 240 \u03a9 (8 of each)",
+   "system": "bought parts",
+   "kind": "bought",
+   "status": "BOUGHT",
+   "qty": "8 + 8",
+   "used_in": "the rotor (place OPEN)",
+   "file": "docs/drawings/set/DCCREG-P-017.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 102,
+   "dwg": "DCCREG-P-018",
+   "title": "AH bypass capacitor, 22 mF 10 V, snap-in",
+   "system": "bought parts",
+   "kind": "bought",
+   "status": "BOUGHT",
+   "qty": 2,
+   "used_in": "the rotor, beside the hub (place OPEN)",
+   "file": "docs/drawings/set/DCCREG-P-018.pdf",
+   "gen": "docs/make_drawing_set.py"
+  },
+  {
+   "sheet": 103,
+   "dwg": "DCCREG-P-019",
+   "title": "Choke parts: EI-84 laminations, bobbin, wire, spacer",
+   "system": "bought parts",
+   "kind": "bought",
+   "status": "BOUGHT",
+   "qty": "for 2 chokes",
+   "used_in": "REL-720",
+   "file": "docs/drawings/set/DCCREG-P-019.pdf",
    "gen": "docs/make_drawing_set.py"
   }
  ]

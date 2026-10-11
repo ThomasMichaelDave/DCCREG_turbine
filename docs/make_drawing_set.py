@@ -104,6 +104,33 @@ class Model:
         return [p["name"] for p in self.m.parts if pred(p)]
 
 
+class SubModel(Model):
+    """a sub-assembly outside the layout (sim/unmodelled_parts.py Sub: the drive, the choke, the kick) behind the
+    layout Model's interface; its assembly views draw the gears with their teeth."""
+
+    def __init__(self, sub):
+        self.m = sub
+        self.by_name = {p["name"]: p for p in sub.parts}
+        self.count = collections.Counter(p["proto"] for p in sub.parts)
+        self._placed = {}
+
+    def placed(self, name):
+        if name not in self._placed:
+            self._placed[name] = self.m.placed(self.by_name[name], True)
+        return self._placed[name]
+
+
+_SUBS = {}
+
+
+def sub(key):
+    """the unmodelled parts' sub-assemblies (sim/unmodelled_parts.py), built once."""
+    import unmodelled_parts as U
+    if key not in _SUBS:
+        _SUBS[key] = dict(reverser=U.reverser_sub, belt=U.belt_sub, choke=U.choke_sub, kick=U.kick_sub)[key]()
+    return _SUBS[key]
+
+
 def bbox(shape):
     from OCP.Bnd import Bnd_Box
     from OCP.BRepBndLib import BRepBndLib
@@ -597,8 +624,10 @@ def equal_spaced(angles, tol=0.2):
     return all(abs(x - 360.0 / n) < tol for x in d)
 
 
-def hole_text(h, mark=None):
-    t = (f"{h['n']}× " if h["n"] > 1 else "") + f"Ø{h['d']:.4g}"
+def hole_text(h, mark=None, tapped=None):
+    """a hole group's callout; tapped {drill Ø: 'M6'} names a tapped hole by its thread."""
+    thr = next((v for k, v in (tapped or {}).items() if abs(k - h["d"]) < 0.05), None)
+    t = (f"{h['n']}× " if h["n"] > 1 else "") + (thr or f"Ø{h['d']:.4g}")
     t += " THRU" if h.get("thru") else f" ↧ {h['z1'] - h['z0']:.3g}"
     if mark:
         t += f", CSK Ø{mark[0]:.3g} × 90°"
@@ -618,11 +647,15 @@ def x_at(outline, z, side=-1, tol=0.06):
 
 
 def z_levels(F, zmin, zmax, tol=0.3):
+    """the faces' heights for the chain of lengths, a level within tol of the one below it merged; the chain ends on
+    the part's top face."""
     zs = sorted({round(q["z"], 3) for q in F["zplanes"]} | {round(zmin, 3), round(zmax, 3)})
     out = []
     for z in zs:
         if not out or z - out[-1] > tol:
             out.append(z)
+    if out[-1] != round(zmax, 3):
+        out[-1] = round(zmax, 3)
     return out
 
 
@@ -676,7 +709,8 @@ MATCOL = [("steatite", (0.95, 0.94, 0.89)), ("silicone", (0.78, 0.86, 0.90)), ("
           ("NiFe", (0.70, 0.70, 0.64)), ("M235", (0.55, 0.57, 0.62)), ("magnet wire", (0.86, 0.53, 0.32)),
           ("Cu", (0.86, 0.53, 0.32)), ("brass", (0.86, 0.72, 0.38)), ("1.4404", (0.74, 0.76, 0.79)),
           ("stainless", (0.74, 0.76, 0.79)), ("bearing", (0.70, 0.72, 0.76)), ("Al", (0.83, 0.85, 0.89)),
-          ("ceramic", (0.56, 0.67, 0.82)), ("rectifier", (0.25, 0.25, 0.28)), ("resistor", (0.36, 0.55, 0.42))]
+          ("ceramic", (0.56, 0.67, 0.82)), ("rectifier", (0.25, 0.25, 0.28)), ("resistor", (0.36, 0.55, 0.42)),
+          ("POM", (0.94, 0.93, 0.88)), ("M400", (0.50, 0.52, 0.57)), ("PET", (0.88, 0.80, 0.45))]
 
 
 def matcol(text, default=None):
@@ -687,11 +721,17 @@ def matcol(text, default=None):
 
 
 def render_part(e, ctx, shape):
+    """the part's shaded 3-D view: its solid (or its 3-D solid, e.g. a gear's teeth), in its material's colour; a
+    module of several parts (parts3d) in each part's colour."""
     if not ctx["renderer"].ok:
         return None
     out = os.path.join(ctx["tmp"], f"{e['dwg']}_3d.png")
-    col = e.get("colour3d") or matcol(e.get("material", "") + " " + e.get("model_material", ""), e.get("colour"))
     v = e.get("view3d", {})
+    if e.get("parts3d"):
+        return ctx["renderer"].png(e["parts3d"], out, view=v.get("dir", (1.0, -1.4, 0.9)), up=v.get("up", (0, 0, 1)),
+                                   size=(900, 620))
+    shape = e["shape3d"] if e.get("shape3d") is not None else shape
+    col = e.get("colour3d") or matcol(e.get("material", "") + " " + e.get("model_material", ""), e.get("colour"))
     lo, hi = bbox(shape)
     if not v and (hi[2] - lo[2]) > 3.0 * max(hi[0] - lo[0], hi[1] - lo[1]):
         shape = rotated(shape, (0, 1, 0), 90.0)                    # a long part lies along x
@@ -704,7 +744,7 @@ def part_mass(e, shape):
     if "mass_kg" in e:                                             # a part of several materials: its entry's sum
         return e["mass_kg"]
     rho = e.get("rho") or density(e.get("model_material", "") or e.get("material", ""))
-    return volume(shape) * 1e-9 * rho if rho else None
+    return volume(e["shape3d"] if e.get("shape3d") is not None else shape) * 1e-9 * rho if rho else None
 
 
 def sheet_turned(e, ctx):
@@ -729,7 +769,7 @@ def sheet_turned(e, ctx):
     sec = section_y0(shape)
     S = begin(e, ctx)
     long_ = e.get("long", L >= 1.2 * R)
-    zl = z_levels(F, zmin, zmax)
+    zl = z_levels(F, zmin, zmax, e.get("level_tol", 0.3))
     scales = []
     if long_:
         bxA, bxB, bxD = (28.0, 160.0, 264.0, 112.0), (28.0, 112.0, 70.0, 44.0), (104.0, 112.0, 188.0, 44.0)
@@ -756,13 +796,15 @@ def sheet_turned(e, ctx):
         for i, (r, hole, z0, z1) in enumerate(mids):
             S.callout(tr([r, 0.5 * (z0 + z1)]), f"Ø{2 * r:.4g}", (0.5 + 0.2 * i, 1.0))
         bt = e.get("bore_text", {})
+        n_bt = 0
         top_s = tr([R, 0.0])[1]
         outer_r = [g[0] for g in G if not g[1]]
         for r, hole, z0, z1 in [g for g in G if g[1] and not any(abs(g[0] - ro) < 0.05 for ro in outer_r)]:
             txt = next((t for k, t in bt.items() if abs(k - 2 * r) < 0.05), None)
             if txt:
                 tip = tr([r, z0 + 0.5 * min(z1 - z0, 0.5 * L)])
-                S.leader(tip, (tip[0] + 9.0, top_s + 8.0), txt)
+                S.leader(tip, (tip[0] + 9.0, top_s + 8.0 + 5.0 * n_bt), txt)
+                n_bt += 1
             elif (z1 - z0) * sA >= 16 and 2 * r * sA >= 8:
                 zc = z0 + 0.3 * (z1 - z0)
                 S.vdim(tr([-r, 0])[1], tr([r, 0])[1], tr([0, zc])[0], tr([0, zc])[0], tr([0, zc])[0], f"Ø{2 * r:.4g}")
@@ -790,6 +832,7 @@ def sheet_turned(e, ctx):
         for v, P, text, d in e.get("callouts", ()):
             if v == "section":
                 S.callout(tr(P), text, d)
+        extra_lines(S, e, "section", tr)
         # the end view, small
         sB = e.get("scale_b") or fit_scale(2 * R, 2 * R, bxB[2] - 26, bxB[3] - 10)
         cB = np.array([bxB[0] + bxB[2] * 0.55, bxB[1] + bxB[3] * 0.5])
@@ -800,7 +843,7 @@ def sheet_turned(e, ctx):
             S.ax.add_patch(Arc(tuple(cB), 2 * r * sB, 2 * r * sB, theta1=0.0, theta2=270.0, ec=INK, lw=LW_THIN * 0.9, zorder=4))
         S.title(bxB[0], bxB[1] + bxB[3] + 1, f"VIEW B   {scale_txt(sB)}")
         scales.append(sB)
-        hole_callouts(S, H, marks, trB, R * sB, cB, compact=True)
+        hole_callouts(S, H, marks, trB, R * sB, cB, compact=True, tapped=e.get("tapped"))
         # detail D: a part of the section, large
         dz = e.get("detail_z")
         if dz:
@@ -833,7 +876,7 @@ def sheet_turned(e, ctx):
         S.title(bxA[0], bxA[1] + bxA[3] + 1, f"PLAN   {scale_txt(sA)}")
         scales.append(sA)
         diameter_fan(S, G, trA, cA, R * sA)
-        hole_callouts(S, H, marks, trA, R * sA, cA)
+        hole_callouts(S, H, marks, trA, R * sA, cA, tapped=e.get("tapped"))
         for (ra, a0, a1, text) in e.get("angles", ()):
             S.adim(cA, ra * sA, a0, a1, text)
         for v, P, text, d in e.get("callouts", ()):
@@ -889,6 +932,7 @@ def sheet_turned(e, ctx):
                 S.line([(xr, z_a - 1.0), (xr, z_a - 6.0)], lw=LW_THIN * 0.8, color=DIMC)
                 S.ax.text(xr, z_a - 7.0, f"r {r:.4g}", fontsize=6.6, ha="center", va="top", rotation=90, color=DIMC,
                           zorder=5, family="DejaVu Sans")
+        extra_lines(S, e, "detail", trC, clip=clip_rect)
         S.title(bxC[0], bxC[1] + bxC[3] + 1, f"SECTION A–A   {scale_txt(sC)}")
         S.text(bxC[0], bxC[1] + bxC[3] - 3.0, f"(its part from r {x0:.4g} to {x1:.4g})", size=6.4, color=DIMC)
         scales.append(sC)
@@ -900,6 +944,20 @@ def sheet_turned(e, ctx):
     png = render_part(e, ctx, shape)
     data = list(e.get("data", ())) + [("mass each", f"{mass:.3g} kg" if mass else "—")]
     return finish(S, e, ctx, mass, sc, png, e.get("notes", []), data)
+
+
+def extra_lines(S, e, view, tr, clip=None):
+    """the entry's own lines in a view: [(view, [(x, z), ...], 'chain' | 'thin')], e.g. a gear's pitch cone."""
+    for v, P, style in e.get("lines", ()):
+        if v != view:
+            continue
+        Q = np.array([tr(np.asarray(p, float)) for p in P])
+        if style == "chain":
+            ln, = S.ax.plot(Q[:, 0], Q[:, 1], color=INK, lw=LW_THIN * 0.8, ls=(0, (9, 2, 1.5, 2)), zorder=4)
+        else:
+            ln, = S.ax.plot(Q[:, 0], Q[:, 1], color=INK, lw=LW_THIN * 0.9, zorder=4)
+        if clip is not None:
+            ln.set_clip_path(clip)
 
 
 def diameter_fan(S, G, tr, c, R_s):
@@ -923,7 +981,7 @@ def diameter_fan(S, G, tr, c, R_s):
         S.text(end[0] - 0.8, end[1] - 0.9, f"Ø{2 * r:.4g}", ha="right", color=DIMC)
 
 
-def hole_callouts(S, H, marks, tr, R_s, c, compact=False):
+def hole_callouts(S, H, marks, tr, R_s, c, compact=False, tapped=None):
     """one leader per hole group from the hole nearest the leader's way (down-left on a plan, down-right on a small end
     view), the groups stacked along it; the pitch circles chained."""
     c = np.asarray(c, float)
@@ -942,7 +1000,7 @@ def hole_callouts(S, H, marks, tr, R_s, c, compact=False):
         P = np.array([r_p * math.cos(a), r_p * math.sin(a)])
         tip = tr(P + 0.5 * h["d"] * np.array([math.cos(a), math.sin(a)]) * (1 if r_p > 0 else 0))
         knee = c + (R_s + 6.0 + 8.0 * k) * u
-        txt = hole_text(h, marks.get(i))
+        txt = hole_text(h, marks.get(i), tapped)
         ha = "left" if u[0] >= 0 else "right"
         S.line([tip, knee], lw=LW_THIN * 0.8, color=DIMC)
         S.arrow(tip, knee, color=DIMC)
@@ -1018,12 +1076,14 @@ def sheet_bought(e, ctx):
     """a bought part: its envelope as the model draws it, the specification, the candidate, the notes."""
     shape = e["shape"]
     S = begin(e, ctx)
-    box = (34.0, 196.0, 258.0, 82.0)
+    box = e.get("env_box", (34.0, 196.0, 258.0, 82.0))
     s, V = three_views(S, shape, box, views=e.get("views", ("front", "top")), scale=e.get("scale"))
     overall_dims(S, V)
-    S.title(28.0, 280.0, "ENVELOPE (as the model draws it)   " + scale_txt(s))
-    y = table(S, 28.0, 190.0, [("specification", 70.0), ("value", 196.0)], e.get("spec", []), size=6.6, row_h=5.0,
-              wrap_cols=("value",))
+    for v, tip, text, d in e.get("callouts", ()):
+        S.callout(V[v][0](tip), text, d)
+    S.title(28.0, 280.0, e.get("env_title", "ENVELOPE (as the model draws it)") + "   " + scale_txt(s))
+    y = table(S, 28.0, box[1] - 6.0, [("specification", 70.0), ("value", 196.0)], e.get("spec", []), size=6.6,
+              row_h=5.0, wrap_cols=("value",))
     mass = e.get("mass_kg")
     png = render_part(e, ctx, shape)
     return finish(S, e, ctx, mass, scale_txt(s), png, e.get("notes", []), e.get("data", ()),
@@ -1197,11 +1257,17 @@ AS_LAYOUTS = {
                  notes=(231.0, None, 178.0, 146.0)),
     "wide": dict(view=(24.0, 172.0, 386.0, 94.0), plist=(24.0, 162.0), box3d=(230.0, 72.0, 180.0, 94.0),
                  notes=(24.0, None, 200.0, 12.0)),
+    "std_notes": dict(view=(24.0, 90.0, 202.0, 190.0), plist=(231.0, 264.0), box3d=(230.0, 72.0, 180.0, 70.0),
+                      notes=(24.0, 86.0, 202.0, 12.0)),
+    # a broad view over two thirds of the sheet, the parts list in a narrow column beside it (the belt drive)
+    "broad": dict(view=(24.0, 116.0, 272.0, 164.0), plist=(300.0, 264.0), box3d=(300.0, 72.0, 110.0, 76.0),
+                  notes=(24.0, 112.0, 202.0, 12.0),
+                  cols=[("item", 7.0), ("drawing", 20.0), ("description", 47.0), ("material", 24.0), ("qty", 12.0)]),
 }
 
 
 def sheet_assembly(e, ctx):
-    M = ctx["model"]
+    M = ctx["submodel"](e["sub"]) if e.get("sub") else ctx["model"]
     items = items_of(M, e["groups"](M))
     S = begin(e, ctx)
     lay = AS_LAYOUTS[e.get("layout", "std")]
@@ -1210,9 +1276,9 @@ def sheet_assembly(e, ctx):
                                   horizontal=e.get("horizontal", False), label=e.get("label", "SECTION A–A"))
     balloons(S, anchors, box)
     # the parts list
-    cols = [("item", 9.0), ("drawing", 31.0), ("description", 80.0), ("material", 44.0), ("qty", 12.0)]
+    cols = lay.get("cols", [("item", 9.0), ("drawing", 31.0), ("description", 80.0), ("material", 44.0), ("qty", 12.0)])
     rows = [(it["no"], it["dwg"], it["label"], it["material"], it["qty"]) for it in items]
-    size = 6.3 if len(rows) <= 16 else 5.6
+    size = (6.3 if len(rows) <= 16 else 5.6) if "cols" not in lay else 5.4
     px, py = lay["plist"]
     y = table(S, px, py, cols, rows, size=size, row_h=4.6 if len(rows) <= 16 else 4.0, wrap_cols=("description", "material"))
     S.text(px, py + 1.6, "PARTS LIST", size=7.4, weight="bold")
@@ -1220,7 +1286,7 @@ def sheet_assembly(e, ctx):
     png = None
     if ctx["renderer"].ok:
         shapes = [(M.placed(nm), part_colour(M, nm)) for it in items if not it["ref"] or e.get("ref3d")
-                  for nm in it["names"]]
+                  for nm in it["names"] if nm not in e.get("omit3d", ())]
         if e.get("cut3d", True):
             shapes = cut_quarter(shapes, True)
         v = dict(dir=(1.0, -1.4, 0.7), up=(0, 0, 1))
@@ -1315,8 +1381,9 @@ def sheet_index(e, ctx, entries):
     rows = [(ctx["sheet_no"][x["dwg"]], x["dwg"].replace("DCCREG-", ""), x["title"], x.get("status", ""),
              x.get("qty_index", x.get("qty")) or "") for x in entries]
     half = (len(rows) + 1) // 2
-    y1 = table(S, 24.0, 274.0, cols, rows[:half], size=5.6, row_h=3.95, wrap_cols=())
-    y2 = table(S, 162.0, 274.0, cols, rows[half:], size=5.6, row_h=3.95, wrap_cols=())
+    sz, rh = (5.6, 3.95) if half <= 40 else (5.0, 3.3)                # a longer set in smaller rows
+    y1 = table(S, 24.0, 274.0, cols, rows[:half], size=sz, row_h=rh, wrap_cols=())
+    y2 = table(S, 162.0, 274.0, cols, rows[half:], size=sz, row_h=rh, wrap_cols=())
     png = e.get("still")
     return finish(S, e, ctx, None, "—", os.path.join(ROOT, png) if png else None, e.get("notes", []), e.get("data", ()),
                   caption3d=e.get("caption3d"), notes_box=dict(x=24.0, y_top=min(108.0, min(y1, y2) - 2.0), width_mm=202.0))
@@ -1425,8 +1492,12 @@ def entries(M):
                "Every sheet is Rev A, a draft for quotation: the drawings are generated from the solids and are to be "
                "checked and approved before release. Side B's parts are side A's mirror or the same part, as each sheet "
                "states.",
-               "Not drawn: the screws, studs and inserts (sheet P-011 lists them), the gel, the potting moulds, the gear "
-               "and belt (docs/drive-gear-belt.md), the frame."],
+               "The proposed parts the layout's model does not carry are drawn from their first cuts (sim/unmodelled_parts.py): "
+               "the magnetic pump's chokes, kick and electronics (REL-720 to REL-730, P-016 to P-019; their places on the "
+               "rotor OPEN) and the drive (DRV-100 to DRV-190, P-012 to P-015; on the record's 940 mm stack-up, to be re-cut "
+               "on the layout: ledger §6, item 71).",
+               "Not drawn: the screws, studs and inserts (sheets P-011 and DRV-190 list them), the gel, the potting moulds, "
+               "the frame (the base plate, the columns, the top plate: placeholders in docs/drive-gear-belt.md §9)."],
         data=[("sheets", "the index and every drawing below"), ("model", "docs/geometry/tube/…-layout.step"),
               ("generator", "docs/make_drawing_set.py")])
     add("GA-001", "General arrangement", "the whole machine", "assembly", status="PROPOSED", qty=1, layout="tall",
@@ -1437,7 +1508,8 @@ def entries(M):
                "(sim/bridge_ring_bearings.py placement).",
                "Two bodies: the rotor (the shaft, the hub, the decks, Ca / Cb, the rotor vanes, the utrons) and the "
                "counter-rotor (the cage, the stator vanes, the spiders, the bridges and bridge rings), geared 1 : -1.",
-               "The balloons name the sub-assemblies; each has its own sheet."])
+               "The balloons name the sub-assemblies; each has its own sheet. The drive (DRV-100, DRV-120) is not placed "
+               "here: its first cut stands on the record's 940 mm stack-up (ledger §6, item 71)."])
     E[-1]["groups"] = None                                           # filled once GA_GROUPS is known (below)
 
     # ---------------- the hub
@@ -1578,8 +1650,11 @@ def entries(M):
     deck_entries(add, M, q, col, mat)
     cap_entries(add, M, q, col, mat, pl, p)
     rel_entries(add, M, q, col, mat, rel)
+    pump_parts_entries(add)
     brg_entries(add, M, q, col, mat)
+    drive_entries(add)
     bought_entries(add, M, q, col, mat)
+    bought_extra_entries(add)
     for e in E:
         if e["dwg"] == "DCCREG-GA-001":
             e["groups"] = lambda M: GA_GROUPS
@@ -2100,6 +2175,489 @@ def bought_entries(add, M, q, col, mat):
                "gaps)."])
 
 
+# ---------------------------------------------------------------------------------------------------------
+# the proposed parts the layout's model does not carry (sim/unmodelled_parts.py): the magnetic pump's chokes and
+# kick, its bought electronics, and the drive (the reverser, the belt, the motor)
+# ---------------------------------------------------------------------------------------------------------
+DRIVE_FLAG = ("Status: the first cut of docs/drive-gear-belt.md on the record's 940 mm stack-up (z from the record's "
+              "bottom end-bearing slot); the ledger asks for the drive to be re-cut on the layout (§6, item 71). PROPOSED.")
+DRIVE_STATUS = "PROPOSED · the first cut, on the record's 940 mm stack-up: to re-cut on the layout (ledger §6, item 71)"
+PUMP_STATUS = "PROPOSED · the first cut (sim/parts-first-cut-findings.md); its place on the rotor OPEN"
+TEETH = ("The teeth as the 3-D view and the model draw them: the heel's involute profile on the back cone (Tredgold), "
+         "the flanks straight to the apex, each tooth thinned 0.064 mm for the backlash (sim/unmodelled_parts.py); "
+         "the section and the plan draw the blank, as a gear drawing does.")
+SS305 = "austenitic stainless 1.4305 (303), non-magnetic, as the shaft"
+AL6 = "Al EN AW-6082-T6"
+_PAIRS = {}
+
+
+def subpart(skey, pkey, turn=0.0, norm="z"):
+    """a sub-assembly's prototype for its own sheet: (make, make3d), the drawing's solid (a gear's blank) and the 3-D
+    view's (its teeth), turned about z by `turn` and moved alike, to start at z 0 (norm 'z') or centred ('c')."""
+    def both():
+        k = (skey, pkey, turn, norm)
+        if k not in _PAIRS:
+            bl, _, _, t3 = sub(skey).protos[pkey]
+            t3 = bl if t3 is None else t3
+            if turn:
+                bl, t3 = rotated(bl, (0, 0, 1), turn), rotated(t3, (0, 0, 1), turn)
+            lo, hi = tight_bbox(bl)
+            d = -0.5 * (lo + hi) if norm == "c" else np.array([0.0, 0.0, -lo[2]])
+            _PAIRS[k] = (moved(bl, *d), moved(t3, *d))
+        return _PAIRS[k]
+    return (lambda M: both()[0]), (lambda M: both()[1])
+
+
+def placed_parts(skey, names=None):
+    """a sub-assembly's parts as placed, each in its colour (a module's 3-D view)."""
+    S = sub(skey)
+    return [(S.placed(p, True), S.protos[p["proto"]][1]) for p in S.parts if names is None or p["name"] in names]
+
+
+def gear_rows(g, mates):
+    """a bevel gear's data block (sim/unmodelled_parts.py bevel_gear's data; docs/drive-gear-belt.md §5)."""
+    return [("gear", "straight bevel, 90° shaft angle; the teeth's proportions at the heel (h_a = m, h_f = 1.25 m)"),
+            ("teeth, module", f"z {g['z']}, m {g['m']:g} at the heel; pressure angle {g['alpha_deg']:g}°"),
+            ("pitch angle δ", f"{g['delta_deg']:.2f}°; face {g['face_angle_deg']:.2f}°, root {g['root_angle_deg']:.2f}°"),
+            ("pitch Ø / tip Ø", f"{g['d_pitch']:.2f} / {g['d_tip_heel']:.2f} at the heel"),
+            ("cone distance, face", f"R_e {g['R_e']:.2f}; b {g['b']:g}"),
+            ("mounting distance", f"{g['mounting_distance']:.2f} ± 0.05, the cone's apex to the back face"),
+            ("mates with", mates), ("backlash", "j_n 0.10-0.15, set at assembly (docs/drive-gear-belt.md §5)"),
+            ("accuracy", "ISO 17485 grade 8 class (AGMA Q 8, as sized) [IR]")]
+
+
+def gear_marks(g):
+    """a bevel gear blank's pitch cone (a chain line) and its callouts in the section, in its drawing's frame (z from
+    the toe's tip, as subpart moves it)."""
+    z0 = g["z_min"]
+    (rh, zh), (rt, zt) = g["pitch_heel"], g["pitch_toe"]
+    u = np.array([rh - rt, zh - zt]) / math.hypot(rh - rt, zh - zt)
+    a, b = np.array([rt, zt - z0]) - 4.0 * u, np.array([rh, zh - z0]) + 4.0 * u
+    Ht = (g["Ht"][0], g["Ht"][1] - z0)
+    mid = (0.5 * (g["Ht"][0] + g["Tt"][0]), 0.5 * (g["Ht"][1] + g["Tt"][1]) - z0)
+    lines = [("detail", [tuple(a), tuple(b)], "chain")]
+    calls = [("detail", Ht, f"tip Ø{g['d_tip_heel']:.2f} at the heel", (1.0, 0.25)),
+             ("detail", mid, f"face cone {g['face_angle_deg']:.2f}°", (1.0, -0.6)),
+             ("detail", tuple(b), f"pitch cone {g['delta_deg']:.2f}°", (0.6, 1.0))]
+    return lines, calls
+
+
+def pump_parts_entries(add):
+    """REL-720 the La / Lb choke, REL-721 its winding, REL-730 the K4 kick module (sim/parts-first-cut-findings.md)."""
+    import unmodelled_parts as U
+    ch = U.CH
+    add("REL-720", "La / Lb choke, EI-84 × 35, 150 turns", "the magnetic pump: La / Lb", "assembly", status="PROPOSED",
+        status_text=PUMP_STATUS, qty=2, sub="choke", window=(-6.0, 90.0, -4.0, 74.0), planes=[("z", 0.5 * U.CH_S, "plan")],
+        label="SECTION A–A: the cut through the stack's middle (seen from +z, the legs up)",
+        view3d=dict(dir=(0.9, -1.0, 1.6), up=(0, 1, 0)), cut3d=False,
+        groups=lambda M: [("E laminations, a bonded stack", "P-019", "M400-50A 0.5", lambda n, k: n == "E_stack"),
+                          ("I laminations, a bonded stack", "P-019", "M400-50A 0.5", lambda n, k: n == "I_stack"),
+                          ("gap spacer, 0.063 mm", "P-019", "PET film", lambda n, k: n == "gap_spacer"),
+                          ("bobbin", "P-019", "PA66-GF", lambda n, k: n == "bobbin"),
+                          ("winding, 150 turns", "REL-721", "Cu, grade 2", lambda n, k: n == "winding"),
+                          ("leads, sleeved", "REL-721", "Cu", lambda n, k: n.startswith("lead_"), 2)],
+        source="sim/parts-first-cut-findings.md §1; sim/parts_first_cut_results.json la_lb.chosen",
+        notes=["La and Lb are one part, two per machine: EI-84 scrapless (84 × 70, centre leg 28, outer legs 14, window "
+               "14 × 42), a 35 mm stack of M400-50A 0.5 mm laminations (M235-35A roughly halves the iron loss).",
+               f"{ch['turns']} turns of Ø{ch['wire_mm']:.2f} grade 2 in {ch['layers']} layers of {ch['per_layer']}: R20 "
+               f"{ch['R20_ohm']:.3f} Ω; 0.146 H, trimmed on test by the spacer (0.063 mm in all three legs, E and I butted).",
+               "Bond the stack and the spacer: the gap pulls 531 N at the peak, 226 N pulsating at 120 Hz. Impregnate "
+               "(VPI, class F).",
+               "On the rotor at r 80 it sees 32 g (490 N at 600 rpm; 760 N in the 750 rpm spin test): La and Lb 180° "
+               "apart in one plane; no bracket may encircle a leg (a shorted turn). Its place on the rotor is OPEN.",
+               f"{ch['m_with_bobbin_kg']:.2f} kg each: {ch['m_fe_kg']:.2f} kg of iron, {ch['m_cu_kg']:.2f} kg of copper, the "
+               "bobbin and the varnish. The flanges reach 1 mm past the build: 84 × 70 × 61 over all."])
+    mk, mk3 = subpart("choke", "ch_winding", norm="c")
+    add("REL-721", "La / Lb winding, 150 turns of Ø1.40", "the magnetic pump: La / Lb", "block", mk, None,
+        material="Cu magnet wire, grade 2 (IEC 60317), Ø1.40, impregnated", status="PROPOSED", status_text=PUMP_STATUS,
+        qty=2, used_in="REL-720", source="sim/parts_first_cut_results.json la_lb.chosen (choke(), winding())",
+        mass_kg=ch["m_cu_kg"], colour3d=(0.86, 0.53, 0.32), view3d=dict(dir=(0.9, -1.0, 1.6), up=(0, 1, 0)),
+        data=[("turns, wire", f"{ch['turns']} × Ø{ch['wire_mm']:.2f} (OD {ch['wire_od_mm']:.3f})"),
+              ("layers", f"{ch['layers']} of {ch['per_layer']}; build {ch['build_mm']:.2f}"),
+              ("mean turn, length", f"{ch['mlt_mm']:.0f} mm; {ch['length_m']:.1f} m"),
+              ("R20, copper", f"{ch['R20_ohm']:.3f} Ω; {ch['m_cu_kg']:.3f} kg")],
+        notes=[f"{ch['turns']} turns of Ø{ch['wire_mm']:.2f} grade 2, {ch['layers']} layers of {ch['per_layer']} at a 1.55 mm "
+               "pitch on the bobbin, polyester tape 0.05 mm between the layers.",
+               "The leads (start and finish) sleeved and led out at the stack's +z face; turn to turn about 0.7 V, layer to "
+               "layer about 40 V, which grade 2 holds with a wide margin (sim/parts-first-cut-findings.md §1).",
+               "The envelope as drawn: the build round the leg's 28 × 35 section from 1.25 to 12.04 mm, its corners R1.25 "
+               "inside and R12.0 outside; 37.2 long between the flanges."])
+    add("REL-730", "Start kick K4, module", "the magnetic pump: the start", "bought", lambda M: compound(
+        [s for s, _ in placed_parts("kick")]), None, material="a G10 base, the cell in its holder, the board potted in "
+        "silicone, the reed sensor", status="PROPOSED", status_text=PUMP_STATUS, qty=1, used_in="the rotor (place OPEN)",
+        source="sim/parts-first-cut-findings.md §3 (K4); sim/parts_first_cut_results.json kick",
+        make_parts3d=lambda M: placed_parts("kick"), views=("top", "front"), env_box=(34.0, 150.0, 258.0, 128.0), scale=1.0,
+        env_title="THE MODULE (its layout a placeholder [RH])", view3d=dict(dir=(1.0, -1.4, 1.2)),
+        mass_kg=None,
+        spec=[("cell", "9 V lithium (LiMnO2, 1.2 Ah): Ultralife U9VL-J-P, 48.5 × 26.5 × 17.5, in a 9 V holder "
+                       "(Keystone 1294 class)"),
+              ("C kick", "470 µF 25 V bipolar electrolytic, Ø16 × 25: Nichicon UES1E471MHM; it swings to −2.4 V after "
+                         "the dump, so it must be bipolar (or film)"),
+              ("R1", "10 kΩ, 0.25 W: the cell charges C in τ 4.7 s"),
+              ("SCR", "≥ 400 V, ≥ 1 A, sensitive gate: Littelfuse TCR22-8 (600 V, 1.5 A, TO-92); it sees −101 … +119 V"),
+              ("snubber, gate", "100 Ω + 10 nF across the SCR (dV/dt); R3 1 kΩ gate to cathode; the reed through 0.1 µF + "
+                                "R2 100 Ω into the gate"),
+              ("reed, magnet", "normally open, flange mount on M3: Littelfuse 59140; the magnet a Littelfuse 57140-000 "
+                               "actuator, brought from outside the frame"),
+              ("link", "the arming link, a 2-pin header and jumper on the potting"),
+              ("energy", "19.0 mJ at 9 V; the seed needs 2.2 mJ (16 % of Ψs), a fast dump about 8 mJ: × 2.4")],
+        notes=["The K4 kick (PROPOSED): the cell charges C through R1; at full speed the magnet closes the reed once a "
+               "revolution, the reed pulses the SCR, and the SCR dumps C across La, + to node a and − to REF: 0.60 A peak "
+               "over 17 ms. The SCR stops when its dump ends, so each charge kicks once.",
+               "Procedure: arm at standstill (the link in); spin up to 600 rpm each way, never below 500; bring the magnet "
+               "to the reed's track; the AH comes up within about 25 cycles (0.2 s); withdraw the magnet. After a slow-down "
+               "below about 750 rpm relative, re-kick at full speed (C recharges in about 25 s).",
+               "The module's layout and envelope are placeholders [RH]; its place on the rotor is OPEN: where the cage carries "
+               "no vanes, away from the bridges and utrons, the reed's blades radial and potted so 20-63 g cannot close it.",
+               "It starts the pump at all four rotor phases tried with every diode set (sim/parts-first-cut-findings.md §3)."])
+
+
+def drive_entries(add):
+    """the reverser (DRV-100 to -109), the belt drive (DRV-120, -121) and their small parts (DRV-190)."""
+    import unmodelled_parts as U
+    res = json.load(open(os.path.join(ROOT, "sim", "unmodelled_parts_results.json")))
+    clr, bclr = res["reverser"]["clearance_mm"], res["belt"]["clearance_mm"]
+    mesh_clr = min(res["reverser"]["mesh_clearance_mm"].values())
+    R = sub("reverser")
+    gr, gc, gp = R.data["g_rotor"], R.data["g_cr"], R.data["g_pinion"]
+    pb = U.pinion_bearings()
+    rotor_ = lambda n: n in ("gear_rotor", "key", "collar", "spacer_A", "spacer_B", "spacer_C")
+    add("DRV-100", "The 1 : −1 bevel reverser, side A", "the drive", "assembly", status="PROPOSED", status_text=DRIVE_STATUS,
+        qty=1, sub="reverser", window=(-80.0, 80.0, -139.0, 24.0), planes=[(U.PHI_P[0], "right"), (U.PHI_P[0] + 180.0, "left")],
+        label=f"SECTION A–A: right through a pinion's axis ({U.PHI_P[0]:.0f}°), left at {U.PHI_P[0] + 180.0:.0f}°",
+        view3d=dict(dir=(1.0, -1.4, 0.7)), layout="std_notes", omit3d=("end_disc",),
+        caption3d="3-D view, a quarter cut away; the end disc and the shaft left out (axonometric, not to scale)",
+        groups=lambda M: [("side gear, the rotor's", "DRV-101", "1.4305", lambda n, k: n == "gear_rotor"),
+                          ("side gear, the counter-rotor's", "DRV-102", "1.4305", lambda n, k: n == "gear_cr"),
+                          ("pinion z 20", "DRV-103", "POM-C", lambda n, k: n.startswith("pinion_")),
+                          ("stub shaft", "DRV-104", "1.4305", lambda n, k: n.startswith("stub_")),
+                          ("cartridge sleeve", "DRV-105", "Al 6082", lambda n, k: n.startswith("cartridge_")),
+                          ("bearing SKF 6000-2Z", "P-012", "—", lambda n, k: n.startswith("b6000_")),
+                          ("gear case", "DRV-106", "Al 6082", lambda n, k: n == "case"),
+                          ("bell", "DRV-107", "Al 6082", lambda n, k: n == "bell"),
+                          ("counter-rotor hub", "DRV-108", "Al 6082", lambda n, k: n == "hub"),
+                          ("end disc", "DRV-109", "G10", lambda n, k: n == "end_disc"),
+                          ("bearing SKF 6205-2Z (of P-001's)", "P-001", "—", lambda n, k: n.startswith("bearing_")),
+                          ("collar, spacers, key, ring, nut", "DRV-190", "1.4305",
+                           lambda n, k: rotor_(n) or n.startswith("spacer_") or n in ("retaining_ring", "nut")),
+                          ("pulley 80T with its bush", "P-014", "—", lambda n, k: n in ("pulley_80T", "bush"), "1 + 1"),
+                          ("shaft, its drive end (for reference)", "SHF-301", "—", lambda n, k: n == "shaft")],
+        source="docs/drive-gear-belt.md §5, §8; sim/unmodelled_parts.py reverser_sub",
+        notes=[DRIVE_FLAG,
+               "Three POM pinions at 30° / 150° / 270° between two equal stainless side gears; the case is the carrier, held "
+               "by the frame: the counter-rotor turns at −600 rpm when the rotor turns at +600 (§5). The teeth clear by "
+               f"{mesh_clr:.3f} mm at the closest point (sim/unmodelled_parts_results.json).",
+               "On the shaft, clamped by the lock nut against the collar: the gear-end bearing's inner ring, spacer A, the "
+               "rotor gear (keyed), spacer B, the locating bearing's inner ring, spacer C, the pulley's bush. Both bodies' "
+               "weight (689 N) reaches the case floor's lip through the locating bearing (§7).",
+               "Departures from the first cut to make it buildable [IR]: the hub's lip above its bearing (so it carries the "
+               "counter-rotor's 350 N); the counter-rotor's gear bolted by a flange outside the bearing; the pinions' "
+               f"bearings {pb['spacing_l_mm']:.0f} mm apart, the mesh {pb['overhang_a_mm']:.0f} mm outboard (the case's arithmetic; "
+               f"the statics' 16 / 12 do not fit it): {pb['limit']['R_inner_N']:.0f} N at the limit, static safety "
+               f"{pb['limit']['static_safety']:.0f}; the bell Ø144 / Ø164, a C open to the motor, clear of the belt.",
+               "Backlash j_n 0.10-0.15 by shims under the cartridges' flanges and the rotor gear's spacer; POM-compatible "
+               "grease in the closed case (§5)."])
+    turned = dict(kind="turned", status="PROPOSED", status_text=DRIVE_STATUS, used_in="DRV-100")
+    lines, calls = gear_marks(gr)
+    mk, mk3 = subpart("reverser", "g_rotor")
+    add("DRV-101", "Side gear, the rotor's, z 30 m 2, keyed", "the drive: the reverser", make=mk, make3d=mk3,
+        material=SS305, qty=1, rho=7900.0, colour3d=(0.74, 0.76, 0.79), lines=lines, scale=1.0, section_vertical=True,
+        detail=(10.0, 33.0), source="docs/drive-gear-belt.md §5; sim/drive_sizing_results.json gear",
+        bore_text={25.0: "Ø25 H7", 40.0: "hub Ø40"},
+        data=gear_rows(gr, "DRV-103 pinion z 20, × 3") + [("keyway", "8 P9 × 3.3 in the hub only (DIN 6885 A 8 × 7)")],
+        notes=["The first cut's side gear (§5): z 30, m 2, b 12, 1.4305 (non-magnetic, as the shaft); the wheel of a "
+               "1.5 : 1 set, re-machined to this drawing, or cut from bar.",
+               "Keyed on the shaft's Ø25 journal in its own hub Ø40 × 12, not under the teeth: the small-end root is "
+               f"Ø{gr['d_root_toe']:.1f} (§5). Keyway 8 P9 × 3.3 in the hub only.",
+               "The mounting distance sets the mesh: shim the spacer under the hub (DRV-190) for the backlash.",
+               TEETH, DRIVE_FLAG], **turned)
+    lines, calls = gear_marks(gc)
+    mk, mk3 = subpart("reverser", "g_cr")
+    add("DRV-102", "Side gear, the counter-rotor's, z 30 m 2, flanged", "the drive: the reverser", make=mk, make3d=mk3,
+        material=SS305, qty=1, rho=7900.0, colour3d=(0.74, 0.76, 0.79), lines=lines, scale=1.0, section_vertical=True,
+        detail=(13.0, 42.0), level_tol=0.6, source="docs/drive-gear-belt.md §5; sim/unmodelled_parts.py side_gear",
+        bore_text={31.0: "Ø31", 40.0: "relief Ø40 × 0.5"},
+        data=gear_rows(gc, "DRV-103 pinion z 20, × 3") + [("flange", "Ø80 × 3, 6 × Ø4.5 on PCD Ø70")],
+        notes=["The same teeth as DRV-101 (§5: two identical side gears), with a back flange Ø80 × 3 [IR]: bolted under "
+               "the counter-rotor's hub (DRV-108) by six M4 (ISO 4762, A4) on PCD Ø70 at 0° / 60° …, between the pinions.",
+               "Its back face holds the gear-end 6205-2Z's outer ring in the hub's seat; the relief Ø40 × 0.5 keeps it off "
+               "the inner ring. Bore Ø31: 1.5 mm round the shaft's spacer tube (Ø28), which turns at 1200 rpm against it.",
+               TEETH, DRIVE_FLAG], **turned)
+    lines, calls = gear_marks(gp)
+    mk, mk3 = subpart("reverser", "g_pinion")
+    add("DRV-103", "Pinion, POM-C, z 20 m 2", "the drive: the reverser", make=mk, make3d=mk3,
+        material="POM-C (acetal copolymer), natural, from annealed stock", qty=3, rho=1410.0, colour3d=(0.94, 0.93, 0.88),
+        lines=lines, scale=1.0, section_vertical=True, detail=(3.0, 23.0), source="docs/drive-gear-belt.md §5",
+        bore_text={10.0: "Ø10 H7 (pressed)", 14.0: "hub Ø14"},
+        data=gear_rows(gp, "DRV-101 and DRV-102, side gears z 30"),
+        notes=["POM-C, z 20, m 2, b 12: an idler, its two meshes balance, so it carries no torque on its shaft; pressed "
+               "on its stainless stub shaft (DRV-104).",
+               "Its Ø14 hub bears on the inner 6000-2Z's inner ring; mounting distance 38.00 from the apex (§8).",
+               "Teeth cut (hob or shaper) or moulded; POM-C ≤ 60 °C (the VDI 2736-class limits of §5): bending 12 MPa, "
+               "contact 30 MPa at the driver's limit (S 3.6 / 2.0).", TEETH, DRIVE_FLAG], **turned)
+    mk, mk3 = subpart("reverser", "stub")
+    add("DRV-104", "Stub shaft, Ø10, the pinion's", "the drive: the reverser", make=mk, material=SS305, qty=3,
+        rho=7900.0, colour3d=(0.74, 0.76, 0.79), long=True, source="docs/drive-gear-belt.md §5 (Ø10, 2 × 6000-2Z)",
+        notes=["Ø10 h6 over the pinion's seat (pressed) and the two 6000-2Z; the circlip's groove DIN 471 for 10 × 1 "
+               "(Ø9.6 × 1.1) at the outer end [IR].",
+               f"Bending at the driver's limit {pb['limit']['axle_sigma_MPa']:.0f} MPa, the mesh {pb['overhang_a_mm']:.0f} mm "
+               "outboard of the inner bearing (sim/unmodelled_parts_results.json pinion_bearings).", DRIVE_FLAG], **turned)
+    mk, mk3 = subpart("reverser", "cart")
+    add("DRV-105", "Cartridge sleeve, the pinion's two 6000-2Z", "the drive: the reverser", make=mk, material=AL6, qty=3,
+        rho=2700.0, colour3d=(0.83, 0.85, 0.89), long=True, source="docs/drive-gear-belt.md §5, §8 (the case's arithmetic)",
+        bore_text={26.0: "Ø26 H7", 22.0: "land Ø22", 26.5: "Ø26.5"},
+        notes=["The two 6000-2Z in Ø26 H7 seats either side of the 4 mm land; the inner one pressed from the inner end, "
+               "the outer one from outside; Ø32 g6 in the case's bore Ø32 H7.",
+               "The flange on the case's boss face (r 76): three M4 (ISO 4762, A4) on PCD Ø40; shims under it set the "
+               "backlash j_n 0.10-0.15 (§5).",
+               f"The bearings {pb['spacing_l_mm']:.0f} mm apart (the case's arithmetic, §8): the inner one takes "
+               f"{pb['steady']['R_inner_N']:.0f} N steady, {pb['limit']['R_inner_N']:.0f} N at the driver's limit, a static "
+               f"safety of {pb['limit']['static_safety']:.0f} (the first cut's statics: 16 mm, 141 N, 14).", DRIVE_FLAG],
+        **turned)
+    mk, mk3 = subpart("reverser", "case", turn=-U.PHI_P[0])
+    add("DRV-106", "Gear case, the carrier and end-bearing housing", "the drive: the reverser", make=mk, material=AL6,
+        qty=1, rho=2700.0, colour3d=(0.83, 0.85, 0.89), detail=(0.0, 83.0), scale=0.5,
+        source="docs/drive-gear-belt.md §5, §7, §8; sim/unmodelled_parts.py gear_case",
+        bore_text={52.0: "Ø52 H7 (6205)", 40.0: "lip Ø40", 88.0: "Ø88", 128.0: "Ø128"},
+        tapped={2.5: "M3", 5.0: "M6"},
+        data=[("bosses", "3 × Ø56 at the pinions' axes (30° / 150° / 270°; drawn at 0° / 120° / 240°), faces at r 76, 60 "
+                         "above the floor's underside; bores Ø32 H7; three M4 × 10 on PCD Ø40 each"),
+              ("floor", "17 thick: the seat Ø52 H7 × 15 from the top, the lip Ø40 × 2 under it"),
+              ("flange", "Ø168 × 8 at the floor; three M6 from below on PCD Ø154 at 120° / 180° / 240°")],
+        notes=["The carrier of the reverser and the frame's bottom end-bearing housing (§5, §8): it takes the gear's "
+               "1.0 N·m steady, 5.2 N·m at the driver's limit, into the base plate.",
+               "The locating 6205-2Z in the floor: the seat Ø52 H7 × 15 from the top on a lip Ø40, which takes both bodies' "
+               "weight (689 N, §7); the retaining ring (DRV-190) over it on three M3 at PCD Ø58.",
+               "The bosses at the pinions' axes (30° / 150° / 270°, 60 above the floor's underside) carry the cartridges "
+               "(DRV-105); three M6 come up from under the base plate, through the bell, into the floor's flange Ø168 [IR: "
+               "the first cut's case is the Ø144 barrel; the bosses and the flange are this drawing's].",
+               "The top lip's bore Ø88 is the labyrinth over the hub; grease POM-compatible, the case closed.", DRIVE_FLAG],
+        **turned)
+    mk, mk3 = subpart("reverser", "bell", turn=210.0)
+    add("DRV-107", "Bell, a C under the case floor", "the drive: the reverser", make=mk, material=AL6, qty=1, rho=2700.0,
+        colour3d=(0.83, 0.85, 0.89), detail=(66.0, 86.0), source="docs/drive-gear-belt.md §8; sim/unmodelled_parts.py bell",
+        notes=["Ø164 / Ø144 × 40 over 170°, open toward the motor so the belt passes and can be fitted without lifting the "
+               "machine [IR]. The first cut's bell (r 64-72) would cut the belt's land (r 63.1-64.8).",
+               "Clamped between the base plate and the case's flange by three M6 × 60 (ISO 4762, A4) from below through "
+               "Ø6.6 at 120° / 180° / 240° (drawn turned 210°, so the section misses a hole).",
+               f"It clears the 80T pulley by {clr['pulley_80T | bell']:.1f} mm and the belt by {bclr['belt | bell']:.1f} mm "
+               "(sim/unmodelled_parts_results.json).", DRIVE_FLAG],
+        **turned)
+    mk, mk3 = subpart("reverser", "hub")
+    add("DRV-108", "Counter-rotor hub, the gear-end bearing's", "the drive: the reverser", make=mk, material=AL6, qty=1,
+        rho=2700.0, colour3d=(0.83, 0.85, 0.89), detail=(0.0, 41.0),
+        source="docs/drive-gear-belt.md §5, §8; sim/unmodelled_parts.py cr_hub", tapped={4.2: "M5", 3.3: "M4"},
+        notes=["z −8 to 10 (§8): the gear-end 6205-2Z in a seat Ø52 H7 × 15 open below, under a lip Ø44 that rests on its "
+               "outer ring, so the counter-rotor's 350 N goes through it into the shaft (§5) [IR: the first cut drew the lip "
+               "below, which would not carry the weight].",
+               "Six M5 × 10 deep from the top on PCD Ø70 (30° / 90° …) for the end disc (DRV-109); six M4 × 8 deep from below "
+               "on PCD Ø70 (0° / 60° …) for the side gear's flange (DRV-102).",
+               "A metal island at the shaft's potential: the G10 disc insulates it from the counter-rotor's REF parts (§5).",
+               DRIVE_FLAG], **turned)
+    mk, mk3 = subpart("reverser", "disc", turn=-30.0)
+    add("DRV-109", "End disc, G10, the counter-rotor's", "the drive: the reverser", make=mk, material=G10 + ", plate 10",
+        qty=1, rho=1850.0, colour3d=(0.84, 0.76, 0.52), detail=(25.0, 45.0), scale=0.5,
+        source="docs/drive-gear-belt.md §5 (the bottom spider re-purposed)",
+        notes=["G10, 10 mm, r 30-156.5 (§5: the record's bottom frame spider re-purposed): it closes bridge ring A's end and "
+               "carries the hub [IR: the bolting].",
+               "Twelve M5 countersunk from below on PCD Ø288 into threaded inserts in bridge ring A's end face; six M5 "
+               "countersunk from the top on PCD Ø70 into the hub (drawn turned 30°: a hub screw at 0°).", G10_MACH,
+               DRIVE_FLAG], **turned)
+    add("DRV-120", "The belt drive: pulleys, belt, motor on its plate", "the drive", "assembly", status="PROPOSED",
+        status_text=DRIVE_STATUS, qty=1, sub="belt", layout="broad", window=(-86.0, 292.0, -138.0, 28.0),
+        planes=[(0.0, "full")], label="SECTION A–A through the shaft's and the motor's axes",
+        view3d=dict(dir=(0.6, -1.0, 1.1)), cut3d=False,
+        groups=lambda M: [("belt Gates 750-5M-15", "P-013", "—", lambda n, k: n == "belt"),
+                          ("pulley 80T and taper bush", "P-014", "—", lambda n, k: n in ("pulley_80T", "bush"), "1 + 1"),
+                          ("pulley 20T", "P-014", "—", lambda n, k: n == "pulley_20T"),
+                          ("motor, 200 W", "P-015", "—", lambda n, k: n == "motor"),
+                          ("motor plate", "DRV-121", "Al 6082", lambda n, k: n == "motor_plate"),
+                          ("the reverser (for reference)", "DRV-100", "—", lambda n, k: True)],
+        source="docs/drive-gear-belt.md §6; sim/drive_sizing_results.json belt",
+        notes=[DRIVE_FLAG,
+               "HTD 5M, 15 wide, 750 long (150 teeth); 20T → 80T, 4 : 1: the motor at 2400 rpm for 600 rpm; centres 245.4 "
+               "mm, the wrap on the 20T 158° (8 teeth in mesh), the belt at 4.0 m/s (§6).",
+               "Tension 46 N static per strand by the motor plate's slots; the hub load 90 N (153 N at the limit) into the "
+               "locating bearing (§6, §7). The pitch length at these centres 750.02 mm (sim/unmodelled_parts_results.json).",
+               "The motor stands on its plate above the 20T pulley; the plate on a bracket of the frame (the frame is not "
+               "drawn: placeholders, §9)."])
+    mk, mk3 = subpart("belt", "plate", norm="c")
+    add("DRV-121", "Motor plate, tensioning slots", "the drive: the belt", "block", mk, None, material=AL6 + ", plate 10",
+        status="PROPOSED", status_text=DRIVE_STATUS, qty=1, used_in="DRV-120", rho=2700.0, colour3d=(0.83, 0.85, 0.89),
+        source="docs/drive-gear-belt.md §6, §9 (the motor plate with tensioning slots)",
+        views=("top", "front"),
+        callouts=[("top", (25.0 * math.cos(math.radians(150)), 25.0 * math.sin(math.radians(150))), "Ø50 H8 THRU", (-0.8, 1.0)),
+                  ("top", (24.75, -24.75), "4× M5 THRU on PCD Ø70, at 45°", (1.0, -0.45)),
+                  ("top", (55.0, 38.0), "4 slots 6.6 × 26 at x ±45, y ±38", (0.6, 1.0))],
+        notes=["120 × 100 × 10: the motor's spigot in Ø50 H8, its flange on four M5 at PCD Ø70 (45°) [IR: the 60 mm "
+               "frame's class; confirm on the motor's drawing, P-015].",
+               "Four slots 6.6 × 26 for M6 to the frame's bracket: 20 mm of travel along the belt's line for the tension.",
+               DRIVE_FLAG])
+    add("DRV-190", "The drive's spacers, rings, keys and fasteners", "the drive", "list", status="PROPOSED",
+        status_text=DRIVE_STATUS, used_in="DRV-100, DRV-120", no_3d=True,
+        heading="THE DRIVE'S SMALL PARTS (per machine)", source="sim/unmodelled_parts.py reverser_sub, belt_sub",
+        cols=[("item", 52.0), ("specification", 160.0), ("qty", 20.0), ("used in", 36.0)],
+        rows=[("spacer A", f"Ø25 / Ø28 × {-8.0 - (U.Z_APEX - U.TOE_SIDE):.1f}, 1.4305: the rotor gear's toe to the gear-end "
+                           "bearing's inner ring (through the counter-rotor's gear)", 1, "DRV-100"),
+              ("spacer B", "Ø25 / Ø32 × 3, 1.4305: the rotor gear's hub to the locating bearing's inner ring; shim it to "
+                           "set the gear's mounting distance", 1, "DRV-100"),
+              ("spacer C", f"Ø25 / Ø32 × {-94.0 - (U.Z_BELT - 0.5 * U.P80['S'] + 25.4):.1f}, 1.4305: the locating bearing to the "
+                           "pulley's bush", 1, "DRV-100"),
+              ("pinion spacer", "Ø10 / Ø14 × 4, 1.4305: between the two 6000-2Z's inner rings", 3, "DRV-100"),
+              ("retaining ring", "Ø44 / Ø66 × 2, 1.4305, three Ø3.4 countersunk on PCD Ø58: over the locating bearing's "
+                                 "outer ring, three M3 × 6 (ISO 10642, A4)", 1, "DRV-100"),
+              ("shaft collar", "two-piece clamp collar Ø25, ≤ Ø40 × 10, stainless: over the gear-end bearing's inner ring, "
+                               "it carries the rotor's weight into the stack [IR]", 1, "DRV-100"),
+              ("key", "DIN 6885 A 8 × 7 × 12, stainless: the rotor gear in its hub", 1, "DRV-100"),
+              ("lock nut", "SKF KM 5 (M25 × 1.5) with its tab washer MB 5: clamps the shaft's stack", 1, "DRV-100"),
+              ("circlip", "DIN 471, 10 × 1, stainless: the stub shafts' outer ends", 3, "DRV-100"),
+              ("shims", "Ø48 / Ø32, 0.05 / 0.1 / 0.2, stainless: under the cartridges' flanges (the backlash)", "3 sets",
+               "DRV-100"),
+              ("screws", "M4 × 10 ISO 4762 A4: 6 (the gear's flange to the hub), 9 (the cartridges); M5 × 12 ISO 10642 A4: "
+                         "6 (the disc to the hub); M5 × 16 ISO 10642 A4 + 12 inserts M5: 12 (the disc to bridge ring A)",
+               "33 + 12", "DRV-100"),
+              ("bolts", "M6 × 60 ISO 4762 A4: 3 (from under the base plate through the bell into the case's flange); M5 × 16 "
+                        "ISO 4762: 4 (the motor's flange); M6 × 20 + washers: 4 (the motor plate to its bracket)", 11,
+               "DRV-100, DRV-120"),
+              ("grease", "POM-compatible, synthetic (PTFE-thickened class): the meshes and the closed case [IR]", "—",
+               "DRV-100")],
+        notes=["Quantities from sim/unmodelled_parts.py reverser_sub and belt_sub; the drive is one per machine.",
+               DRIVE_FLAG])
+
+
+def bought_extra_entries(add):
+    """the bought parts of the drive and of the magnetic pump's electronics (candidates from this session's search,
+    2026-10-11: confirm each on the maker's current sheet before ordering)."""
+    import unmodelled_parts as U
+    st = lambda txt: dict(status="BOUGHT", status_text=txt)
+    add("P-012", "Bearing, SKF 6000-2Z", "bought parts", "bought", lambda M: _nz(U.bearing(10.0, 26.0, 8.0)), None,
+        material="deep groove ball bearing, 10 / 26 / 8, shielded both sides", qty=6, used_in="DRV-105, DRV-100",
+        colour3d=(0.70, 0.72, 0.76), mass_kg=0.019, source="docs/drive-gear-belt.md §5 (2 × 6000-2Z a pinion)",
+        **st("BOUGHT · for the drive's first cut (PROPOSED)"),
+        spec=[("designation", "SKF 6000-2Z: deep groove ball bearing, shields both sides, greased for life"),
+              ("bore / OD / width", "10 / 26 / 8 mm"),
+              ("ratings", "C 4.75 kN, C0 1.96 kN (the first cut sized on 4.55 kN)"),
+              ("speeds", "reference 67 000 r/min, limiting 34 000 r/min (2Z); here 900 rpm"),
+              ("load", "the inner one 40 N steady, 195 N at the driver's limit (sim/unmodelled_parts_results.json)"),
+              ("alternates", "FAG 6000-2Z, NSK 6000ZZ, NTN 6000ZZ (the same ISO 15 boundary)"),
+              ("where", "two in each pinion's cartridge (DRV-105): six per machine")],
+        notes=["Catalogue data as distributors' listings render it (2026-10-11): simplybearings.co.uk 6000-2Z-SKF; "
+               "rgbautomatyka.pl 6000-2Z SKF. Re-read SKF's current page before ordering.",
+               "Fits: the stub shaft Ø10 k5, the cartridge's seats Ø26 H7."])
+    add("P-013", "Timing belt, Gates 750-5M-15 (HTD 5M)", "bought parts", "bought", lambda M: _nc(sub("belt").placed(
+        [p for p in sub("belt").parts if p["name"] == "belt"][0])), None, material="HTD 5M timing belt, neoprene / glass "
+        "cord", qty=1, used_in="DRV-120", colour3d=(0.18, 0.18, 0.19), views=("top", "front"), mass_kg=None,
+        env_box=(34.0, 150.0, 258.0, 128.0), scale=0.5,
+        source="docs/drive-gear-belt.md §6; sim/drive_sizing_results.json belt", **st("BOUGHT · for the drive's first cut (PROPOSED)"),
+        spec=[("designation", "Gates 750-5M-15 PowerGrip HTD: HTD 5M, 750 mm pitch length, 150 teeth, 15 mm wide"),
+              ("listing", "acorn-ind.co.uk, Gates metric timing belts (750-5M-15, EAN 5412571282061)"),
+              ("duty", "steady pull 15 N; 60 N at the driver's limit: the 15 mm width needed (§6)"),
+              ("tension", "46 N static per strand; the tight side ≤ 76 N against 375 N allowable (§6) [IR]"),
+              ("drawn", "its land only, 1.74 mm from the pulleys' tips; the teeth sit in the grooves")],
+        notes=["Any HTD 5M 750 × 15 of the same pitch length fits (Optibelt, ContiTech, Megadyne): to choose with the "
+               "pulleys' maker."])
+    add("P-014", "Pulleys HTD 5M: 80T taper-bush, 20T flanged", "bought parts", "bought", lambda M: compound([
+        moved(_nz(compound([sub("belt").placed(p) for p in sub("belt").parts if p["name"] in ("pulley_80T", "bush")])), 0, 0, 0),
+        moved(_nz(sub("belt").placed([p for p in sub("belt").parts if p["name"] == "pulley_20T"][0])), 105.0 - U.BELT["centre_mm"],
+              0, 0)]), None, material="cast iron / Al pulleys, HTD 5M", qty="1 + 1", qty_index="1 + 1", used_in="DRV-120",
+        colour3d=(0.83, 0.85, 0.89), views=("front", "top"), mass_kg=None, source="docs/drive-gear-belt.md §6",
+        env_box=(34.0, 150.0, 258.0, 128.0), scale=0.5,
+        make3d=lambda M: compound([
+            _nz(compound([sub("belt").placed(p, True) for p in sub("belt").parts if p["name"] in ("pulley_80T", "bush")])),
+            moved(_nz(sub("belt").placed([p for p in sub("belt").parts if p["name"] == "pulley_20T"][0], True)),
+                  105.0 - U.BELT["centre_mm"], 0, 0)]),
+        **st("BOUGHT · for the drive's first cut (PROPOSED)"),
+        spec=[("80T", "TL80-5M-15: HTD 5M, 80 teeth, pitch Ø127.32, tip Ø126.18, hub Ø92, F 22, S 25, no flanges, for a "
+                      "taper bush 1610 (beltingonline.com 80-5M-15)"),
+              ("bush", "taper bush 1610, bore Ø25 with an 8 mm keyway, on the shaft's drive end"),
+              ("20T", "P20-5M-15F: HTD 5M, 20 teeth, pitch Ø31.83, tip Ø30.69, flanges Ø36, hub Ø23, face 20.5, overall 26, "
+                      "pilot bore 6 (ondrives.com); bored Ø14 H7, keyway 5 JS9, an M5 set screw [IR: the motor's shaft]"),
+              ("drawn", "the 80T at left with its bush, the 20T at right, its hub up")],
+        notes=["The first cut said '24 mm over the flanges' for the 80T: the catalogue's TL80-5M-15 has no flanges and is 25 "
+               "through; the flanges are on the 20T (§6 to correct).",
+               "Confirm the bush's bore and the 20T's bore with the shaft and the motor's drawing before ordering."])
+    add("P-015", "Motor, BLDC 200 W 48 V (APBA60M048030-E), with driver", "bought parts", "bought",
+        lambda M: _nc(U.motor_shape()), None, material="brushless DC motor, 60 mm flange, encoder", qty=1, used_in="DRV-120",
+        colour3d=(0.20, 0.20, 0.22), views=("front", "top"), mass_kg=1.0, source="docs/drive-gear-belt.md §6",
+        **st("BOUGHT · for the drive's first cut (PROPOSED)"),
+        spec=[("motor", "Nanotec / SMD APBA60M048030-E: 200 W, 48 V, 3000 rpm, 0.64 N·m rated, 1.92 N·m peak, 6 A, IP65, "
+                        "2500 CPR encoder, 60 mm flange (NEMA 24), body 110 mm, about 1 kg (smd.ee; nanotec.com)"),
+              ("duty", "0.94 N·m at the belt, 61 W at its shaft (38 % of rated at 2400 rpm), 76 W electrical; run-up 32 s "
+                       "at its rated torque (§4)"),
+              ("driver", "a 48 V BLDC driver with a speed loop, ramps and a current limit at 1.5 × rated (the design's torque "
+                         "fuse, §4.3): Nanotec's matching driver (to choose)"),
+              ("supply", "48 V DC, 300 W"),
+              ("alternates", "Oriental Motor BLV series 200 W (48 V DC driver); Nanotec DB80S048030 (283 W); a 0.25 kW "
+                             "4-pole induction motor on a VFD, 24T / 56T (the economy line, §6)"),
+              ("envelope", "the flange's PCD Ø70, the spigot Ø50 and the shaft Ø14 × 30 keyed are the 60 mm frame's class "
+                           "[IR]: confirm on the maker's drawing")],
+        notes=["The motor's flange stands on the motor plate (DRV-121), its shaft down into the 20T pulley.",
+               "Datasheets: smd.ee/products/dc-brushless-motors/apba60m048030-e; nanotec.com 2881-apba60m048030-e."])
+    add("P-016", "Schottky rectifiers D1*–D4*, DO-201AD", "bought parts", "bought", lambda M: U.diode_shape(), None,
+        material="Schottky rectifier, axial DO-201AD", qty="2 + 2", qty_index="2 + 2", used_in="the rotor (place OPEN)",
+        colour3d=(0.20, 0.20, 0.22), views=("front", "side"), mass_kg=0.0012,
+        source="sim/parts-first-cut-findings.md §2.1, §4", **st("BOUGHT · for the first cut (PROPOSED)"),
+        spec=[("D1*, D2*", "200 V Schottky, ≥ 3 A (5 A preferred): SMC Diode Solutions SB5200 (200 V, 5 A, VF 0.85 V typ. at "
+                           "5 A, IFSM 120 A); alternates PANJIT MBR5200 (LCSC C268577), MCC SR5200-TP"),
+              ("their duty", "VR 113 / 104 V; IF 0.81 A average, 1.00 A rms, 1.90 A peak: VR × 1.8"),
+              ("D3*, D4*", "150 V Schottky (100 V at least), ≥ 3 A: SR5150 (150 V, 5 A, 0.92 V at 5 A, IFSM 150 A; DIYI, LCSC "
+                           "C129840); alternate ST STPS3150RL (150 V, 3 A, LCSC C262964)"),
+              ("their duty", "VR 58 / 60 V; IF 1.07 A average, 1.45 A rms, 2.27 A peak: VR × 2.5"),
+              ("package", "DO-201AD: body Ø5.3 × 9.5 max., leads Ø1.3; the cathode band"),
+              ("heat", "0.44-0.59 W a diode: on copper pads or a small heatsink")],
+        notes=["With Schottky parts the pump runs as modelled (z 1.142, AH 444 A-turns, a 16 % kick threshold); 1N540x-class "
+               "silicon costs 6 % of the AH (sim/parts-first-cut-findings.md §2.1).",
+               "Listings: digikey SB5200 (6022615); lcsc.com C268577, C129840, C262964. Confirm on the maker's sheet."])
+    cap, res = U.snubber_shapes()
+    add("P-017", "Node snubbers: 22 nF PP film + 240 Ω (8 of each)", "bought parts", "bought",
+        lambda M: compound(list(U.snubber_shapes())), None, material="PP film capacitor; ceramic composition resistor",
+        qty="8 + 8", qty_index="8 + 8", used_in="the rotor (place OPEN)", colour3d=(0.25, 0.35, 0.65), views=("front", "top"),
+        mass_kg=None, source="sim/parts-first-cut-findings.md §2.5, §4", **st("BOUGHT · for the first cut (PROPOSED)"),
+        spec=[("C", "22 nF ±10 %, polypropylene film, ≥ 250 V DC, pulse-rated: KEMET R76 22 nF ±5 % 400 V DC, 10 mm pitch, "
+                    "13 × 9 × 14 (RS 1353468); alternate Panasonic ECW-F series 250 V"),
+              ("its duty", "≤ 113 V, ≤ 1.7 V/µs: × 2.2 at 250 V"),
+              ("R", "240 Ω (E24), 0.5 W, pulse-rated, non-inductive: Ohmite OX221KE (220 Ω ±10 %, 1 W, ceramic composition, "
+                    "pulse-withstanding, 300 V, Ø5.5 × 16.5); alternate OY221KE (2 W)"),
+              ("its duty", "≤ 4.2 mW average, ≤ 0.30 W peak: × 118"),
+              ("drawn", "the capacitor (leads down) and the resistor (axial) side by side")],
+        notes=["The deck's frequency-scaled damping (sim/magnetic_doubler.py snub 'scaled'): tune R and C on the bench to the "
+               "real winding capacitance and the diodes' recovery (§2.5). 220 Ω is the OX series' nearest stock value.",
+               "Listings: uk.rs-online.com 1353468; digikey.ch OX221KE (823917)."])
+    add("P-018", "AH bypass capacitor, 22 mF 10 V, snap-in", "bought parts", "bought", lambda M: U.snapin_shape(), None,
+        material="aluminium electrolytic, snap-in", qty=2, used_in="the rotor, beside the hub (place OPEN)",
+        colour3d=(0.20, 0.30, 0.55),
+        views=("front", "top"), mass_kg=None, source="sim/parts-first-cut-findings.md §2.6, §4; sim/ah-steady-cusp-findings.md",
+        **st("BOUGHT · for the first cut (PROPOSED)"),
+        spec=[("rating", "22 mF, 6.3-10 V, 105 °C, ≥ 2 A rms at 120 Hz, ESR ≤ 20 mΩ, polarised: + to nodes d / b"),
+              ("candidate", "Rubycon 10MXG22000MEFCSN30X30: 22 000 µF, 10 V, 105 °C, Ø30 × 30 snap-in, 10 mm pitch, 2.5 A rms "
+                            "at 120 Hz, 3000 h at 105 °C (a retailer's listing; its ESR not found: confirm ≤ 20 mΩ)"),
+              ("alternate", "Nichicon LGU1E223MELC: 22 mF, 25 V, 3.96 A, Ø35 × 35 (RS 846-6928)"),
+              ("duty", "−0.54 … −0.44 V (nodes d / b positive), 0.63 A rms at 120 Hz, ≤ 1.3 mV the wrong way: × 12 on V, × 3.2 "
+                       "on ripple"),
+              ("mounting", "beside the hub, clamped against 20-40 g [RH]; the clamp not drawn (its place OPEN)")],
+        notes=["The bypass is PROPOSED (sim/ah-steady-cusp-findings.md): it lifts the belt power to 18.13 W.",
+               "Snap-in pins on a board or soldered tags; keep the leads short (0.63 A rms at 120 Hz)."])
+    add("P-019", "Choke parts: EI-84 laminations, bobbin, wire, spacer", "bought parts", "bought",
+        lambda M: U.laminations_shape(), None, material="M400-50A laminations; PA66-GF bobbin; Cu wire; PET film",
+        make3d=lambda M: U.laminations_shape(5.0),
+        qty="for 2 chokes", qty_index="2 sets", used_in="REL-720", colour3d=(0.66, 0.68, 0.73), views=("front", "top"),
+        view3d=dict(dir=(0.5, -1.5, 0.45)),
+        mass_kg=None, source="sim/parts-first-cut-findings.md §1; sim/parts_first_cut_results.json la_lb.chosen",
+        **st("BOUGHT · for the first cut (PROPOSED)"),
+        spec=[("laminations", "EI-84 scrapless (84 × 70, centre leg 28, outer legs 14, window 14 × 42), non-oriented SiFe "
+                              "0.5 mm, M400-50A class (M235-35A halves the iron loss): about 67 E + 67 I a choke (35 mm at a "
+                              "0.95 stacking factor)"),
+              ("bobbin", "EI-84 for a 35 mm stack: 1.0 mm wall, 1.5 mm flanges, glass-filled PA66, UL 94 V-0"),
+              ("wire", "Ø1.40 enamelled copper, grade 2 (IEC 60317), class 180 or better: 24.6 m a choke"),
+              ("spacer", "PET film 0.063 mm, the E / I joint (all three legs); trim L to 0.146 H on test"),
+              ("varnish, tape", "class F impregnating varnish (VPI); polyester tape 0.05 mm between the layers"),
+              ("candidate", "no maker's EI-84 lamination or bobbin listing was found in this session's search: to the "
+                            "specification")],
+        notes=["Drawn: one E and one I lamination as delivered (0.5 mm), the E's legs up; the 3-D view shows ten of each, "
+               "stacked.",
+               "Any standard EI-84 bobbin for a 35 mm stack fits the winding as sized (sim/parts_first_cut.py winding())."])
+
+
 COL_LV = (0.87, 0.55, 0.08)
 
 # the general arrangement's sub-assemblies, by the parts' names and prototypes
@@ -2159,8 +2717,14 @@ def main():
                              used_in=after, qty=None, gen=gen))
     sheet_no = {e["dwg"]: i + 1 for i, e in enumerate(E)}
     tmp = tempfile.mkdtemp(prefix="dset_")
+    subs = {}
+
+    def submodel(key):
+        if key not in subs:
+            subs[key] = SubModel(sub(key))
+        return subs[key]
     ctx = dict(model=M, renderer=Renderer(not a.no_3d), tmp=tmp, sheet_no=sheet_no, n_sheets=len(E), preview=a.preview,
-               dpi=a.dpi, out_pdf=lambda dwg: os.path.join(set_dir, f"{dwg}.pdf"))
+               dpi=a.dpi, out_pdf=lambda dwg: os.path.join(set_dir, f"{dwg}.pdf"), submodel=submodel)
     index = []
     try:
         for e in E:
@@ -2182,6 +2746,10 @@ def main():
             else:
                 if e.get("make"):
                     e["shape"] = e["make"](M)
+                if e.get("make3d"):
+                    e["shape3d"] = e["make3d"](M)
+                if e.get("make_parts3d"):
+                    e["parts3d"] = e["make_parts3d"](M)
                 BUILDERS[e["kind"]](e, ctx)
             print(f"{e['dwg']:18s} {e['kind']:9s} {time.time() - t1:5.1f} s  {e['title']}", flush=True)
     finally:
