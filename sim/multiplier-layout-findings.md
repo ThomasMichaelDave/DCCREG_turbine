@@ -265,7 +265,8 @@ from the rms at pollution degree 2 × 1.25; group I is PTFE and silicone, IIIa i
   - one cage tube spans the two Ca|reluctance spiders;
   - the sleeve, the can and the decks (1.85 kg each) come in.
 - **The masses:**
-  - the rotor goes from 33.4 to 36.8 kg;
+  - the rotor goes from 30.4 to 33.8 kg (corrected 2026-10-11: first reported as 33.4 to 36.8, the shaft halves
+    counted twice; `sim/bridge-ring-bearings-findings.md`);
   - the counter-rotor goes from 33.1 to 30.8 kg.
 - **The gate:** the record's own solids give d 25 at 28.57 Hz, as the record's row.
 
@@ -287,7 +288,8 @@ from the rms at pollution degree 2 × 1.25; group I is PTFE and silicone, IIIa i
   out) take that load to the frame's end of each section.
   - With them, d 25 meets the criterion (3 × the bodies' 20 Hz relative speed).
   - Its first mode sits 29 % under the pumps' 120 Hz, where the record's was 9 % over.
-  - The layout grows 10–20 mm a side for them (ledger §3.1); not counted in the 974 mm.
+  - The layout grows 10–20 mm a side for them (ledger §3.1); not counted in the 974 mm. Placed and drawn since
+    (`sim/bridge-ring-bearings-findings.md`, PROPOSED): an SKF 6205-2Z each, 20 mm a side, 1014 mm, 87 / 83 Hz.
 - **The REF link:** now through a Ca|reluctance bearing. The proposal draws 0.02 µA through it, so the counter-rotor
   could float (`sim/integrated-multiplier-findings.md` §6).
 - **The magnetic pump's low-voltage leads** (the AH coils to La / Lb, D1*–D4* and the utrons):

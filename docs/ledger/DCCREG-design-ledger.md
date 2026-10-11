@@ -10,7 +10,7 @@ temporary documentation ledger and the current fact sheet of the exercise.
 | what the lock means | the design of record below is the baseline; later changes are recorded against it. The lock does not settle what is still PROPOSED or OPEN (§5): those keep their status |
 | the redesign (2026-10-10) | the designer is redesigning the electrostatic pump's multipliers: stacked into the doubler, not a separate circuit tapping nodes 1 and 4. The turbine's stack will change; the magnetic pump, the sphere, its AH and the field interface stay for now. The worked circuit is §3.9, taken by the designer "for now" (2026-10-11); its mechanical layout is §3.9 too (PROPOSED). The record below stays the baseline until the designer accepts them |
 | this ledger | `docs/ledger/DCCREG-design-ledger.md` (the source) and `.pdf` (its print form) |
-| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 58 sheets behind a two-page register (§7) |
+| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 60 sheets behind a two-page register (§7) |
 | how it is built | `python3 docs/ledger/make_ledger.py` (needs markdown-it-py, mdit-py-plugins, pypdf and playwright with Chromium) |
 
 **Abstract.** As locked, the DCCREG turbine is a belt-driven tube machine. Its rotor and counter-rotor turn at 600 rpm
@@ -43,9 +43,11 @@ in opposite directions through a 1 : −1 reversing gear.
   - **The layout (2026-10-11, PROPOSED):**
     - Ca / Cb stay plates in each side's column, toward the hub;
     - every diode and the multiplier's capacitors sit on a potted deck round a grounded can over the hub;
-    - only l1 and r1 cross between the halves; the machine grows to 974 mm.
+    - only l1 and r1 cross between the halves; the machine grows to 974 mm, and to 1014 mm with its bridge-ring
+      bearings.
   - **What it costs:**
-    - it needs the record's bridge-ring bearings, since the hub-face bearings must go;
+    - it needs the bridge-ring bearings, since the hub-face bearings must go. They are placed and named: an SKF
+      6205-2Z at each bridge ring's outer end, 83–87 Hz at d 25 (PROPOSED, §3.9);
     - it needs the clamp strings trimmed to about 60 parts.
 - **What is still open:** the physics is mainstream throughout [OC]. The ratings, the leakage and several parts are
   placeholders that the bench test must qualify.
@@ -259,7 +261,8 @@ commits' dates.
     utron gap 123 µm at the stack's centre and 1.7× that at its outer end.
   - **The ways out:** d 40 gives 65 Hz and 25 µm. A bearing between the shaft and each bridge ring's outer end gives
     131–165 Hz (realistic to stiff seats) and 2–3 µm, but on G10 spiders it sits only 9 % above the pumps' 120 Hz, and
-    the layout grows 10–20 mm a side for it. The choice is the designer's (§5.2).
+    the layout grows 10–20 mm a side for it. The choice is the designer's (§5.2). The redesign's layout needs the
+    pair; there it is placed and named (an SKF 6205-2Z, 20 mm a side; §3.9).
   - **The gap budget:** each inner bearing's total runout within 0.027 mm as laid out (P5 bearings under an axial
     spring preload), or 0.05 mm with the eighth pair (`sim/rotor-mechanics-findings.md` §5).
 - **The shaft:**
@@ -792,8 +795,9 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 - **The shafts** (the record's two-body model, its solids moved; criterion 60 Hz):
   - without the hub-face bearings, d 25 falls from 29 Hz to 14 Hz and the utron gap moves 499 µm per g;
   - d 40 alone reaches only 26 Hz;
-  - **with the record's bridge-ring bearings: 89 Hz** (85 on realistic seats) and +1 µm. They become necessary.
-- **The length:** 974 mm (+34 mm), before the bridge-ring bearings' 10–20 mm a side.
+  - **with the record's bridge-ring bearings: 89 Hz** (85 on realistic seats) and +1 µm. They become necessary;
+    as placed and drawn (below) they give 87 / 83 Hz.
+- **The length:** 974 mm (+34 mm); 1014 mm with the bridge-ring bearings (below).
 - **The magnetic pump's LV leads** (the AH coils to the utrons' circuit) cross the Ca|reluctance spiders in an 8 mm
   bore in each shaft half. The record leaves them unrouted.
 
@@ -801,11 +805,12 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 `sim/multiplier-layout-3d-findings.md`, `sim/multiplier-waveforms-findings.md`; sheets 32–33; the viewer
 `tools/step-viewer/layout.html`):
 - **the solids** (`sim/tube_geometry.py --layout`):
-  - 378 of them from 142 prototypes, 974 mm, drawn from the layout study's results and the record's own parts;
+  - 386 of them from 147 prototypes, 1014 mm with the bridge-ring bearings, drawn from the layout study's results,
+    the bearings' study and the record's own parts;
   - every part of both decks, the can, the column, the vanes with C2 in phase, the wiring as routed (the riser, the
     tap, the cross nets, the rings' leads through the can, the LV cable in its bore), the sleeve's cover and sheds;
   - no clash, no sweep hit; every deck pair matches the study's plan in 3-D (the least housing gap 1.86 mm, as the
-    study); the bridge-ring bearings are not drawn (10–20 mm a side, the designer's place);
+    study);
 - **the circuit running** (`sim/multiplier_waveforms.py`; the layout study's deck at its picks, ideal diodes):
   - the rings ±14.77 kV, 7.50 kV/cm at the null with the can, 11.8 V of ripple; 95 % at cycle 146 (1.2 s) from a
     1 kV seed;
@@ -814,6 +819,30 @@ pump, the sphere, its AH and the field interface stay as they are for now.
     D3 / D4 and D7 / D8 at 40–60°, the ring stages in two short pulses; reverse peaks 3.4–6.1 kV;
   - read by Kirchhoff's law along each chain: an ideal diode's own current at a solver step is not the charge the
     step moved [OC].
+
+**The bridge-ring bearings** (2026-10-11, PROPOSED; `sim/bridge-ring-bearings-findings.md`; sheets 34–35; the
+viewer's "Ring bearing A"):
+- **the part: SKF 6205-2Z.**
+  - It is a 25 / 52 / 15 mm SKF Explorer bearing, shielded both sides, with normal clearance: C 14.8 kN, C0 7.8 kN,
+    a limiting speed of 14 000 r/min, running accuracy P5.
+  - It is the record's 6205 class at the record's ratings, with the shields the record asks for.
+  - Alternates: FAG 6205-C-2Z and NSK 6205ZZ.
+  - The catalogue data come from a web search [IR]; re-read them before ordering.
+- **the place:**
+  - each in the record's end-bearing slot, the end bearing (frame) one 20 mm slot out, so the layout is 1014 mm;
+  - the seat: a stainless cartridge in an 8 mm G10 spider centred in its slot, with a 6 mm G10 ring to the bridge
+    ring's outer face. That keeps 9 mm from the utrons' end turns, where an end disc on the face would leave 3.
+- **the shafts at d 25:**
+  - 87 Hz on stiff seats, 83 Hz on G10 spiders (the drawn solids agree to 1.2 %); the utron gap +1–2 µm under 1 g;
+  - the first mode is now the shaft's central span between the Ca|reluctance bearings, so the diameter moves it
+    (d 30: 96–105 Hz) and the seats barely do;
+  - d 40 on G10 spiders puts f3 3.4 % under 240 Hz.
+- **the duty:**
+  - the bottom one locates the counter-rotor: 331 N at 1200 rpm relative, L10 217 000 h;
+  - the top one floats on the record's 100 N preload (SKF's rule for spring preloads gives 125–250 N at d 25);
+  - the pair adds 2.1 W of friction (6.1 W at the record's high end) and 0.06 W of windage.
+- **the drive's first cut** makes its gear-end bearing this pair's bottom one. But it seats it under an end disc on
+  the ring's face, on the record's 940 mm stack-up; to be re-cut on the layout (§6, item 71).
 
 ## 4. Fact sheet: the numbers of record, with their sources
 
@@ -824,7 +853,7 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 | speed | 600 rpm each way, 1200 rpm relative | `sim/pole-design-findings.md` §6 |
 | pump frequency | 120 Hz (6 sectors and 6 bridges per relative revolution) | `sim/core_field.py`; `sim/pole_design_variants_op.json` |
 | tube length | 940 mm, the record in solids (153 solids, no clash) | `sim/tube-shaft-findings.md` §0; `sim/tube_geometry_record_results.json` |
-| masses | rotor 33.4 kg, counter-rotor 33.1 kg from the solids; the other studies' own counts give 32.9–35.3 and 33.4–34.9 kg | `sim/shaft_bearings_record_results.json`; `sim/rotor-mechanics-findings.md` §6; `docs/drive-gear-belt.md` §3 |
+| masses | rotor 30.4 kg, counter-rotor 33.1 kg from the solids, without La / Lb and the small parts; the other studies' own counts, with them, give 32.9–35.3 and 33.4–34.9 kg | `sim/shaft_bearings_record_results.json` (corrected 10-11, §6 item 70); `sim/rotor-mechanics-findings.md` §6; `docs/drive-gear-belt.md` §3 |
 | bearings | 6 × 6205-class (25 / 52 / 15 mm) on 8 mm G10 spiders; 4 inner, 2 end; the counter-rotor floats on the 4 inner | `sim/stack_sizing.py`; `sim/tube-shaft-findings.md` §0 |
 | the shaft's modes | as laid out, d 25: f1 27–29 Hz, 123 µm gap change under 1 g lateral; d 40: 65 Hz, 25 µm; the eighth bearing pair: 131–165 Hz, 2–3 µm | `sim/tube-shaft-findings.md` §0; `sim/rotor-mechanics-findings.md` §4 |
 | shaft | d 25 (tube model) or d 30 (hub register), OPEN; non-magnetic, μ_r ≤ 1.05 | `sim/stack_sizing.py`; `presets/hub-locked.json`; `sim/ah-null-findings.md` §5 |
@@ -832,6 +861,7 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 | rotating loads | no banding (factors ≥ 19 at 750 rpm); balance G2.5 per body; windage about 12 W, bearings 5 W | `sim/rotor-mechanics-findings.md` |
 | reference link | one inner bearing; 0.41 mA rms AC, no DC | `sim/core_field_results.json` |
 | the drive (PROPOSED) | bevel reverser at side A, POM-C pinions; HTD 5M 4 : 1, 200 W motor; 0.48 / 0.52 N·m on the bodies, 1.00 into the frame; run-up 32 s | `docs/drive-gear-belt.md` |
+| the layout's bridge-ring bearings (PROPOSED) | SKF 6205-2Z at each bridge ring's outer end; the layout 1014 mm; d 25: 83–87 Hz, the gap +1–2 µm under 1 g | `sim/bridge-ring-bearings-findings.md` |
 
 **Magnetic pump** (per side unless stated; `sim/pole-design-findings.md` §7–§8, `sim/pole_design_variants_op.json`)
 
@@ -935,6 +965,7 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 | the multipliers stacked into the doubler (the sketch: C3–C6, D5–D8); the clamps on nodes 1 / 4; one revolving body | DECIDED (10-10) | the redesign, §3.9 |
 | the redesign's circuit: bipolar, C1 / C2 in phase, the ring stages (C7 / C8, D9–D12, Csa / Csb), C3–C6 180 pF | DECIDED for now (10-11) | `sim/integrated-multiplier-findings.md`; "will do for now" |
 | the redesign's layout: the decks round a grounded can, the columns toward the hub, the vane stacks against the Ca\|reluctance bearings, no hub-face bearings, the clamp strings at about 60 parts | PROPOSED | `sim/multiplier-layout-findings.md` (Figure 11) |
+| the layout's bridge-ring bearings: an SKF 6205-2Z in each of the record's end slots, the end bearings one slot out (1014 mm), stainless cartridges in 8 mm G10 spiders | PROPOSED | `sim/bridge-ring-bearings-findings.md` (sheets 34–35) |
 
 ### 5.2 Open items
 
@@ -947,8 +978,9 @@ pump, the sphere, its AH and the field interface stay as they are for now.
   - Still to run: a vane flashover with the ring stages, the torque at the gear;
 - **the redesign's layout** (§3.9, Figure 11, `sim/multiplier-layout-findings.md`, PROPOSED): accept it or set it
   otherwise. Its consequences:
-  - **the hub-face bearings go,** so the shaft needs the bridge-ring bearings: 89 Hz at d 25, where d 40 alone
-    gives only 26 Hz;
+  - **the hub-face bearings go,** so the shaft needs the bridge-ring bearings, where d 40 alone gives only 26 Hz.
+    Placed and named (an SKF 6205-2Z, 20 mm a side, 1014 mm) they give 83–87 Hz at d 25. Their preload (the
+    record's 100 N, under SKF's 125–250 N rule) and the drive's seat at side A (§6, item 71) are the designer's;
   - **the clamp strings drop to about 60 parts,** as the layout's small strays raise the rings to ±16.25 kV at 66.
     A field solve of the new stack would fix the number; the bench trims it in any case;
   - **the sleeve's outer ends** need PTFE sheds (17.5 mm against 62 mm of creepage);
@@ -957,7 +989,7 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 - **the shaft and its bearings** (§3.1): six bearings with d 40 (65 Hz, the runout at 0.027 mm), or an eighth pair
   between the shaft and each bridge ring's outer end at d 25 (131–165 Hz, the runout at 0.05 mm; the layout +10–20 mm
   a side; stiff seats to keep it clear of 120 Hz). The redesign's layout removes the hub-face bearings and leaves
-  only the second way (85–89 Hz; §3.9);
+  only the second way (83–89 Hz; placed and named in §3.9);
 - **the drive's first cut** (§3.1, `docs/drive-gear-belt.md`): accept it, or set the gear and belt otherwise;
 - **the bypass and the split**, both PROPOSED;
 - **the hub's first cuts** (§3.5): the grooves' full-round tops, the AH ends rounded to 1.5 mm (which also gives the
@@ -1158,6 +1190,13 @@ and the corrected one stands beside it, dated, until the designer decides.
 | 68 | `sim/shaft_bearings.py --record` no longer ran: its density table lacked the shaft's renamed material, "austenitic stainless" | **fixed:** the key added at the record's steel figure (7850 kg/m³); the record's 28.57 Hz reproduces |
 | 69 | the redesign's rings rest on the new nodes' strays, 24.5 pF each [RH] (`sim/integrated-multiplier-findings.md`) | **noted:** laid out compactly they carry 1–3 pF, and the rings rise to ±16.25 kV at the record's V_op. The layout trims the clamp strings to about 60 parts (±14.77 kV); a field solve of the new stack would settle it |
 
+**Found by the bridge-ring bearings** (`sim/bridge-ring-bearings-findings.md`, 2026-10-11)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 70 | the two-body model's rotor mass, 33.4 kg at d 25 (§4; `sim/tube-shaft-findings.md` §0) and 36.8 kg for the layout (`sim/multiplier-layout-findings.md` §7), counted the shaft halves twice: once as solids, once as the beam's steel | **corrected:** 30.4 and 33.8 kg. The model counted the shaft once, so its modes, deflections and loads stand (to 3e-8); `sim/shaft_bearings.py` fixed, `--record` and the layout study's shafts re-run, only the masses changed |
+| 71 | the drive's first cut seats its gear-end bearing (the bottom bridge-ring bearing) in a hub under a 10 mm G10 end disc on bridge ring A's face, 3 mm from the utrons' end turns, on the record's 940 mm stack-up (`docs/drive-gear-belt.md` §5, §8) | **open:** the layout's seat (an 8 mm spider centred in its slot, 9 mm clear, a 6 mm ring to the face) is PROPOSED; the drive's stack-up is to be re-cut on the layout, with its frame bearing in the gear case |
+
 ## 7. Drawing register
 
 The bundle, `docs/ledger/DCCREG-drawings-bundle.pdf`, carries every sheet below on A3, in this order. It opens with a
@@ -1206,29 +1245,31 @@ redraw them (`docs/ledger/register.py`).
 | 31 | The multiplier laid out in the machine (PROPOSED, 10-11) | `docs/figures/multiplier-layout.png` |
 | 32 | The layout in solids: the section and the decks (PROPOSED, 10-11) | `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout-section.png` |
 | 33 | The layout in 3-D, its circuit at 25.5° of the cycle (PROPOSED, 10-11) | `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout-3d-bay-potential.png` |
+| 34 | The bridge-ring bearings: the shafts' modes with them as drawn (SKF 6205-2Z, PROPOSED, 10-11) | `docs/figures/bridge-ring-bearings.png` |
+| 35 | Side A's end in 3-D: the end bearing and the bridge-ring bearing (PROPOSED, 10-11) | `…-hub50-layout-3d-ringA.png` |
 
 **Part C — earlier phases, superseded, kept for the record**
 
 | sheets | what | files |
 |:--|:--|:--|
-| 34–36 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
-| 37 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
-| 38–39 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
-| 40–42 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
-| 43–45 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
-| 46–49 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
-| 50–51 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
-| 52–54 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
-| 55–58 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
+| 36–38 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
+| 39 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
+| 40–41 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
+| 42–44 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
+| 45–47 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
+| 48–51 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
+| 52–53 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
+| 54–56 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
+| 57–60 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
 
 **CAD and DXF files** (not on sheets; `tools/step-viewer/` renders the STEP files):
 - **of the record:**
   - `docs/drawings/DCCREG-UTR-101_half-core_A.step` and `_lamination.dxf`;
   - the record in solids: `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.step`, with its `.glb` and
     `.parts.json`;
-  - the redesign's layout in solids (PROPOSED): `…-hub50-layout.step`, with its `.glb`, its `.parts.json` (each
-    conductor's net) and the stills `…-layout-3d-{cutaway,bay,deckB}.png` and `…-3d-deckB-potential.png`; the
-    interactive viewer with the circuit running is `tools/step-viewer/layout.html`.
+  - the redesign's layout in solids with its bridge-ring bearings (PROPOSED): `…-hub50-layout.step`, with its
+    `.glb`, its `.parts.json` (each conductor's net) and the stills `…-layout-3d-{cutaway,bay,deckB}.png` and
+    `…-3d-deckB-potential.png`; the interactive viewer with the circuit running is `tools/step-viewer/layout.html`.
 - **earlier phases:**
   - the machine as modelled before the record, `tube-r150-n8-wound-g0p5-6br.step`;
   - the spark-gap tube `tube-r150-n8.step`;
@@ -1256,7 +1297,8 @@ redraw them (`docs/ledger/register.py`).
 - `sim/integrated_multiplier_results.json` (the redesign's proposal, §3.9);
 - `sim/multiplier_layout_results.json` (the redesign's layout, §3.9);
 - `sim/tube_geometry_layout_results.json` and `sim/multiplier_waveforms_results.json` (the layout in solids, its
-  circuit running, §3.9).
+  circuit running, §3.9);
+- `sim/bridge_ring_bearings_results.json` (the layout's bridge-ring bearings, §3.9).
 
 **The findings,** one per study:
 - `sim/pole-design-findings.md`, `sim/ah-steady-cusp-findings.md`, `sim/rotor-parts-duty-findings.md`;
@@ -1266,7 +1308,8 @@ redraw them (`docs/ledger/register.py`).
   `sim/rotor-mechanics-findings.md`, `sim/tube-shaft-findings.md` §0, `sim/parts-first-cut-findings.md`,
   `docs/drive-gear-belt.md`, and the model checks of §6 (31–34);
 - the redesign's: `sim/integrated-multiplier-findings.md`, `sim/multiplier-layout-findings.md`,
-  `sim/multiplier-layout-3d-findings.md` and `sim/multiplier-waveforms-findings.md` (§3.9);
+  `sim/multiplier-layout-3d-findings.md`, `sim/multiplier-waveforms-findings.md` and
+  `sim/bridge-ring-bearings-findings.md` (§3.9);
 - the design and test documents `docs/rings-design.md` and `docs/bench-test-rings.md`;
 - the cost guide `docs/cost/README.md`.
 
@@ -1280,7 +1323,8 @@ redraw them (`docs/ledger/register.py`).
   - `sim/tube_geometry.py --record` and `sim/shaft_bearings.py --record` (the record in solids, its shaft);
   - `sim/integrated_multiplier.py --procs 4` (the redesign's proposal), then `sim/multiplier_layout.py --procs 4` (its
     layout), then `sim/tube_geometry.py --layout` and `sim/multiplier_waveforms.py` (the layout in solids, its circuit
-    running).
+    running), then `sim/bridge_ring_bearings.py` (its bridge-ring bearings, and `docs/figures/bridge-ring-bearings.png`;
+    `sim/tube_geometry.py --layout` imports their placement).
 - **the drawings and figures:**
   - `docs/make_rings_drawing.py`;
   - `docs/make_rings_field_figure.py`;
@@ -1292,7 +1336,7 @@ redraw them (`docs/ledger/register.py`).
   - `docs/make_multiplier_layout.py` (after `sim/multiplier_layout.py`);
   - the layout in 3-D: `sim/step_to_glb.py …-hub50-layout.step --angular 0.4`, then `tools/step-viewer/make_layout_data.py
     OUT` (the viewer's files) and `tools/step-viewer/shoot.py 8765 docs/geometry/tube/…-hub50-layout cutaway bay deckB
-    bay@0.425 deckB@0.425 --sim <OUT's sim.json>` (the stills, from a local server at the repository's root).
+    ringA bay@0.425 deckB@0.425 --sim <OUT's sim.json>` (the stills, from a local server at the repository's root).
 - **the cost:** `docs/make_cost_sheet.py`, then recalculate the workbook.
 - **this ledger:** `docs/ledger/make_ledger_figures.py`, then `docs/ledger/make_ledger.py`.
 

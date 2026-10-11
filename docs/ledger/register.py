@@ -104,13 +104,23 @@ _R = [
      "C3 / C6 / C8, Csa and the clamp string round the grounded can); the parts, the interfaces, the strays, the clamp "
      "trim and the shafts", "docs/make_multiplier_layout.py"),
     ("B", "The layout in solids: the section and the decks (PROPOSED, 2026-10-11)", f"{_LAY}-section.png",
-     "the layout's 378 solids cut through the shaft, side A's central bay enlarged, and both decks cut in plan at the "
-     "sticks' height: every part of the study's plans, the can, the column, the vanes with C2 in phase",
-     "sim/tube_geometry.py --layout"),
+     "the layout's 386 solids cut through the shaft, side A's central bay enlarged, both decks cut in plan at the "
+     "sticks' height, and side A's end with its bridge-ring bearing: every part of the study's plans, the can, the "
+     "column, the vanes with C2 in phase", "sim/tube_geometry.py --layout"),
     ("B", "The layout in 3-D, its circuit at 25.5 deg of the cycle (PROPOSED, 2026-10-11)", f"{_LAY}-3d-bay-potential.png",
      "side A's central bay, quarter cut: every conductor by its potential (blue -15 kV, grey REF, red +15 kV), the "
      "diodes and the clamp lit while they conduct, insulators faded; the circuit of sim/multiplier_waveforms.py",
      "tools/step-viewer/shoot.py (sim.json from tools/step-viewer/make_layout_data.py)"),
+    ("B", "The bridge-ring bearings: the shafts' modes with them as drawn (SKF 6205-2Z, PROPOSED, 2026-10-11)",
+     "docs/figures/bridge-ring-bearings.png",
+     "the first three modes of the shaft and the counter-rotor against the seats' stiffness at d 25 and d 30, with "
+     "the 60 Hz criterion and the pumps' 120 / 240 Hz; the mode shapes at d 25 on G10 spiders",
+     "sim/bridge_ring_bearings.py"),
+    ("B", "Side A's end in 3-D: the end bearing and the bridge-ring bearing (PROPOSED, 2026-10-11)",
+     f"{_LAY}-3d-ringA.png",
+     "quarter cut: the frame's end bearing on its spider; the bridge-ring bearing in its stainless cartridge on an "
+     "8 mm G10 spider, the 6 mm ring to bridge ring A, utron A1's end turns 9 mm above",
+     "tools/step-viewer/shoot.py"),
     # ---------------------------------------------------------------------------------------- C: earlier phases
     ("C", "The machine as modelled before the record: section", f"{_TUBE}-section.png",
      "superseded by the record in solids: the old vacuum 8 + 8 stack, Ca / Cb on the counter-rotor, the 120 mm "
@@ -176,7 +186,8 @@ CAD = [
     ("A", f"{_REC}.step", "the record in solids (153 solids, 940 mm)"),
     ("A", f"{_REC}.glb", "the same, for tools/step-viewer/"),
     ("A", f"{_REC}.parts.json", "its parts and layout list"),
-    ("B", f"{_LAY}.step", "the redesign's layout in solids (378 solids, 974 mm; PROPOSED)"),
+    ("B", f"{_LAY}.step", "the redesign's layout in solids, with its bridge-ring bearings (386 solids, 1014 mm; "
+                          "PROPOSED)"),
     ("B", f"{_LAY}.glb", "the same, for tools/step-viewer/layout.html (the circuit running on it)"),
     ("B", f"{_LAY}.parts.json", "its parts, layout list and each conductor's net"),
     ("C", f"{_TUBE}.step", "the machine as modelled before the record (152 solids)"),

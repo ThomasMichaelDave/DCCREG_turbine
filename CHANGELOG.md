@@ -41,6 +41,60 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The bridge-ring bearings: placed, drawn and named (2026-10-11)
+The designer: "Add the bridge-ring bearings to the model and propose an actual component number from an existing
+manufacturer."
+
+- **The study** (PROPOSED; `sim/bridge_ring_bearings.py`, `sim/bridge_ring_bearings_results.json`,
+  `sim/bridge-ring-bearings-findings.md`, `docs/figures/bridge-ring-bearings.png`).
+  - **The part: SKF 6205-2Z.**
+    - SKF Explorer, 25 / 52 / 15 mm, shielded both sides, normal clearance.
+    - C 14.8 kN, C0 7.8 kN, limiting speed 14 000 r/min, running accuracy P5.
+    - These are the record's 6205 class and ratings, with the record's shields.
+    - Alternates: FAG 6205-C-2Z, NSK 6205ZZ.
+    - The catalogue data are as a web search rendered them (the makers' sites are outside the session's network
+      policy); re-read them before ordering.
+  - **The place:**
+    - each bearing sits in the record's end-bearing slot, the end bearing (frame) one 20 mm slot out, so the layout is
+      974 → 1014 mm;
+    - the seat is a stainless cartridge in an 8 mm G10 spider centred in its slot, with a 6 mm G10 ring to the bridge
+      ring's face, 9 mm clear of the utrons' end turns.
+  - **The shafts at d 25:**
+    - 87 Hz on stiff seats and 83 Hz on G10 spiders (the layout study's placement gave 89 / 85), the utron gap
+      +1–2 µm under 1 g; the drawn solids agree to 1.2 %;
+    - the first mode is now the shaft's central span between the Ca|reluctance bearings;
+    - d 40 on G10 spiders puts f3 3.4 % under 240 Hz.
+  - **The duty:**
+    - the bottom bearing locates the counter-rotor (331 N, L10 217 000 h at 1200 rpm relative); the top one floats on
+      the 100 N preload;
+    - the pair adds 2.1 W of friction and 0.06 W of windage.
+  - **The gates:** the layout study's shaft rows reproduced exactly; the part fits the record; 3 × 20 Hz met; the
+    drawn solids as placed.
+- **The model** (`sim/tube_geometry.py --layout`):
+  - LayoutMachine draws the bearings, cartridges, spiders and rings (`ring_bearings`, default on, from the study's
+    placement), each end bearing one slot out, the shaft halves to them;
+  - 386 solids of 147 prototypes, 1014 mm; no clash in 1151 pairs, no sweep hit, G-LAYOUT as before;
+  - the section gains panel (e), side A's end; the STEP, GLB and parts list are rebuilt;
+  - the stills are re-shot, with a new one, `…-layout-3d-ringA.png`;
+  - the viewer gains the "Ring bearing A" view, republished to the same artifact.
+- **Fixed:** `sim/shaft_bearings.py` `two_body` reported the rotor's mass with the shaft halves counted twice (their
+  solids and the beam's distributed steel). The model itself counted them once, so its modes, deflections and loads
+  stand.
+  - The record's rotor is 30.4 kg, not 33.4; the layout's 33.8 kg, not 36.8.
+  - `--record` and `sim/multiplier_layout.py --only shaft` were re-run; only the masses changed (the record's
+    material names come up to date too).
+  - The quoted masses are corrected in `sim/tube-shaft-findings.md` §0, `sim/multiplier-layout-findings.md` §7,
+    `docs/drive-gear-belt.md` §3 and the ledger's §4.
+- **Added:** `two_body`'s `n_shapes` (the mode shapes; default off).
+- **Open** (the ledger's §6 item 71): the drive's first cut seats the same bearing under an end disc on the ring's
+  face, 3 mm from the end turns, on the record's 940 mm stack-up. To be re-cut on the layout.
+- **Records:**
+  - the ledger: the summary, §3.1, §3.9 (the bridge-ring bearings), §4, §5.1, §5.2, §6 (items 70–71), §7 (sheets
+    34–35; Part C now 36–60), §8;
+  - the register and the bundle (60 sheets);
+  - `presets/hub-locked.json` supply_redesign (bridge_ring_bearings, the solids);
+  - the README; `sim/multiplier-layout-3d-findings.md`; `sim/multiplier-layout-findings.md` §7.
+
 ### The layout in solids, and its circuit running (2026-10-11)
 The designer: "I would like to see an updated artefact 3d render and simulation."
 

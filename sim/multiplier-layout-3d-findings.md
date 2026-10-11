@@ -5,7 +5,8 @@
 `…-layout-section.png` (about a minute). The 3-D stills (`…-layout-3d-{cutaway,bay,deckB}.png`, and the circuit's
 potentials in `…-3d-bay-potential.png` and `…-3d-deckB-potential.png`) are by `tools/step-viewer/shoot.py`.
 The interactive viewer is `tools/step-viewer/layout.html`, built by `tools/step-viewer/make_layout_data.py`
-(published as the "DCCREG Wound Tube" artifact).
+(published as the "DCCREG Wound Tube" artifact). Since 2026-10-11 the model carries the bridge-ring bearings
+(`sim/bridge-ring-bearings-findings.md`, their own still `…-layout-3d-ringA.png`).
 
 **What it is:** the PROPOSED layout of `sim/multiplier-layout-findings.md`, in solids. The source is
 `sim/multiplier_layout_results.json` (the stack, both decks' plans) and the study's own constants (its leads, straps
@@ -15,7 +16,8 @@ and mirror). The record supplies the rest: its hub, column plates, vanes and rel
 **Tags:** [OC] the solids' geometry; [IR] the routing chosen here; [RH] the parts' envelopes and the junctions.
 
 ## Headline
-- **378 solids from 142 prototypes; 974 mm, the hub's centre at z 487** (z from side A's end):
+- **386 solids from 147 prototypes; 1014 mm, the hub's centre at z 507** (z from side A's end; 378 solids and 974 mm
+  before the bridge-ring bearings):
 
 | \|z\| from the hub (mm) | per side, as drawn | body |
 |:--|:--|:--|
@@ -25,7 +27,9 @@ and mirror). The record supplies the rest: its hub, column plates, vanes and rel
 | 117–165 | Ca / Cb: the record's six plates, node 2 / 3 toward the deck | rotor |
 | 171–273 | C1 / C2: the record's 6 + 6 vanes, a rotor vane at the hub end, **C2 in phase with C1** (no half-pitch offset) | rotor / counter-rotor |
 | 289 | the Ca\|reluctance bearing and its spider; one cage from spider to spider | — / counter-rotor |
-| 299–487 | the record's reluctance section and end bearing (side B's moved out 34 mm) | rotor / counter-rotor |
+| 299–467 | the record's reluctance section (side B's moved out 34 mm) | rotor / counter-rotor |
+| 467–487 | the bridge-ring bearing (SKF 6205-2Z) in its cartridge, its 8 mm spider and the 6 mm ring to the bridge ring (`sim/bridge-ring-bearings-findings.md`) | — / counter-rotor |
+| 487–507 | the record's end bearing and its frame spider, one slot out | — / frame |
 
 - **The decks, part by part** (from `sim/multiplier_layout_results.json` decks; deck B the mirror):
   - lying sticks and surge resistors: the study's capsule (Ø24, 66 mm) round a Ø8 × 40 body, with its leads;
@@ -52,22 +56,25 @@ and mirror). The record supplies the rest: its hub, column plates, vanes and rel
 ## Gates
 | gate | result | pass |
 |:--|:--|:--|
-| G-TUBE-CLASH: no two solids share volume (except the intended joins) | 1129 pairs tested, 0 clashes | ✔ |
+| G-TUBE-CLASH: no two solids share volume (except the intended joins) | 1151 pairs tested, 0 clashes (1129 before the bridge-ring bearings) | ✔ |
 | G-TUBE-SWEEP: no counter-rotor solid in the volume a rotor solid sweeps | 0 hits | ✔ |
 | G-TUBE-WOUND: the utrons' air gap and clearances, the record's | 0.5 mm aligned, 9.74 mm unaligned, the winding 1.0 mm off its iron | ✔ |
 | G-LAYOUT, decks A and B: every pair's housings and bodies in 3-D against the study's plan | 78 pairs each; the solids never closer than the plan by more than 0.019 mm (the clamp's arc against its 9-point polyline); the least housing gap 1.86 mm, as the study (C8 sits under r2's junction, so D5–C8 and D8–C8 tie) | ✔ |
 | G-LAYOUT, the stack | the column's node-2 plate 39.0 mm from the deck's parts (the study's 39); the riser 13.5 mm from the node-2 plates' bores (13 needed); the decks 12.0 mm from the cage (the record's 12); deck A's conductors 73.2 mm from deck B's (72 needed) | ✔ |
-| the STEP read back | 378 instances of 142 products | ✔ |
+| the STEP read back | 386 instances of 147 products | ✔ |
 | the record unchanged | `Machine(record)` builds the same 153 parts as `docs/geometry/tube/…-hub50.parts.json` after the refactor (`wound_element`) and the hub's new options | ✔ |
 
 ## Changes to the tools (none to the record's outputs)
 - **`sim/tube_geometry.py`:**
-  - `LayoutMachine` and `--layout` added;
+  - `LayoutMachine` and `--layout` added; since 2026-10-11 its `ring_bearings` (default on) draws the bridge-ring
+    bearings from `sim/bridge_ring_bearings.py`'s placement, with each end bearing one slot out, and the section adds
+    panel (e), side A's end;
   - the wound reluctance section's branches moved into `Machine.wound_element`, used by both builds;
   - `locked_hub` takes options for the coupler's length and the leads' channels, the record's defaults unchanged;
   - the primitives `cyl_between`, `wire`, `capsule_y` and `arc_capsule` added.
 - **`sim/step_to_glb.py`:** `--angular` added, default 0.15 (the record's). The layout's GLB uses 0.4. This keeps the
-  3 mm wires and the beads light (3.0 MB, not 8.4); the linear deflection still sets the large parts.
+  3 mm wires and the beads light (3.2 MB with the bridge-ring bearings, not 8.4); the linear deflection still sets the
+  large parts.
 - **`tools/step-viewer/`:**
   - `scene.js`: the potting is translucent, and the layout gets its views (central bay, deck B, deck A), two-plane
     clipping and section labels;
@@ -77,8 +84,8 @@ and mirror). The record supplies the rest: its hub, column plates, vanes and rel
   - `make_layout_data.py`: the viewer's files.
 
 ## Not drawn (open, as in the study)
-- **The bridge-ring bearings:** the shafts need them (`sim/multiplier-layout-findings.md` §7). They need 10–20 mm a
-  side beyond the 974 mm; their place is the designer's.
+- **The bridge-ring bearings:** drawn since 2026-10-11 (`sim/bridge-ring-bearings-findings.md`, PROPOSED); their
+  place and part are the designer's to accept.
 - **Mounts and standoffs:**
   - Ca / Cb's rods and mounts, and the plates' interconnections (the riser passes the node-1 plates' bores; their tabs
     are not drawn);

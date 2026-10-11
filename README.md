@@ -31,13 +31,16 @@ fields come from charge pumps driven by the relative rotation of the machine's t
     it bipolar with the varicaps in phase and feeds each ring from one stage past its varicap node: ±14.93 kV as
     built (`sim/integrated-multiplier-findings.md`; the ledger's §3.9). The designer took it "for now" (2026-10-11).
   - **Its layout** (2026-10-11, PROPOSED): every diode and the multiplier's capacitors go on a potted deck round a
-    grounded can over the hub, and Ca / Cb's plates go between the deck and the vanes. The machine is 974 mm, with no
-    hub-face bearings, so it needs the bridge-ring bearings; the clamp strings drop to about 60 parts
+    grounded can over the hub, and Ca / Cb's plates go between the deck and the vanes. The machine is 974 mm (1014 with
+    its bridge-ring bearings), with no hub-face bearings; the clamp strings drop to about 60 parts
     (`sim/multiplier-layout-findings.md`; `docs/figures/multiplier-layout.png`).
-  - **In 3-D, its circuit running:** the layout in solids (`sim/tube_geometry.py --layout`, 378 solids) and its
+  - **In 3-D, its circuit running:** the layout in solids (`sim/tube_geometry.py --layout`, 386 solids) and its
     circuit simulated through a cycle and its start-up (`sim/multiplier_waveforms.py`). The viewer is
     `tools/step-viewer/layout.html`: every conductor coloured by its potential, each diode lit while it conducts
     (`sim/multiplier-layout-3d-findings.md`, `sim/multiplier-waveforms-findings.md`).
+  - **Its bridge-ring bearings** (2026-10-11, PROPOSED): an SKF 6205-2Z between the shaft and each bridge ring's outer
+    end, in the record's end-bearing slot, with the end bearing one slot out (1014 mm). They hold the shaft's first
+    mode at 83–87 Hz at d 25 (`sim/bridge_ring_bearings.py`, `sim/bridge-ring-bearings-findings.md`).
 - **The hub:** a 50 mm borosilicate vacuum sphere in a PEEK retainer with a silicone-gel interface, the AH's MnZn
   cores on the axis. At its centre: the AH's null and 7.62 kV/cm from ring B to ring A, steady (8.2 once settled).
 - **The model checks** (2026-10-09; the ledger's §6 items 31–34) found both pumps weaker than recorded: the AH holds
