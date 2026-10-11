@@ -6,6 +6,15 @@
 for the designer to decide (`docs/ledger/DCCREG-design-ledger.md` §5.1–§5.2). No netlist or record of the design was
 changed.
 
+**Drawn (2026-10-11):** the drawing set draws these first cuts, their places on the rotor OPEN:
+- La / Lb and its winding: REL-720, REL-721; the choke is 84 × 70 × 61 over its bobbin's flanges (59.1 over the
+  build);
+- the K4 kick as a placeholder module: REL-730;
+- the bought parts' candidates: D1*–D4* on P-016, the snubbers on P-017, the bypass on P-018, the choke's parts on
+  P-019.
+
+Source: `docs/make_drawing_set.py`, from `sim/unmodelled_parts.py` (`sim/unmodelled-parts-findings.md`).
+
 **What it runs:**
 - **The magnetic dual doubler** at the pick (g 0.5 / 6 bridges / 1200 rpm relative), exactly as
   `sim/rotor_parts_duty.py` runs it: the deck of `sim/magnetic_doubler.py`, with the Ψs and the group of

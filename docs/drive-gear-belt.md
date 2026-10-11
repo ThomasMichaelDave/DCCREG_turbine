@@ -9,6 +9,18 @@ deck in ngspice (about 25 s); `--no-spice` reuses the stored harmonics.
 
 ![The bevel reverser at the frame end (side A, below) and the belt drive, from sim/drive_sizing.py.](figures/drive-gear-concept.svg)
 
+**Drawn (2026-10-11):** the drawing set draws this first cut part by part: DRV-100 to DRV-190 and P-012 to P-015
+(`docs/make_drawing_set.py`, from the solids of `sim/unmodelled_parts.py`). Drawn, five of its choices do not close, and
+the drawings depart from them (PROPOSED; `sim/unmodelled-parts-findings.md` §2):
+- the hub's lip goes above its bearing;
+- the counter-rotor's gear gets a flange;
+- the pinions' bearings sit 12 mm apart, as the case's arithmetic below allows: 195 N at the limit, against the
+  statics' 141 N at 16 mm;
+- the bell becomes a C, Ø144 / Ø164, clear of the belt;
+- the 80T pulley (TL80-5M-15) has no flanges.
+
+The teeth mesh with 0.043 mm to spare at the backlash below.
+
 **Inputs.** Every number below that is not computed here comes from these records:
 
 | input | value | source |

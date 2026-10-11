@@ -1,0 +1,1335 @@
+{
+ "note": "solids for the proposed parts the layout's model does not carry (sim/unmodelled_parts.py)",
+ "sources": {
+  "choke": "sim/parts_first_cut_results.json la_lb.chosen",
+  "kick": "sim/parts-first-cut-findings.md \u00a73",
+  "drive": "sim/drive_sizing_results.json gear, belt, envelope; docs/drive-gear-belt.md \u00a75-\u00a78"
+ },
+ "status": "PROPOSED; the drive on the record's 940 mm stack-up, to be re-cut on the layout (ledger \u00a76, item 71)",
+ "gears": {
+  "side_rotor": {
+   "outline": [
+    [
+     12.5,
+     15.00897929754155
+    ],
+    [
+     18.90514203311634,
+     15.00897929754155
+    ],
+    [
+     20.755566091165566,
+     12.233343210467718
+    ],
+    [
+     31.109400392450457,
+     18.335899411324313
+    ],
+    [
+     28.335899411324313,
+     22.49615088301353
+    ],
+    [
+     28.335899411324313,
+     28.0
+    ],
+    [
+     20.0,
+     28.0
+    ],
+    [
+     20.0,
+     40.0
+    ],
+    [
+     12.5,
+     40.0
+    ]
+   ],
+   "Ht": [
+    31.109400392450457,
+    18.335899411324313
+   ],
+   "Hr": [
+    28.613249509436926,
+    22.08012573584461
+   ],
+   "Tt": [
+    20.755566091165566,
+    12.233343210467718
+   ],
+   "Tr": [
+    19.090184438921266,
+    14.731415688834169
+   ],
+   "z_min": 12.2333,
+   "z": 30,
+   "m": 2.0,
+   "delta_deg": 56.3099,
+   "b": 12.0,
+   "alpha_deg": 20.0,
+   "R_e": 36.0555,
+   "R_i": 24.0555,
+   "d_pitch": 60.0,
+   "d_tip_heel": 62.2188,
+   "apex_to_tip_heel": 18.3359,
+   "apex_to_back": 40.0,
+   "face_angle_deg": 59.4849,
+   "root_angle_deg": 52.3435,
+   "back_cone_deg": 33.6901,
+   "d_root_toe": 38.1804,
+   "d_root_heel": 57.2265,
+   "h_a": 2.0,
+   "h_f": 2.5,
+   "pitch_heel": [
+    30.0,
+    20.0
+   ],
+   "pitch_toe": [
+    20.015396467945877,
+    13.343597645297251
+   ],
+   "thin_mm": 0.0639,
+   "z_v": 54.0833,
+   "tip_land_heel_mm": 1.4938,
+   "root_gap_heel_mm": 1.6969,
+   "bore": "\u00d825 H7",
+   "keyway": "8 P9 x 3.3 (DIN 6885 A 8 x 7) in the hub only",
+   "hub": [
+    40.0,
+    12.0
+   ],
+   "mounting_distance": 28.0,
+   "valid_blank": true,
+   "valid_toothed": true,
+   "mass_kg": 0.2684,
+   "blank_mass_kg": 0.2966
+  },
+  "side_cr": {
+   "outline": [
+    [
+     15.5,
+     15.00897929754155
+    ],
+    [
+     18.90514203311634,
+     15.00897929754155
+    ],
+    [
+     20.755566091165566,
+     12.233343210467718
+    ],
+    [
+     31.109400392450457,
+     18.335899411324313
+    ],
+    [
+     28.335899411324313,
+     22.49615088301353
+    ],
+    [
+     28.335899411324313,
+     28.0
+    ],
+    [
+     15.5,
+     28.0
+    ]
+   ],
+   "Ht": [
+    31.109400392450457,
+    18.335899411324313
+   ],
+   "Hr": [
+    28.613249509436926,
+    22.08012573584461
+   ],
+   "Tt": [
+    20.755566091165566,
+    12.233343210467718
+   ],
+   "Tr": [
+    19.090184438921266,
+    14.731415688834169
+   ],
+   "z_min": 12.2333,
+   "z": 30,
+   "m": 2.0,
+   "delta_deg": 56.3099,
+   "b": 12.0,
+   "alpha_deg": 20.0,
+   "R_e": 36.0555,
+   "R_i": 24.0555,
+   "d_pitch": 60.0,
+   "d_tip_heel": 62.2188,
+   "apex_to_tip_heel": 18.3359,
+   "apex_to_back": 28.0,
+   "face_angle_deg": 59.4849,
+   "root_angle_deg": 52.3435,
+   "back_cone_deg": 33.6901,
+   "d_root_toe": 38.1804,
+   "d_root_heel": 57.2265,
+   "h_a": 2.0,
+   "h_f": 2.5,
+   "pitch_heel": [
+    30.0,
+    20.0
+   ],
+   "pitch_toe": [
+    20.015396467945877,
+    13.343597645297251
+   ],
+   "thin_mm": 0.0639,
+   "z_v": 54.0833,
+   "tip_land_heel_mm": 1.4938,
+   "root_gap_heel_mm": 1.6969,
+   "bore": "\u00d831",
+   "flange": [
+    80.0,
+    3.0
+   ],
+   "flange_holes": "6 x \u00d84.5 on PCD \u00d870",
+   "relief": "\u00d840 x 0.5",
+   "mounting_distance": 28.0,
+   "valid_blank": true,
+   "valid_toothed": true,
+   "mass_kg": 0.2265,
+   "blank_mass_kg": 0.2547
+  },
+  "pinion": {
+   "outline": [
+    [
+     5.0,
+     21.125650902775412
+    ],
+    [
+     11.67821599305295,
+     21.125650902775412
+    ],
+    [
+     14.453852080126785,
+     19.27522684472619
+    ],
+    [
+     21.664100588675687,
+     28.89059960754955
+    ],
+    [
+     17.50384911698647,
+     31.664100588675694
+    ],
+    [
+     17.503849116986466,
+     32.51410058867569
+    ],
+    [
+     7.0,
+     32.51410058867569
+    ],
+    [
+     7.0,
+     38.0
+    ],
+    [
+     5.0,
+     38.0
+    ]
+   ],
+   "Ht": [
+    21.664100588675687,
+    28.89059960754955
+   ],
+   "Hr": [
+    17.91987426415539,
+    31.38675049056308
+   ],
+   "Tt": [
+    14.453852080126785,
+    19.27522684472619
+   ],
+   "Tr": [
+    11.955779601760334,
+    20.94060849697049
+   ],
+   "z_min": 19.2752,
+   "z": 20,
+   "m": 2.0,
+   "delta_deg": 33.6901,
+   "b": 12.0,
+   "alpha_deg": 20.0,
+   "R_e": 36.0555,
+   "R_i": 24.0555,
+   "d_pitch": 40.0,
+   "d_tip_heel": 43.3282,
+   "apex_to_tip_heel": 28.8906,
+   "apex_to_back": 38.0,
+   "face_angle_deg": 36.865,
+   "root_angle_deg": 29.7237,
+   "back_cone_deg": 56.3099,
+   "d_root_toe": 23.9116,
+   "d_root_heel": 35.8397,
+   "h_a": 2.0,
+   "h_f": 2.5,
+   "pitch_heel": [
+    20.0,
+    30.000000000000007
+   ],
+   "pitch_toe": [
+    13.343597645297251,
+    20.01539646794588
+   ],
+   "thin_mm": 0.0639,
+   "z_v": 24.037,
+   "tip_land_heel_mm": 1.3623,
+   "root_gap_heel_mm": 2.2301,
+   "bore": "\u00d810, pressed on the stub shaft (H7 / p6 class)",
+   "hub": [
+    14.0,
+    5.485899411324313
+   ],
+   "mounting_distance": 38.0,
+   "valid_blank": true,
+   "valid_toothed": true,
+   "mass_kg": 0.0143,
+   "blank_mass_kg": 0.0179
+  },
+  "first_cut_masses_kg": {
+   "side": 0.3,
+   "hub": 0.25,
+   "pinion": 0.035
+  }
+ },
+ "reverser": {
+  "parts": 36,
+  "overlaps_blank": [],
+  "mesh_overlap_mm3": "none",
+  "mesh_clearance_mm": {
+   "pinion_1 | gear_cr": 0.043,
+   "pinion_1 | gear_rotor": 0.043,
+   "pinion_2 | gear_cr": 0.043,
+   "pinion_2 | gear_rotor": 0.043,
+   "pinion_3 | gear_cr": 0.043,
+   "pinion_3 | gear_rotor": 0.043
+  },
+  "clearance_mm": {
+   "gear_rotor | case": 6.708,
+   "gear_rotor | retaining_ring": 2.236,
+   "gear_rotor | gear_cr": 24.467,
+   "gear_cr | case": 24.0,
+   "gear_cr | spacer_A": 1.5,
+   "gear_cr | cartridge_1": 7.276,
+   "gear_rotor | cartridge_1": 7.276,
+   "hub | case": 24.0,
+   "hub | collar": 2.0,
+   "hub | spacer_A": 12.0,
+   "end_disc | collar": 10.0,
+   "end_disc | case": 12.0,
+   "pinion_1 | cartridge_1": 5.486,
+   "pinion_1 | spacer_A": 5.275,
+   "pinion_1 | case": 21.336,
+   "stub_1 | spacer_A": 7.5,
+   "pulley_80T | bell": 8.91,
+   "pulley_80T | case": 5.0,
+   "spacer_B | retaining_ring": 6.0
+  },
+  "pinion_bearings": {
+   "mesh_from_apex_mm": 25.00769823397294,
+   "inner_centre_mm": 42.0,
+   "outer_centre_mm": 54.0,
+   "overhang_a_mm": 16.99230176602706,
+   "spacing_l_mm": 12.0,
+   "first_cut": {
+    "overhang_a_mm": 12.0,
+    "spacing_l_mm": 16.0
+   },
+   "steady": {
+    "F_net_N": 16.643354431515966,
+    "R_inner_N": 40.21076283978789,
+    "R_outer_N": 23.567408408271927,
+    "first_cut_R_inner_N": 29.12587025515294,
+    "static_safety": 48.74316878317494,
+    "L10_h": 30525313.468041304,
+    "axle_sigma_MPa": 2.8806678098242355
+   },
+   "limit": {
+    "F_net_N": 80.64534807751077,
+    "R_inner_N": 194.8411889574569,
+    "R_outer_N": 114.19584087994612,
+    "first_cut_R_inner_N": 141.12935913564385,
+    "static_safety": 10.059474644388263,
+    "L10_h": 268314.87862870476,
+    "axle_sigma_MPa": 13.95827140345264
+   }
+  }
+ },
+ "belt": {
+  "pitch_length_mm": 750.02,
+  "catalogue_mm": 750.0,
+  "centres_mm": 245.3542134037014,
+  "overlaps": [],
+  "clearance_mm": {
+   "belt | bell": 7.17,
+   "belt | case": 10.0,
+   "pulley_20T | motor_plate": 9.384,
+   "belt | motor_plate": 9.0,
+   "pulley_80T | bell": 8.91
+  }
+ },
+ "choke": {
+  "data": {
+   "outline_mm": [
+    84.0,
+    70.06317028037724,
+    61.088
+   ],
+   "window": [
+    14.0,
+    42.0
+   ],
+   "flange_z": [
+    -13.044,
+    48.044
+   ],
+   "winding_y": [
+    16.379839999999998,
+    53.62016
+   ],
+   "winding_offsets": [
+    1.25,
+    12.044
+   ]
+  },
+  "overlaps": [],
+  "iron_kg_model": 1.2043,
+  "iron_kg_first_cut": 1.2043416,
+  "copper_kg_first_cut": 0.3372206635523482,
+  "total_kg_first_cut": 1.6648872446365361
+ },
+ "kick": {
+  "overlaps": [],
+  "parts": [
+   "base",
+   "cell_holder",
+   "cell",
+   "board",
+   "C_kick",
+   "SCR",
+   "R1",
+   "R2",
+   "R3",
+   "potting",
+   "reed",
+   "link"
+  ]
+ },
+ "parts": {
+  "reverser/shaft": {
+   "material": "the shaft, \u00d825 at its drive end, its keyway 8 x 4 for the rotor gear",
+   "n": 1,
+   "bbox_first": [
+    [
+     -12.5,
+     -12.5,
+     -133.0
+    ],
+    [
+     12.5,
+     12.5,
+     30.0
+    ]
+   ],
+   "volume_mm3": 79649.2
+  },
+  "reverser/collar": {
+   "material": "shaft collar, two-piece clamp, \u00d825 / \u00d840 x 10",
+   "n": 1,
+   "bbox_first": [
+    [
+     -20.0,
+     -20.0,
+     7.0
+    ],
+    [
+     20.0,
+     20.0,
+     17.0
+    ]
+   ],
+   "volume_mm3": 7657.6
+  },
+  "reverser/b6205": {
+   "material": "bearing SKF 6205-2Z",
+   "n": 2,
+   "bbox_first": [
+    [
+     -26.0,
+     -26.0,
+     -8.0
+    ],
+    [
+     26.0,
+     26.0,
+     7.0
+    ]
+   ],
+   "volume_mm3": 24492.6
+  },
+  "reverser/hub": {
+   "material": "Al 6082-T6, counter-rotor hub",
+   "n": 1,
+   "bbox_first": [
+    [
+     -40.0,
+     -40.0,
+     -8.0
+    ],
+    [
+     40.0,
+     40.0,
+     10.0
+    ]
+   ],
+   "volume_mm3": 52818.7,
+   "mass_kg": 0.1426
+  },
+  "reverser/disc": {
+   "material": "G10, the counter-rotor's end disc",
+   "n": 1,
+   "bbox_first": [
+    [
+     -156.5,
+     -156.5,
+     10.0
+    ],
+    [
+     156.5,
+     156.5,
+     20.0
+    ]
+   ],
+   "volume_mm3": 735685.4,
+   "mass_kg": 1.361
+  },
+  "reverser/g_cr": {
+   "material": "austenitic stainless 1.4305, counter-rotor side gear z 30",
+   "n": 1,
+   "bbox_first": [
+    [
+     -40.0,
+     -40.0,
+     -23.77
+    ],
+    [
+     40.0,
+     40.0,
+     -8.0
+    ]
+   ],
+   "volume_mm3": 28668.3,
+   "mass_kg": 0.2265
+  },
+  "reverser/sp_A": {
+   "material": "spacer tube \u00d825 / \u00d828, stainless",
+   "n": 1,
+   "bbox_first": [
+    [
+     -14.0,
+     -14.0,
+     -51.01
+    ],
+    [
+     14.0,
+     14.0,
+     -8.0
+    ]
+   ],
+   "volume_mm3": 5370.9,
+   "mass_kg": 0.0424
+  },
+  "reverser/g_rotor": {
+   "material": "austenitic stainless 1.4305, rotor side gear z 30",
+   "n": 1,
+   "bbox_first": [
+    [
+     -31.11,
+     -31.11,
+     -76.0
+    ],
+    [
+     31.11,
+     31.11,
+     -48.23
+    ]
+   ],
+   "volume_mm3": 33972.8,
+   "mass_kg": 0.2684
+  },
+  "reverser/key": {
+   "material": "key DIN 6885 A 8 x 7 x 12",
+   "n": 1,
+   "bbox_first": [
+    [
+     5.36,
+     -11.21,
+     -76.0
+    ],
+    [
+     15.42,
+     -0.79,
+     -64.0
+    ]
+   ],
+   "volume_mm3": 672.0
+  },
+  "reverser/g_pinion": {
+   "material": "POM-C, pinion z 20",
+   "n": 3,
+   "bbox_first": [
+    [
+     9.47,
+     -4.32,
+     -57.66
+    ],
+    [
+     36.91,
+     33.21,
+     -14.34
+    ]
+   ],
+   "volume_mm3": 10169.9,
+   "mass_kg": 0.0143
+  },
+  "reverser/stub": {
+   "material": "austenitic stainless 1.4305, stub shaft \u00d810",
+   "n": 3,
+   "bbox_first": [
+    [
+     16.12,
+     6.42,
+     -41.0
+    ],
+    [
+     54.63,
+     34.43,
+     -31.0
+    ]
+   ],
+   "volume_mm3": 3032.7,
+   "mass_kg": 0.024
+  },
+  "reverser/cart": {
+   "material": "Al 6082-T6, cartridge sleeve",
+   "n": 3,
+   "bbox_first": [
+    [
+     24.91,
+     5.14,
+     -60.0
+    ],
+    [
+     81.28,
+     60.78,
+     -12.0
+    ]
+   ],
+   "volume_mm3": 15459.2,
+   "mass_kg": 0.0417
+  },
+  "reverser/b6000": {
+   "material": "bearing SKF 6000-2Z",
+   "n": 6,
+   "bbox_first": [
+    [
+     26.41,
+     7.74,
+     -49.0
+    ],
+    [
+     46.34,
+     34.26,
+     -23.0
+    ]
+   ],
+   "volume_mm3": 3619.1
+  },
+  "reverser/sp_pin": {
+   "material": "spacer \u00d810 / \u00d814 x 4, between the 6000s' inner rings",
+   "n": 3,
+   "bbox_first": [
+    [
+     36.34,
+     16.94,
+     -43.0
+    ],
+    [
+     46.8,
+     31.06,
+     -29.0
+    ]
+   ],
+   "volume_mm3": 301.6,
+   "mass_kg": 0.0024
+  },
+  "reverser/case": {
+   "material": "Al 6082-T6, gear case",
+   "n": 1,
+   "bbox_first": [
+    [
+     -84.0,
+     -84.0,
+     -96.0
+    ],
+    [
+     84.0,
+     84.0,
+     -2.0
+    ]
+   ],
+   "volume_mm3": 561120.2,
+   "mass_kg": 1.515
+  },
+  "reverser/bell": {
+   "material": "Al 6082-T6, bell",
+   "n": 1,
+   "bbox_first": [
+    [
+     -82.0,
+     -81.69,
+     -136.0
+    ],
+    [
+     -6.28,
+     81.69,
+     -96.0
+    ]
+   ],
+   "volume_mm3": 87280.0,
+   "mass_kg": 0.2357
+  },
+  "reverser/sp_B": {
+   "material": "spacer \u00d825 / \u00d832 x 3, stainless",
+   "n": 1,
+   "bbox_first": [
+    [
+     -16.0,
+     -16.0,
+     -79.0
+    ],
+    [
+     16.0,
+     16.0,
+     -76.0
+    ]
+   ],
+   "volume_mm3": 940.1,
+   "mass_kg": 0.0074
+  },
+  "reverser/ret": {
+   "material": "retaining ring \u00d844 / \u00d866 x 2, stainless",
+   "n": 1,
+   "bbox_first": [
+    [
+     -33.0,
+     -33.0,
+     -79.0
+    ],
+    [
+     33.0,
+     33.0,
+     -77.0
+    ]
+   ],
+   "volume_mm3": 3689.1,
+   "mass_kg": 0.0291
+  },
+  "reverser/sp_C": {
+   "material": "spacer \u00d825 / \u00d832, stainless",
+   "n": 1,
+   "bbox_first": [
+    [
+     -16.0,
+     -16.0,
+     -100.6
+    ],
+    [
+     16.0,
+     16.0,
+     -94.0
+    ]
+   ],
+   "volume_mm3": 2068.3,
+   "mass_kg": 0.0163
+  },
+  "reverser/bush": {
+   "material": "taper bush 1610, bore \u00d825, keyed",
+   "n": 1,
+   "bbox_first": [
+    [
+     -28.6,
+     -28.6,
+     -126.0
+    ],
+    [
+     28.6,
+     28.6,
+     -100.6
+    ]
+   ],
+   "volume_mm3": 52087.5
+  },
+  "reverser/p80": {
+   "material": "pulley TL80-5M-15, cast iron / Al, unflanged",
+   "n": 1,
+   "bbox_first": [
+    [
+     -63.07,
+     -63.07,
+     -126.0
+    ],
+    [
+     63.07,
+     63.07,
+     -101.0
+    ]
+   ],
+   "volume_mm3": 224613.3
+  },
+  "reverser/nut": {
+   "material": "lock nut SKF KM 5 (M25 x 1.5) with MB 5",
+   "n": 1,
+   "bbox_first": [
+    [
+     -19.0,
+     -19.0,
+     -133.0
+    ],
+    [
+     19.0,
+     19.0,
+     -126.0
+    ]
+   ],
+   "volume_mm3": 4502.7
+  },
+  "belt/case": {
+   "material": "Al 6082-T6, gear case",
+   "n": 1,
+   "bbox_first": [
+    [
+     -84.0,
+     -84.0,
+     -96.0
+    ],
+    [
+     84.0,
+     84.0,
+     -2.0
+    ]
+   ],
+   "volume_mm3": 561120.2,
+   "mass_kg": 1.515
+  },
+  "belt/bell": {
+   "material": "Al 6082-T6, bell",
+   "n": 1,
+   "bbox_first": [
+    [
+     -82.0,
+     -81.69,
+     -136.0
+    ],
+    [
+     -6.28,
+     81.69,
+     -96.0
+    ]
+   ],
+   "volume_mm3": 87280.0,
+   "mass_kg": 0.2357
+  },
+  "belt/hub": {
+   "material": "Al 6082-T6, counter-rotor hub",
+   "n": 1,
+   "bbox_first": [
+    [
+     -40.0,
+     -40.0,
+     -8.0
+    ],
+    [
+     40.0,
+     40.0,
+     10.0
+    ]
+   ],
+   "volume_mm3": 52818.7,
+   "mass_kg": 0.1426
+  },
+  "belt/g_cr": {
+   "material": "austenitic stainless 1.4305, counter-rotor side gear z 30",
+   "n": 1,
+   "bbox_first": [
+    [
+     -40.0,
+     -40.0,
+     -23.77
+    ],
+    [
+     40.0,
+     40.0,
+     -8.0
+    ]
+   ],
+   "volume_mm3": 28668.3,
+   "mass_kg": 0.2265
+  },
+  "belt/g_rotor": {
+   "material": "austenitic stainless 1.4305, rotor side gear z 30",
+   "n": 1,
+   "bbox_first": [
+    [
+     -31.11,
+     -31.11,
+     -76.0
+    ],
+    [
+     31.11,
+     31.11,
+     -48.23
+    ]
+   ],
+   "volume_mm3": 33972.8,
+   "mass_kg": 0.2684
+  },
+  "belt/b6205": {
+   "material": "bearing SKF 6205-2Z",
+   "n": 1,
+   "bbox_first": [
+    [
+     -26.0,
+     -26.0,
+     -94.0
+    ],
+    [
+     26.0,
+     26.0,
+     -79.0
+    ]
+   ],
+   "volume_mm3": 24492.6
+  },
+  "belt/p80": {
+   "material": "pulley TL80-5M-15, cast iron / Al, unflanged",
+   "n": 1,
+   "bbox_first": [
+    [
+     -63.07,
+     -63.07,
+     -126.0
+    ],
+    [
+     63.07,
+     63.07,
+     -101.0
+    ]
+   ],
+   "volume_mm3": 224613.3
+  },
+  "belt/bush": {
+   "material": "taper bush 1610, bore \u00d825, keyed",
+   "n": 1,
+   "bbox_first": [
+    [
+     -28.6,
+     -28.6,
+     -126.0
+    ],
+    [
+     28.6,
+     28.6,
+     -100.6
+    ]
+   ],
+   "volume_mm3": 52087.5
+  },
+  "belt/shaft": {
+   "material": "the shaft, \u00d825 at its drive end, its keyway 8 x 4 for the rotor gear",
+   "n": 1,
+   "bbox_first": [
+    [
+     -12.5,
+     -12.5,
+     -133.0
+    ],
+    [
+     12.5,
+     12.5,
+     30.0
+    ]
+   ],
+   "volume_mm3": 79649.2
+  },
+  "belt/nut": {
+   "material": "lock nut SKF KM 5 (M25 x 1.5) with MB 5",
+   "n": 1,
+   "bbox_first": [
+    [
+     -19.0,
+     -19.0,
+     -133.0
+    ],
+    [
+     19.0,
+     19.0,
+     -126.0
+    ]
+   ],
+   "volume_mm3": 4502.7
+  },
+  "belt/belt": {
+   "material": "belt Gates 750-5M-15 (HTD 5M, 150 teeth, 15 wide)",
+   "n": 1,
+   "bbox_first": [
+    [
+     -64.83,
+     -64.83,
+     -121.0
+    ],
+    [
+     262.44,
+     64.83,
+     -106.0
+    ]
+   ],
+   "volume_mm3": 19624.8
+  },
+  "belt/p20": {
+   "material": "pulley P20-5M-15F, flanged, bored \u00d814",
+   "n": 1,
+   "bbox_first": [
+    [
+     227.35,
+     -18.0,
+     -123.75
+    ],
+    [
+     263.35,
+     18.0,
+     -97.75
+    ]
+   ],
+   "volume_mm3": 12723.3
+  },
+  "belt/plate": {
+   "material": "Al 6082-T6, motor plate",
+   "n": 1,
+   "bbox_first": [
+    [
+     185.35,
+     -50.0,
+     -97.0
+    ],
+    [
+     305.35,
+     50.0,
+     -87.0
+    ]
+   ],
+   "volume_mm3": 93162.4,
+   "mass_kg": 0.2515
+  },
+  "belt/motor": {
+   "material": "brushless DC motor 200 W 48 V (Nanotec / SMD APBA60M048030-E)",
+   "n": 1,
+   "bbox_first": [
+    [
+     215.35,
+     -30.0,
+     -117.0
+    ],
+    [
+     275.35,
+     30.0,
+     23.0
+    ]
+   ],
+   "volume_mm3": 381214.5
+  },
+  "choke/ch_E": {
+   "material": "M400-50A 0.5 mm laminations, E, bonded stack",
+   "n": 1,
+   "bbox_first": [
+    [
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    [
+     84.0,
+     56.0,
+     35.0
+    ]
+   ],
+   "volume_mm3": 123480.0,
+   "mass_kg": 0.9033
+  },
+  "choke/ch_I": {
+   "material": "M400-50A 0.5 mm laminations, I, bonded stack",
+   "n": 1,
+   "bbox_first": [
+    [
+     -0.0,
+     56.06,
+     -0.0
+    ],
+    [
+     84.0,
+     70.06,
+     35.0
+    ]
+   ],
+   "volume_mm3": 41160.0,
+   "mass_kg": 0.3011
+  },
+  "choke/ch_spacer": {
+   "material": "PET film 0.063 mm, the gap spacer",
+   "n": 1,
+   "bbox_first": [
+    [
+     -0.0,
+     56.0,
+     -0.0
+    ],
+    [
+     84.0,
+     56.06,
+     35.0
+    ]
+   ],
+   "volume_mm3": 185.7
+  },
+  "choke/ch_bobbin": {
+   "material": "bobbin, glass-filled PA66 (UL 94 V-0), 1.0 mm wall, 1.5 mm flanges",
+   "n": 1,
+   "bbox_first": [
+    [
+     15.0,
+     14.25,
+     -13.04
+    ],
+    [
+     69.0,
+     55.75,
+     48.04
+    ]
+   ],
+   "volume_mm3": 11891.4,
+   "mass_kg": 0.0172
+  },
+  "choke/ch_winding": {
+   "material": "Cu magnet wire, grade 2, 1.40 mm, 150 turns",
+   "n": 1,
+   "bbox_first": [
+    [
+     15.96,
+     16.38,
+     -12.04
+    ],
+    [
+     68.04,
+     53.62,
+     47.04
+    ]
+   ],
+   "volume_mm3": 67436.6
+  },
+  "choke/ch_lead": {
+   "material": "Cu lead, 1.40 mm, sleeved",
+   "n": 2,
+   "bbox_first": [
+    [
+     33.3,
+     50.92,
+     47.04
+    ],
+    [
+     34.7,
+     52.32,
+     69.04
+    ]
+   ],
+   "volume_mm3": 33.9
+  },
+  "kick/k_base": {
+   "material": "G10 base, 3 mm, four M3 holes",
+   "n": 1,
+   "bbox_first": [
+    [
+     -0.0,
+     -0.0,
+     -0.0
+    ],
+    [
+     100.0,
+     60.0,
+     3.0
+    ]
+   ],
+   "volume_mm3": 17891.0
+  },
+  "kick/k_holder": {
+   "material": "9 V cell holder, PCB / chassis mount (Keystone 1294 class)",
+   "n": 1,
+   "bbox_first": [
+    [
+     6.0,
+     6.0,
+     3.0
+    ],
+    [
+     58.5,
+     36.5,
+     17.0
+    ]
+   ],
+   "volume_mm3": 6351.9
+  },
+  "kick/k_cell": {
+   "material": "9 V lithium cell, LiMnO2, 1.2 Ah (Ultralife U9VL-J-P)",
+   "n": 1,
+   "bbox_first": [
+    [
+     8.0,
+     8.0,
+     4.5
+    ],
+    [
+     56.5,
+     34.5,
+     22.0
+    ]
+   ],
+   "volume_mm3": 22491.9
+  },
+  "kick/k_pcb": {
+   "material": "FR-4 board, 1.6 mm",
+   "n": 1,
+   "bbox_first": [
+    [
+     65.0,
+     8.0,
+     4.0
+    ],
+    [
+     95.0,
+     52.0,
+     5.6
+    ]
+   ],
+   "volume_mm3": 2112.0
+  },
+  "kick/k_cap": {
+   "material": "470 uF 25 V bipolar electrolytic, 16 x 25 (Nichicon UES1E471MHM)",
+   "n": 1,
+   "bbox_first": [
+    [
+     67.5,
+     22.0,
+     5.8
+    ],
+    [
+     92.5,
+     38.0,
+     21.8
+    ]
+   ],
+   "volume_mm3": 5026.5
+  },
+  "kick/k_scr": {
+   "material": "SCR TO-92, 600 V 1.5 A (Littelfuse TCR22-8)",
+   "n": 1,
+   "bbox_first": [
+    [
+     67.6,
+     11.6,
+     5.6
+    ],
+    [
+     72.4,
+     15.3,
+     10.4
+    ]
+   ],
+   "volume_mm3": 71.8
+  },
+  "kick/k_res": {
+   "material": "resistor, axial, 0.25-0.5 W",
+   "n": 3,
+   "bbox_first": [
+    [
+     80.0,
+     10.75,
+     5.65
+    ],
+    [
+     86.5,
+     13.25,
+     8.15
+    ]
+   ],
+   "volume_mm3": 31.9
+  },
+  "kick/k_pot": {
+   "material": "silicone potting, RTV-2",
+   "n": 1,
+   "bbox_first": [
+    [
+     64.0,
+     6.0,
+     3.0
+    ],
+    [
+     96.0,
+     54.0,
+     25.0
+    ]
+   ],
+   "volume_mm3": 26485.9
+  },
+  "kick/k_reed": {
+   "material": "reed sensor, normally open, flange mount (Littelfuse 59140)",
+   "n": 1,
+   "bbox_first": [
+    [
+     6.0,
+     40.0,
+     3.0
+    ],
+    [
+     29.0,
+     54.0,
+     8.5
+    ]
+   ],
+   "volume_mm3": 1682.5
+  },
+  "kick/k_link": {
+   "material": "arming link, 2-pin header and jumper",
+   "n": 1,
+   "bbox_first": [
+    [
+     84.0,
+     10.0,
+     25.0
+    ],
+    [
+     92.0,
+     15.0,
+     33.0
+    ]
+   ],
+   "volume_mm3": 320.0
+  }
+ },
+ "run_s": 263.1
+}
