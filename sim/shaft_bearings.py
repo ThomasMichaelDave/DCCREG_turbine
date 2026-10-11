@@ -209,12 +209,13 @@ def record_parts(pick="g 0.5 / 6 bridges / 1200 rpm"):
     return lad, out
 
 
-def two_body(lad, parts, d_mm, hub_joint="coupler", k_b=K_BEARING, k_mag=None, extra_inner=()):
+def two_body(lad, parts, d_mm, hub_joint="coupler", k_b=K_BEARING, k_mag=None, extra_inner=(), n_shapes=0):
     """the shaft (rotor) and the counter-rotor as Euler-Bernoulli beams on one z grid. The four inner bearings join them
     (radial springs k_b), the two end bearings tie the shaft to the frame. Every solid is a lumped mass and rotary
     inertia at its body's nearest node; the shaft's own steel is distributed. The hub span (between the flanges)
     bends as the G10 coupler + the PEEK retainer at the equator ('coupler', rigid joints) or as a hinge. k_mag: the
-    utrons' negative magnetic stiffness per reluctance plane, between the bodies (N/m) [OC law / IR inputs]."""
+    utrons' negative magnetic stiffness per reluctance plane, between the bodies (N/m) [OC law / IR inputs].
+    n_shapes: also return the first n mode shapes (each body's lateral displacement on the grid, the largest 1)."""
     el = lad["tube_geometry"]["elements"]
     L = lad["tube_geometry"]["L_total_mm"]
     z = np.linspace(0.0, L, 471)
@@ -287,6 +288,15 @@ def two_body(lad, parts, d_mm, hub_joint="coupler", k_b=K_BEARING, k_mag=None, e
     mu = np.linalg.eigvals(np.linalg.solve(Kf, Mf))                 # M v = (1 / w^2) K v; massless dof give mu = 0
     mu = np.sort(np.real(mu[np.abs(np.imag(mu)) < 1e-9 * np.abs(mu).max()]))[::-1]
     f = [float(1.0 / (2 * math.pi * math.sqrt(x))) for x in mu[:6] if x > 0]
+    shapes = []
+    if n_shapes:
+        lam, vec = np.linalg.eig(np.linalg.solve(Kf, Mf))
+        for k in np.argsort(-np.real(lam))[:n_shapes]:
+            v = np.zeros(nd); v[free] = np.real(vec[:, k])
+            ws, wc = v[0:2 * n:2], v[2 * n::2]
+            big = ws[np.argmax(np.abs(ws))] if np.abs(ws).max() >= np.abs(wc).max() else wc[np.argmax(np.abs(wc))]
+            shapes.append(dict(f_Hz=float(1.0 / (2 * math.pi * math.sqrt(np.real(lam[k])))),
+                               w_shaft=(ws / big).tolist(), w_counter_rotor=(wc / big).tolist()))
     g = np.zeros(nd); g[0:2 * n:2] = 9.81; g[2 * n::2] = 9.81
     u = np.zeros(nd); u[free] = np.linalg.solve(Kf, (M @ g)[free])
     w_s, w_c = u[0:2 * n:2] * 1e3, u[2 * n::2] * 1e3
@@ -294,11 +304,13 @@ def two_body(lad, parts, d_mm, hub_joint="coupler", k_b=K_BEARING, k_mag=None, e
     loads = {f"{zb:.0f}": float(k_b * (u[2 * int(np.argmin(np.abs(z - zb)))] - u[2 * n + 2 * int(np.argmin(np.abs(z - zb)))]))
              for zb in inner}
     loads.update({f"{zb:.0f} (end)": float(k_b * u[2 * int(np.argmin(np.abs(z - zb)))]) for zb in ends})
-    return dict(d_mm=d_mm, hub_joint=hub_joint, k_mag_N_per_m=k_mag, extra_inner_z_mm=list(extra_inner), f_Hz=f,
+    more = dict(z_mm=z.tolist(), shapes=shapes) if n_shapes else {}
+    return dict(more, d_mm=d_mm, hub_joint=hub_joint, k_mag_N_per_m=k_mag, extra_inner_z_mm=list(extra_inner), f_Hz=f,
                 f1_Hz=f[0], EI_hub_Nm2=EI_hub,
                 EI_shaft_Nm2=E_STEEL * I_sh, EI_counter_rotor_Nm2=EI_cr, defl_shaft_max_um=float(np.abs(w_s).max() * 1e3),
                 gap_change_um=[g_ * 1e3 for g_ in gap], bearing_loads_1g_N=loads,
-                m_rotor_kg=float(sum(p_["kg"] for p_ in parts if p_["body"] != "stator") + RHO_STEEL * A_sh * (L - (hub["z1"] - hub["z0"])) * 1e-3),
+                m_rotor_kg=float(sum(p_["kg"] for p_ in parts if p_["body"] != "stator" and not p_["name"].startswith("shaft_"))
+                                 + RHO_STEEL * A_sh * (L - (hub["z1"] - hub["z0"])) * 1e-3),       # the shaft's steel once
                 m_counter_rotor_kg=float(sum(p_["kg"] for p_ in parts if p_["body"] == "stator" and not ("spider" in p_["name"] and "end" in p_["name"]))))
 
 

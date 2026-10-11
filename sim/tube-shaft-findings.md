@@ -28,7 +28,8 @@ back. Not drawn [IR]: the vanes' full rounds, the Ca / Cb mounts, the HV parts, 
 - The model: the shaft and the counter-rotor as two Euler–Bernoulli beams on one z grid. The four inner bearings join
   them, and the two end bearings tie the shaft to the frame (each 2e8 N/m [RH]).
 - The masses: every solid's mass and rotary inertia at its centroid (datasheet-class densities [IR]; windings half
-  Cu). That gives a rotor of 33.4 kg (d 25) and a counter-rotor of 33.1 kg. Their heaviest parts are the two G10 bridge
+  Cu). That gives a rotor of 30.4 kg (d 25) and a counter-rotor of 33.1 kg (corrected 2026-10-11: the rotor's 33.4 kg as
+  first reported counted the shaft halves twice, `sim/bridge-ring-bearings-findings.md`). Their heaviest parts are the two G10 bridge
   rings (6.4 kg each, plus 3.9 kg of bridges), which overhang the inner bearings toward the ends.
 - The hub span bends as the G10 coupler plus the PEEK retainer at the equator (EI 6.4 kN·m², rigid joints [IR]),
   against the shaft's 4.0 (d 25) or 8.4 kN·m² (d 30). A hinge there is the lower bound.

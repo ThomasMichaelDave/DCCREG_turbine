@@ -134,8 +134,9 @@ Masses and polar inertias from the record's geometry [OC: geometry; IR: as model
 - **At 600 rpm each way** the bodies hold 1.89 kJ [OC].
 - **The counter-rotor has 2.3 × the rotor's inertia,** 40 % of it in the G10 bridge rings [IR: as modelled].
   `sim/tube-shaft-findings.md` §0 notes those rings could be lighter.
-- **Cross-check:** the record's solids give 33.4 and 33.1 kg (`sim/tube-shaft-findings.md` §0). The difference here is
-  the [RH] lumps and this design's parts.
+- **Cross-check:** the record's solids give 30.4 and 33.1 kg (`sim/tube-shaft-findings.md` §0; 33.4 kg as first
+  reported, corrected 2026-10-11). The difference here is the [RH] lumps (La / Lb, the electronics) and this design's
+  parts.
 
 ## 4. The torques
 
