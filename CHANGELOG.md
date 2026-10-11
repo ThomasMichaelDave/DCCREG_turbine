@@ -41,6 +41,55 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The multiplier laid out in the machine (2026-10-11)
+The designer: "This unipolar setup will do for now, lay out the doubler capacitors in the multiplier top and bottom of
+the machine stack. Propose placement of the diodes. A mechanical layout."
+
+- **Recorded as the designer's (2026-10-11):**
+  - the redesign's circuit "for now": the proposal of 10-10. "Unipolar" is read as each chain one polarity, ring A's
+    side negative (Figure 10); if it meant one polarity for the whole circuit, the capacitors' places stay and only
+    the diodes, the ring stages and the clocking change;
+  - the layout requested.
+- **The layout** (PROPOSED; `sim/multiplier_layout.py`, its results, `sim/multiplier-layout-findings.md`,
+  `docs/figures/multiplier-layout.png` by `docs/make_multiplier_layout.py`). Per side from the hub outward:
+  - the hub as locked inside a grounded Al can on the rotor (r 46–48, |z| ≤ 85);
+  - a potted deck round the can: the side's six diodes, C3–C8 (discrete 180 / 100 pF parts), Csa / Csb, the clamp
+    string and two surge resistors;
+  - Ca / Cb's plates, node 2 / 3 toward the deck;
+  - the vane stack, its ends swapped;
+  - the Ca|reluctance bearing at |z| 289. The machine is 974 mm.
+- **The hub-face bearings removed** (PROPOSED): a counter-rotor spider leaves no path for a rotor wire except the
+  shaft, and nodes 1 / 4 cannot run there (3.0 pF in a bore, 0.008 of z). The record's own D3 / D4, chains and rings'
+  leads cross those spiders unrouted (ledger §6, item 66).
+- **The diodes' placement:** each deck holds the six diodes of its own nodes, and only l1 and r1 cross between the
+  halves, the fewest the ladder's two odd cycles allow.
+- **The checks:**
+  - every part pair on a deck (78 each) and every part to the can clears the record's bare clearance; the potting
+    adds at least 16 mm;
+  - the column stands 39 mm off the deck (19.5 kV), and the decks are 72 mm apart (29.9 kV);
+  - the sleeve's outer end needs two PTFE sheds (17.5 mm against 62 mm of creepage);
+  - the grounded can moves the field at the null × 0.9973 (the record's hub solve).
+- **What it does to the circuit** (the layout's strays estimated [RH]):
+  - **the strays:** nodes 2 / 3 −10.8 pF, nodes 1 / 4 +4.6 pF, the new nodes 1–3 pF against the 24.5 assumed;
+  - **the gain:** z 1.0164 against 1.0142;
+  - **the rings:** they rise to ±16.25 kV, and neither C3–C6 nor C7 / C8 brings them down. Clamp strings of 60 parts
+    (V_op 11.94 kV) hold them at ±14.77 kV.
+- **What it does to the shafts** (the record's two-body model, its solids moved):
+  - without the hub-face bearings, d 25 drops from 29 to 14 Hz with 499 µm of utron gap per g, and d 40 reaches only
+    26 Hz;
+  - the record's bridge-ring bearings give 89 Hz (85 on realistic seats) and +1 µm, so they become necessary.
+- **The magnetic pump's LV leads:** routed in an 8 mm bore in each shaft half under the Ca|reluctance bearings
+  (PROPOSED; ledger §6, item 67).
+- **Fixed:** `sim/shaft_bearings.py --record` no longer ran, because the shaft's renamed material ("austenitic
+  stainless") was missing from its density table. The key is added at the record's steel figure, and the record's
+  28.57 Hz reproduces (ledger §6, item 68).
+- **Records:**
+  - the ledger: the header, the abstract, §2.3, §3.9 (the layout, Figure 11; the bench figure is now 12), §5.1, §5.2,
+    §6 (items 66–69), §7 (sheet 31; Part C now 32–56), §8, Appendix A;
+  - the register and the bundle (56 sheets). The bundle's first register page now takes the tighter rows of its
+    second: sheet 31 had run off it onto the second page's heading (`docs/ledger/make_ledger.py`);
+  - `presets/hub-locked.json` supply_redesign.
+
 ### The multiplier stacked into the doubler (2026-10-10)
 The designer: "We will redesign the charge pump multipliers so they stack integrated in the doubler circuit. Now it's a
 separate circuit tapping on node 1 and 4. It's no good this way." The turbine's stack will change; the magnetic pump,

@@ -8,9 +8,9 @@ temporary documentation ledger and the current fact sheet of the exercise.
 | status | **LOCKED for now** — the designer, 2026-10-09: "Let's lock the design for now." |
 | design state | the lock's baseline is commit `09243c7` on branch `claude/new-session-0az7f9`. The settlement (2026-10-09; §2.3, §6) brought the records into line with it, corrected computed values (the field at the null with the beads; the beads as drawn), added first cuts, which stay PROPOSED until the designer accepts them, and ran four model checks (§6 items 31–34). Those correct both pumps' numbers: the record's values stay as its basis, with the corrected ones beside them, dated, until the designer decides (§5.2) |
 | what the lock means | the design of record below is the baseline; later changes are recorded against it. The lock does not settle what is still PROPOSED or OPEN (§5): those keep their status |
-| the redesign (2026-10-10) | the designer is redesigning the electrostatic pump's multipliers: stacked into the doubler, not a separate circuit tapping nodes 1 and 4. The turbine's stack will change; the magnetic pump, the sphere, its AH and the field interface stay for now. The worked proposal is §3.9 (PROPOSED); the record below stays the baseline until the designer accepts it |
+| the redesign (2026-10-10) | the designer is redesigning the electrostatic pump's multipliers: stacked into the doubler, not a separate circuit tapping nodes 1 and 4. The turbine's stack will change; the magnetic pump, the sphere, its AH and the field interface stay for now. The worked circuit is §3.9, taken by the designer "for now" (2026-10-11); its mechanical layout is §3.9 too (PROPOSED). The record below stays the baseline until the designer accepts them |
 | this ledger | `docs/ledger/DCCREG-design-ledger.md` (the source) and `.pdf` (its print form) |
-| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 55 sheets behind a two-page register (§7) |
+| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 56 sheets behind a two-page register (§7) |
 | how it is built | `python3 docs/ledger/make_ledger.py` (needs markdown-it-py, mdit-py-plugins, pypdf and playwright with Chromium) |
 
 **Abstract.** As locked, the DCCREG turbine is a belt-driven tube machine. Its rotor and counter-rotor turn at 600 rpm
@@ -40,6 +40,13 @@ in opposite directions through a 1 : −1 reversing gear.
     past its varicap node to its ring.
   - As built it holds the rings at ±14.93 kV (±14.67 kV with typical HV sticks; the record ±13.86 / ±13.39 kV) on 12
     single sticks, at a lower ideal gain (1.014 against 1.032).
+  - **The layout (2026-10-11, PROPOSED):**
+    - Ca / Cb stay plates in each side's column, toward the hub;
+    - every diode and the multiplier's capacitors sit on a potted deck round a grounded can over the hub;
+    - only l1 and r1 cross between the halves; the machine grows to 974 mm.
+  - **What it costs:**
+    - it needs the record's bridge-ring bearings, since the hub-face bearings must go;
+    - it needs the clamp strings trimmed to about 60 parts.
 - **What is still open:** the physics is mainstream throughout [OC]. The ratings, the leakage and several parts are
   placeholders that the bench test must qualify.
 
@@ -176,6 +183,7 @@ commits' dates.
 | 10-09 (the settlement) | rewrite `README.md` and `CLAUDE.md` for the locked machine | `README.md`, `CLAUDE.md` |
 | 10-10 | redesign the charge-pump multipliers so they stack into the doubler, not "a separate circuit tapping on node 1 and 4"; the design stack of the whole turbine will change; the magnetic pump, the sphere, its AH and the field interface untouched for now | §3.9 |
 | 10-10 | the sketch: C3–C6 and D5–D8 are the new parts (read back and confirmed); the clamps Z1 / Z4 stay on nodes 1 / 4; C3–C6 to be sized; the polarity free; the rings' supply to be worked out; the doubler, the rings and the magnetic pump's Schottky circuit on one revolving body | §3.9; `sim/integrated-multiplier-findings.md` |
+| 10-11 | "This unipolar setup will do for now": the proposal's circuit, for now (read here as Figure 10's: each chain one polarity, ring A's side negative). "Lay out the doubler capacitors in the multiplier top and bottom of the machine stack. Propose placement of the diodes. A mechanical layout." | §3.9; `sim/multiplier-layout-findings.md` |
 
 ### 2.4 What was learned, and what it superseded
 - **Charge pumps pay their equalisation tax inside the core** [OC].
@@ -615,7 +623,7 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
 
 ![Figure 9. One revolution of the rotor: the pump goes through its phases twelve times (C1 / C2, nodes 1 / 4, the chains' oscillating nodes), while the rings hold and the field at the null stays 7.611–7.625 kV/cm from B to A. Source: docs/figures/hub-rings-revolution.png (sim/hub_revolution.py).](../figures/hub-rings-revolution.png)
 
-**In time** (the bench test's predictions are Figure 11, §5.3):
+**In time** (the bench test's predictions are Figure 12, §5.3):
 - **Start-up** from the pump's seed: 50 % at 0.12 s, 95 % at 0.24 s, 99 % at 0.33 s; as built, with the tube's strays
   solved, 95 % at 0.63 s on the deck's own start (`sim/tube-strays-findings.md` §5); with real HV sticks as well,
   0.575 s from a consistent −1 kV, 1.49 s at their maximum leakage, and hot no start from −1 kV
@@ -740,7 +748,54 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 - the rings' level rests on the new nodes' strays, 24.5 pF assumed [RH]: with none the rings reach ±16.3 kV. Set the
   clamp strings on the bench (each 200 V part moves V_op 1.5 %) before the hub sees them;
 - in phase, the stacks' pulls add: the varicaps' torque ripple triples;
-- not run: a vane flashover with the ring stages, the torque's share at the gear, the redesigned stack itself.
+- not run: a vane flashover with the ring stages, the torque's share at the gear.
+
+**The mechanical layout** (2026-10-11, PROPOSED; `sim/multiplier-layout-findings.md`). The designer took the circuit
+"for now" and asked for its capacitors laid out top and bottom of the stack, the diodes placed, a mechanical layout.
+
+![Figure 11. The multiplier laid out in the machine (PROPOSED): (a) the half-section, side B above, without the hub-face bearings; (b) side A's central bay with the gaps that set it; (c) deck A in plan, the sticks along the outer lane, the capacitors and the clamp string on the inner; (d) the parts, the interfaces and what the layout does. Source: docs/figures/multiplier-layout.png (docs/make_multiplier_layout.py; sim/multiplier_layout.py).](../figures/multiplier-layout.png)
+
+- **The stack, per side from the hub outward** (|z| from the hub's centre; side B the mirror) [IR]:
+
+| \|z\| (mm) | what |
+|:--|:--|
+| 0–80 | the hub as locked, in a grounded aluminium can on the rotor (r 46–48, \|z\| ≤ 85) |
+| 30–78 | **the deck**: a G10 ring plate (r 50–150) round the can carrying the side's six diodes, C3–C8 and Csa / Csb, the clamp string and two surge resistors, each potted |
+| 117–165 | **the column**: Ca (Cb), the record's six plates, node 2 (3) toward the deck |
+| 171–273 | **the vane stack**: the record's 6 + 6, its ends swapped (a rotor vane at its hub end) |
+| 289 | the Ca\|reluctance bearing (the record's 272), then the reluctance section as the record |
+
+- **Why there are no hub-face bearings** [OC]:
+  - a counter-rotor spider leaves no path for a rotor wire except the shaft;
+  - nodes 1 / 4 in a shaft bore would take 3.0 pF each, 0.008 of z;
+  - the record's own wiring (D3 / D4, the chains, the rings' leads) has the same unsolved crossing.
+- **The diodes' placement:**
+  - deck A holds D1, D3, D5, D8, D11, D12 with C3, C6, C8 and Csa; deck B holds the mirror set;
+  - **only l1 and r1 cross** between the halves, the fewest the ladder's two odd cycles allow, on PTFE HV wire
+    between the decks;
+  - C3–C8 are discrete (class 1 HV ceramic or film): as plates they would put a third node in each column.
+- **Clearances** [IR]:
+  - every one of the 78 part pairs per deck, and every part to the can, clears the record's bare clearance;
+  - the potting adds at least 16 mm of silicone;
+  - the column stands 39 mm off the deck (node 2 against ring A's lead, 19.5 kV);
+  - deck A and deck B are 72 mm apart (29.9 kV needs 67);
+  - **the sleeve:** a PTFE cover under the column, and two 12 mm PTFE sheds at its outer end. That end holds only
+    17.5 mm, against 62 mm of creepage on PTFE. This is the record's own open point, moved there.
+- **The hub:** with the can as its REF boundary, the record's hub solve gives the field at the null × 0.9973. The can
+  also screens the hub from the decks' 120 Hz swing.
+- **The circuit with the layout's strays** (estimated [RH]):
+  - **the strays:** nodes 2 / 3 lose 10.8 pF, nodes 1 / 4 gain 4.6 pF, and the new nodes carry 1–3 pF against the
+    24.5 assumed;
+  - **the gain** at start-up rises to 1.0164 (from 1.0142);
+  - **the rings rise to ±16.25 kV,** and neither C3–C6 nor C7 / C8 brings them down;
+  - **trim the clamp strings to 60 parts** (V_op 11.94 kV): the rings hold ±14.77 kV, the field 7.50 kV/cm.
+- **The shafts** (the record's two-body model, its solids moved; criterion 60 Hz):
+  - without the hub-face bearings, d 25 falls from 29 Hz to 14 Hz and the utron gap moves 499 µm per g;
+  - d 40 alone reaches only 26 Hz;
+  - **with the record's bridge-ring bearings: 89 Hz** (85 on realistic seats) and +1 µm. They become necessary.
+- **The length:** 974 mm (+34 mm), before the bridge-ring bearings' 10–20 mm a side.
+- **The magnetic pump's LV leads** (the AH coils to the utrons' circuit) cross the Ca|reluctance spiders in an 8 mm
+  bore in each shaft half. The record leaves them unrouted.
 
 ## 4. Fact sheet: the numbers of record, with their sources
 
@@ -860,21 +915,31 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 | the shaft's diameter and the bearings | OPEN | the designer's choice (§5.2) |
 | the ratings, the leakage, the conductivities | OPEN / ESTIMATE | the bench qualifies them |
 | the multipliers stacked into the doubler (the sketch: C3–C6, D5–D8); the clamps on nodes 1 / 4; one revolving body | DECIDED (10-10) | the redesign, §3.9 |
-| the redesign's circuit: bipolar, C1 / C2 in phase, the ring stages (C7 / C8, D9–D12, Csa / Csb), C3–C6 180 pF | PROPOSED | `sim/integrated-multiplier-findings.md` |
+| the redesign's circuit: bipolar, C1 / C2 in phase, the ring stages (C7 / C8, D9–D12, Csa / Csb), C3–C6 180 pF | DECIDED for now (10-11) | `sim/integrated-multiplier-findings.md`; "will do for now" |
+| the redesign's layout: the decks round a grounded can, the columns toward the hub, the vane stacks against the Ca\|reluctance bearings, no hub-face bearings, the clamp strings at about 60 parts | PROPOSED | `sim/multiplier-layout-findings.md` (Figure 11) |
 
 ### 5.2 Open items
 
 **For the designer to decide** (each has its numbers in this ledger):
-- **the redesign** (§3.9, `sim/integrated-multiplier-findings.md`): accept the proposal (bipolar, C1 / C2 in phase,
-  the ring stages, C3–C6 180 pF) or set it otherwise.
-  - With it: Ca / Cb at 13.2 kV; the rings' level set on the bench by the clamp strings until a drawn stack fixes the
-    new nodes' strays; the varicaps' torque ripple tripled; no bearing link needed.
+- **the redesign** (§3.9, `sim/integrated-multiplier-findings.md`): the circuit is taken "for now" (10-11): bipolar,
+  C1 / C2 in phase, the ring stages, C3–C6 180 pF.
+  - With it: Ca / Cb at 13.2 kV; the varicaps' torque ripple tripled; no bearing link needed.
   - Its seed is 51 V / 947 V / 4.87 kV (typical / maximum / hot), against the record's 122 V / 1.0 kV / 3.65 kV
     below.
-  - Still to run: a vane flashover with the ring stages, the torque at the gear, the redesigned stack;
+  - Still to run: a vane flashover with the ring stages, the torque at the gear;
+- **the redesign's layout** (§3.9, Figure 11, `sim/multiplier-layout-findings.md`, PROPOSED): accept it or set it
+  otherwise. Its consequences:
+  - **the hub-face bearings go,** so the shaft needs the bridge-ring bearings: 89 Hz at d 25, where d 40 alone
+    gives only 26 Hz;
+  - **the clamp strings drop to about 60 parts,** as the layout's small strays raise the rings to ±16.25 kV at 66.
+    A field solve of the new stack would fix the number; the bench trims it in any case;
+  - **the sleeve's outer ends** need PTFE sheds (17.5 mm against 62 mm of creepage);
+  - **the decks** need their parts' real envelopes and a balance;
+  - **Ca / Cb's mounts** need their 13.2 kV creepage (77 mm on PTFE);
 - **the shaft and its bearings** (§3.1): six bearings with d 40 (65 Hz, the runout at 0.027 mm), or an eighth pair
   between the shaft and each bridge ring's outer end at d 25 (131–165 Hz, the runout at 0.05 mm; the layout +10–20 mm
-  a side; stiff seats to keep it clear of 120 Hz);
+  a side; stiff seats to keep it clear of 120 Hz). The redesign's layout removes the hub-face bearings and leaves
+  only the second way (85–89 Hz; §3.9);
 - **the drive's first cut** (§3.1, `docs/drive-gear-belt.md`): accept it, or set the gear and belt otherwise;
 - **the bypass and the split**, both PROPOSED;
 - **the hub's first cuts** (§3.5): the grooves' full-round tops, the AH ends rounded to 1.5 mm (which also gives the
@@ -947,7 +1012,7 @@ Source: `docs/bench-test-rings.md`.
      record's capacitances, 7.62 with ideal diodes); a low reading points at the sticks' leakage. Then the AH
      powered, with the Faraday offset measured first.
 
-![Figure 11. What the bench test should see: the start-up, the 120 Hz ripple (the pump's nodes, the rings, the field), the 6 h drift by material, and the test's phases. Source: docs/figures/hub-bench-predictions.png (docs/make_hub_bench_figure.py).](../figures/hub-bench-predictions.png)
+![Figure 12. What the bench test should see: the start-up, the 120 Hz ripple (the pump's nodes, the rings, the field), the 6 h drift by material, and the test's phases. Source: docs/figures/hub-bench-predictions.png (docs/make_hub_bench_figure.py).](../figures/hub-bench-predictions.png)
 
 ## 6. Known inconsistencies and stale records
 
@@ -1066,6 +1131,15 @@ and the corrected one stands beside it, dated, until the designer decides.
 |:--|:--|:--|
 | 65 | as built, "the pump barely self-excites"; the seed "tens of volts, a few hundred hot", and "the deck's −1 kV is enough at every leakage level" (§3.4, §5.2) | **corrected:** those hold with ideal diodes or on the record's capacitances. As built with real HV sticks it does not self-excite: it starts from 122 V, 1.0 kV or 3.65 kV (typical, maximum, hot leakage), so −1 kV does not start it hot; 6.82 kV/cm with typical sticks. The clamps' hot leakage [RH] sets the 3.65 kV; the bench settles it |
 
+**Found by the layout of the redesign** (`sim/multiplier-layout-findings.md`, 2026-10-11)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 66 | the record's rotor wiring crosses the hub-face bearings' spiders: D3 / D4 join side A's nodes to side B's, and the rings' chains and leads join the vane bays to the hub bay. Each spider is counter-rotor, so only the shaft passes it, and nodes 1 / 4 cannot run there (3.0 pF in a bore, 0.008 of z) | **noted:** the record's layout gives no path. The redesign's layout removes the hub-face bearings (PROPOSED, §3.9); the record stays the baseline |
+| 67 | the magnetic pump's leads (the AH coils in the hub to La / Lb, D1*–D4* and the utrons) cross the Ca\|reluctance spiders, unrouted (`sim/rotor-mechanics-findings.md` puts the electronics "at the hub" [RH]) | **proposed:** an 8 mm bore in each shaft half, from the flange's face under the Ca\|reluctance bearing to the reluctance bay; low voltage, 1 % of the shaft's stiffness |
+| 68 | `sim/shaft_bearings.py --record` no longer ran: its density table lacked the shaft's renamed material, "austenitic stainless" | **fixed:** the key added at the record's steel figure (7850 kg/m³); the record's 28.57 Hz reproduces |
+| 69 | the redesign's rings rest on the new nodes' strays, 24.5 pF each [RH] (`sim/integrated-multiplier-findings.md`) | **noted:** laid out compactly they carry 1–3 pF, and the rings rise to ±16.25 kV at the record's V_op. The layout trims the clamp strings to about 60 parts (±14.77 kV); a field solve of the new stack would settle it |
+
 ## 7. Drawing register
 
 The bundle, `docs/ledger/DCCREG-drawings-bundle.pdf`, carries every sheet below on A3, in this order. It opens with a
@@ -1111,20 +1185,21 @@ redraw them (`docs/ledger/register.py`).
 | 28 | Real diodes in both pumps | `docs/figures/diodes-real.png` |
 | 29 | The tube's strays by a field solve | `docs/figures/tube-strays.png` |
 | 30 | The multiplier stacked into the doubler (PROPOSED, the redesign of 10-10) | `docs/schematic-integrated-multiplier.svg` |
+| 31 | The multiplier laid out in the machine (PROPOSED, 10-11) | `docs/figures/multiplier-layout.png` |
 
 **Part C — earlier phases, superseded, kept for the record**
 
 | sheets | what | files |
 |:--|:--|:--|
-| 31–33 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
-| 34 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
-| 35–36 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
-| 37–39 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
-| 40–42 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
-| 43–46 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
-| 47–48 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
-| 49–51 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
-| 52–55 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
+| 32–34 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
+| 35 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
+| 36–37 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
+| 38–40 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
+| 41–43 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
+| 44–47 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
+| 48–49 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
+| 50–52 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
+| 53–56 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
 
 **CAD and DXF files** (not on sheets; `tools/step-viewer/` renders the STEP files):
 - **of the record:**
@@ -1155,7 +1230,8 @@ redraw them (`docs/ledger/register.py`).
 - `sim/ah_steady_cusp_results.json`, `sim/hub_drift_results.json` and `sim/hub_revolution_results.json`;
 - `sim/tube_geometry_record_results.json` and `sim/shaft_bearings_record_results.json` (the record in solids, its
   shaft);
-- `sim/integrated_multiplier_results.json` (the redesign's proposal, §3.9).
+- `sim/integrated_multiplier_results.json` (the redesign's proposal, §3.9);
+- `sim/multiplier_layout_results.json` (the redesign's layout, §3.9).
 
 **The findings,** one per study:
 - `sim/pole-design-findings.md`, `sim/ah-steady-cusp-findings.md`, `sim/rotor-parts-duty-findings.md`;
@@ -1164,7 +1240,7 @@ redraw them (`docs/ledger/register.py`).
 - the settlement's: `sim/hub-beads-settled-findings.md`, `sim/hub-thermal-findings.md`, `sim/ah-null-findings.md`,
   `sim/rotor-mechanics-findings.md`, `sim/tube-shaft-findings.md` §0, `sim/parts-first-cut-findings.md`,
   `docs/drive-gear-belt.md`, and the model checks of §6 (31–34);
-- the redesign's: `sim/integrated-multiplier-findings.md` (§3.9);
+- the redesign's: `sim/integrated-multiplier-findings.md` and `sim/multiplier-layout-findings.md` (§3.9);
 - the design and test documents `docs/rings-design.md` and `docs/bench-test-rings.md`;
 - the cost guide `docs/cost/README.md`.
 
@@ -1176,7 +1252,8 @@ redraw them (`docs/ledger/register.py`).
   - `sim/hub_beads_settled.py` and `sim/hub_thermal.py` (the hub settled, its heat);
   - `sim/ah_null.py`, `sim/rotor_mechanics.py`, `sim/drive_sizing.py --figure`, `sim/parts_first_cut.py`;
   - `sim/tube_geometry.py --record` and `sim/shaft_bearings.py --record` (the record in solids, its shaft);
-  - `sim/integrated_multiplier.py --procs 4` (the redesign's proposal).
+  - `sim/integrated_multiplier.py --procs 4` (the redesign's proposal), then `sim/multiplier_layout.py --procs 4` (its
+    layout).
 - **the drawings and figures:**
   - `docs/make_rings_drawing.py`;
   - `docs/make_rings_field_figure.py`;
@@ -1184,7 +1261,8 @@ redraw them (`docs/ledger/register.py`).
   - `docs/make_schematic_rotor.py`;
   - `docs/make_hub_rings_build_figure.py`, `docs/make_hub_bench_figure.py` and `docs/make_hub_revolution_figure.py`;
   - `docs/make_core_drawing.py` and `docs/make_utron_drawing.py`;
-  - `docs/make_air_vane_drawing.py`.
+  - `docs/make_air_vane_drawing.py`;
+  - `docs/make_multiplier_layout.py` (after `sim/multiplier_layout.py`).
 - **the cost:** `docs/make_cost_sheet.py`, then recalculate the workbook.
 - **this ledger:** `docs/ledger/make_ledger_figures.py`, then `docs/ledger/make_ledger.py`.
 
@@ -1213,6 +1291,7 @@ redraw them (`docs/ledger/register.py`).
 | m1, m2, b1; n1, n2, a1 | the chains' oscillating and smoothing nodes |
 | C3–C6; l1, l2, r1, r2 | the redesign (§3.9): the ladder's capacitors and nodes, C3 / C5 on node 2, C4 / C6 on node 3 |
 | D1–D8; D9–D12, C7 / C8, xa / xb | the redesign's chains: as sketched, D1–D4 at the doubler's places and D5–D8 on the ladder; the ring stages and their nodes |
+| deck A / B; the can; the column; the riser; the cross nets | the redesign's layout (§3.9): each side's potted ring of diodes and capacitors round the hub; the grounded can over the hub; Ca / Cb's plates between the deck and the vanes; node 1's (4's) lead up the column's bore; l1 and r1, the two nets that cross between the decks |
 | Csa / Csb | the redesign's smoothing capacitor of ring A / B to the shaft (the record's chains number theirs Csa1, Csa2) |
 | z | gain per pump cycle (the growth of the stored charge or flux) |
 | κ | the swing ratio C_max / C_min or L_max / L_min |

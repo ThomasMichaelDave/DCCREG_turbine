@@ -112,7 +112,8 @@ FOOTER = ('<div style="font-family: DejaVu Sans, sans-serif; font-size: 7pt; col
 
 # figures the paper sets on a page of their own, turned to landscape: the wide schematics and the A3 drawing
 LANDSCAPE = ("figures/architecture.png", "../schematic-rings-supply.png", "../drawings/DCCREG-HUB-201.png",
-             "../figures/hub-bench-predictions.png", "../schematic-integrated-multiplier.png")
+             "../figures/hub-bench-predictions.png", "../schematic-integrated-multiplier.png",
+             "../figures/multiplier-layout.png")
 
 
 def md_to_html(text):
@@ -255,7 +256,7 @@ def _cover_html(n_total):
     head = ('<table><thead><tr><th style="width:4%">sheet</th><th style="width:20%">title</th><th>what it shows</th>'
             '<th style="width:24%">file</th><th style="width:15%">generator</th></tr></thead><tbody>')
     cad = "".join(f'<tr><td>{p_}</td><td>{html.escape(f)}</td><td>{html.escape(w)}</td></tr>' for p_, f, w in CAD)
-    page1 = (f'<div class="sheet" style="padding-top: 14mm"><h1>DCCREG turbine — technical drawings</h1>'
+    page1 = (f'<div class="sheet tight" style="padding-top: 14mm"><h1>DCCREG turbine — technical drawings</h1>'
              f'<div class="sub">The bundle of the design lock ({LOCK_DATE}, design state {LOCK_STATE}, {REVISION}; built '
              f'at {commit()}): '
              f'{n_total} sheets after '

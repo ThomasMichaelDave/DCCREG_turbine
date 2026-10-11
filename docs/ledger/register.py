@@ -98,6 +98,10 @@ _R = [
      "the designer's ladder C3-C6 / D5-D8 run bipolar with C1 / C2 in phase, each chain one stage past its varicap "
      "node to its ring; every node's swing, reverse peak and DC as built; against the record's supply",
      "docs/make_integrated_multiplier_schematic.py"),
+    ("B", "The multiplier laid out in the machine (PROPOSED, 2026-10-11)", "docs/figures/multiplier-layout.png",
+     "the half-section without the hub-face bearings; side A's central bay with its gaps; deck A in plan (the sticks, "
+     "C3 / C6 / C8, Csa and the clamp string round the grounded can); the parts, the interfaces, the strays, the clamp "
+     "trim and the shafts", "docs/make_multiplier_layout.py"),
     # ---------------------------------------------------------------------------------------- C: earlier phases
     ("C", "The machine as modelled before the record: section", f"{_TUBE}-section.png",
      "superseded by the record in solids: the old vacuum 8 + 8 stack, Ca / Cb on the counter-rotor, the 120 mm "
