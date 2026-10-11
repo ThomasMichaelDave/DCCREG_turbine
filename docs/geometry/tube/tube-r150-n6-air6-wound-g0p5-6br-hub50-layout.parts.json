@@ -1,0 +1,7627 @@
+{
+"parts": [
+{
+"name": "hub_vessel",
+"proto": "hub_vessel",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "hub-vessel",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_vessel - the vessel: borosilicate sphere, vacuum inside [borosilicate vessel, OD 50 mm, wall 1.5 mm (vacuum inside), rotor]"
+},
+{
+"name": "hub_gel",
+"proto": "hub_gel",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "hub-gel",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_gel - interface filler: silicone gel [silicone gel, 0.5 mm, vacuum-cast, rotor]"
+},
+{
+"name": "hub_retainer",
+"proto": "hub_retainer",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "hub-retainer",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_retainer - retainer: PEEK, the pocket over the glass, the bead grooves, the AH bores and seats [PEEK retainer, unfilled, rotor]"
+},
+{
+"name": "hub_coupler",
+"proto": "hub_coupler",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "hub-coupler",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_coupler - shaft coupler: G10 around the retainer, between the flanges [G10 shaft coupler: a straight tube over the retainer and both flanges (docs/rings-design.md \u00a72, PROPOSED), rotor]"
+},
+{
+"name": "hub_ring_B",
+"proto": "hub_ring_B",
+"body": "rotor",
+"node": "ring B",
+"group": "hub",
+"join": "ring-B",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_ring_B - ring B (+15.0 kV): the foil band, 26.25-55.71 deg [Cu-ETP foil 0.1 mm, a band, rotor]"
+},
+{
+"name": "hub_bead_B_pol",
+"proto": "hub_bead_B_pol",
+"body": "rotor",
+"node": "ring B",
+"group": "hub",
+"join": "ring-B",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_bead_B_pol - ring B's polar bead, soldered to the foil [Cu wire ring, 3 mm, rotor]"
+},
+{
+"name": "hub_bead_B_eq",
+"proto": "hub_bead_B_eq",
+"body": "rotor",
+"node": "ring B",
+"group": "hub",
+"join": "ring-B",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_bead_B_eq - ring B's equatorial bead, soldered to the foil [Cu wire ring, 2 mm, rotor]"
+},
+{
+"name": "hub_ring_A",
+"proto": "hub_ring_A",
+"body": "rotor",
+"node": "ring A",
+"group": "hub",
+"join": "ring-A",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_ring_A - ring A (-15.0 kV): the foil band, 26.25-55.71 deg [Cu-ETP foil 0.1 mm, a band, rotor]"
+},
+{
+"name": "hub_bead_A_pol",
+"proto": "hub_bead_A_pol",
+"body": "rotor",
+"node": "ring A",
+"group": "hub",
+"join": "ring-A",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_bead_A_pol - ring A's polar bead, soldered to the foil [Cu wire ring, 3 mm, rotor]"
+},
+{
+"name": "hub_bead_A_eq",
+"proto": "hub_bead_A_eq",
+"body": "rotor",
+"node": "ring A",
+"group": "hub",
+"join": "ring-A",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_bead_A_eq - ring A's equatorial bead, soldered to the foil [Cu wire ring, 2 mm, rotor]"
+},
+{
+"name": "hub_AH_B_core",
+"proto": "ah_core_B",
+"body": "rotor",
+"node": "REF",
+"group": "hub",
+"join": "ah-B",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_AH_B_core - AH B (above): core [77 MnZn rod (Fair-Rite 4077484611), rotor]"
+},
+{
+"name": "hub_AH_B_former",
+"proto": "ah_former_B",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "ah-B",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_AH_B_former - AH B (above): former [G-10 former, rotor]"
+},
+{
+"name": "hub_AH_B_coil",
+"proto": "ah_coil_B",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "ah-B",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_AH_B_coil - AH B (above): coil [Cu coil, 160 turns, rotor]"
+},
+{
+"name": "hub_AH_A_core",
+"proto": "ah_core_A",
+"body": "rotor",
+"node": "REF",
+"group": "hub",
+"join": "ah-A",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_AH_A_core - AH A (below): core [77 MnZn rod (Fair-Rite 4077484611), rotor]"
+},
+{
+"name": "hub_AH_A_former",
+"proto": "ah_former_A",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "ah-A",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_AH_A_former - AH A (below): former [G-10 former, rotor]"
+},
+{
+"name": "hub_AH_A_coil",
+"proto": "ah_coil_A",
+"body": "rotor",
+"node": "",
+"group": "hub",
+"join": "ah-A",
+"place": {
+"dx": 0.0,
+"dz": 487.0,
+"rot": 0.0
+},
+"label": "hub / hub_AH_A_coil - AH A (below): coil [Cu coil, 160 turns, rotor]"
+},
+{
+"name": "A_flange",
+"proto": "flange_lv",
+"body": "rotor",
+"node": "0",
+"group": "hub",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 407.0,
+"rot": 0.0
+},
+"label": "hub / A_flange - shaft-half flange A, bonded and pinned in the coupler [austenitic stainless flange, non-magnetic, turned to 60 mm, its LV bore 8 mm, rotor]"
+},
+{
+"name": "shaft_A",
+"proto": "shaft_A",
+"body": "rotor",
+"node": "0",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / shaft_A - shaft half A, its LV bore 8 mm [austenitic stainless shaft half, non-magnetic, rotor]"
+},
+{
+"name": "A_lv_cable",
+"proto": "A_lv_cable",
+"body": "rotor",
+"node": "lv",
+"group": "rotor",
+"join": "lv-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / A_lv_cable - the magnetic pump's LV leads in the shaft's bore [LV cable: the AH coils to La / Lb, D1*-D4* and the utrons (sim/multiplier-layout-findings.md \u00a77), rotor]"
+},
+{
+"name": "B_flange",
+"proto": "flange_lv",
+"body": "rotor",
+"node": "0",
+"group": "hub",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 559.0,
+"rot": 0.0
+},
+"label": "hub / B_flange - shaft-half flange B, bonded and pinned in the coupler [austenitic stainless flange, non-magnetic, turned to 60 mm, its LV bore 8 mm, rotor]"
+},
+{
+"name": "shaft_B",
+"proto": "shaft_B",
+"body": "rotor",
+"node": "0",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / shaft_B - shaft half B, its LV bore 8 mm [austenitic stainless shaft half, non-magnetic, rotor]"
+},
+{
+"name": "B_lv_cable",
+"proto": "B_lv_cable",
+"body": "rotor",
+"node": "lv",
+"group": "rotor",
+"join": "lv-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / B_lv_cable - the magnetic pump's LV leads in the shaft's bore [LV cable: the AH coils to La / Lb, D1*-D4* and the utrons (sim/multiplier-layout-findings.md \u00a77), rotor]"
+},
+{
+"name": "can",
+"proto": "can",
+"body": "rotor",
+"node": "0",
+"group": "can",
+"join": "can",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "can / can - the grounded can: r 46-48, |z| <= 85 (sim/multiplier-layout-findings.md \u00a75) [Al can over the hub, 2 mm, on the shaft (REF), rotor]"
+},
+{
+"name": "A_can_disc",
+"proto": "can_disc",
+"body": "rotor",
+"node": "0",
+"group": "can",
+"join": "can",
+"place": {
+"dx": 0.0,
+"dz": 400.0,
+"rot": 0.0
+},
+"label": "can / A_can_disc - the can's end disc A, on the shaft [Al end disc of the can, rotor]"
+},
+{
+"name": "A_bushing",
+"proto": "bushing_A",
+"body": "rotor",
+"node": "",
+"group": "can",
+"join": "can",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "can / A_bushing - ring A's lead through the can [PTFE bushing, rotor]"
+},
+{
+"name": "B_can_disc",
+"proto": "can_disc",
+"body": "rotor",
+"node": "0",
+"group": "can",
+"join": "can",
+"place": {
+"dx": 0.0,
+"dz": 572.0,
+"rot": 0.0
+},
+"label": "can / B_can_disc - the can's end disc B, on the shaft [Al end disc of the can, rotor]"
+},
+{
+"name": "B_bushing",
+"proto": "bushing_B",
+"body": "rotor",
+"node": "",
+"group": "can",
+"join": "can",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "can / B_bushing - ring B's lead through the can [PTFE bushing, rotor]"
+},
+{
+"name": "A_Ca_06",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "A_Ca_06",
+"place": {
+"dx": 0.0,
+"dz": 367.0,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_06 - Ca fixed plate, node 2 (the record's six, node 2 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "A_Ca_05",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "A_Ca_05",
+"place": {
+"dx": 0.0,
+"dz": 358.0,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_05 - Ca fixed plate, node 1 (the record's six, node 2 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "A_Ca_04",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "A_Ca_04",
+"place": {
+"dx": 0.0,
+"dz": 349.0,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_04 - Ca fixed plate, node 2 (the record's six, node 2 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "A_Ca_03",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "A_Ca_03",
+"place": {
+"dx": 0.0,
+"dz": 340.0,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_03 - Ca fixed plate, node 1 (the record's six, node 2 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "A_Ca_02",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "A_Ca_02",
+"place": {
+"dx": 0.0,
+"dz": 331.0,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_02 - Ca fixed plate, node 2 (the record's six, node 2 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "A_Ca_01",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "A_Ca_01",
+"place": {
+"dx": 0.0,
+"dz": 322.0,
+"rot": 0.0
+},
+"label": "side-A / A_Ca_01 - Ca fixed plate, node 1 (the record's six, node 2 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "A_C1_r01",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 313.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r01 - C1 vane, node 1 [Al vane, rotor]"
+},
+{
+"name": "A_C1_s02",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-A",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 304.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s02 - C1 vane, node REF (the counter-rotor) [Al vane, stator]"
+},
+{
+"name": "A_C1_r03",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 295.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r03 - C1 vane, node 1 [Al vane, rotor]"
+},
+{
+"name": "A_C1_s04",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-A",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 286.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s04 - C1 vane, node REF (the counter-rotor) [Al vane, stator]"
+},
+{
+"name": "A_C1_r05",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 277.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r05 - C1 vane, node 1 [Al vane, rotor]"
+},
+{
+"name": "A_C1_s06",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-A",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 268.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s06 - C1 vane, node REF (the counter-rotor) [Al vane, stator]"
+},
+{
+"name": "A_C1_r07",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 259.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r07 - C1 vane, node 1 [Al vane, rotor]"
+},
+{
+"name": "A_C1_s08",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-A",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 250.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s08 - C1 vane, node REF (the counter-rotor) [Al vane, stator]"
+},
+{
+"name": "A_C1_r09",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 241.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r09 - C1 vane, node 1 [Al vane, rotor]"
+},
+{
+"name": "A_C1_s10",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-A",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 232.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s10 - C1 vane, node REF (the counter-rotor) [Al vane, stator]"
+},
+{
+"name": "A_C1_r11",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 223.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_r11 - C1 vane, node 1 [Al vane, rotor]"
+},
+{
+"name": "A_C1_s12",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-A",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 214.0,
+"rot": 0.0
+},
+"label": "side-A / A_C1_s12 - C1 vane, node REF (the counter-rotor) [Al vane, stator]"
+},
+{
+"name": "A_rotor_sleeve_vanes",
+"proto": "sleeve_vanes",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 205.5,
+"rot": 0.0
+},
+"label": "rotor / A_rotor_sleeve_vanes - rotor sleeve: the vane bay, the can's disc to the Ca|reluctance bearing [G10 rotor sleeve, rotor]"
+},
+{
+"name": "A_rotor_sleeve_rel",
+"proto": "sleeve_rel_A",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / A_rotor_sleeve_rel - rotor sleeve: the reluctance bay (the record's), its LV exit 8 mm [G10 rotor sleeve, rotor]"
+},
+{
+"name": "A_sleeve_cover",
+"proto": "sleeve_cover",
+"body": "rotor",
+"node": "",
+"group": "side-A",
+"join": "cover-A",
+"place": {
+"dx": 0.0,
+"dz": 316.0,
+"rot": 0.0
+},
+"label": "side-A / A_sleeve_cover - the sleeve's PTFE cover under the column: 84 mm of creepage (sim/multiplier-layout-findings.md \u00a74) [PTFE cover over the sleeve, rotor]"
+},
+{
+"name": "A_shed_1",
+"proto": "shed",
+"body": "rotor",
+"node": "",
+"group": "side-A",
+"join": "cover-A",
+"place": {
+"dx": 0.0,
+"dz": 216.16666666666669,
+"rot": 0.0
+},
+"label": "side-A / A_shed_1 - a PTFE shed on the sleeve's outer end (two give 65.5 mm of creepage) [PTFE shed, 12 mm, rotor]"
+},
+{
+"name": "A_shed_2",
+"proto": "shed",
+"body": "rotor",
+"node": "",
+"group": "side-A",
+"join": "cover-A",
+"place": {
+"dx": 0.0,
+"dz": 210.33333333333331,
+"rot": 0.0
+},
+"label": "side-A / A_shed_2 - a PTFE shed on the sleeve's outer end (two give 65.5 mm of creepage) [PTFE shed, 12 mm, rotor]"
+},
+{
+"name": "B_Cb_06",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "B_Cb_06",
+"place": {
+"dx": 0.0,
+"dz": 604.0,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_06 - Cb fixed plate, node 3 (the record's six, node 3 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "B_Cb_05",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "B_Cb_05",
+"place": {
+"dx": 0.0,
+"dz": 613.0,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_05 - Cb fixed plate, node 4 (the record's six, node 3 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "B_Cb_04",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "B_Cb_04",
+"place": {
+"dx": 0.0,
+"dz": 622.0,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_04 - Cb fixed plate, node 3 (the record's six, node 3 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "B_Cb_03",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "B_Cb_03",
+"place": {
+"dx": 0.0,
+"dz": 631.0,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_03 - Cb fixed plate, node 4 (the record's six, node 3 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "B_Cb_02",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "B_Cb_02",
+"place": {
+"dx": 0.0,
+"dz": 640.0,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_02 - Cb fixed plate, node 3 (the record's six, node 3 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "B_Cb_01",
+"proto": "fixed_plate",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "B_Cb_01",
+"place": {
+"dx": 0.0,
+"dz": 649.0,
+"rot": 0.0
+},
+"label": "side-B / B_Cb_01 - Cb fixed plate, node 4 (the record's six, node 3 toward the deck; their rods and mounts not drawn) [Al plate, rotor]"
+},
+{
+"name": "B_C2_r01",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 658.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r01 - C2 vane, node 4, in phase with C1 [Al vane, rotor]"
+},
+{
+"name": "B_C2_s02",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-B",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 667.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s02 - C2 vane, node REF (the counter-rotor), in phase with C1 [Al vane, stator]"
+},
+{
+"name": "B_C2_r03",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 676.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r03 - C2 vane, node 4, in phase with C1 [Al vane, rotor]"
+},
+{
+"name": "B_C2_s04",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-B",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 685.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s04 - C2 vane, node REF (the counter-rotor), in phase with C1 [Al vane, stator]"
+},
+{
+"name": "B_C2_r05",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 694.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r05 - C2 vane, node 4, in phase with C1 [Al vane, rotor]"
+},
+{
+"name": "B_C2_s06",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-B",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 703.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s06 - C2 vane, node REF (the counter-rotor), in phase with C1 [Al vane, stator]"
+},
+{
+"name": "B_C2_r07",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 712.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r07 - C2 vane, node 4, in phase with C1 [Al vane, rotor]"
+},
+{
+"name": "B_C2_s08",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-B",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 721.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s08 - C2 vane, node REF (the counter-rotor), in phase with C1 [Al vane, stator]"
+},
+{
+"name": "B_C2_r09",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 730.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r09 - C2 vane, node 4, in phase with C1 [Al vane, rotor]"
+},
+{
+"name": "B_C2_s10",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-B",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 739.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s10 - C2 vane, node REF (the counter-rotor), in phase with C1 [Al vane, stator]"
+},
+{
+"name": "B_C2_r11",
+"proto": "rotor_vane",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 748.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_r11 - C2 vane, node 4, in phase with C1 [Al vane, rotor]"
+},
+{
+"name": "B_C2_s12",
+"proto": "stator_vane",
+"body": "stator",
+"node": "s",
+"group": "side-B",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 757.0,
+"rot": 0.0
+},
+"label": "side-B / B_C2_s12 - C2 vane, node REF (the counter-rotor), in phase with C1 [Al vane, stator]"
+},
+{
+"name": "B_rotor_sleeve_vanes",
+"proto": "sleeve_vanes",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 574.0,
+"rot": 0.0
+},
+"label": "rotor / B_rotor_sleeve_vanes - rotor sleeve: the vane bay, the can's disc to the Ca|reluctance bearing [G10 rotor sleeve, rotor]"
+},
+{
+"name": "B_rotor_sleeve_rel",
+"proto": "sleeve_rel_B",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / B_rotor_sleeve_rel - rotor sleeve: the reluctance bay (the record's), its LV exit 8 mm [G10 rotor sleeve, rotor]"
+},
+{
+"name": "B_sleeve_cover",
+"proto": "sleeve_cover",
+"body": "rotor",
+"node": "",
+"group": "side-B",
+"join": "cover-B",
+"place": {
+"dx": 0.0,
+"dz": 574.0,
+"rot": 0.0
+},
+"label": "side-B / B_sleeve_cover - the sleeve's PTFE cover under the column: 84 mm of creepage (sim/multiplier-layout-findings.md \u00a74) [PTFE cover over the sleeve, rotor]"
+},
+{
+"name": "B_shed_1",
+"proto": "shed",
+"body": "rotor",
+"node": "",
+"group": "side-B",
+"join": "cover-B",
+"place": {
+"dx": 0.0,
+"dz": 755.8333333333333,
+"rot": 0.0
+},
+"label": "side-B / B_shed_1 - a PTFE shed on the sleeve's outer end (two give 65.5 mm of creepage) [PTFE shed, 12 mm, rotor]"
+},
+{
+"name": "B_shed_2",
+"proto": "shed",
+"body": "rotor",
+"node": "",
+"group": "side-B",
+"join": "cover-B",
+"place": {
+"dx": 0.0,
+"dz": 761.6666666666667,
+"rot": 0.0
+},
+"label": "side-B / B_shed_2 - a PTFE shed on the sleeve's outer end (two give 65.5 mm of creepage) [PTFE shed, 12 mm, rotor]"
+},
+{
+"name": "A_bearing_Ca-reluctance",
+"proto": "bearing",
+"body": "bearing",
+"node": "0",
+"group": "bearings",
+"join": "brg-A-rel",
+"place": {
+"dx": 0.0,
+"dz": 190.5,
+"rot": 0.0
+},
+"label": "bearings / A_bearing_Ca-reluctance - bearing, Ca|reluctance: the REF link to the counter-rotor [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "A_spider_Ca-reluctance",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 194.0,
+"rot": 0.0
+},
+"label": "bearings / A_spider_Ca-reluctance - bearing hub, tied into the stator cage [G10 bearing spider, stator]"
+},
+{
+"name": "A_bearing_end",
+"proto": "bearing",
+"body": "bearing",
+"node": "0",
+"group": "bearings",
+"join": "brg-A-end",
+"place": {
+"dx": 0.0,
+"dz": 2.5,
+"rot": 0.0
+},
+"label": "bearings / A_bearing_end - bearing, end (frame) [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "A_spider_end",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "brg-A-end",
+"place": {
+"dx": 0.0,
+"dz": 6.0,
+"rot": 0.0
+},
+"label": "bearings / A_spider_end - frame bearing hub [G10 bearing spider, stator]"
+},
+{
+"name": "B_bearing_Ca-reluctance",
+"proto": "bearing",
+"body": "bearing",
+"node": "0",
+"group": "bearings",
+"join": "brg-B-rel",
+"place": {
+"dx": 0.0,
+"dz": 768.5,
+"rot": 0.0
+},
+"label": "bearings / B_bearing_Ca-reluctance - bearing, Ca|reluctance: the REF link to the counter-rotor [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "B_spider_Ca-reluctance",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 772.0,
+"rot": 0.0
+},
+"label": "bearings / B_spider_Ca-reluctance - bearing hub, tied into the stator cage [G10 bearing spider, stator]"
+},
+{
+"name": "B_bearing_end",
+"proto": "bearing",
+"body": "bearing",
+"node": "0",
+"group": "bearings",
+"join": "brg-B-end",
+"place": {
+"dx": 0.0,
+"dz": 956.5,
+"rot": 0.0
+},
+"label": "bearings / B_bearing_end - bearing, end (frame) [6205-class deep-groove bearing, bearing]"
+},
+{
+"name": "B_spider_end",
+"proto": "spider",
+"body": "stator",
+"node": "",
+"group": "bearings",
+"join": "brg-B-end",
+"place": {
+"dx": 0.0,
+"dz": 960.0,
+"rot": 0.0
+},
+"label": "bearings / B_spider_end - frame bearing hub [G10 bearing spider, stator]"
+},
+{
+"name": "stator_cage",
+"proto": "cage",
+"body": "stator",
+"node": "",
+"group": "cage",
+"join": "cage",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "cage / stator_cage - the counter-rotor's cage: one tube from spider to spider, no hub-face bearing [G10 stator cage, stator]"
+},
+{
+"name": "A_U1_core_pos",
+"proto": "wu_core_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_core_pos",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_core_pos - utron A1 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U1_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_core_neg - utron A1 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U1_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_strip",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_strip - utron A1 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "A_U1_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_spacer",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_spacer - utron A1 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "A_U1_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_wedge",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_wedge - utron A1 slot cover (G10, bonded) [G10 slot cover, rotor]"
+},
+{
+"name": "A_U1_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L1 group",
+"group": "rel-A",
+"join": "A_U1_winding",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_winding - utron A1 yoke coil, 200 turns, L1 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "A_U1_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_cheek_pos_lo - utron A1 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U1_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_cheek_pos_hi - utron A1 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_U1_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_cheek_neg_lo - utron A1 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U1_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U1_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 0.0
+},
+"label": "rel-A / A_U1_cheek_neg_hi - utron A1 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_U2_core_pos",
+"proto": "wu_core_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_core_pos",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_core_pos - utron A2 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U2_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_core_neg - utron A2 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U2_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_strip",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_strip - utron A2 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "A_U2_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_spacer",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_spacer - utron A2 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "A_U2_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_wedge",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_wedge - utron A2 slot cover (G10, bonded) [G10 slot cover, rotor]"
+},
+{
+"name": "A_U2_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L1 group",
+"group": "rel-A",
+"join": "A_U2_winding",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_winding - utron A2 yoke coil, 200 turns, L1 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "A_U2_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_cheek_pos_lo - utron A2 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U2_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_cheek_pos_hi - utron A2 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_U2_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_cheek_neg_lo - utron A2 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U2_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U2_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 120.0
+},
+"label": "rel-A / A_U2_cheek_neg_hi - utron A2 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_U3_core_pos",
+"proto": "wu_core_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_core_pos",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_core_pos - utron A3 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U3_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_core_neg - utron A3 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "A_U3_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_strip",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_strip - utron A3 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "A_U3_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_spacer",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_spacer - utron A3 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "A_U3_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_wedge",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_wedge - utron A3 slot cover (G10, bonded) [G10 slot cover, rotor]"
+},
+{
+"name": "A_U3_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L1 group",
+"group": "rel-A",
+"join": "A_U3_winding",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_winding - utron A3 yoke coil, 200 turns, L1 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "A_U3_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_cheek_pos_lo - utron A3 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U3_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_cheek_pos_hi - utron A3 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_U3_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_cheek_neg_lo - utron A3 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "A_U3_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_U3_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 240.0
+},
+"label": "rel-A / A_U3_cheek_neg_hi - utron A3 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "A_carrier_disc_1",
+"proto": "w_disc_57.0",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_carrier_disc_1",
+"place": {
+"dx": 0.0,
+"dz": 29.0,
+"rot": 0.0
+},
+"label": "rel-A / A_carrier_disc_1 - utron carrier disc [G10 utron carrier disc, rotor]"
+},
+{
+"name": "A_carrier_disc_2",
+"proto": "w_disc_57.0",
+"body": "rotor",
+"node": "",
+"group": "rel-A",
+"join": "A_carrier_disc_2",
+"place": {
+"dx": 0.0,
+"dz": 161.0,
+"rot": 0.0
+},
+"label": "rel-A / A_carrier_disc_2 - utron carrier disc [G10 utron carrier disc, rotor]"
+},
+{
+"name": "A_bridge_1",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_1",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 0.0
+},
+"label": "rel-A / A_bridge_1 - passive bridge A1 at 0 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_2",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_2",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 60.0
+},
+"label": "rel-A / A_bridge_2 - passive bridge A2 at 60 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_3",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_3",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 120.0
+},
+"label": "rel-A / A_bridge_3 - passive bridge A3 at 120 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_4",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_4",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 180.0
+},
+"label": "rel-A / A_bridge_4 - passive bridge A4 at 180 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_5",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_5",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 240.0
+},
+"label": "rel-A / A_bridge_5 - passive bridge A5 at 240 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_6",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_6",
+"place": {
+"dx": 0.0,
+"dz": 51.0,
+"rot": 300.0
+},
+"label": "rel-A / A_bridge_6 - passive bridge A6 at 300 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "A_bridge_ring",
+"proto": "w_ring_A",
+"body": "stator",
+"node": "",
+"group": "rel-A",
+"join": "A_bridge_ring",
+"place": {
+"dx": 0.0,
+"dz": 20.0,
+"rot": 0.0
+},
+"label": "rel-A / A_bridge_ring - bridge ring (counter-rotor), bridges set 1 mm proud of its bore [G10 bridge ring, stator]"
+},
+{
+"name": "B_U1_core_pos",
+"proto": "wu_core_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_core_pos",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_core_pos - utron B1 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U1_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_core_neg - utron B1 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U1_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_strip",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_strip - utron B1 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "B_U1_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_spacer",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_spacer - utron B1 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "B_U1_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_wedge",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_wedge - utron B1 slot cover (G10, bonded) [G10 slot cover, rotor]"
+},
+{
+"name": "B_U1_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L2 group",
+"group": "rel-B",
+"join": "B_U1_winding",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_winding - utron B1 yoke coil, 200 turns, L2 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "B_U1_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_cheek_pos_lo - utron B1 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U1_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 933.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_cheek_pos_hi - utron B1 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_U1_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_cheek_neg_lo - utron B1 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U1_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U1_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 933.0,
+"rot": 0.0
+},
+"label": "rel-B / B_U1_cheek_neg_hi - utron B1 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_U2_core_pos",
+"proto": "wu_core_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_core_pos",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_core_pos - utron B2 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U2_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_core_neg - utron B2 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U2_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_strip",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_strip - utron B2 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "B_U2_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_spacer",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_spacer - utron B2 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "B_U2_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_wedge",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_wedge - utron B2 slot cover (G10, bonded) [G10 slot cover, rotor]"
+},
+{
+"name": "B_U2_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L2 group",
+"group": "rel-B",
+"join": "B_U2_winding",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_winding - utron B2 yoke coil, 200 turns, L2 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "B_U2_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_cheek_pos_lo - utron B2 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U2_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 933.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_cheek_pos_hi - utron B2 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_U2_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_cheek_neg_lo - utron B2 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U2_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U2_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 933.0,
+"rot": 120.0
+},
+"label": "rel-B / B_U2_cheek_neg_hi - utron B2 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_U3_core_pos",
+"proto": "wu_core_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_core_pos",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_core_pos - utron B3 half-core +v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U3_core_neg",
+"proto": "wu_core_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_core_neg",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_core_neg - utron B3 half-core -v (M235-35A) [utron half-core, M235-35A laminated (studded), rotor]"
+},
+{
+"name": "B_U3_strip",
+"proto": "wu_strip",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_strip",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_strip - utron B3 neck strip (80 % NiFe) [neck strip, 80 % NiFe laminated 0.1 mm, rotor]"
+},
+{
+"name": "B_U3_spacer",
+"proto": "wu_spacer",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_spacer",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_spacer - utron B3 air-break spacer (G10) [G10 air-break spacer, rotor]"
+},
+{
+"name": "B_U3_wedge",
+"proto": "wu_wedge",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_wedge",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_wedge - utron B3 slot cover (G10, bonded) [G10 slot cover, rotor]"
+},
+{
+"name": "B_U3_winding",
+"proto": "wu_winding",
+"body": "rotor",
+"node": "L2 group",
+"group": "rel-B",
+"join": "B_U3_winding",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_winding - utron B3 yoke coil, 200 turns, L2 group [Cu yoke coil, 200 turns of 1.55 mm, rotor]"
+},
+{
+"name": "B_U3_cheek_pos_lo",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_cheek_pos_lo",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_cheek_pos_lo - utron B3 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U3_cheek_pos_hi",
+"proto": "wu_cheek_pos",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_cheek_pos_hi",
+"place": {
+"dx": 0.0,
+"dz": 933.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_cheek_pos_hi - utron B3 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_U3_cheek_neg_lo",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_cheek_neg_lo",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_cheek_neg_lo - utron B3 cheek (G10), lo end [G10 cheek, rotor]"
+},
+{
+"name": "B_U3_cheek_neg_hi",
+"proto": "wu_cheek_neg",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_U3_cheek_neg_hi",
+"place": {
+"dx": 0.0,
+"dz": 933.0,
+"rot": 240.0
+},
+"label": "rel-B / B_U3_cheek_neg_hi - utron B3 cheek (G10), hi end [G10 cheek, rotor]"
+},
+{
+"name": "B_carrier_disc_1",
+"proto": "w_disc_57.0",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_carrier_disc_1",
+"place": {
+"dx": 0.0,
+"dz": 801.0,
+"rot": 0.0
+},
+"label": "rel-B / B_carrier_disc_1 - utron carrier disc [G10 utron carrier disc, rotor]"
+},
+{
+"name": "B_carrier_disc_2",
+"proto": "w_disc_57.0",
+"body": "rotor",
+"node": "",
+"group": "rel-B",
+"join": "B_carrier_disc_2",
+"place": {
+"dx": 0.0,
+"dz": 933.0,
+"rot": 0.0
+},
+"label": "rel-B / B_carrier_disc_2 - utron carrier disc [G10 utron carrier disc, rotor]"
+},
+{
+"name": "B_bridge_1",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_1",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 30.0
+},
+"label": "rel-B / B_bridge_1 - passive bridge B1 at 30 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_2",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_2",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 90.0
+},
+"label": "rel-B / B_bridge_2 - passive bridge B2 at 90 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_3",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_3",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 150.0
+},
+"label": "rel-B / B_bridge_3 - passive bridge B3 at 150 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_4",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_4",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 210.0
+},
+"label": "rel-B / B_bridge_4 - passive bridge B4 at 210 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_5",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_5",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 270.0
+},
+"label": "rel-B / B_bridge_5 - passive bridge B5 at 270 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_6",
+"proto": "w_bridge",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_6",
+"place": {
+"dx": 0.0,
+"dz": 823.0,
+"rot": 330.0
+},
+"label": "rel-B / B_bridge_6 - passive bridge B6 at 330 deg [bridge, M235-35A laminated, stator]"
+},
+{
+"name": "B_bridge_ring",
+"proto": "w_ring_B",
+"body": "stator",
+"node": "",
+"group": "rel-B",
+"join": "B_bridge_ring",
+"place": {
+"dx": 0.0,
+"dz": 780.0,
+"rot": 0.0
+},
+"label": "rel-B / B_bridge_ring - bridge ring (counter-rotor), bridges set 1 mm proud of its bore [G10 bridge ring, stator]"
+},
+{
+"name": "A_deck_plate",
+"proto": "deck_plate",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "plate-A",
+"place": {
+"dx": 0.0,
+"dz": 451.0,
+"rot": 0.0
+},
+"label": "deck-A / A_deck_plate - deck A: the G10 plate round the can, r 50-150, |z| 30-36 [G10 deck plate, 6 mm, the cross nets' holes 6 mm, rotor]"
+},
+{
+"name": "A_J_0",
+"proto": "j_cond",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -149.7
+},
+"label": "deck-A / A_J_0 - junction 0: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "A_J_0_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -149.7
+},
+"label": "deck-A / A_J_0_pot - junction 0: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "A_J_0p",
+"proto": "j_cond",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -120.09999999999998
+},
+"label": "deck-A / A_J_0p - junction 0': brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "A_J_0p_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -120.09999999999998
+},
+"label": "deck-A / A_J_0p_pot - junction 0': potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "A_J_2",
+"proto": "j_cond",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -88.9
+},
+"label": "deck-A / A_J_2 - junction 2: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "A_J_2_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -88.9
+},
+"label": "deck-A / A_J_2_pot - junction 2: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "A_J_2p",
+"proto": "j_cond",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -57.699999999999996
+},
+"label": "deck-A / A_J_2p - junction 2': brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "A_J_2p_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -57.699999999999996
+},
+"label": "deck-A / A_J_2p_pot - junction 2': potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "A_J_r1",
+"proto": "j_cond",
+"body": "rotor",
+"node": "r1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -27.8
+},
+"label": "deck-A / A_J_r1 - junction r1: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "A_J_r1_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -27.8
+},
+"label": "deck-A / A_J_r1_pot - junction r1: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "A_J_l1",
+"proto": "j_cond",
+"body": "rotor",
+"node": "l1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -14.800000000000002
+},
+"label": "deck-A / A_J_l1 - junction l1: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "A_J_l1_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -14.800000000000002
+},
+"label": "deck-A / A_J_l1_pot - junction l1: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "A_J_r2",
+"proto": "j_cond",
+"body": "rotor",
+"node": "r2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 15.1
+},
+"label": "deck-A / A_J_r2 - junction r2: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "A_J_r2_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 15.1
+},
+"label": "deck-A / A_J_r2_pot - junction r2: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "A_J_1",
+"proto": "j_cond",
+"body": "rotor",
+"node": "1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 46.3
+},
+"label": "deck-A / A_J_1 - junction 1: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "A_J_1_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 46.3
+},
+"label": "deck-A / A_J_1_pot - junction 1: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "A_J_xa",
+"proto": "j_cond",
+"body": "rotor",
+"node": "xa",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 77.5
+},
+"label": "deck-A / A_J_xa - junction xa: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "A_J_xa_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 77.5
+},
+"label": "deck-A / A_J_xa_pot - junction xa: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "A_J_ea",
+"proto": "j_cond",
+"body": "rotor",
+"node": "ea",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 107.4
+},
+"label": "deck-A / A_J_ea - junction ea: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "A_J_ea_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 107.4
+},
+"label": "deck-A / A_J_ea_pot - junction ea: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "A_R1_body",
+"proto": "rsurge_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_R1_body",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -135.7
+},
+"label": "deck-A / A_R1_body - R1 (0 - 0): 22 kOhm surge resistor, HV thick film, >= 15 kV, >= 1 W [22 kOhm surge resistor, HV thick film, >= 15 kV, >= 1 W, rotor]"
+},
+{
+"name": "A_R1_pot",
+"proto": "rsurge_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -135.7
+},
+"label": "deck-A / A_R1_pot - R1: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_R1_lead_neg",
+"proto": "rsurge_lead_neg",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -135.7
+},
+"label": "deck-A / A_R1_lead_neg - R1: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_R1_to_0",
+"proto": "A_R1_to_0",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_R1_to_0 - R1's lead to junction 0 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_R1_lead_pos",
+"proto": "rsurge_lead_pos",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -135.7
+},
+"label": "deck-A / A_R1_lead_pos - R1: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_R1_to_0p",
+"proto": "A_R1_to_0p",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_R1_to_0p - R1's lead to junction 0' [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D1_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_D1_body",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -104.5
+},
+"label": "deck-A / A_D1_body - D1 (0 - 2): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "A_D1_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -104.5
+},
+"label": "deck-A / A_D1_pot - D1: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_D1_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -104.5
+},
+"label": "deck-A / A_D1_lead_neg - D1: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D1_to_0p",
+"proto": "A_D1_to_0p",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D1_to_0p - D1's lead to junction 0' [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D1_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -104.5
+},
+"label": "deck-A / A_D1_lead_pos - D1: its lead, net 2 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D1_to_2",
+"proto": "A_D1_to_2",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D1_to_2 - D1's lead to junction 2 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_R3_body",
+"proto": "rsurge_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_R3_body",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -73.3
+},
+"label": "deck-A / A_R3_body - R3 (2 - 2): 22 kOhm surge resistor, HV thick film, >= 15 kV, >= 1 W [22 kOhm surge resistor, HV thick film, >= 15 kV, >= 1 W, rotor]"
+},
+{
+"name": "A_R3_pot",
+"proto": "rsurge_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -73.3
+},
+"label": "deck-A / A_R3_pot - R3: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_R3_lead_neg",
+"proto": "rsurge_lead_neg",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -73.3
+},
+"label": "deck-A / A_R3_lead_neg - R3: its lead, net 2 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_R3_to_2",
+"proto": "A_R3_to_2",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_R3_to_2 - R3's lead to junction 2 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_R3_lead_pos",
+"proto": "rsurge_lead_pos",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -73.3
+},
+"label": "deck-A / A_R3_lead_pos - R3: its lead, net 2 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_R3_to_2p",
+"proto": "A_R3_to_2p",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_R3_to_2p - R3's lead to junction 2' [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D3_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_D3_body",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -42.1
+},
+"label": "deck-A / A_D3_body - D3 (2 - r1): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "A_D3_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -42.1
+},
+"label": "deck-A / A_D3_pot - D3: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_D3_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -42.1
+},
+"label": "deck-A / A_D3_lead_neg - D3: its lead, net 2 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D3_to_2p",
+"proto": "A_D3_to_2p",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D3_to_2p - D3's lead to junction 2' [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D3_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "r1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -42.1
+},
+"label": "deck-A / A_D3_lead_pos - D3: its lead, net r1 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D3_to_r1",
+"proto": "A_D3_to_r1",
+"body": "rotor",
+"node": "r1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D3_to_r1 - D3's lead to junction r1 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D5_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_D5_body",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -0.4999999999999999
+},
+"label": "deck-A / A_D5_body - D5 (l1 - r2): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "A_D5_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -0.4999999999999999
+},
+"label": "deck-A / A_D5_pot - D5: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_D5_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "l1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -0.4999999999999999
+},
+"label": "deck-A / A_D5_lead_neg - D5: its lead, net l1 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D5_to_l1",
+"proto": "A_D5_to_l1",
+"body": "rotor",
+"node": "l1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D5_to_l1 - D5's lead to junction l1 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D5_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "r2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": -0.4999999999999999
+},
+"label": "deck-A / A_D5_lead_pos - D5: its lead, net r2 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D5_to_r2",
+"proto": "A_D5_to_r2",
+"body": "rotor",
+"node": "r2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D5_to_r2 - D5's lead to junction r2 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D8_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_D8_body",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 30.7
+},
+"label": "deck-A / A_D8_body - D8 (r2 - 1): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "A_D8_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 30.7
+},
+"label": "deck-A / A_D8_pot - D8: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_D8_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "r2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 30.7
+},
+"label": "deck-A / A_D8_lead_neg - D8: its lead, net r2 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D8_to_r2",
+"proto": "A_D8_to_r2",
+"body": "rotor",
+"node": "r2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D8_to_r2 - D8's lead to junction r2 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D8_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 30.7
+},
+"label": "deck-A / A_D8_lead_pos - D8: its lead, net 1 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D8_to_1",
+"proto": "A_D8_to_1",
+"body": "rotor",
+"node": "1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D8_to_1 - D8's lead to junction 1 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D11_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_D11_body",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 61.900000000000006
+},
+"label": "deck-A / A_D11_body - D11 (1 - xa): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "A_D11_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 61.900000000000006
+},
+"label": "deck-A / A_D11_pot - D11: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_D11_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 61.900000000000006
+},
+"label": "deck-A / A_D11_lead_neg - D11: its lead, net 1 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D11_to_1",
+"proto": "A_D11_to_1",
+"body": "rotor",
+"node": "1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D11_to_1 - D11's lead to junction 1 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D11_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "xa",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 61.900000000000006
+},
+"label": "deck-A / A_D11_lead_pos - D11: its lead, net xa [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D11_to_xa",
+"proto": "A_D11_to_xa",
+"body": "rotor",
+"node": "xa",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D11_to_xa - D11's lead to junction xa [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D12_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_D12_body",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 93.1
+},
+"label": "deck-A / A_D12_body - D12 (xa - ea): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "A_D12_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 93.1
+},
+"label": "deck-A / A_D12_pot - D12: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_D12_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "xa",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 93.1
+},
+"label": "deck-A / A_D12_lead_neg - D12: its lead, net xa [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D12_to_xa",
+"proto": "A_D12_to_xa",
+"body": "rotor",
+"node": "xa",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D12_to_xa - D12's lead to junction xa [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_D12_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "ea",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 132.0,
+"dz": 439.0,
+"rot": 93.1
+},
+"label": "deck-A / A_D12_lead_pos - D12: its lead, net ea [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_D12_to_ea",
+"proto": "A_D12_to_ea",
+"body": "rotor",
+"node": "ea",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_D12_to_ea - D12's lead to junction ea [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "A_C3_body",
+"proto": "c180_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_C3_body",
+"place": {
+"dx": 86.0,
+"dz": 432.0,
+"rot": -68.0
+},
+"label": "deck-A / A_C3_body - C3 (2 at its top, l1 at its foot): 180 pF / 30 kV, class 1 HV ceramic (or PP / PTFE film), screw terminals [180 pF / 30 kV, class 1 HV ceramic (or PP / PTFE film), screw terminals, rotor]"
+},
+{
+"name": "A_C3_pot",
+"proto": "c180_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 86.0,
+"dz": 432.0,
+"rot": -68.0
+},
+"label": "deck-A / A_C3_pot - C3: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_C3_stud_top",
+"proto": "stud",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 86.0,
+"dz": 417.0,
+"rot": -68.0
+},
+"label": "deck-A / A_C3_stud_top - C3: its top terminal, net 2 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "A_C3_stud_foot",
+"proto": "stud",
+"body": "rotor",
+"node": "l1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 86.0,
+"dz": 447.0,
+"rot": -68.0
+},
+"label": "deck-A / A_C3_stud_foot - C3: its foot terminal, net l1 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "A_C6_body",
+"proto": "c180_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_C6_body",
+"place": {
+"dx": 85.0,
+"dz": 432.0,
+"rot": -29.999999999999993
+},
+"label": "deck-A / A_C6_body - C6 (r1 at its top, r2 at its foot): 180 pF / 30 kV, class 1 HV ceramic (or PP / PTFE film), screw terminals [180 pF / 30 kV, class 1 HV ceramic (or PP / PTFE film), screw terminals, rotor]"
+},
+{
+"name": "A_C6_pot",
+"proto": "c180_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 85.0,
+"dz": 432.0,
+"rot": -29.999999999999993
+},
+"label": "deck-A / A_C6_pot - C6: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_C6_stud_top",
+"proto": "stud",
+"body": "rotor",
+"node": "r1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 85.0,
+"dz": 417.0,
+"rot": -29.999999999999993
+},
+"label": "deck-A / A_C6_stud_top - C6: its top terminal, net r1 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "A_C6_stud_foot",
+"proto": "stud",
+"body": "rotor",
+"node": "r2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 85.0,
+"dz": 447.0,
+"rot": -29.999999999999993
+},
+"label": "deck-A / A_C6_stud_foot - C6: its foot terminal, net r2 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "A_C8_body",
+"proto": "c100_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_C8_body",
+"place": {
+"dx": 102.0,
+"dz": 433.0,
+"rot": 15.1
+},
+"label": "deck-A / A_C8_body - C8 (r2 at its top, xa at its foot): 100 pF / 30 kV, class 1 HV ceramic (or film) [100 pF / 30 kV, class 1 HV ceramic (or film), rotor]"
+},
+{
+"name": "A_C8_pot",
+"proto": "c100_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 102.0,
+"dz": 433.0,
+"rot": 15.1
+},
+"label": "deck-A / A_C8_pot - C8: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_C8_stud_top",
+"proto": "stud",
+"body": "rotor",
+"node": "r2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 102.0,
+"dz": 419.0,
+"rot": 15.1
+},
+"label": "deck-A / A_C8_stud_top - C8: its top terminal, net r2 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "A_C8_stud_foot",
+"proto": "stud",
+"body": "rotor",
+"node": "xa",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 102.0,
+"dz": 447.0,
+"rot": 15.1
+},
+"label": "deck-A / A_C8_stud_foot - C8: its foot terminal, net xa [brass screw terminal, M5, rotor]"
+},
+{
+"name": "A_Z1_body",
+"proto": "clamp_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_Z1_body",
+"place": {
+"dx": 0.0,
+"dz": 433.0,
+"rot": 76.0
+},
+"label": "deck-A / A_Z1_body - Z1 (1 - 0): the clamp string: 66 x 1.5KE200A in a meander, its HV and REF ends at opposite ends [the clamp string: 66 x 1.5KE200A in a meander, its HV and REF ends at opposite ends, rotor]"
+},
+{
+"name": "A_Z1_pot",
+"proto": "clamp_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 433.0,
+"rot": 76.0
+},
+"label": "deck-A / A_Z1_pot - Z1: its potted housing [silicone potting, 8 mm over the module, rotor]"
+},
+{
+"name": "A_Z1_lead_0",
+"proto": "clamp_lead_0",
+"body": "rotor",
+"node": "1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 433.0,
+"rot": 76.0
+},
+"label": "deck-A / A_Z1_lead_0 - Z1: its lead, net 1 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_Z1_lead_1",
+"proto": "clamp_lead_1",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 433.0,
+"rot": 76.0
+},
+"label": "deck-A / A_Z1_lead_1 - Z1: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "A_Csa_body",
+"proto": "c100h_body",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "A_Csa_body",
+"place": {
+"dx": 126.0,
+"dz": 431.0,
+"rot": 172.0
+},
+"label": "deck-A / A_Csa_body - Csa (ea at its top, 0 at its foot): 100 pF / 40 kV, class 1 HV ceramic (or film) [100 pF / 40 kV, class 1 HV ceramic (or film), rotor]"
+},
+{
+"name": "A_Csa_pot",
+"proto": "c100h_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 126.0,
+"dz": 431.0,
+"rot": 172.0
+},
+"label": "deck-A / A_Csa_pot - Csa: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "A_Csa_stud_top",
+"proto": "stud",
+"body": "rotor",
+"node": "ea",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 126.0,
+"dz": 415.0,
+"rot": 172.0
+},
+"label": "deck-A / A_Csa_stud_top - Csa: its top terminal, net ea [brass screw terminal, M5, rotor]"
+},
+{
+"name": "A_Csa_stud_foot",
+"proto": "stud",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 126.0,
+"dz": 447.0,
+"rot": 172.0
+},
+"label": "deck-A / A_Csa_stud_foot - Csa: its foot terminal, net 0 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "A_lead_C3_0",
+"proto": "A_lead_C3_0",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_lead_C3_0 - lead: C3's terminal 0 to junction 2, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_lead_C3_1",
+"proto": "A_lead_C3_1",
+"body": "rotor",
+"node": "l1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_lead_C3_1 - lead: C3's terminal 1 to junction l1, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_lead_C6_0",
+"proto": "A_lead_C6_0",
+"body": "rotor",
+"node": "r1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_lead_C6_0 - lead: C6's terminal 0 to junction r1, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_lead_C6_1",
+"proto": "A_lead_C6_1",
+"body": "rotor",
+"node": "r2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_lead_C6_1 - lead: C6's terminal 1 to junction r2, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_lead_C8_0",
+"proto": "A_lead_C8_0",
+"body": "rotor",
+"node": "r2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_lead_C8_0 - lead: C8's terminal 0 to junction r2, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_lead_C8_1",
+"proto": "A_lead_C8_1",
+"body": "rotor",
+"node": "xa",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_lead_C8_1 - lead: C8's terminal 1 to junction xa, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_lead_Z1_0",
+"proto": "A_lead_Z1_0",
+"body": "rotor",
+"node": "1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_lead_Z1_0 - lead: Z1's terminal 0 to junction 1, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_lead_Csa_0",
+"proto": "A_lead_Csa_0",
+"body": "rotor",
+"node": "ea",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_lead_Csa_0 - lead: Csa's terminal 0 to junction ea, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_strap_R1",
+"proto": "A_strap_R1",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_strap_R1 - REF strap: R1's terminal 0 to the can [Cu strap to the can (REF), rotor]"
+},
+{
+"name": "A_strap_Z1",
+"proto": "A_strap_Z1",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_strap_Z1 - REF strap: Z1's terminal 1 to the can [Cu strap to the can (REF), rotor]"
+},
+{
+"name": "A_strap_Csa",
+"proto": "A_strap_Csa",
+"body": "rotor",
+"node": "0",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_strap_Csa - REF strap: Csa's terminal 1 to the can [Cu strap to the can (REF), rotor]"
+},
+{
+"name": "A_riser_deck",
+"proto": "A_riser_deck",
+"body": "rotor",
+"node": "1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_riser_deck - node 1's riser, in the potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_riser",
+"proto": "A_riser",
+"body": "rotor",
+"node": "1",
+"group": "wiring",
+"join": "riser-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / A_riser - node 1's riser: up from the deck, in to r 35, up the column's bore to the first rotor vane [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_tap_deck",
+"proto": "A_tap_deck",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_tap_deck - node 2's tap, in the potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_tap",
+"proto": "A_tap",
+"body": "rotor",
+"node": "2",
+"group": "wiring",
+"join": "tap-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / A_tap - node 2's tap: up from the deck to the column's node-2 plate [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_ring_lead",
+"proto": "A_ring_lead",
+"body": "rotor",
+"node": "ea",
+"group": "wiring",
+"join": "ring-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / A_ring_lead - ring A's lead: from its equatorial bead through the PEEK and the coupler, along the coupler, out through the can's PTFE bushing [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_ring_lead_deck",
+"proto": "A_ring_lead_deck",
+"body": "rotor",
+"node": "ea",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_ring_lead_deck - ring A's lead on the deck, to Csa's top [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_deck_plate",
+"proto": "deck_plate",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "plate-B",
+"place": {
+"dx": 0.0,
+"dz": 517.0,
+"rot": 0.0
+},
+"label": "deck-B / B_deck_plate - deck B: the G10 plate round the can, r 50-150, |z| 30-36 [G10 deck plate, 6 mm, the cross nets' holes 6 mm, rotor]"
+},
+{
+"name": "B_J_0",
+"proto": "j_cond",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 107.1
+},
+"label": "deck-B / B_J_0 - junction 0: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "B_J_0_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 107.1
+},
+"label": "deck-B / B_J_0_pot - junction 0: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "B_J_0p",
+"proto": "j_cond",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 77.5
+},
+"label": "deck-B / B_J_0p - junction 0': brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "B_J_0p_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 77.5
+},
+"label": "deck-B / B_J_0p_pot - junction 0': potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "B_J_3",
+"proto": "j_cond",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 46.30000000000001
+},
+"label": "deck-B / B_J_3 - junction 3: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "B_J_3_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 46.30000000000001
+},
+"label": "deck-B / B_J_3_pot - junction 3: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "B_J_3p",
+"proto": "j_cond",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 15.100000000000001
+},
+"label": "deck-B / B_J_3p - junction 3': brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "B_J_3p_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 15.100000000000001
+},
+"label": "deck-B / B_J_3p_pot - junction 3': potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "B_J_l1",
+"proto": "j_cond",
+"body": "rotor",
+"node": "l1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -14.800000000000002
+},
+"label": "deck-B / B_J_l1 - junction l1: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "B_J_l1_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -14.800000000000002
+},
+"label": "deck-B / B_J_l1_pot - junction l1: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "B_J_r1",
+"proto": "j_cond",
+"body": "rotor",
+"node": "r1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -27.8
+},
+"label": "deck-B / B_J_r1 - junction r1: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "B_J_r1_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -27.8
+},
+"label": "deck-B / B_J_r1_pot - junction r1: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "B_J_l2",
+"proto": "j_cond",
+"body": "rotor",
+"node": "l2",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -57.699999999999996
+},
+"label": "deck-B / B_J_l2 - junction l2: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "B_J_l2_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -57.699999999999996
+},
+"label": "deck-B / B_J_l2_pot - junction l2: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "B_J_4",
+"proto": "j_cond",
+"body": "rotor",
+"node": "4",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -88.9
+},
+"label": "deck-B / B_J_4 - junction 4: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "B_J_4_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -88.9
+},
+"label": "deck-B / B_J_4_pot - junction 4: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "B_J_xb",
+"proto": "j_cond",
+"body": "rotor",
+"node": "xb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -120.09999999999998
+},
+"label": "deck-B / B_J_xb - junction xb: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "B_J_xb_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -120.09999999999998
+},
+"label": "deck-B / B_J_xb_pot - junction xb: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "B_J_eb",
+"proto": "j_cond",
+"body": "rotor",
+"node": "eb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -150.0
+},
+"label": "deck-B / B_J_eb - junction eb: brass terminal in its potted block [brass junction terminal, rotor]"
+},
+{
+"name": "B_J_eb_pot",
+"proto": "j_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -150.0
+},
+"label": "deck-B / B_J_eb_pot - junction eb: potting [silicone potting, the junction's block, rotor]"
+},
+{
+"name": "B_R2_body",
+"proto": "rsurge_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_R2_body",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 93.1
+},
+"label": "deck-B / B_R2_body - R2 (0 - 0): 22 kOhm surge resistor, HV thick film, >= 15 kV, >= 1 W [22 kOhm surge resistor, HV thick film, >= 15 kV, >= 1 W, rotor]"
+},
+{
+"name": "B_R2_pot",
+"proto": "rsurge_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 93.1
+},
+"label": "deck-B / B_R2_pot - R2: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_R2_lead_neg",
+"proto": "rsurge_lead_neg",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 93.1
+},
+"label": "deck-B / B_R2_lead_neg - R2: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_R2_to_0p",
+"proto": "B_R2_to_0p",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_R2_to_0p - R2's lead to junction 0' [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_R2_lead_pos",
+"proto": "rsurge_lead_pos",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 93.1
+},
+"label": "deck-B / B_R2_lead_pos - R2: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_R2_to_0",
+"proto": "B_R2_to_0",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_R2_to_0 - R2's lead to junction 0 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D2_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_D2_body",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 61.900000000000006
+},
+"label": "deck-B / B_D2_body - D2 (0 - 3): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "B_D2_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 61.900000000000006
+},
+"label": "deck-B / B_D2_pot - D2: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_D2_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 61.900000000000006
+},
+"label": "deck-B / B_D2_lead_neg - D2: its lead, net 3 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D2_to_3",
+"proto": "B_D2_to_3",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D2_to_3 - D2's lead to junction 3 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D2_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 61.900000000000006
+},
+"label": "deck-B / B_D2_lead_pos - D2: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D2_to_0p",
+"proto": "B_D2_to_0p",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D2_to_0p - D2's lead to junction 0' [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_R4_body",
+"proto": "rsurge_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_R4_body",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 30.7
+},
+"label": "deck-B / B_R4_body - R4 (3 - 3): 22 kOhm surge resistor, HV thick film, >= 15 kV, >= 1 W [22 kOhm surge resistor, HV thick film, >= 15 kV, >= 1 W, rotor]"
+},
+{
+"name": "B_R4_pot",
+"proto": "rsurge_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 30.7
+},
+"label": "deck-B / B_R4_pot - R4: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_R4_lead_neg",
+"proto": "rsurge_lead_neg",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 30.7
+},
+"label": "deck-B / B_R4_lead_neg - R4: its lead, net 3 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_R4_to_3p",
+"proto": "B_R4_to_3p",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_R4_to_3p - R4's lead to junction 3' [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_R4_lead_pos",
+"proto": "rsurge_lead_pos",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": 30.7
+},
+"label": "deck-B / B_R4_lead_pos - R4: its lead, net 3 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_R4_to_3",
+"proto": "B_R4_to_3",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_R4_to_3 - R4's lead to junction 3 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D4_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_D4_body",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -0.4999999999999999
+},
+"label": "deck-B / B_D4_body - D4 (3 - l1): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "B_D4_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -0.4999999999999999
+},
+"label": "deck-B / B_D4_pot - D4: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_D4_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "l1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -0.4999999999999999
+},
+"label": "deck-B / B_D4_lead_neg - D4: its lead, net l1 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D4_to_l1",
+"proto": "B_D4_to_l1",
+"body": "rotor",
+"node": "l1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D4_to_l1 - D4's lead to junction l1 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D4_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -0.4999999999999999
+},
+"label": "deck-B / B_D4_lead_pos - D4: its lead, net 3 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D4_to_3p",
+"proto": "B_D4_to_3p",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D4_to_3p - D4's lead to junction 3' [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D6_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_D6_body",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -42.1
+},
+"label": "deck-B / B_D6_body - D6 (r1 - l2): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "B_D6_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -42.1
+},
+"label": "deck-B / B_D6_pot - D6: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_D6_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "l2",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -42.1
+},
+"label": "deck-B / B_D6_lead_neg - D6: its lead, net l2 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D6_to_l2",
+"proto": "B_D6_to_l2",
+"body": "rotor",
+"node": "l2",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D6_to_l2 - D6's lead to junction l2 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D6_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "r1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -42.1
+},
+"label": "deck-B / B_D6_lead_pos - D6: its lead, net r1 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D6_to_r1",
+"proto": "B_D6_to_r1",
+"body": "rotor",
+"node": "r1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D6_to_r1 - D6's lead to junction r1 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D7_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_D7_body",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -73.3
+},
+"label": "deck-B / B_D7_body - D7 (l2 - 4): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "B_D7_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -73.3
+},
+"label": "deck-B / B_D7_pot - D7: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_D7_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "4",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -73.3
+},
+"label": "deck-B / B_D7_lead_neg - D7: its lead, net 4 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D7_to_4",
+"proto": "B_D7_to_4",
+"body": "rotor",
+"node": "4",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D7_to_4 - D7's lead to junction 4 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D7_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "l2",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -73.3
+},
+"label": "deck-B / B_D7_lead_pos - D7: its lead, net l2 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D7_to_l2",
+"proto": "B_D7_to_l2",
+"body": "rotor",
+"node": "l2",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D7_to_l2 - D7's lead to junction l2 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D9_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_D9_body",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -104.5
+},
+"label": "deck-B / B_D9_body - D9 (4 - xb): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "B_D9_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -104.5
+},
+"label": "deck-B / B_D9_pot - D9: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_D9_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "xb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -104.5
+},
+"label": "deck-B / B_D9_lead_neg - D9: its lead, net xb [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D9_to_xb",
+"proto": "B_D9_to_xb",
+"body": "rotor",
+"node": "xb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D9_to_xb - D9's lead to junction xb [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D9_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "4",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -104.5
+},
+"label": "deck-B / B_D9_lead_pos - D9: its lead, net 4 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D9_to_4",
+"proto": "B_D9_to_4",
+"body": "rotor",
+"node": "4",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D9_to_4 - D9's lead to junction 4 [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D10_body",
+"proto": "stick_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_D10_body",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -135.7
+},
+"label": "deck-B / B_D10_body - D10 (xb - eb): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
+},
+{
+"name": "B_D10_pot",
+"proto": "stick_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -135.7
+},
+"label": "deck-B / B_D10_pot - D10: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_D10_lead_neg",
+"proto": "stick_lead_neg",
+"body": "rotor",
+"node": "eb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -135.7
+},
+"label": "deck-B / B_D10_lead_neg - D10: its lead, net eb [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D10_to_eb",
+"proto": "B_D10_to_eb",
+"body": "rotor",
+"node": "eb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D10_to_eb - D10's lead to junction eb [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_D10_lead_pos",
+"proto": "stick_lead_pos",
+"body": "rotor",
+"node": "xb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 132.0,
+"dz": 535.0,
+"rot": -135.7
+},
+"label": "deck-B / B_D10_lead_pos - D10: its lead, net xb [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_D10_to_xb",
+"proto": "B_D10_to_xb",
+"body": "rotor",
+"node": "xb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_D10_to_xb - D10's lead to junction xb [tinned Cu lead, in the potting, rotor]"
+},
+{
+"name": "B_C4_body",
+"proto": "c180_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_C4_body",
+"place": {
+"dx": 86.0,
+"dz": 542.0,
+"rot": 25.4
+},
+"label": "deck-B / B_C4_body - C4 (3 at its top, r1 at its foot): 180 pF / 30 kV, class 1 HV ceramic (or PP / PTFE film), screw terminals [180 pF / 30 kV, class 1 HV ceramic (or PP / PTFE film), screw terminals, rotor]"
+},
+{
+"name": "B_C4_pot",
+"proto": "c180_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 86.0,
+"dz": 542.0,
+"rot": 25.4
+},
+"label": "deck-B / B_C4_pot - C4: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_C4_stud_top",
+"proto": "stud",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 86.0,
+"dz": 557.0,
+"rot": 25.4
+},
+"label": "deck-B / B_C4_stud_top - C4: its top terminal, net 3 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "B_C4_stud_foot",
+"proto": "stud",
+"body": "rotor",
+"node": "r1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 86.0,
+"dz": 527.0,
+"rot": 25.4
+},
+"label": "deck-B / B_C4_stud_foot - C4: its foot terminal, net r1 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "B_C5_body",
+"proto": "c180_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_C5_body",
+"place": {
+"dx": 85.00000000000001,
+"dz": 542.0,
+"rot": -12.599999999999998
+},
+"label": "deck-B / B_C5_body - C5 (l1 at its top, l2 at its foot): 180 pF / 30 kV, class 1 HV ceramic (or PP / PTFE film), screw terminals [180 pF / 30 kV, class 1 HV ceramic (or PP / PTFE film), screw terminals, rotor]"
+},
+{
+"name": "B_C5_pot",
+"proto": "c180_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 85.00000000000001,
+"dz": 542.0,
+"rot": -12.599999999999998
+},
+"label": "deck-B / B_C5_pot - C5: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_C5_stud_top",
+"proto": "stud",
+"body": "rotor",
+"node": "l1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 85.00000000000001,
+"dz": 557.0,
+"rot": -12.599999999999998
+},
+"label": "deck-B / B_C5_stud_top - C5: its top terminal, net l1 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "B_C5_stud_foot",
+"proto": "stud",
+"body": "rotor",
+"node": "l2",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 85.00000000000001,
+"dz": 527.0,
+"rot": -12.599999999999998
+},
+"label": "deck-B / B_C5_stud_foot - C5: its foot terminal, net l2 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "B_C7_body",
+"proto": "c100_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_C7_body",
+"place": {
+"dx": 102.0,
+"dz": 541.0,
+"rot": -57.699999999999996
+},
+"label": "deck-B / B_C7_body - C7 (l2 at its top, xb at its foot): 100 pF / 30 kV, class 1 HV ceramic (or film) [100 pF / 30 kV, class 1 HV ceramic (or film), rotor]"
+},
+{
+"name": "B_C7_pot",
+"proto": "c100_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 102.0,
+"dz": 541.0,
+"rot": -57.699999999999996
+},
+"label": "deck-B / B_C7_pot - C7: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_C7_stud_top",
+"proto": "stud",
+"body": "rotor",
+"node": "l2",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 102.0,
+"dz": 555.0,
+"rot": -57.699999999999996
+},
+"label": "deck-B / B_C7_stud_top - C7: its top terminal, net l2 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "B_C7_stud_foot",
+"proto": "stud",
+"body": "rotor",
+"node": "xb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 102.0,
+"dz": 527.0,
+"rot": -57.699999999999996
+},
+"label": "deck-B / B_C7_stud_foot - C7: its foot terminal, net xb [brass screw terminal, M5, rotor]"
+},
+{
+"name": "B_Z4_body",
+"proto": "clamp_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_Z4_body",
+"place": {
+"dx": 0.0,
+"dz": 541.0,
+"rot": 177.73802276324187
+},
+"label": "deck-B / B_Z4_body - Z4 (4 - 0): the clamp string: 66 x 1.5KE200A in a meander, its HV and REF ends at opposite ends [the clamp string: 66 x 1.5KE200A in a meander, its HV and REF ends at opposite ends, rotor]"
+},
+{
+"name": "B_Z4_pot",
+"proto": "clamp_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 541.0,
+"rot": 177.73802276324187
+},
+"label": "deck-B / B_Z4_pot - Z4: its potted housing [silicone potting, 8 mm over the module, rotor]"
+},
+{
+"name": "B_Z4_lead_0",
+"proto": "clamp_lead_0",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 541.0,
+"rot": 177.73802276324187
+},
+"label": "deck-B / B_Z4_lead_0 - Z4: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_Z4_lead_1",
+"proto": "clamp_lead_1",
+"body": "rotor",
+"node": "4",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 541.0,
+"rot": 177.73802276324187
+},
+"label": "deck-B / B_Z4_lead_1 - Z4: its lead, net 4 [tinned Cu lead, 1.2 mm, rotor]"
+},
+{
+"name": "B_Csb_body",
+"proto": "c100h_body",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "B_Csb_body",
+"place": {
+"dx": 126.0,
+"dz": 543.0,
+"rot": 145.4
+},
+"label": "deck-B / B_Csb_body - Csb (eb at its top, 0 at its foot): 100 pF / 40 kV, class 1 HV ceramic (or film) [100 pF / 40 kV, class 1 HV ceramic (or film), rotor]"
+},
+{
+"name": "B_Csb_pot",
+"proto": "c100h_pot",
+"body": "rotor",
+"node": "",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 126.0,
+"dz": 543.0,
+"rot": 145.4
+},
+"label": "deck-B / B_Csb_pot - Csb: its potted housing [silicone potting, 8 mm over the part, rotor]"
+},
+{
+"name": "B_Csb_stud_top",
+"proto": "stud",
+"body": "rotor",
+"node": "eb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 126.0,
+"dz": 559.0,
+"rot": 145.4
+},
+"label": "deck-B / B_Csb_stud_top - Csb: its top terminal, net eb [brass screw terminal, M5, rotor]"
+},
+{
+"name": "B_Csb_stud_foot",
+"proto": "stud",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 126.0,
+"dz": 527.0,
+"rot": 145.4
+},
+"label": "deck-B / B_Csb_stud_foot - Csb: its foot terminal, net 0 [brass screw terminal, M5, rotor]"
+},
+{
+"name": "B_lead_C4_0",
+"proto": "B_lead_C4_0",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_lead_C4_0 - lead: C4's terminal 0 to junction 3, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_lead_C4_1",
+"proto": "B_lead_C4_1",
+"body": "rotor",
+"node": "r1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_lead_C4_1 - lead: C4's terminal 1 to junction r1, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_lead_C5_0",
+"proto": "B_lead_C5_0",
+"body": "rotor",
+"node": "l1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_lead_C5_0 - lead: C5's terminal 0 to junction l1, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_lead_C5_1",
+"proto": "B_lead_C5_1",
+"body": "rotor",
+"node": "l2",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_lead_C5_1 - lead: C5's terminal 1 to junction l2, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_lead_C7_0",
+"proto": "B_lead_C7_0",
+"body": "rotor",
+"node": "l2",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_lead_C7_0 - lead: C7's terminal 0 to junction l2, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_lead_C7_1",
+"proto": "B_lead_C7_1",
+"body": "rotor",
+"node": "xb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_lead_C7_1 - lead: C7's terminal 1 to junction xb, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_lead_Z4_0",
+"proto": "B_lead_Z4_0",
+"body": "rotor",
+"node": "4",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_lead_Z4_0 - lead: Z4's terminal 0 to junction 4, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_lead_Csb_0",
+"proto": "B_lead_Csb_0",
+"body": "rotor",
+"node": "eb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_lead_Csb_0 - lead: Csb's terminal 0 to junction eb, over the parts [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_strap_R2",
+"proto": "B_strap_R2",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_strap_R2 - REF strap: R2's terminal 0 to the can [Cu strap to the can (REF), rotor]"
+},
+{
+"name": "B_strap_Z4",
+"proto": "B_strap_Z4",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_strap_Z4 - REF strap: Z4's terminal 1 to the can [Cu strap to the can (REF), rotor]"
+},
+{
+"name": "B_strap_Csb",
+"proto": "B_strap_Csb",
+"body": "rotor",
+"node": "0",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_strap_Csb - REF strap: Csb's terminal 1 to the can [Cu strap to the can (REF), rotor]"
+},
+{
+"name": "B_riser_deck",
+"proto": "B_riser_deck",
+"body": "rotor",
+"node": "4",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_riser_deck - node 4's riser, in the potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_riser",
+"proto": "B_riser",
+"body": "rotor",
+"node": "4",
+"group": "wiring",
+"join": "riser-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / B_riser - node 4's riser: up from the deck, in to r 35, up the column's bore to the first rotor vane [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_tap_deck",
+"proto": "B_tap_deck",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_tap_deck - node 3's tap, in the potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_tap",
+"proto": "B_tap",
+"body": "rotor",
+"node": "3",
+"group": "wiring",
+"join": "tap-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / B_tap - node 3's tap: up from the deck to the column's node-3 plate [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_ring_lead",
+"proto": "B_ring_lead",
+"body": "rotor",
+"node": "eb",
+"group": "wiring",
+"join": "ring-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / B_ring_lead - ring B's lead: from its equatorial bead through the PEEK and the coupler, along the coupler, out through the can's PTFE bushing [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_ring_lead_deck",
+"proto": "B_ring_lead_deck",
+"body": "rotor",
+"node": "eb",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_ring_lead_deck - ring B's lead on the deck, to Csb's top [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_cross_l1",
+"proto": "A_cross_l1",
+"body": "rotor",
+"node": "l1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_cross_l1 - the cross net l1, in deck A's potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "cross_l1",
+"proto": "cross_l1",
+"body": "rotor",
+"node": "l1",
+"group": "wiring",
+"join": "cross-l1",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / cross_l1 - the cross net l1: PTFE HV wire straight across between the decks [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_cross_l1",
+"proto": "B_cross_l1",
+"body": "rotor",
+"node": "l1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_cross_l1 - the cross net l1, in deck B's potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_cross_r1",
+"proto": "A_cross_r1",
+"body": "rotor",
+"node": "r1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_cross_r1 - the cross net r1, in deck A's potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "cross_r1",
+"proto": "cross_r1",
+"body": "rotor",
+"node": "r1",
+"group": "wiring",
+"join": "cross-r1",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / cross_r1 - the cross net r1: PTFE HV wire straight across between the decks [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_cross_r1",
+"proto": "B_cross_r1",
+"body": "rotor",
+"node": "r1",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_cross_r1 - the cross net r1, in deck B's potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+}
+],
+"nets": {
+"hub_ring_A": {
+"net": "ea"
+},
+"hub_bead_A_pol": {
+"net": "ea"
+},
+"hub_bead_A_eq": {
+"net": "ea"
+},
+"hub_ring_B": {
+"net": "eb"
+},
+"hub_bead_B_pol": {
+"net": "eb"
+},
+"hub_bead_B_eq": {
+"net": "eb"
+},
+"hub_AH_A_core": {
+"net": "0"
+},
+"hub_AH_B_core": {
+"net": "0"
+},
+"A_flange": {
+"net": "0"
+},
+"shaft_A": {
+"net": "0"
+},
+"A_lv_cable": {
+"net": "lv",
+"path": [
+[
+0.0,
+0.0,
+415.0
+],
+[
+0.0,
+0.0,
+181.0
+],
+[
+24.0,
+0.0,
+181.0
+]
+]
+},
+"B_flange": {
+"net": "0"
+},
+"shaft_B": {
+"net": "0"
+},
+"B_lv_cable": {
+"net": "lv",
+"path": [
+[
+0.0,
+0.0,
+559.0
+],
+[
+0.0,
+0.0,
+793.0
+],
+[
+24.0,
+0.0,
+793.0
+]
+]
+},
+"can": {
+"net": "0"
+},
+"A_can_disc": {
+"net": "0"
+},
+"B_can_disc": {
+"net": "0"
+},
+"A_Ca_06": {
+"net": "2"
+},
+"A_Ca_05": {
+"net": "1"
+},
+"A_Ca_04": {
+"net": "2"
+},
+"A_Ca_03": {
+"net": "1"
+},
+"A_Ca_02": {
+"net": "2"
+},
+"A_Ca_01": {
+"net": "1"
+},
+"A_C1_r01": {
+"net": "1"
+},
+"A_C1_s02": {
+"net": "s"
+},
+"A_C1_r03": {
+"net": "1"
+},
+"A_C1_s04": {
+"net": "s"
+},
+"A_C1_r05": {
+"net": "1"
+},
+"A_C1_s06": {
+"net": "s"
+},
+"A_C1_r07": {
+"net": "1"
+},
+"A_C1_s08": {
+"net": "s"
+},
+"A_C1_r09": {
+"net": "1"
+},
+"A_C1_s10": {
+"net": "s"
+},
+"A_C1_r11": {
+"net": "1"
+},
+"A_C1_s12": {
+"net": "s"
+},
+"B_Cb_06": {
+"net": "3"
+},
+"B_Cb_05": {
+"net": "4"
+},
+"B_Cb_04": {
+"net": "3"
+},
+"B_Cb_03": {
+"net": "4"
+},
+"B_Cb_02": {
+"net": "3"
+},
+"B_Cb_01": {
+"net": "4"
+},
+"B_C2_r01": {
+"net": "4"
+},
+"B_C2_s02": {
+"net": "s"
+},
+"B_C2_r03": {
+"net": "4"
+},
+"B_C2_s04": {
+"net": "s"
+},
+"B_C2_r05": {
+"net": "4"
+},
+"B_C2_s06": {
+"net": "s"
+},
+"B_C2_r07": {
+"net": "4"
+},
+"B_C2_s08": {
+"net": "s"
+},
+"B_C2_r09": {
+"net": "4"
+},
+"B_C2_s10": {
+"net": "s"
+},
+"B_C2_r11": {
+"net": "4"
+},
+"B_C2_s12": {
+"net": "s"
+},
+"A_bearing_Ca-reluctance": {
+"net": "0"
+},
+"A_bearing_end": {
+"net": "0"
+},
+"B_bearing_Ca-reluctance": {
+"net": "0"
+},
+"B_bearing_end": {
+"net": "0"
+},
+"A_U1_core_pos": {
+"net": "0"
+},
+"A_U1_core_neg": {
+"net": "0"
+},
+"A_U2_core_pos": {
+"net": "0"
+},
+"A_U2_core_neg": {
+"net": "0"
+},
+"A_U3_core_pos": {
+"net": "0"
+},
+"A_U3_core_neg": {
+"net": "0"
+},
+"A_bridge_1": {
+"net": "s"
+},
+"A_bridge_2": {
+"net": "s"
+},
+"A_bridge_3": {
+"net": "s"
+},
+"A_bridge_4": {
+"net": "s"
+},
+"A_bridge_5": {
+"net": "s"
+},
+"A_bridge_6": {
+"net": "s"
+},
+"B_U1_core_pos": {
+"net": "0"
+},
+"B_U1_core_neg": {
+"net": "0"
+},
+"B_U2_core_pos": {
+"net": "0"
+},
+"B_U2_core_neg": {
+"net": "0"
+},
+"B_U3_core_pos": {
+"net": "0"
+},
+"B_U3_core_neg": {
+"net": "0"
+},
+"B_bridge_1": {
+"net": "s"
+},
+"B_bridge_2": {
+"net": "s"
+},
+"B_bridge_3": {
+"net": "s"
+},
+"B_bridge_4": {
+"net": "s"
+},
+"B_bridge_5": {
+"net": "s"
+},
+"B_bridge_6": {
+"net": "s"
+},
+"A_J_0": {
+"net": "0"
+},
+"A_J_0p": {
+"net": "0"
+},
+"A_J_2": {
+"net": "2"
+},
+"A_J_2p": {
+"net": "2"
+},
+"A_J_r1": {
+"net": "r1"
+},
+"A_J_l1": {
+"net": "l1"
+},
+"A_J_r2": {
+"net": "r2"
+},
+"A_J_1": {
+"net": "1"
+},
+"A_J_xa": {
+"net": "xa"
+},
+"A_J_ea": {
+"net": "ea"
+},
+"A_R1_body": {
+"nets": [
+"0",
+"0"
+],
+"axis": [
+[
+-108.43974655751322,
+-77.87696300281812,
+439.0
+],
+[
+-80.50313514027297,
+-106.50467235096752,
+439.0
+]
+]
+},
+"A_R1_lead_neg": {
+"net": "0"
+},
+"A_R1_to_0": {
+"net": "0",
+"path": [
+[
+-117.5191452681163,
+-68.57295746466954,
+439.0
+],
+[
+-113.96821268009386,
+-66.59764634358255,
+439.0
+]
+]
+},
+"A_R1_lead_pos": {
+"net": "0"
+},
+"A_R1_to_0p": {
+"net": "0",
+"path": [
+[
+-71.42373642966989,
+-115.8086778891161,
+439.0
+],
+[
+-66.19941730504833,
+-114.19998751520102,
+439.0
+]
+]
+},
+"A_D1_body": {
+"nets": [
+"0",
+"2"
+],
+"axis": [
+[
+-52.41311334274842,
+-122.78788844882139,
+439.0
+],
+[
+-13.68720772762411,
+-132.80308861099905,
+439.0
+]
+],
+"device": "D1"
+},
+"A_D1_lead_neg": {
+"net": "0"
+},
+"A_D1_to_0p": {
+"net": "0",
+"path": [
+[
+-64.99903266766381,
+-119.53294839611365,
+439.0
+],
+[
+-66.19941730504833,
+-114.19998751520102,
+439.0
+]
+]
+},
+"A_D1_lead_pos": {
+"net": "2"
+},
+"A_D1_to_2": {
+"net": "2",
+"path": [
+[
+-1.101288402708711,
+-136.05802866370678,
+439.0
+],
+[
+2.5340623967590328,
+-131.97567400005704,
+439.0
+]
+]
+},
+"A_R3_body": {
+"nets": [
+"2",
+"2"
+],
+"axis": [
+[
+18.775138723255697,
+-132.1797797165758,
+439.0
+],
+[
+57.0880385170683,
+-120.68535892258731,
+439.0
+]
+]
+},
+"A_R3_lead_neg": {
+"net": "2"
+},
+"A_R3_to_2": {
+"net": "2",
+"path": [
+[
+6.323446290266606,
+-135.91546647462206,
+439.0
+],
+[
+2.5340623967590328,
+-131.97567400005704,
+439.0
+]
+]
+},
+"A_R3_lead_pos": {
+"net": "2"
+},
+"A_R3_to_2p": {
+"net": "2",
+"path": [
+[
+69.53973095005739,
+-116.94967216454106,
+439.0
+],
+[
+70.5345101194571,
+-111.574561985285,
+439.0
+]
+]
+},
+"A_D3_body": {
+"nets": [
+"2",
+"r1"
+],
+"axis": [
+[
+84.53227862960539,
+-103.33583052207382,
+439.0
+],
+[
+111.34934338795735,
+-73.65679688304917,
+439.0
+]
+],
+"device": "D3"
+},
+"A_D3_lead_neg": {
+"net": "2"
+},
+"A_D3_to_2p": {
+"net": "2",
+"path": [
+[
+75.81673258314099,
+-112.98151645475684,
+439.0
+],
+[
+70.5345101194571,
+-111.574561985285,
+439.0
+]
+]
+},
+"A_D3_lead_pos": {
+"net": "r1"
+},
+"A_D3_to_r1": {
+"net": "r1",
+"path": [
+[
+120.06488943442174,
+-64.01111095036615,
+439.0
+],
+[
+116.76468872839108,
+-61.56303652486564,
+439.0
+]
+]
+},
+"A_D5_body": {
+"nets": [
+"l1",
+"r2"
+],
+"axis": [
+[
+131.82044313450314,
+-21.151141147068785,
+439.0
+],
+[
+132.1695045544381,
+18.847335775498067,
+439.0
+]
+],
+"device": "D5"
+},
+"A_D5_lead_neg": {
+"net": "l1"
+},
+"A_D5_to_l1": {
+"net": "l1",
+"path": [
+[
+131.7069981730243,
+-34.150646146903014,
+439.0
+],
+[
+127.62068729578864,
+-33.71884004752435,
+439.0
+]
+]
+},
+"A_D5_lead_pos": {
+"net": "r2"
+},
+"A_D5_to_r2": {
+"net": "r2",
+"path": [
+[
+132.28294951591695,
+31.846840775332296,
+439.0
+],
+[
+127.44238727605772,
+34.386595140829584,
+439.0
+]
+]
+},
+"A_D8_body": {
+"nets": [
+"r2",
+"1"
+],
+"axis": [
+[
+123.71135820901942,
+50.194619732394486,
+439.0
+],
+[
+103.28964149255519,
+84.58871059626942,
+439.0
+]
+],
+"device": "D8"
+},
+"A_D8_lead_neg": {
+"net": "r2"
+},
+"A_D8_to_r2": {
+"net": "r2",
+"path": [
+[
+130.3484161418703,
+39.016540201635124,
+439.0
+],
+[
+127.44238727605772,
+34.386595140829584,
+439.0
+]
+]
+},
+"A_D8_lead_pos": {
+"net": "1"
+},
+"A_D8_to_1": {
+"net": "1",
+"path": [
+[
+96.65258355970431,
+95.76679012702878,
+439.0
+],
+[
+91.19647826214532,
+95.43166326006299,
+439.0
+]
+]
+},
+"A_D11_body": {
+"nets": [
+"1",
+"xa"
+],
+"axis": [
+[
+79.81610564131546,
+107.02050868994394,
+439.0
+],
+[
+44.531031000608756,
+125.86098393872035,
+439.0
+]
+],
+"device": "D11"
+},
+"A_D11_lead_neg": {
+"net": "1"
+},
+"A_D11_to_1": {
+"net": "1",
+"path": [
+[
+91.28375489954514,
+100.89735423409162,
+439.0
+],
+[
+91.19647826214532,
+95.43166326006299,
+439.0
+]
+]
+},
+"A_D11_lead_pos": {
+"net": "xa"
+},
+"A_D11_to_xa": {
+"net": "xa",
+"path": [
+[
+33.06338174237908,
+131.98413839457268,
+439.0
+],
+[
+28.570029039829585,
+128.8710729398312,
+439.0
+]
+]
+},
+"A_D12_body": {
+"nets": [
+"xa",
+"ea"
+],
+"axis": [
+[
+12.83233009253391,
+132.88841674275545,
+439.0
+],
+[
+-27.109136720514563,
+130.72526422336443,
+439.0
+]
+],
+"device": "D12"
+},
+"A_D12_lead_neg": {
+"net": "xa"
+},
+"A_D12_to_xa": {
+"net": "xa",
+"path": [
+[
+25.813306806774662,
+133.59144131155753,
+439.0
+],
+[
+28.570029039829585,
+128.8710729398312,
+439.0
+]
+]
+},
+"A_D12_lead_pos": {
+"net": "ea"
+},
+"A_D12_to_ea": {
+"net": "ea",
+"path": [
+[
+-40.09011343475531,
+130.02223965456236,
+439.0
+],
+[
+-39.47338457780346,
+125.95972336414854,
+439.0
+]
+]
+},
+"A_C3_body": {
+"nets": [
+"2",
+"l1"
+],
+"axis": [
+[
+32.21616703376843,
+-79.73781149274372,
+421.0
+],
+[
+32.21616703376843,
+-79.73781149274372,
+443.0
+]
+]
+},
+"A_C3_stud_top": {
+"net": "2"
+},
+"A_C3_stud_foot": {
+"net": "l1"
+},
+"A_C6_body": {
+"nets": [
+"r1",
+"r2"
+],
+"axis": [
+[
+73.6121593216773,
+-42.49999999999999,
+421.0
+],
+[
+73.6121593216773,
+-42.49999999999999,
+443.0
+]
+]
+},
+"A_C6_stud_top": {
+"net": "r1"
+},
+"A_C6_stud_foot": {
+"net": "r2"
+},
+"A_C8_body": {
+"nets": [
+"r2",
+"xa"
+],
+"axis": [
+[
+98.47820834968095,
+26.57145988155013,
+423.0
+],
+[
+98.47820834968095,
+26.57145988155013,
+443.0
+]
+]
+},
+"A_C8_stud_top": {
+"net": "r2"
+},
+"A_C8_stud_foot": {
+"net": "xa"
+},
+"A_Z1_body": {
+"nets": [
+"1",
+"0"
+],
+"arc": {
+"r": 90.0,
+"th": [
+60.08450569081047,
+155.57747154594767
+],
+"z": 433.0
+},
+"device": "Z1"
+},
+"A_Z1_lead_0": {
+"net": "1"
+},
+"A_Z1_lead_1": {
+"net": "0"
+},
+"A_Csa_body": {
+"nets": [
+"ea",
+"0"
+],
+"axis": [
+[
+-124.77377666143786,
+17.535810720968232,
+419.0
+],
+[
+-124.77377666143786,
+17.535810720968232,
+443.0
+]
+]
+},
+"A_Csa_stud_top": {
+"net": "ea"
+},
+"A_Csa_stud_foot": {
+"net": "0"
+},
+"A_lead_C3_0": {
+"net": "2",
+"path": [
+[
+32.21616703376843,
+-79.73781149274372,
+413.0
+],
+[
+32.21616703376843,
+-79.73781149274372,
+410.5
+],
+[
+0.03452311645492223,
+-132.02366760605628,
+410.5
+],
+[
+0.03452311645492223,
+-132.02366760605628,
+433.0
+]
+]
+},
+"A_lead_C3_1": {
+"net": "l1",
+"path": [
+[
+32.21616703376843,
+-79.73781149274372,
+447.0
+],
+[
+55.183850269456755,
+-68.65920477596379,
+447.0
+],
+[
+55.183850269456755,
+-68.65920477596379,
+410.5
+],
+[
+127.62068729578864,
+-33.71884004752435,
+410.5
+],
+[
+127.62068729578864,
+-33.71884004752435,
+433.0
+]
+]
+},
+"A_lead_C6_0": {
+"net": "r1",
+"path": [
+[
+73.6121593216773,
+-42.49999999999999,
+413.0
+],
+[
+73.6121593216773,
+-42.49999999999999,
+410.5
+],
+[
+116.76468872839108,
+-61.56303652486564,
+410.5
+],
+[
+116.76468872839108,
+-61.56303652486564,
+433.0
+]
+]
+},
+"A_lead_C6_1": {
+"net": "r2",
+"path": [
+[
+73.6121593216773,
+-42.49999999999999,
+447.0
+],
+[
+88.66820467001223,
+-21.91929305225687,
+447.0
+],
+[
+88.66820467001223,
+-21.91929305225687,
+410.5
+],
+[
+128.09364854766434,
+31.972913563631522,
+410.5
+],
+[
+128.09364854766434,
+31.972913563631522,
+433.0
+]
+]
+},
+"A_lead_C8_0": {
+"net": "r2",
+"path": [
+[
+98.47820834968095,
+26.57145988155013,
+415.0
+],
+[
+98.47820834968095,
+26.57145988155013,
+410.5
+],
+[
+126.7911260044511,
+36.800276718027646,
+410.5
+],
+[
+126.7911260044511,
+36.800276718027646,
+433.0
+]
+]
+},
+"A_lead_C8_1": {
+"net": "xa",
+"path": [
+[
+98.47820834968095,
+26.57145988155013,
+447.0
+],
+[
+85.50139097047747,
+45.56098885693028,
+447.0
+],
+[
+85.50139097047747,
+45.56098885693028,
+410.5
+],
+[
+28.570029039829585,
+128.8710729398312,
+410.5
+],
+[
+28.570029039829585,
+128.8710729398312,
+433.0
+]
+]
+},
+"A_lead_Z1_0": {
+"net": "1",
+"path": [
+[
+44.88499382039381,
+78.00857215552153,
+433.0
+],
+[
+44.88499382039381,
+78.00857215552153,
+410.5
+],
+[
+93.00389612691924,
+93.70445723237084,
+410.5
+],
+[
+93.00389612691924,
+93.70445723237084,
+433.0
+]
+]
+},
+"A_lead_Csa_0": {
+"net": "ea",
+"path": [
+[
+-124.77377666143786,
+17.535810720968232,
+411.0
+],
+[
+-124.77377666143786,
+17.535810720968232,
+410.5
+],
+[
+-39.47338457780346,
+125.95972336414854,
+410.5
+],
+[
+-39.47338457780346,
+125.95972336414854,
+433.0
+]
+]
+},
+"A_strap_R1": {
+"net": "0",
+"path": [
+[
+-117.5191452681163,
+-68.57295746466954,
+439.0
+],
+[
+-117.5191452681163,
+-68.57295746466954,
+449.0
+],
+[
+-41.45829723831011,
+-24.191105598957822,
+449.0
+]
+]
+},
+"A_strap_Z1": {
+"net": "0",
+"path": [
+[
+-81.94690435755031,
+37.211622730196844,
+433.0
+],
+[
+-81.94690435755031,
+37.211622730196844,
+449.0
+],
+[
+-43.705015657360164,
+19.84619878943832,
+449.0
+]
+]
+},
+"A_strap_Csa": {
+"net": "0",
+"path": [
+[
+-124.77377666143786,
+17.535810720968232,
+447.0
+],
+[
+-124.77377666143786,
+17.535810720968232,
+449.0
+],
+[
+-47.53286729959538,
+6.680308846083136,
+449.0
+]
+]
+},
+"A_riser_deck": {
+"net": "1",
+"path": [
+[
+89.3890603973714,
+97.15886928775514,
+433.0
+],
+[
+89.3890603973714,
+97.15886928775514,
+427.0
+]
+]
+},
+"A_riser": {
+"net": "1",
+"path": [
+[
+89.3890603973714,
+97.15886928775514,
+427.0
+],
+[
+89.3890603973714,
+97.15886928775514,
+385.5
+],
+[
+24.180884387690046,
+25.303850106834883,
+385.5
+],
+[
+24.180884387690046,
+25.303850106834883,
+316.0
+]
+]
+},
+"A_tap_deck": {
+"net": "2",
+"path": [
+[
+5.033601677063143,
+-131.9276803940578,
+433.0
+],
+[
+5.033601677063143,
+-131.9276803940578,
+427.0
+]
+]
+},
+"A_tap": {
+"net": "2",
+"path": [
+[
+5.033601677063143,
+-131.9276803940578,
+427.0
+],
+[
+5.033601677063143,
+-131.9276803940578,
+370.0
+]
+]
+},
+"A_ring_lead": {
+"net": "ea",
+"path": [
+[
+-22.090215966235892,
+3.104577390650884,
+471.7886898069063
+],
+[
+-32.67884626847182,
+4.592712331682156,
+464.4973649826725
+],
+[
+-35.649650474696536,
+5.010231634562352,
+464.4973649826725
+],
+[
+-35.649650474696536,
+5.010231634562352,
+430.0
+],
+[
+-53.4744757120448,
+7.515347451843527,
+430.0
+]
+]
+},
+"A_ring_lead_deck": {
+"net": "ea",
+"path": [
+[
+-53.4744757120448,
+7.515347451843527,
+430.0
+],
+[
+-55.45501184952794,
+7.7936936537636585,
+430.0
+],
+[
+-124.77377666143786,
+17.535810720968232,
+411.0
+]
+]
+},
+"B_J_0": {
+"net": "0"
+},
+"B_J_0p": {
+"net": "0"
+},
+"B_J_3": {
+"net": "3"
+},
+"B_J_3p": {
+"net": "3"
+},
+"B_J_l1": {
+"net": "l1"
+},
+"B_J_r1": {
+"net": "r1"
+},
+"B_J_l2": {
+"net": "l2"
+},
+"B_J_4": {
+"net": "4"
+},
+"B_J_xb": {
+"net": "xb"
+},
+"B_J_eb": {
+"net": "eb"
+},
+"B_R2_body": {
+"nets": [
+"0",
+"0"
+],
+"axis": [
+[
+-27.109136720514563,
+130.72526422336443,
+535.0
+],
+[
+12.83233009253391,
+132.88841674275545,
+535.0
+]
+]
+},
+"B_R2_lead_neg": {
+"net": "0"
+},
+"B_R2_to_0p": {
+"net": "0",
+"path": [
+[
+25.813306806774662,
+133.59144131155753,
+535.0
+],
+[
+28.570029039829585,
+128.8710729398312,
+535.0
+]
+]
+},
+"B_R2_lead_pos": {
+"net": "0"
+},
+"B_R2_to_0": {
+"net": "0",
+"path": [
+[
+-40.09011343475531,
+130.02223965456236,
+535.0
+],
+[
+-38.8133229306641,
+126.1646779533796,
+535.0
+]
+]
+},
+"B_D2_body": {
+"nets": [
+"0",
+"3"
+],
+"axis": [
+[
+44.531031000608756,
+125.86098393872035,
+535.0
+],
+[
+79.81610564131546,
+107.02050868994394,
+535.0
+]
+],
+"device": "D2"
+},
+"B_D2_lead_neg": {
+"net": "3"
+},
+"B_D2_to_3": {
+"net": "3",
+"path": [
+[
+91.28375489954514,
+100.89735423409162,
+535.0
+],
+[
+91.1964782621453,
+95.43166326006302,
+535.0
+]
+]
+},
+"B_D2_lead_pos": {
+"net": "0"
+},
+"B_D2_to_0p": {
+"net": "0",
+"path": [
+[
+33.06338174237908,
+131.98413839457268,
+535.0
+],
+[
+28.570029039829585,
+128.8710729398312,
+535.0
+]
+]
+},
+"B_R4_body": {
+"nets": [
+"3",
+"3"
+],
+"axis": [
+[
+103.28964149255519,
+84.58871059626942,
+535.0
+],
+[
+123.71135820901942,
+50.194619732394486,
+535.0
+]
+]
+},
+"B_R4_lead_neg": {
+"net": "3"
+},
+"B_R4_to_3p": {
+"net": "3",
+"path": [
+[
+130.3484161418703,
+39.016540201635124,
+535.0
+],
+[
+127.44238727605772,
+34.38659514082959,
+535.0
+]
+]
+},
+"B_R4_lead_pos": {
+"net": "3"
+},
+"B_R4_to_3": {
+"net": "3",
+"path": [
+[
+96.65258355970431,
+95.76679012702878,
+535.0
+],
+[
+91.1964782621453,
+95.43166326006302,
+535.0
+]
+]
+},
+"B_D4_body": {
+"nets": [
+"3",
+"l1"
+],
+"axis": [
+[
+132.1695045544381,
+18.847335775498067,
+535.0
+],
+[
+131.82044313450314,
+-21.151141147068785,
+535.0
+]
+],
+"device": "D4"
+},
+"B_D4_lead_neg": {
+"net": "l1"
+},
+"B_D4_to_l1": {
+"net": "l1",
+"path": [
+[
+131.7069981730243,
+-34.150646146903014,
+535.0
+],
+[
+127.62068729578864,
+-33.71884004752435,
+535.0
+]
+]
+},
+"B_D4_lead_pos": {
+"net": "3"
+},
+"B_D4_to_3p": {
+"net": "3",
+"path": [
+[
+132.28294951591695,
+31.846840775332296,
+535.0
+],
+[
+127.44238727605772,
+34.38659514082959,
+535.0
+]
+]
+},
+"B_D6_body": {
+"nets": [
+"r1",
+"l2"
+],
+"axis": [
+[
+111.34934338795735,
+-73.65679688304917,
+535.0
+],
+[
+84.53227862960539,
+-103.33583052207382,
+535.0
+]
+],
+"device": "D6"
+},
+"B_D6_lead_neg": {
+"net": "l2"
+},
+"B_D6_to_l2": {
+"net": "l2",
+"path": [
+[
+75.81673258314099,
+-112.98151645475684,
+535.0
+],
+[
+70.5345101194571,
+-111.574561985285,
+535.0
+]
+]
+},
+"B_D6_lead_pos": {
+"net": "r1"
+},
+"B_D6_to_r1": {
+"net": "r1",
+"path": [
+[
+120.06488943442174,
+-64.01111095036615,
+535.0
+],
+[
+116.76468872839108,
+-61.56303652486564,
+535.0
+]
+]
+},
+"B_D7_body": {
+"nets": [
+"l2",
+"4"
+],
+"axis": [
+[
+57.0880385170683,
+-120.68535892258731,
+535.0
+],
+[
+18.775138723255697,
+-132.1797797165758,
+535.0
+]
+],
+"device": "D7"
+},
+"B_D7_lead_neg": {
+"net": "4"
+},
+"B_D7_to_4": {
+"net": "4",
+"path": [
+[
+6.323446290266606,
+-135.91546647462206,
+535.0
+],
+[
+2.5340623967590328,
+-131.97567400005704,
+535.0
+]
+]
+},
+"B_D7_lead_pos": {
+"net": "l2"
+},
+"B_D7_to_l2": {
+"net": "l2",
+"path": [
+[
+69.53973095005739,
+-116.94967216454106,
+535.0
+],
+[
+70.5345101194571,
+-111.574561985285,
+535.0
+]
+]
+},
+"B_D9_body": {
+"nets": [
+"4",
+"xb"
+],
+"axis": [
+[
+-13.68720772762411,
+-132.80308861099905,
+535.0
+],
+[
+-52.41311334274842,
+-122.78788844882139,
+535.0
+]
+],
+"device": "D9"
+},
+"B_D9_lead_neg": {
+"net": "xb"
+},
+"B_D9_to_xb": {
+"net": "xb",
+"path": [
+[
+-64.99903266766381,
+-119.53294839611365,
+535.0
+],
+[
+-66.19941730504833,
+-114.19998751520102,
+535.0
+]
+]
+},
+"B_D9_lead_pos": {
+"net": "4"
+},
+"B_D9_to_4": {
+"net": "4",
+"path": [
+[
+-1.101288402708711,
+-136.05802866370678,
+535.0
+],
+[
+2.5340623967590328,
+-131.97567400005704,
+535.0
+]
+]
+},
+"B_D10_body": {
+"nets": [
+"xb",
+"eb"
+],
+"axis": [
+[
+-80.50313514027297,
+-106.50467235096752,
+535.0
+],
+[
+-108.43974655751322,
+-77.87696300281812,
+535.0
+]
+],
+"device": "D10"
+},
+"B_D10_lead_neg": {
+"net": "eb"
+},
+"B_D10_to_eb": {
+"net": "eb",
+"path": [
+[
+-117.5191452681163,
+-68.57295746466954,
+535.0
+],
+[
+-114.3153532995459,
+-65.99999999999999,
+535.0
+]
+]
+},
+"B_D10_lead_pos": {
+"net": "xb"
+},
+"B_D10_to_xb": {
+"net": "xb",
+"path": [
+[
+-71.42373642966989,
+-115.8086778891161,
+535.0
+],
+[
+-66.19941730504833,
+-114.19998751520102,
+535.0
+]
+]
+},
+"B_C4_body": {
+"nets": [
+"3",
+"r1"
+],
+"axis": [
+[
+77.68683518624387,
+36.888421472670544,
+553.0
+],
+[
+77.68683518624387,
+36.888421472670544,
+531.0
+]
+]
+},
+"B_C4_stud_top": {
+"net": "3"
+},
+"B_C4_stud_foot": {
+"net": "r1"
+},
+"B_C5_body": {
+"nets": [
+"l1",
+"l2"
+],
+"axis": [
+[
+82.95292476479354,
+-18.542175518706117,
+553.0
+],
+[
+82.95292476479354,
+-18.542175518706117,
+531.0
+]
+]
+},
+"B_C5_stud_top": {
+"net": "l1"
+},
+"B_C5_stud_foot": {
+"net": "l2"
+},
+"B_C7_body": {
+"nets": [
+"l2",
+"xb"
+],
+"axis": [
+[
+54.5039396377623,
+-86.21670698862933,
+551.0
+],
+[
+54.5039396377623,
+-86.21670698862933,
+531.0
+]
+]
+},
+"B_C7_stud_top": {
+"net": "l2"
+},
+"B_C7_stud_foot": {
+"net": "xb"
+},
+"B_Z4_body": {
+"nets": [
+"4",
+"0"
+],
+"arc": {
+"r": 90.0,
+"th": [
+-102.68450569081047,
+161.82252845405236
+],
+"z": 541.0
+},
+"device": "Z4"
+},
+"B_Z4_lead_0": {
+"net": "0"
+},
+"B_Z4_lead_1": {
+"net": "4"
+},
+"B_Csb_body": {
+"nets": [
+"eb",
+"0"
+],
+"axis": [
+[
+-103.71518243533967,
+71.54831187669076,
+555.0
+],
+[
+-103.71518243533967,
+71.54831187669076,
+531.0
+]
+]
+},
+"B_Csb_stud_top": {
+"net": "eb"
+},
+"B_Csb_stud_foot": {
+"net": "0"
+},
+"B_lead_C4_0": {
+"net": "3",
+"path": [
+[
+77.68683518624387,
+36.888421472670544,
+561.0
+],
+[
+77.68683518624387,
+36.888421472670544,
+563.5
+],
+[
+93.00389612691923,
+93.70445723237087,
+563.5
+],
+[
+93.00389612691923,
+93.70445723237087,
+541.0
+]
+]
+},
+"B_lead_C4_1": {
+"net": "r1",
+"path": [
+[
+77.68683518624387,
+36.888421472670544,
+527.0
+],
+[
+87.09443724976954,
+13.187218477582984,
+527.0
+],
+[
+87.09443724976954,
+13.187218477582984,
+563.5
+],
+[
+116.76468872839108,
+-61.56303652486564,
+563.5
+],
+[
+116.76468872839108,
+-61.56303652486564,
+541.0
+]
+]
+},
+"B_lead_C5_0": {
+"net": "l1",
+"path": [
+[
+82.95292476479354,
+-18.542175518706117,
+561.0
+],
+[
+82.95292476479354,
+-18.542175518706117,
+563.5
+],
+[
+127.62068729578864,
+-33.71884004752435,
+563.5
+],
+[
+127.62068729578864,
+-33.71884004752435,
+541.0
+]
+]
+},
+"B_lead_C5_1": {
+"net": "l2",
+"path": [
+[
+82.95292476479354,
+-18.542175518706117,
+527.0
+],
+[
+79.07197732700944,
+-43.74511675549745,
+527.0
+],
+[
+79.07197732700944,
+-43.74511675549745,
+563.5
+],
+[
+68.42135553640246,
+-112.91044285875957,
+563.5
+],
+[
+68.42135553640246,
+-112.91044285875957,
+541.0
+]
+]
+},
+"B_lead_C7_0": {
+"net": "l2",
+"path": [
+[
+54.5039396377623,
+-86.21670698862933,
+559.0
+],
+[
+54.5039396377623,
+-86.21670698862933,
+563.5
+],
+[
+72.64766470251173,
+-110.23868111181044,
+563.5
+],
+[
+72.64766470251173,
+-110.23868111181044,
+541.0
+]
+]
+},
+"B_lead_C7_1": {
+"net": "xb",
+"path": [
+[
+54.5039396377623,
+-86.21670698862933,
+527.0
+],
+[
+32.098186325818446,
+-91.4111481062393,
+527.0
+],
+[
+32.098186325818446,
+-91.4111481062393,
+563.5
+],
+[
+-66.19941730504833,
+-114.19998751520102,
+563.5
+],
+[
+-66.19941730504833,
+-114.19998751520102,
+541.0
+]
+]
+},
+"B_lead_Z4_0": {
+"net": "4",
+"path": [
+[
+-19.762414714749298,
+-87.80345645042831,
+541.0
+],
+[
+-19.762414714749298,
+-87.80345645042831,
+563.5
+],
+[
+0.03452311645492223,
+-132.02366760605628,
+563.5
+],
+[
+0.03452311645492223,
+-132.02366760605628,
+541.0
+]
+]
+},
+"B_lead_Csb_0": {
+"net": "eb",
+"path": [
+[
+-103.71518243533967,
+71.54831187669076,
+563.0
+],
+[
+-103.71518243533967,
+71.54831187669076,
+563.5
+],
+[
+-114.3153532995459,
+-65.99999999999999,
+563.5
+],
+[
+-114.3153532995459,
+-65.99999999999999,
+541.0
+]
+]
+},
+"B_strap_R2": {
+"net": "0",
+"path": [
+[
+-40.09011343475531,
+130.02223965456236,
+535.0
+],
+[
+-40.09011343475531,
+130.02223965456236,
+525.0
+],
+[
+-14.142953774073993,
+45.869127510171865,
+525.0
+]
+]
+},
+"B_strap_Z4": {
+"net": "0",
+"path": [
+[
+-85.50853081503958,
+28.076523250812723,
+541.0
+],
+[
+-85.50853081503958,
+28.076523250812723,
+525.0
+],
+[
+-45.60454976802111,
+14.974145733766786,
+525.0
+]
+]
+},
+"B_strap_Csb": {
+"net": "0",
+"path": [
+[
+-103.71518243533967,
+71.54831187669076,
+527.0
+],
+[
+-103.71518243533967,
+71.54831187669076,
+525.0
+],
+[
+-39.51054568965321,
+27.256499762548863,
+525.0
+]
+]
+},
+"B_riser_deck": {
+"net": "4",
+"path": [
+[
+5.033601677063143,
+-131.9276803940578,
+541.0
+],
+[
+5.033601677063143,
+-131.9276803940578,
+547.0
+]
+]
+},
+"B_riser": {
+"net": "4",
+"path": [
+[
+5.033601677063143,
+-131.9276803940578,
+547.0
+],
+[
+5.033601677063143,
+-131.9276803940578,
+588.5
+],
+[
+0.6719104839891374,
+-34.99354992425755,
+588.5
+],
+[
+0.6719104839891374,
+-34.99354992425755,
+658.0
+]
+]
+},
+"B_tap_deck": {
+"net": "3",
+"path": [
+[
+89.38906039737138,
+97.15886928775517,
+541.0
+],
+[
+89.38906039737138,
+97.15886928775517,
+547.0
+]
+]
+},
+"B_tap": {
+"net": "3",
+"path": [
+[
+89.38906039737138,
+97.15886928775517,
+547.0
+],
+[
+89.38906039737138,
+97.15886928775517,
+604.0
+]
+]
+},
+"B_ring_lead": {
+"net": "eb",
+"path": [
+[
+-18.361957458343774,
+12.667065978649408,
+502.2113101930937
+],
+[
+-27.163500161636588,
+18.73884358675234,
+509.5026350173275
+],
+[
+-29.63290926723991,
+20.44237482191164,
+509.5026350173275
+],
+[
+-29.63290926723991,
+20.44237482191164,
+544.0
+],
+[
+-44.449363900859865,
+30.66356223286746,
+544.0
+]
+]
+},
+"B_ring_lead_deck": {
+"net": "eb",
+"path": [
+[
+-44.449363900859865,
+30.66356223286746,
+544.0
+],
+[
+-46.09563663792875,
+31.799249722973663,
+544.0
+],
+[
+-103.71518243533967,
+71.54831187669076,
+563.0
+]
+]
+},
+"A_cross_l1": {
+"net": "l1",
+"path": [
+[
+127.62068729578864,
+-33.71884004752435,
+445.0
+],
+[
+127.62068729578864,
+-33.71884004752435,
+451.0
+]
+]
+},
+"cross_l1": {
+"net": "l1",
+"path": [
+[
+127.62068729578864,
+-33.71884004752435,
+451.0
+],
+[
+127.62068729578864,
+-33.71884004752435,
+523.0
+]
+]
+},
+"B_cross_l1": {
+"net": "l1",
+"path": [
+[
+127.62068729578864,
+-33.71884004752435,
+523.0
+],
+[
+127.62068729578864,
+-33.71884004752435,
+529.0
+]
+]
+},
+"A_cross_r1": {
+"net": "r1",
+"path": [
+[
+116.76468872839108,
+-61.56303652486564,
+445.0
+],
+[
+116.76468872839108,
+-61.56303652486564,
+451.0
+]
+]
+},
+"cross_r1": {
+"net": "r1",
+"path": [
+[
+116.76468872839108,
+-61.56303652486564,
+451.0
+],
+[
+116.76468872839108,
+-61.56303652486564,
+523.0
+]
+]
+},
+"B_cross_r1": {
+"net": "r1",
+"path": [
+[
+116.76468872839108,
+-61.56303652486564,
+523.0
+],
+[
+116.76468872839108,
+-61.56303652486564,
+529.0
+]
+]
+}
+},
+"zc_mm": 487.0,
+"L_mm": 974.0
+}

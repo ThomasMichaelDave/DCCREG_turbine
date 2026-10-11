@@ -1,0 +1,1429 @@
+{
+ "tag": "tube-r150-n6-air6-wound-g0p5-6br-hub50-layout",
+ "source": "sim/multiplier_layout_results.json (the stack, the decks' plans); the record's solids (record_plates); presets/hub-locked.json",
+ "status": "PROPOSED (the layout, 2026-10-11)",
+ "n_parts": 378,
+ "n_protos": 142,
+ "L_total_mm": 974.0,
+ "hub_centre_z_mm": 487.0,
+ "G-TUBE-CLASH": {
+  "pairs_tested": 1129,
+  "clashes": [],
+  "n_clash": 0,
+  "pass_": true
+ },
+ "G-TUBE-SWEEP": {
+  "hits": [],
+  "n_hits": 0,
+  "pass_": true,
+  "note": "each rotor solid revolved into a ring (its r and z extent) against every stator solid"
+ },
+ "G-TUBE-GAP": {
+  "rows": [],
+  "pass_": true
+ },
+ "G-TUBE-WOUND": {
+  "gap_set_mm": 0.5,
+  "clr_set_mm": 1.0,
+  "A": {
+   "gap_at_rotor_0_mm": 0.5,
+   "gap_aligned_mm": 0.5,
+   "gap_unaligned_mm": 9.737,
+   "winding_to_core_mm": 1.0,
+   "winding_to_strip_mm": 1.0,
+   "winding_to_wedge_mm": 0.1,
+   "winding_to_cheek_mm": 1.0,
+   "winding_to_disc_mm": 2.6757,
+   "winding_to_ring_mm": 2.7367,
+   "core_to_ring_mm": 1.5,
+   "half_core_to_half_core_mm": 12.0,
+   "core_r_max_mm": 130.0,
+   "winding_r_max_mm": 128.76,
+   "winding_r_min_mm": 59.67
+  },
+  "B": {
+   "gap_at_rotor_0_mm": 9.737,
+   "gap_aligned_mm": 0.5,
+   "gap_unaligned_mm": 9.737,
+   "winding_to_core_mm": 1.0,
+   "winding_to_strip_mm": 1.0,
+   "winding_to_wedge_mm": 0.1,
+   "winding_to_cheek_mm": 1.0,
+   "winding_to_disc_mm": 2.6757,
+   "winding_to_ring_mm": 2.7367,
+   "core_to_ring_mm": 1.5,
+   "half_core_to_half_core_mm": 12.0,
+   "core_r_max_mm": 130.0,
+   "winding_r_max_mm": 128.76,
+   "winding_r_min_mm": 59.67
+  },
+  "envelope_dia_mm": 313.0,
+  "section_len_mm": 162.0,
+  "utron_radial_mm": [
+   57.0,
+   130.0
+  ],
+  "utron_axial_mm": 156.0,
+  "pass_": true
+ },
+ "G-LAYOUT": {
+  "A": {
+   "pairs": 78,
+   "housing_solid_minus_plan_min_mm": -0.019232072350584772,
+   "body_solid_minus_plan_min_mm": -0.019232072350565232,
+   "least_housing": {
+    "pair": "D8-C8",
+    "solid_mm": 1.8643112801184876,
+    "study_pair": "D5-C8",
+    "study_mm": 1.8643112801182653
+   },
+   "body_to_can_mm": {
+    "R1": 80.0,
+    "D1": 80.0,
+    "R3": 80.0,
+    "D3": 80.0,
+    "D5": 80.0,
+    "D8": 80.0,
+    "D11": 80.0,
+    "D12": 80.0,
+    "C3": 23.0,
+    "C6": 22.0,
+    "C8": 41.5,
+    "Z1": 25.0,
+    "Csa": 63.0
+   },
+   "can_solid_minus_plan_min_mm": -2.842170943040401e-14,
+   "rows": [
+    {
+     "a": "R1",
+     "b": "D1",
+     "plan_housing_mm": 6.542004836928442,
+     "solid_housing_mm": 6.542004836928445,
+     "plan_body_mm": 24.46832997052377,
+     "solid_body_mm": 30.316971405601638
+    },
+    {
+     "a": "R1",
+     "b": "R3",
+     "plan_housing_mm": 76.83383154776504,
+     "solid_housing_mm": 76.83383155074328,
+     "plan_body_mm": 94.54456006808607,
+     "solid_body_mm": 98.40034399310102
+    },
+    {
+     "a": "R1",
+     "b": "D3",
+     "plan_housing_mm": 139.69673919024768,
+     "solid_housing_mm": 139.69673919549942,
+     "plan_body_mm": 157.06583340210506,
+     "solid_body_mm": 159.23408438273378
+    },
+    {
+     "a": "R1",
+     "b": "D5",
+     "plan_housing_mm": 204.07519706693915,
+     "solid_housing_mm": 204.07519707974768,
+     "plan_body_mm": 220.83733781963969,
+     "solid_body_mm": 221.4409695507412
+    },
+    {
+     "a": "R1",
+     "b": "D8",
+     "plan_housing_mm": 233.16992747125272,
+     "solid_housing_mm": 233.1699274968753,
+     "plan_body_mm": 249.40673540786577,
+     "solid_body_mm": 249.46301134301342
+    },
+    {
+     "a": "R1",
+     "b": "D11",
+     "plan_housing_mm": 230.46688757796036,
+     "solid_housing_mm": 230.46688758138137,
+     "plan_body_mm": 246.77285925052843,
+     "solid_body_mm": 246.86703219895603
+    },
+    {
+     "a": "R1",
+     "b": "D12",
+     "plan_housing_mm": 199.07010040020003,
+     "solid_housing_mm": 199.07010040341115,
+     "plan_body_mm": 215.89630925984912,
+     "solid_body_mm": 216.61083997339972
+    },
+    {
+     "a": "R1",
+     "b": "C3",
+     "plan_housing_mm": 80.34283615051268,
+     "solid_housing_mm": 80.3428361509527,
+     "plan_body_mm": 96.85381272451231,
+     "solid_body_mm": 97.44185946773703
+    },
+    {
+     "a": "R1",
+     "b": "C6",
+     "plan_housing_mm": 131.50965279213048,
+     "solid_housing_mm": 131.50965279215566,
+     "plan_body_mm": 147.87756610715638,
+     "solid_body_mm": 148.1689730512047
+    },
+    {
+     "a": "R1",
+     "b": "C8",
+     "plan_housing_mm": 190.40144664620527,
+     "solid_housing_mm": 190.40144664620524,
+     "plan_body_mm": 206.53268434791212,
+     "solid_body_mm": 206.56910752633112
+    },
+    {
+     "a": "R1",
+     "b": "Z1",
+     "plan_housing_mm": 104.354961675174,
+     "solid_housing_mm": 104.354961675174,
+     "plan_body_mm": 120.84300316119732,
+     "solid_body_mm": 121.371672783436
+    },
+    {
+     "a": "R1",
+     "b": "Csa",
+     "plan_housing_mm": 60.97921441017613,
+     "solid_housing_mm": 60.97921441017613,
+     "plan_body_mm": 77.80081574605852,
+     "solid_body_mm": 79.58761644956324
+    },
+    {
+     "a": "D1",
+     "b": "R3",
+     "plan_housing_mm": 6.542004836928516,
+     "solid_housing_mm": 6.542004836928551,
+     "plan_body_mm": 24.468329970523833,
+     "solid_body_mm": 30.316971405601716
+    },
+    {
+     "a": "D1",
+     "b": "D3",
+     "plan_housing_mm": 76.8338315477651,
+     "solid_housing_mm": 76.83383155074334,
+     "plan_body_mm": 94.54456006808611,
+     "solid_body_mm": 98.40034399310109
+    },
+    {
+     "a": "D1",
+     "b": "D5",
+     "plan_housing_mm": 158.17705698849693,
+     "solid_housing_mm": 158.1770569900557,
+     "plan_body_mm": 175.40837993914826,
+     "solid_body_mm": 177.10429391029453
+    },
+    {
+     "a": "D1",
+     "b": "D8",
+     "plan_housing_mm": 204.07519706693913,
+     "solid_housing_mm": 204.07519707974765,
+     "plan_body_mm": 220.8373378196397,
+     "solid_body_mm": 221.44096955074124
+    },
+    {
+     "a": "D1",
+     "b": "D11",
+     "plan_housing_mm": 233.16992747125272,
+     "solid_housing_mm": 233.1699274968753,
+     "plan_body_mm": 249.4067354078657,
+     "solid_body_mm": 249.46301134301342
+    },
+    {
+     "a": "D1",
+     "b": "D12",
+     "plan_housing_mm": 230.46688757796036,
+     "solid_housing_mm": 230.46688758138134,
+     "plan_body_mm": 246.7728592505284,
+     "solid_body_mm": 246.86703219895603
+    },
+    {
+     "a": "D1",
+     "b": "C3",
+     "plan_housing_mm": 34.72613520625427,
+     "solid_housing_mm": 34.72613520625428,
+     "plan_body_mm": 51.164403012653665,
+     "solid_body_mm": 51.60403118600803
+    },
+    {
+     "a": "D1",
+     "b": "C6",
+     "plan_housing_mm": 90.11199032406579,
+     "solid_housing_mm": 90.1119903242982,
+     "plan_body_mm": 106.60186025650496,
+     "solid_body_mm": 107.13742012842674
+    },
+    {
+     "a": "D1",
+     "b": "C8",
+     "plan_housing_mm": 162.03778631767096,
+     "solid_housing_mm": 162.03778631767096,
+     "plan_body_mm": 178.38798647171376,
+     "solid_body_mm": 178.64986452484385
+    },
+    {
+     "a": "D1",
+     "b": "Z1",
+     "plan_housing_mm": 144.43365767762185,
+     "solid_housing_mm": 144.43365767762182,
+     "plan_body_mm": 160.76682175857107,
+     "solid_body_mm": 161.00387914330773
+    },
+    {
+     "a": "D1",
+     "b": "Csa",
+     "plan_housing_mm": 122.2177662892583,
+     "solid_housing_mm": 122.21776628925828,
+     "plan_body_mm": 138.88225405223457,
+     "solid_body_mm": 139.9222869186109
+    },
+    {
+     "a": "R3",
+     "b": "D3",
+     "plan_housing_mm": 6.542004836928498,
+     "solid_housing_mm": 6.542004836928508,
+     "plan_body_mm": 24.468329970523797,
+     "solid_body_mm": 30.316971405601674
+    },
+    {
+     "a": "R3",
+     "b": "D5",
+     "plan_housing_mm": 98.85704657442878,
+     "solid_housing_mm": 98.85704660461087,
+     "plan_body_mm": 116.4668341691406,
+     "solid_body_mm": 119.71948307631098
+    },
+    {
+     "a": "R3",
+     "b": "D8",
+     "plan_housing_mm": 158.17705698849696,
+     "solid_housing_mm": 158.1770569900557,
+     "plan_body_mm": 175.40837993914826,
+     "solid_body_mm": 177.10429391029447
+    },
+    {
+     "a": "R3",
+     "b": "D11",
+     "plan_housing_mm": 204.07519706693915,
+     "solid_housing_mm": 204.07519707974768,
+     "plan_body_mm": 220.83733781963969,
+     "solid_body_mm": 221.4409695507412
+    },
+    {
+     "a": "R3",
+     "b": "D12",
+     "plan_housing_mm": 233.16992747125272,
+     "solid_housing_mm": 233.16992749687526,
+     "plan_body_mm": 249.4067354078657,
+     "solid_body_mm": 249.4630113430134
+    },
+    {
+     "a": "R3",
+     "b": "C3",
+     "plan_housing_mm": 11.367675956125936,
+     "solid_housing_mm": 11.367675956125922,
+     "plan_body_mm": 27.36767595612593,
+     "solid_body_mm": 27.367675956125943
+    },
+    {
+     "a": "R3",
+     "b": "C6",
+     "plan_housing_mm": 44.43807524242682,
+     "solid_housing_mm": 44.43807524243926,
+     "plan_body_mm": 60.91243281379384,
+     "solid_body_mm": 61.425665802961916
+    },
+    {
+     "a": "R3",
+     "b": "C8",
+     "plan_housing_mm": 119.92964403166093,
+     "solid_housing_mm": 119.9296440316609,
+     "plan_body_mm": 136.46312249391056,
+     "solid_body_mm": 137.10113936827327
+    },
+    {
+     "a": "R3",
+     "b": "Z1",
+     "plan_housing_mm": 172.3890271563148,
+     "solid_housing_mm": 172.3890271563148,
+     "plan_body_mm": 188.52493769784547,
+     "solid_body_mm": 188.56409367491108
+    },
+    {
+     "a": "R3",
+     "b": "Csa",
+     "plan_housing_mm": 171.96160288190563,
+     "solid_housing_mm": 171.9616028819056,
+     "plan_body_mm": 188.41516127849562,
+     "solid_body_mm": 188.86230430806197
+    },
+    {
+     "a": "D3",
+     "b": "D5",
+     "plan_housing_mm": 30.485559667115588,
+     "solid_housing_mm": 30.485559667115606,
+     "plan_body_mm": 48.355211019907614,
+     "solid_body_mm": 53.51435532064252
+    },
+    {
+     "a": "D3",
+     "b": "D8",
+     "plan_housing_mm": 98.8570465744288,
+     "solid_housing_mm": 98.85704660461087,
+     "plan_body_mm": 116.46683416914063,
+     "solid_body_mm": 119.71948307631101
+    },
+    {
+     "a": "D3",
+     "b": "D11",
+     "plan_housing_mm": 158.177056988497,
+     "solid_housing_mm": 158.1770569900557,
+     "plan_body_mm": 175.40837993914826,
+     "solid_body_mm": 177.1042939102945
+    },
+    {
+     "a": "D3",
+     "b": "D12",
+     "plan_housing_mm": 204.07519706693915,
+     "solid_housing_mm": 204.07519707974765,
+     "plan_body_mm": 220.8373378196397,
+     "solid_body_mm": 221.4409695507412
+    },
+    {
+     "a": "D3",
+     "b": "C3",
+     "plan_housing_mm": 22.093888701133743,
+     "solid_housing_mm": 22.093888701133753,
+     "plan_body_mm": 38.39200322881832,
+     "solid_body_mm": 38.597927073142074
+    },
+    {
+     "a": "D3",
+     "b": "C6",
+     "plan_housing_mm": 13.888424875518488,
+     "solid_housing_mm": 13.8884248756783,
+     "plan_body_mm": 29.88842487551849,
+     "solid_body_mm": 29.888424875518492
+    },
+    {
+     "a": "D3",
+     "b": "C8",
+     "plan_housing_mm": 67.90365523291904,
+     "solid_housing_mm": 67.90365523291905,
+     "plan_body_mm": 84.55132147203217,
+     "solid_body_mm": 85.54796515397301
+    },
+    {
+     "a": "D3",
+     "b": "Z1",
+     "plan_housing_mm": 146.90704919667002,
+     "solid_housing_mm": 146.90704919667,
+     "plan_body_mm": 163.22699471062754,
+     "solid_body_mm": 163.44516348639442
+    },
+    {
+     "a": "D3",
+     "b": "Csa",
+     "plan_housing_mm": 206.492644632614,
+     "solid_housing_mm": 206.49264463261397,
+     "plan_body_mm": 222.70018295045605,
+     "solid_body_mm": 222.79044055845569
+    },
+    {
+     "a": "D5",
+     "b": "D8",
+     "plan_housing_mm": 6.542004836928491,
+     "solid_housing_mm": 6.5420048369285055,
+     "plan_body_mm": 24.46832997052381,
+     "solid_body_mm": 30.316971405601695
+    },
+    {
+     "a": "D5",
+     "b": "D11",
+     "plan_housing_mm": 76.83383154776512,
+     "solid_housing_mm": 76.83383155074335,
+     "plan_body_mm": 94.54456006808611,
+     "solid_body_mm": 98.40034399310109
+    },
+    {
+     "a": "D5",
+     "b": "D12",
+     "plan_housing_mm": 139.69673919024768,
+     "solid_housing_mm": 139.69673919549945,
+     "plan_body_mm": 157.06583340210508,
+     "solid_body_mm": 159.23408438273378
+    },
+    {
+     "a": "D5",
+     "b": "C3",
+     "plan_housing_mm": 80.04565389510478,
+     "solid_housing_mm": 80.0456538955717,
+     "plan_body_mm": 96.55695461435533,
+     "solid_body_mm": 97.14586912236831
+    },
+    {
+     "a": "D5",
+     "b": "C6",
+     "plan_housing_mm": 26.654408386905097,
+     "solid_housing_mm": 26.6544083869051,
+     "plan_body_mm": 42.999823215529105,
+     "solid_body_mm": 43.27366430898261
+    },
+    {
+     "a": "D5",
+     "b": "C8",
+     "plan_housing_mm": 1.8643112801182653,
+     "solid_housing_mm": 1.8643112801184922,
+     "plan_body_mm": 18.06538055862221,
+     "solid_body_mm": 18.17093392235175
+    },
+    {
+     "a": "D5",
+     "b": "Z1",
+     "plan_housing_mm": 92.39389419783481,
+     "solid_housing_mm": 92.39389419783483,
+     "plan_body_mm": 108.91076337760492,
+     "solid_body_mm": 109.5104229039185
+    },
+    {
+     "a": "D5",
+     "b": "Csa",
+     "plan_housing_mm": 221.9220525331001,
+     "solid_housing_mm": 221.92205253310033,
+     "plan_body_mm": 237.9220525331001,
+     "solid_body_mm": 237.92205253310013
+    },
+    {
+     "a": "D8",
+     "b": "D11",
+     "plan_housing_mm": 6.542004836928523,
+     "solid_housing_mm": 6.542004836928532,
+     "plan_body_mm": 24.46832997052384,
+     "solid_body_mm": 30.316971405601716
+    },
+    {
+     "a": "D8",
+     "b": "D12",
+     "plan_housing_mm": 76.83383154776509,
+     "solid_housing_mm": 76.83383155074331,
+     "plan_body_mm": 94.54456006808611,
+     "solid_body_mm": 98.40034399310106
+    },
+    {
+     "a": "D8",
+     "b": "C3",
+     "plan_housing_mm": 123.50799898976675,
+     "solid_housing_mm": 123.5079989901139,
+     "plan_body_mm": 139.91446344581414,
+     "solid_body_mm": 140.27311179963164
+    },
+    {
+     "a": "D8",
+     "b": "C6",
+     "plan_housing_mm": 69.85690478062575,
+     "solid_housing_mm": 69.85690478062585,
+     "plan_body_mm": 86.36708336329082,
+     "solid_body_mm": 86.95588420329594
+    },
+    {
+     "a": "D8",
+     "b": "C8",
+     "plan_housing_mm": 1.8643112801182653,
+     "solid_housing_mm": 1.8643112801184876,
+     "plan_body_mm": 18.065380558622202,
+     "solid_body_mm": 18.170933922351736
+    },
+    {
+     "a": "D8",
+     "b": "Z1",
+     "plan_housing_mm": 44.027895505082185,
+     "solid_housing_mm": 44.027895505082185,
+     "plan_body_mm": 60.562637005430716,
+     "solid_body_mm": 61.22344879448373
+    },
+    {
+     "a": "D8",
+     "b": "Csa",
+     "plan_housing_mm": 202.47095176541836,
+     "solid_housing_mm": 202.47095176541836,
+     "plan_body_mm": 218.71624698739095,
+     "solid_body_mm": 218.8425543633434
+    },
+    {
+     "a": "D11",
+     "b": "D12",
+     "plan_housing_mm": 6.542004836928484,
+     "solid_housing_mm": 6.542004836928483,
+     "plan_body_mm": 24.468329970523797,
+     "solid_body_mm": 30.316971405601667
+    },
+    {
+     "a": "D11",
+     "b": "C3",
+     "plan_housing_mm": 157.4927840382317,
+     "solid_housing_mm": 157.49278403839475,
+     "plan_body_mm": 173.72888811203558,
+     "solid_body_mm": 173.84678172100774
+    },
+    {
+     "a": "D11",
+     "b": "C6",
+     "plan_housing_mm": 114.2178438797668,
+     "solid_housing_mm": 114.21784387991194,
+     "plan_body_mm": 130.6491612700738,
+     "solid_body_mm": 131.05590007778648
+    },
+    {
+     "a": "D11",
+     "b": "C8",
+     "plan_housing_mm": 49.430543338116266,
+     "solid_housing_mm": 49.43054333811625,
+     "plan_body_mm": 66.08525008542938,
+     "solid_body_mm": 67.11729692793345
+    },
+    {
+     "a": "D11",
+     "b": "Z1",
+     "plan_housing_mm": 7.72109314723032,
+     "solid_housing_mm": 7.72109314723031,
+     "plan_body_mm": 23.752953806477798,
+     "solid_body_mm": 23.757020565906842
+    },
+    {
+     "a": "D11",
+     "b": "Csa",
+     "plan_housing_mm": 165.5063821892229,
+     "solid_housing_mm": 165.50638218922293,
+     "plan_body_mm": 181.9936841050947,
+     "solid_body_mm": 182.5146882588642
+    },
+    {
+     "a": "D12",
+     "b": "C3",
+     "plan_housing_mm": 178.47349313741242,
+     "solid_housing_mm": 178.47349326052816,
+     "plan_body_mm": 194.50795317322246,
+     "solid_body_mm": 194.51071414451718
+    },
+    {
+     "a": "D12",
+     "b": "C6",
+     "plan_housing_mm": 150.3479759447856,
+     "solid_housing_mm": 150.34797594485414,
+     "plan_body_mm": 166.6213467483045,
+     "solid_body_mm": 166.7799082274069
+    },
+    {
+     "a": "D12",
+     "b": "C8",
+     "plan_housing_mm": 103.44105218114117,
+     "solid_housing_mm": 103.44105218114116,
+     "plan_body_mm": 120.02293499139788,
+     "solid_body_mm": 120.79729073905716
+    },
+    {
+     "a": "D12",
+     "b": "Z1",
+     "plan_housing_mm": 5.019232072350562,
+     "solid_housing_mm": 4.999999999999977,
+     "plan_body_mm": 21.01923207235056,
+     "solid_body_mm": 20.999999999999996
+    },
+    {
+     "a": "D12",
+     "b": "Csa",
+     "plan_housing_mm": 113.80842895358873,
+     "solid_housing_mm": 113.80842895358873,
+     "plan_body_mm": 130.49994742126603,
+     "solid_body_mm": 131.64343292905897
+    },
+    {
+     "a": "C3",
+     "b": "C6",
+     "plan_housing_mm": 9.680183030138537,
+     "solid_housing_mm": 9.680183030138533,
+     "plan_body_mm": 25.680183030138537,
+     "solid_body_mm": 25.680183030138544
+    },
+    {
+     "a": "C3",
+     "b": "C8",
+     "plan_housing_mm": 81.76898778023613,
+     "solid_housing_mm": 81.76898778023613,
+     "plan_body_mm": 97.76898778023613,
+     "solid_body_mm": 97.76898778023615
+    },
+    {
+     "a": "C3",
+     "b": "Z1",
+     "plan_housing_mm": 119.3905107015454,
+     "solid_housing_mm": 119.39051070154541,
+     "plan_body_mm": 135.3905107015454,
+     "solid_body_mm": 135.3905107015454
+    },
+    {
+     "a": "C3",
+     "b": "Csa",
+     "plan_housing_mm": 138.6835130703334,
+     "solid_housing_mm": 138.68351307033336,
+     "plan_body_mm": 154.6835130703334,
+     "solid_body_mm": 154.68351307033336
+    },
+    {
+     "a": "C6",
+     "b": "C8",
+     "plan_housing_mm": 29.911082027386513,
+     "solid_housing_mm": 29.9110820273865,
+     "plan_body_mm": 45.91108202738651,
+     "solid_body_mm": 45.9110820273865
+    },
+    {
+     "a": "C6",
+     "b": "Z1",
+     "plan_housing_mm": 91.793603372973,
+     "solid_housing_mm": 91.793603372973,
+     "plan_body_mm": 107.793603372973,
+     "solid_body_mm": 107.79360337297298
+    },
+    {
+     "a": "C6",
+     "b": "Csa",
+     "plan_housing_mm": 161.2710258690794,
+     "solid_housing_mm": 161.2710258690794,
+     "plan_body_mm": 177.2710258690794,
+     "solid_body_mm": 177.2710258690794
+    },
+    {
+     "a": "C8",
+     "b": "Z1",
+     "plan_housing_mm": 52.35132812294739,
+     "solid_housing_mm": 52.35132812294738,
+     "plan_body_mm": 68.3513281229474,
+     "solid_body_mm": 68.35132812294738
+    },
+    {
+     "a": "C8",
+     "b": "Csa",
+     "plan_housing_mm": 179.93475953207894,
+     "solid_housing_mm": 179.93475953207894,
+     "plan_body_mm": 195.93475953207894,
+     "solid_body_mm": 195.93475953207894
+    },
+    {
+     "a": "Z1",
+     "b": "Csa",
+     "plan_housing_mm": 21.379451980166948,
+     "solid_housing_mm": 21.37945198016695,
+     "plan_body_mm": 37.37945198016695,
+     "solid_body_mm": 37.37945198016697
+    }
+   ],
+   "pass_": true
+  },
+  "B": {
+   "pairs": 78,
+   "housing_solid_minus_plan_min_mm": -0.01923207235058566,
+   "body_solid_minus_plan_min_mm": -0.0192320723505901,
+   "least_housing": {
+    "pair": "D6-C7",
+    "solid_mm": 1.8643112801184736,
+    "study_pair": "D6-C7",
+    "study_mm": 1.864311280118251
+   },
+   "body_to_can_mm": {
+    "R2": 80.0,
+    "D2": 80.0,
+    "R4": 80.0,
+    "D4": 80.0,
+    "D6": 80.0,
+    "D7": 80.0,
+    "D9": 80.0,
+    "D10": 80.0,
+    "C4": 23.0,
+    "C5": 22.0,
+    "C7": 41.5,
+    "Z4": 25.0,
+    "Csb": 63.0
+   },
+   "can_solid_minus_plan_min_mm": -2.842170943040401e-14,
+   "rows": [
+    {
+     "a": "R2",
+     "b": "D2",
+     "plan_housing_mm": 6.542004836928484,
+     "solid_housing_mm": 6.542004836928483,
+     "plan_body_mm": 24.468329970523797,
+     "solid_body_mm": 30.316971405601667
+    },
+    {
+     "a": "R2",
+     "b": "R4",
+     "plan_housing_mm": 76.83383154776509,
+     "solid_housing_mm": 76.83383155074331,
+     "plan_body_mm": 94.54456006808611,
+     "solid_body_mm": 98.40034399310106
+    },
+    {
+     "a": "R2",
+     "b": "D4",
+     "plan_housing_mm": 139.69673919024768,
+     "solid_housing_mm": 139.69673919549945,
+     "plan_body_mm": 157.06583340210508,
+     "solid_body_mm": 159.23408438273378
+    },
+    {
+     "a": "R2",
+     "b": "D6",
+     "plan_housing_mm": 204.07519706693915,
+     "solid_housing_mm": 204.07519707974765,
+     "plan_body_mm": 220.8373378196397,
+     "solid_body_mm": 221.4409695507412
+    },
+    {
+     "a": "R2",
+     "b": "D7",
+     "plan_housing_mm": 233.16992747125272,
+     "solid_housing_mm": 233.16992749687526,
+     "plan_body_mm": 249.4067354078657,
+     "solid_body_mm": 249.4630113430134
+    },
+    {
+     "a": "R2",
+     "b": "D9",
+     "plan_housing_mm": 230.46688757796036,
+     "solid_housing_mm": 230.46688758138134,
+     "plan_body_mm": 246.7728592505284,
+     "solid_body_mm": 246.86703219895603
+    },
+    {
+     "a": "R2",
+     "b": "D10",
+     "plan_housing_mm": 199.07010040020003,
+     "solid_housing_mm": 199.07010040341115,
+     "plan_body_mm": 215.89630925984912,
+     "solid_body_mm": 216.61083997339972
+    },
+    {
+     "a": "R2",
+     "b": "C4",
+     "plan_housing_mm": 80.3428361505127,
+     "solid_housing_mm": 80.3428361509527,
+     "plan_body_mm": 96.85381272451234,
+     "solid_body_mm": 97.44185946773707
+    },
+    {
+     "a": "R2",
+     "b": "C5",
+     "plan_housing_mm": 131.50965279213048,
+     "solid_housing_mm": 131.50965279215566,
+     "plan_body_mm": 147.8775661071564,
+     "solid_body_mm": 148.1689730512047
+    },
+    {
+     "a": "R2",
+     "b": "C7",
+     "plan_housing_mm": 190.40144664620524,
+     "solid_housing_mm": 190.40144664620524,
+     "plan_body_mm": 206.5326843479121,
+     "solid_body_mm": 206.56910752633115
+    },
+    {
+     "a": "R2",
+     "b": "Z4",
+     "plan_housing_mm": 104.354961675174,
+     "solid_housing_mm": 104.354961675174,
+     "plan_body_mm": 120.84300316119729,
+     "solid_body_mm": 121.371672783436
+    },
+    {
+     "a": "R2",
+     "b": "Csb",
+     "plan_housing_mm": 60.9792144101761,
+     "solid_housing_mm": 60.97921441017615,
+     "plan_body_mm": 77.80081574605848,
+     "solid_body_mm": 79.58761644956324
+    },
+    {
+     "a": "D2",
+     "b": "R4",
+     "plan_housing_mm": 6.542004836928523,
+     "solid_housing_mm": 6.542004836928532,
+     "plan_body_mm": 24.46832997052384,
+     "solid_body_mm": 30.316971405601716
+    },
+    {
+     "a": "D2",
+     "b": "D4",
+     "plan_housing_mm": 76.83383154776512,
+     "solid_housing_mm": 76.83383155074335,
+     "plan_body_mm": 94.54456006808611,
+     "solid_body_mm": 98.40034399310109
+    },
+    {
+     "a": "D2",
+     "b": "D6",
+     "plan_housing_mm": 158.177056988497,
+     "solid_housing_mm": 158.1770569900557,
+     "plan_body_mm": 175.40837993914826,
+     "solid_body_mm": 177.1042939102945
+    },
+    {
+     "a": "D2",
+     "b": "D7",
+     "plan_housing_mm": 204.07519706693915,
+     "solid_housing_mm": 204.07519707974768,
+     "plan_body_mm": 220.83733781963969,
+     "solid_body_mm": 221.4409695507412
+    },
+    {
+     "a": "D2",
+     "b": "D9",
+     "plan_housing_mm": 233.16992747125272,
+     "solid_housing_mm": 233.1699274968753,
+     "plan_body_mm": 249.4067354078657,
+     "solid_body_mm": 249.46301134301342
+    },
+    {
+     "a": "D2",
+     "b": "D10",
+     "plan_housing_mm": 230.46688757796036,
+     "solid_housing_mm": 230.46688758138137,
+     "plan_body_mm": 246.77285925052843,
+     "solid_body_mm": 246.86703219895603
+    },
+    {
+     "a": "D2",
+     "b": "C4",
+     "plan_housing_mm": 34.726135206254284,
+     "solid_housing_mm": 34.726135206254284,
+     "plan_body_mm": 51.164403012653665,
+     "solid_body_mm": 51.604031186008015
+    },
+    {
+     "a": "D2",
+     "b": "C5",
+     "plan_housing_mm": 90.1119903240658,
+     "solid_housing_mm": 90.11199032429819,
+     "plan_body_mm": 106.60186025650495,
+     "solid_body_mm": 107.1374201284267
+    },
+    {
+     "a": "D2",
+     "b": "C7",
+     "plan_housing_mm": 162.03778631767096,
+     "solid_housing_mm": 162.03778631767096,
+     "plan_body_mm": 178.3879864717137,
+     "solid_body_mm": 178.6498645248438
+    },
+    {
+     "a": "D2",
+     "b": "Z4",
+     "plan_housing_mm": 144.43365767762185,
+     "solid_housing_mm": 144.43365767762185,
+     "plan_body_mm": 160.76682175857107,
+     "solid_body_mm": 161.00387914330776
+    },
+    {
+     "a": "D2",
+     "b": "Csb",
+     "plan_housing_mm": 122.2177662892583,
+     "solid_housing_mm": 122.21776628925832,
+     "plan_body_mm": 138.88225405223457,
+     "solid_body_mm": 139.9222869186109
+    },
+    {
+     "a": "R4",
+     "b": "D4",
+     "plan_housing_mm": 6.542004836928491,
+     "solid_housing_mm": 6.5420048369285055,
+     "plan_body_mm": 24.46832997052381,
+     "solid_body_mm": 30.31697140560169
+    },
+    {
+     "a": "R4",
+     "b": "D6",
+     "plan_housing_mm": 98.8570465744288,
+     "solid_housing_mm": 98.85704660461087,
+     "plan_body_mm": 116.46683416914063,
+     "solid_body_mm": 119.71948307631101
+    },
+    {
+     "a": "R4",
+     "b": "D7",
+     "plan_housing_mm": 158.17705698849696,
+     "solid_housing_mm": 158.1770569900557,
+     "plan_body_mm": 175.40837993914826,
+     "solid_body_mm": 177.10429391029447
+    },
+    {
+     "a": "R4",
+     "b": "D9",
+     "plan_housing_mm": 204.07519706693913,
+     "solid_housing_mm": 204.07519707974765,
+     "plan_body_mm": 220.8373378196397,
+     "solid_body_mm": 221.44096955074124
+    },
+    {
+     "a": "R4",
+     "b": "D10",
+     "plan_housing_mm": 233.16992747125272,
+     "solid_housing_mm": 233.1699274968753,
+     "plan_body_mm": 249.40673540786577,
+     "solid_body_mm": 249.46301134301342
+    },
+    {
+     "a": "R4",
+     "b": "C4",
+     "plan_housing_mm": 11.36767595612595,
+     "solid_housing_mm": 11.367675956125947,
+     "plan_body_mm": 27.367675956125957,
+     "solid_body_mm": 27.36767595612595
+    },
+    {
+     "a": "R4",
+     "b": "C5",
+     "plan_housing_mm": 44.438075242426805,
+     "solid_housing_mm": 44.43807524243923,
+     "plan_body_mm": 60.912432813793856,
+     "solid_body_mm": 61.42566580296189
+    },
+    {
+     "a": "R4",
+     "b": "C7",
+     "plan_housing_mm": 119.9296440316609,
+     "solid_housing_mm": 119.9296440316609,
+     "plan_body_mm": 136.4631224939106,
+     "solid_body_mm": 137.10113936827327
+    },
+    {
+     "a": "R4",
+     "b": "Z4",
+     "plan_housing_mm": 172.3890271563148,
+     "solid_housing_mm": 172.38902715631482,
+     "plan_body_mm": 188.52493769784547,
+     "solid_body_mm": 188.56409367491108
+    },
+    {
+     "a": "R4",
+     "b": "Csb",
+     "plan_housing_mm": 171.9616028819056,
+     "solid_housing_mm": 171.96160288190563,
+     "plan_body_mm": 188.4151612784956,
+     "solid_body_mm": 188.862304308062
+    },
+    {
+     "a": "D4",
+     "b": "D6",
+     "plan_housing_mm": 30.485559667115588,
+     "solid_housing_mm": 30.485559667115606,
+     "plan_body_mm": 48.355211019907614,
+     "solid_body_mm": 53.51435532064252
+    },
+    {
+     "a": "D4",
+     "b": "D7",
+     "plan_housing_mm": 98.85704657442878,
+     "solid_housing_mm": 98.85704660461087,
+     "plan_body_mm": 116.4668341691406,
+     "solid_body_mm": 119.71948307631098
+    },
+    {
+     "a": "D4",
+     "b": "D9",
+     "plan_housing_mm": 158.17705698849693,
+     "solid_housing_mm": 158.1770569900557,
+     "plan_body_mm": 175.40837993914826,
+     "solid_body_mm": 177.10429391029453
+    },
+    {
+     "a": "D4",
+     "b": "D10",
+     "plan_housing_mm": 204.07519706693915,
+     "solid_housing_mm": 204.07519707974768,
+     "plan_body_mm": 220.83733781963969,
+     "solid_body_mm": 221.4409695507412
+    },
+    {
+     "a": "D4",
+     "b": "C4",
+     "plan_housing_mm": 22.093888701133736,
+     "solid_housing_mm": 22.093888701133753,
+     "plan_body_mm": 38.39200322881832,
+     "solid_body_mm": 38.59792707314208
+    },
+    {
+     "a": "D4",
+     "b": "C5",
+     "plan_housing_mm": 13.888424875518488,
+     "solid_housing_mm": 13.88842487551846,
+     "plan_body_mm": 29.88842487551846,
+     "solid_body_mm": 29.88842487551846
+    },
+    {
+     "a": "D4",
+     "b": "C7",
+     "plan_housing_mm": 67.90365523291902,
+     "solid_housing_mm": 67.90365523291902,
+     "plan_body_mm": 84.55132147203216,
+     "solid_body_mm": 85.547965153973
+    },
+    {
+     "a": "D4",
+     "b": "Z4",
+     "plan_housing_mm": 146.90704919667,
+     "solid_housing_mm": 146.90704919667,
+     "plan_body_mm": 163.22699471062754,
+     "solid_body_mm": 163.4451634863944
+    },
+    {
+     "a": "D4",
+     "b": "Csb",
+     "plan_housing_mm": 206.49264463261397,
+     "solid_housing_mm": 206.49264463261397,
+     "plan_body_mm": 222.70018295045605,
+     "solid_body_mm": 222.7904405584557
+    },
+    {
+     "a": "D6",
+     "b": "D7",
+     "plan_housing_mm": 6.542004836928498,
+     "solid_housing_mm": 6.542004836928508,
+     "plan_body_mm": 24.468329970523797,
+     "solid_body_mm": 30.316971405601674
+    },
+    {
+     "a": "D6",
+     "b": "D9",
+     "plan_housing_mm": 76.8338315477651,
+     "solid_housing_mm": 76.83383155074334,
+     "plan_body_mm": 94.54456006808611,
+     "solid_body_mm": 98.40034399310109
+    },
+    {
+     "a": "D6",
+     "b": "D10",
+     "plan_housing_mm": 139.69673919024768,
+     "solid_housing_mm": 139.69673919549942,
+     "plan_body_mm": 157.06583340210506,
+     "solid_body_mm": 159.23408438273378
+    },
+    {
+     "a": "D6",
+     "b": "C4",
+     "plan_housing_mm": 80.04565389510478,
+     "solid_housing_mm": 80.0456538955717,
+     "plan_body_mm": 96.55695461435533,
+     "solid_body_mm": 97.1458691223683
+    },
+    {
+     "a": "D6",
+     "b": "C5",
+     "plan_housing_mm": 26.65440838690511,
+     "solid_housing_mm": 26.654408386905114,
+     "plan_body_mm": 42.99982321552912,
+     "solid_body_mm": 43.27366430898262
+    },
+    {
+     "a": "D6",
+     "b": "C7",
+     "plan_housing_mm": 1.864311280118251,
+     "solid_housing_mm": 1.8643112801184736,
+     "plan_body_mm": 18.065380558622188,
+     "solid_body_mm": 18.17093392235173
+    },
+    {
+     "a": "D6",
+     "b": "Z4",
+     "plan_housing_mm": 92.39389419783481,
+     "solid_housing_mm": 92.3938941978348,
+     "plan_body_mm": 108.9107633776049,
+     "solid_body_mm": 109.51042290391848
+    },
+    {
+     "a": "D6",
+     "b": "Csb",
+     "plan_housing_mm": 221.9220525331001,
+     "solid_housing_mm": 221.9220525331007,
+     "plan_body_mm": 237.9220525331001,
+     "solid_body_mm": 237.92205253310013
+    },
+    {
+     "a": "D7",
+     "b": "D9",
+     "plan_housing_mm": 6.542004836928516,
+     "solid_housing_mm": 6.542004836928551,
+     "plan_body_mm": 24.468329970523833,
+     "solid_body_mm": 30.316971405601716
+    },
+    {
+     "a": "D7",
+     "b": "D10",
+     "plan_housing_mm": 76.83383154776504,
+     "solid_housing_mm": 76.83383155074328,
+     "plan_body_mm": 94.54456006808607,
+     "solid_body_mm": 98.40034399310102
+    },
+    {
+     "a": "D7",
+     "b": "C4",
+     "plan_housing_mm": 123.50799898976678,
+     "solid_housing_mm": 123.5079989901139,
+     "plan_body_mm": 139.9144634458141,
+     "solid_body_mm": 140.27311179963164
+    },
+    {
+     "a": "D7",
+     "b": "C5",
+     "plan_housing_mm": 69.85690478062577,
+     "solid_housing_mm": 69.85690478062585,
+     "plan_body_mm": 86.36708336329082,
+     "solid_body_mm": 86.95588420329595
+    },
+    {
+     "a": "D7",
+     "b": "C7",
+     "plan_housing_mm": 1.8643112801182582,
+     "solid_housing_mm": 1.8643112801184787,
+     "plan_body_mm": 18.06538055862218,
+     "solid_body_mm": 18.170933922351722
+    },
+    {
+     "a": "D7",
+     "b": "Z4",
+     "plan_housing_mm": 44.02789550508217,
+     "solid_housing_mm": 44.027895505082164,
+     "plan_body_mm": 60.562637005430716,
+     "solid_body_mm": 61.223448794483716
+    },
+    {
+     "a": "D7",
+     "b": "Csb",
+     "plan_housing_mm": 202.47095176541836,
+     "solid_housing_mm": 202.47095176541833,
+     "plan_body_mm": 218.71624698739095,
+     "solid_body_mm": 218.84255436334334
+    },
+    {
+     "a": "D9",
+     "b": "D10",
+     "plan_housing_mm": 6.542004836928442,
+     "solid_housing_mm": 6.542004836928445,
+     "plan_body_mm": 24.46832997052377,
+     "solid_body_mm": 30.31697140560163
+    },
+    {
+     "a": "D9",
+     "b": "C4",
+     "plan_housing_mm": 157.49278403823163,
+     "solid_housing_mm": 157.49278403839475,
+     "plan_body_mm": 173.72888811203558,
+     "solid_body_mm": 173.84678172100777
+    },
+    {
+     "a": "D9",
+     "b": "C5",
+     "plan_housing_mm": 114.21784387976678,
+     "solid_housing_mm": 114.21784387991194,
+     "plan_body_mm": 130.64916127007382,
+     "solid_body_mm": 131.05590007778653
+    },
+    {
+     "a": "D9",
+     "b": "C7",
+     "plan_housing_mm": 49.43054333811625,
+     "solid_housing_mm": 49.430543338116266,
+     "plan_body_mm": 66.0852500854294,
+     "solid_body_mm": 67.11729692793348
+    },
+    {
+     "a": "D9",
+     "b": "Z4",
+     "plan_housing_mm": 7.721093147230313,
+     "solid_housing_mm": 7.721093147230306,
+     "plan_body_mm": 23.752953806477784,
+     "solid_body_mm": 23.757020565906842
+    },
+    {
+     "a": "D9",
+     "b": "Csb",
+     "plan_housing_mm": 165.5063821892229,
+     "solid_housing_mm": 165.50638218922288,
+     "plan_body_mm": 181.9936841050947,
+     "solid_body_mm": 182.51468825886417
+    },
+    {
+     "a": "D10",
+     "b": "C4",
+     "plan_housing_mm": 178.47349313741245,
+     "solid_housing_mm": 178.4734932605282,
+     "plan_body_mm": 194.50795317322246,
+     "solid_body_mm": 194.51071414451718
+    },
+    {
+     "a": "D10",
+     "b": "C5",
+     "plan_housing_mm": 150.3479759447856,
+     "solid_housing_mm": 150.34797594485417,
+     "plan_body_mm": 166.62134674830452,
+     "solid_body_mm": 166.77990822740693
+    },
+    {
+     "a": "D10",
+     "b": "C7",
+     "plan_housing_mm": 103.44105218114117,
+     "solid_housing_mm": 103.44105218114116,
+     "plan_body_mm": 120.02293499139785,
+     "solid_body_mm": 120.79729073905713
+    },
+    {
+     "a": "D10",
+     "b": "Z4",
+     "plan_housing_mm": 5.019232072350576,
+     "solid_housing_mm": 4.99999999999999,
+     "plan_body_mm": 21.019232072350576,
+     "solid_body_mm": 20.999999999999986
+    },
+    {
+     "a": "D10",
+     "b": "Csb",
+     "plan_housing_mm": 113.80842895358876,
+     "solid_housing_mm": 113.8084289535887,
+     "plan_body_mm": 130.49994742126609,
+     "solid_body_mm": 131.64343292905897
+    },
+    {
+     "a": "C4",
+     "b": "C5",
+     "plan_housing_mm": 9.680183030138508,
+     "solid_housing_mm": 9.680183030138512,
+     "plan_body_mm": 25.680183030138508,
+     "solid_body_mm": 25.680183030138508
+    },
+    {
+     "a": "C4",
+     "b": "C7",
+     "plan_housing_mm": 81.76898778023613,
+     "solid_housing_mm": 81.76898778023613,
+     "plan_body_mm": 97.76898778023613,
+     "solid_body_mm": 97.76898778023612
+    },
+    {
+     "a": "C4",
+     "b": "Z4",
+     "plan_housing_mm": 119.3905107015454,
+     "solid_housing_mm": 119.39051070154538,
+     "plan_body_mm": 135.3905107015454,
+     "solid_body_mm": 135.3905107015454
+    },
+    {
+     "a": "C4",
+     "b": "Csb",
+     "plan_housing_mm": 138.68351307033336,
+     "solid_housing_mm": 138.6835130703334,
+     "plan_body_mm": 154.68351307033336,
+     "solid_body_mm": 154.68351307033336
+    },
+    {
+     "a": "C5",
+     "b": "C7",
+     "plan_housing_mm": 29.911082027386513,
+     "solid_housing_mm": 29.911082027386517,
+     "plan_body_mm": 45.91108202738651,
+     "solid_body_mm": 45.91108202738653
+    },
+    {
+     "a": "C5",
+     "b": "Z4",
+     "plan_housing_mm": 91.793603372973,
+     "solid_housing_mm": 91.793603372973,
+     "plan_body_mm": 107.793603372973,
+     "solid_body_mm": 107.793603372973
+    },
+    {
+     "a": "C5",
+     "b": "Csb",
+     "plan_housing_mm": 161.27102586907938,
+     "solid_housing_mm": 161.2710258690794,
+     "plan_body_mm": 177.27102586907938,
+     "solid_body_mm": 177.2710258690794
+    },
+    {
+     "a": "C7",
+     "b": "Z4",
+     "plan_housing_mm": 52.35132812294739,
+     "solid_housing_mm": 52.35132812294738,
+     "plan_body_mm": 68.3513281229474,
+     "solid_body_mm": 68.35132812294738
+    },
+    {
+     "a": "C7",
+     "b": "Csb",
+     "plan_housing_mm": 179.93475953207894,
+     "solid_housing_mm": 179.93475953207894,
+     "plan_body_mm": 195.93475953207894,
+     "solid_body_mm": 195.9347595320789
+    },
+    {
+     "a": "Z4",
+     "b": "Csb",
+     "plan_housing_mm": 21.379451980166948,
+     "solid_housing_mm": 21.379451980166948,
+     "plan_body_mm": 37.37945198016695,
+     "solid_body_mm": 37.37945198016694
+    }
+   ],
+   "pass_": true
+  },
+  "gaps": {
+   "column A: node-2 plate to the deck's parts": {
+    "solid_mm": 39.0,
+    "needs_or_study_mm": 39,
+    "ok": true
+   },
+   "the riser A to the column's plates (their bores)": {
+    "solid_mm": 13.5,
+    "needs_or_study_mm": 13.0,
+    "ok": true
+   },
+   "deck A to the cage": {
+    "solid_mm": 12.0,
+    "needs_or_study_mm": 12.0,
+    "ok": true
+   },
+   "column B: node-3 plate to the deck's parts": {
+    "solid_mm": 39.0,
+    "needs_or_study_mm": 39,
+    "ok": true
+   },
+   "the riser B to the column's plates (their bores)": {
+    "solid_mm": 13.5,
+    "needs_or_study_mm": 13.0,
+    "ok": true
+   },
+   "deck B to the cage": {
+    "solid_mm": 12.0,
+    "needs_or_study_mm": 12.0,
+    "ok": true
+   },
+   "deck A's conductors to deck B's": {
+    "solid_mm": 73.18,
+    "needs_or_study_mm": 72.0,
+    "ok": true
+   }
+  },
+  "pass_": true
+ },
+ "renders": [
+  "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout-section.png"
+ ],
+ "step": "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout.step",
+ "step_bytes": 3307286,
+ "step_read_back": {
+  "instances": 378,
+  "assemblies": 13,
+  "products": 142,
+  "pass_": true
+ },
+ "run_s": 65
+}

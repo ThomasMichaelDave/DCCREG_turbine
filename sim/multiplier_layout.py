@@ -9,7 +9,7 @@ per chain; sim/integrated-multiplier-findings.md), the setup the designer took "
 1. The working voltages: the pick's steady state re-run as built (ideal diodes, sim/integrated_multiplier.py's deck);
    every node's and every pair's peak and rms over its last cycles [OC: the deck].
 2. The stack (side A from the hub outward; side B its mirror):
-   - the hub as locked, inside a grounded can on the rotor (r 60, |z| <= 85);
+   - the hub as locked, inside a grounded can on the rotor (r 48, |z| <= 85);
    - the deck: a G10 ring round the can carrying every diode, C3-C8, Csa / Csb and the clamp string, each part potted;
    - the column: Ca / Cb as the record's six plates, node 2 / 3 toward the deck, node 1 / 4 toward the vanes;
    - the vane stack, the record's 6 + 6 with its ends swapped, a rotor vane at its hub end;
@@ -89,7 +89,7 @@ SHAFT_R, SLEEVE_R = S.SHAFT_R, S.SLEEVE_R           # 12.5 (d 25 in the tube mod
 # the grounded can over the hub (rotor, REF) [IR, PROPOSED]: an aluminium cylinder and two end discs on the shaft
 CAN_R, CAN_T, CAN_Z, CAN_DISC_T = 48.0, 2.0, 85.0, 2.0
 # the deck (per side) [IR, PROPOSED]: a G10 ring plate round the can, the parts potted on its outer face
-DECK_R0, DECK_R1 = CAN_R + 2.0, R_OUT              # r 62-150: inside the cage with the record's 12 mm
+DECK_R0, DECK_R1 = CAN_R + 2.0, R_OUT              # r 50-150: inside the cage with the record's 12 mm
 DECK_Z0, DECK_T, DECK_H = 30.0, 6.0, 42.0           # the plate at |z| 30-36, the parts' zone |z| 36-78
 POT = 8.0                                           # mm of silicone over each part (sim/parts-first-cut-findings.md §5)
 LEAD_MIN = 3.0                                      # mm of lead each end of a part, at least [RH]

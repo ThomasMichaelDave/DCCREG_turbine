@@ -6,7 +6,7 @@ product ONCE (BRepMesh, per-face vertices so the CAD edges stay sharp; area-weig
 one glTF mesh per product and one node per placed instance. Units: the STEP's mm under a root node scaled to metres.
 Each node carries its STEP instance label and, parsed from it, extras {part, group, body, material}.
 Usage: python3 sim/step_to_glb.py docs/geometry/tube/tube-r150-n8-wound-g0p5-6br.step [out.glb] [--deflection 0.1]
-       [--json model.json]   (viewer: tools/step-viewer/)
+       [--angular 0.15] [--json model.json]   (viewer: tools/step-viewer/)
 """
 import argparse
 import json
@@ -170,13 +170,15 @@ def main():
     ap.add_argument("step")
     ap.add_argument("out", nargs="?")
     ap.add_argument("--deflection", type=float, default=0.1)
+    ap.add_argument("--angular", type=float, default=0.15,
+                    help="the angular deflection (rad); coarser keeps small round parts (wires, beads) light while the linear deflection still sets the large ones")
     ap.add_argument("--json", help="also write the GLB base64-wrapped in this JSON file (for hosts that do not serve .glb)")
     a = ap.parse_args()
     out = a.out or os.path.splitext(a.step)[0] + ".glb"
     products, instances = read_assembly(a.step)
     keys, meshes, n_tri = {}, [], 0
     for key, (shape, col, name) in products.items():
-        t = tessellate(shape, a.deflection)
+        t = tessellate(shape, a.deflection, a.angular)
         if t is None:
             continue
         metal = 0.6 if any(w in name.lower() for w in ("steel", "bearing", "al ", "al vane", "al plate", "sife", "nife",

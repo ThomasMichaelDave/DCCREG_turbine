@@ -146,6 +146,39 @@ def rounded_box_y(x0, x1, y0, y1, z0, z1, R):
     return mk.Shape()
 
 
+def cyl_between(p0, p1, r):
+    """a cylinder of radius r from the point p0 to the point p1."""
+    from OCP.BRepPrimAPI import BRepPrimAPI_MakeCylinder
+    from OCP.gp import gp_Ax2, gp_Pnt, gp_Dir
+    a, b = np.asarray(p0, float), np.asarray(p1, float)
+    v = b - a
+    L = float(np.linalg.norm(v))
+    u = v / L
+    return BRepPrimAPI_MakeCylinder(gp_Ax2(gp_Pnt(*map(float, a)), gp_Dir(*map(float, u))), r, L).Shape()
+
+
+def wire(points, r):
+    """a round wire along a polyline: a cylinder per segment and a sphere at each inner joint, fused."""
+    pts = [np.asarray(p, float) for p in points]
+    keep = [pts[0]] + [q for p_, q in zip(pts[:-1], pts[1:]) if np.linalg.norm(q - p_) > 1e-6]
+    parts = [cyl_between(a, b, r) for a, b in zip(keep[:-1], keep[1:])]
+    parts += [sphere(r, tuple(map(float, q))) for q in keep[1:-1]]
+    return fuse(parts) if len(parts) > 1 else parts[0]
+
+
+def capsule_y(rad, half):
+    """a capsule along y, centred at the origin: a cylinder of radius rad over |y| <= half with a sphere at each end."""
+    return fuse([cyl_between((0, -half, 0), (0, half, 0), rad), sphere(rad, (0, -half, 0)), sphere(rad, (0, half, 0))])
+
+
+def arc_capsule(r, span_deg, rad, z0, z1):
+    """a capsule bent along an arc of radius r from angle 0 to span_deg (an annular sector with a round end of radius
+    rad at each end), extruded from z0 to z1."""
+    t = math.radians(span_deg)
+    return fuse([sector(r - rad, r + rad, z0, z1, 0.0, span_deg), cyl_z(r, 0.0, rad, z0, z1),
+                 cyl_z(r * math.cos(t), r * math.sin(t), rad, z0, z1)])
+
+
 def read_step(path):
     from OCP.STEPControl import STEPControl_Reader
     r = STEPControl_Reader(); r.ReadFile(path); r.TransferRoots()
@@ -280,48 +313,8 @@ class Machine:
                 key = f"utron_hub_{e['r1']:.2f}"
                 self.proto(key, lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"]), COL["g10"], "G10 rotor hub")
                 self.add(f"{side}_utron_hub", key, "rotor", "", f"rel-{side}", join="rotor-core", dz=e["z0"], desc="utron hub ring")
-            elif k == "w utron":
-                sp = p["rel"]
-                self.wound_protos(sp)
-                for j, a in enumerate(e["angles"]):
-                    u = f"{side}_U{j + 1}"
-                    for piece, desc in (("wu_core_pos", "half-core +v (M235-35A)"), ("wu_core_neg", "half-core -v (M235-35A)"),
-                                        ("wu_strip", "neck strip (80 % NiFe)"),
-                                        ("wu_spacer", "air-break spacer (G10)"), ("wu_wedge", "slot cover (G10, bonded)"),
-                                        ("wu_winding", f"yoke coil, {sp['N_u']} turns, {e['node']}")):
-                        self.add(f"{u}_{piece[3:]}", piece, "rotor", e["node"] if piece == "wu_winding" else "", f"rel-{side}",
-                                 dz=e["zs0"], rot=a, desc=f"utron {side}{j + 1} {desc}")
-                    for piece in ("wu_cheek_pos", "wu_cheek_neg"):
-                        for end, dz in (("lo", e["zs0"]), ("hi", e["zs1"] + sp["t_cheek"])):
-                            self.add(f"{u}_{piece[3:]}_{end}", piece, "rotor", "", f"rel-{side}", dz=dz, rot=a,
-                                     desc=f"utron {side}{j + 1} cheek (G10), {end} end")
-            elif k == "w disc":
-                key = f"w_disc_{e['r1']:.1f}"
-                self.proto(key, lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"]), COL["g10"], "G10 utron carrier disc")
-                self.add(f"{side}_carrier_disc_{i}", key, "rotor", "", f"rel-{side}", dz=e["z0"], desc="utron carrier disc")
-            elif k == "w bridge":
-                self.proto("w_bridge", lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"], -0.5 * e["width_deg"], e["width_deg"]),
-                           COL["sife"], "bridge, M235-35A laminated")
-                for j, a in enumerate(e["angles"]):
-                    self.add(f"{side}_bridge_{j + 1}", "w_bridge", "stator", "", f"rel-{side}", dz=e["z0"], rot=a,
-                             desc=f"passive bridge {side}{j + 1} at {a:g} deg")
-            elif k == "w ring":
-                def ring(e=e):
-                    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
-                    pk, h = e["pockets"], e["z1"] - e["z0"]
-                    o = sector(e["r0"], e["r1"], 0.0, h)
-                    for a in pk["angles"]:
-                        o = BRepAlgoAPI_Cut(o, sector(e["r0"] - 1.0, pk["r1"], pk["z0"] - e["z0"], pk["z1"] - e["z0"],
-                                                      a - 0.5 * pk["width_deg"], pk["width_deg"])).Shape()
-                    return o
-                self.proto(f"w_ring_{side}", ring, COL["g10"], "G10 bridge ring")
-                self.add(f"{side}_bridge_ring", f"w_ring_{side}", "stator", "", f"rel-{side}", dz=e["z0"],
-                         desc="bridge ring (counter-rotor), bridges set 1 mm proud of its bore")
-            elif k == "w flange":
-                key = f"w_flange_{e['r0']:.1f}_{e['r1']:.1f}"
-                self.proto(key, lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"]), COL["g10"], "G10 ring flange")
-                self.add(f"{side}_ring_flange", key, "stator", "", f"rel-{side}", dz=e["z0"],
-                         desc="flange: bridge ring to the stator cage at the Ca|reluctance spider")
+            elif k in ("w utron", "w disc", "w bridge", "w ring", "w flange"):
+                self.wound_element(e, k, side, i)
             elif k == "hub" and p.get("hub") == "locked":
                 self.locked_hub(e)
             elif k == "hub":
@@ -353,6 +346,52 @@ class Machine:
                      desc="cage across the hub: A and B stator bodies are one counter-rotor")
         return self
 
+    def wound_element(self, e, k, side, i):
+        """one element of a wound reluctance section (the diode build): the utrons, a carrier disc, the bridges, the
+        bridge ring or its flange; i counts the element's kind on its side."""
+        if k == "w utron":
+            sp = self.p["rel"]
+            self.wound_protos(sp)
+            for j, a in enumerate(e["angles"]):
+                u = f"{side}_U{j + 1}"
+                for piece, desc in (("wu_core_pos", "half-core +v (M235-35A)"), ("wu_core_neg", "half-core -v (M235-35A)"),
+                                    ("wu_strip", "neck strip (80 % NiFe)"),
+                                    ("wu_spacer", "air-break spacer (G10)"), ("wu_wedge", "slot cover (G10, bonded)"),
+                                    ("wu_winding", f"yoke coil, {sp['N_u']} turns, {e['node']}")):
+                    self.add(f"{u}_{piece[3:]}", piece, "rotor", e["node"] if piece == "wu_winding" else "", f"rel-{side}",
+                             dz=e["zs0"], rot=a, desc=f"utron {side}{j + 1} {desc}")
+                for piece in ("wu_cheek_pos", "wu_cheek_neg"):
+                    for end, dz in (("lo", e["zs0"]), ("hi", e["zs1"] + sp["t_cheek"])):
+                        self.add(f"{u}_{piece[3:]}_{end}", piece, "rotor", "", f"rel-{side}", dz=dz, rot=a,
+                                 desc=f"utron {side}{j + 1} cheek (G10), {end} end")
+        elif k == "w disc":
+            key = f"w_disc_{e['r1']:.1f}"
+            self.proto(key, lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"]), COL["g10"], "G10 utron carrier disc")
+            self.add(f"{side}_carrier_disc_{i}", key, "rotor", "", f"rel-{side}", dz=e["z0"], desc="utron carrier disc")
+        elif k == "w bridge":
+            self.proto("w_bridge", lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"], -0.5 * e["width_deg"], e["width_deg"]),
+                       COL["sife"], "bridge, M235-35A laminated")
+            for j, a in enumerate(e["angles"]):
+                self.add(f"{side}_bridge_{j + 1}", "w_bridge", "stator", "", f"rel-{side}", dz=e["z0"], rot=a,
+                         desc=f"passive bridge {side}{j + 1} at {a:g} deg")
+        elif k == "w ring":
+            def ring(e=e):
+                from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+                pk, h = e["pockets"], e["z1"] - e["z0"]
+                o = sector(e["r0"], e["r1"], 0.0, h)
+                for a in pk["angles"]:
+                    o = BRepAlgoAPI_Cut(o, sector(e["r0"] - 1.0, pk["r1"], pk["z0"] - e["z0"], pk["z1"] - e["z0"],
+                                                  a - 0.5 * pk["width_deg"], pk["width_deg"])).Shape()
+                return o
+            self.proto(f"w_ring_{side}", ring, COL["g10"], "G10 bridge ring")
+            self.add(f"{side}_bridge_ring", f"w_ring_{side}", "stator", "", f"rel-{side}", dz=e["z0"],
+                     desc="bridge ring (counter-rotor), bridges set 1 mm proud of its bore")
+        elif k == "w flange":
+            key = f"w_flange_{e['r0']:.1f}_{e['r1']:.1f}"
+            self.proto(key, lambda e=e: sector(e["r0"], e["r1"], 0.0, e["z1"] - e["z0"]), COL["g10"], "G10 ring flange")
+            self.add(f"{side}_ring_flange", key, "stator", "", f"rel-{side}", dz=e["z0"],
+                     desc="flange: bridge ring to the stator cage at the Ca|reluctance spider")
+
     def locked_hub(self, e):
         """the locked hub (presets/hub-locked.json; docs/rings-design.md; docs/drawings/DCCREG-HUB-201), centred on the hub
         element's mid-plane, every part on the rotor: the borosilicate vessel; rings A (below) and B (above), copper foil
@@ -376,6 +415,20 @@ class Machine:
         th = {"pol": tp, "eq": te}
         z_ret, r_ret = ret["absz_max_mm"], ret["r_max_mm"]
         core, former, coil = ah["core"], ah["former"], ah["coil"]
+        # LayoutMachine's options: the coupler over both flanges (docs/rings-design.md §2, PROPOSED) and the rings' leads'
+        # channels; the record draws neither (its coupler a plain tube over the retainer, the channels OPEN)
+        opts = getattr(self, "hub_opts", None) or {}
+        z_cpl = opts.get("coupler_absz", z_ret)
+        cpl_mat = opts.get("coupler_material", "G10 shaft coupler (shape OPEN: a plain tube)")
+
+        def channel(sg, th):
+            """a ring's lead's channel: from its equatorial bead along the sphere's normal past the coupler (r 34)."""
+            return cyl_between(lead_dir(sg, th) * (Ro + rho["eq"]), lead_dir(sg, th) * (34.0 / math.sin(te)), 1.6)
+
+        def lead_dir(sg, th):
+            t_ = math.radians(th)
+            return np.array([math.sin(te) * math.cos(t_), math.sin(te) * math.sin(t_), sg * math.cos(te)])
+        chans = lambda: [channel(sg, th) for sg, th in opts.get("channels", ())]
 
         def cut(a, *bs):
             for b in bs:
@@ -404,13 +457,13 @@ class Machine:
 
         def retainer():
             return cut(sector(0.0, r_ret, -z_ret, z_ret), sphere(Rg, (0, 0, 0)),
-                       *[bead(sg, w) for sg in (1, -1) for w in ("pol", "eq")], ah_bore(1), ah_bore(-1))
+                       *[bead(sg, w) for sg in (1, -1) for w in ("pol", "eq")], ah_bore(1), ah_bore(-1), *chans())
         self.proto("hub_vessel", lambda: cut(sphere(Ro, (0, 0, 0)), sphere(Ri, (0, 0, 0))), COL["glass"],
                    f"borosilicate vessel, OD {2 * Ro:g} mm, wall {wall:g} mm (vacuum inside)")
         self.proto("hub_gel", gel_shape, COL["gel"], f"silicone gel, {gel['t_mm']:g} mm, vacuum-cast")
         self.proto("hub_retainer", retainer, COL["peek"], "PEEK retainer, unfilled")
-        self.proto("hub_coupler", lambda: sector(r_ret, r_ret + cpl["wall_mm"], -z_ret, z_ret), COL["g10"],
-                   "G10 shaft coupler (shape OPEN: a plain tube)")
+        self.proto("hub_coupler", lambda: cut(sector(r_ret, r_ret + cpl["wall_mm"], -z_cpl, z_cpl), *chans()), COL["g10"],
+                   cpl_mat)
         self.add("hub_vessel", "hub_vessel", "rotor", "", "hub", join="hub-vessel", dz=zc,
                  desc="the vessel: borosilicate sphere, vacuum inside")
         self.add("hub_gel", "hub_gel", "rotor", "", "hub", join="hub-gel", dz=zc, desc="interface filler: silicone gel")
@@ -484,6 +537,474 @@ class Machine:
         t = MG.trsf(pl["dx"], 0.0, 0.0, pl["rot"])
         z = gp_Trsf(); z.SetTranslation(gp_Vec(0, 0, pl["dz"]))
         return z.Multiplied(t)
+
+
+# ---------------------------------------------------------------------------------------------------------
+# the multiplier laid out in the machine (sim/multiplier_layout.py, PROPOSED 2026-10-11)
+# ---------------------------------------------------------------------------------------------------------
+LAYOUT_JSON = os.path.join(HERE, "multiplier_layout_results.json")
+COL.update({"can": (0.64, 0.69, 0.75), "silicone": (0.80, 0.86, 0.89), "stick": (0.16, 0.17, 0.20),
+            "rsurge": (0.30, 0.49, 0.36), "cap": (0.30, 0.47, 0.71), "clamp": (0.60, 0.45, 0.20),
+            "brass": (0.80, 0.66, 0.30), "ptfe": (0.93, 0.93, 0.90), "lv": (0.87, 0.55, 0.08)})
+WIRE_R = 1.5            # PTFE HV wire: a 1 mm conductor in 3 mm of PTFE (sim/multiplier_layout.py bore_wire) [IR]
+LV_R = 2.5              # the magnetic pump's LV leads drawn as one 5 mm cable [RH]
+LV_BORE = 8.0           # the LV bore in each shaft half (sim/multiplier-layout-findings.md §7)
+LV_EXIT = 306.0         # |z| of its radial exit: between the Ca|reluctance bearing and the inner carrier disc [IR]
+Z_OVER = 76.5           # |z| at which the deck's leads run over the parts (their zone ends at 78) [IR]
+J_COND = (5.0, 12.0)    # a junction's brass terminal: radius, length, standing [RH]
+J_POT = (10.0, 24.0)    # its potted block, 20 mm across (sim/multiplier_layout.py deck_mass), as tall as the housings [RH]
+POST = 60.0             # |z| of a junction block's outer face, where the riser and the tap leave it
+STUD_R = 2.5            # a standing part's screw terminals (M5) [RH]
+BUSH = (5.0, 1.6, 12.0)  # a ring lead's PTFE bushing through the can: outer radius, bore, length [RH]
+SHED = (12.0, 2.0)      # the sleeve's PTFE sheds: radial height (sim/multiplier-layout-findings.md §4), thickness [RH]
+COVER_T = 2.0           # the PTFE cover over the sleeve under the column [RH]
+LEAD_Z = 57.0           # |z| at which a ring's lead leaves the can: the parts' mid-height (docs/make_multiplier_layout.py)
+LEAD_R = 36.0           # the radius of its run along the coupler [IR]
+R_RISER = 35.0          # node 1's riser in the column's bore (sim/multiplier_layout.py strays) [IR]
+
+
+def _ang(xy):
+    return math.degrees(math.atan2(xy[1], xy[0]))
+
+
+def _u(th_deg):
+    t = math.radians(th_deg)
+    return np.array([math.cos(t), math.sin(t), 0.0])
+
+
+def _cut(a, *bs):
+    from OCP.BRepAlgoAPI import BRepAlgoAPI_Cut
+    for b in bs:
+        a = BRepAlgoAPI_Cut(a, b).Shape()
+    return a
+
+
+class LayoutMachine(Machine):
+    """the design of record re-stacked as sim/multiplier_layout.py lays the multiplier out (PROPOSED; its results: the
+    stack, both decks' plans, the record's reluctance sections moved), each side from the hub outward: the hub as locked
+    inside a grounded Al can; the deck, a G10 plate with every diode, C3-C8, Csa / Csb, the clamp string and the surge
+    resistors potted on it; Ca / Cb's six plates; the vane stack with its ends swapped, C1 and C2 in phase; the
+    Ca|reluctance bearing; the record's reluctance section. No hub-face bearings; one cage from spider to spider. Drawn
+    as well: the junctions, the leads over the parts, the straps to the can, node 1's riser, node 2's tap, the cross
+    nets l1 / r1, the rings' leads through the can, the sleeve's PTFE cover and sheds, the magnetic pump's LV cable in
+    its bore [IR; the parts' envelopes and the junctions RH]. self.nets: each conductor's net (or its two nets and the
+    line or arc it grades along) for the viewer."""
+
+    def __init__(self, pick="g 0.5 / 6 bridges / 1200 rpm"):
+        import copy
+        super().__init__(S.size_stack("tube", record_plates(pick)))
+        self.lay = json.load(open(LAYOUT_JSON))
+        st = self.lay["stack"]
+        rec = self.lad["tube_geometry"]["elements"]
+        hub = [e for e in rec if e["kind"] == "hub"][0]
+        z_rec = 0.5 * (hub["z0"] + hub["z1"])                 # the record's hub centre (470)
+        self.zc, self.L_mm = st["h_end_mm"], st["L_mm"]         # the new hub centre from side A's end (487), 974
+        # the record's reluctance sections and end bearings: side A where it was, side B out by 2 dh (as
+        # sim/multiplier_layout.py record_reluctance moves them)
+        sh_b = 2.0 * (self.zc - z_rec)
+        self.el = []
+        for e in rec:
+            if e["kind"] not in ("w utron", "w disc", "w bridge", "w ring", "w flange", "reluctance") and not (
+                    e["kind"] == "bearing" and e.get("where") == "end"):
+                continue
+            q = copy.deepcopy(e)
+            dz = 0.0 if q["side"] == "A" else sh_b
+            for k in ("z0", "z1", "zc", "zs0", "zs1"):
+                if k in q:
+                    q[k] += dz
+            if "pockets" in q:
+                q["pockets"] = dict(q["pockets"], z0=q["pockets"]["z0"] + dz, z1=q["pockets"]["z1"] + dz)
+            self.el.append(q)
+        self.lad["tube_geometry"]["L_total_mm"] = self.L_mm
+        self.nets = {}
+
+    def zz(self, side, h):
+        return self.zc - h if side == "A" else self.zc + h
+
+    def zs(self, side, h0, h1):
+        a, b = self.zz(side, h0), self.zz(side, h1)
+        return (a, b) if a < b else (b, a)
+
+    def put(self, name, key, make, colour, material, body, group, join=None, net=None, dz=0.0, rot=0.0, dx=0.0, desc=""):
+        """a part (its prototype made once): net a net's name, or {'nets': [a, b], 'axis' | 'arc': ...} for a part whose
+        potential grades from a to b."""
+        self.proto(key, make, colour, material)
+        self.add(name, key, body, net if isinstance(net, str) else "", group, join=join, dz=dz, rot=rot, dx=dx, desc=desc)
+        if net is not None:
+            self.nets[name] = dict(net) if isinstance(net, dict) else {"net": net}
+
+    def put_wire(self, name, pts, net, group, join, colour=None, material="PTFE HV wire, 1 mm Cu in 3 mm PTFE", r=WIRE_R,
+                 desc="", body="rotor"):
+        P = [tuple(float(x) for x in q) for q in pts]
+        self.put(name, name, lambda P=P: wire(P, r), colour or COL["ptfe"], material, body, group, join=join, net=net,
+                 desc=desc)
+        self.nets[name]["path"] = [list(q) for q in P]
+
+    def build(self):
+        import multiplier_layout as ML                   # the study's leads, straps and mirror (its own constants)
+        p, st, dk = self.p, self.lay["stack"], self.lay["decks"]
+        E = st["elements"]
+        kinds = lambda k: [e for e in E if e["kind"] == k]
+        one = lambda k: kinds(k)[0]
+        ri, ro, t = p["r_inMm"], p["r_outMm"], p["t_vaneMm"]
+        assert (ri, ro, t) == (ML.R_IN, ML.R_OUT, ML.T_V), "the layout's vanes and plates are the record's"
+        hs, hw = 0.5 * p["ws_deg"], 0.5 * p["wr_deg"]
+        per = 360.0 / (p["N_sec"] / 2.0)
+        n_sec = int(p["N_sec"] / 2)
+        self.proto("stator_vane", lambda: fuse([sector(ri, ro, 0.0, t, k * per - hs, p["ws_deg"]) for k in range(n_sec)]
+                                               + [sector(ro, ro + 12.0, 0.0, t)]), COL["stator vane"], "Al vane")
+        self.proto("rotor_vane", lambda: fuse([sector(ri, ro, 0.0, t, k * per - hw, p["wr_deg"]) for k in range(n_sec)]
+                                              + [sector(S.SLEEVE_R, ri, 0.0, t)]), COL["rotor vane"], "Al vane")
+        self.proto("fixed_plate", lambda: sector(ri, ro, 0.0, t), COL["fixed plate"], "Al plate")
+        zc, mirror = self.zc, ML.MIRROR
+        mp = {"A": lambda n: n, "B": lambda n: mirror[n]}
+        plan = {s_: {q["name"]: q for q in dk[s_]["parts"]} for s_ in "AB"}
+        csa = {"A": plan["A"]["Csa"], "B": plan["B"]["Csb"]}
+        th_lead = {s_: _ang(csa[s_]["centre"]) for s_ in "AB"}          # each ring's lead leaves the can toward its Cs
+        bore = 0.5 * LV_BORE
+        # ---- the hub as locked (its coupler over both flanges, its leads' channels), the flanges, the shaft halves
+        fl, cpl = one("flange"), one("coupler")
+        self.hub_opts = dict(coupler_absz=cpl["h1"], channels=[(-1, th_lead["A"]), (1, th_lead["B"])],
+                             coupler_material="G10 shaft coupler: a straight tube over the retainer and both flanges "
+                                              "(docs/rings-design.md §2, PROPOSED)")
+        self.locked_hub(dict(z0=zc - fl["h0"], z1=zc + fl["h0"]))
+        for nm in ("hub_ring_A", "hub_bead_A_pol", "hub_bead_A_eq"):
+            self.nets[nm] = {"net": "ea"}
+        for nm in ("hub_ring_B", "hub_bead_B_pol", "hub_bead_B_eq"):
+            self.nets[nm] = {"net": "eb"}
+        for s_ in "AB":
+            self.nets[f"hub_AH_{s_}_core"] = {"net": "0"}
+        tf = fl["h1"] - fl["h0"]
+        self.proto("flange_lv", lambda: _cut(sector(0.0, fl["r1"], 0.0, tf), cyl_z(0.0, 0.0, bore, -1.0, tf + 1.0)),
+                   COL["steel"], "austenitic stainless flange, non-magnetic, turned to 60 mm, its LV bore 8 mm")
+        sh = one("shaft")
+        for s_ in "AB":
+            z0, _ = self.zs(s_, fl["h0"], fl["h1"])
+            self.put(f"{s_}_flange", "flange_lv", None, None, None, "rotor", "hub", join="rotor-core", net="0", dz=z0,
+                     desc=f"shaft-half flange {s_}, bonded and pinned in the coupler")
+            z0, z1 = self.zs(s_, sh["h0"], sh["h1"])
+            ze, zf = self.zz(s_, LV_EXIT), self.zz(s_, sh["h0"])
+            lo, hi = (ze - bore, zf + 1.0) if s_ == "A" else (zf - 1.0, ze + bore)     # the bore ends round its exit
+
+            def shaft_half(z0=z0, z1=z1, lo=lo, hi=hi, ze=ze):
+                return _cut(sector(0.0, S.SHAFT_R, z0, z1), cyl_z(0.0, 0.0, bore, lo, hi),
+                            cyl_between((0.0, 0.0, ze), (S.SHAFT_R + 1.0, 0.0, ze), bore))
+            self.put(f"shaft_{s_}", f"shaft_{s_}", shaft_half, COL["steel"], "austenitic stainless shaft half, non-magnetic",
+                     "rotor", "rotor", join="rotor-core", net="0", desc=f"shaft half {s_}, its LV bore 8 mm")
+            # the magnetic pump's LV cable: from the flange's face down the bore, out radially in the reluctance bay
+            self.put_wire(f"{s_}_lv_cable", [(0.0, 0.0, self.zz(s_, fl["h0"])), (0.0, 0.0, ze), (S.SLEEVE_R + 3.5, 0.0, ze)],
+                          "lv", "rotor", f"lv-{s_}", colour=COL["lv"], r=LV_R,
+                          material="LV cable: the AH coils to La / Lb, D1*-D4* and the utrons (sim/multiplier-layout-findings.md §7)",
+                          desc="the magnetic pump's LV leads in the shaft's bore")
+        # ---- the can over the hub (REF), its end discs and the rings' leads' bushings
+        can, cdi = one("can"), one("can disc")
+        lead_pt = lambda s_, r: _u(th_lead[s_]) * r + np.array([0.0, 0.0, self.zz(s_, LEAD_Z)])
+        self.put("can", "can", lambda: _cut(sector(can["r0"], can["r1"], zc - can["h1"], zc + can["h1"]),
+                                            *[cyl_between(lead_pt(s_, can["r0"] - 2.0), lead_pt(s_, can["r1"] + 2.0), BUSH[0])
+                                              for s_ in "AB"]),
+                 COL["can"], "Al can over the hub, 2 mm, on the shaft (REF)", "rotor", "can", join="can", net="0",
+                 desc="the grounded can: r 46-48, |z| <= 85 (sim/multiplier-layout-findings.md §5)")
+        for s_ in "AB":
+            z0, _ = self.zs(s_, cdi["h0"], cdi["h1"])
+            self.put(f"{s_}_can_disc", "can_disc", lambda: sector(cdi["r0"], cdi["r1"], 0.0, cdi["h1"] - cdi["h0"]),
+                     COL["can"], "Al end disc of the can", "rotor", "can", join="can", net="0", dz=z0,
+                     desc=f"the can's end disc {s_}, on the shaft")
+            a_, b_ = lead_pt(s_, 48.0 - 0.5 * BUSH[2]), lead_pt(s_, 48.0 + 0.5 * BUSH[2])
+            self.put(f"{s_}_bushing", f"bushing_{s_}", lambda a_=a_, b_=b_: _cut(cyl_between(a_, b_, BUSH[0]),
+                                                                                 cyl_between(a_ - (b_ - a_), b_ + (b_ - a_), BUSH[1])),
+                     COL["ptfe"], "PTFE bushing", "rotor", "can", join="can", desc=f"ring {s_}'s lead through the can")
+        # ---- the column, the vanes (C1 and C2 in phase: no offset), the sleeves, the PTFE cover and sheds
+        hv0 = st["h_vanes"][0]
+        hb = st["h_bearing_mm"]
+        for s_ in "AB":
+            cn, vn = ("Ca", "C1") if s_ == "A" else ("Cb", "C2")
+            for e in kinds("Ca plate"):
+                z0, _ = self.zs(s_, e["h0"], e["h1"])
+                nd = mp[s_](e["node"])
+                self.put(f"{s_}_{cn}_{e['index']:02d}", "fixed_plate", None, None, None, "rotor", f"side-{s_}", net=nd, dz=z0,
+                         desc=f"{cn} fixed plate, node {nd} (the record's six, node {mp[s_]('2')} toward the deck; their "
+                              "rods and mounts not drawn)")
+            for e in kinds("C1 vane"):
+                z0, _ = self.zs(s_, e["h0"], e["h1"])
+                rot_ = e["body"] == "rotor"
+                self.put(f"{s_}_{vn}_{'r' if rot_ else 's'}{e['index']:02d}", "rotor_vane" if rot_ else "stator_vane", None,
+                         None, None, "rotor" if rot_ else "stator", f"side-{s_}", join="rotor-core" if rot_ else "cage",
+                         net=mp[s_](e["node"]) if rot_ else "s", dz=z0,
+                         desc=f"{vn} vane, node {mp[s_](e['node']) if rot_ else 'REF (the counter-rotor)'}"
+                              + (", in phase with C1" if s_ == "B" else ""))
+            sl = one("sleeve")
+            z0, z1 = self.zs(s_, sl["h0"], sl["h1"])
+            self.put(f"{s_}_rotor_sleeve_vanes", "sleeve_vanes", lambda z0=z0, z1=z1: sector(S.SHAFT_R, S.SLEEVE_R, 0.0, z1 - z0),
+                     COL["g10"], "G10 rotor sleeve", "rotor", "rotor", join="rotor-core", dz=z0,
+                     desc="rotor sleeve: the vane bay, the can's disc to the Ca|reluctance bearing")
+            eb = [e for e in self.el if e["kind"] == "bearing" and e["side"] == s_][0]
+            ze = self.zz(s_, LV_EXIT)
+            z0, z1 = (eb["z1"], self.zz("A", hb + 0.5 * S.BEARING["slot"])) if s_ == "A" else \
+                (self.zz("B", hb + 0.5 * S.BEARING["slot"]), eb["z0"])
+            self.put(f"{s_}_rotor_sleeve_rel", f"sleeve_rel_{s_}",
+                     lambda z0=z0, z1=z1, ze=ze: _cut(sector(S.SHAFT_R, S.SLEEVE_R, z0, z1),
+                                                      cyl_between((S.SHAFT_R - 1.0, 0.0, ze), (S.SLEEVE_R + 1.0, 0.0, ze), bore)),
+                     COL["g10"], "G10 rotor sleeve", "rotor", "rotor", join="rotor-core",
+                     desc="rotor sleeve: the reluctance bay (the record's), its LV exit 8 mm")
+            z0, z1 = self.zs(s_, sl["h0"], hv0)
+            self.put(f"{s_}_sleeve_cover", "sleeve_cover", lambda z0=z0, z1=z1: sector(S.SLEEVE_R, S.SLEEVE_R + COVER_T, 0.0, z1 - z0),
+                     COL["ptfe"], "PTFE cover over the sleeve", "rotor", f"side-{s_}", join=f"cover-{s_}", dz=z0,
+                     desc="the sleeve's PTFE cover under the column: 84 mm of creepage (sim/multiplier-layout-findings.md §4)")
+            last = max((e for e in kinds("C1 vane") if e["body"] == "rotor"), key=lambda e: e["h1"])
+            gap = (hb - 0.5 * S.BEARING["width"]) - last["h1"]
+            for j in (1, 2):
+                h_ = last["h1"] + j * gap / 3.0
+                z0, _ = self.zs(s_, h_ - 0.5 * SHED[1], h_ + 0.5 * SHED[1])
+                self.put(f"{s_}_shed_{j}", "shed", lambda: sector(S.SLEEVE_R, S.SLEEVE_R + SHED[0], 0.0, SHED[1]), COL["ptfe"],
+                         "PTFE shed, 12 mm", "rotor", f"side-{s_}", join=f"cover-{s_}", dz=z0,
+                         desc="a PTFE shed on the sleeve's outer end (two give 65.5 mm of creepage)")
+        # ---- the bearings: the Ca|reluctance pair (the REF link) and the end pair (frame); one cage, spider to spider
+        B = S.BEARING
+        self.proto("bearing", lambda: sector(S.SHAFT_R, 0.5 * B["od"], 0.0, B["width"]), COL["steel"], f"{B['name']} bearing")
+        self.proto("spider", lambda: sector(0.5 * B["od"], ro + 12.0, 0.0, B["spider_t"]), COL["g10"], "G10 bearing spider")
+        for s_ in "AB":
+            zb = self.zz(s_, hb)
+            self.put(f"{s_}_bearing_Ca-reluctance", "bearing", None, None, None, "bearing", "bearings", join=f"brg-{s_}-rel",
+                     net="0", dz=zb - 0.5 * B["width"], desc="bearing, Ca|reluctance: the REF link to the counter-rotor")
+            self.put(f"{s_}_spider_Ca-reluctance", "spider", None, None, None, "stator", "bearings", join="cage",
+                     dz=zb - 0.5 * B["spider_t"], desc="bearing hub, tied into the stator cage")
+            eb = [e for e in self.el if e["kind"] == "bearing" and e["side"] == s_][0]
+            self.put(f"{s_}_bearing_end", "bearing", None, None, None, "bearing", "bearings", join=f"brg-{s_}-end", net="0",
+                     dz=eb["zc"] - 0.5 * B["width"], desc="bearing, end (frame)")
+            self.put(f"{s_}_spider_end", "spider", None, None, None, "stator", "bearings", join=f"brg-{s_}-end",
+                     dz=eb["zc"] - 0.5 * B["spider_t"], desc="frame bearing hub")
+        za, zb_ = self.zz("A", hb + 0.5 * B["slot"]), self.zz("B", hb + 0.5 * B["slot"])
+        self.put("stator_cage", "cage", lambda: sector(ro + 12.0, ro + 16.0, za, zb_), COL["g10"], "G10 stator cage",
+                 "stator", "cage", join="cage", desc="the counter-rotor's cage: one tube from spider to spider, no hub-face bearing")
+        # ---- the record's reluctance sections
+        counts = {}
+        for e in self.el:
+            k, s_ = e["kind"], e["side"]
+            counts[(k, s_)] = counts.get((k, s_), 0) + 1
+            if k.startswith("w "):
+                self.wound_element(e, k, s_, counts[(k, s_)])
+        for nm, pt in [(q["name"], q) for q in self.parts]:
+            if pt["proto"] in ("w_bridge",) or pt["proto"].startswith("wu_core"):
+                self.nets[nm] = {"net": "s" if pt["body"] == "stator" else "0"}
+        # ---- the decks
+        self.decks(ML, dk, st, kinds, one, mp, plan, th_lead, hv0)
+        return self
+
+    def decks(self, ML, dk, st, kinds, one, mp, plan, th_lead, hv0):
+        P, zone = dk["parts"], dk["zone"]
+        h_face = zone["parts_absz_mm"][0]                       # 36: the plate's outer face
+        dpl = one("deck plate")
+        holes = [dk["A"]["junctions"][n] for n in ("l1", "r1")]  # the cross nets (deck B's l1 / r1 sit over deck A's)
+        tpl = dpl["h1"] - dpl["h0"]
+        self.proto("deck_plate", lambda: _cut(sector(dpl["r0"], dpl["r1"], 0.0, tpl),
+                                              *[cyl_z(x, y, 3.0, -1.0, tpl + 1.0) for x, y in holes]),
+                   COL["g10"], "G10 deck plate, 6 mm, the cross nets' holes 6 mm")
+        # the prototypes, each centred on its own mid-height so one serves both decks (side A's parts hang below)
+        for kind in ("stick", "rsurge"):
+            q = P[kind]
+            rad, bl, br = 0.5 * q["d"], q["body_l"], 0.5 * q["body_d"]
+            half = 0.5 * q["l"] - rad
+            body = lambda bl=bl, br=br: cyl_between((0, -0.5 * bl, 0), (0, 0.5 * bl, 0), br)
+            lead = lambda sg, bl=bl, q=q: cyl_between((0, sg * 0.5 * bl, 0), (0, sg * 0.5 * q["l"], 0), 0.6)
+            self.proto(f"{kind}_body", body, COL["stick" if kind == "stick" else "rsurge"], q["what"])
+            self.proto(f"{kind}_pot", lambda rad=rad, half=half, body=body, lead=lead: _cut(capsule_y(rad, half), body(),
+                                                                                          lead(1), lead(-1)),
+                       COL["silicone"], "silicone potting, 8 mm over the part")
+            for sg, nm in ((-1, "neg"), (1, "pos")):
+                self.proto(f"{kind}_lead_{nm}", lambda sg=sg, lead=lead: lead(sg), COL["cu"], "tinned Cu lead, 1.2 mm")
+        for kind in ("c180", "c100", "c100h"):
+            q = P[kind]
+            rad, L, br, bl = 0.5 * q["d"], q["l"], 0.5 * q["body_d"], q["body_l"]
+            self.proto(f"{kind}_body", lambda br=br, bl=bl: cyl_z(0.0, 0.0, br, -0.5 * bl, 0.5 * bl), COL["cap"], q["what"])
+            self.proto(f"{kind}_pot", lambda rad=rad, L=L, br=br, bl=bl: _cut(
+                cyl_z(0.0, 0.0, rad, -0.5 * L, 0.5 * L), cyl_z(0.0, 0.0, br, -0.5 * bl, 0.5 * bl),
+                cyl_z(0.0, 0.0, STUD_R, 0.5 * bl, 0.5 * L), cyl_z(0.0, 0.0, STUD_R, -0.5 * L, -0.5 * bl)),
+                COL["silicone"], "silicone potting, 8 mm over the part")
+        pot = ML.POT
+        self.proto("stud", lambda: cyl_z(0.0, 0.0, STUD_R, -0.5 * pot, 0.5 * pot), COL["brass"], "brass screw terminal, M5")
+        qc = P["clamp"]
+        span = math.degrees((qc["l"] - qc["w"]) / ML.R_I)             # the study's arc (sim/multiplier_layout.py plan)
+        # a lead from the body's round end to the module's terminal as the plan places it (on the arc), leaving the round
+        # end along its radius toward the terminal, 0.7 mm off it
+        def cl_lead(end):
+            c_end = _u(0.0 if end == 0 else span) * ML.R_I
+            term = _u(-math.degrees(0.5 * qc["w"] / ML.R_I) if end == 0 else span + math.degrees(0.5 * qc["w"] / ML.R_I)) * ML.R_I
+            u = (term - c_end) / np.linalg.norm(term - c_end)
+            return cyl_between(c_end + (0.5 * qc["body_w"] + 0.7) * u, term, 0.6)
+        cl_body = lambda: arc_capsule(ML.R_I, span, 0.5 * qc["body_w"], -0.5 * qc["body_h"], 0.5 * qc["body_h"])
+        self.proto("clamp_body", cl_body, COL["clamp"], qc["what"])
+        self.proto("clamp_pot", lambda: _cut(arc_capsule(ML.R_I, span, 0.5 * qc["w"], -0.5 * qc["h"], 0.5 * qc["h"]), cl_body(),
+                                             cl_lead(0), cl_lead(1)), COL["silicone"], "silicone potting, 8 mm over the module")
+        for end in (0, 1):
+            self.proto(f"clamp_lead_{end}", lambda end=end: cl_lead(end), COL["cu"], "tinned Cu lead, 1.2 mm")
+        jr, jl = J_COND
+        self.proto("j_cond", lambda: cyl_z(0.0, 0.0, jr, -0.5 * jl, 0.5 * jl), COL["brass"], "brass junction terminal")
+        self.proto("j_pot", lambda: _cut(cyl_z(0.0, 0.0, J_POT[0], -0.5 * J_POT[1], 0.5 * J_POT[1]),
+                                         cyl_z(0.0, 0.0, jr, -0.5 * jl, 0.5 * jl)),
+                   COL["silicone"], "silicone potting, the junction's block")
+        h_ax = lambda kind: h_face + 0.5 * (P[kind]["d"] if kind in ("stick", "rsurge") else
+                                           P[kind]["h"] if kind == "clamp" else P[kind]["l"])
+        j_top = h_face + 0.5 * P["stick"]["d"] + 0.5 * jl            # 54: a junction terminal's outer face
+        j_in = h_face + 0.5 * P["stick"]["d"] - 0.5 * jl             # 42: its face toward the hub
+        for s_ in "AB":
+            g, jn = f"deck-{s_}", f"deck-{s_}"
+            z0, _ = self.zs(s_, dpl["h0"], dpl["h1"])
+            self.put(f"{s_}_deck_plate", "deck_plate", None, None, None, "rotor", g, join=f"plate-{s_}", dz=z0,
+                     desc=f"deck {s_}: the G10 plate round the can, r 50-150, |z| 30-36")
+            J = {n: np.array([x, y, 0.0]) for n, (x, y) in dk[s_]["junctions"].items()}
+            tag = lambda n: n.replace("'", "p")
+            for n, c in J.items():
+                r_, th = float(np.hypot(c[0], c[1])), _ang(c)
+                self.put(f"{s_}_J_{tag(n)}", "j_cond", None, None, None, "rotor", g, join=jn, net=n.rstrip("'"), dx=r_, rot=th,
+                         dz=self.zz(s_, h_ax("stick")), desc=f"junction {n}: brass terminal in its potted block")
+                self.put(f"{s_}_J_{tag(n)}_pot", "j_pot", None, None, None, "rotor", g, join=jn, dx=r_, rot=th,
+                         dz=self.zz(s_, h_ax("stick")), desc=f"junction {n}: potting")
+            for q in dk[s_]["parts"]:
+                nm, kind, (na, nb) = q["name"], q["kind"], q["nets"]
+                c = np.array([q["centre"][0], q["centre"][1], 0.0])
+                r_c, th_c = float(np.hypot(c[0], c[1])), _ang(c)
+                dev = {"stick": nm, "clamp": nm}.get(kind)
+                if q["orient"] == "tan":
+                    zax = self.zz(s_, h_ax(kind))
+                    b0, b1 = (np.array([x, y, zax]) for x, y in q["body_pts"])
+                    body_net = {"nets": [na, nb], "axis": [b0.tolist(), b1.tolist()]}
+                    if dev:
+                        body_net["device"] = dev
+                    self.put(f"{s_}_{nm}_body", f"{kind}_body", None, None, None, "rotor", g, join=f"{s_}_{nm}_body",
+                             net=body_net, dx=r_c, rot=th_c, dz=zax, desc=f"{nm} ({na} - {nb}): {P[kind]['what']}")
+                    self.put(f"{s_}_{nm}_pot", f"{kind}_pot", None, None, None, "rotor", g, join=jn, dx=r_c, rot=th_c, dz=zax,
+                             desc=f"{nm}: its potted housing")
+                    tvec = np.array([-math.sin(math.radians(th_c)), math.cos(math.radians(th_c)), 0.0])
+                    tip_neg = c - 0.5 * P[kind]["l"] * tvec
+                    T0 = np.array([*q["terminals"][0], 0.0])
+                    k_neg = 0 if np.linalg.norm(tip_neg - T0) < 1e-6 else 1          # which net the local -y end holds
+                    for sg, end_nm in ((-1, "neg"), (1, "pos")):
+                        k = k_neg if sg < 0 else 1 - k_neg
+                        self.put(f"{s_}_{nm}_lead_{end_nm}", f"{kind}_lead_{end_nm}", None, None, None, "rotor", g, join=jn,
+                                 net=(na, nb)[k], dx=r_c, rot=th_c, dz=zax, desc=f"{nm}: its lead, net {(na, nb)[k]}")
+                        T = np.array([*q["terminals"][k], 0.0])
+                        jn_ = min(J, key=lambda n: np.linalg.norm(J[n] - T))
+                        self.put_wire(f"{s_}_{nm}_to_{tag(jn_)}", [T + [0, 0, zax], J[jn_] + [0, 0, zax]], jn_.rstrip("'"), g, jn,
+                                      colour=COL["cu"], material="tinned Cu lead, in the potting",
+                                      desc=f"{nm}'s lead to junction {jn_}")
+                elif q["orient"] == "up":
+                    zc_ = self.zz(s_, h_ax(kind))
+                    L, bl = P[kind]["l"], P[kind]["body_l"]
+                    top, foot = self.zz(s_, h_face + 0.5 * L + 0.5 * bl), self.zz(s_, h_face + 0.5 * L - 0.5 * bl)
+                    self.put(f"{s_}_{nm}_body", f"{kind}_body", None, None, None, "rotor", g, join=f"{s_}_{nm}_body",
+                             net={"nets": [na, nb], "axis": [(c + [0, 0, top]).tolist(), (c + [0, 0, foot]).tolist()]},
+                             dx=r_c, rot=th_c, dz=zc_, desc=f"{nm} ({na} at its top, {nb} at its foot): {P[kind]['what']}")
+                    self.put(f"{s_}_{nm}_pot", f"{kind}_pot", None, None, None, "rotor", g, join=jn, dx=r_c, rot=th_c, dz=zc_,
+                             desc=f"{nm}: its potted housing")
+                    for end_nm, net_, hz in (("top", na, h_face + L - 0.5 * pot), ("foot", nb, h_face + 0.5 * pot)):
+                        self.put(f"{s_}_{nm}_stud_{end_nm}", "stud", None, None, None, "rotor", g, join=jn, net=net_, dx=r_c,
+                                 rot=th_c, dz=self.zz(s_, hz), desc=f"{nm}: its {end_nm} terminal, net {net_}")
+                else:                                                      # the clamp module along its arc
+                    a0, a1 = _ang(q["pts"][0]), _ang(q["pts"][-1])
+                    d_ = (a1 - a0 + 540.0) % 360.0 - 180.0
+                    rot_ = a0 if d_ > 0 else a1                            # the arc's lower end
+                    hv_local0 = d_ > 0                                     # its first terminal (net 1 / 4) at local 0
+                    zc_ = self.zz(s_, h_ax(kind))
+                    th_t = [_ang(x) for x in q["terminals"]]
+                    self.put(f"{s_}_{nm}_body", "clamp_body", None, None, None, "rotor", g, join=f"{s_}_{nm}_body",
+                             net={"nets": [na, nb], "arc": dict(r=ML.R_I, th=th_t, z=zc_), "device": nm},
+                             rot=rot_, dz=zc_, desc=f"{nm} ({na} - {nb}): {P[kind]['what']}")
+                    self.put(f"{s_}_{nm}_pot", "clamp_pot", None, None, None, "rotor", g, join=jn, rot=rot_, dz=zc_,
+                             desc=f"{nm}: its potted housing")
+                    for end in (0, 1):
+                        k = end if hv_local0 else 1 - end
+                        self.put(f"{s_}_{nm}_lead_{end}", f"clamp_lead_{end}", None, None, None, "rotor", g, join=jn,
+                                 net=(na, nb)[k], rot=rot_, dz=zc_, desc=f"{nm}: its lead, net {(na, nb)[k]}")
+            # the leads over the parts (sim/multiplier_layout.py LEADS_A, mirrored), each landing on its junction's
+            # outer face; two on one junction land 2.5 mm either side of its centre, along the lane
+            pm = (lambda n: n) if s_ == "A" else (lambda n: ML.PART_MIRROR[n])
+            jname = lambda b: mp[s_](b.rstrip("'")) + ("'" if b.endswith("'") else "")
+            land = {}
+            for a_, b_ in ML.LEADS_A:
+                land.setdefault(jname(b_), []).append(("lead", a_))
+            n1, n2 = mp[s_]("1"), mp[s_]("2")
+            land.setdefault(n1, []).append(("riser", None))
+            land.setdefault(n2, []).append(("tap", None))
+
+            def landing(n, who):
+                lst = land[n]
+                if len(lst) == 1:
+                    return J[n]
+                th = math.radians(_ang(J[n]))
+                tv = np.array([-math.sin(th), math.cos(th), 0.0])
+                return J[n] + (-2.5 if lst.index(who) == 0 else 2.5) * tv
+            zh = lambda h: np.array([0.0, 0.0, self.zz(s_, h)])
+            for a_, b_ in ML.LEADS_A:
+                nm, k = a_.split(":")
+                q = plan[s_][pm(nm)]
+                n = jname(b_)
+                Jp = landing(n, ("lead", a_))
+                c = np.array([q["centre"][0], q["centre"][1], 0.0])
+                if q["orient"] == "up" and int(k) == 0:
+                    pts = [c + zh(h_face + P[q["kind"]]["l"]), c + zh(Z_OVER)]
+                elif q["orient"] == "up":
+                    u = (Jp - c) / np.linalg.norm(Jp - c)
+                    e_ = c + (0.5 * P[q["kind"]]["d"] + 2.5) * u
+                    pts = [c + zh(h_face + 0.5 * pot), e_ + zh(h_face + 0.5 * pot), e_ + zh(Z_OVER)]
+                else:
+                    T = np.array([*q["terminals"][int(k)], 0.0])
+                    pts = [T + zh(h_ax(q["kind"])), T + zh(Z_OVER)]
+                pts += [Jp + zh(Z_OVER), Jp + zh(j_top)]
+                self.put_wire(f"{s_}_lead_{pm(nm)}_{k}", pts, n.rstrip("'"), g, jn,
+                              desc=f"lead: {pm(nm)}'s terminal {k} to junction {n}, over the parts")
+            # the REF straps to the can (sim/multiplier_layout.py STRAPS_A)
+            for a_, _ in ML.STRAPS_A:
+                nm, k = a_.split(":")
+                q = plan[s_][pm(nm)]
+                if q["orient"] == "up":
+                    T, h0 = np.array([q["centre"][0], q["centre"][1], 0.0]), h_face + 0.5 * pot
+                else:
+                    T, h0 = np.array([*q["terminals"][int(k)], 0.0]), h_ax(q["kind"])
+                h_s = h_face + WIRE_R + 0.5
+                pts = [T + zh(h0), T + zh(h_s), T / np.linalg.norm(T) * ML.CAN_R + zh(h_s)]
+                self.put_wire(f"{s_}_strap_{pm(nm)}", pts, "0", g, jn, colour=COL["cu"], material="Cu strap to the can (REF)",
+                              desc=f"REF strap: {pm(nm)}'s terminal {k} to the can")
+            # node 1's riser (4 on side B) and node 2's tap (3): from their junctions' outer faces out of the deck
+            Jr, Jt = landing(n1, ("riser", None)), landing(n2, ("tap", None))
+            u1 = J[n1] / np.linalg.norm(J[n1])
+            hr = 0.5 * (st["h_parts_mm"] + st["h_col_mm"]) + 4.0      # docs/make_multiplier_layout.py's riser height
+            self.put_wire(f"{s_}_riser_deck", [Jr + zh(j_top), Jr + zh(POST)], n1, g, jn, desc=f"node {n1}'s riser, in the potting")
+            self.put_wire(f"{s_}_riser", [Jr + zh(POST), Jr + zh(hr), u1 * R_RISER + zh(hr), u1 * R_RISER + zh(hv0)], n1,
+                          "wiring", f"riser-{s_}",
+                          desc=f"node {n1}'s riser: up from the deck, in to r 35, up the column's bore to the first rotor vane")
+            self.put_wire(f"{s_}_tap_deck", [Jt + zh(j_top), Jt + zh(POST)], n2, g, jn, desc=f"node {n2}'s tap, in the potting")
+            self.put_wire(f"{s_}_tap", [Jt + zh(POST), Jt + zh(st["h_col_mm"])], n2, "wiring", f"tap-{s_}",
+                          desc=f"node {n2}'s tap: up from the deck to the column's node-{n2} plate")
+            # ring A's lead (B's): from its equatorial bead along the normal through the PEEK and the coupler, along the
+            # coupler, out through the can's bushing to Csa (Csb) [docs/rings-design.md §2; sim/multiplier-layout-findings.md §5]
+            H = json.load(open(os.path.join(ROOT, "presets", "hub-locked.json")))
+            rg, Ro = H["rings"]["value"], 0.5 * H["vessel"]["value"]["od_mm"]
+            te, rho = math.radians(rg["equatorial_edge_deg"]), 0.5 * rg["bead_d_mm"]["equatorial"]
+            sg = -1 if s_ == "A" else 1
+            th = math.radians(th_lead[s_])
+            u3 = np.array([math.sin(te) * math.cos(th), math.sin(te) * math.sin(th), sg * math.cos(te)])
+            hub0 = np.array([0.0, 0.0, self.zc])
+            p1, p2 = hub0 + (Ro + 2.0 * rho) * u3, hub0 + (33.0 / math.sin(te)) * u3
+            ul = _u(th_lead[s_])
+            p3 = ul * LEAD_R + [0.0, 0.0, p2[2]]
+            p4, p5 = ul * LEAD_R + zh(LEAD_Z), ul * (48.0 + 0.5 * BUSH[2]) + zh(LEAD_Z)
+            ring = "ea" if s_ == "A" else "eb"
+            self.put_wire(f"{s_}_ring_lead", [p1, p2, p3, p4, p5], ring, "wiring", f"ring-{s_}",
+                          desc=f"ring {s_}'s lead: from its equatorial bead through the PEEK and the coupler, along the "
+                               "coupler, out through the can's PTFE bushing")
+            cs = plan[s_]["Csa" if s_ == "A" else "Csb"]
+            c = np.array([cs["centre"][0], cs["centre"][1], 0.0])
+            self.put_wire(f"{s_}_ring_lead_deck", [p5, ul * (48.0 + 0.5 * BUSH[2] + 2.0) + zh(LEAD_Z),
+                                                   c + zh(h_face + P[cs["kind"]]["l"])], ring, g, jn,
+                          desc=f"ring {s_}'s lead on the deck, to {cs['name']}'s top")
+        # the cross nets l1 and r1: straight across between the decks, through the plates' holes
+        for n in ("l1", "r1"):
+            c = np.array([*dk["A"]["junctions"][n], 0.0])
+            za, zb = lambda h: c + [0.0, 0.0, self.zz("A", h)], lambda h: c + [0.0, 0.0, self.zz("B", h)]
+            self.put_wire(f"A_cross_{n}", [za(j_in), za(h_face)], n, "deck-A", "deck-A", desc=f"the cross net {n}, in deck A's potting")
+            self.put_wire(f"cross_{n}", [za(h_face), zb(h_face)], n, "wiring", f"cross-{n}",
+                          desc=f"the cross net {n}: PTFE HV wire straight across between the decks")
+            self.put_wire(f"B_cross_{n}", [zb(h_face), zb(j_in)], n, "deck-B", "deck-B", desc=f"the cross net {n}, in deck B's potting")
 
 
 # ---------------------------------------------------------------------------------------------------------
@@ -579,6 +1100,100 @@ def checks(m, log=print):
     rel.update(r_utron_centre=e_cem["r_u"], reluctance_envelope_dia_mm=2 * (e_cem["r_u"] + S.REL_X_MAX), sleeve_r=S.SLEEVE_R)
     res["G-TUBE-REL"] = rel
     return res
+
+
+def compound(shapes):
+    from OCP.BRep import BRep_Builder
+    from OCP.TopoDS import TopoDS_Compound
+    b, c = BRep_Builder(), TopoDS_Compound()
+    b.MakeCompound(c)
+    for s in shapes:
+        b.Add(c, s)
+    return c
+
+
+def layout_checks(m, log=print):
+    """G-LAYOUT: the solids against the study (sim/multiplier_layout.py, its results). Per deck, every pair of parts:
+    the housings' and the bodies' least distance in 3-D against the plan's (the study's housings as capsules and arcs,
+    its bodies of their radius along their axes) -- the solids may only be farther apart, the clamp's true arc within
+    its 9-point polyline's sagitta (0.22 mm); the least housing gap and its pair; every body to the can. The stack's
+    gaps: the column's node-2 plate to the deck's parts, deck A's conductors to deck B's, the decks to the cage, the
+    riser to the node-2 plates' bores."""
+    import multiplier_layout as ML
+    from OCP.BRepExtrema import BRepExtrema_DistShapeShape
+    by = {pt["name"]: pt for pt in m.parts}
+    shp = {}
+
+    def S_(n):
+        if n not in shp:
+            shp[n] = m.placed(by[n])
+        return shp[n]
+
+    def dist(a, b):
+        d = BRepExtrema_DistShapeShape(a, b); d.Perform()
+        return float(d.Value())
+    P, out, ok = m.lay["decks"]["parts"], {}, True
+    tol = 0.25
+    body_r = lambda q: 0.5 * (P[q["kind"]].get("body_d") or P[q["kind"]]["body_w"])
+    for s_ in "AB":
+        parts = m.lay["decks"][s_]["parts"]
+        rows = []
+        for i, a in enumerate(parts):
+            for b in parts[i + 1:]:
+                ph = ML.poly_dist(a["pts"], b["pts"]) - a["rad"] - b["rad"]
+                pb = ML.poly_dist(a["body_pts"], b["body_pts"]) - body_r(a) - body_r(b)
+                sh = dist(S_(f"{s_}_{a['name']}_pot"), S_(f"{s_}_{b['name']}_pot"))
+                sb = dist(S_(f"{s_}_{a['name']}_body"), S_(f"{s_}_{b['name']}_body"))
+                rows.append(dict(a=a["name"], b=b["name"], plan_housing_mm=ph, solid_housing_mm=sh, plan_body_mm=pb,
+                                 solid_body_mm=sb))
+        dh = min(r["solid_housing_mm"] - max(r["plan_housing_mm"], 0.0) for r in rows)
+        db = min(r["solid_body_mm"] - r["plan_body_mm"] for r in rows)
+        least = min(rows, key=lambda r: r["solid_housing_mm"])
+        study = m.lay["decks"]["checks"][s_]["min_housing_gap"]
+        can = m.placed(by["can"])
+        to_can = {q["name"]: dist(S_(f"{s_}_{q['name']}_body"), can) for q in parts}
+        plan_can = {}
+        for q in parts:
+            pts = [np.asarray(x) for x in q["body_pts"]]
+            if len(pts) == 2:
+                pts = [pts[0] + (pts[1] - pts[0]) * k / 40.0 for k in range(41)]
+            plan_can[q["name"]] = min(float(np.linalg.norm(x)) for x in pts) - body_r(q) - ML.CAN_R
+        dc = min(to_can[n] - plan_can[n] for n in to_can)
+        same = [r for r in rows if {r["a"], r["b"]} == {study["a"], study["b"]}][0]
+        good = dh >= -tol and db >= -tol and dc >= -tol and abs(same["solid_housing_mm"] - study["housing_gap_mm"]) < 0.05 \
+            and least["solid_housing_mm"] >= study["housing_gap_mm"] - 0.05          # a tie (C8 under r2) may name another pair
+        ok &= good
+        out[s_] = dict(pairs=len(rows), housing_solid_minus_plan_min_mm=dh, body_solid_minus_plan_min_mm=db,
+                       least_housing=dict(pair=f"{least['a']}-{least['b']}", solid_mm=least["solid_housing_mm"],
+                                          study_pair=f"{study['a']}-{study['b']}", study_mm=study["housing_gap_mm"]),
+                       body_to_can_mm={n: round(v, 2) for n, v in to_can.items()}, can_solid_minus_plan_min_mm=dc,
+                       rows=rows, pass_=bool(good))
+        log(f"G-LAYOUT deck {s_}: {len(rows)} pairs; housings solid - plan >= {dh:+.3f} mm, bodies >= {db:+.3f} mm, the can "
+            f">= {dc:+.3f} mm; least housing gap {least['a']}-{least['b']} {least['solid_housing_mm']:.2f} mm (the study "
+            f"{study['a']}-{study['b']} {study['housing_gap_mm']:.2f}); {good}")
+    # the stack's gaps
+    deck = lambda s_: [n for n, pt in by.items() if pt["group"] == f"deck-{s_}"]
+    hv = lambda s_: [n for n in deck(s_) if n in m.nets and not n.endswith("_plate") and "cross" not in n
+                     and "riser" not in n and "tap" not in n]
+    st = m.lay["stack"]
+    col2 = {"A": "A_Ca_06", "B": "B_Cb_06"}
+    g = {}
+    for s_ in "AB":
+        g[f"column {s_}: node-{'2' if s_ == 'A' else '3'} plate to the deck's parts"] = (
+            dist(S_(col2[s_]), compound([S_(n) for n in deck(s_) if "riser" not in n and "tap" not in n])), st["c_col_mm"])
+        g[f"the riser {s_} to the column's plates (their bores)"] = (
+            dist(S_(f"{s_}_riser"), compound([S_(n) for n in by if n.startswith(f"{s_}_C{'a' if s_ == 'A' else 'b'}_")
+                                              and m.nets.get(n, {}).get("net") in ("2", "3")])), 13.0)
+        g[f"deck {s_} to the cage"] = (dist(compound([S_(n) for n in deck(s_)]), S_("stator_cage")), 12.0)
+    g["deck A's conductors to deck B's"] = (dist(compound([S_(n) for n in hv("A")]), compound([S_(n) for n in hv("B")])),
+                                           2 * (st["elements"][[e["kind"] for e in st["elements"]].index("deck parts")]["h0"]))
+    gaps = {k: dict(solid_mm=round(v, 2), needs_or_study_mm=w, ok=bool(v >= w - 0.05)) for k, (v, w) in g.items()}
+    for k, v in gaps.items():
+        log(f"G-LAYOUT {k}: {v['solid_mm']} mm (the study / need {v['needs_or_study_mm']}) {v['ok']}")
+        ok &= v["ok"]
+    out["gaps"] = gaps
+    out["pass_"] = bool(ok)
+    return out
 
 
 def wound_checks(m, shapes, log=print):
@@ -738,7 +1353,12 @@ def main():
                     help="the design of record: the air stack of record (sim/air_stack_sizing_results.json: 3 mm full-round "
                          "vanes, 6 + 6, 6 mm gaps), the HV side on the rotor (Ca / Cb on the rotor, the stator vanes REF) and "
                          "the locked hub (presets/hub-locked.json); implies --rel wound")
+    ap.add_argument("--layout", action="store_true",
+                    help="the multiplier laid out in the machine (sim/multiplier_layout_results.json, PROPOSED): the record "
+                         "re-stacked round the decks and the grounded can, no hub-face bearings")
     a = ap.parse_args()
+    if a.layout:
+        return main_layout(a)
     if a.record:
         a.rel = "wound"
     plates = {}
@@ -784,6 +1404,39 @@ def main():
     json.dump(res, open(results, "w"), indent=1, default=float)
     for k, v in res.items():
         print(k, ":", json.dumps(v, default=float)[:500], flush=True)
+
+
+def main_layout(a):
+    import time
+    t0 = time.time()
+    log = lambda s: print(s, flush=True)
+    m = LayoutMachine(a.pick).build()
+    rel = m.p["rel"]
+    tag = (f"tube-r{m.p['r_outMm']:g}-n{m.p['n_plates']}-air{m.p['g_vMm']:g}-wound-g{str(rel['g']).replace('.', 'p')}-"
+           f"{rel['n_br']}br-hub50-layout")
+    m.lad["tube_geometry"]["tag"] = tag
+    log(f"{tag}: {len(m.parts)} placed solids from {len(m.protos)} prototypes, {m.L_mm:.0f} mm")
+    res = dict(tag=tag, source="sim/multiplier_layout_results.json (the stack, the decks' plans); the record's solids "
+                               "(record_plates); presets/hub-locked.json", status="PROPOSED (the layout, 2026-10-11)",
+               n_parts=len(m.parts), n_protos=len(m.protos), L_total_mm=m.L_mm, hub_centre_z_mm=m.zc)
+    res.update(checks(m, log))
+    res["G-LAYOUT"] = layout_checks(m, log)
+    json.dump(dict(parts=m.parts, nets=m.nets, zc_mm=m.zc, L_mm=m.L_mm),
+              open(os.path.join(OUT_DIR, f"{tag}.parts.json"), "w"), indent=0, default=float)
+    res["renders"] = renders_layout(m, OUT_DIR, tag, log)
+    if not a.no_step:
+        path = write_step(m, os.path.join(OUT_DIR, f"{tag}.step"))
+        res["step"] = os.path.relpath(path, ROOT)
+        res["step_bytes"] = os.path.getsize(path)
+        res["step_read_back"] = rb = read_back(path)
+        res["step_read_back"]["pass_"] = rb["instances"] == len(m.parts)
+    res["run_s"] = round(time.time() - t0)
+    out = os.path.join(HERE, "tube_geometry_layout_results.json")
+    json.dump(res, open(out, "w"), indent=1, default=float)
+    for k, v in res.items():
+        if k != "G-LAYOUT":
+            log(f"{k} : {json.dumps(v, default=float)[:400]}")
+    log(f"wrote {os.path.relpath(out, ROOT)} ({res['run_s']} s)")
 
 
 
@@ -1079,6 +1732,75 @@ def renders_wound(m, out_dir, tag):
     f = os.path.join(out_dir, f"{tag}-reluctance-plan.png"); fig.tight_layout(rect=(0, 0.04, 1, 0.95)); fig.savefig(f, dpi=100)
     plt.close(fig); files.append(f)
     return [os.path.relpath(x, ROOT) for x in files]
+
+
+LAYOUT_LEGEND = [("sife", "SiFe (utron cores, bridges)"), ("cu", "Cu (coils, leads, straps)"), ("stator vane", "Al stator vane"),
+                 ("rotor vane", "Al rotor vane"), ("fixed plate", "Al Ca / Cb plate"), ("can", "Al can (REF)"),
+                 ("g10", "G10"), ("steel", "steel"), ("silicone", "silicone potting"), ("stick", "HV rectifier stick"),
+                 ("rsurge", "surge resistor"), ("cap", "HV capacitor"), ("clamp", "clamp string"),
+                 ("brass", "brass terminals"), ("ptfe", "PTFE (wire, bushing, cover, sheds)"), ("lv", "LV cable"),
+                 ("glass", "borosilicate vessel"), ("ring", "Cu rings + beads"), ("peek", "PEEK retainer")]
+
+
+def renders_layout(m, out_dir, tag, log=print):
+    """the layout's exact sections: (a) the machine through the shaft (y = 0), (b) side A's central bay enlarged,
+    (c) / (d) plan cuts through deck A and deck B at the sticks' axis (|z| 48), each seen from the hub's side."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Patch
+    st, zc, L = m.lay["stack"], m.zc, m.L_mm
+    shapes = [(pt, m.placed(pt)) for pt in m.parts]
+    in_plane = [(pt, s) for pt, s in shapes if bbox(s)[0][1] <= 0.01 and bbox(s)[1][1] >= -0.01]
+    sec = _sections(m, in_plane, ("y", 0.0))
+    log(f"  the section: {len(sec)} parts cut")
+    fig = plt.figure(figsize=(21, 15))
+    ax = fig.add_axes((0.015, 0.04, 0.36, 0.9))
+    _draw(ax, sec, lw=0.25)
+    ax.axvline(0, color="#888", lw=0.5, ls="--")
+    ax.set_aspect("equal"); ax.set_xlim(-175, 175); ax.set_ylim(-10, L + 10)
+    ax.set_xlabel("x [mm] (y = 0: 0 deg right, 180 deg left)", fontsize=8.5)
+    ax.set_ylabel("z [mm] from side A's end (shaft vertical, side B above)", fontsize=8.5)
+    ax.tick_params(labelsize=7.5)
+    ax.set_title(f"(a) the machine through the shaft, exact cut of the solids, rotor angle 0; {L:.0f} mm", fontsize=10, loc="left")
+    hb, hv0, hv1 = st["h_bearing_mm"], st["h_vanes"][0], st["h_vanes"][1]
+    hc_ = st["h_col_mm"]
+    for z, t_ in ((zc + hb + 100, "reluctance B (the record's)"), (zc + 0.5 * (hv0 + hv1), "C2, in phase with C1"),
+                  (zc + hc_ + 24, "Cb"), (zc + 57, "deck B"), (zc, "the hub in its can"), (zc - 57, "deck A"),
+                  (zc - hc_ - 24, "Ca"), (zc - 0.5 * (hv0 + hv1), "C1"), (zc - hb - 100, "reluctance A (the record's)")):
+        ax.text(172, z, t_, fontsize=7.5, va="center", ha="left", color="#333", clip_on=False)
+    # (b) side A's central bay
+    ad = fig.add_axes((0.40, 0.33, 0.32, 0.62))
+    _draw(ad, sec, lw=0.45, keep=lambda n: not n.startswith(("B_", "shaft_B")))
+    ad.axvline(0, color="#888", lw=0.5, ls="--")
+    ad.set_aspect("equal"); ad.set_xlim(-170, 170); ad.set_ylim(zc - hb - 22, zc + 12)
+    ad.set_yticks([zc - k for k in range(0, int(hb) + 1, 50)])
+    ad.set_yticklabels([f"{k}" for k in range(0, int(hb) + 1, 50)])
+    ad.set_ylabel("|z| from the hub's centre [mm], side A", fontsize=8.5); ad.tick_params(labelsize=7.5)
+    ad.set_title("(b) side A's central bay: the can, deck A, Ca, the dead gap, C1, the Ca|reluctance bearing", fontsize=10,
+                 loc="left")
+    # (c), (d) the decks in plan
+    for k, s_ in enumerate("AB"):
+        a = fig.add_axes((0.40 + 0.165 * k, 0.03, 0.155, 0.27))
+        zz_ = m.zz(s_, 48.0)
+        sel = [(pt, s) for pt, s in shapes if bbox(s)[0][2] <= zz_ <= bbox(s)[1][2] and (pt["group"] in (f"deck-{s_}", "can", "hub", "cage", "rotor", "wiring"))]
+        _draw(a, _sections(m, sel, ("z", zz_)), lw=0.3)
+        for q in m.lay["decks"][s_]["parts"]:
+            a.text(q["centre"][0], q["centre"][1], q["name"], fontsize=6.0, ha="center", va="center", color="#111", zorder=9)
+        a.set_aspect("equal"); a.set_xlim(-170, 170); a.set_ylim(-170, 170); a.tick_params(labelsize=6.5)
+        a.set_title(f"({'c' if s_ == 'A' else 'd'}) deck {s_} at |z| 48, seen from +z", fontsize=9, loc="left")
+    an = fig.add_axes((0.74, 0.33, 0.25, 0.62)); an.axis("off")
+    an.legend(handles=[Patch(facecolor=COL[k_], label=t_) for k_, t_ in LAYOUT_LEGEND], loc="upper left", fontsize=8.5,
+              frameon=False, ncol=1)
+    an.text(0.0, 0.30, "The layout of sim/multiplier-layout-findings.md (PROPOSED, 2026-10-11) in solids:\n"
+            "every part of the decks from the study's plans, the record's\nhub, column plates, vanes and reluctance "
+            "sections; the wiring\nas sim/tube_geometry.py LayoutMachine routes it.\n\n"
+            "Not drawn: the bridge-ring bearings (10-20 mm a side, the\nfindings' §7), Ca / Cb's rods and mounts, the "
+            "decks' standoffs\nto the can, the plates' interconnections, the gear.", fontsize=8.5, va="top",
+            transform=an.transAxes)
+    fig.suptitle(f"{tag}: the multiplier laid out in the machine", fontsize=12, x=0.01, ha="left")
+    f = os.path.join(out_dir, f"{tag}-section.png"); fig.savefig(f, dpi=100); plt.close(fig)
+    return [os.path.relpath(f, ROOT)]
 
 
 def renders(m, out_dir, tag):
