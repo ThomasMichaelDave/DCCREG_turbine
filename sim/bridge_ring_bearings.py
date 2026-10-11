@@ -315,19 +315,21 @@ def shafts(st, log):
 # ---------------------------------------------------------------------------------------------------- the drawn solids
 RHO_LAYOUT = [("silicone potting", 1150.0), ("PTFE HV wire", 2950.0), ("LV cable", 2950.0), ("PTFE", 2200.0),
               ("brass", 8500.0), ("tinned Cu", 8900.0), ("Cu strap", 8900.0), ("HV rectifier stick", 2500.0),
-              ("surge resistor", 2500.0), ("HV ceramic", 2500.0), ("the clamp string", 2500.0)]
-# kg/m^3: [RH] silicone and the parts' bodies as sim/multiplier_layout.py deck_mass; [IR] PTFE, brass, Cu, and the HV
-# wire as 1 mm Cu in 3 mm PTFE (an eighth Cu by section); then the record's table (sim/shaft_bearings.py DENSITY)
+              ("surge resistor", 2500.0), ("HV ceramic", 2500.0), ("the clamp string", 2500.0), ("steatite", 2800.0)]
+# kg/m^3: [RH] silicone and the parts' bodies as sim/multiplier_layout.py deck_mass; [IR] PTFE, brass, Cu, steatite
+# C 221 (sim/doubler_caps.py's standoffs), and the HV wire as 1 mm Cu in 3 mm PTFE (an eighth Cu by section); then the
+# record's table (sim/shaft_bearings.py DENSITY)
 
 
-def solids_parts(log):
-    """every drawn solid of the layout (sim/tube_geometry.py LayoutMachine, with the bridge-ring bearings) with its body,
-    mass, centroid and inertia, and the elements the two-body model reads."""
+def solids_parts(log, mounts=False):
+    """every drawn solid of the layout (sim/tube_geometry.py LayoutMachine, with the bridge-ring bearings; with
+    mounts, the capacitors' mounts of sim/doubler_caps.py too) with its body, mass, centroid and inertia, and the
+    elements the two-body model reads. This study's own numbers are the layout's without the mounts."""
     import shaft_bearings as SB
     import tube_geometry as TG
     from OCP.BRepGProp import BRepGProp
     from OCP.GProp import GProp_GProps
-    m = TG.LayoutMachine().build()
+    m = TG.LayoutMachine(mounts=mounts).build()
     parts = []
     for pt in m.parts:
         mat = m.protos[pt["proto"]][2]
