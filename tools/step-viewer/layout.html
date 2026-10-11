@@ -1,0 +1,568 @@
+<title>DCCREG Wound Tube</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* layout: one screen; the model fills it, a drawing-office control card floats top-left and the circuit's panel right
+   (a drawer at medium widths, a tabbed bottom sheet on phones). Potential runs blue (negative) - grey (REF) - red
+   (positive) in the model and the charts alike; a lit amber marks a diode passing current. */
+:root {
+  --bg: #e9ecee; --canvas: #eef1f2; --panel: rgba(250, 251, 251, 0.94); --fg: #1a1e22; --muted: #59626b;
+  --line: #ccd3d9; --accent: #a4561f; --accent-soft: rgba(164, 86, 31, 0.12); --halo: #eef1f2;
+  --neg: #2a78d6; --pos: #e34948; --cond: #eda100; --grid: #e1e0d9; --axis: #c3c2b7;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121518; --canvas: #15191c; --panel: rgba(27, 32, 36, 0.94); --fg: #e4e8eb; --muted: #9aa5ae;
+    --line: #313a41; --accent: #e3925a; --accent-soft: rgba(227, 146, 90, 0.16); --halo: #15191c;
+    --neg: #3987e5; --pos: #e66767; --cond: #c98500; --grid: #2c2c2a; --axis: #383835; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121518; --canvas: #15191c; --panel: rgba(27, 32, 36, 0.94); --fg: #e4e8eb; --muted: #9aa5ae;
+  --line: #313a41; --accent: #e3925a; --accent-soft: rgba(227, 146, 90, 0.16); --halo: #15191c;
+  --neg: #3987e5; --pos: #e66767; --cond: #c98500; --grid: #2c2c2a; --axis: #383835; color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font: 14px/1.45 var(--sans); overflow: hidden; }
+.app { position: relative; height: 100%; }
+#stage { position: absolute; inset: 0; background: var(--canvas); }
+#stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+#labels { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+#labels text { font: 12.5px var(--sans); fill: var(--fg); paint-order: stroke; stroke: var(--halo); stroke-width: 4px; stroke-linejoin: round; }
+#labels line, #labels circle { stroke: var(--muted); fill: var(--muted); }
+.panel {
+  position: absolute; top: calc(16px + env(safe-area-inset-top, 0px)); max-height: calc(100% - 32px); overflow: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 14px 12px;
+  display: flex; flex-direction: column; gap: 12px; backdrop-filter: blur(6px);
+}
+.card { left: 16px; width: 290px; }
+.circuit { right: 16px; width: 336px; }
+h1 { font: 600 16px/1.2 var(--sans); margin: 0; text-wrap: balance; }
+h2 { font: 600 14px/1.25 var(--sans); margin: 0; text-wrap: balance; }
+h3 { font: 500 11px/1 var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0; }
+.sub { color: var(--muted); font-size: 12.5px; margin-top: 3px; }
+.group { display: flex; flex-direction: column; gap: 6px; }
+.label { font: 500 11px/1 var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; }
+button {
+  font: 500 12.5px/1 var(--sans); color: var(--fg); background: transparent; border: 1px solid var(--line);
+  border-radius: 6px; padding: 7px 9px; cursor: pointer;
+}
+button:hover { border-color: var(--muted); }
+button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--fg); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.checks { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.checks label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; margin: 0; }
+input[type="range"] { accent-color: var(--accent); width: 100%; margin: 0; }
+.clock { font: 12px/1.4 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.info { border-top: 1px solid var(--line); padding-top: 10px; min-height: 62px; }
+.info .name { font: 500 13px/1.3 var(--mono); word-break: break-word; }
+.info .desc { color: var(--muted); font-size: 12.5px; margin-top: 2px; }
+.info .live { font: 12.5px/1.4 var(--mono); margin-top: 4px; font-variant-numeric: tabular-nums; }
+.legend { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; font-size: 12px; color: var(--muted); }
+.legend span { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.legend i { width: 11px; height: 11px; border-radius: 2px; flex: none; border: 1px solid rgba(0, 0, 0, 0.18); }
+.scale { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.scale .bar { height: 10px; border-radius: 3px; }
+.scale .ticks { display: flex; justify-content: space-between; font: 11px var(--mono); font-variant-numeric: tabular-nums; }
+.scale .lit { display: flex; align-items: center; gap: 6px; }
+.scale .lit i { width: 11px; height: 11px; border-radius: 50%; background: var(--cond); flex: none; }
+.foot { font: 11.5px/1.4 var(--mono); color: var(--muted); }
+#status { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: var(--muted); font-size: 14px; }
+#viewTitle { position: absolute; left: calc(50% - 16px); transform: translateX(-50%); bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  max-width: min(560px, calc(100% - 720px)); text-align: center; font-size: 12.5px; color: var(--muted); text-wrap: balance;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+#viewTitle:empty { display: none; }
+/* the circuit's panel */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.stat .k { font-size: 11.5px; color: var(--muted); }
+.stat .v { font: 600 17px/1.2 var(--sans); }
+.stat .v small { font: 400 12px var(--sans); color: var(--muted); margin-left: 2px; }
+.note { font-size: 12px; color: var(--muted); margin: 0; }
+.strips, .chart { width: 100%; height: auto; display: block; overflow: visible; }
+.strips .zero, .chart .axis { stroke: var(--axis); stroke-width: 1; }
+.chart .grid { stroke: var(--grid); stroke-width: 1; }
+.strips .wave { fill: none; stroke: var(--fg); stroke-width: 1.2; stroke-linejoin: round; }
+.strips .fill-pos { fill: var(--pos); fill-opacity: 0.42; }
+.strips .fill-neg { fill: var(--neg); fill-opacity: 0.42; }
+.strips .fill-cond { fill: var(--cond); fill-opacity: 0.85; }
+.strips .row-label, .strips .row-value, .chart .end-label { font: 10.5px var(--mono); fill: var(--muted); }
+.strips .row-value { fill: var(--fg); font-variant-numeric: tabular-nums; }
+.strips .tick, .chart .tick { font: 9.5px var(--mono); fill: var(--muted); font-variant-numeric: tabular-nums; }
+.strips .cursor, .chart .cursor { stroke: var(--accent); stroke-width: 1.5; }
+.strips .hover, .chart .hover { stroke: var(--muted); stroke-width: 1; }
+.strips .lamp { fill: var(--line); }
+.strips .lamp.on { fill: var(--cond); }
+.chart .band-pos { fill: var(--pos); fill-opacity: 0.14; }
+.chart .band-neg { fill: var(--neg); fill-opacity: 0.14; }
+.chart .line-pos { fill: none; stroke: var(--pos); stroke-width: 2; stroke-linejoin: round; }
+.chart .line-neg { fill: none; stroke: var(--neg); stroke-width: 2; stroke-linejoin: round; }
+.keys { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: 11.5px; color: var(--muted); }
+.keys span { display: flex; align-items: center; gap: 5px; }
+.keys i { width: 14px; height: 2px; flex: none; }
+.keys i.band { height: 8px; opacity: 0.35; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 11.5px; font-variant-numeric: tabular-nums; }
+th, td { padding: 3px 5px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child, th:nth-child(2), td:nth-child(2) { text-align: left; }
+th { font-weight: 500; color: var(--muted); }
+.drawer { display: none; }
+.tabs { display: none; }
+@media (max-width: 1180px) and (min-width: 761px) {
+  .circuit { display: none; }
+  .circuit.open { display: flex; }
+  .drawer { display: inline-block; position: absolute; right: 16px; top: calc(16px + env(safe-area-inset-top, 0px)); background: var(--panel); }
+  .circuit.open + .drawer { right: 362px; }
+  #viewTitle { max-width: min(520px, calc(100% - 380px)); left: calc(50% + 150px); }
+}
+@media (max-width: 760px) {
+  #stage, #labels { bottom: 50%; }
+  .panel { left: 0; right: 0; top: auto; bottom: 0; width: auto; height: 50%; max-height: none; border-radius: 12px 12px 0 0;
+           padding: 46px 16px calc(12px + env(safe-area-inset-bottom, 0px)); border-width: 1px 0 0; }
+  .panel[hidden] { display: none !important; }
+  .tabs { display: flex; position: absolute; left: 16px; right: 16px; bottom: calc(50% - 38px); z-index: 2; gap: 6px; }
+  #viewTitle { bottom: auto; top: calc(10px + env(safe-area-inset-top, 0px)); left: 50%; max-width: calc(100% - 32px); }
+  .legend { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto; } }
+</style>
+<script type="importmap">
+{"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+             "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}
+</script>
+
+<div class="app">
+  <div id="stage"></div>
+  <svg id="labels" aria-hidden="true"></svg>
+  <div id="status">Loading the model…</div>
+  <div id="viewTitle"></div>
+  <div class="tabs" role="tablist">
+    <button id="t-model" role="tab" aria-pressed="true">Model</button>
+    <button id="t-circuit" role="tab" aria-pressed="false">Circuit</button>
+  </div>
+  <aside class="panel card" id="card" aria-label="Viewer controls">
+    <div>
+      <h1>DCCREG wound tube</h1>
+      <div class="sub" id="sub">The multiplier laid out in the machine (PROPOSED, 2026-10-11), with its circuit running</div>
+    </div>
+    <div class="group">
+      <div class="label">View</div>
+      <div class="seg" id="views">
+        <button id="v-bay" data-view="bay">Central bay</button>
+        <button id="v-deckB" data-view="deckB">Deck B</button>
+        <button id="v-deckA" data-view="deckA">Deck A</button>
+        <button id="v-cutaway" data-view="cutaway">Cutaway</button>
+        <button id="v-half" data-view="half">Half section</button>
+        <button id="v-whole" data-view="whole">Whole</button>
+        <button id="v-reluctance" data-view="reluctance">Reluctance A</button>
+        <button id="v-plan" data-view="plan">Plan A</button>
+        <button id="v-exploded" data-view="exploded">Utron exploded</button>
+      </div>
+    </div>
+    <div class="group">
+      <div class="label">Cut</div>
+      <div class="seg" id="cuts">
+        <button id="c-none" data-cut="none">None</button>
+        <button id="c-quarter" data-cut="quarter">Quarter</button>
+        <button id="c-half" data-cut="half">Half</button>
+      </div>
+    </div>
+    <div class="group">
+      <div class="label">Show</div>
+      <div class="checks">
+        <label><input type="checkbox" id="b-rotor" checked> Rotor</label>
+        <label><input type="checkbox" id="b-counter" checked> Counter-rotor</label>
+        <label><input type="checkbox" id="b-frame" checked> Frame + bearings</label>
+      </div>
+    </div>
+    <div class="group">
+      <div class="label">Colour by</div>
+      <div class="seg" id="colours">
+        <button id="k-potential" data-colour="potential">Potential</button>
+        <button id="k-materials" data-colour="materials">Materials</button>
+      </div>
+    </div>
+    <div class="group">
+      <div class="label">Simulation</div>
+      <div class="seg">
+        <button id="play" aria-pressed="true">Pause</button>
+        <span class="seg" id="modes">
+          <button id="m-cycle" data-mode="cycle">One cycle</button>
+          <button id="m-startup" data-mode="startup">Start-up</button>
+        </span>
+      </div>
+      <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Time within the simulation">
+      <div class="clock" id="clock"></div>
+    </div>
+    <div class="info" id="info" aria-live="polite">
+      <div class="name">Point at a part</div>
+      <div class="desc">Drag to orbit, scroll or pinch to zoom, right-drag to pan.</div>
+    </div>
+    <div class="scale" id="scale"></div>
+    <div class="legend" id="legend" hidden></div>
+    <div class="foot" id="foot"></div>
+  </aside>
+  <aside class="panel circuit" id="circuit" aria-label="The circuit running">
+    <div>
+      <h2>The circuit running</h2>
+      <p class="note" id="circuitSub"></p>
+    </div>
+    <div class="stats" id="stats"></div>
+    <section class="group">
+      <h3>Every node through one cycle, kV</h3>
+      <div id="nodes"></div>
+      <p class="note">Side B mirrors side A with the sign flipped. The rotor turns 30° per cycle and the counter-rotor −30°; at 0° the vanes are aligned and C1 = C2 = C<sub>max</sub>.</p>
+    </section>
+    <section class="group">
+      <h3>When each diode and clamp conducts</h3>
+      <div id="devices"></div>
+      <p class="note">Each row's own peak at its right; the lamp lights while it conducts.</p>
+    </section>
+    <section class="group">
+      <h3>The start-up, kV</h3>
+      <div id="startup"></div>
+      <div class="keys"><span><i style="background:var(--pos)"></i>ring B</span><span><i style="background:var(--neg)"></i>ring A</span>
+        <span><i class="band" style="background:var(--pos)"></i>node 4's swing</span><span><i class="band" style="background:var(--neg)"></i>node 1's swing</span></div>
+      <p class="note" id="startupNote"></p>
+    </section>
+    <section class="group">
+      <div class="seg"><button id="tbl" aria-pressed="false">Show the table</button></div>
+      <div class="tablewrap" id="table" hidden></div>
+    </section>
+    <p class="foot" id="circuitFoot"></p>
+  </aside>
+  <button class="drawer" id="drawer" aria-pressed="false">Circuit</button>
+</div>
+
+<script type="module">
+import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { buildScene, views, applyView, labelPositions, setCut, setExplode, spin } from "./scene.js";
+import { initSim, divergingLUT, lutAt, cssOf, atPhase, atCycle, nodeStrips, deviceStrips, startupChart } from "./sim.js";
+
+const q = new URLSearchParams(location.search);
+const MODEL = q.get("model") || "./model.json", SIMD = q.get("sim") || "./sim.json";
+const $ = (id) => document.getElementById(id);
+const stage = $("stage");
+const css = (n) => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+stage.appendChild(renderer.domElement);
+const camera = new THREE.PerspectiveCamera(26, 1, 0.005, 20);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+
+const LEGEND = [["SiFe laminations", "#545966"], ["Cu", "#cc7838"], ["Al stator vane", "#c792eb"], ["Al rotor vane", "#7dd1ff"],
+                ["Al Ca / Cb plate", "#45c46b"], ["Al can (REF)", "#a3b0bf"], ["G10", "#8c9980"], ["steel", "#6b737f"],
+                ["silicone potting", "#ccdbe3"], ["HV stick", "#292b33"], ["HV capacitor", "#4d78b5"], ["clamp string", "#997333"]];
+$("legend").replaceChildren(...LEGEND.map(([t, c]) => {
+  const s = document.createElement("span"), i = document.createElement("i");
+  i.style.background = c; s.append(i, document.createTextNode(t)); return s;
+}));
+// the model's potential scale: the palette's diverging pair through a REF grey that reads on both canvases
+const LUT = divergingLUT("#2a78d6", "#9a9993", "#e34948"), VMAX = 15000;
+const NODE_ROWS = [["1", "1"], ["2", "2"], ["r2", "r2"], ["xa", "xa"], ["ea", "ring A"], ["l1", "l1"], ["r1", "r1"],
+                   ["4", "4"], ["3", "3"], ["l2", "l2"], ["xb", "xb"], ["eb", "ring B"]];
+const DEV_ROWS = [["D1", "D1"], ["D3", "D3"], ["D6", "D6"], ["D7", "D7"], ["z4", "Z4"], ["D9", "D9"], ["D10", "D10"],
+                  ["D2", "D2"], ["D4", "D4"], ["D5", "D5"], ["D8", "D8"], ["z1", "Z1"], ["D11", "D11"], ["D12", "D12"]];
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+let S, V, D = null, SIM = null, current = "bay", cut = "quarter", exploded = false, zTop = null, zBand = null;
+const show = { rotor: true, counter: true, frame: true };
+const st = { mode: "cycle", playing: !reduced, phase: reduced ? 25.5 / 60 : 0, cyc: 0, colour: "potential",
+             hoverPh: null, hoverC: null, picked: null, spinA: 0, hold: 0 };
+const CYCLE_S = 6, STARTUP_S = 18;
+
+function setPressed(sel, attr, val) {
+  document.querySelectorAll(sel).forEach((b) => b.setAttribute("aria-pressed", String(b.dataset[attr] === val)));
+}
+function visibleNow(p) {
+  const role = p.role === "bearing" ? "frame" : p.role;
+  return V[current].show(p) && show[role];
+}
+function refresh() { for (const p of S.parts) p.mesh.visible = visibleNow(p); setCut(S, cut); }
+function gotoView(name) {
+  if (!V[name]) name = "cutaway";
+  current = name;
+  const v = V[name];
+  exploded = !!v.explode;
+  applyView(S, camera, v, renderer);
+  zTop = v.zTop || null; zBand = v.zBand || null;
+  cut = v.cut;
+  spin(S, st.spinA);
+  refresh();
+  controls.target.copy(v.target);
+  controls.update();
+  $("viewTitle").textContent = v.title;
+  setPressed("#views button", "view", name);
+  setPressed("#cuts button", "cut", cut);
+}
+
+// the panels that float over the stage, so the model centres between them and no label lands under one
+function occluded() {
+  const w = stage.clientWidth, sr = stage.getBoundingClientRect(), side = { left: 0, right: 0 };
+  for (const id of ["card", "circuit"]) {
+    const e = $(id);
+    if (e.hidden || getComputedStyle(e).display === "none") continue;
+    const r = e.getBoundingClientRect();
+    if (r.height < 0.6 * sr.height && r.top > sr.top + 0.3 * sr.height) continue;      // a bottom sheet: not beside the model
+    if (r.left - sr.left < w / 2) side.left = Math.max(side.left, r.right - sr.left);
+    else side.right = Math.max(side.right, sr.right - r.left);
+  }
+  return side;
+}
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / Math.max(h, 1);
+  const o = occluded();
+  if (o.left || o.right) camera.setViewOffset(w, h, (o.right - o.left) / 2, 0, w, h); else camera.clearViewOffset();
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(stage);
+function theme() { renderer.setClearColor(new THREE.Color(css("--canvas") || "#eef1f2")); }
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", theme);
+new MutationObserver(theme).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+// the instant shown: the playhead, or a chart's hover
+function instant() {
+  if (!D) return null;
+  if (st.mode === "cycle") return atPhase(D, st.hoverPh ?? st.phase);
+  return atCycle(D, st.hoverC ?? st.cyc);
+}
+const fmtkV = (v) => `${v >= 0 ? "+" : "−"}${Math.abs(v / 1000).toFixed(2)} kV`;
+
+// pointing at a part: skip hits in the cut-away or clipped region
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function clippedAway(p) {
+  if (zTop !== null && p.z > zTop) return true;
+  if (zBand && (p.z < zBand[0] || p.z > zBand[1])) return true;
+  if (cut === "quarter") return p.x > 0 && p.y < 0;
+  if (cut === "half") return p.y < 0;
+  return false;
+}
+function pick(ev) {
+  if (!S) return;
+  const r = renderer.domElement.getBoundingClientRect();
+  ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const hits = ray.intersectObjects(S.parts.filter((p) => p.mesh.visible).map((p) => p.mesh), false);
+  const h = hits.find((x) => !clippedAway(x.point) && !(st.colour === "potential" && SIM && SIM.faded.some((f) => f.mesh === x.object)));
+  if (!h) return;
+  st.picked = S.parts.find((qq) => qq.mesh === h.object);
+  showInfo();
+}
+function showInfo() {
+  const p = st.picked, info = $("info");
+  if (!p) return;
+  const desc = (p.label.split(" - ")[1] || "").replace(/\s*\[.*\]$/, "");
+  const role = { rotor: "rotor", counter: "counter-rotor", frame: "frame", bearing: "bearing" }[p.role];
+  const name = document.createElement("div"); name.className = "name"; name.textContent = p.part;
+  const d = document.createElement("div"); d.className = "desc"; d.textContent = `${desc}${desc ? " · " : ""}${p.material} · ${role}`;
+  const live = document.createElement("div"); live.className = "live"; live.id = "live";
+  info.replaceChildren(name, d, live);
+  liveInfo();
+}
+function liveInfo() {
+  const el = $("live"), p = st.picked;
+  if (!el || !p || !D) return;
+  const n = D.nets[p.part], now = instant();
+  if (!n || !now) { el.textContent = n ? "" : "an insulator, or a part the circuit does not reach"; return; }
+  const name = (x) => (x === "0" ? "REF" : x === "s" ? "the counter-rotor" : x === "lv" ? "LV" : `node ${x}`);
+  let t = n.net ? (n.net === "lv" ? "the magnetic pump's LV circuit" : `${name(n.net)}: ${fmtkV(now.V[n.net] ?? 0)}`)
+                : `${name(n.nets[0])} ${fmtkV(now.V[n.nets[0]] ?? 0)} to ${name(n.nets[1])} ${fmtkV(now.V[n.nets[1]] ?? 0)}`;
+  if (n.device && now.I) {
+    const i = now.I[n.device] || 0, dv = D.devices[n.device];
+    t += i > 0.01 * dv.I_peak_mA * 1000 ? ` · conducting ${(i / 1000).toFixed(3)} mA` : " · blocking";
+    if (dv.V_reverse_peak_kV != null) t += `, ${dv.V_reverse_peak_kV.toFixed(2)} kV reverse at most`;
+  }
+  el.textContent = t;
+}
+renderer.domElement.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse" && e.buttons === 0) pick(e); });
+renderer.domElement.addEventListener("pointerup", (e) => { if (e.pointerType !== "mouse") pick(e); });
+
+$("views").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) gotoView(b.dataset.view); });
+$("cuts").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  cut = b.dataset.cut; setPressed("#cuts button", "cut", cut); setCut(S, cut);
+});
+for (const k of ["rotor", "counter", "frame"]) $("b-" + k).addEventListener("change", (e) => { show[k] = e.target.checked; refresh(); });
+function setColour(c) {
+  st.colour = SIM ? c : "materials";
+  setPressed("#colours button", "colour", st.colour);
+  if (SIM) SIM.setMode(st.colour);
+  $("scale").hidden = st.colour !== "potential";
+  $("legend").hidden = st.colour === "potential";
+}
+$("colours").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setColour(b.dataset.colour); });
+function setPlaying(on) { st.playing = on; $("play").textContent = on ? "Pause" : "Play"; $("play").setAttribute("aria-pressed", String(on)); }
+$("play").addEventListener("click", () => setPlaying(!st.playing));
+function setMode(m) {
+  st.mode = m; st.hoverPh = st.hoverC = null; st.hold = 0;
+  setPressed("#modes button", "mode", m);
+  syncScrub();
+}
+$("modes").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) setMode(b.dataset.mode); });
+$("scrub").addEventListener("input", (e) => {
+  const u = e.target.value / 1000;
+  if (st.mode === "cycle") st.phase = Math.min(0.9999, u); else st.cyc = u * (D.startup.mean.ea.length - 1);
+  setPlaying(false);
+});
+function syncScrub() {
+  if (!D) return;
+  $("scrub").value = String(Math.round((st.mode === "cycle" ? st.phase : st.cyc / (D.startup.mean.ea.length - 1)) * 1000));
+}
+$("tbl").addEventListener("click", (e) => {
+  const on = $("table").hidden; $("table").hidden = !on;
+  e.currentTarget.setAttribute("aria-pressed", String(on)); e.currentTarget.textContent = on ? "Hide the table" : "Show the table";
+});
+$("drawer").addEventListener("click", (e) => {
+  const open = !$("circuit").classList.contains("open");
+  $("circuit").classList.toggle("open", open); e.currentTarget.setAttribute("aria-pressed", String(open));
+  resize();
+});
+for (const [id, which] of [["t-model", "card"], ["t-circuit", "circuit"]]) {
+  $(id).addEventListener("click", () => {
+    $("card").hidden = which !== "card"; $("circuit").hidden = which !== "circuit";
+    $("t-model").setAttribute("aria-pressed", String(which === "card")); $("t-circuit").setAttribute("aria-pressed", String(which === "circuit"));
+    resize();
+  });
+}
+function phoneTabs() {
+  const phone = matchMedia("(max-width: 760px)").matches;
+  if (!phone) { $("card").hidden = false; $("circuit").hidden = false; }
+  else { const c = $("t-circuit").getAttribute("aria-pressed") === "true"; $("card").hidden = c; $("circuit").hidden = !c; }
+}
+matchMedia("(max-width: 760px)").addEventListener("change", phoneTabs);
+
+// the circuit's panel
+let NODES, DEVS, START;
+function buildPanel() {
+  const c = D.circuit, r = D.rings;
+  $("circuitSub").textContent = `The layout's deck at its picks: C3–C6 ${c.C3_C6_pF} pF, the clamp strings at ${c.clamp_parts} parts ` +
+    `(V_op ${c.V_op_kV.toFixed(2)} kV), the layout's strays; ${c.note}.`;
+  const stat = (k, v, u) => { const d = document.createElement("div"); d.className = "stat";
+    const a = document.createElement("div"); a.className = "k"; a.textContent = k;
+    const b = document.createElement("div"); b.className = "v"; b.textContent = v;
+    const s = document.createElement("small"); s.textContent = u; b.append(s); d.append(a, b); return d; };
+  const chain = D.devices.D1.I_avg_uA;
+  $("stats").replaceChildren(stat("ring A", `−${Math.abs(r.V_A_kV).toFixed(2)}`, "kV"), stat("ring B", `+${r.V_B_kV.toFixed(2)}`, "kV"),
+    stat("field at the null", r.E_null_kV_cm.toFixed(2), "kV/cm"), stat("each chain", chain.toFixed(1), "µA"));
+  $("stats").children[0].id = "statA"; $("stats").children[1].id = "statB";
+  const hoverPh = (ph) => { st.hoverPh = ph; };
+  NODES = nodeStrips($("nodes"), D, NODE_ROWS, VMAX, hoverPh);
+  DEVS = deviceStrips($("devices"), D, DEV_ROWS, hoverPh);
+  START = startupChart($("startup"), D, (cc) => { st.hoverC = cc; });
+  const n = D.startup.mean.ea.length, Tms = c.period_ms;
+  $("startupNote").textContent = `From a 1 kV seed: ${n} cycles, ${(n * Tms / 1000).toFixed(2)} s; the rings reach 95 % at cycle ` +
+    `${r.cycles_to_95pc} (${(r.cycles_to_95pc * Tms / 1000).toFixed(2)} s) and settle with ${r.ripple_V.toFixed(0)} V of ripple.`;
+  const tb = document.createElement("table"), hd = document.createElement("tr");
+  for (const h of ["part", "from → to", "nC a cycle", "µA", "peak mA", "on, deg", "reverse kV"]) { const th = document.createElement("th"); th.textContent = h; hd.append(th); }
+  tb.append(hd);
+  for (const [nm, lab] of DEV_ROWS) {
+    const d = D.devices[nm], tr = document.createElement("tr");
+    const on = d.conducts_deg.map(([a, b]) => `${a.toFixed(1)}–${b.toFixed(1)}`).join(", ");
+    for (const v of [lab, `${d.anode} → ${d.cathode}`, d.charge_nC.toFixed(1), d.I_avg_uA.toFixed(2), d.I_peak_mA.toFixed(3), on,
+                     d.V_reverse_peak_kV == null ? "—" : d.V_reverse_peak_kV.toFixed(2)]) { const td = document.createElement("td"); td.textContent = v; tr.append(td); }
+    tb.append(tr);
+  }
+  $("table").replaceChildren(tb);
+  const g = D.gates, ok = Object.values(g).every(Boolean);
+  $("circuitFoot").textContent = `${D.source}. Gates ${ok ? "pass" : "FAIL"}: the rings as the layout study, the charge balance along both ` +
+    `chains, twice the steps. The strays are estimates; the bench sets the clamps' trim.`;
+  // the potential scale under the controls
+  const bar = document.createElement("div"); bar.className = "bar";
+  bar.style.background = `linear-gradient(90deg, ${[0, 0.25, 0.5, 0.75, 1].map((u) => cssOf(LUT[Math.round(u * (LUT.length - 1))])).join(", ")})`;
+  const ticks = document.createElement("div"); ticks.className = "ticks";
+  for (const t of ["−15 kV", "REF", "+15 kV"]) { const s = document.createElement("span"); s.textContent = t; ticks.append(s); }
+  const lit = document.createElement("div"); lit.className = "lit"; const li = document.createElement("i");
+  lit.append(li, document.createTextNode("lit: a diode or clamp passing current; faded: insulators"));
+  const lab = document.createElement("div"); lab.textContent = "Potential, every conductor on one scale";
+  $("scale").replaceChildren(lab, bar, ticks, lit);
+}
+
+const svg = $("labels");
+let last = performance.now();
+function frame(t) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.1, (t - last) / 1000); last = t;
+  if (D && st.playing && st.hoverPh == null && st.hoverC == null) {
+    if (st.mode === "cycle") st.phase = (st.phase + dt / CYCLE_S) % 1;
+    else {
+      const n = D.startup.mean.ea.length;
+      if (st.cyc >= n - 1) { st.hold += dt; if (st.hold > 2.5) { st.cyc = 0; st.hold = 0; } }
+      else st.cyc = Math.min(n - 1, st.cyc + dt * n / STARTUP_S);
+    }
+    syncScrub();
+  }
+  if (D) {
+    // the cycle drives the rotation: 60 deg of relative rotation a cycle, each body half of it
+    if (st.mode === "cycle") st.spinA = (st.hoverPh ?? st.phase) * Math.PI / 6;
+    else if (st.playing) st.spinA += dt * 2 * Math.PI / 12;
+    spin(S, st.spinA);
+    const now = instant();
+    if (SIM && now) SIM.apply(now, LUT, VMAX);
+    if (now) {
+      if (st.mode === "cycle") { NODES.set(st.phase, now, st.hoverPh); DEVS.set(st.phase, st.hoverPh); START.set(null, null); }
+      else {
+        NODES.set(0, now, null); DEVS.set(0, null); START.set(st.cyc, st.hoverC);
+      }
+      const A = now.V.ea, B = now.V.eb;
+      $("statA").querySelector(".v").firstChild.nodeValue = `${A >= 0 ? "+" : "−"}${Math.abs(A / 1000).toFixed(2)}`;
+      $("statB").querySelector(".v").firstChild.nodeValue = `${B >= 0 ? "+" : "−"}${Math.abs(B / 1000).toFixed(2)}`;
+      const T = D.circuit.period_ms;
+      if (st.mode === "cycle") {
+        const ph = st.hoverPh ?? st.phase, rel = ph * 60;
+        $("clock").textContent = `one cycle: ${rel.toFixed(1)}° relative (rotor +${(rel / 2).toFixed(1)}°, counter-rotor −${(rel / 2).toFixed(1)}°) · ${(ph * T).toFixed(2)} of ${T.toFixed(2)} ms · shown ${(CYCLE_S * 1000 / T).toFixed(0)}× slower`;
+      } else {
+        const c = st.hoverC ?? st.cyc;
+        $("clock").textContent = `start-up: cycle ${Math.floor(c) + 1} of ${D.startup.mean.ea.length} · ${(c * T / 1000).toFixed(2)} s · each node's mean over its cycle`;
+      }
+      liveInfo();
+    }
+  }
+  controls.update();
+  renderer.render(S.scene, camera);
+  const w = stage.clientWidth, h = stage.clientHeight;
+  const L = labelPositions(S, camera, V[current], w, h), occ = occluded();
+  svg.innerHTML = "";
+  for (const { x, y, dx, dy, text } of L) {
+    const tx = x + dx, ty = y + dy, ns = "http://www.w3.org/2000/svg", tw = 6.8 * text.length + 8;
+    const x0 = dx < 0 ? tx - tw : tx, x1 = dx < 0 ? tx : tx + tw;
+    if (x0 < occ.left + 8 || x1 > w - occ.right - 8 || x < occ.left || x > w - occ.right) continue;
+    const ln = document.createElementNS(ns, "line"); ln.setAttribute("x1", x); ln.setAttribute("y1", y); ln.setAttribute("x2", tx); ln.setAttribute("y2", ty); ln.setAttribute("stroke-width", "1");
+    const ci = document.createElementNS(ns, "circle"); ci.setAttribute("cx", x); ci.setAttribute("cy", y); ci.setAttribute("r", "2.5");
+    const te = document.createElementNS(ns, "text"); te.setAttribute("x", tx + (dx < 0 ? -5 : 5)); te.setAttribute("y", ty + 4);
+    te.setAttribute("text-anchor", dx < 0 ? "end" : "start"); te.textContent = text;
+    svg.append(ln, ci, te);
+  }
+}
+
+try {
+  theme(); resize(); phoneTabs();
+  S = await buildScene(renderer, MODEL);
+  V = views(S);
+  try {
+    D = await (await fetch(SIMD)).json();
+    SIM = initSim(S, D);
+    buildPanel();
+    $("sub").textContent = `The multiplier laid out in the machine (PROPOSED, 2026-10-11): ${D.model.n_parts} solids, ${D.model.L_mm.toFixed(0)} mm; its circuit running from sim/multiplier_waveforms.py`;
+    $("foot").textContent = `${D.model.tag}.step · the circuit ${(CYCLE_S * 1000 / D.circuit.period_ms).toFixed(0)}× slowed (one cycle = 1/120 s at ${D.circuit.rpm} rpm each way)`;
+  } catch (err) {
+    $("circuit").hidden = true;
+    $("foot").textContent = "The circuit's data could not be loaded; the model shows its materials.";
+  }
+  $("status").hidden = true;
+  setMode("cycle");
+  setColour(SIM ? "potential" : "materials");
+  setPlaying(st.playing);
+  gotoView(V.bay ? "bay" : "cutaway");
+  requestAnimationFrame(frame);
+} catch (err) {
+  $("status").textContent = "The model could not be loaded: " + (err && err.message ? err.message : err);
+}
+</script>

@@ -44,10 +44,14 @@ export async function buildScene(renderer, url) {
       sh.fragmentShader = sh.fragmentShader.replace("#include <dithering_fragment>",
         "#include <dithering_fragment>\n  if (!gl_FrontFacing) gl_FragColor.rgb *= 0.55;");
     };
+    // the layout's potting is drawn translucent, so the parts it holds show through
+    const potted = /silicone/i.test(info.material || "");
+    if (potted) { m.transparent = true; m.opacity = 0.32; m.depthWrite = false; }
     o.material = m;
+    o.renderOrder = potted ? 2 : 0;
     parts.push({ mesh: o, part: name, body: info.body || "", group: info.group || "", material: info.material || "",
                  label: info.label || name, home: o.position.clone(), homeQ: o.quaternion.clone(),
-                 role: classify(name, info.body || "") });
+                 role: classify(name, info.body || ""), potted, base: m.color.clone(), baseOpacity: m.opacity });
   });
   const box = new THREE.Box3().setFromObject(root);
   return { scene, root, parts, planes, box };
@@ -124,6 +128,17 @@ function sections(S) {
   const qOf = (re) => (S.parts.find((p) => re.test(p.part)) || {}).homeQ;
   const qa = qOf(/^A_C1_s/), qb = qOf(/^B_C2_s/);
   const c2off = qa && qb ? 2 * Math.acos(Math.min(1, Math.abs(qa.dot(qb)))) * 180 / Math.PI : 0;
+  if (n(/^A_deck_plate$/) > 0) {
+    return [[/^A_U\d_core/, "reluctance A: 3 utrons (rotor), 6 bridges (counter-rotor)"],
+            [/^A_C1_/, `C1: ${n(/^A_C1_s/)} stator + ${n(/^A_C1_r/)} rotor vanes, a rotor vane at the hub end`],
+            [/^A_Ca_/, "Ca: 6 plates, node 2 toward the deck"],
+            [/^A_(D\d+|C\d|Csa|Z1|R\d)_pot$/, "deck A: its diodes, C3 / C6 / C8, Csa, Z1, potted"],
+            [/^hub_(vessel|retainer)$/, "the hub as locked, in its grounded can"],
+            [/^B_(D\d+|C\d|Csb|Z4|R\d)_pot$/, "deck B: the mirror set"],
+            [/^B_Cb_/, "Cb: node 3 toward the deck"],
+            [/^B_C2_/, "C2, in phase with C1"],
+            [/^B_U\d_core/, "reluctance B: bridges offset 30°"]];
+  }
   return [[/^A_U\d_core/, "reluctance A: 3 utrons (rotor), 6 bridges (counter-rotor)"],
           [/^A_Ca_/, "Ca fixed plates" + (onRotor ? " (rotor)" : "")],
           [/^A_C1_/, `C1 varicap: ${n(/^A_C1_s/)} stator + ${n(/^A_C1_r/)} rotor vanes`],
@@ -167,6 +182,7 @@ export function views(S) {
             target: new THREE.Vector3(0, 0, zc.z), dir: [0.0001, -0.0001, 1], dist: 0.82, up: [0, 1, 0], labels: [] },
     whole: { title: "The whole machine", cut: "none", explode: false, show: () => true, size: [1400, 1500],
              target: c.clone(), dir: [1.0, -1.25, 0.5], dist: 2.45, labels: [] },
+    ...layoutViews(S, ctr),
     exploded: { title: "Utron A1 exploded along its assembly directions, with bridge A1", cut: "none", explode: true,
                 size: [1600, 1150], show: (p) => p.part.startsWith("A_U1_") || p.part === "A_bridge_1",
                 target: new THREE.Vector3(0.112, 0, zc.z), dir: [1.0, -0.62, 0.75], dist: 0.82,
@@ -181,11 +197,41 @@ export function views(S) {
   };
 }
 
+// the layout's views (sim/tube_geometry.py --layout): its central bay and its decks in plan; none for the record
+function layoutViews(S, ctr) {
+  if (!S.parts.some((p) => p.part === "A_deck_plate")) return {};
+  const zc = ctr(/^hub_vessel$/).z;
+  const mm = (x) => x / 1000;
+  const deck = (s) => (p) => p.group === `deck-${s}` || p.group === "can" || p.group === "hub" || /^(cross_|shaft_)/.test(p.part)
+    || /_(riser|tap)$/.test(p.part) || p.part === "stator_cage";
+  return {
+    bay: { title: "Side A's central bay, quarter cut: the hub in its can, deck A, Ca, the dead gap, C1, the Ca|reluctance bearing",
+           cut: "quarter", explode: false, size: [1500, 1300], zTop: zc + mm(40), show: (p) => true,
+           target: new THREE.Vector3(0, 0, zc - mm(150)), dir: [1.0, -1.15, 0.42], dist: 1.45,
+           labels: [[new THREE.Vector3(mm(138), 0, zc - mm(50)), "deck A: the sticks along r 132", 60, -40],
+                    [new THREE.Vector3(mm(47), 0, zc - mm(20)), "the can (Al, REF), r 48", -60, -90],
+                    [new THREE.Vector3(mm(150), 0, zc - mm(140)), "Ca: node 2 toward the deck", 70, 0],
+                    [new THREE.Vector3(mm(150), 0, zc - mm(220)), "C1: 6 + 6 vanes", 70, 10],
+                    [new THREE.Vector3(mm(60), 0, zc - mm(289)), "Ca|reluctance bearing: the REF link", 120, 40]] },
+    deckB: { title: "Deck B in plan, from above: the sticks on the outer lane, C4 / C5 / C7, Csb and the clamp string Z4, each potted",
+             cut: "none", explode: false, size: [1300, 1300], zBand: [zc + mm(25), zc + mm(82)], show: deck("B"),
+             target: new THREE.Vector3(0, 0, zc + mm(50)), dir: [0.0001, -0.0001, 1], dist: 0.95, up: [0, 1, 0], labels: [] },
+    deckA: { title: "Deck A in plan, from below: its mirror (D1, D3, D5, D8, D11, D12, C3 / C6 / C8, Csa, Z1)",
+             cut: "none", explode: false, size: [1300, 1300], zBand: [zc - mm(82), zc - mm(25)], show: deck("A"),
+             target: new THREE.Vector3(0, 0, zc - mm(50)), dir: [0.0001, 0.0001, -1], dist: 0.95, up: [0, 1, 0], labels: [] },
+  };
+}
+
 export function applyView(S, camera, v, renderer) {
   setExplode(S, v.explode);
   for (const p of S.parts) p.mesh.visible = v.show(p);
   setCut(S, v.cut);
-  if (renderer) renderer.clippingPlanes = v.zTop ? [new THREE.Plane(new THREE.Vector3(0, 0, -1), v.zTop)] : [];
+  if (renderer) {
+    const pl = [];
+    if (v.zTop) pl.push(new THREE.Plane(new THREE.Vector3(0, 0, -1), v.zTop));
+    if (v.zBand) pl.push(new THREE.Plane(new THREE.Vector3(0, 0, 1), -v.zBand[0]), new THREE.Plane(new THREE.Vector3(0, 0, -1), v.zBand[1]));
+    renderer.clippingPlanes = pl;
+  }
   aim(camera, v.target, v.dir, v.dist, v.up);
 }
 

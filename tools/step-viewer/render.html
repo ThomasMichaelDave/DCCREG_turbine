@@ -10,7 +10,8 @@ svg text{font:13px system-ui,sans-serif;fill:#1d1d1f;paint-order:stroke;stroke:#
 <svg id="o"></svg>
 <script type="module">
 import * as THREE from "three";
-import { buildScene, views, applyView, labelPositions } from "./scene.js";
+import { buildScene, views, applyView, labelPositions, spin } from "./scene.js";
+import { initSim, divergingLUT, atPhase } from "./sim.js";
 const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
 renderer.setPixelRatio(devicePixelRatio); renderer.setClearColor(0xf4f4f2);
 document.body.appendChild(renderer.domElement);
@@ -20,11 +21,21 @@ document.getElementById("src").textContent =
   `${MODEL.replace(/^\//, "").replace(/\.(glb|json)$/, ".step")}, rendered from the STEP (sim/step_to_glb.py + three.js)`;
 const S = await buildScene(renderer, MODEL);
 const V = views(S);
+// optional: one instant of the layout's circuit on the parts (?sim=sim.json&phase=0..1), as tools/step-viewer/layout.html
+const SIMQ = new URLSearchParams(location.search), SIMD = SIMQ.get("sim");
+if (SIMD) {
+  const D = await (await fetch(SIMD)).json(), sim = initSim(S, D), ph = parseFloat(SIMQ.get("phase") || "0");
+  sim.setMode("potential");
+  spin(S, ph * Math.PI / 6);
+  sim.apply(atPhase(D, ph), divergingLUT("#2a78d6", "#9a9993", "#e34948"), 15000);
+  window.simNote = `the circuit at ${(ph * 60).toFixed(1)} deg of its cycle (sim/multiplier_waveforms.py): every conductor by its ` +
+    "potential, blue -15 kV, grey REF, red +15 kV; lit amber: a diode or clamp conducting; insulators faded";
+}
 window.renderView = (name) => {
   const v = V[name], [W, H] = [innerWidth, innerHeight];
   renderer.setSize(W, H); camera.aspect = W / H;
   applyView(S, camera, v, renderer);
-  document.getElementById("t").textContent = v.title;
+  document.getElementById("t").textContent = v.title + (window.simNote ? ". " + window.simNote : "");
   renderer.render(S.scene, camera);
   const svg = document.getElementById("o");
   svg.setAttribute("width", W); svg.setAttribute("height", H);
