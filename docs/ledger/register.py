@@ -10,6 +10,7 @@ their findings and are not bundled.
 
 _TUBE = "docs/geometry/tube/tube-r150-n8-wound-g0p5-6br"         # the model before the record (vacuum stack, placeholder hub)
 _REC = "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50"   # the record in solids (sim/tube_geometry.py --record)
+_LAY = _REC + "-layout"                                                # the layout in solids (sim/tube_geometry.py --layout)
 _R = [
     # ------------------------------------------------------------------------------------- A: the design of record
     ("A", "The locked machine: what drives what", "docs/ledger/figures/architecture.png",
@@ -102,6 +103,14 @@ _R = [
      "the half-section without the hub-face bearings; side A's central bay with its gaps; deck A in plan (the sticks, "
      "C3 / C6 / C8, Csa and the clamp string round the grounded can); the parts, the interfaces, the strays, the clamp "
      "trim and the shafts", "docs/make_multiplier_layout.py"),
+    ("B", "The layout in solids: the section and the decks (PROPOSED, 2026-10-11)", f"{_LAY}-section.png",
+     "the layout's 378 solids cut through the shaft, side A's central bay enlarged, and both decks cut in plan at the "
+     "sticks' height: every part of the study's plans, the can, the column, the vanes with C2 in phase",
+     "sim/tube_geometry.py --layout"),
+    ("B", "The layout in 3-D, its circuit at 25.5 deg of the cycle (PROPOSED, 2026-10-11)", f"{_LAY}-3d-bay-potential.png",
+     "side A's central bay, quarter cut: every conductor by its potential (blue -15 kV, grey REF, red +15 kV), the "
+     "diodes and the clamp lit while they conduct, insulators faded; the circuit of sim/multiplier_waveforms.py",
+     "tools/step-viewer/shoot.py (sim.json from tools/step-viewer/make_layout_data.py)"),
     # ---------------------------------------------------------------------------------------- C: earlier phases
     ("C", "The machine as modelled before the record: section", f"{_TUBE}-section.png",
      "superseded by the record in solids: the old vacuum 8 + 8 stack, Ca / Cb on the counter-rotor, the 120 mm "

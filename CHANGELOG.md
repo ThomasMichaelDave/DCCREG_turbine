@@ -41,6 +41,51 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The layout in solids, and its circuit running (2026-10-11)
+The designer: "I would like to see an updated artefact 3d render and simulation."
+
+- **The layout in solids** (PROPOSED, as the layout; `sim/tube_geometry.py --layout`,
+  `sim/tube_geometry_layout_results.json`, `sim/multiplier-layout-3d-findings.md`):
+  - 378 solids from 142 prototypes, 974 mm, drawn from `sim/multiplier_layout_results.json` (the stack, both decks'
+    plans) and the record's own parts: the hub in its can, the decks part by part, the columns, the vanes with C2 in
+    phase, the reluctance sections;
+  - the wiring as routed here [IR]: node 1's riser up the column's bore, node 2's tap, the cross nets l1 / r1, the
+    rings' leads through channels in the PEEK and the coupler and a bushing in the can, the LV cable in its shaft bore;
+    the sleeve's PTFE cover and sheds;
+  - the gates: no clash (1129 pairs), no sweep hit, the utrons' gaps the record's; every deck pair in 3-D at least
+    as far apart as the study's plan (least housing gap 1.86 mm, as the study); the stack's gaps (39, 13.5, 12,
+    73.2 mm) as the study's;
+  - `docs/geometry/tube/…-hub50-layout.{step,glb,parts.json}`, its exact-section render and five 3-D stills;
+  - not drawn: the bridge-ring bearings (10–20 mm a side; their place is the designer's), the plates' rods and mounts,
+    the standoffs.
+- **The circuit running** (`sim/multiplier_waveforms.py`, `sim/multiplier_waveforms_results.json`,
+  `sim/multiplier-waveforms-findings.md`): the layout study's deck at its picks, from the 1 kV seed.
+  - **The rings:** ±14.77 kV, as the study; 7.50 kV/cm at the null with the can; 11.8 V of ripple; 95 % at cycle 146
+    (1.2 s) with ideal diodes.
+  - **The charge:** each chain passes 208.5 nC a cycle (25.0 µA). The clamps take 207.2 nC, the ring stages 1.27 nC.
+  - **When each diode conducts** through a cycle; reverse peaks 3.4–6.1 kV.
+  - **The diodes' currents** are read by Kirchhoff's law along each chain, since an ideal diode's own current at a
+    solver step is not the charge the step moved. They are gated by the chains' charge balance (0.01 %), no backward
+    conduction and none while reverse biased.
+- **The viewer** (`tools/step-viewer/layout.html` with `sim.js`, built by `tools/step-viewer/make_layout_data.py`;
+  published as the "DCCREG Wound Tube" artifact, the same link as before):
+  - the machine in 3-D, every conductor coloured by its potential and each diode lit while it conducts, the rotor
+    and counter-rotor turning with the cycle;
+  - every node's waveform, when each diode conducts, the rings' start-up, the devices' table.
+- **The tools:**
+  - `sim/tube_geometry.py`: the reluctance branches moved into `Machine.wound_element`; `locked_hub` takes options
+    whose defaults are the record's. The record's 153 parts are unchanged.
+  - `sim/step_to_glb.py --angular` (default 0.15, the record's; 0.4 for the layout: 3.0 MB, not 8.4);
+  - `tools/step-viewer/scene.js`: translucent potting, the layout's views, two-plane clipping;
+  - `tools/step-viewer/render.html` and `shoot.py`: a still at one instant of the circuit.
+- **Fixed:** `sim/multiplier_layout.py`'s comments gave the can at r 60 and the deck from r 62; its code has r 48
+  and r 50.
+- **Records:**
+  - the ledger: §3.9 (the layout in solids, its circuit running), §7 (sheets 32–33; Part C now 34–58; the layout's
+    CAD files), §8;
+  - the register and the bundle (58 sheets);
+  - `presets/hub-locked.json` supply_redesign (the solids, the simulation, the viewer); the README.
+
 ### The multiplier laid out in the machine (2026-10-11)
 The designer: "This unipolar setup will do for now, lay out the doubler capacitors in the multiplier top and bottom of
 the machine stack. Propose placement of the diodes. A mechanical layout."

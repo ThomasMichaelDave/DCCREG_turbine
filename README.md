@@ -34,6 +34,10 @@ fields come from charge pumps driven by the relative rotation of the machine's t
     grounded can over the hub, and Ca / Cb's plates go between the deck and the vanes. The machine is 974 mm, with no
     hub-face bearings, so it needs the bridge-ring bearings; the clamp strings drop to about 60 parts
     (`sim/multiplier-layout-findings.md`; `docs/figures/multiplier-layout.png`).
+  - **In 3-D, its circuit running:** the layout in solids (`sim/tube_geometry.py --layout`, 378 solids) and its
+    circuit simulated through a cycle and its start-up (`sim/multiplier_waveforms.py`). The viewer is
+    `tools/step-viewer/layout.html`: every conductor coloured by its potential, each diode lit while it conducts
+    (`sim/multiplier-layout-3d-findings.md`, `sim/multiplier-waveforms-findings.md`).
 - **The hub:** a 50 mm borosilicate vacuum sphere in a PEEK retainer with a silicone-gel interface, the AH's MnZn
   cores on the axis. At its centre: the AH's null and 7.62 kV/cm from ring B to ring A, steady (8.2 once settled).
 - **The model checks** (2026-10-09; the ledger's §6 items 31–34) found both pumps weaker than recorded: the AH holds

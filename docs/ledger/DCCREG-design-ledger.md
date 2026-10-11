@@ -10,7 +10,7 @@ temporary documentation ledger and the current fact sheet of the exercise.
 | what the lock means | the design of record below is the baseline; later changes are recorded against it. The lock does not settle what is still PROPOSED or OPEN (§5): those keep their status |
 | the redesign (2026-10-10) | the designer is redesigning the electrostatic pump's multipliers: stacked into the doubler, not a separate circuit tapping nodes 1 and 4. The turbine's stack will change; the magnetic pump, the sphere, its AH and the field interface stay for now. The worked circuit is §3.9, taken by the designer "for now" (2026-10-11); its mechanical layout is §3.9 too (PROPOSED). The record below stays the baseline until the designer accepts them |
 | this ledger | `docs/ledger/DCCREG-design-ledger.md` (the source) and `.pdf` (its print form) |
-| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 56 sheets behind a two-page register (§7) |
+| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 58 sheets behind a two-page register (§7) |
 | how it is built | `python3 docs/ledger/make_ledger.py` (needs markdown-it-py, mdit-py-plugins, pypdf and playwright with Chromium) |
 
 **Abstract.** As locked, the DCCREG turbine is a belt-driven tube machine. Its rotor and counter-rotor turn at 600 rpm
@@ -797,6 +797,24 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 - **The magnetic pump's LV leads** (the AH coils to the utrons' circuit) cross the Ca|reluctance spiders in an 8 mm
   bore in each shaft half. The record leaves them unrouted.
 
+**The layout in solids, and its circuit running** (2026-10-11, PROPOSED as the layout;
+`sim/multiplier-layout-3d-findings.md`, `sim/multiplier-waveforms-findings.md`; sheets 32–33; the viewer
+`tools/step-viewer/layout.html`):
+- **the solids** (`sim/tube_geometry.py --layout`):
+  - 378 of them from 142 prototypes, 974 mm, drawn from the layout study's results and the record's own parts;
+  - every part of both decks, the can, the column, the vanes with C2 in phase, the wiring as routed (the riser, the
+    tap, the cross nets, the rings' leads through the can, the LV cable in its bore), the sleeve's cover and sheds;
+  - no clash, no sweep hit; every deck pair matches the study's plan in 3-D (the least housing gap 1.86 mm, as the
+    study); the bridge-ring bearings are not drawn (10–20 mm a side, the designer's place);
+- **the circuit running** (`sim/multiplier_waveforms.py`; the layout study's deck at its picks, ideal diodes):
+  - the rings ±14.77 kV, 7.50 kV/cm at the null with the can, 11.8 V of ripple; 95 % at cycle 146 (1.2 s) from a
+    1 kV seed;
+  - each chain passes 208.5 nC a cycle (25.0 µA): the clamps take 207.2 nC, the rings' stages 1.27 nC (their leakage);
+  - through a cycle (0° the vanes aligned): D5 / D6 at 10.5–22.8°, D1 / D2 at 22.7–26.3°, the clamps at 25.2–30.2°,
+    D3 / D4 and D7 / D8 at 40–60°, the ring stages in two short pulses; reverse peaks 3.4–6.1 kV;
+  - read by Kirchhoff's law along each chain: an ideal diode's own current at a solver step is not the charge the
+    step moved [OC].
+
 ## 4. Fact sheet: the numbers of record, with their sources
 
 **Operating point and machine**
@@ -1186,26 +1204,31 @@ redraw them (`docs/ledger/register.py`).
 | 29 | The tube's strays by a field solve | `docs/figures/tube-strays.png` |
 | 30 | The multiplier stacked into the doubler (PROPOSED, the redesign of 10-10) | `docs/schematic-integrated-multiplier.svg` |
 | 31 | The multiplier laid out in the machine (PROPOSED, 10-11) | `docs/figures/multiplier-layout.png` |
+| 32 | The layout in solids: the section and the decks (PROPOSED, 10-11) | `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout-section.png` |
+| 33 | The layout in 3-D, its circuit at 25.5° of the cycle (PROPOSED, 10-11) | `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout-3d-bay-potential.png` |
 
 **Part C — earlier phases, superseded, kept for the record**
 
 | sheets | what | files |
 |:--|:--|:--|
-| 32–34 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
-| 35 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
-| 36–37 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
-| 38–40 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
-| 41–43 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
-| 44–47 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
-| 48–49 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
-| 50–52 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
-| 53–56 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
+| 34–36 | the machine as modelled before the record: section, cutaway, half section | `docs/geometry/tube/tube-r150-n8-wound-g0p5-6br-{section,3d-cutaway,3d-half}.png` |
+| 37 | the first two-pump hub drive | `docs/schematic-hub-drive.svg` |
+| 38–39 | the first pole pick's flux | `docs/figures/pole-pair-flux-g0p5.png`, `-g1p0.png` |
+| 40–42 | the core-field studies: the pair inside, AC-coupled rings, floating cones | `docs/figures/core-null-field.png`, `core-rings.png`, `core-swing-waveforms.png` |
+| 43–45 | the earlier spark-gap tube build | `docs/geometry/tube/tube-r150-n8-{section,reluctance-plan,clocking-plan}.png` |
+| 46–49 | the C-EM and diode-core schematics | `docs/schematic-diode-core-{switchless,dcbus}.svg`, `docs/schematic-cem-{in-discharge-path,motor-placement}.svg` |
+| 50–51 | the disc machine's KiCad schematic and its simplification | `docs/kicad/DCCREG_Turbine_circuit.svg`, `schematic_simplification.png` |
+| 52–54 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
+| 55–58 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
 
 **CAD and DXF files** (not on sheets; `tools/step-viewer/` renders the STEP files):
 - **of the record:**
   - `docs/drawings/DCCREG-UTR-101_half-core_A.step` and `_lamination.dxf`;
   - the record in solids: `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.step`, with its `.glb` and
-    `.parts.json`.
+    `.parts.json`;
+  - the redesign's layout in solids (PROPOSED): `…-hub50-layout.step`, with its `.glb`, its `.parts.json` (each
+    conductor's net) and the stills `…-layout-3d-{cutaway,bay,deckB}.png` and `…-3d-deckB-potential.png`; the
+    interactive viewer with the circuit running is `tools/step-viewer/layout.html`.
 - **earlier phases:**
   - the machine as modelled before the record, `tube-r150-n8-wound-g0p5-6br.step`;
   - the spark-gap tube `tube-r150-n8.step`;
@@ -1231,7 +1254,9 @@ redraw them (`docs/ledger/register.py`).
 - `sim/tube_geometry_record_results.json` and `sim/shaft_bearings_record_results.json` (the record in solids, its
   shaft);
 - `sim/integrated_multiplier_results.json` (the redesign's proposal, §3.9);
-- `sim/multiplier_layout_results.json` (the redesign's layout, §3.9).
+- `sim/multiplier_layout_results.json` (the redesign's layout, §3.9);
+- `sim/tube_geometry_layout_results.json` and `sim/multiplier_waveforms_results.json` (the layout in solids, its
+  circuit running, §3.9).
 
 **The findings,** one per study:
 - `sim/pole-design-findings.md`, `sim/ah-steady-cusp-findings.md`, `sim/rotor-parts-duty-findings.md`;
@@ -1240,7 +1265,8 @@ redraw them (`docs/ledger/register.py`).
 - the settlement's: `sim/hub-beads-settled-findings.md`, `sim/hub-thermal-findings.md`, `sim/ah-null-findings.md`,
   `sim/rotor-mechanics-findings.md`, `sim/tube-shaft-findings.md` §0, `sim/parts-first-cut-findings.md`,
   `docs/drive-gear-belt.md`, and the model checks of §6 (31–34);
-- the redesign's: `sim/integrated-multiplier-findings.md` and `sim/multiplier-layout-findings.md` (§3.9);
+- the redesign's: `sim/integrated-multiplier-findings.md`, `sim/multiplier-layout-findings.md`,
+  `sim/multiplier-layout-3d-findings.md` and `sim/multiplier-waveforms-findings.md` (§3.9);
 - the design and test documents `docs/rings-design.md` and `docs/bench-test-rings.md`;
 - the cost guide `docs/cost/README.md`.
 
@@ -1253,7 +1279,8 @@ redraw them (`docs/ledger/register.py`).
   - `sim/ah_null.py`, `sim/rotor_mechanics.py`, `sim/drive_sizing.py --figure`, `sim/parts_first_cut.py`;
   - `sim/tube_geometry.py --record` and `sim/shaft_bearings.py --record` (the record in solids, its shaft);
   - `sim/integrated_multiplier.py --procs 4` (the redesign's proposal), then `sim/multiplier_layout.py --procs 4` (its
-    layout).
+    layout), then `sim/tube_geometry.py --layout` and `sim/multiplier_waveforms.py` (the layout in solids, its circuit
+    running).
 - **the drawings and figures:**
   - `docs/make_rings_drawing.py`;
   - `docs/make_rings_field_figure.py`;
@@ -1262,7 +1289,10 @@ redraw them (`docs/ledger/register.py`).
   - `docs/make_hub_rings_build_figure.py`, `docs/make_hub_bench_figure.py` and `docs/make_hub_revolution_figure.py`;
   - `docs/make_core_drawing.py` and `docs/make_utron_drawing.py`;
   - `docs/make_air_vane_drawing.py`;
-  - `docs/make_multiplier_layout.py` (after `sim/multiplier_layout.py`).
+  - `docs/make_multiplier_layout.py` (after `sim/multiplier_layout.py`);
+  - the layout in 3-D: `sim/step_to_glb.py …-hub50-layout.step --angular 0.4`, then `tools/step-viewer/make_layout_data.py
+    OUT` (the viewer's files) and `tools/step-viewer/shoot.py 8765 docs/geometry/tube/…-hub50-layout cutaway bay deckB
+    bay@0.425 deckB@0.425 --sim <OUT's sim.json>` (the stills, from a local server at the repository's root).
 - **the cost:** `docs/make_cost_sheet.py`, then recalculate the workbook.
 - **this ledger:** `docs/ledger/make_ledger_figures.py`, then `docs/ledger/make_ledger.py`.
 
