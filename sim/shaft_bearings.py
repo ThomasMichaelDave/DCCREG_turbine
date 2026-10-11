@@ -176,8 +176,10 @@ def main():
 # ---------------------------------------------------------------------------------------------------------
 DENSITY = [("MnZn", 4800.0), ("NiFe", 8700.0), ("M235", 7650.0), ("borosilicate", 2230.0), ("PEEK", 1300.0),
            ("gel", 1000.0), ("coil", 5050.0), ("foil", 8900.0), ("wire ring", 8900.0), ("Al ", 2700.0), ("G10", 1850.0),
-           ("G-10", 1850.0), ("steel", 7850.0), ("bearing", 7850.0)]          # kg/m^3, datasheet-class [IR]; windings:
-# half Cu (8900), half impregnant (1200) [IR]
+           ("G-10", 1850.0), ("steel", 7850.0), ("stainless", 7850.0), ("bearing", 7850.0)]   # kg/m^3, datasheet-class
+# [IR]; windings: half Cu (8900), half impregnant (1200) [IR]. "stainless": the shaft halves and flanges, renamed
+# austenitic stainless (sim/tube_geometry.py), keep the steel figure the record ran with (austenitic grades are
+# 7900-8000, 1-2 % more) [IR]
 E_G10, E_PEEK = 18e9, 3.6e9                                                   # in-plane G10, unfilled PEEK [IR]
 F_REL_HZ = 1200.0 / 60.0                                                       # the bearings' relative speed (20 Hz)
 
