@@ -227,7 +227,8 @@ h1 { font-size: 24pt; margin: 0 0 2mm; } .sub { font-size: 12pt; color: #1d3f5e;
 """
 PART_NAME = {"A": "Part A — the design of record (locked)", "B": "Part B — supporting drawings of the record",
              "C": "Part C — earlier phases, kept for the record (superseded)",
-             "D": "Part D — the drawing set: every part, bought part and sub-assembly of the layout (PROPOSED)"}
+             "D": "Part D — the drawing set: every part, bought part and sub-assembly of the layout and the first cuts "
+                  "(PROPOSED)"}
 
 
 def _sheet_html(r, n_total):
@@ -285,7 +286,8 @@ def _cover_html(n_total):
     half = (len(d_rows) + 1) // 2
     page3 = (f'<div class="sheet tighter" style="padding-top: 12mm"><header><span class="t">Register, continued</span>'
              f'<span class="n">{PART_NAME["D"]}</span></header>'
-             f'<div class="what">The machine as sim/tube_geometry.py LayoutMachine builds it, drawn sheet by sheet by '
+             f'<div class="what">The machine as sim/tube_geometry.py LayoutMachine builds it, and the first cuts\' '
+             f'parts outside it as sim/unmodelled_parts.py builds them (their places OPEN), drawn sheet by sheet by '
              f'docs/make_drawing_set.py: a drawing with a small 3-D view for every made part, a source-control sheet '
              f'for every bought part, the sub-assemblies with their balloons and parts lists, and the general '
              f'arrangement. Each sheet is Rev A, a draft for quotation, and carries the set\'s own sheet number; its '

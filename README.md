@@ -14,7 +14,7 @@ fields come from charge pumps driven by the relative rotation of the machine's t
 |:--|:--|
 | the overview, the design logic, each component's working principle, the fact sheet, the status and open items, the known inconsistencies | `docs/ledger/DCCREG-design-ledger.md` (print form `.pdf`) |
 | every technical drawing, one A3 sheet each, behind a register | `docs/ledger/DCCREG-drawings-bundle.pdf` (register: `docs/ledger/register.py`) |
-| the drawing set (PROPOSED, Rev A drafts): a drawing with a small 3-D view for every part, a source-control sheet for every bought part, the sub-assemblies and the general arrangement | `docs/drawings/set/` (its order: `docs/drawings/set-index.json`; generator `docs/make_drawing_set.py`); the bundle's Part D |
+| the drawing set (PROPOSED, Rev A drafts): a drawing with a small 3-D view for every part, a source-control sheet for every bought part, the sub-assemblies and the general arrangement, of the layout and of the first cuts' parts outside it (the chokes, the kick, the drive) | `docs/drawings/set/` (its order: `docs/drawings/set-index.json`; generator `docs/make_drawing_set.py`; the first cuts in solids: `sim/unmodelled_parts.py`, `sim/unmodelled-parts-findings.md`); the bundle's Part D |
 | the hub's specification of record | `presets/hub-locked.json` |
 | the rings: design, manufacturing drawing, bench test | `docs/rings-design.md`, `docs/drawings/DCCREG-HUB-201.pdf`, `docs/bench-test-rings.md` |
 | the utron's manufacturing drawing | `docs/drawings/DCCREG-UTR-101.pdf` |
@@ -45,8 +45,10 @@ fields come from charge pumps driven by the relative rotation of the machine's t
   - **Its capacitors' mounts** (2026-10-11, PROPOSED): Ca / Cb as two combs, each on its own posts in the column's
     bore, C1 / C2 on G10 spacer rings and glass-epoxy tie rods, the cage moved out to r 182. They hold the record's HV
     rules at every new interface (`sim/doubler_caps.py`, `sim/doubler-caps-findings.md`).
-  - **Its drawing set** (2026-10-11, Rev A drafts): 79 sheets drawn from the solids, every part with its own drawing
-    and 3-D view (`docs/make_drawing_set.py`, `docs/drawings/set/`).
+  - **Its drawing set** (2026-10-11, Rev A drafts): 103 sheets drawn from the solids, every part with its own drawing
+    and 3-D view (`docs/make_drawing_set.py`, `docs/drawings/set/`). 24 of them draw the first cuts' parts outside
+    the layout: La / Lb, the start kick, the bevel reverser and the belt drive, with their bought parts. Drawn, the
+    drive's first cut needs five changes (`sim/unmodelled-parts-findings.md`; the ledger's §6 item 74).
 - **The hub:** a 50 mm borosilicate vacuum sphere in a PEEK retainer with a silicone-gel interface, the AH's MnZn
   cores on the axis. At its centre: the AH's null and 7.62 kV/cm from ring B to ring A, steady (8.2 once settled).
 - **The model checks** (2026-10-09; the ledger's §6 items 31–34) found both pumps weaker than recorded: the AH holds

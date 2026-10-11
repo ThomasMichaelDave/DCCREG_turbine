@@ -10,7 +10,7 @@ temporary documentation ledger and the current fact sheet of the exercise.
 | what the lock means | the design of record below is the baseline; later changes are recorded against it. The lock does not settle what is still PROPOSED or OPEN (§5): those keep their status |
 | the redesign (2026-10-10) | the designer is redesigning the electrostatic pump's multipliers: stacked into the doubler, not a separate circuit tapping nodes 1 and 4. The turbine's stack will change; the magnetic pump, the sphere, its AH and the field interface stay for now. The worked circuit is §3.9, taken by the designer "for now" (2026-10-11); its mechanical layout is §3.9 too (PROPOSED). The record below stays the baseline until the designer accepts them |
 | this ledger | `docs/ledger/DCCREG-design-ledger.md` (the source) and `.pdf` (its print form) |
-| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 137 sheets behind a three-page register (§7); its Part D is the drawing set, a sheet for every part, bought part and sub-assembly of the layout (`docs/make_drawing_set.py`) |
+| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 161 sheets behind a three-page register (§7); its Part D is the drawing set, a sheet for every part, bought part and sub-assembly of the layout, and of the first cuts' parts outside it: the magnetic pump's chokes and kick, the drive (`docs/make_drawing_set.py`) |
 | how it is built | `python3 docs/ledger/make_ledger.py` (needs markdown-it-py, mdit-py-plugins, pypdf and playwright with Chromium) |
 
 **Abstract.** As locked, the DCCREG turbine is a belt-driven tube machine. Its rotor and counter-rotor turn at 600 rpm
@@ -52,8 +52,10 @@ in opposite directions through a 1 : −1 reversing gear.
   - **The capacitors' mounts (2026-10-11, PROPOSED):** Ca / Cb as two combs on posts in each column's bore, C1 / C2
     on G10 spacers and glass-epoxy tie rods, the cage moved out to r 182. They hold the record's HV rules and cost
     0.0005 of the free gain (§3.9).
-  - **The drawing set (2026-10-11, Rev A drafts):** 79 sheets: a drawing with a small 3-D view for every part, a
-    source-control sheet for every bought part, the sub-assemblies and the general arrangement (§7, Part D).
+  - **The drawing set (2026-10-11, Rev A drafts):** 103 sheets: a drawing with a small 3-D view for every part, a
+    source-control sheet for every bought part, the sub-assemblies and the general arrangement (§7, Part D). The
+    first cuts' parts outside the layout are drawn too (the chokes, the kick, the reverser and the belt drive); drawn,
+    the drive's first cut needs five changes (§6 item 74).
 - **What is still open:** the physics is mainstream throughout [OC]. The ratings, the leakage and several parts are
   placeholders that the bench test must qualify.
 
@@ -258,7 +260,9 @@ commits' dates.
   - the gear puts 0.48 / 0.52 N·m on the bodies and 1.00 N·m into the frame; the belt carries 59 W with a 25 W
     windage allowance; the run-up takes 32 s;
   - the pumps' 120 / 240 Hz pulsation stays in the bodies: the gear sees 0.061 N·m p-p;
-  - 1,066 EUR against the cost sheet's 800.
+  - 1,066 EUR against the cost sheet's 800;
+  - drawn part by part (DCCREG-DRV-100 to -190, `sim/unmodelled-parts-findings.md`), it needs five changes, drawn as
+    PROPOSED (§6, item 74).
 - **The bearings:** six 6205-class deep-groove bearings (25 / 52 / 15 mm), each on an 8 mm G10 spider.
   - The four inner ones join rotor and counter-rotor at the relative speed; only the two end bearings face the frame.
   - **So the counter-rotor floats on the shaft** (`sim/tube-shaft-findings.md` §0; `sim/rotor-mechanics-findings.md`
@@ -360,7 +364,8 @@ commits' dates.
   - the utrons: M235-35A 0.35 mm laminations, stack 100 mm, 200 turns of Ø1.55 mm Cu, 0.58 Ω, 2.23 kg each as built;
   - La / Lb: 0.146 H DC chokes, 0.87–1.15 A, ≤ 110 V. First cut (PROPOSED): EI-84 laminations, a 35 mm stack,
     150 turns of Ø1.40 mm, a 0.126 mm gap trimmed to 0.146 H; R20 0.276 Ω, 1.20 T at the peak, 1.66 kg each
-    (`sim/parts-first-cut-findings.md` §1);
+    (`sim/parts-first-cut-findings.md` §1). Drawn on DCCREG-REL-720 / -721, 84 × 70 × 61 mm over the bobbin's flanges
+    (§6, item 75);
   - D1*–D4*: reverse 113 / 104 / 58 / 60 V with the start-up, 1.9 / 2.3 A peak in each diode (2.8 A in the branch).
     First cut (PROPOSED): Schottky, 200 V (D1* / D2*) and 150 V (D3* / D4*), ≥ 3 A. Silicon rectifiers (0.85 V)
     would cost z 1.139 → 1.074 and the AH 449 → 423 A-turns (§2.1 there);
@@ -881,19 +886,31 @@ drawing set's CAP-600 to CAP-617). The record leaves them undrawn; with the layo
   back.
 
 **The drawing set** (2026-10-11, Rev A drafts for quotation; `docs/make_drawing_set.py`; the bundle's Part D, §7):
-- **79 A3 sheets drawn from the layout's solids:**
+- **103 A3 sheets:**
   - the general arrangement;
   - a drawing for every made part: its views, dimensions and notes, and a small 3-D view;
   - a source-control sheet for every bought part: its envelope, the specification, a candidate part and its source;
   - the sub-assemblies with their sections, balloons and parts lists; deck A's wiring list; the fasteners and stock.
+- **What they are drawn from:**
+  - 79 sheets from the layout's solids (`sim/tube_geometry.py --layout`);
+  - 24 from the first cuts' parts outside the layout, put in solids by `sim/unmodelled_parts.py`
+    (`sim/unmodelled-parts-findings.md`): the chokes La / Lb and the start kick K4 (REL-720 to REL-730), the 1 : −1
+    bevel reverser and the belt drive (DRV-100 to DRV-190), and their bought parts (P-012 to P-019). Their places on
+    the rotor are OPEN.
 - **How they are drawn:** the views are hidden-line projections and exact sections of each part's own solid; the
-  diameters, lengths and hole patterns are read off its faces, the masses and quantities counted from the model.
+  diameters, lengths and hole patterns are read off its faces, the masses and quantities counted from the model. The
+  gears are drawn as blanks, as a gear drawing does; their 3-D views and the reverser's sections carry the teeth
+  (straight bevels on Tredgold's approximation [IR]), which mesh with 0.043 mm to spare
+  (`sim/unmodelled_parts_results.json` reverser.mesh_clearance_mm).
 - **The status on each sheet:** LOCKED for the record's own parts (the hub, the utrons, the reluctance sections),
-  PROPOSED for the layout's, BOUGHT for the bought parts. They are drafts, to be checked and approved before release.
+  PROPOSED for the layout's and the first cuts', BOUGHT for the bought parts. They are drafts, to be checked and
+  approved before release.
 - **Flagged on the sheets:**
   - the shaft is drawn at Ø25, as the model has it, against d 30 in `presets/hub-locked.json` (OPEN, §5.2);
   - the capacitor candidates (P-003, P-004) are taller than the layout's envelopes and over the deck's zone when
-    standing (§6, item 72).
+    standing (§6, item 72);
+  - the drive stands on the record's 940 mm stack-up and is to be re-cut on the layout (§6, item 71); drawn part by
+    part, its first cut needs five changes, drawn as PROPOSED (§6, item 74).
 
 ## 4. Fact sheet: the numbers of record, with their sources
 
@@ -1019,7 +1036,8 @@ drawing set's CAP-600 to CAP-617). The record leaves them undrawn; with the layo
 | the redesign's layout: the decks round a grounded can, the columns toward the hub, the vane stacks against the Ca\|reluctance bearings, no hub-face bearings, the clamp strings at about 60 parts | PROPOSED | `sim/multiplier-layout-findings.md` (Figure 11) |
 | the layout's bridge-ring bearings: an SKF 6205-2Z in each of the record's end slots, the end bearings one slot out (1014 mm), stainless cartridges in 8 mm G10 spiders | PROPOSED | `sim/bridge-ring-bearings-findings.md` (sheets 34–35) |
 | the capacitors' mounts: two combs on posts in each column's bore (Al spacers, glazed steatite standoffs), the vane stacks on G10 spacers and glass-epoxy tie rods, the cage at r 182–186 | PROPOSED | `sim/doubler-caps-findings.md` (the drawing set's CAP-600 to CAP-617) |
-| the drawing set: a sheet for every part, bought part and sub-assembly of the layout, Rev A drafts | PROPOSED | `docs/make_drawing_set.py` (§7, Part D) |
+| the drawing set: a sheet for every part, bought part and sub-assembly of the layout and of the first cuts' parts outside it (the chokes, the kick, the drive), Rev A drafts | PROPOSED | `docs/make_drawing_set.py`, `sim/unmodelled-parts-findings.md` (§7, Part D) |
+| the drive as drawn: the hub's lip above its bearing, the counter-rotor gear's flange, the pinion bearings 12 mm apart, the bell a C, the 80T pulley unflanged | PROPOSED | `sim/unmodelled-parts-findings.md` §2 (§6, item 74) |
 
 ### 5.2 Open items
 
@@ -1049,12 +1067,14 @@ drawing set's CAP-600 to CAP-617). The record leaves them undrawn; with the layo
   - the steatite standoffs are a custom part (no catalogue part at Ø16 × 30 with M4 threads was found); PTFE is the
     alternate;
 - **the drawing set** (§7, Part D, Rev A drafts): to be checked and approved before release. The shaft on it follows
-  the decision below;
+  the decision below. The first cuts' parts are drawn so they can be judged; their places on the rotor stay OPEN;
 - **the shaft and its bearings** (§3.1): six bearings with d 40 (65 Hz, the runout at 0.027 mm), or an eighth pair
   between the shaft and each bridge ring's outer end at d 25 (131–165 Hz, the runout at 0.05 mm; the layout +10–20 mm
   a side; stiff seats to keep it clear of 120 Hz). The redesign's layout removes the hub-face bearings and leaves
   only the second way (83–89 Hz; placed and named in §3.9);
-- **the drive's first cut** (§3.1, `docs/drive-gear-belt.md`): accept it, or set the gear and belt otherwise;
+- **the drive's first cut** (§3.1, `docs/drive-gear-belt.md`; drawn on DRV-100 to DRV-190): accept it, or set the
+  gear and belt otherwise. Drawn part by part, it needs five changes (§6, item 74), and it is still to be re-cut on the
+  layout (§6, item 71);
 - **the bypass and the split**, both PROPOSED;
 - **the hub's first cuts** (§3.5): the grooves' full-round tops, the AH ends rounded to 1.5 mm (which also gives the
   polar beads 2.3–2.4 % of margin), the coupler as a tube with the flanges turned to Ø60, the leads' path;
@@ -1269,6 +1289,13 @@ and the corrected one stands beside it, dated, until the designer decides.
 | 72 | the deck's capacitor candidates are taller than the layout's envelopes [RH]: Vishay 715C30KTT19 (190 pF / 30 kV) is Ø21 × 28 and 715C40KTT10 (100 pF / 40 kV) Ø21 × 31, against Ø30 × 22, Ø30 × 24 and Ø25 × 20. Potted standing, their modules are 44 and 47 mm tall, over the deck's 42 mm zone (\|z\| 36–78, `sim/multiplier_layout.py` DECK_Z0, DECK_T, DECK_H) | **open:** lay them along their lanes, or re-cut the deck's plan with the real parts' envelopes (§5.2, "the decks need their parts' real envelopes"); flagged on DCCREG-P-003 and -P-004 |
 | 73 | the record leaves the doubler capacitors' mounts undrawn ("connection and mounts not drawn", `sim/tube_geometry.py`), and the layout asks 77 mm of PTFE creepage of Ca / Cb's (§5.2) | **proposed:** two combs on their own posts, no support touching two adjacent plates, so no mount bridges the combs' 13.2 kV: the node-2 comb's standoffs hold 4.5 kV to REF on 30 mm of glazed steatite (6.5 needed); the stator vanes on tie rods in the cage moved out to r 182–186 (`sim/doubler-caps-findings.md` §1–§2) |
 
+**Found by drawing the first cuts** (`sim/unmodelled-parts-findings.md`, 2026-10-11)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 74 | drawn part by part, the drive's first cut does not close (`docs/drive-gear-belt.md` §5, §8): (1) the counter-rotor's hub holds the gear-end 6205-2Z over a lip below it, which cannot carry the counter-rotor's 350 N down into the outer ring; (2) the counter-rotor's side gear is "bolted under the hub", but its body (r ≤ 28.3) cannot reach the hub outside the bearing (r 26); (3) each pinion's two 6000-2Z sit 16 mm apart, which the first cut's own case cannot hold; (4) the bell continues the case wall (r 64–72) and would cut the belt's land (r 63.1–64.8); (5) the 80T pulley is "24 mm over the flanges", but the catalogue's TL80-5M-15 has none and is 25 mm through | **proposed** (drawn on DRV-100 to DRV-190): (1) the seat open below, a lip Ø44 at its top, the gear's flange closing it from below; (2) a back flange Ø80 × 3 on the gear, six M4 on PCD Ø70; (3) the bearings 12 mm apart: the inner one takes 40 N steady and 195 N at the driver's limit (the first cut's 29 / 141 N), a static safety of 10, L10 3 × 10⁷ h steady (`sim/unmodelled_parts_results.json` reverser.pinion_bearings); (4) the bell a C, Ø164 / Ø144 over 170°, open to the motor, the belt 7.2 mm clear; (5) the flanges on the 20T pulley, P20-5M-15F. The drive is still to be re-cut on the layout (item 71) |
+| 75 | the first cut's choke, 84 × 70 × 59 mm (`sim/parts_first_cut_results.json` la_lb.chosen.outline_mm), is the core and the winding's build | **noted:** with the bobbin's 1.0 mm wall and 1.5 mm flanges, 1 mm past the build [IR], La / Lb are 84 × 70 × 61 over all (`sim/unmodelled_parts_results.json` choke.data.outline_mm); their place on the rotor is OPEN |
+
 ## 7. Drawing register
 
 The bundle, `docs/ledger/DCCREG-drawings-bundle.pdf`, carries every sheet below on A3, in this order. It opens with a
@@ -1334,10 +1361,11 @@ redraw them (`docs/ledger/register.py`).
 | 54–56 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
 | 57–60 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
 
-**Part D — the drawing set: every part, bought part and sub-assembly of the layout (PROPOSED)**: sheets 61–137, each
-`docs/drawings/set/<drawing>.pdf` (`docs/make_drawing_set.py`, in the order of `docs/drawings/set-index.json`). Each
-title block carries the set's own sheet number, 1 to 79; the set's DCCREG-UTR-101 and DCCREG-HUB-201 are sheets 4 and 7
-above.
+**Part D — the drawing set: every part, bought part and sub-assembly of the layout and the first cuts (PROPOSED)**:
+sheets 61–161, each `docs/drawings/set/<drawing>.pdf` (`docs/make_drawing_set.py`, in the order of
+`docs/drawings/set-index.json`). Each title block carries the set's own sheet number, 1 to 103; the set's
+DCCREG-UTR-101 and DCCREG-HUB-201 are sheets 4 and 7 above. The first cuts' parts outside the layout come from
+`sim/unmodelled_parts.py` (`sim/unmodelled-parts-findings.md`); their places on the rotor are OPEN.
 
 | sheets | drawings | what |
 |:--|:--|:--|
@@ -1349,9 +1377,13 @@ above.
 | 91–98 | CAP-600 to -607 | the C1 / C2 stack; the rotor vanes, the stator vane with its lugs, the spacer ring, the dowel, the spacer tube, the end ring |
 | 99–106 | CAP-610 to -617 | the Ca / Cb column on its posts; the five Ca plates, the post spacer, the steatite standoff |
 | 107–116 | REL-700 to -713 | the wound utron and its parts; reluctance section A, the carrier disc, the bridge, the bridge ring |
-| 117–124 | BRG-800 to -814 | the three bearing hubs; the spiders, the ring adapter, the cartridge |
-| 125–126 | CGE-900, -901 | the counter-rotor; the cage tube |
-| 127–137 | P-001 to -011 | the bought parts: the bearing, the HV sticks, the HV capacitors, the surge resistor, the TVS diodes, the ferrite rod, the tie rods, the HV wire, the LV cable; the fasteners and stock |
+| 117–119 | REL-720 to -730 | the first cuts' La / Lb and its winding; the start kick K4 as a placeholder module |
+| 120–127 | BRG-800 to -814 | the three bearing hubs; the spiders, the ring adapter, the cartridge |
+| 128–129 | CGE-900, -901 | the counter-rotor; the cage tube |
+| 130–139 | DRV-100 to -109 | the drive's first cut: the 1 : −1 bevel reverser at side A; the two side gears, the pinion, its stub shaft and cartridge, the gear case, the bell, the counter-rotor's hub and end disc |
+| 140–142 | DRV-120 to -190 | the belt drive; the motor plate; the drive's spacers, rings, keys and fasteners |
+| 143–153 | P-001 to -011 | the bought parts: the bearing, the HV sticks, the HV capacitors, the surge resistor, the TVS diodes, the ferrite rod, the tie rods, the HV wire, the LV cable; the fasteners and stock |
+| 154–161 | P-012 to -019 | the first cuts' bought parts: the pinions' bearing, the belt, the pulleys, the motor, the Schottky rectifiers, the node snubbers, the AH bypass, the choke's parts |
 
 **CAD and DXF files** (not on sheets; `tools/step-viewer/` renders the STEP files):
 - **of the record:**
@@ -1369,10 +1401,9 @@ above.
     pump + motor);
   - the designer's C-EM source, the two disc DXF layouts (r0.15, r0.6) and the KiCad source.
 - **Not drawn as manufacturing drawings** (every other part has its sheet in Part D):
-  - La / Lb (first cut in `sim/parts-first-cut-findings.md`);
-  - the kick source (first cut in `sim/parts-first-cut-findings.md` §3);
-  - the gear and the belt (their concept is sheet 25), and the frame;
-  - the potting moulds, the screws, studs and inserts (DCCREG-P-011 lists them).
+  - the frame: the base plate, the columns, the top plate, the motor's bracket;
+  - the chokes' brackets, the electronics' boards and clamps (their places on the rotor are OPEN);
+  - the potting moulds, the screws, studs and inserts (DCCREG-P-011 and DCCREG-DRV-190 list them).
 
 ## 8. Files, tools and how to regenerate
 
@@ -1390,6 +1421,8 @@ above.
   circuit running, §3.9);
 - `sim/bridge_ring_bearings_results.json` (the layout's bridge-ring bearings, §3.9);
 - `sim/doubler_caps_results.json` (the capacitors' mounts, §3.9);
+- `sim/unmodelled_parts_results.json` (the first cuts' parts outside the layout, in solids: the chokes, the kick, the
+  drive; §3.9, §6 items 74–75);
 - `docs/drawings/set-index.json` (the drawing set in its order, §7).
 
 **The findings,** one per study:
@@ -1402,6 +1435,7 @@ above.
 - the redesign's: `sim/integrated-multiplier-findings.md`, `sim/multiplier-layout-findings.md`,
   `sim/multiplier-layout-3d-findings.md`, `sim/multiplier-waveforms-findings.md`,
   `sim/bridge-ring-bearings-findings.md` and `sim/doubler-caps-findings.md` (§3.9);
+- the drawing set's: `sim/unmodelled-parts-findings.md` (the first cuts' parts outside the layout, drawn);
 - the design and test documents `docs/rings-design.md` and `docs/bench-test-rings.md`;
 - the cost guide `docs/cost/README.md`.
 
@@ -1427,8 +1461,9 @@ above.
   - `docs/make_core_drawing.py` and `docs/make_utron_drawing.py`;
   - `docs/make_air_vane_drawing.py`;
   - `docs/make_multiplier_layout.py` (after `sim/multiplier_layout.py`);
-  - the drawing set: `docs/make_drawing_set.py` (after `sim/tube_geometry.py --layout`; the bundle's Part D reads its
-    index);
+  - the drawing set: `docs/make_drawing_set.py` (after `sim/tube_geometry.py --layout` and `sim/unmodelled_parts.py`,
+    which puts the first cuts' parts outside the layout in solids from `sim/parts_first_cut_results.json` and
+    `sim/drive_sizing_results.json`; the bundle's Part D reads its index);
   - the layout in 3-D: `sim/step_to_glb.py …-hub50-layout.step --angular 0.4`, then `tools/step-viewer/make_layout_data.py
     OUT` (the viewer's files) and `tools/step-viewer/shoot.py 8765 docs/geometry/tube/…-hub50-layout cutaway bay deckB
     ringA bay@0.425 deckB@0.425 --sim <OUT's sim.json>` (the stills, from a local server at the repository's root).

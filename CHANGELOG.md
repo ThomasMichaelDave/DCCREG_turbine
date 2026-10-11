@@ -41,6 +41,64 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The first cuts' parts drawn: the chokes, the kick and the drive (2026-10-11)
+The designer's request stands: "a drawing and small 3d on the drawing sheet for every component proposed as of this
+design. Plus sub assemblies". The layout's model left out the parts that have only first cuts: La / Lb, the kick, the
+drive and their bought parts. Asked whether to draw them from those specifications, their places in the machine
+OPEN, the designer chose "Draw them all".
+
+- **The study** (PROPOSED; `sim/unmodelled_parts.py`, `sim/unmodelled_parts_results.json`,
+  `sim/unmodelled-parts-findings.md`). Why: those parts had a specification but no solid, so no sheet.
+  - **Built from the first cuts' numbers** (`sim/parts_first_cut_results.json`, `sim/drive_sizing_results.json`).
+    Every dimension they leave open is tagged [IR]; the kick's layout is [RH].
+  - **The gears have teeth:** straight bevels on Tredgold's approximation, each tooth thinned 0.064 mm for the
+    backlash. The pinions are turned half a pitch, so each contact line has a tooth meeting a space.
+  - **The checks:**
+    - no two parts overlap;
+    - the teeth are 0.043 mm apart at the closest point, on all six meshes;
+    - the belt is 750.02 mm at the first cut's centres;
+    - the masses are within the first cuts' blanks (the bodies' inertias move under 0.1 %);
+    - the choke's iron is 1.2044 kg, against the first cut's 1.2043.
+- **The drive's first cut, drawn part by part, needs five changes** (PROPOSED; the ledger's §6 item 74). Why: as
+  sketched (`docs/drive-gear-belt.md` §5, §8) it cannot be built:
+  1. the counter-rotor's hub holds its bearing over a lip above it, not below;
+  2. the counter-rotor's gear gets a back flange Ø80 × 3 on six M4, to reach the hub outside the bearing;
+  3. the pinions' bearings sit 12 mm apart, as the case allows, not 16. The inner one takes 40 N steady and 195 N at
+     the driver's limit (29 / 141 N in the first cut), a static safety of 10;
+  4. the bell is a C, Ø164 / Ø144, open to the motor, so the belt clears it by 7.2 mm;
+  5. the 80T pulley is unflanged, as the catalogue's TL80-5M-15 is; the flanged pulley is the 20T.
+  - **The drive is still to be re-cut on the layout** (§6 item 71); its sheets carry that flag.
+- **The choke is 84 × 70 × 61 over the bobbin's flanges** (the ledger's §6 item 75; noted). The first cut's 59 mm
+  is the build alone.
+- **The drawing set** (`docs/make_drawing_set.py`): 24 new sheets, 103 in all.
+  - **The pump's parts:**
+    - REL-720 / -721, the choke and its winding;
+    - REL-730, the K4 kick as a placeholder module.
+  - **The drive:**
+    - DRV-100, the reverser, with DRV-101 to -109: the two side gears, the pinion, its stub shaft and cartridge, the
+      gear case, the bell, the counter-rotor's hub and end disc;
+    - DRV-120, the belt drive, with DRV-121, the motor plate;
+    - DRV-190, the drive's spacers, rings, keys and fasteners.
+  - **The bought parts, P-012 to P-019:** source-control sheets with this session's candidates, each listing named
+    on its sheet (to confirm on the maker's current sheet):
+    - the 6000-2Z bearing, the Gates 750-5M-15 belt, the pulleys, the APBA60M048030-E motor;
+    - the SB5200 / SR5150 rectifiers, the R76 capacitor and OX221KE resistor of the snubbers;
+    - the Rubycon snap-in bypass, the choke's parts.
+  - **The machinery:**
+    - sub-models for the sub-assemblies;
+    - 3-D views from separate solids (the gears' teeth over their blanks);
+    - tapped holes, stacked bore texts, countersinks measured from the face;
+    - two more assembly layouts;
+    - tighter index rows above 40 a column.
+  - **The other sheets:** the layout's 79 are redrawn with the new count. DS-000 and GA-001 name what is new and what
+    is still not drawn: the frame, the chokes' brackets, the electronics' boards and clamps.
+- **Records:**
+  - the ledger: the header and the summary, §3.1, §3.2, §3.9 (the drawing set), §5.1, §5.2, §6 (items 74–75), §7
+    (Part D, sheets 61–161; what is not drawn) and §8;
+  - the bundle: 161 sheets behind a three-page register, Part D's name and text;
+  - `presets/hub-locked.json` supply_redesign.drawings, and the README;
+  - a "Drawn" note in `docs/drive-gear-belt.md` and in `sim/parts-first-cut-findings.md`.
+
 ### The doubler capacitors' mounts, and the drawing set (2026-10-11)
 The designer: "I would like to see a drawing and small 3d on the drawing sheet for every component proposed as of this
 design. Plus sub assemblies and the doubler capacitor designs." Asked, the designer chose every part, made and bought,
