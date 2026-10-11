@@ -16,17 +16,17 @@ and mirror). The record supplies the rest: its hub, column plates, vanes and rel
 **Tags:** [OC] the solids' geometry; [IR] the routing chosen here; [RH] the parts' envelopes and the junctions.
 
 ## Headline
-- **386 solids from 147 prototypes; 1014 mm, the hub's centre at z 507** (z from side A's end; 378 solids and 974 mm
-  before the bridge-ring bearings):
+- **552 solids from 168 prototypes; 1014 mm, the hub's centre at z 507** (z from side A's end; 386 from 147 before
+  the capacitors' mounts, 378 solids and 974 mm before the bridge-ring bearings):
 
 | \|z\| from the hub (mm) | per side, as drawn | body |
 |:--|:--|:--|
 | 0–72 / 72–80 | the hub as locked; the shaft halves' flanges, turned to Ø60 inside the coupler (`docs/rings-design.md` §2) | rotor |
 | 0–87 | the can: Al, r 46–48, its end discs, a PTFE bushing for its ring's lead | rotor (REF) |
 | 30–36 / 36–78 | the deck: the G10 plate; every part of the study's plan, potted | rotor |
-| 117–165 | Ca / Cb: the record's six plates, node 2 / 3 toward the deck | rotor |
-| 171–273 | C1 / C2: the record's 6 + 6 vanes, a rotor vane at the hub end, **C2 in phase with C1** (no half-pitch offset) | rotor / counter-rotor |
-| 289 | the Ca\|reluctance bearing and its spider; one cage from spider to spider | — / counter-rotor |
+| 117–165 | Ca / Cb: the record's six plates, node 2 / 3 toward the deck; since 2026-10-11 two combs on their posts and standoffs (`sim/doubler-caps-findings.md`) | rotor |
+| 171–273 | C1 / C2: the record's 6 + 6 vanes, a rotor vane at the hub end, **C2 in phase with C1** (no half-pitch offset); the rotor vanes on G10 spacer rings and dowels, the stator vanes on tie rods (the mounts) | rotor / counter-rotor |
+| 289 | the Ca\|reluctance bearing and its spider; one cage from spider to spider (r 182–186 with the mounts) | — / counter-rotor |
 | 299–467 | the record's reluctance section (side B's moved out 34 mm) | rotor / counter-rotor |
 | 467–487 | the bridge-ring bearing (SKF 6205-2Z) in its cartridge, its 8 mm spider and the 6 mm ring to the bridge ring (`sim/bridge-ring-bearings-findings.md`) | — / counter-rotor |
 | 487–507 | the record's end bearing and its frame spider, one slot out | — / frame |
@@ -56,12 +56,12 @@ and mirror). The record supplies the rest: its hub, column plates, vanes and rel
 ## Gates
 | gate | result | pass |
 |:--|:--|:--|
-| G-TUBE-CLASH: no two solids share volume (except the intended joins) | 1151 pairs tested, 0 clashes (1129 before the bridge-ring bearings) | ✔ |
+| G-TUBE-CLASH: no two solids share volume (except the intended joins) | 1447 pairs tested, 0 clashes (1151 before the capacitors' mounts, 1129 before the bridge-ring bearings) | ✔ |
 | G-TUBE-SWEEP: no counter-rotor solid in the volume a rotor solid sweeps | 0 hits | ✔ |
 | G-TUBE-WOUND: the utrons' air gap and clearances, the record's | 0.5 mm aligned, 9.74 mm unaligned, the winding 1.0 mm off its iron | ✔ |
 | G-LAYOUT, decks A and B: every pair's housings and bodies in 3-D against the study's plan | 78 pairs each; the solids never closer than the plan by more than 0.019 mm (the clamp's arc against its 9-point polyline); the least housing gap 1.86 mm, as the study (C8 sits under r2's junction, so D5–C8 and D8–C8 tie) | ✔ |
-| G-LAYOUT, the stack | the column's node-2 plate 39.0 mm from the deck's parts (the study's 39); the riser 13.5 mm from the node-2 plates' bores (13 needed); the decks 12.0 mm from the cage (the record's 12); deck A's conductors 73.2 mm from deck B's (72 needed) | ✔ |
-| the STEP read back | 386 instances of 147 products | ✔ |
+| G-LAYOUT, the stack | the column's node-2 plate 39.0 mm from the deck's parts (the study's 39); the riser 13.5 mm from the node-2 plates' bores (13 needed); the decks 32.0 mm from the cage at r 182 (12 needed; 12.0 before the mounts moved it out); deck A's conductors 73.2 mm from deck B's (72 needed) | ✔ |
+| the STEP read back | 552 instances of 168 products | ✔ |
 | the record unchanged | `Machine(record)` builds the same 153 parts as `docs/geometry/tube/…-hub50.parts.json` after the refactor (`wound_element`) and the hub's new options | ✔ |
 
 ## Changes to the tools (none to the record's outputs)
@@ -86,9 +86,9 @@ and mirror). The record supplies the rest: its hub, column plates, vanes and rel
 ## Not drawn (open, as in the study)
 - **The bridge-ring bearings:** drawn since 2026-10-11 (`sim/bridge-ring-bearings-findings.md`, PROPOSED); their
   place and part are the designer's to accept.
-- **Mounts and standoffs:**
-  - Ca / Cb's rods and mounts, and the plates' interconnections (the riser passes the node-1 plates' bores; their tabs
-    are not drawn);
-  - the decks' standoffs to the can, and the riser's standoffs.
+- **The capacitors' mounts:** drawn since 2026-10-11 (`sim/doubler-caps-findings.md`, PROPOSED): Ca / Cb's combs
+  on their posts and standoffs (the riser now ends under the node-1 comb's first post), C1 / C2's spacer rings,
+  dowels, tie rods, tubes and end rings, the cage moved out to r 182–186.
+- **Standoffs still not drawn:** the decks' standoffs to the can, and the riser's.
 - **Circuits beyond the HV deck:** the magnetic pump's La / Lb and D1*–D4*, and the AH leads inside the hub.
 - **Elsewhere:** the gear and the belt; the potting's real shapes (the study's envelopes stand in) [RH].

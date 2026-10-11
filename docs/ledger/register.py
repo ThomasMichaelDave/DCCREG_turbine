@@ -2,11 +2,15 @@
 day): every technical drawing bundled into docs/ledger/DCCREG-drawings-bundle.pdf, in sheet order, and the CAD files that
 cannot go on a sheet.
 Parts: "A" the design of record (locked); "B" supporting drawings and figures of the record (stale content flagged);
-"C" earlier phases, superseded, kept for the record.
+"C" earlier phases, superseded, kept for the record; "D" the drawing set of the machine as the layout proposes it (every
+part, bought part and sub-assembly, docs/make_drawing_set.py), read from docs/drawings/set-index.json.
 Each entry: part, title, file (from the repository root), what it shows (and what in it is stale), generator.
 Analysis plots of the earlier phases (the repository root's *.png, sim/*.png) are data, not drawings: they stay with
 their findings and are not bundled.
 """
+
+import json
+import os
 
 _TUBE = "docs/geometry/tube/tube-r150-n8-wound-g0p5-6br"         # the model before the record (vacuum stack, placeholder hub)
 _REC = "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50"   # the record in solids (sim/tube_geometry.py --record)
@@ -104,9 +108,9 @@ _R = [
      "C3 / C6 / C8, Csa and the clamp string round the grounded can); the parts, the interfaces, the strays, the clamp "
      "trim and the shafts", "docs/make_multiplier_layout.py"),
     ("B", "The layout in solids: the section and the decks (PROPOSED, 2026-10-11)", f"{_LAY}-section.png",
-     "the layout's 386 solids cut through the shaft, side A's central bay enlarged, both decks cut in plan at the "
+     "the layout's 552 solids cut through the shaft, side A's central bay enlarged, both decks cut in plan at the "
      "sticks' height, and side A's end with its bridge-ring bearing: every part of the study's plans, the can, the "
-     "column, the vanes with C2 in phase", "sim/tube_geometry.py --layout"),
+     "column on its posts, the vanes with C2 in phase on their mounts", "sim/tube_geometry.py --layout"),
     ("B", "The layout in 3-D, its circuit at 25.5 deg of the cycle (PROPOSED, 2026-10-11)", f"{_LAY}-3d-bay-potential.png",
      "side A's central bay, quarter cut: every conductor by its potential (blue -15 kV, grey REF, red +15 kV), the "
      "diodes and the clamp lit while they conduct, insulators faded; the circuit of sim/multiplier_waveforms.py",
@@ -177,6 +181,23 @@ _R = [
     ("C", "Disc motor: field cut, unit drive", "docs/geometry/rt/slices/motor-A-station-unit-cA.png",
      "the motor model at rotor 15°, unit drive on C_A", "sim/field_slice.py"),
 ]
+# ------------------------------------------------------------------------------------- D: the drawing set
+# every sheet of the set in its order, but the two drawn by their own scripts (DCCREG-UTR-101 and DCCREG-HUB-201 are
+# Part A's sheets); each title block carries the set's own sheet number
+_KIND = {"index": "the set's index", "assembly": "sub-assembly: section, balloons, parts list, 3-D view",
+         "turned": "part drawing: views, dimensions, notes, 3-D view", "block": "part drawing: views, notes, 3-D view",
+         "bought": "source-control sheet: envelope, specification, candidate", "wiring": "wiring list",
+         "list": "list of fasteners and stock"}
+_SET_INDEX = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "drawings", "set-index.json")
+if os.path.exists(_SET_INDEX):
+    for _s in json.load(open(_SET_INDEX))["sheets"]:
+        if _s["kind"] == "existing":
+            continue
+        _q = f"; {_s['qty']} per machine" if _s.get("qty") not in (None, "", "—") else ""
+        _R.append(("D", f"{_s['dwg']}: {_s['title']}", _s["file"],
+                   f"{_KIND[_s['kind']]}; {_s['status']}{_q}" + (f"; in {_s['used_in']}" if _s.get("used_in") else ""),
+                   _s["gen"]))
+
 REGISTER = [dict(sheet=i + 1, part=p, title=t, file=f, what=w, gen=g) for i, (p, t, f, w, g) in enumerate(_R)]
 
 # CAD and DXF files: not placed on sheets (open them in a CAD viewer; tools/step-viewer/ renders the STEP files)
@@ -186,8 +207,8 @@ CAD = [
     ("A", f"{_REC}.step", "the record in solids (153 solids, 940 mm)"),
     ("A", f"{_REC}.glb", "the same, for tools/step-viewer/"),
     ("A", f"{_REC}.parts.json", "its parts and layout list"),
-    ("B", f"{_LAY}.step", "the redesign's layout in solids, with its bridge-ring bearings (386 solids, 1014 mm; "
-                          "PROPOSED)"),
+    ("B", f"{_LAY}.step", "the redesign's layout in solids, with its bridge-ring bearings and the capacitors' mounts "
+                          "(552 solids from 168 prototypes, 1014 mm; PROPOSED)"),
     ("B", f"{_LAY}.glb", "the same, for tools/step-viewer/layout.html (the circuit running on it)"),
     ("B", f"{_LAY}.parts.json", "its parts, layout list and each conductor's net"),
     ("C", f"{_TUBE}.step", "the machine as modelled before the record (152 solids)"),

@@ -164,7 +164,8 @@ V_op), re-run with every node kept [OC]:
   - all 78 pairs and every part to the can clear bare;
   - **the least bare margin:** D12–Z1, 0.8 mm (21.7 mm against 21.0, at 11.4 kV);
   - **the least housing gap:** D5–C8, 1.9 mm;
-  - **to the cage:** the outer lane keeps 16 mm and Csa 13 mm, against the record's 12;
+  - **to the cage:** the outer lane keeps 16 mm and Csa 13 mm, against the record's 12 (32 mm since 2026-10-11:
+    the capacitors' mounts move the cage out to r 182, `sim/doubler-caps-findings.md` §2);
   - **the clamp's HV end to the can:** 25 mm against 24.7.
 - **The mass and balance** [RH]:
   - each deck weighs 1.85 kg: 1.16 kg of parts and silicone and 0.70 kg of plate;
@@ -182,7 +183,7 @@ from the rms at pollution degree 2 × 1.25; group I is PTFE and silicone, IIIa i
 | the column's node-2 plate ↔ the can's disc | 4.5 / 3.1 | 6.5 | 20 / 39 | 30 mm |
 | the column's node-2 plate ↔ the deck's parts | 19.5 / 17.7 | 38.9 | 110 / 221 | 39 mm (sets the column) |
 | node 1's riser ↔ the node-2 plates' bores | 13.2 / 12.3 | 24.7 | — | PTFE HV wire ≥ 20 kV DC, 13 mm off |
-| the decks ↔ the cage (G10, not REF) | 14.9 | — | — | 13 mm (the record keeps 12) |
+| the decks ↔ the cage (G10, not REF) | 14.9 | — | — | 13 mm (the record keeps 12); 32 mm with the cage at r 182 (`sim/doubler-caps-findings.md`, 2026-10-11) |
 | deck A ↔ deck B, across the equator | 29.9 / 29.9 | 67.2 | 187 / 373 | 72 mm |
 | the cross nets ↔ the can | 6.4 / 5.2 | 10.4 | 33 / 66 | 82 mm |
 | a ring's lead ↔ the can's wall | 14.9 | 28.8 | — | a PTFE bushing; the lead's insulation continuous |

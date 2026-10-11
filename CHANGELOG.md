@@ -41,6 +41,50 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The doubler capacitors' mounts, and the drawing set (2026-10-11)
+The designer: "I would like to see a drawing and small 3d on the drawing sheet for every component proposed as of this
+design. Plus sub assemblies and the doubler capacitor designs." Asked, the designer chose every part, made and bought,
+and the capacitors' mounts designed, not left out.
+
+- **The mounts** (PROPOSED; `sim/doubler_caps.py`, `sim/doubler_caps_results.json`, `sim/doubler-caps-findings.md`,
+  `docs/figures/doubler-caps.png`; `5e781b7`). Why: the record leaves them undrawn, and with the layout Ca / Cb hold
+  13.2 kV DC.
+  - **Ca / Cb:** two combs, each on its own three posts in the column's bore at r 35. Each plate keeps its full annulus
+    with three tabs into the bore. The node-1 comb hangs from the first rotor vane on Ø8 Al spacers, the node-2 comb
+    stands on glazed steatite standoffs (Ø16 × 30) on the can's disc. No support touches two adjacent plates.
+  - **C1 / C2:** G10 spacer rings and three dowels between the rotor vanes; lugs, M8 glass-epoxy tie rods, G10 tubes
+    and an end ring for the stator vanes. The cage moves out to r 182–186 and the Ca|reluctance spiders grow to r 182.
+  - **The checks:**
+    - the HV rules at every new interface (post to post 27 mm against 24.7; the standoff 30 mm of glazed steatite
+      against 6.5; the rims 15–18 mm from the new G10 against 12; the decks 32 mm from the cage);
+    - the tab crossing's corona margin 1.052 at 11 mm (the C1 rims 1.061; under 1 at 7 mm);
+    - Ca 480.5 → 482.3 pF; the strays +3.81 pF (nodes 1 / 4) and +4.64 pF (2 / 3);
+    - the free gain 1.01636 → 1.01589, the rings −9 V; f1 ≥ 81 Hz at d 25.
+- **The model** (`sim/tube_geometry.py --layout`; `1d7596d`): LayoutMachine draws the mounts from the study's
+  placement (`mounts`, default on).
+  - 552 solids from 168 prototypes: no clash in 1447 pairs, no sweep hit, every G-LAYOUT gap held, the STEP reads back
+    552 / 168.
+  - The STEP, GLB, parts list, section and stills are regenerated. `write_step` skips prototypes no part places.
+  - `sim/bridge_ring_bearings.py` `solids_parts` takes `mounts` (off for its own numbers, which stay reproducible).
+- **The drawing set** (Rev A drafts for quotation; `docs/make_drawing_set.py` → `docs/drawings/set/`,
+  `docs/drawings/set-index.json`):
+  - 79 A3 sheets: the index and the general arrangement; 12 sub-assemblies with sections, balloons and parts lists;
+    51 made parts; 10 bought parts on source-control sheets (envelope, specification, candidate, source); deck A's
+    wiring list; the fasteners and stock. UTR-101 and HUB-201 go in as their own scripts draw them;
+  - every view is a hidden-line projection or an exact section of the part's own solid; the diameters, lengths and
+    hole patterns are read off its faces, the masses and quantities counted from the model; each sheet has a small
+    shaded 3-D view (the assemblies a quarter cut away);
+  - drawing solids add the holes the model leaves out (the posts tapped M4 through; the standoff's insert bores).
+- **Open** (the ledger's §6 item 72): the deck's capacitor candidates (Vishay 715C30KTT19, 715C40KTT10) are taller
+  than the layout's envelopes; potted standing they are over the deck's 42 mm zone.
+- **Records:**
+  - the ledger: the summary, §3.9 (the mounts, the drawing set), §4, §5.1, §5.2, §6 (items 72–73), §7 (Part D,
+    sheets 61–137), §8;
+  - the register's Part D, read from the set's index, and the bundle: 137 sheets behind a three-page register;
+  - `presets/hub-locked.json` supply_redesign (capacitor_mounts, drawings; the solids); the README;
+  - `sim/multiplier-layout-3d-findings.md` (552 solids, the mounts drawn); `sim/multiplier-layout-findings.md` (the
+    cage now 32 mm from the decks); `sim/doubler-caps-findings.md` (the sheets' numbers).
+
 ### The bridge-ring bearings: placed, drawn and named (2026-10-11)
 The designer: "Add the bridge-ring bearings to the model and propose an actual component number from an existing
 manufacturer."

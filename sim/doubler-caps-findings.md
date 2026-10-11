@@ -2,8 +2,8 @@
 
 **Source:** `sim/doubler_caps.py` → `sim/doubler_caps_results.json` and `docs/figures/doubler-caps.png` (about 70 s on
 four cores; ngspice, OCP). The solids come from `sim/tube_geometry.py --layout`, which imports this study's placement
-(`placement()`). The parts' and the sub-assemblies' drawings are DCCREG-CAP-600 to -613 in the drawing set
-(`docs/make_drawing_set.py`).
+(`placement()`). The parts' and the sub-assemblies' drawings are DCCREG-CAP-600 to -607 (C1 / C2) and -610 to -617
+(Ca / Cb) in the drawing set (`docs/make_drawing_set.py`).
 
 **What it is:** the mounts the record leaves undrawn ("connection and mounts not drawn", `sim/tube_geometry.py`; the Ca
 mounts' first cut in `sim/parts-first-cut-findings.md` §4), designed for the multiplier's layout, where Ca / Cb hold
@@ -224,7 +224,7 @@ From the drawn solids (`sim/bridge_ring_bearings.py` solids_parts, without and w
 - **The strays are formulas** [RH], an upper bound for the columns. The record's 3-D solve
   (`sim/tube_strays.py`) is not re-run with the tabs.
 - **The steatite standoff is a custom part:** no catalogue part was found at Ø16 × 30 with M4 threads. Abbatron's
-  glazed standoffs run 1/2–5/8 in with 6-32 / 8-32 threads. It is drawn as DCCREG-CAP-613 for a technical-ceramics
+  glazed standoffs run 1/2–5/8 in with 6-32 / 8-32 threads. It is drawn as DCCREG-CAP-617 for a technical-ceramics
   maker; PTFE is the alternate (it creeps; the 30 mm hold 19.7 mm of PTFE creepage).
 - **The cage moves out to r 186 (Ø372, was Ø332),** and the counter-rotor is 2.47 kg heavier (§6).
 - **Bonding:** the rotor-vane stack is bonded on the sleeve and to its rings (structural epoxy), the end ring into the

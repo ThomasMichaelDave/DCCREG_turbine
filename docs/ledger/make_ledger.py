@@ -226,7 +226,8 @@ h1 { font-size: 24pt; margin: 0 0 2mm; } .sub { font-size: 12pt; color: #1d3f5e;
 .tighter table { font-size: 7.1pt; } .tighter td, .tighter th { padding: 0.45mm 1.4mm; }
 """
 PART_NAME = {"A": "Part A — the design of record (locked)", "B": "Part B — supporting drawings of the record",
-             "C": "Part C — earlier phases, kept for the record (superseded)"}
+             "C": "Part C — earlier phases, kept for the record (superseded)",
+             "D": "Part D — the drawing set: every part, bought part and sub-assembly of the layout (PROPOSED)"}
 
 
 def _sheet_html(r, n_total):
@@ -242,7 +243,8 @@ def _sheet_html(r, n_total):
 
 
 def _cover_html(n_total):
-    """two register pages: the title with parts A and B; then part C and the CAD files."""
+    """the register pages: the title with parts A and B; then part C and the CAD files; then part D, the drawing set,
+    in two columns."""
     def rows_for(parts):
         out, last = [], None
         for r in REGISTER:
@@ -271,7 +273,27 @@ def _cover_html(n_total):
              f'<tbody>{cad}</tbody></table>'
              f'<p style="font-size: 8pt; color: #444; margin-top: 4mm">Analysis plots of the earlier phases (the '
              f'repository root\'s *.png and sim/*.png) are data, not drawings; they stay with their findings.</p></div>')
-    return page1 + page2
+    d_rows = [r for r in REGISTER if r["part"] == "D"]
+    if not d_rows:
+        return page1 + page2
+
+    def d_table(rows):
+        return ('<table><thead><tr><th style="width:7%">sheet</th><th>drawing</th><th style="width:36%">what</th>'
+                '</tr></thead><tbody>' +
+                "".join(f'<tr><td>{r["sheet"]}</td><td>{html.escape(r["title"])}</td><td>{html.escape(r["what"])}</td></tr>'
+                        for r in rows) + '</tbody></table>')
+    half = (len(d_rows) + 1) // 2
+    page3 = (f'<div class="sheet tighter" style="padding-top: 12mm"><header><span class="t">Register, continued</span>'
+             f'<span class="n">{PART_NAME["D"]}</span></header>'
+             f'<div class="what">The machine as sim/tube_geometry.py LayoutMachine builds it, drawn sheet by sheet by '
+             f'docs/make_drawing_set.py: a drawing with a small 3-D view for every made part, a source-control sheet '
+             f'for every bought part, the sub-assemblies with their balloons and parts lists, and the general '
+             f'arrangement. Each sheet is Rev A, a draft for quotation, and carries the set\'s own sheet number; its '
+             f'PDF is docs/drawings/set/&lt;drawing&gt;.pdf, the set\'s order docs/drawings/set-index.json. The set\'s '
+             f'DCCREG-UTR-101 and DCCREG-HUB-201 are Part A\'s sheets.</div>'
+             f'<div style="display: flex; gap: 6mm"><div style="flex: 1">{d_table(d_rows[:half])}</div>'
+             f'<div style="flex: 1">{d_table(d_rows[half:])}</div></div></div>')
+    return page1 + page2 + page3
 
 
 def _print(pg, html_text, out):

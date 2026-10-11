@@ -10,7 +10,7 @@ temporary documentation ledger and the current fact sheet of the exercise.
 | what the lock means | the design of record below is the baseline; later changes are recorded against it. The lock does not settle what is still PROPOSED or OPEN (§5): those keep their status |
 | the redesign (2026-10-10) | the designer is redesigning the electrostatic pump's multipliers: stacked into the doubler, not a separate circuit tapping nodes 1 and 4. The turbine's stack will change; the magnetic pump, the sphere, its AH and the field interface stay for now. The worked circuit is §3.9, taken by the designer "for now" (2026-10-11); its mechanical layout is §3.9 too (PROPOSED). The record below stays the baseline until the designer accepts them |
 | this ledger | `docs/ledger/DCCREG-design-ledger.md` (the source) and `.pdf` (its print form) |
-| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 60 sheets behind a two-page register (§7) |
+| the drawings | `docs/ledger/DCCREG-drawings-bundle.pdf`: 137 sheets behind a three-page register (§7); its Part D is the drawing set, a sheet for every part, bought part and sub-assembly of the layout (`docs/make_drawing_set.py`) |
 | how it is built | `python3 docs/ledger/make_ledger.py` (needs markdown-it-py, mdit-py-plugins, pypdf and playwright with Chromium) |
 
 **Abstract.** As locked, the DCCREG turbine is a belt-driven tube machine. Its rotor and counter-rotor turn at 600 rpm
@@ -49,6 +49,11 @@ in opposite directions through a 1 : −1 reversing gear.
     - it needs the bridge-ring bearings, since the hub-face bearings must go. They are placed and named: an SKF
       6205-2Z at each bridge ring's outer end, 83–87 Hz at d 25 (PROPOSED, §3.9);
     - it needs the clamp strings trimmed to about 60 parts.
+  - **The capacitors' mounts (2026-10-11, PROPOSED):** Ca / Cb as two combs on posts in each column's bore, C1 / C2
+    on G10 spacers and glass-epoxy tie rods, the cage moved out to r 182. They hold the record's HV rules and cost
+    0.0005 of the free gain (§3.9).
+  - **The drawing set (2026-10-11, Rev A drafts):** 79 sheets: a drawing with a small 3-D view for every part, a
+    source-control sheet for every bought part, the sub-assemblies and the general arrangement (§7, Part D).
 - **What is still open:** the physics is mainstream throughout [OC]. The ratings, the leakage and several parts are
   placeholders that the bench test must qualify.
 
@@ -805,8 +810,9 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 `sim/multiplier-layout-3d-findings.md`, `sim/multiplier-waveforms-findings.md`; sheets 32–33; the viewer
 `tools/step-viewer/layout.html`):
 - **the solids** (`sim/tube_geometry.py --layout`):
-  - 386 of them from 147 prototypes, 1014 mm with the bridge-ring bearings, drawn from the layout study's results,
-    the bearings' study and the record's own parts;
+  - 552 of them from 168 prototypes, 1014 mm, with the bridge-ring bearings and the capacitors' mounts (386 from 147
+    before the mounts), drawn from the layout study's results, the bearings' and the mounts' studies and the record's
+    own parts;
   - every part of both decks, the can, the column, the vanes with C2 in phase, the wiring as routed (the riser, the
     tap, the cross nets, the rings' leads through the can, the LV cable in its bore), the sleeve's cover and sheds;
   - no clash, no sweep hit; every deck pair matches the study's plan in 3-D (the least housing gap 1.86 mm, as the
@@ -844,6 +850,51 @@ viewer's "Ring bearing A"):
 - **the drive's first cut** makes its gear-end bearing this pair's bottom one. But it seats it under an end disc on
   the ring's face, on the record's 940 mm stack-up; to be re-cut on the layout (§6, item 71).
 
+**The capacitors' mounts** (2026-10-11, PROPOSED; `sim/doubler-caps-findings.md`, `docs/figures/doubler-caps.png`; the
+drawing set's CAP-600 to CAP-617). The record leaves them undrawn; with the layout, Ca / Cb hold 13.2 kV DC.
+- **Ca / Cb: two combs, each on its own three posts in the column's bore** [IR; RH the sizes]. Every plate keeps the
+  record's full annulus and carries three tabs into the bore (r 50 → 27) at its comb's angles:
+  - the node-1 comb (Ca_05, Ca_03, Ca_01) hangs from the first rotor vane on Ø8 Al spacers joined by M4 studs; the
+    riser lands under its first post, at Ca_05;
+  - the node-2 comb (Ca_06, Ca_04, Ca_02) stands on three glazed steatite standoffs (Ø16 × 30, M4 inserts) on the
+    can's end disc (REF);
+  - no support touches two adjacent plates, so no mount carries the 13.2 kV between the combs; each post passes the
+    other comb's plates 11 mm off their bore.
+- **C1 / C2:** the rotor vanes on G10 spacer rings (r 20.5–32 × 15) and three G10 dowels Ø5; the stator vanes on six
+  glass-epoxy M8 tie rods through lugs at r 173, with G10 spacer tubes, from a G10 end ring to the Ca|reluctance
+  spider. **The cage moves out to r 182–186** (from 162–166) to take the lugs, and the spiders grow to r 182.
+- **The record's HV rules hold at every new interface** [IR]:
+  - post to post, 27 mm of air against the 24.7 mm case-A clearance;
+  - the standoff, 30 mm of glazed steatite against 6.5 mm (PTFE would need 19.7);
+  - the rims 15–18 mm from the new G10, against the 12 mm rule; the decks 32 mm from the cage (12 needed).
+- **The fields** [OC; RH Peek's surface factor 0.85]: where a tab crosses the other comb's bore edge, 45.0 kV/cm
+  against the handled surface's 47.3, a corona margin of 1.052 at the 11 mm drawn (the C1 rims' own is 1.061). It
+  falls under 1 at 7 mm. The hole edges hold 1.184, the posts 4.07.
+- **Ca and the strays:** the tabs' fringe adds 1.84 pF (Ca 482.3 pF, 1.072 C_max, inside the 1.1 rule); nodes 1 / 4
+  gain 3.81 pF (70.80 → 74.61), nodes 2 / 3 4.64 pF (13.66 → 18.30).
+- **The circuit** (the layout's deck with its strays): the free gain 1.01636 → 1.01589; the rings ±16.248 →
+  ±16.239 kV at the layout's clamps, the field at the null 8.273 → 8.268 kV/cm.
+- **The masses and the shafts:** the rotor 35.09 → 35.88 kg, the counter-rotor 33.93 → 36.40 kg (the cage and the
+  spiders grow); f1 at d 25 on G10 spiders 82.2 → 81.1 Hz (85.1 on stiff seats), at d 30 93.7–102.4 Hz: all over the
+  60 Hz criterion.
+- **In solids:** the layout takes the mounts (552 solids from 168 prototypes); no clash, no sweep hit, the STEP reads
+  back.
+
+**The drawing set** (2026-10-11, Rev A drafts for quotation; `docs/make_drawing_set.py`; the bundle's Part D, §7):
+- **79 A3 sheets drawn from the layout's solids:**
+  - the general arrangement;
+  - a drawing for every made part: its views, dimensions and notes, and a small 3-D view;
+  - a source-control sheet for every bought part: its envelope, the specification, a candidate part and its source;
+  - the sub-assemblies with their sections, balloons and parts lists; deck A's wiring list; the fasteners and stock.
+- **How they are drawn:** the views are hidden-line projections and exact sections of each part's own solid; the
+  diameters, lengths and hole patterns are read off its faces, the masses and quantities counted from the model.
+- **The status on each sheet:** LOCKED for the record's own parts (the hub, the utrons, the reluctance sections),
+  PROPOSED for the layout's, BOUGHT for the bought parts. They are drafts, to be checked and approved before release.
+- **Flagged on the sheets:**
+  - the shaft is drawn at Ø25, as the model has it, against d 30 in `presets/hub-locked.json` (OPEN, §5.2);
+  - the capacitor candidates (P-003, P-004) are taller than the layout's envelopes and over the deck's zone when
+    standing (§6, item 72).
+
 ## 4. Fact sheet: the numbers of record, with their sources
 
 **Operating point and machine**
@@ -862,6 +913,7 @@ viewer's "Ring bearing A"):
 | reference link | one inner bearing; 0.41 mA rms AC, no DC | `sim/core_field_results.json` |
 | the drive (PROPOSED) | bevel reverser at side A, POM-C pinions; HTD 5M 4 : 1, 200 W motor; 0.48 / 0.52 N·m on the bodies, 1.00 into the frame; run-up 32 s | `docs/drive-gear-belt.md` |
 | the layout's bridge-ring bearings (PROPOSED) | SKF 6205-2Z at each bridge ring's outer end; the layout 1014 mm; d 25: 83–87 Hz, the gap +1–2 µm under 1 g | `sim/bridge-ring-bearings-findings.md` |
+| the capacitors' mounts (PROPOSED) | Ca / Cb two combs on Ø8 Al posts and Ø16 × 30 glazed steatite standoffs; C1 / C2 on G10 spacer rings and dowels and M8 glass-epoxy tie rods; the cage r 182–186; the tab crossing's corona margin 1.052; Ca 482.3 pF; the free gain 1.01589; f1 81–85 Hz at d 25 | `sim/doubler-caps-findings.md` |
 
 **Magnetic pump** (per side unless stated; `sim/pole-design-findings.md` §7–§8, `sim/pole_design_variants_op.json`)
 
@@ -966,6 +1018,8 @@ viewer's "Ring bearing A"):
 | the redesign's circuit: bipolar, C1 / C2 in phase, the ring stages (C7 / C8, D9–D12, Csa / Csb), C3–C6 180 pF | DECIDED for now (10-11) | `sim/integrated-multiplier-findings.md`; "will do for now" |
 | the redesign's layout: the decks round a grounded can, the columns toward the hub, the vane stacks against the Ca\|reluctance bearings, no hub-face bearings, the clamp strings at about 60 parts | PROPOSED | `sim/multiplier-layout-findings.md` (Figure 11) |
 | the layout's bridge-ring bearings: an SKF 6205-2Z in each of the record's end slots, the end bearings one slot out (1014 mm), stainless cartridges in 8 mm G10 spiders | PROPOSED | `sim/bridge-ring-bearings-findings.md` (sheets 34–35) |
+| the capacitors' mounts: two combs on posts in each column's bore (Al spacers, glazed steatite standoffs), the vane stacks on G10 spacers and glass-epoxy tie rods, the cage at r 182–186 | PROPOSED | `sim/doubler-caps-findings.md` (the drawing set's CAP-600 to CAP-617) |
+| the drawing set: a sheet for every part, bought part and sub-assembly of the layout, Rev A drafts | PROPOSED | `docs/make_drawing_set.py` (§7, Part D) |
 
 ### 5.2 Open items
 
@@ -985,7 +1039,17 @@ viewer's "Ring bearing A"):
     A field solve of the new stack would fix the number; the bench trims it in any case;
   - **the sleeve's outer ends** need PTFE sheds (17.5 mm against 62 mm of creepage);
   - **the decks** need their parts' real envelopes and a balance;
-  - **Ca / Cb's mounts** need their 13.2 kV creepage (77 mm on PTFE);
+  - **Ca / Cb's mounts** need their 13.2 kV creepage (77 mm on PTFE). The mounts as designed avoid it, no support
+    touching two adjacent plates (below);
+- **the capacitors' mounts** (§3.9, `sim/doubler-caps-findings.md`, PROPOSED): accept them or set them otherwise.
+  Their consequences:
+  - the cage moves out to r 182–186 and the spiders grow to r 182 (the counter-rotor +2.47 kg);
+  - the tab crossings hold a corona margin of 1.052, as the C1 rims do: the posts must keep 8 mm or more from the
+    other comb's bore;
+  - the steatite standoffs are a custom part (no catalogue part at Ø16 × 30 with M4 threads was found); PTFE is the
+    alternate;
+- **the drawing set** (§7, Part D, Rev A drafts): to be checked and approved before release. The shaft on it follows
+  the decision below;
 - **the shaft and its bearings** (§3.1): six bearings with d 40 (65 Hz, the runout at 0.027 mm), or an eighth pair
   between the shaft and each bridge ring's outer end at d 25 (131–165 Hz, the runout at 0.05 mm; the layout +10–20 mm
   a side; stiff seats to keep it clear of 120 Hz). The redesign's layout removes the hub-face bearings and leaves
@@ -1036,8 +1100,8 @@ viewer's "Ring bearing A"):
 **Still open in the models and parts:**
 - the 77 MnZn data sheet: its values are in `presets/hub-locked.json` (AH core), as a web search rendered the sheet;
   re-read them from the current sheet before ordering;
-- the capacitor mounts' creepage, potting and balancing: first cuts in `sim/parts-first-cut-findings.md` and
-  `sim/rotor-mechanics-findings.md` §6;
+- the capacitor mounts: designed for the layout (`sim/doubler-caps-findings.md`, PROPOSED); their potting and the
+  bodies' balance: first cuts in `sim/parts-first-cut-findings.md` and `sim/rotor-mechanics-findings.md` §6;
 - the fired-on coating's edges, for the later build.
 
 ### 5.3 The bench test
@@ -1197,10 +1261,18 @@ and the corrected one stands beside it, dated, until the designer decides.
 | 70 | the two-body model's rotor mass, 33.4 kg at d 25 (§4; `sim/tube-shaft-findings.md` §0) and 36.8 kg for the layout (`sim/multiplier-layout-findings.md` §7), counted the shaft halves twice: once as solids, once as the beam's steel | **corrected:** 30.4 and 33.8 kg. The model counted the shaft once, so its modes, deflections and loads stand (to 3e-8); `sim/shaft_bearings.py` fixed, `--record` and the layout study's shafts re-run, only the masses changed |
 | 71 | the drive's first cut seats its gear-end bearing (the bottom bridge-ring bearing) in a hub under a 10 mm G10 end disc on bridge ring A's face, 3 mm from the utrons' end turns, on the record's 940 mm stack-up (`docs/drive-gear-belt.md` §5, §8) | **open:** the layout's seat (an 8 mm spider centred in its slot, 9 mm clear, a 6 mm ring to the face) is PROPOSED; the drive's stack-up is to be re-cut on the layout, with its frame bearing in the gear case |
 
+**Found by the capacitors' mounts and the drawing set** (`sim/doubler-caps-findings.md`, `docs/make_drawing_set.py`,
+2026-10-11)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 72 | the deck's capacitor candidates are taller than the layout's envelopes [RH]: Vishay 715C30KTT19 (190 pF / 30 kV) is Ø21 × 28 and 715C40KTT10 (100 pF / 40 kV) Ø21 × 31, against Ø30 × 22, Ø30 × 24 and Ø25 × 20. Potted standing, their modules are 44 and 47 mm tall, over the deck's 42 mm zone (\|z\| 36–78, `sim/multiplier_layout.py` DECK_Z0, DECK_T, DECK_H) | **open:** lay them along their lanes, or re-cut the deck's plan with the real parts' envelopes (§5.2, "the decks need their parts' real envelopes"); flagged on DCCREG-P-003 and -P-004 |
+| 73 | the record leaves the doubler capacitors' mounts undrawn ("connection and mounts not drawn", `sim/tube_geometry.py`), and the layout asks 77 mm of PTFE creepage of Ca / Cb's (§5.2) | **proposed:** two combs on their own posts, no support touching two adjacent plates, so no mount bridges the combs' 13.2 kV: the node-2 comb's standoffs hold 4.5 kV to REF on 30 mm of glazed steatite (6.5 needed); the stator vanes on tie rods in the cage moved out to r 182–186 (`sim/doubler-caps-findings.md` §1–§2) |
+
 ## 7. Drawing register
 
 The bundle, `docs/ledger/DCCREG-drawings-bundle.pdf`, carries every sheet below on A3, in this order. It opens with a
-two-page register and has bookmarks by part. The drawings stay in the repository at these paths, with the scripts that
+three-page register and has bookmarks by part. The drawings stay in the repository at these paths, with the scripts that
 redraw them (`docs/ledger/register.py`).
 
 **Part A — the design of record (locked)**
@@ -1262,12 +1334,32 @@ redraw them (`docs/ledger/register.py`).
 | 54–56 | the disc machine's cross-section, boomerang cap, placed motor | `tools/cross-section.svg`, `docs/boomerang-cap.png`, `docs/geometry/motor/motor-il2f-6563b90d-rc40.png` |
 | 57–60 | the disc machine's field cuts | `docs/geometry/rt/slices/*.png` |
 
+**Part D — the drawing set: every part, bought part and sub-assembly of the layout (PROPOSED)**: sheets 61–137, each
+`docs/drawings/set/<drawing>.pdf` (`docs/make_drawing_set.py`, in the order of `docs/drawings/set-index.json`). Each
+title block carries the set's own sheet number, 1 to 79; the set's DCCREG-UTR-101 and DCCREG-HUB-201 are sheets 4 and 7
+above.
+
+| sheets | drawings | what |
+|:--|:--|:--|
+| 61–62 | DS-000, GA-001 | the set's index; the general arrangement, the machine through the shaft at 1:5 |
+| 63–68 | HUB-200, HUB-202 to -206 | the hub in its coupler; the vessel, the retainer, the coupler, the AH former and coil |
+| 69–76 | SHF-300 to -307 | shaft half A with its flange, sleeves and sheds; the shaft halves, the flange, the sleeves, the PTFE cover and shed |
+| 77–80 | CAN-400 to -403 | the can over the hub; the can, its end disc, the rings' bushing |
+| 81–90 | DCK-500 to -509 | deck A in plan; its wiring list; the deck plate, the junction, the six potted modules |
+| 91–98 | CAP-600 to -607 | the C1 / C2 stack; the rotor vanes, the stator vane with its lugs, the spacer ring, the dowel, the spacer tube, the end ring |
+| 99–106 | CAP-610 to -617 | the Ca / Cb column on its posts; the five Ca plates, the post spacer, the steatite standoff |
+| 107–116 | REL-700 to -713 | the wound utron and its parts; reluctance section A, the carrier disc, the bridge, the bridge ring |
+| 117–124 | BRG-800 to -814 | the three bearing hubs; the spiders, the ring adapter, the cartridge |
+| 125–126 | CGE-900, -901 | the counter-rotor; the cage tube |
+| 127–137 | P-001 to -011 | the bought parts: the bearing, the HV sticks, the HV capacitors, the surge resistor, the TVS diodes, the ferrite rod, the tie rods, the HV wire, the LV cable; the fasteners and stock |
+
 **CAD and DXF files** (not on sheets; `tools/step-viewer/` renders the STEP files):
 - **of the record:**
   - `docs/drawings/DCCREG-UTR-101_half-core_A.step` and `_lamination.dxf`;
   - the record in solids: `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50.step`, with its `.glb` and
     `.parts.json`;
-  - the redesign's layout in solids with its bridge-ring bearings (PROPOSED): `…-hub50-layout.step`, with its
+  - the redesign's layout in solids with its bridge-ring bearings and the capacitors' mounts (PROPOSED; 552 solids):
+    `…-hub50-layout.step`, with its
     `.glb`, its `.parts.json` (each conductor's net) and the stills `…-layout-3d-{cutaway,bay,deckB}.png` and
     `…-3d-deckB-potential.png`; the interactive viewer with the circuit running is `tools/step-viewer/layout.html`.
 - **earlier phases:**
@@ -1276,13 +1368,11 @@ redraw them (`docs/ledger/register.py`).
   - the disc builds `freeze-v010-CaCb`, `floor-56b6cb83`, `opt-c9ac780b`, `il2-ce1a9380`, `il2f-6563b90d` (with its
     pump + motor);
   - the designer's C-EM source, the two disc DXF layouts (r0.15, r0.6) and the KiCad source.
-- **Not drawn as manufacturing drawings:**
-  - the bridge, the bridge ring, the carrier discs and cheeks, the NiFe strip and the coil as parts;
+- **Not drawn as manufacturing drawings** (every other part has its sheet in Part D):
   - La / Lb (first cut in `sim/parts-first-cut-findings.md`);
-  - the AH coil and core (in the record's solids);
   - the kick source (first cut in `sim/parts-first-cut-findings.md` §3);
-  - the gear (its concept is sheet 25);
-  - the retainer and the coupler (in the record's solids; first cut in `docs/rings-design.md` §2).
+  - the gear and the belt (their concept is sheet 25), and the frame;
+  - the potting moulds, the screws, studs and inserts (DCCREG-P-011 lists them).
 
 ## 8. Files, tools and how to regenerate
 
@@ -1298,7 +1388,9 @@ redraw them (`docs/ledger/register.py`).
 - `sim/multiplier_layout_results.json` (the redesign's layout, §3.9);
 - `sim/tube_geometry_layout_results.json` and `sim/multiplier_waveforms_results.json` (the layout in solids, its
   circuit running, §3.9);
-- `sim/bridge_ring_bearings_results.json` (the layout's bridge-ring bearings, §3.9).
+- `sim/bridge_ring_bearings_results.json` (the layout's bridge-ring bearings, §3.9);
+- `sim/doubler_caps_results.json` (the capacitors' mounts, §3.9);
+- `docs/drawings/set-index.json` (the drawing set in its order, §7).
 
 **The findings,** one per study:
 - `sim/pole-design-findings.md`, `sim/ah-steady-cusp-findings.md`, `sim/rotor-parts-duty-findings.md`;
@@ -1308,8 +1400,8 @@ redraw them (`docs/ledger/register.py`).
   `sim/rotor-mechanics-findings.md`, `sim/tube-shaft-findings.md` §0, `sim/parts-first-cut-findings.md`,
   `docs/drive-gear-belt.md`, and the model checks of §6 (31–34);
 - the redesign's: `sim/integrated-multiplier-findings.md`, `sim/multiplier-layout-findings.md`,
-  `sim/multiplier-layout-3d-findings.md`, `sim/multiplier-waveforms-findings.md` and
-  `sim/bridge-ring-bearings-findings.md` (§3.9);
+  `sim/multiplier-layout-3d-findings.md`, `sim/multiplier-waveforms-findings.md`,
+  `sim/bridge-ring-bearings-findings.md` and `sim/doubler-caps-findings.md` (§3.9);
 - the design and test documents `docs/rings-design.md` and `docs/bench-test-rings.md`;
 - the cost guide `docs/cost/README.md`.
 
@@ -1323,8 +1415,9 @@ redraw them (`docs/ledger/register.py`).
   - `sim/tube_geometry.py --record` and `sim/shaft_bearings.py --record` (the record in solids, its shaft);
   - `sim/integrated_multiplier.py --procs 4` (the redesign's proposal), then `sim/multiplier_layout.py --procs 4` (its
     layout), then `sim/tube_geometry.py --layout` and `sim/multiplier_waveforms.py` (the layout in solids, its circuit
-    running), then `sim/bridge_ring_bearings.py` (its bridge-ring bearings, and `docs/figures/bridge-ring-bearings.png`;
-    `sim/tube_geometry.py --layout` imports their placement).
+    running), then `sim/bridge_ring_bearings.py` (its bridge-ring bearings, and `docs/figures/bridge-ring-bearings.png`)
+    and `sim/doubler_caps.py --procs 4` (the capacitors' mounts, and `docs/figures/doubler-caps.png`).
+    `sim/tube_geometry.py --layout` imports both placements, so it runs again after them.
 - **the drawings and figures:**
   - `docs/make_rings_drawing.py`;
   - `docs/make_rings_field_figure.py`;
@@ -1334,6 +1427,8 @@ redraw them (`docs/ledger/register.py`).
   - `docs/make_core_drawing.py` and `docs/make_utron_drawing.py`;
   - `docs/make_air_vane_drawing.py`;
   - `docs/make_multiplier_layout.py` (after `sim/multiplier_layout.py`);
+  - the drawing set: `docs/make_drawing_set.py` (after `sim/tube_geometry.py --layout`; the bundle's Part D reads its
+    index);
   - the layout in 3-D: `sim/step_to_glb.py …-hub50-layout.step --angular 0.4`, then `tools/step-viewer/make_layout_data.py
     OUT` (the viewer's files) and `tools/step-viewer/shoot.py 8765 docs/geometry/tube/…-hub50-layout cutaway bay deckB
     ringA bay@0.425 deckB@0.425 --sim <OUT's sim.json>` (the stills, from a local server at the repository's root).
