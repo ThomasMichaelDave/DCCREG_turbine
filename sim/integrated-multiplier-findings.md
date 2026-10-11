@@ -2,7 +2,8 @@
 
 **Source:** `sim/integrated_multiplier.py` → `sim/integrated_multiplier_results.json` (about 610 ngspice runs, 20
 min on 4 processes). The schematic is `docs/schematic-integrated-multiplier.svg`, drawn by
-`docs/make_integrated_multiplier_schematic.py`.
+`docs/make_integrated_multiplier_schematic.py`. Since 2026-10-11 it draws the circuit as laid out (the layout's strays,
+the clamps of 60 parts: `sim/multiplier_waveforms_results.json`), with this study's values beside them.
 
 **Status:**
 - **DECIDED** (the designer, 2026-10-10):

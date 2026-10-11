@@ -41,6 +41,44 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The schematics redrawn to the latest studies (2026-10-11)
+The designer asked whether the theory and schematic book holds the latest versions. Its text did; its three schematics
+did not. Asked, the designer said: "Redraw indeed".
+
+- **Why** (the ledger's §6 item 76):
+  - the rotor schematic's panel (b) said D1–D4 "parts not chosen" and drew no surge or chain-input resistors, though the
+    parts' first cut chose them (`sim/parts-first-cut-findings.md` §2.2);
+  - the rings' supply drew neither those resistors nor the rings as built with real sticks;
+  - the redesign's schematic predated the layout (24.5 pF strays assumed [RH], the clamp trim open).
+- **The rotor's circuits** (`docs/make_schematic_rotor.py` → `docs/schematic-rotor-circuits.svg`, `.png`):
+  - panel (b) draws a 22 kΩ surge resistor in each of D1–D4 and one at each chain's input, amber (PROPOSED);
+  - the tables name the first cut's parts: the 20 kV sticks, the clamp strings of 1.5KE200A, the chains' sticks and
+    capacitors;
+  - they also name this session's candidates (P-002, P-005, P-006, P-016 to P-019) and the choke as drawn;
+  - the K4 kick box carries its own numbers (19.0 mJ, 0.60 A, a 17 ms dump; the seed threshold 16 % in the deck,
+    25–30 % in the best estimate);
+  - the note that put the rings among the parts the record's solids lack is corrected.
+  - The text it shows is read from `sim/parts_first_cut_results.json`, and fails loudly if that text changes.
+- **The rings' supply** (`docs/make_rings_supply_schematic.py` → `docs/schematic-rings-supply.svg`, `.png`): the
+  chain-input resistors are drawn, the first cut's parts named, and the rings as built (−13.38 / +13.40 kV, 6.82 kV/cm;
+  `sim/diodes_real_results.json`) set beside the record's ±15.0 kV.
+- **The redesign** (`docs/make_integrated_multiplier_schematic.py` → `docs/schematic-integrated-multiplier.svg`, `.png`):
+  - it draws the circuit as laid out: every node's swing, each diode's reverse peak and each capacitor's DC from
+    `sim/multiplier_waveforms_results.json` (the layout's strays, the clamps of 60 parts, V_op 11.94 kV);
+  - the rings are ±14.77 kV, 7.52 kV/cm at the null (7.50 with the can);
+  - the study's values (±14.93 kV, 7.60 kV/cm) stand beside them;
+  - the surge resistors R1–R4 are drawn in series with D1–D4, as the layout places them, and the deck's parts named;
+  - the free gain is 1.0164 as laid out, 1.0159 with the capacitors' mounts.
+- **Notes on two older drawings:** Figure 11 (the layout drawing) was drawn before the bridge-ring bearings and the
+  mounts; bundle sheet 25 (the drive's concept) is drawn part by part on DRV-100 to -190. Their captions and register
+  entries now say so.
+- **Records:**
+  - the ledger: the captions of Figures 4, 7, 10 and 11, §6 item 76, §7's sheet 30;
+  - the register's notes for sheets 2, 3, 25, 30 and 31;
+  - a pointer in `sim/integrated-multiplier-findings.md`;
+  - `docs/ledger/figures/architecture.svg` regenerated (the shared style sheet gains the resistors' class; its PNG is
+    unchanged).
+
 ### The first cuts' parts drawn: the chokes, the kick and the drive (2026-10-11)
 The designer's request stands: "a drawing and small 3d on the drawing sheet for every component proposed as of this
 design. Plus sub assemblies". The layout's model left out the parts that have only first cuts: La / Lb, the kick, the

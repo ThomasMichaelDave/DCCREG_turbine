@@ -376,7 +376,7 @@ commits' dates.
   1.25 W of iron. With the bypass the belt reads 18.1 W (`docs/schematic-rotor-circuits.png`;
   `sim/ah-steady-cusp-findings.md`).
 
-![Figure 4. The rotor's two circuits as built: (a) the magnetic dual doubler driving the AH pair; (b) the electrostatic de Queiroz doubler with the HV side on the rotor and the rings' two mirrored chains. The 22 mF bypass across each AH coil is drawn dashed (PROPOSED). Source: docs/schematic-rotor-circuits.svg (docs/make_schematic_rotor.py).](../schematic-rotor-circuits.png)
+![Figure 4. The rotor's two circuits as built: (a) the magnetic dual doubler driving the AH pair; (b) the electrostatic de Queiroz doubler with the HV side on the rotor and the rings' two mirrored chains. The 22 mF bypass across each AH coil is drawn dashed (PROPOSED); the parts' first cuts are drawn amber (PROPOSED): the K4 kick, the 22 kΩ surge resistors in D1–D4 and at the chains' inputs; the tables name the candidates (redrawn 2026-10-11). Source: docs/schematic-rotor-circuits.svg (docs/make_schematic_rotor.py).](../schematic-rotor-circuits.png)
 
 ### 3.3 The AH pair and the steady cusp
 - **The pair:** two coils on the shaft's axis, one in each group's branch:
@@ -575,7 +575,7 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
 
 ![Figure 6. DCCREG-HUB-201, the rings' manufacturing drawing: the half-section at 2:1, the beads in their grooves at 5:1, one gore flat at 4:1, the feature table and the build notes. Source: docs/drawings/DCCREG-HUB-201.pdf (docs/make_rings_drawing.py).](../drawings/DCCREG-HUB-201.png)
 
-![Figure 7. The rings' DC supply of record: ring B on two positive Cockcroft-Walton stages from node 4, ring A on the mirror image from node 1; both chains stand on the shaft; each capacitor's DC and each diode's reverse peak. Source: docs/schematic-rings-supply.svg (docs/make_rings_supply_schematic.py).](../schematic-rings-supply.png)
+![Figure 7. The rings' DC supply of record: ring B on two positive Cockcroft-Walton stages from node 4, ring A on the mirror image from node 1; both chains stand on the shaft; each capacitor's DC and each diode's reverse peak; the first cut's chain-input resistors amber (PROPOSED), and the rings as built with real HV sticks beside the record's (redrawn 2026-10-11). Source: docs/schematic-rings-supply.svg (docs/make_rings_supply_schematic.py).](../schematic-rings-supply.png)
 
 **The supply: two mirrored Cockcroft-Walton chains** [OC] (Figure 7; `sim/core_field.py` dc,
 `n_cw = n_cw_a = 2`, `a_ref = "shaft"`).
@@ -707,7 +707,7 @@ and tooling.
 
 ### 3.9 The redesign: the multiplier stacked into the doubler (2026-10-10, PROPOSED)
 
-![Figure 10. The multiplier stacked into the doubler, as proposed: the designer's ladder (C3–C6, D5–D8) as sketched, run bipolar (chain 2 reversed) with C1 / C2 in phase, each chain continued one stage past its varicap node to its ring; every node's swing, each diode's reverse peak and each capacitor's DC as built. Source: docs/schematic-integrated-multiplier.svg (docs/make_integrated_multiplier_schematic.py).](../schematic-integrated-multiplier.png)
+![Figure 10. The multiplier stacked into the doubler, as laid out (PROPOSED): the designer's ladder (C3–C6, D5–D8) as sketched, run bipolar (chain 2 reversed) with C1 / C2 in phase, each chain continued one stage past its varicap node to its ring; every node's swing, each diode's reverse peak and each capacitor's DC with the layout's strays and the clamps trimmed to 60 parts (sim/multiplier_waveforms_results.json), the study's values beside them; the surge resistors R1–R4 amber (redrawn 2026-10-11). Source: docs/schematic-integrated-multiplier.svg (docs/make_integrated_multiplier_schematic.py).](../schematic-integrated-multiplier.png)
 
 **The brief** (the designer, 2026-10-10; §2.3). The record's multipliers are "a separate circuit tapping on node 1
 and 4. It's no good this way." They are to stack into the doubler; the turbine's stack will change, and the magnetic
@@ -766,7 +766,7 @@ pump, the sphere, its AH and the field interface stay as they are for now.
 **The mechanical layout** (2026-10-11, PROPOSED; `sim/multiplier-layout-findings.md`). The designer took the circuit
 "for now" and asked for its capacitors laid out top and bottom of the stack, the diodes placed, a mechanical layout.
 
-![Figure 11. The multiplier laid out in the machine (PROPOSED): (a) the half-section, side B above, without the hub-face bearings; (b) side A's central bay with the gaps that set it; (c) deck A in plan, the sticks along the outer lane, the capacitors and the clamp string on the inner; (d) the parts, the interfaces and what the layout does. Source: docs/figures/multiplier-layout.png (docs/make_multiplier_layout.py; sim/multiplier_layout.py).](../figures/multiplier-layout.png)
+![Figure 11. The multiplier laid out in the machine (PROPOSED): (a) the half-section, side B above, without the hub-face bearings; (b) side A's central bay with the gaps that set it; (c) deck A in plan, the sticks along the outer lane, the capacitors and the clamp string on the inner; (d) the parts, the interfaces and what the layout does. It was drawn before the bridge-ring bearings and the capacitors' mounts (below): bundle sheets 32–35 and the drawing set's GA-001 show them. Source: docs/figures/multiplier-layout.png (docs/make_multiplier_layout.py; sim/multiplier_layout.py).](../figures/multiplier-layout.png)
 
 - **The stack, per side from the hub outward** (|z| from the hub's centre; side B the mirror) [IR]:
 
@@ -1296,6 +1296,12 @@ and the corrected one stands beside it, dated, until the designer decides.
 | 74 | drawn part by part, the drive's first cut does not close (`docs/drive-gear-belt.md` §5, §8): (1) the counter-rotor's hub holds the gear-end 6205-2Z over a lip below it, which cannot carry the counter-rotor's 350 N down into the outer ring; (2) the counter-rotor's side gear is "bolted under the hub", but its body (r ≤ 28.3) cannot reach the hub outside the bearing (r 26); (3) each pinion's two 6000-2Z sit 16 mm apart, which the first cut's own case cannot hold; (4) the bell continues the case wall (r 64–72) and would cut the belt's land (r 63.1–64.8); (5) the 80T pulley is "24 mm over the flanges", but the catalogue's TL80-5M-15 has none and is 25 mm through | **proposed** (drawn on DRV-100 to DRV-190): (1) the seat open below, a lip Ø44 at its top, the gear's flange closing it from below; (2) a back flange Ø80 × 3 on the gear, six M4 on PCD Ø70; (3) the bearings 12 mm apart: the inner one takes 40 N steady and 195 N at the driver's limit (the first cut's 29 / 141 N), a static safety of 10, L10 3 × 10⁷ h steady (`sim/unmodelled_parts_results.json` reverser.pinion_bearings); (4) the bell a C, Ø164 / Ø144 over 170°, open to the motor, the belt 7.2 mm clear; (5) the flanges on the 20T pulley, P20-5M-15F. The drive is still to be re-cut on the layout (item 71) |
 | 75 | the first cut's choke, 84 × 70 × 59 mm (`sim/parts_first_cut_results.json` la_lb.chosen.outline_mm), is the core and the winding's build | **noted:** with the bobbin's 1.0 mm wall and 1.5 mm flanges, 1 mm past the build [IR], La / Lb are 84 × 70 × 61 over all (`sim/unmodelled_parts_results.json` choke.data.outline_mm); their place on the rotor is OPEN |
 
+**Found by checking the schematics against the studies** (2026-10-11)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 76 | the schematics lagged the studies: Figure 4's panel (b) said D1–D4 "parts not chosen" and drew no surge or chain-input resistors, though the parts' first cut chose them (`sim/parts-first-cut-findings.md` §2.2); Figure 7 drew neither those resistors nor the rings as built; Figure 10 predated the layout (24.5 pF strays assumed, the clamp trim open); Figure 4's notes put the rings among the parts the record's solids lack | **done:** the three redrawn by their scripts. The first cuts' parts and resistors are amber (PROPOSED), with the candidates named. Figure 10 is drawn as laid out (the clamps of 60 parts, `sim/multiplier_waveforms_results.json`), the study's values beside it. The note is corrected |
+
 ## 7. Drawing register
 
 The bundle, `docs/ledger/DCCREG-drawings-bundle.pdf`, carries every sheet below on A3, in this order. It opens with a
@@ -1340,7 +1346,7 @@ redraw them (`docs/ledger/register.py`).
 | 27 | The neck in a nonlinear field solve | `docs/figures/neck-nonlinear.png` |
 | 28 | Real diodes in both pumps | `docs/figures/diodes-real.png` |
 | 29 | The tube's strays by a field solve | `docs/figures/tube-strays.png` |
-| 30 | The multiplier stacked into the doubler (PROPOSED, the redesign of 10-10) | `docs/schematic-integrated-multiplier.svg` |
+| 30 | The multiplier stacked into the doubler (PROPOSED, the redesign of 10-10, as laid out 10-11) | `docs/schematic-integrated-multiplier.svg` |
 | 31 | The multiplier laid out in the machine (PROPOSED, 10-11) | `docs/figures/multiplier-layout.png` |
 | 32 | The layout in solids: the section and the decks (PROPOSED, 10-11) | `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout-section.png` |
 | 33 | The layout in 3-D, its circuit at 25.5° of the cycle (PROPOSED, 10-11) | `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout-3d-bay-potential.png` |

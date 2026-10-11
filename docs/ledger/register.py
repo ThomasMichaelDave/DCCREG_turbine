@@ -22,10 +22,12 @@ _R = [
      "goes; the reference", "docs/ledger/make_ledger_figures.py"),
     ("A", "Rotor circuits: reluctance pump and electrostatic pump", "docs/schematic-rotor-circuits.svg",
      "(a) the magnetic dual doubler driving the AH pair (the 22 mF bypass dashed, PROPOSED); (b) the de Queiroz diode "
-     "doubler, the clamps and the rings' two mirrored chains; parts and operating point", "docs/make_schematic_rotor.py"),
+     "doubler, the clamps and the rings' two mirrored chains; parts and operating point; the parts' first cuts and "
+     "candidates (amber, PROPOSED: the kick, the surge and chain-input resistors)", "docs/make_schematic_rotor.py"),
     ("A", "The rings' DC supply, the symmetric pair", "docs/schematic-rings-supply.svg",
      "both Cockcroft-Walton chains stage by stage, each capacitor's DC and each diode's reverse peak; the hub with its "
-     "AH cores at REF", "docs/make_rings_supply_schematic.py"),
+     "AH cores at REF; the first cut's chain-input resistors (amber, PROPOSED) and parts; the rings as built with real "
+     "sticks", "docs/make_rings_supply_schematic.py"),
     ("A", "DCCREG-UTR-101: the wound utron's SiFe half-core", "docs/drawings/DCCREG-UTR-101.pdf",
      "manufacturing drawing, Rev A draft for quotation: lamination profile 2:1, views B and C, GD&T, hole table, stack "
      "data, 3-D view", "docs/make_core_drawing.py"),
@@ -85,7 +87,8 @@ _R = [
      "the rods' flux, the shaft's permeability", "sim/ah_null.py"),
     ("B", "The reversing gear and the belt drive (PROPOSED)", "docs/figures/drive-gear-concept.svg",
      "the first cut: a bevel reverser at side A, its carrier held by the frame, three POM-C pinions; the HTD belt and "
-     "the motor", "sim/drive_sizing.py --figure"),
+     "the motor. Drawn part by part on DCCREG-DRV-100 to -190 (sheets 130-142), with five of its choices changed "
+     "(ledger §6 item 74)", "sim/drive_sizing.py --figure"),
     ("B", "The utrons in 3-D: their ends, their coupling and the pump", "docs/figures/utron-3d.png",
      "κ in 3-D against the record's 2-D section, where the flux goes, the coils' coupling round the machine, and the "
      "pump with each utron set (model check 34)", "sim/utron_3d.py"),
@@ -98,15 +101,17 @@ _R = [
     ("B", "The tube's strays by a field solve", "docs/figures/tube-strays.png",
      "the strays per node and where they come from, the varicap with its rims, and the pump as built (model check 33)",
      "sim/tube_strays.py"),
-    ("B", "The multiplier stacked into the doubler (PROPOSED, the redesign of 2026-10-10)",
+    ("B", "The multiplier stacked into the doubler (PROPOSED, the redesign of 2026-10-10, as laid out 2026-10-11)",
      "docs/schematic-integrated-multiplier.svg",
      "the designer's ladder C3-C6 / D5-D8 run bipolar with C1 / C2 in phase, each chain one stage past its varicap "
-     "node to its ring; every node's swing, reverse peak and DC as built; against the record's supply",
+     "node to its ring; every node's swing, reverse peak and DC as laid out (the clamps of 60 parts), the study's "
+     "beside them; the surge resistors R1-R4 (amber); against the record's supply",
      "docs/make_integrated_multiplier_schematic.py"),
     ("B", "The multiplier laid out in the machine (PROPOSED, 2026-10-11)", "docs/figures/multiplier-layout.png",
      "the half-section without the hub-face bearings; side A's central bay with its gaps; deck A in plan (the sticks, "
      "C3 / C6 / C8, Csa and the clamp string round the grounded can); the parts, the interfaces, the strays, the clamp "
-     "trim and the shafts", "docs/make_multiplier_layout.py"),
+     "trim and the shafts. Drawn before the bridge-ring bearings and the capacitors' mounts: sheets 32-35 and the "
+     "drawing set's GA-001 show them", "docs/make_multiplier_layout.py"),
     ("B", "The layout in solids: the section and the decks (PROPOSED, 2026-10-11)", f"{_LAY}-section.png",
      "the layout's 552 solids cut through the shaft, side A's central bay enlarged, both decks cut in plan at the "
      "sticks' height, and side A's end with its bridge-ring bearing: every part of the study's plans, the can, the "
