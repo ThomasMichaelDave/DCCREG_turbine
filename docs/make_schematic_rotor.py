@@ -11,6 +11,10 @@
     (sim/hub-rings-build-findings.md; the drawing also handles the earlier Dk supply);
     the stator vanes joined to the shaft through one inner bearing for now (a brush later).
 (a) also draws the 22 mF bypass across each AH coil (PROPOSED; sim/ah-steady-cusp-findings.md), dashed.
+The parts' first cuts (PROPOSED; sim/parts_first_cut_results.json ratings) are drawn amber: the K4 kick, the 22 kOhm
+surge resistors in D1-D4 and the chains' input resistors in (b); the tables name the parts' candidates as the drawing set
+draws them (sim/unmodelled-parts-findings.md §4: P-002, P-005, P-006, P-016 to P-019, REL-720, REL-730) and the choke as
+drawn (sim/unmodelled_parts_results.json).
 Values: sim/pole_design_variants_op.json (the pick), sim/utron_profile.py, sim/rotor_parts_duty_results.json and sim/parts_first_cut_results.json (La / Lb,
 D1*-D4* at the pick), sim/core_field_results.json (the electrostatic pump), sim/hub_rings_build_results.json (the rings
 as built and their supply in full: the clamps, the link), sim/hub_drift_results.json (the settled field),
@@ -108,6 +112,20 @@ def res_v(x, y, h=32, cl="w"):
     pl(pts, cl)
 
 
+def res_h(x, y, w=30, cl="w"):
+    k = 6
+    pts = [(x, y)] + [(x + w * (i + 0.5) / k, y + (7 if i % 2 == 0 else -7)) for i in range(k)] + [(x + w, y)]
+    pl(pts, cl)
+
+
+def grab(pat, text):
+    """one number or name out of a first cut's rating text; fails loudly if the text no longer says it."""
+    m = re.search(pat, text)
+    if not m:
+        raise SystemExit(f"make_schematic_rotor: {pat!r} not in {text!r}")
+    return m.group(1)
+
+
 def ground(x, y):
     ln(x - 12, y, x + 12, y); ln(x - 7, y + 5, x + 7, y + 5); ln(x - 3, y + 10, x + 3, y + 10)
 
@@ -141,6 +159,7 @@ def numbers():
     rsn = MDm.RSNUB * (Lg / MDm.L_MAX) * (F / 60.0)
     duty = json.load(open(os.path.join(ROOT, "sim", "rotor_parts_duty_results.json")))
     parts = json.load(open(os.path.join(ROOT, "sim", "parts_first_cut_results.json")))   # the first cuts (PROPOSED)
+    drawn = json.load(open(os.path.join(ROOT, "sim", "unmodelled_parts_results.json")))  # the first cuts as drawn
     u3d = json.load(open(os.path.join(ROOT, "sim", "utron_3d_results.json")))["summary"]  # the utrons in 3-D
     cf = json.load(open(os.path.join(ROOT, "sim", "core_field_results.json")))
     cfr = {r["name"]: r for r in cf["rows"]}
@@ -151,7 +170,7 @@ def numbers():
     cusp = [r for r in json.load(open(os.path.join(ROOT, "sim", "ah_steady_cusp_results.json")))["rows"]
             if r["C_byp_mF"] == 22.0][0]                                           # the bypass (PROPOSED)
     return dict(op=op, b=b, sp=sp, Lg=Lg, ah=ah, F=F, csn=csn, rsn=rsn, la=LA_RATIO * Lg, lp=MDm.R_PAR * Lg, duty=duty, cusp=cusp,
-                parts=parts, u3d=u3d,
+                parts=parts, u3d=u3d, drawn=drawn, rt={q["part"]: q for q in parts["ratings"]},
                 cf=cf, cfr=cfr, hb=hb, dc=hb["record_supply"], dc_free=hb["record_supply_free"], ring=ring)
 
 
@@ -226,26 +245,36 @@ def panel_a(ox, N):
         dot(x, REF)
     tx(xa - 30, REF + 20, "REF = shaft (rotor), shared with (b)", "m")
     # start kick: the first cut, PROPOSED (sim/parts-first-cut-findings.md §3); no connection drawn
-    box(xa + 60, 514, 200, 96, "kick")
-    tx(xa + 70, 534, "START KICK (PROPOSED)", "tk2")
-    tx(xa + 70, 551, "470 µF + SCR across La (+ to a)", "ms")
-    tx(xa + 70, 567, "reed-fired at full speed, once;", "ms")
-    tx(xa + 70, 583, f"the record's {100 * b['kick_frac']:.0f} % of Ψs seeds", "ms")
-    tx(xa + 70, 599, f"{b['kick_I_A']:.2f} A, {b['kick_mJ']:.1f} mJ; threshold 16 %", "ms")
+    kk = N["parts"]["kick"]
+    k4, thr = kk["candidates"][kk["recommended"]], kk["thresholds"]["no_bypass"]["min_start"]
+    box(xa + 48, 486, 200, 126, "kick")
+    tx(xa + 58, 505, "START KICK K4 (PROPOSED)", "tk2")
+    tx(xa + 58, 522, f"{k4['C_uF']:.0f} µF + SCR across La (+ to a),", "ms")
+    tx(xa + 58, 538, "reed-fired once, at full speed:", "ms")
+    tx(xa + 58, 554, f"{k4['V']:.0f} V cell, {k4['E0_mJ']:.1f} mJ, {k4['I_pk_A']:.2f} A pk,", "ms")
+    tx(xa + 58, 570, f"a {k4['t_dump_ms']:.0f} ms dump; " + ("all phases start" if k4["all_phases_start"] else
+                                                            "not all phases start"), "ms")
+    tx(xa + 58, 586, f"seed needs {100 * thr:.0f} % of Ψs (deck),", "ms")
+    tx(xa + 58, 602, "25–30 % in the best estimate", "ms")      # sim/neck-nonlinear-findings.md §7
     # the node snubber, drawn once
     xs, ys = xc + 70, 528
     dot(xs, ys); tx(xs + 10, ys + 4, "any node", "ms")
     ln(xs, ys, xs, ys + 14); cap_v(xs, ys + 14, 12); ln(xs, ys + 24, xs, ys + 36); res_v(xs, ys + 36, 30)
     ln(xs, ys + 66, xs, ys + 74); ground(xs, ys + 74)
     tx(xs + 22, ys + 30, "RC to REF at each", "ms"); tx(xs + 22, ys + 45, "of the 8 nodes [IR]", "ms")
-    tx(xs + 22, ys + 60, f"{N['csn'] * 1e9:.0f} nF + {N['rsn']:.0f} Ω", "ms")
+    tx(xs + 22, ys + 60, f"{N['csn'] * 1e9:.0f} nF + {N['rsn']:.0f} Ω (deck)", "ms")
+    sn = N["rt"]["node snubbers (RC to REF)"]["rating"]
+    c_fc, r_fc = grab(r"(\d+) nF", sn), grab(r"(\d+) ohm", sn)
+    tx(xs + 22, ys + 75, f"first cut {c_fc} nF + {r_fc} Ω", "tp")
 
 
 def panel_a_table(ox, y, N):
     b, sp, ah = N["b"], N["sp"], N["ah"]
     la, ch = N["duty"]["la_lb"]["La"], N["parts"]["la_lb"]["chosen"]
-    rt = {q["part"]: q for q in N["parts"]["ratings"]}
+    rt = N["rt"]
     vr = [float(re.search(r"VR (\d+) V", rt[k]["duty"]).group(1)) for k in ("D1*", "D2*", "D3*", "D4*")]
+    sn = rt["node snubbers (RC to REF)"]["rating"]
+    c_fc, r_fc = grab(r"(\d+) nF", sn), grab(r"(\d+) ohm", sn)
     ipk = [float(re.search(r"([\d.]+) A pk", rt[k]["duty"]).group(1)) for k in ("D1*", "D3*")]
     rows = [
         ("A1–A3, B1–B3", f"wound utrons at 0 / 120 / 240°, {sp['N_u']} t of Ø{sp['wire_d_mm']:.2f} mm Cu: "
@@ -260,16 +289,25 @@ def panel_a_table(ox, y, N):
         ("AH", f"anti-Helmholtz pair at the hub, one coil per branch: {ah['N']} t, {ah['L'] * 1e3:.2f} mH, "
                f"{ah['R']:.2f} Ω each [RH]"),
         ("", f"bypass {N['cusp']['C_byp_mF']:.0f} mF across each coil, ESR {1e3 * 0.01:.0f} mΩ [RH] (PROPOSED)"),
+        ("", "candidate (P-018): Rubycon 10MXG22000MEFCSN30X30, 22 mF 10 V, Ø30 × 30 snap-in; its ESR to confirm"),
         ("La, Lb", f"{N['la']:.3f} H DC chokes: {la['I_min_A']:.2f}–{la['I_max_A']:.2f} A, ≤ {la['V_pk_V']:.0f} V, "
                    f"{N['la'] / TAU_FIXED:.2f} Ω in the deck (τ {TAU_FIXED:g} s [RH])"),
         ("", f"first cut (PROPOSED): {ch['core']} × {ch['stack_mm']:.0f} mm, {ch['turns']} t of Ø{ch['wire_mm']:.2f} mm, "
              f"{ch['gap_total_mm']:.3f} mm gap, {ch['R20_ohm']:.3f} Ω, {ch['m_with_bobbin_kg']:.2f} kg each"),
+        ("", f"as drawn: " + " × ".join(f"{v:.0f}" for v in N["drawn"]["choke"]["data"]["outline_mm"]) +
+             " mm over the bobbin's flanges (REL-720 / -721; its parts P-019)"),
         ("Lp2, Lp3", f"{N['lp'] * 1e3:.1f} mH wiring stray, as modelled (dual of Cpar) [IR]"),
         ("D1*–D4*", f"0.54 V at 1 A in the deck; {ipk[0]:.1f} / {ipk[1]:.1f} A peak; reverse "
                     + " / ".join(f"{v:.0f}" for v in vr) + " V with the start-up"),
         ("", "first cut (PROPOSED): Schottky, 200 V (D1* / D2*) and 150 V (D3* / D4*), ≥ 3 A"),
+        ("", "candidates (P-016): SMC SB5200 (200 V, 5 A) for D1* / D2*, SR5150 (150 V, 5 A) for D3* / D4*, DO-201AD"),
+        ("snubbers", f"{N['csn'] * 1e9:.0f} nF + {N['rsn']:.0f} Ω in the deck; first cut (PROPOSED) {c_fc} nF PP film + "
+                     f"{r_fc} Ω at each of the 8 nodes"),
+        ("", "candidates (P-017): KEMET R76 22 nF 400 V + Ohmite OX221KE 220 Ω 1 W (the nearest stock value)"),
+        ("kick", "K4 (PROPOSED; REL-730): 9 V cell Ultralife U9VL-J-P, 470 µF bipolar Nichicon UES1E471MHM,"),
+        ("", "SCR Littelfuse TCR22-8, reed sensor 59140 with its actuator 57140, on a potted module"),
     ]
-    y = table(ox + 42, y, rows)
+    y = table(ox + 42, y, rows, dy=18.5)
     I_min = b["AT_min"] / ah["N"]
     cu = N["cusp"]
     tx(ox + 42, y + 6, f"At {b['rpm']:.0f} rpm relative ({N['F']:.0f} Hz): {I_min:.2f}–{b['I_pk']:.2f} A per branch, "
@@ -338,16 +376,22 @@ def panel_b(ox, N):
         xm = (xa + xb_) / 2 - 5
         ln(xa, y_n, xm, y_n); cap_h(xm, y_n); ln(xm + 10, y_n, xb_, y_n)
         tx(xm + 5, y_n - 22, nm, "t", "middle", 'font-weight="bold"')
-    # D3: 1 -> 3 ; D4: 4 -> 2
-    dot(x1, y_d3); ln(x1, y_d3, x3 - 34, y_d3); diode(x3 - 34, y_d3, "right"); ln(x3 - 16, y_d3, x3, y_d3); dot(x3, y_d3)
+    # D3: 1 -> 3 ; D4: 4 -> 2; each with its 22 kOhm surge resistor (the first cut, PROPOSED: amber)
+    rs = grab(r"(\d+) kOhm", N["rt"]["surge resistors (one per D1-D4)"]["rating"]) + " kΩ"
+    dot(x1, y_d3); ln(x1, y_d3, x1 + 12, y_d3); res_h(x1 + 12, y_d3, 30, "propr"); ln(x1 + 42, y_d3, x3 - 34, y_d3)
+    diode(x3 - 34, y_d3, "right"); ln(x3 - 16, y_d3, x3, y_d3); dot(x3, y_d3)
+    tx(x1 + 27, y_d3 - 11, rs, "tp", "middle")
     tx(x3 - 25, y_d3 - 15, "D3", "t", "middle")
     ln(x4, y_n, x4, y_z)
-    dot(x4, y_d4); ln(x4, y_d4, x2 + 34, y_d4); diode(x2 + 34, y_d4, "left"); ln(x2 + 16, y_d4, x2, y_d4); dot(x2, y_d4)
+    dot(x4, y_d4); ln(x4, y_d4, x4 - 12, y_d4); res_h(x4 - 42, y_d4, 30, "propr"); ln(x4 - 42, y_d4, x2 + 34, y_d4)
+    diode(x2 + 34, y_d4, "left"); ln(x2 + 16, y_d4, x2, y_d4); dot(x2, y_d4)
+    tx(x4 - 27, y_d4 - 11, rs, "tp", "middle")
     tx(x2 + 25, y_d4 - 15, "D4", "t", "middle")
-    # D1: 2 -> shaft ; D2: 3 -> shaft
+    # D1: 2 -> shaft ; D2: 3 -> shaft; each with its surge resistor
     for x, nm in ((x2, "D1"), (x3, "D2")):
-        ln(x, y_n, x, 392); diode(x, 392, "down"); ln(x, 410, x, y_sh)
+        ln(x, y_n, x, 392); diode(x, 392, "down"); ln(x, 410, x, 424); res_v(x, 424, 30, "propr"); ln(x, 454, x, y_sh)
         tx(x + 16 if nm == "D1" else x - 16, 406, nm, "t", "start" if nm == "D1" else "end")
+        tx(x + 12 if nm == "D1" else x - 12, 444, rs, "tp", "start" if nm == "D1" else "end")
     # clamps Z1 (1 -> shaft), Z4 (4 -> shaft)
     for x, xz, nm in ((x1, x1z, "Z1"), (x4, x4z, "Z4")):
         dot(x, y_z); pl([(x, y_z), (xz, y_z), (xz, 392)], "lim"); diode(xz, 392, "down", "#7d3c98", zener=True)
@@ -375,11 +419,13 @@ def panel_b(ox, N):
         ln(ox + 150, y_a, ox + 150, y_a + 12); diode(ox + 150, y_a + 12, "down"); ln(ox + 150, y_a + 30, ox + 150, y_a + 50)
         ground(ox + 150, y_a + 50)                                                                  # Dca: n -> shaft
         tx(ox + 166, y_a + 27, "Dca", "t", "start", 'font-weight="bold"')
-        ln(ox + 150, y_a, ox + 190, y_a); cap_h(ox + 190, y_a, 10); ln(ox + 200, y_a, x1, y_a)   # Coa: node 1 -> n
+        ln(ox + 150, y_a, ox + 190, y_a); cap_h(ox + 190, y_a, 10); ln(ox + 200, y_a, ox + 212, y_a)   # Coa: node 1 -> n
+        res_h(ox + 212, y_a, 26, "propr"); ln(ox + 238, y_a, x1, y_a)     # the chain's input resistor (PROPOSED)
+        tx(ox + 225, y_a + 21, rs, "tp", "middle")
         tx(ox + 195, y_a - 16, "Coa", "t", "middle", 'font-weight="bold"')
-        o.append(f'<rect x="{ox + 22:.1f}" y="{y_a - 32:.1f}" width="{ox + 222 - (ox + 22):.1f}" height="94" '
+        o.append(f'<rect x="{ox + 22:.1f}" y="{y_a - 32:.1f}" width="{ox + 206 - (ox + 22):.1f}" height="94" '
                  'fill="none" stroke="#7f8c8d" stroke-width="1.2" stroke-dasharray="5 4"/>')
-        tx(ox + 228, y_a - 36, f"× {nl['n_a']} stages, mirrored", "t", "end", 'font-weight="bold"')
+        tx(ox + 212, y_a - 36, f"× {nl['n_a']} stages, mirrored", "t", "end", 'font-weight="bold"')
     else:
         ln(x1, y_n, x1, y_k); dot(x1, y_k)
         # A: from the lower ring down to the Dk lead; C_A to the shaft
@@ -400,12 +446,14 @@ def panel_b(ox, N):
     ln(ox + 150, y_cw, ox + 150, y_cw + 18); diode(ox + 150, y_cw + 36, "up"); ln(ox + 150, y_cw + 36, ox + 150, y_cw + 58)
     ground(ox + 150, y_cw + 58)                                                                # Dc: shaft -> m
     tx(ox + 166, y_cw + 31, "Dc", "t", "start", 'font-weight="bold"')
-    ln(ox + 150, y_cw, ox + 190, y_cw); cap_h(ox + 190, y_cw, 10); ln(ox + 200, y_cw, x4, y_cw)   # Co: node 4 -> m
+    ln(ox + 150, y_cw, ox + 190, y_cw); cap_h(ox + 190, y_cw, 10); ln(ox + 200, y_cw, ox + 212, y_cw)   # Co: node 4 -> m
+    res_h(ox + 212, y_cw, 26, "propr"); ln(ox + 238, y_cw, x4, y_cw)      # the chain's input resistor (PROPOSED)
+    tx(ox + 225, y_cw + 21, rs, "tp", "middle")
     tx(ox + 195, y_cw - 16, "Co", "t", "middle", 'font-weight="bold"')
     o.append(f'<rect x="{ox + 22 if sym else ox + 36:.1f}" y="{y_cw - 34:.1f}" '
-             f'width="{ox + 222 - (ox + 22 if sym else ox + 36):.1f}" height="104" '
+             f'width="{ox + 206 - (ox + 22 if sym else ox + 36):.1f}" height="104" '
              'fill="none" stroke="#7f8c8d" stroke-width="1.2" stroke-dasharray="5 4"/>')
-    tx(ox + 228, y_cw - 38, f"× {nl['n_cw']} stages", "t", "end", 'font-weight="bold"')
+    tx(ox + 212, y_cw - 38, f"× {nl['n_cw']} stages", "t", "end", 'font-weight="bold"')
     tx(ox + 42, y_cw + 90, ("Coa, Csa, Co, Cs" if sym else "C_A, Co, Cs") + " 100 pF · ground = the shaft", "ms", "start")
     tx(xk + 50, yc - 23, f"B +{nl['V_B_kV']:.1f} kV", "tu", "start", 'font-weight="bold"')
     tx(xk + 50, yc - 5, f"rings {nl['theta_p']:.0f}–{nl['theta_e']:.0f}°", "ms")
@@ -438,8 +486,21 @@ def panel_b_table(ox, y, N):
     tsr = json.load(open(os.path.join(ROOT, "sim", "tube_strays_results.json")))   # the tube's strays solved
     ts, tb = tsr["side_best"], tsr["decks"]["table"]["as built"]
     vr = fs["VR_pk_kV"]
-    zs = N["duty"]["clamp_string"]
-    n_z = math.ceil(d["V_op_kV"] * 1e3 / zs["V_Z"])
+    rt = N["rt"]                                        # the first cut's ratings (PROPOSED)
+    stick = grab(r"x (\d+ kV) HV rectifier stick", rt["D1"]["rating"])
+    n_d1 = {"1": "one", "2": "two"}[grab(r"^(\d) x", rt["D1"]["rating"])]
+    n_d3 = {"1": "one", "2": "two in series"}[grab(r"^(\d) x", rt["D3"]["rating"])]
+    rs = grab(r"(\d+) kOhm", rt["surge resistors (one per D1-D4)"]["rating"]) + " kΩ"
+    sr, sd = rt["surge resistors (one per D1-D4)"]["rating"], rt["surge resistors (one per D1-D4)"]["duty"]
+    sr_kv, sr_w, sr_j = grab(r">= (\d+) kV", sr), grab(r">= (\d+) W", sr), grab(r">= ([\d.]+) J", sr)
+    sd_kv, sd_a = grab(r"up to ([\d.]+) kV", sd), grab(r"([\d.]+) A pk", sd)
+    zr = rt["Z1 / Z4 clamp strings"]["rating"]
+    z_n, z_part = grab(r"(\d+) x 200 V", zr), grab(r"\(([\w.]+) class\)", zr)
+    z_bv = grab(r"TVS ([\d-]+ V at 1 mA)", zr).replace("-", "–")
+    cdr = rt["chain diodes Dc1 Dc2 Dp1 Dp2 Dca1 Dca2 Dpa1 Dpa2"]["rating"]
+    ccr = rt["chain capacitors Co1 Co2 Cs1 Cs2 Coa1 Coa2 Csa1 Csa2"]["rating"]
+    cd_stick, cd_ir = grab(r"1 x (\d+ kV) stick each", cdr), grab(r"IR <= (\d+ nA at [\d.]+ kV)", cdr)
+    cc_c, cc_v = grab(r"^(\d+ pF)", ccr), grab(r"(\d+ kV) DC", ccr)
     rows = [
         ("C1, C2", f"{d['n_plates']} + {d['n_plates']} vanes, 6 × {d['ws_deg']:g}° / {d['wr_deg']:g}°, {d['gap_mm']:g} mm "
                    f"air gaps, {d['t_vaneMm']:g} mm full rounds: {d['C_min_pF']:.0f}–{d['C_max_pF']:.0f} pF, "
@@ -451,10 +512,15 @@ def panel_b_table(ox, y, N):
         ("", f"z {tb['z']:.3f} bare, {tb['z_rings_start']:.3f} with the chains; {tb['P_clamped_W']:.2f} W "
              "(sim/tube-strays-findings.md)"),
         ("Ca, Cb", f"{d['Ca_pF']:.0f} pF (1.1 C_max): full-annulus plates, now on the rotor"),
-        ("D1–D4", f"HV stacks, reverse peaks {vr['D1']:.1f} / {vr['D2']:.1f} / {vr['D3']:.1f} / {vr['D4']:.1f} kV; "
-                  "parts not chosen"),
-        ("Z1, Z4", f"avalanche strings, BV {d['V_op_kV']:.1f} kV (e.g. {n_z} × {zs['V_Z']:.0f} V), on the rotor: "
+        ("D1–D4", f"HV sticks, reverse peaks {vr['D1']:.1f} / {vr['D2']:.1f} / {vr['D3']:.1f} / {vr['D4']:.1f} kV"),
+        ("", f"first cut (PROPOSED): {stick} / 5 mA sticks, {n_d1} in D1 / D2, {n_d3} in D3 / D4"),
+        ("", "candidate (P-002): XCH 2CL77 avalanche sticks, as named for the redesign's decks"),
+        ("R", f"{rs} surge resistors (PROPOSED): one in each of D1–D4 and one at each chain's input"),
+        ("", f"≥ {sr_kv} kV across the body, ≥ {sr_w} W, ≥ {sr_j} J (P-005); a vane flashover: ≤ {sd_kv} kV, "
+             f"{sd_a} A pk"),
+        ("Z1, Z4", f"avalanche strings, BV {d['V_op_kV']:.1f} kV, on the rotor: "
                    f"{fs['Z1']['P_W']:.2f} W, {fs['Z1']['I_pk_mA']:.2f} mA peak each"),
+        ("", f"first cut (PROPOSED): {z_n} × {z_part}-class TVS, {z_bv}, BV-sorted (P-006)"),
         ("core", f"two rings outside the 50 mm glass: Cu foil bands {nl['theta_p']:.1f}–{nl['theta_e']:.1f}°, "
                  f"{nl['gap_mm']:.1f} mm apart along it"),
         ("", f"beaded edges Ø{2 * nl['rho_pol_mm']:g} / Ø{2 * nl['rho_eq_mm']:g} mm (polar / equatorial) in gel, "
@@ -467,6 +533,7 @@ def panel_b_table(ox, y, N):
              f"reverse; {1e3 * fs['P_leak_W']:.0f} mW leakage at 100 GΩ/ring [RH]"),
         ("", f"{nl['V_gap_kV']:.1f} kV across: {nl['E_dc_kV_cm']:.1f} kV/cm, {nl['p_dc_Pa']:.1f} Pa at the null "
              f"(as connected; {nl['E_settled_kV_cm']:.1f} settled)"),
+        ("", f"first cut (PROPOSED): {cd_stick} sticks (IR ≤ {cd_ir}), {cc_c} / {cc_v}, class 1"),
         ("strays", f"≈ {cf['CPAR_pF']:.0f} pF per node [RH]; the rings {nl['C_ring_ref_pF']:.1f} pF each to REF, "
                    f"{nl['C_ring_ring_pF']:.1f} pF between"),
         ("bearing", f"one inner bearing, for now: {fs['link']['I_rms_mA']:.2f} mA rms AC "
@@ -489,7 +556,7 @@ def panel_b_table(ox, y, N):
 # ------------------------------------------------------------------------------------------------ sheet
 def main():
     N = numbers()
-    W, H = 1440, 1288
+    W, H = 1440, 1446
     o.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
              'font-family="DejaVu Sans, Arial, sans-serif" font-size="13">')
     o.append("<title>Rotor circuits</title>")
@@ -504,7 +571,7 @@ def main():
     .zone_cr{fill:#f3f0e6;stroke:#b9ad8a;stroke-width:1;stroke-dasharray:6 4} .zone_r{fill:#eef3f8;stroke:#9fb3c8;stroke-width:1;stroke-dasharray:6 4}
     .kick{fill:#fff7ec;stroke:#d68910;stroke-width:1.4;stroke-dasharray:5 4} .frame{fill:none;stroke:#999;stroke-width:1}
     .prop{stroke:#9c640c;stroke-width:1.6;fill:none;stroke-dasharray:5 3} .propc{stroke:#9c640c;stroke-width:2.4}
-    .tp{fill:#9c640c;font-size:10.5px}
+    .tp{fill:#9c640c;font-size:10.5px} .propr{stroke:#9c640c;stroke-width:2;fill:none}
     .t{fill:#111} .tu{fill:#1f6fb2} .ta{fill:#c0392b} .tl{fill:#7d3c98} .nd{fill:#111;font-size:12.5px}
     .m{fill:#444;font-size:12px} .ms{fill:#555;font-size:11px} .zh{fill:#333;font-size:12.5px;font-weight:bold;letter-spacing:0.06em}
     .tk{fill:#111;font-size:11.5px;font-weight:bold} .tk2{fill:#9c640c;font-size:11.5px;font-weight:bold} .tv{fill:#333;font-size:11.5px}
@@ -519,7 +586,7 @@ def main():
                f"straddle the bodies · operating point {PICK} relative · only diodes switch", "m")
     for ox, w, title in ((20, 760, "(a) RELUCTANCE: magnetic dual doubler → AH pair"),
                          (800, 620, "(b) ELECTROSTATIC: de Queiroz diode doubler → DC field on the null")):
-        box(ox, 70, w, 1000, "frame")
+        box(ox, 70, w, 1128, "frame")
         tx(ox + 12, 94, title, "h2")
     panel_a(20, N)
     panel_b(780, N)
@@ -529,11 +596,13 @@ def main():
         "Bodies. Rotor: shaft, sleeve, rotor vanes (nodes 1 / 4), Ca / Cb plates, the 6 utrons on their carrier discs, the hub "
         "(the glass vessel with the rings outside it, the AH pair, retainer and coupler).",
         "Counter-rotor: stator cage, stator vanes (REF), bridges. Frame: end bearings, the gear.",
-        "Not in the solids yet: La, Lb, D1*–D4*, the RC snubbers, the kick source, D1–D4, Z1 / Z4, " +
-        ("the two CW chains, " if N["ring"].get("a_ref") == "shaft" else "Dk, the CW stage, C_A, ") +
-        "the rings (all rotor);",
-        "the record's solids (sim/tube_geometry.py --record) carry Ca / Cb on the rotor, the hub and the rings. Each pump's "
-        "reaction torque goes into the gear.",
+        "Not in the record's solids: La, Lb, D1*–D4*, the RC snubbers, the kick, D1–D4 and their resistors, Z1 / Z4, " +
+        ("the two CW chains " if N["ring"].get("a_ref") == "shaft" else "Dk, the CW stage, C_A ") +
+        "(all rotor); the record's solids (sim/tube_geometry.py --record) carry Ca / Cb on the rotor, the hub and the rings.",
+        "The first cuts' La / Lb and the kick are drawn as separate solids, their places OPEN (sim/unmodelled_parts.py; the "
+        "drawing set's REL-720 to -730). Each pump's reaction torque goes into the gear.",
+        "Amber: the parts' first cuts, PROPOSED (sim/parts-first-cut-findings.md): the bypass, the K4 kick, the surge and "
+        "chain-input resistors. The candidates are this search's (sim/unmodelled-parts-findings.md §4); confirm them.",
         "(a) is the planar dual of (b) [OC]: C → L, V → I, Q → Ψ, Ca / Cb → La / Lb, Cpar → Lp2 / Lp3, D1–D4 → D1*–D4*, "
         "the clamps Z1 / Z4 → the NiFe neck's saturation.",
         "A and B swap every half cycle: one group generates (L falling) while the other motors. Each branch carries its own "
@@ -547,11 +616,11 @@ def main():
         "is steady, B to A.",
         "de Queiroz's Fig. 1 draws the core positive, all four diodes the other way (sim/queiroz_fig1_check.py).",
         f"Numbers: sim/pole_design_variants_op.json ({PICK}), sim/utron_profile.py, sim/rotor_parts_duty_results.json, "
-        "sim/core_field_results.json, sim/hub_rings_build_results.json (b: the air build's capped stack)",
-        "Netlists: sim/magnetic_doubler.py, sim/core_field.py · findings: sim/pole-design-findings.md, sim/hub-rings-build-findings.md "
-        "· generator: docs/make_schematic_rotor.py",
+        "sim/core_field_results.json, sim/hub_rings_build_results.json (b: the air build's capped stack),",
+        "sim/parts_first_cut_results.json (the first cuts), sim/unmodelled_parts_results.json (as drawn) · netlists: "
+        "sim/magnetic_doubler.py, sim/core_field.py · generator: docs/make_schematic_rotor.py (redrawn 2026-10-11)",
     ]
-    y = 1094
+    y = 1222
     for s in notes:
         tx(20, y, s, "n"); y += 19
     o.append("</svg>")

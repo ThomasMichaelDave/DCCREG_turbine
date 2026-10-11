@@ -4,6 +4,9 @@ n_cw_a and a_ref "shaft"):
   ring B on a positive Cockcroft-Walton chain driven by the pump's node 4, ring A on its mirror image driven by node 1,
   both chains standing on the shaft (REF), which the AH, the flanges and the null share; every stage drawn, with its
   DC level, each diode's reverse peak and the parts' ratings; the hub with the rings and the field at the null.
+The first cut's parts (PROPOSED; sim/parts_first_cut_results.json ratings) are named, its chain-input resistors drawn
+amber; the values as built with real HV sticks (sim/diodes_real_results.json electrostatic_as_built, 2026-10-09) stand
+beside the record's basis.
 Usage: python3 docs/make_rings_supply_schematic.py   (the PNG needs playwright + chromium)
 """
 import json
@@ -39,11 +42,12 @@ def vdiode(x, y_anode, y_cathode):
     dot(x, y_anode); dot(x, y_cathode)
 
 
-def chain(x0, y_osc, y_smo, sign, vr, stages, tags, cdc):
+def chain(x0, y_osc, y_smo, sign, vr, stages, tags, cdc, r_in=None):
     """one Cockcroft-Walton chain as a ladder: the oscillating column on y_osc, driven from the left through Co1; the
     smoothing column on y_smo, starting at the shaft at x0. sign +1: ring B's chain (the clamp diodes' anodes on the
     smoothing side, the levels rise); -1: ring A's mirror image (both diodes reversed, the levels fall). Each part
-    carries its name, its DC (capacitors) or its reverse peak (diodes). Returns the output's point."""
+    carries its name, its DC (capacitors) or its reverse peak (diodes). r_in: the label of a resistor in series with
+    Co1 / Coa1, the chain's input (drawn amber, PROPOSED). Returns the output's point."""
     pitch = 230
     up = y_smo > y_osc                                                  # the oscillating column on top (ring B)
     prev_osc, prev_smo = x0 - 60, x0
@@ -52,7 +56,13 @@ def chain(x0, y_osc, y_smo, sign, vr, stages, tags, cdc):
         xc = x0 + 10 + (k - 1) * pitch                                  # Co_k's left plate
         xd, xs_c, xp = xc + 45, xc + 95, xc + 150                       # the clamp diode, Cs_k's left plate, the peak diode
         x_end = xp if last else xc + pitch
-        ln(prev_osc, y_osc, xc, y_osc); cap_h(xc, y_osc, 12)
+        if k == 1 and r_in:                                             # the chain's input resistor (PROPOSED)
+            ln(prev_osc, y_osc, prev_osc + 12, y_osc); SR.res_h(prev_osc + 12, y_osc, 30, "propr")
+            ln(prev_osc + 42, y_osc, xc, y_osc)
+            tx(prev_osc + 27, y_osc - 13 if up else y_osc + 24, r_in, "tp", "middle")
+        else:
+            ln(prev_osc, y_osc, xc, y_osc)
+        cap_h(xc, y_osc, 12)
         nm_o, nm_s = ("Co" if sign > 0 else "Coa") + str(k), ("Cs" if sign > 0 else "Csa") + str(k)
         yo = y_osc - 34 if up else y_osc + 34                           # outside the ladder
         tx(xc + 5, yo, nm_o, "t", "middle", 'font-weight="bold"')
@@ -121,7 +131,7 @@ def main():
                               min(b - a for a, b in zip(sw["V_A_kV"], sw["V_B_kV"]))))
     n = rec["n_cw"]
     stage = sup["V_eb_kV"]["mean"] / n
-    W, H = 1440, 890
+    W, H = 1440, 966
     o.clear()
     o.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" height="{H}" '
              'font-family="DejaVu Sans, Arial, sans-serif" font-size="13">')
@@ -161,9 +171,12 @@ def main():
     tags_b = [f"+{kv(stage * k)} kV" for k in range(1, n)] + [f"B +{kv(sup['V_eb_kV']['mean'])} kV"]
     tags_a = [f"{kv(-stage * k)} kV" for k in range(1, n)] + [f"A {kv(sup['V_ea_kV']['mean'])} kV"]
     pl([(230, 240), (250, 240), (250, 190), (x0 - 60, 190)])
-    out_b = chain(x0, 190, 300, +1, vr, n, tags_b, cdc)
+    rt = {q["part"]: q for q in json.load(open(os.path.join(ROOT, "sim", "parts_first_cut_results.json")))["ratings"]}
+    ri = rt["chain-input resistors (in series with Coa1 / Co1; added here)"]
+    r_in = SR.grab(r"(\d+) kOhm", ri["rating"]) + " kΩ"
+    out_b = chain(x0, 190, 300, +1, vr, n, tags_b, cdc, r_in)
     pl([(230, 520), (250, 520), (250, 570), (x0 - 60, 570)])
-    out_a = chain(x0, 570, 460, -1, vr, n, tags_a, cdc)
+    out_a = chain(x0, 570, 460, -1, vr, n, tags_a, cdc, r_in)
     # the shaft rail between the chains, joined to both chains' first smoothing nodes
     xh, yh = 1080, y_rail
     ln(x0 - 40, y_rail, xh - 108, y_rail, "rail")
@@ -184,19 +197,35 @@ def main():
     tx(xh + 96, yh + 100, "ring B's mirror image", "ms")
     tx(xh + 96, yh - 4, f"{rec['E_null_kV_cm']:.2f} kV/cm at the null, B to A", "te")
     tx(xh + 96, yh + 12, f"{rec['p_null_Pa']:.2f} Pa, steady (ripple {sw['E_pp_kV_cm']:.3f} kV/cm p-p)", "ms")
+    dab = json.load(open(os.path.join(ROOT, "sim", "diodes_real_results.json")))["electrostatic_as_built"]
+    ht, th = dab["runs"]["HV-typ"]["clamped 1000 V, 419 cycles"], dab["thresholds"]      # as built, real HV sticks
+    k_null = rec["E_null_kV_cm"] / rec["V_gap_kV"]                      # (kV/cm)/kV as connected [OC: linear]
+    va, vb, e_ab = abs(ht["V_ea_mean_samples_kV"]), ht["V_eb_mean_samples_kV"], k_null * ht["V_gap_kV"]["mean"]
+    tx(xh + 96, yh + 32, "as built with real HV sticks (10-09):", "op")
+    tx(xh + 96, yh + 48, f"−{va:.2f} / +{vb:.2f} kV, {e_ab:.2f} kV/cm", "op")
     tx(xh, yh - 172, "THE HUB", "zh", "middle")
     tx(xh, yh - 156, "the vessel, the AH cores on its axis", "ms", "middle")
-    # the parts and the numbers
+    # the parts and the numbers (the first cut's ratings: grab fails loudly if their text changes)
+    cdr = rt["chain diodes Dc1 Dc2 Dp1 Dp2 Dca1 Dca2 Dpa1 Dpa2"]
+    cd_stick, cd_ir = SR.grab(r"(1 x \d+ kV)", cdr["rating"]).replace(" x ", " × "), SR.grab(r"IR <= (\d+ nA at [\d.]+ kV)", cdr["rating"])
+    cd_m = "VR " + SR.grab(r"VR (x[\d.]+)", cdr["margin"]).replace("x", "×")
+    ccr = rt["chain capacitors Co1 Co2 Cs1 Cs2 Coa1 Coa2 Csa1 Csa2"]["rating"]
+    cc_spec = SR.grab(r"^([^;]+);", ccr).replace("+-", "±").replace("N750-N4700", "N750–N4700")
+    cc_ir = SR.grab(r"(IR >= [\de]+ ohm guaranteed)", ccr).replace(">=", "≥").replace("ohm", "Ω")
+    ri_kv, ri_m = SR.grab(r"up to ([\d.]+) kV", ri["duty"]), ri["margin"].replace("R C", "RC").replace(" us", " µs")
     y = 690
     rows = [
         ("chains", f"{n} stages each; ring B's from node 4 (Co, Dc, Dp, Cs), ring A's from node 1 (Coa, Dca, Dpa, Csa), the "
                    "diodes reversed"),
         ("levels", f"each stage adds node 4's / node 1's swing: {kv(stage)} kV a stage at {R['R_leak_est'] / 1e9:.0f} GΩ per "
                    f"ring; {sup['V_eb_kV']['mean'] - sup['V_ea_kV']['mean']:.1f} kV across the rings"),
-        ("diodes", f"{4 * n} HV stacks, reverse ≤ {max(v for k, v in vr.items() if k[:2] in ('Dc', 'Dp')):.1f} kV each "
-                   "(20 kV stacks, derated 1.5×)"),
+        ("diodes", f"{4 * n} HV sticks, reverse ≤ {max(v for k, v in vr.items() if k[:2] in ('Dc', 'Dp')):.1f} kV each; "
+                   f"first cut (PROPOSED): {cd_stick} stick each, {cd_m}, selected for IR ≤ {cd_ir}"),
         ("capacitors", f"{4 * n} × 100 pF / 30 kV; each holds about one stage's {kv(stage)} kV DC, but Co1 "
                        f"{cdc['Co1']:.1f} and Coa1 {cdc['Coa1']:.1f} kV: nodes 4 and 1 sit at {kv(v4['mean'])} kV mean"),
+        ("", f"first cut (PROPOSED): {cc_spec}; {cc_ir}, PD-free at 1.25 ×"),
+        ("resistors", f"{r_in} in series with Co1 and Coa1 (PROPOSED, amber): a vane flashover puts up to {ri_kv} kV forward "
+                      f"across the chains' first diodes; {ri_m}"),
         ("ripple", f"ring A {1e3 * sup['V_ea_kV']['pp']:.0f} V, ring B {1e3 * sup['V_eb_kV']['pp']:.0f} V p-p at "
                    f"{SR.json.load(open(os.path.join(ROOT, 'sim', 'core_field_results.json')))['F_Hz']:.0f} Hz; ring A tops "
                    f"up as node 1 bottoms, ring B as node 4 peaks, {sw['dt_topup_cyc']:.3f} of a cycle later: "
@@ -206,11 +235,16 @@ def main():
                  f"{fr['z']:.3f}"),
         ("rings", f"Cu foil bands, beads Ø{2 * rec['rho_pol_mm']:g} / Ø{2 * rec['rho_eq_mm']:g} mm (polar / equatorial) "
                   f"in gel; strays {rec['C_ring_ref_pF']:.1f} pF each to REF, {rec['C_ring_ring_pF']:.1f} pF between"),
+        ("as built", f"with real HV sticks (sim/diodes-real-findings.md §6): rings −{va:.2f} / +{vb:.2f} kV, {e_ab:.2f} kV/cm; "
+                     f"no self-start: a seed of {th['HV-typ']['v_grows_V']:.0f} V on nodes 1 / 4 "
+                     f"({th['HV-max']['v_grows_V'] / 1e3:.1f} kV at maximum leakage, {th['HV-hot']['v_grows_V'] / 1e3:.2f} kV hot)"),
     ]
     table(42, y, rows, w_key=96, dy=21)
-    tx(20, 870, "Numbers: sim/hub_rings_build_results.json (record, record_supply), sim/hub_drift_results.json (swing), "
-                "sim/core_field.py (the deck) · "
-                "findings: sim/hub-rings-build-findings.md · generator: docs/make_rings_supply_schematic.py", "n")
+    tx(20, 932, "Numbers: sim/hub_rings_build_results.json (record, record_supply), sim/hub_drift_results.json (swing), "
+                "sim/core_field.py (the deck), sim/parts_first_cut_results.json (the first cut), "
+                "sim/diodes_real_results.json (as built) ·", "n")
+    tx(20, 950, "findings: sim/hub-rings-build-findings.md, sim/parts-first-cut-findings.md §2 · amber: PROPOSED · "
+                "generator: docs/make_rings_supply_schematic.py (redrawn 2026-10-11)", "n")
     o.append("</svg>")
     svg = OUT + ".svg"
     open(svg, "w").write("\n".join(o) + "\n")

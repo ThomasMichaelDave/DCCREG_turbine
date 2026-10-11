@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 890" width="1440" height="890" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 966" width="1440" height="966" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">
 <title>Rings supply</title>
-<rect width="1440" height="890" fill="#ffffff"/>
+<rect width="1440" height="966" fill="#ffffff"/>
 <style>
     .w{stroke:#111;stroke-width:2;fill:none} .ut{stroke:#1f6fb2;stroke-width:2.4;fill:none} .ah{stroke:#c0392b;stroke-width:2.6;fill:none}
     .st{stroke:#8a8a8a;stroke-width:2;fill:none} .lim{stroke:#7d3c98;stroke-width:2.2;fill:none}
@@ -11,7 +11,7 @@
     .zone_cr{fill:#f3f0e6;stroke:#b9ad8a;stroke-width:1;stroke-dasharray:6 4} .zone_r{fill:#eef3f8;stroke:#9fb3c8;stroke-width:1;stroke-dasharray:6 4}
     .kick{fill:#fff7ec;stroke:#d68910;stroke-width:1.4;stroke-dasharray:5 4} .frame{fill:none;stroke:#999;stroke-width:1}
     .prop{stroke:#9c640c;stroke-width:1.6;fill:none;stroke-dasharray:5 3} .propc{stroke:#9c640c;stroke-width:2.4}
-    .tp{fill:#9c640c;font-size:10.5px}
+    .tp{fill:#9c640c;font-size:10.5px} .propr{stroke:#9c640c;stroke-width:2;fill:none}
     .t{fill:#111} .tu{fill:#1f6fb2} .ta{fill:#c0392b} .tl{fill:#7d3c98} .nd{fill:#111;font-size:12.5px}
     .m{fill:#444;font-size:12px} .ms{fill:#555;font-size:11px} .zh{fill:#333;font-size:12.5px;font-weight:bold;letter-spacing:0.06em}
     .tk{fill:#111;font-size:11.5px;font-weight:bold} .tk2{fill:#9c640c;font-size:11.5px;font-weight:bold} .tv{fill:#333;font-size:11.5px}
@@ -36,7 +36,10 @@
 <text x="52.0" y="578.0" class="ms" text-anchor="start" >the same swing,</text>
 <text x="52.0" y="593.0" class="ms" text-anchor="start" >half a cycle later</text>
 <polyline points="230.0,240.0 250.0,240.0 250.0,190.0 270.0,190.0" class="w"/>
-<line x1="270.0" y1="190.0" x2="340.0" y2="190.0" class="w"/>
+<line x1="270.0" y1="190.0" x2="282.0" y2="190.0" class="w"/>
+<polyline points="282.0,190.0 284.5,197.0 289.5,183.0 294.5,197.0 299.5,183.0 304.5,197.0 309.5,183.0 312.0,190.0" class="propr"/>
+<line x1="312.0" y1="190.0" x2="340.0" y2="190.0" class="w"/>
+<text x="297.0" y="177.0" class="tp" text-anchor="middle" >22 kΩ</text>
 <line x1="340.0" y1="178.0" x2="340.0" y2="202.0" class="pl"/>
 <line x1="350.0" y1="178.0" x2="350.0" y2="202.0" class="pl"/>
 <text x="345.0" y="156.0" class="t" text-anchor="middle" font-weight="bold">Co1</text>
@@ -97,7 +100,10 @@
 <text x="734.0" y="263.0" class="ms" text-anchor="start" >7.5 kV</text>
 <text x="730.0" y="330.0" class="tu" text-anchor="start" font-weight="bold">B +15.0 kV</text>
 <polyline points="230.0,520.0 250.0,520.0 250.0,570.0 270.0,570.0" class="w"/>
-<line x1="270.0" y1="570.0" x2="340.0" y2="570.0" class="w"/>
+<line x1="270.0" y1="570.0" x2="282.0" y2="570.0" class="w"/>
+<polyline points="282.0,570.0 284.5,577.0 289.5,563.0 294.5,577.0 299.5,563.0 304.5,577.0 309.5,563.0 312.0,570.0" class="propr"/>
+<line x1="312.0" y1="570.0" x2="340.0" y2="570.0" class="w"/>
+<text x="297.0" y="594.0" class="tp" text-anchor="middle" >22 kΩ</text>
 <line x1="340.0" y1="558.0" x2="340.0" y2="582.0" class="pl"/>
 <line x1="350.0" y1="558.0" x2="350.0" y2="582.0" class="pl"/>
 <text x="345.0" y="604.0" class="t" text-anchor="middle" font-weight="bold">Coa1</text>
@@ -199,6 +205,8 @@
 <text x="1176.0" y="480.0" class="ms" text-anchor="start" >ring B's mirror image</text>
 <text x="1176.0" y="376.0" class="te" text-anchor="start" >7.62 kV/cm at the null, B to A</text>
 <text x="1176.0" y="392.0" class="ms" text-anchor="start" >2.57 Pa, steady (ripple 0.014 kV/cm p-p)</text>
+<text x="1176.0" y="412.0" class="op" text-anchor="start" >as built with real HV sticks (10-09):</text>
+<text x="1176.0" y="428.0" class="op" text-anchor="start" >−13.38 / +13.40 kV, 6.82 kV/cm</text>
 <text x="1080.0" y="208.0" class="zh" text-anchor="middle" >THE HUB</text>
 <text x="1080.0" y="224.0" class="ms" text-anchor="middle" >the vessel, the AH cores on its axis</text>
 <text x="42.0" y="690.0" class="tk" text-anchor="start" >chains</text>
@@ -206,14 +214,21 @@
 <text x="42.0" y="711.0" class="tk" text-anchor="start" >levels</text>
 <text x="138.0" y="711.0" class="tv" text-anchor="start" >each stage adds node 4's / node 1's swing: 7.5 kV a stage at 100 GΩ per ring; 29.9 kV across the rings</text>
 <text x="42.0" y="732.0" class="tk" text-anchor="start" >diodes</text>
-<text x="138.0" y="732.0" class="tv" text-anchor="start" >8 HV stacks, reverse ≤ 7.5 kV each (20 kV stacks, derated 1.5×)</text>
+<text x="138.0" y="732.0" class="tv" text-anchor="start" >8 HV sticks, reverse ≤ 7.5 kV each; first cut (PROPOSED): 1 × 20 kV stick each, VR ×2.7, selected for IR ≤ 25 nA at 7.5 kV</text>
 <text x="42.0" y="753.0" class="tk" text-anchor="start" >capacitors</text>
 <text x="138.0" y="753.0" class="tv" text-anchor="start" >8 × 100 pF / 30 kV; each holds about one stage's 7.5 kV DC, but Co1 13.2 and Coa1 5.7 kV: nodes 4 and 1 sit at −8.6 kV mean</text>
-<text x="42.0" y="774.0" class="tk" text-anchor="start" >ripple</text>
-<text x="138.0" y="774.0" class="tv" text-anchor="start" >ring A 34 V, ring B 29 V p-p at 120 Hz; ring A tops up as node 1 bottoms, ring B as node 4 peaks, 0.124 of a cycle later: 57 V p-p across the gap, 0.2 % of the field; no swing</text>
-<text x="42.0" y="795.0" class="tk" text-anchor="start" >pump</text>
-<text x="138.0" y="795.0" class="tv" text-anchor="start" >belt 2.14 W into the clamps; leakage 4.5 mW; start-up gain z 1.191</text>
-<text x="42.0" y="816.0" class="tk" text-anchor="start" >rings</text>
-<text x="138.0" y="816.0" class="tv" text-anchor="start" >Cu foil bands, beads Ø3 / Ø2 mm (polar / equatorial) in gel; strays 5.1 pF each to REF, 1.1 pF between</text>
-<text x="20.0" y="870.0" class="n" text-anchor="start" >Numbers: sim/hub_rings_build_results.json (record, record_supply), sim/hub_drift_results.json (swing), sim/core_field.py (the deck) · findings: sim/hub-rings-build-findings.md · generator: docs/make_rings_supply_schematic.py</text>
+<text x="42.0" y="774.0" class="tk" text-anchor="start" ></text>
+<text x="138.0" y="774.0" class="tv" text-anchor="start" >first cut (PROPOSED): 100 pF ±10 %, 30 kV DC, HV ceramic class 1 (N750–N4700) or PP / PTFE film; IR ≥ 1e11 Ω guaranteed, PD-free at 1.25 ×</text>
+<text x="42.0" y="795.0" class="tk" text-anchor="start" >resistors</text>
+<text x="138.0" y="795.0" class="tv" text-anchor="start" >22 kΩ in series with Co1 and Coa1 (PROPOSED, amber): a vane flashover puts up to 5.8 kV forward across the chains' first diodes; 0.26 A pk; RC 2.2 µs, no effect at 120 Hz</text>
+<text x="42.0" y="816.0" class="tk" text-anchor="start" >ripple</text>
+<text x="138.0" y="816.0" class="tv" text-anchor="start" >ring A 34 V, ring B 29 V p-p at 120 Hz; ring A tops up as node 1 bottoms, ring B as node 4 peaks, 0.124 of a cycle later: 57 V p-p across the gap, 0.2 % of the field; no swing</text>
+<text x="42.0" y="837.0" class="tk" text-anchor="start" >pump</text>
+<text x="138.0" y="837.0" class="tv" text-anchor="start" >belt 2.14 W into the clamps; leakage 4.5 mW; start-up gain z 1.191</text>
+<text x="42.0" y="858.0" class="tk" text-anchor="start" >rings</text>
+<text x="138.0" y="858.0" class="tv" text-anchor="start" >Cu foil bands, beads Ø3 / Ø2 mm (polar / equatorial) in gel; strays 5.1 pF each to REF, 1.1 pF between</text>
+<text x="42.0" y="879.0" class="tk" text-anchor="start" >as built</text>
+<text x="138.0" y="879.0" class="tv" text-anchor="start" >with real HV sticks (sim/diodes-real-findings.md §6): rings −13.38 / +13.40 kV, 6.82 kV/cm; no self-start: a seed of 122 V on nodes 1 / 4 (1.0 kV at maximum leakage, 3.65 kV hot)</text>
+<text x="20.0" y="932.0" class="n" text-anchor="start" >Numbers: sim/hub_rings_build_results.json (record, record_supply), sim/hub_drift_results.json (swing), sim/core_field.py (the deck), sim/parts_first_cut_results.json (the first cut), sim/diodes_real_results.json (as built) ·</text>
+<text x="20.0" y="950.0" class="n" text-anchor="start" >findings: sim/hub-rings-build-findings.md, sim/parts-first-cut-findings.md §2 · amber: PROPOSED · generator: docs/make_rings_supply_schematic.py (redrawn 2026-10-11)</text>
 </svg>
