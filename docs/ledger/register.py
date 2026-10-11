@@ -184,18 +184,17 @@ _R = [
 # ------------------------------------------------------------------------------------- D: the drawing set
 # every sheet of the set in its order, but the two drawn by their own scripts (DCCREG-UTR-101 and DCCREG-HUB-201 are
 # Part A's sheets); each title block carries the set's own sheet number
-_KIND = {"index": "the set's index", "assembly": "sub-assembly: section, balloons, parts list, 3-D view",
-         "turned": "part drawing: views, dimensions, notes, 3-D view", "block": "part drawing: views, notes, 3-D view",
-         "bought": "source-control sheet: envelope, specification, candidate", "wiring": "wiring list",
-         "list": "list of fasteners and stock"}
+_KIND = {"index": "index", "assembly": "sub-assembly", "turned": "part", "block": "part", "bought": "source control",
+         "wiring": "wiring list", "list": "list"}
 _SET_INDEX = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "drawings", "set-index.json")
 if os.path.exists(_SET_INDEX):
     for _s in json.load(open(_SET_INDEX))["sheets"]:
         if _s["kind"] == "existing":
             continue
-        _q = f"; {_s['qty']} per machine" if _s.get("qty") not in (None, "", "—") else ""
+        _n = _s.get("qty")
+        _q = "" if _n in (None, "", "—") else (f", {_n} off" if isinstance(_n, (int, float)) else f", {_n}")
         _R.append(("D", f"{_s['dwg']}: {_s['title']}", _s["file"],
-                   f"{_KIND[_s['kind']]}; {_s['status']}{_q}" + (f"; in {_s['used_in']}" if _s.get("used_in") else ""),
+                   f"{_KIND[_s['kind']]}, {_s['status']}{_q}" + (f"; in {_s['used_in']}" if _s.get("used_in") else ""),
                    _s["gen"]))
 
 REGISTER = [dict(sheet=i + 1, part=p, title=t, file=f, what=w, gen=g) for i, (p, t, f, w, g) in enumerate(_R)]

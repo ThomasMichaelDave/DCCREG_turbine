@@ -280,8 +280,8 @@ def _cover_html(n_total):
     def d_table(rows):
         return ('<table><thead><tr><th style="width:7%">sheet</th><th>drawing</th><th style="width:36%">what</th>'
                 '</tr></thead><tbody>' +
-                "".join(f'<tr><td>{r["sheet"]}</td><td>{html.escape(r["title"])}</td><td>{html.escape(r["what"])}</td></tr>'
-                        for r in rows) + '</tbody></table>')
+                "".join(f'<tr><td>{r["sheet"]}</td><td>{html.escape(r["title"].replace("DCCREG-", ""))}</td>'
+                        f'<td>{html.escape(r["what"])}</td></tr>' for r in rows) + '</tbody></table>')
     half = (len(d_rows) + 1) // 2
     page3 = (f'<div class="sheet tighter" style="padding-top: 12mm"><header><span class="t">Register, continued</span>'
              f'<span class="n">{PART_NAME["D"]}</span></header>'
