@@ -223,6 +223,7 @@ th { background: #eceae3; }
 h1 { font-size: 24pt; margin: 0 0 2mm; } .sub { font-size: 12pt; color: #1d3f5e; margin-bottom: 6mm; }
 .part { font-weight: bold; background: #f4f6f9; }
 .tight td, .tight th { padding: 0.75mm 1.6mm; }
+.tighter table { font-size: 7.1pt; } .tighter td, .tighter th { padding: 0.45mm 1.4mm; }
 """
 PART_NAME = {"A": "Part A — the design of record (locked)", "B": "Part B — supporting drawings of the record",
              "C": "Part C — earlier phases, kept for the record (superseded)"}
@@ -256,7 +257,7 @@ def _cover_html(n_total):
     head = ('<table><thead><tr><th style="width:4%">sheet</th><th style="width:20%">title</th><th>what it shows</th>'
             '<th style="width:24%">file</th><th style="width:15%">generator</th></tr></thead><tbody>')
     cad = "".join(f'<tr><td>{p_}</td><td>{html.escape(f)}</td><td>{html.escape(w)}</td></tr>' for p_, f, w in CAD)
-    page1 = (f'<div class="sheet tight" style="padding-top: 14mm"><h1>DCCREG turbine — technical drawings</h1>'
+    page1 = (f'<div class="sheet tighter" style="padding-top: 12mm"><h1>DCCREG turbine — technical drawings</h1>'
              f'<div class="sub">The bundle of the design lock ({LOCK_DATE}, design state {LOCK_STATE}, {REVISION}; built '
              f'at {commit()}): '
              f'{n_total} sheets after '
@@ -279,6 +280,11 @@ def _print(pg, html_text, out):
                                            f'</head><body>{html_text}</body></html>')
     pg.goto("file://" + tmp)
     pg.wait_for_load_state("networkidle")
+    # a sheet's content must fit its page: an overflow prints over the next page's heading
+    over = pg.evaluate("Array.from(document.querySelectorAll('.sheet')).map(e => e.scrollHeight - e.clientHeight)")
+    if any(o > 0 for o in over):
+        os.remove(tmp)
+        raise SystemExit(f"{out}: a sheet overflows its page by {max(over)} px (pages {over}); tighten or split it")
     pg.pdf(path=out, width="420mm", height="297mm", print_background=True, margin=dict(top="0", bottom="0", left="0",
                                                                                         right="0"))
     os.remove(tmp)

@@ -86,6 +86,10 @@ manufacturer."
   - The quoted masses are corrected in `sim/tube-shaft-findings.md` §0, `sim/multiplier-layout-findings.md` §7,
     `docs/drive-gear-belt.md` §3 and the ledger's §4.
 - **Added:** `two_body`'s `n_shapes` (the mode shapes; default off).
+- **Fixed:** with sheets 34–35 the bundle's register ran two rows over its first page, onto the second's heading.
+  - Its first page is now set tighter (7.1 pt).
+  - `docs/ledger/make_ledger.py` now stops when any sheet overflows its page; the check catches the old layout's
+    49 px.
 - **Open** (the ledger's §6 item 71): the drive's first cut seats the same bearing under an end disc on the ring's
   face, 3 mm from the end turns, on the record's 940 mm stack-up. To be re-cut on the layout.
 - **Records:**
