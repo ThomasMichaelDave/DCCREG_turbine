@@ -545,7 +545,8 @@ class Machine:
 LAYOUT_JSON = os.path.join(HERE, "multiplier_layout_results.json")
 COL.update({"can": (0.64, 0.69, 0.75), "silicone": (0.80, 0.86, 0.89), "stick": (0.16, 0.17, 0.20),
             "rsurge": (0.30, 0.49, 0.36), "cap": (0.30, 0.47, 0.71), "clamp": (0.60, 0.45, 0.20),
-            "brass": (0.80, 0.66, 0.30), "ptfe": (0.93, 0.93, 0.90), "lv": (0.87, 0.55, 0.08)})
+            "brass": (0.80, 0.66, 0.30), "ptfe": (0.93, 0.93, 0.90), "lv": (0.87, 0.55, 0.08),
+            "cartridge": (0.70, 0.72, 0.76)})
 WIRE_R = 1.5            # PTFE HV wire: a 1 mm conductor in 3 mm of PTFE (sim/multiplier_layout.py bore_wire) [IR]
 LV_R = 2.5              # the magnetic pump's LV leads drawn as one 5 mm cable [RH]
 LV_BORE = 8.0           # the LV bore in each shaft half (sim/multiplier-layout-findings.md §7)
@@ -584,31 +585,39 @@ class LayoutMachine(Machine):
     stack, both decks' plans, the record's reluctance sections moved), each side from the hub outward: the hub as locked
     inside a grounded Al can; the deck, a G10 plate with every diode, C3-C8, Csa / Csb, the clamp string and the surge
     resistors potted on it; Ca / Cb's six plates; the vane stack with its ends swapped, C1 and C2 in phase; the
-    Ca|reluctance bearing; the record's reluctance section. No hub-face bearings; one cage from spider to spider. Drawn
-    as well: the junctions, the leads over the parts, the straps to the can, node 1's riser, node 2's tap, the cross
-    nets l1 / r1, the rings' leads through the can, the sleeve's PTFE cover and sheds, the magnetic pump's LV cable in
-    its bore [IR; the parts' envelopes and the junctions RH]. self.nets: each conductor's net (or its two nets and the
-    line or arc it grades along) for the viewer."""
+    Ca|reluctance bearing; the record's reluctance section; with ring_bearings, a bearing between the shaft and each
+    bridge ring's outer end (sim/bridge_ring_bearings.py, PROPOSED: in the record's end-bearing slot, the end bearing
+    one slot out; its cartridge, spider and the ring joining the spider to the bridge ring). No hub-face bearings; one
+    cage from spider to spider. Drawn as well: the junctions, the leads over the parts, the straps to the can, node 1's
+    riser, node 2's tap, the cross nets l1 / r1, the rings' leads through the can, the sleeve's PTFE cover and sheds,
+    the magnetic pump's LV cable in its bore [IR; the parts' envelopes and the junctions RH]. self.nets: each
+    conductor's net (or its two nets and the line or arc it grades along) for the viewer."""
 
-    def __init__(self, pick="g 0.5 / 6 bridges / 1200 rpm"):
+    def __init__(self, pick="g 0.5 / 6 bridges / 1200 rpm", ring_bearings=True):
         import copy
+        import bridge_ring_bearings as BRB               # the bridge-ring bearings' placement and part
         super().__init__(S.size_stack("tube", record_plates(pick)))
         self.lay = json.load(open(LAYOUT_JSON))
         st = self.lay["stack"]
         rec = self.lad["tube_geometry"]["elements"]
         hub = [e for e in rec if e["kind"] == "hub"][0]
         z_rec = 0.5 * (hub["z0"] + hub["z1"])                 # the record's hub centre (470)
-        self.zc, self.L_mm = st["h_end_mm"], st["L_mm"]         # the new hub centre from side A's end (487), 974
+        self.ring = BRB.placement(st) if ring_bearings else None
+        self.ring_slot = BRB.SLOT if ring_bearings else 0.0
+        # the new hub centre from side A's end (487, or 507 with the bridge-ring bearings) and the length (974, 1014)
+        self.zc, self.L_mm = st["h_end_mm"] + self.ring_slot, st["L_mm"] + 2.0 * self.ring_slot
         # the record's reluctance sections and end bearings: side A where it was, side B out by 2 dh (as
-        # sim/multiplier_layout.py record_reluctance moves them)
-        sh_b = 2.0 * (self.zc - z_rec)
+        # sim/multiplier_layout.py record_reluctance moves them). With the bridge-ring bearings each end bearing moves
+        # one slot further out: in z from side A's end, side A's sections move by the slot and its end bearing stays
+        sh_b = 2.0 * (st["h_end_mm"] - z_rec)
         self.el = []
         for e in rec:
             if e["kind"] not in ("w utron", "w disc", "w bridge", "w ring", "w flange", "reluctance") and not (
                     e["kind"] == "bearing" and e.get("where") == "end"):
                 continue
             q = copy.deepcopy(e)
-            dz = 0.0 if q["side"] == "A" else sh_b
+            end, sl = q["kind"] == "bearing", self.ring_slot
+            dz = (0.0 if end else sl) if q["side"] == "A" else sh_b + (2.0 if end else 1.0) * sl
             for k in ("z0", "z1", "zc", "zs0", "zs1"):
                 if k in q:
                     q[k] += dz
@@ -682,7 +691,7 @@ class LayoutMachine(Machine):
             z0, _ = self.zs(s_, fl["h0"], fl["h1"])
             self.put(f"{s_}_flange", "flange_lv", None, None, None, "rotor", "hub", join="rotor-core", net="0", dz=z0,
                      desc=f"shaft-half flange {s_}, bonded and pinned in the coupler")
-            z0, z1 = self.zs(s_, sh["h0"], sh["h1"])
+            z0, z1 = self.zs(s_, sh["h0"], sh["h1"] + self.ring_slot)       # to the end bearing, one slot out
             ze, zf = self.zz(s_, LV_EXIT), self.zz(s_, sh["h0"])
             lo, hi = (ze - bore, zf + 1.0) if s_ == "A" else (zf - 1.0, ze + bore)     # the bore ends round its exit
 
@@ -739,8 +748,8 @@ class LayoutMachine(Machine):
                      desc="rotor sleeve: the vane bay, the can's disc to the Ca|reluctance bearing")
             eb = [e for e in self.el if e["kind"] == "bearing" and e["side"] == s_][0]
             ze = self.zz(s_, LV_EXIT)
-            z0, z1 = (eb["z1"], self.zz("A", hb + 0.5 * S.BEARING["slot"])) if s_ == "A" else \
-                (self.zz("B", hb + 0.5 * S.BEARING["slot"]), eb["z0"])
+            z0, z1 = (eb["z1"] + self.ring_slot, self.zz("A", hb + 0.5 * S.BEARING["slot"])) if s_ == "A" else \
+                (self.zz("B", hb + 0.5 * S.BEARING["slot"]), eb["z0"] - self.ring_slot)
             self.put(f"{s_}_rotor_sleeve_rel", f"sleeve_rel_{s_}",
                      lambda z0=z0, z1=z1, ze=ze: _cut(sector(S.SHAFT_R, S.SLEEVE_R, z0, z1),
                                                       cyl_between((S.SHAFT_R - 1.0, 0.0, ze), (S.SLEEVE_R + 1.0, 0.0, ze), bore)),
@@ -773,6 +782,8 @@ class LayoutMachine(Machine):
                      dz=eb["zc"] - 0.5 * B["width"], desc="bearing, end (frame)")
             self.put(f"{s_}_spider_end", "spider", None, None, None, "stator", "bearings", join=f"brg-{s_}-end",
                      dz=eb["zc"] - 0.5 * B["spider_t"], desc="frame bearing hub")
+        if self.ring:
+            self.ring_bearing_parts()
         za, zb_ = self.zz("A", hb + 0.5 * B["slot"]), self.zz("B", hb + 0.5 * B["slot"])
         self.put("stator_cage", "cage", lambda: sector(ro + 12.0, ro + 16.0, za, zb_), COL["g10"], "G10 stator cage",
                  "stator", "cage", join="cage", desc="the counter-rotor's cage: one tube from spider to spider, no hub-face bearing")
@@ -789,6 +800,37 @@ class LayoutMachine(Machine):
         # ---- the decks
         self.decks(ML, dk, st, kinds, one, mp, plan, th_lead, hv0)
         return self
+
+    def ring_bearing_parts(self):
+        """the bridge-ring bearings (sim/bridge_ring_bearings.py placement, PROPOSED): each bearing in its stainless
+        cartridge (barrel, a flange on the spider's outboard face, a lip over the outer ring inboard), the 8 mm G10
+        spider centred in its slot, and the 6 mm G10 ring from the spider's rim to the bridge ring's outer face; side B
+        the mirror of side A [IR; the cartridge's walls RH]."""
+        import bridge_ring_bearings as BRB
+        P, part = self.ring["side_A"], BRB.PART
+        mz = lambda s_, z0, z1: (z0, z1) if s_ == "A" else (2.0 * self.zc - z1, 2.0 * self.zc - z0)
+        b, sp, ad = P["bearing"], P["spider"], P["adapter"]
+        self.proto("ring_bearing", lambda: sector(b["r0"], b["r1"], 0.0, b["z1"] - b["z0"]), COL["steel"],
+                   f"{part['maker']} {part['designation']} deep groove ball bearing, 25 / 52 / 15 (PROPOSED)")
+        self.proto("ring_spider", lambda: sector(sp["r0"], sp["r1"], 0.0, sp["z1"] - sp["z0"]), COL["g10"],
+                   "G10 bearing spider, the bridge-ring bearing's")
+        self.proto("ring_adapter", lambda: sector(ad["r0"], ad["r1"], 0.0, ad["z1"] - ad["z0"]), COL["g10"],
+                   "G10 ring, the spider's rim to the bridge ring's outer face")
+        for s_ in "AB":
+            def cart(s_=s_):
+                return fuse([sector(q["r0"], q["r1"], *mz(s_, q["z0"], q["z1"]))
+                             for q in (P["cartridge_barrel"], P["cartridge_flange"], P["cartridge_lip"])])
+            self.proto(f"ring_cartridge_{s_}", cart, COL["cartridge"], BRB.CART_MATERIAL)
+            role = "locates the counter-rotor axially" if s_ == "A" else "floats on its spring preload"
+            self.put(f"{s_}_bearing_bridge-ring", "ring_bearing", None, None, None, "bearing", "bearings",
+                     join=f"brg-{s_}-ring", net="0", dz=mz(s_, b["z0"], b["z1"])[0],
+                     desc=f"bearing, bridge ring {s_}'s outer end: {part['maker']} {part['designation']}; {role}")
+            self.put(f"{s_}_cartridge_bridge-ring", f"ring_cartridge_{s_}", None, None, None, "stator", "bearings",
+                     join=f"brg-{s_}-ring", net="0", desc="the bridge-ring bearing's cartridge, bolted to its spider")
+            self.put(f"{s_}_spider_bridge-ring", "ring_spider", None, None, None, "stator", "bearings", join=f"ring-{s_}",
+                     dz=mz(s_, sp["z0"], sp["z1"])[0], desc=f"the bridge-ring bearing's spider, on bridge ring {s_}")
+            self.put(f"{s_}_ring_adapter", "ring_adapter", None, None, None, "stator", "bearings", join=f"ring-{s_}",
+                     dz=mz(s_, ad["z0"], ad["z1"])[0], desc=f"the spider's rim to bridge ring {s_}'s outer face")
 
     def decks(self, ML, dk, st, kinds, one, mp, plan, th_lead, hv0):
         P, zone = dk["parts"], dk["zone"]
@@ -1739,12 +1781,14 @@ LAYOUT_LEGEND = [("sife", "SiFe (utron cores, bridges)"), ("cu", "Cu (coils, lea
                  ("g10", "G10"), ("steel", "steel"), ("silicone", "silicone potting"), ("stick", "HV rectifier stick"),
                  ("rsurge", "surge resistor"), ("cap", "HV capacitor"), ("clamp", "clamp string"),
                  ("brass", "brass terminals"), ("ptfe", "PTFE (wire, bushing, cover, sheds)"), ("lv", "LV cable"),
-                 ("glass", "borosilicate vessel"), ("ring", "Cu rings + beads"), ("peek", "PEEK retainer")]
+                 ("glass", "borosilicate vessel"), ("ring", "Cu rings + beads"), ("peek", "PEEK retainer"),
+                 ("cartridge", "stainless bearing cartridge")]
 
 
 def renders_layout(m, out_dir, tag, log=print):
     """the layout's exact sections: (a) the machine through the shaft (y = 0), (b) side A's central bay enlarged,
-    (c) / (d) plan cuts through deck A and deck B at the sticks' axis (|z| 48), each seen from the hub's side."""
+    (c) / (d) plan cuts through deck A and deck B at the sticks' axis (|z| 48), each seen from the hub's side, (e) side
+    A's end enlarged: the end bearing and the bridge-ring bearing."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -1789,14 +1833,35 @@ def renders_layout(m, out_dir, tag, log=print):
             a.text(q["centre"][0], q["centre"][1], q["name"], fontsize=6.0, ha="center", va="center", color="#111", zorder=9)
         a.set_aspect("equal"); a.set_xlim(-170, 170); a.set_ylim(-170, 170); a.tick_params(labelsize=6.5)
         a.set_title(f"({'c' if s_ == 'A' else 'd'}) deck {s_} at |z| 48, seen from +z", fontsize=9, loc="left")
+    if m.ring:
+        import bridge_ring_bearings as BRB
+        ae = fig.add_axes((0.745, 0.035, 0.245, 0.265))
+        _draw(ae, sec, lw=0.5, keep=lambda n: not n.startswith(("B_", "shaft_B")))
+        ae.axvline(0, color="#888", lw=0.5, ls="--")
+        ae.set_aspect("equal"); ae.set_xlim(-12, 238); ae.set_ylim(-4, 76); ae.tick_params(labelsize=6.5)
+        ae.set_xticks([0, 25, 50, 75, 100, 125, 150])
+        ae.set_ylabel("z [mm]", fontsize=7.5)
+        pl, P = m.ring, m.ring["side_A"]
+        SPIDER_T_ = P["spider"]["z1"] - P["spider"]["z0"]
+        lab = dict(fontsize=6.3, va="center", ha="left", color="#222")
+        ae.text(165, pl["z_frame_mm"][0], f"end bearing (frame) on its\nspider, z {pl['z_frame_mm'][0]:.0f}", **lab)
+        ae.text(165, pl["z_ring_mm"][0], f"the bridge-ring bearing's G10\nspider, {SPIDER_T_:.0f} mm, and the {pl['side_A']['adapter']['z1'] - pl['side_A']['adapter']['z0']:.0f} mm\nring to bridge ring A", **lab)
+        ae.text(165, 60, "bridge ring A (the record's)", **lab)
+        ae.annotate(f"bearing z {pl['z_ring_mm'][0]:.0f} in its stainless cartridge", (24.0, P["bearing"]["z0"] + 1.0),
+                    (42.0, 18.0), arrowprops=dict(arrowstyle="-", lw=0.5, color="#222"), **lab)
+        ae.text(60, P["spider"]["z1"] + 0.5 * pl["clear_spider_to_turns_mm"],
+                f"{pl['clear_spider_to_turns_mm']:.0f} mm to the utrons' end turns", **lab)
+        ae.set_title(f"(e) side A's end: the bridge-ring bearing ({BRB.PART['maker']} {BRB.PART['designation']}), "
+                     f"z {pl['z_ring_mm'][0]:.0f}", fontsize=8.5, loc="left")
     an = fig.add_axes((0.74, 0.33, 0.25, 0.62)); an.axis("off")
     an.legend(handles=[Patch(facecolor=COL[k_], label=t_) for k_, t_ in LAYOUT_LEGEND], loc="upper left", fontsize=8.5,
               frameon=False, ncol=1)
     an.text(0.0, 0.30, "The layout of sim/multiplier-layout-findings.md (PROPOSED, 2026-10-11) in solids:\n"
             "every part of the decks from the study's plans, the record's\nhub, column plates, vanes and reluctance "
-            "sections; the wiring\nas sim/tube_geometry.py LayoutMachine routes it.\n\n"
-            "Not drawn: the bridge-ring bearings (10-20 mm a side, the\nfindings' §7), Ca / Cb's rods and mounts, the "
-            "decks' standoffs\nto the can, the plates' interconnections, the gear.", fontsize=8.5, va="top",
+            "sections; the wiring\nas sim/tube_geometry.py LayoutMachine routes it; the bridge-ring\nbearings as "
+            "sim/bridge_ring_bearings.py places them (PROPOSED).\n\n"
+            "Not drawn: Ca / Cb's rods and mounts, the decks' standoffs to\nthe can, the plates' interconnections, "
+            "the gear.", fontsize=8.5, va="top",
             transform=an.transAxes)
     fig.suptitle(f"{tag}: the multiplier laid out in the machine", fontsize=12, x=0.01, ha="left")
     f = os.path.join(out_dir, f"{tag}-section.png"); fig.savefig(f, dpi=100); plt.close(fig)

@@ -2,12 +2,12 @@
  "tag": "tube-r150-n6-air6-wound-g0p5-6br-hub50-layout",
  "source": "sim/multiplier_layout_results.json (the stack, the decks' plans); the record's solids (record_plates); presets/hub-locked.json",
  "status": "PROPOSED (the layout, 2026-10-11)",
- "n_parts": 378,
- "n_protos": 142,
- "L_total_mm": 974.0,
- "hub_centre_z_mm": 487.0,
+ "n_parts": 386,
+ "n_protos": 147,
+ "L_total_mm": 1014.0,
+ "hub_centre_z_mm": 507.0,
  "G-TUBE-CLASH": {
-  "pairs_tested": 1129,
+  "pairs_tested": 1151,
   "clashes": [],
   "n_clash": 0,
   "pass_": true
@@ -1418,12 +1418,12 @@
   "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout-section.png"
  ],
  "step": "docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout.step",
- "step_bytes": 3307286,
+ "step_bytes": 3405455,
  "step_read_back": {
-  "instances": 378,
+  "instances": 386,
   "assemblies": 13,
-  "products": 142,
+  "products": 147,
   "pass_": true
  },
- "run_s": 65
+ "run_s": 69
 }
