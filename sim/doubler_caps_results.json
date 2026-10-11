@@ -1,0 +1,1320 @@
+{
+ "note": "sim/doubler_caps.py -- the doubler's capacitors as built: how C1 / C2 (the vane stacks) and Ca / Cb (the plate\ncolumns) are held in the multiplier's layout (PROPOSED, 2026-10-11), checked against the record's HV rules, and what\nthe mounts do to Ca, the strays, the pump and the shafts.",
+ "sources": {
+  "stack": "sim/multiplier_layout_results.json stack (the column, the vanes, the can's disc, the spider) and decks (the junctions: the riser's and the tap's angles)",
+  "volts": "sim/multiplier_layout_results.json volts.pairs (the pick's steady state as built)",
+  "rules": "sim/parts_first_cut.py clearance_case_a, creepage, DC_MARGIN, CLR_MARGIN (via sim/multiplier_layout.py clearance, worst; sim/parts-first-cut-findings.md \u00a74)",
+  "rim model": "sim/vane_cell.py edge_field, _round_field, peek_kV_per_cm; sim/vane_matrix.py M_HANDLED 0.85",
+  "strays": "sim/multiplier_layout.py c_wire_cyl, c_cyl_plane, strays (its total_pF, cp_pF, deck_strays_pF)",
+  "Ca as laid out": "sim/tube-strays-findings.md \u00a74 (480.5 pF solved); sim/integrated_multiplier.py SET_AB ca",
+  "circuit": "sim/multiplier_layout.py run_deck (sim/integrated_multiplier.py proposal at the pick, C3-C6 180 pF)",
+  "shafts": "sim/bridge_ring_bearings.py solids_parts, K_REAL; sim/shaft_bearings.py two_body, K_BEARING, F_REL_HZ"
+ },
+ "tags": "CONVENTIONS.md \u00a71",
+ "status": "PROPOSED",
+ "placement": {
+  "params": {
+   "R_POST": 35.0,
+   "POST_D": 8.0,
+   "TAB_LOBE_R": 8.0,
+   "TAB_W": 24.0,
+   "HOLE_D": 4.5,
+   "STANDOFF": [
+    16.0,
+    30.0
+   ],
+   "VSP_R1": 32.0,
+   "DOWEL": [
+    5.0,
+    26.25
+   ],
+   "ROD_R": 173.0,
+   "ROD_D": 8.0,
+   "LUG": [
+    9.0,
+    28.0
+   ],
+   "SSP_D": 16.0,
+   "CAGE": [
+    182.0,
+    186.0
+   ],
+   "END_RING": [
+    166.0,
+    182.0,
+    10.0
+   ]
+  },
+  "sides": {
+   "A": {
+    "node_1": "1",
+    "node_2": "2",
+    "theta_riser_deg": 46.3,
+    "theta_tap_deg": -88.9,
+    "theta_n1_deg": [
+     46.30000000000001,
+     166.3,
+     -73.69999999999999
+    ],
+    "theta_n2_deg": [
+     106.30000000000001,
+     -133.7,
+     -13.700000000000045
+    ]
+   },
+   "B": {
+    "node_1": "4",
+    "node_2": "3",
+    "theta_riser_deg": -88.9,
+    "theta_tap_deg": 46.30000000000001,
+    "theta_n1_deg": [
+     -88.9,
+     31.099999999999994,
+     151.10000000000002
+    ],
+    "theta_n2_deg": [
+     -28.900000000000006,
+     91.10000000000002,
+     -148.89999999999998
+    ]
+   }
+  },
+  "comb": {
+   "1": [
+    "Ca_05",
+    "Ca_03",
+    "Ca_01"
+   ],
+   "2": [
+    "Ca_06",
+    "Ca_04",
+    "Ca_02"
+   ]
+  },
+  "plates": {
+   "Ca_06": {
+    "h0": 117.0,
+    "h1": 120.0,
+    "node": "2"
+   },
+   "Ca_05": {
+    "h0": 126.0,
+    "h1": 129.0,
+    "node": "1"
+   },
+   "Ca_04": {
+    "h0": 135.0,
+    "h1": 138.0,
+    "node": "2"
+   },
+   "Ca_03": {
+    "h0": 144.0,
+    "h1": 147.0,
+    "node": "1"
+   },
+   "Ca_02": {
+    "h0": 153.0,
+    "h1": 156.0,
+    "node": "2"
+   },
+   "Ca_01": {
+    "h0": 162.0,
+    "h1": 165.0,
+    "node": "1"
+   }
+  },
+  "posts_n1": [
+   {
+    "kind": "spacer",
+    "h0": 129.0,
+    "h1": 144.0,
+    "below": "Ca_05",
+    "above": "Ca_03",
+    "L": 15.0,
+    "passes": [
+     "Ca_04"
+    ]
+   },
+   {
+    "kind": "spacer",
+    "h0": 147.0,
+    "h1": 162.0,
+    "below": "Ca_03",
+    "above": "Ca_01",
+    "L": 15.0,
+    "passes": [
+     "Ca_02"
+    ]
+   },
+   {
+    "kind": "spacer",
+    "h0": 165.0,
+    "h1": 171.0,
+    "below": "Ca_01",
+    "above": "r01",
+    "L": 6.0,
+    "passes": []
+   }
+  ],
+  "posts_n2": [
+   {
+    "kind": "standoff",
+    "h0": 87.0,
+    "h1": 117.0,
+    "below": "can disc",
+    "above": "Ca_06",
+    "L": 30.0,
+    "passes": []
+   },
+   {
+    "kind": "spacer",
+    "h0": 120.0,
+    "h1": 135.0,
+    "below": "Ca_06",
+    "above": "Ca_04",
+    "L": 15.0,
+    "passes": [
+     "Ca_05"
+    ]
+   },
+   {
+    "kind": "spacer",
+    "h0": 138.0,
+    "h1": 153.0,
+    "below": "Ca_04",
+    "above": "Ca_02",
+    "L": 15.0,
+    "passes": [
+     "Ca_03"
+    ]
+   }
+  ],
+  "r01": {
+   "h0": 171.0,
+   "h1": 174.0
+  },
+  "riser_end_h": 126.0,
+  "can_disc": {
+   "h0": 85.0,
+   "h1": 87.0,
+   "r0": 12.5,
+   "r1": 48.0
+  },
+  "vane_spacers": [
+   {
+    "h0": 174.0,
+    "h1": 189.0
+   },
+   {
+    "h0": 192.0,
+    "h1": 207.0
+   },
+   {
+    "h0": 210.0,
+    "h1": 225.0
+   },
+   {
+    "h0": 228.0,
+    "h1": 243.0
+   },
+   {
+    "h0": 246.0,
+    "h1": 261.0
+   }
+  ],
+  "dowels": {
+   "h0": 171.0,
+   "h1": 264.0,
+   "r": 26.25,
+   "d": 5.0,
+   "theta_deg": [
+    90.0,
+    210.0,
+    330.0
+   ]
+  },
+  "rotor_vanes": [
+   {
+    "h0": 171.0,
+    "h1": 174.0,
+    "index": 1
+   },
+   {
+    "h0": 189.0,
+    "h1": 192.0,
+    "index": 3
+   },
+   {
+    "h0": 207.0,
+    "h1": 210.0,
+    "index": 5
+   },
+   {
+    "h0": 225.0,
+    "h1": 228.0,
+    "index": 7
+   },
+   {
+    "h0": 243.0,
+    "h1": 246.0,
+    "index": 9
+   },
+   {
+    "h0": 261.0,
+    "h1": 264.0,
+    "index": 11
+   }
+  ],
+  "stator_vanes": [
+   {
+    "h0": 180.0,
+    "h1": 183.0,
+    "index": 2
+   },
+   {
+    "h0": 198.0,
+    "h1": 201.0,
+    "index": 4
+   },
+   {
+    "h0": 216.0,
+    "h1": 219.0,
+    "index": 6
+   },
+   {
+    "h0": 234.0,
+    "h1": 237.0,
+    "index": 8
+   },
+   {
+    "h0": 252.0,
+    "h1": 255.0,
+    "index": 10
+   },
+   {
+    "h0": 270.0,
+    "h1": 273.0,
+    "index": 12
+   }
+  ],
+  "stator_spacers": [
+   {
+    "h0": 183.0,
+    "h1": 198.0
+   },
+   {
+    "h0": 201.0,
+    "h1": 216.0
+   },
+   {
+    "h0": 219.0,
+    "h1": 234.0
+   },
+   {
+    "h0": 237.0,
+    "h1": 252.0
+   },
+   {
+    "h0": 255.0,
+    "h1": 270.0
+   },
+   {
+    "h0": 273.0,
+    "h1": 285.0
+   }
+  ],
+  "end_ring": {
+   "r0": 166.0,
+   "r1": 182.0,
+   "h0": 170.0,
+   "h1": 180.0
+  },
+  "rods": {
+   "h0": 163.5,
+   "h1": 299.5,
+   "nuts": [
+    [
+     163.5,
+     170.0
+    ],
+    [
+     293.0,
+     299.5
+    ]
+   ]
+  },
+  "lugs_deg": [
+   30.0,
+   90.0,
+   150.0,
+   210.0,
+   270.0,
+   330.0
+  ],
+  "spider": {
+   "h0": 285.0,
+   "h1": 293.0,
+   "r0": 26.0,
+   "r1": 182.0
+  },
+  "cage": {
+   "r0": 182.0,
+   "r1": 186.0,
+   "h": 299.0
+  },
+  "sleeve_cover": {
+   "h0": 87.0,
+   "h1": 171.0
+  }
+ },
+ "rules": {
+  "rows": [
+   {
+    "interface": "a node-1 post <-> the nearest node-2 post (Ca), bare air",
+    "kind": "air",
+    "pair": "1-2",
+    "U_pk_kV": 13.1845045357176,
+    "U_rms_kV": 12.278590453083142,
+    "clearance_mm": 24.68160149853051,
+    "creepage_PTFE_mm": 76.74119033176963,
+    "creepage_G10_mm": 153.48238066353926,
+    "need_mm": 24.68160149853051,
+    "available_mm": 26.999999999999993,
+    "ok": true,
+    "note": "posts 60 deg apart on r 35, both \u00d88"
+   },
+   {
+    "interface": "a post <-> the other comb's bore edges (r 50), bare air",
+    "kind": "field",
+    "pair": "1-2",
+    "U_pk_kV": 13.1845045357176,
+    "U_rms_kV": 12.278590453083142,
+    "clearance_mm": 24.68160149853051,
+    "creepage_PTFE_mm": 76.74119033176963,
+    "creepage_G10_mm": 153.48238066353926,
+    "need_mm": null,
+    "available_mm": 11.0,
+    "ok": null,
+    "note": "the column's own class: its plates hold the same 13.2 kV across 6 mm; judged by the field (\u00a73), not case A"
+   },
+   {
+    "interface": "a node-2 standoff, node 2 <-> the can's disc (REF): along glazed steatite",
+    "kind": "steatite",
+    "pair": "2-0",
+    "U_pk_kV": 4.522438,
+    "U_rms_kV": 3.1442196411217886,
+    "clearance_mm": 6.453570864973778,
+    "creepage_PTFE_mm": 19.651372757011178,
+    "creepage_G10_mm": 39.302745514022355,
+    "need_mm": 6.453570864973778,
+    "available_mm": 30.0,
+    "ok": true,
+    "note": "inorganic: creepage need not exceed the clearance (IEC 60664-1)"
+   },
+   {
+    "interface": "the same, were it PTFE (the alternate)",
+    "kind": "PTFE",
+    "pair": "2-0",
+    "U_pk_kV": 4.522438,
+    "U_rms_kV": 3.1442196411217886,
+    "clearance_mm": 6.453570864973778,
+    "creepage_PTFE_mm": 19.651372757011178,
+    "creepage_G10_mm": 39.302745514022355,
+    "need_mm": 19.651372757011178,
+    "available_mm": 30.0,
+    "ok": true,
+    "note": ""
+   },
+   {
+    "interface": "Ca_06's tabs <-> the can's disc (REF), bare air",
+    "kind": "air",
+    "pair": "2-0",
+    "U_pk_kV": 4.522438,
+    "U_rms_kV": 3.1442196411217886,
+    "clearance_mm": 6.453570864973778,
+    "creepage_PTFE_mm": 19.651372757011178,
+    "creepage_G10_mm": 39.302745514022355,
+    "need_mm": 6.453570864973778,
+    "available_mm": 30.0,
+    "ok": true,
+    "note": "the plate's own interface as the layout"
+   },
+   {
+    "interface": "the node-1 comb's lowest metal (Ca_05) <-> the can's disc (REF), bare air",
+    "kind": "air",
+    "pair": "1-0",
+    "U_pk_kV": 13.1845028,
+    "U_rms_kV": 9.867148339268418,
+    "clearance_mm": 24.681597788166343,
+    "creepage_PTFE_mm": 61.669677120427615,
+    "creepage_G10_mm": 123.33935424085523,
+    "need_mm": 24.681597788166343,
+    "available_mm": 39.0,
+    "ok": true,
+    "note": "the riser's lug under Ca_05 is in its silicone boot"
+   },
+   {
+    "interface": "the sleeve's PTFE cover, the first rotor vane (node 1) <-> the can's disc: no node-1 metal on it below",
+    "kind": "PTFE",
+    "pair": "1-0",
+    "U_pk_kV": 13.1845028,
+    "U_rms_kV": 9.867148339268418,
+    "clearance_mm": 24.681597788166343,
+    "creepage_PTFE_mm": 61.669677120427615,
+    "creepage_G10_mm": 123.33935424085523,
+    "need_mm": 61.669677120427615,
+    "available_mm": 84.0,
+    "ok": true,
+    "note": "unchanged from the layout (84 mm)"
+   },
+   {
+    "interface": "a rotor-vane spacer ring (G10, between node-1 vanes) <-> the stator blades' inner ends (r 50)",
+    "kind": "insulator",
+    "pair": "1-0",
+    "U_pk_kV": 13.1845028,
+    "U_rms_kV": 9.867148339268418,
+    "clearance_mm": 24.681597788166343,
+    "creepage_PTFE_mm": 61.669677120427615,
+    "creepage_G10_mm": 123.33935424085523,
+    "need_mm": 12.0,
+    "available_mm": 18.0,
+    "ok": true,
+    "note": "the ring bridges node-1 vanes only; the blades' ends face the vanes' hub rings across the varicap's own 6 mm gap; the 12 mm rule for an insulator, as the cage"
+   },
+   {
+    "interface": "the rotor vanes' rims (r 150) <-> the stator stack's G10 spacer tubes",
+    "kind": "insulator",
+    "pair": "1-0",
+    "U_pk_kV": 13.1845028,
+    "U_rms_kV": 9.867148339268418,
+    "clearance_mm": 24.681597788166343,
+    "creepage_PTFE_mm": 61.669677120427615,
+    "creepage_G10_mm": 123.33935424085523,
+    "need_mm": 12.0,
+    "available_mm": 15.0,
+    "ok": true,
+    "note": "the record keeps 12 mm between the rims and the cage's G10 (12 mm rule)"
+   },
+   {
+    "interface": "the Ca plates' and the first rotor vane's rims (r 150) <-> the G10 end ring and its nuts",
+    "kind": "insulator",
+    "pair": "1-0",
+    "U_pk_kV": 13.1845028,
+    "U_rms_kV": 9.867148339268418,
+    "clearance_mm": 24.681597788166343,
+    "creepage_PTFE_mm": 61.669677120427615,
+    "creepage_G10_mm": 123.33935424085523,
+    "need_mm": 12.0,
+    "available_mm": 15.494446500534877,
+    "ok": true,
+    "note": "the 12 mm rule"
+   },
+   {
+    "interface": "the decks' outermost housings <-> the cage, moved out to r 182",
+    "kind": "insulator",
+    "pair": "ea-0",
+    "U_pk_kV": 14.9405035,
+    "U_rms_kV": 14.934083804672678,
+    "clearance_mm": 28.80286491806511,
+    "creepage_PTFE_mm": 93.33802377920424,
+    "creepage_G10_mm": 186.67604755840847,
+    "need_mm": 12.0,
+    "available_mm": 32.0,
+    "ok": true,
+    "note": "the layout's 13 mm becomes 33 mm"
+   }
+  ],
+  "touches": [
+   {
+    "comb": "1",
+    "h0": 129.0,
+    "h1": 144.0,
+    "touches": [
+     "Ca_05",
+     "Ca_03"
+    ],
+    "passes": [
+     "Ca_04"
+    ],
+    "ok": true
+   },
+   {
+    "comb": "1",
+    "h0": 147.0,
+    "h1": 162.0,
+    "touches": [
+     "Ca_03",
+     "Ca_01"
+    ],
+    "passes": [
+     "Ca_02"
+    ],
+    "ok": true
+   },
+   {
+    "comb": "1",
+    "h0": 165.0,
+    "h1": 171.0,
+    "touches": [
+     "Ca_01"
+    ],
+    "passes": [],
+    "ok": true
+   },
+   {
+    "comb": "2",
+    "h0": 87.0,
+    "h1": 117.0,
+    "touches": [
+     "Ca_06"
+    ],
+    "passes": [],
+    "ok": true
+   },
+   {
+    "comb": "2",
+    "h0": 120.0,
+    "h1": 135.0,
+    "touches": [
+     "Ca_06",
+     "Ca_04"
+    ],
+    "passes": [
+     "Ca_05"
+    ],
+    "ok": true
+   },
+   {
+    "comb": "2",
+    "h0": 138.0,
+    "h1": 153.0,
+    "touches": [
+     "Ca_04",
+     "Ca_02"
+    ],
+    "passes": [
+     "Ca_03"
+    ],
+    "ok": true
+   }
+  ],
+  "adjacent_pairs": [
+   [
+    "Ca_06",
+    "Ca_05"
+   ],
+   [
+    "Ca_05",
+    "Ca_04"
+   ],
+   [
+    "Ca_04",
+    "Ca_03"
+   ],
+   [
+    "Ca_03",
+    "Ca_02"
+   ],
+   [
+    "Ca_02",
+    "Ca_01"
+   ]
+  ],
+  "no_support_touches_two_adjacent": true,
+  "ok": true
+ },
+ "fields": {
+  "m_handled": 0.85,
+  "peaks_kV": {
+   "Ca": 13.1845045357176,
+   "C1": 13.1845028
+  },
+  "C1_rims": {
+   "model": "sim/vane_cell.py edge_field(3, 6): a rotor rim between the stator rings",
+   "E_kV_cm": 44.5674319154972,
+   "onset_kV_cm": 47.304905494100105,
+   "margin": 1.0614231841716466,
+   "V_onset_kV": 13.994336943695991
+  },
+  "Ca_aligned_rims": {
+   "model": "the column's own rims, ending together",
+   "E_kV_cm": 33.03442352243223,
+   "onset_kV_cm": 47.304905494100105,
+   "margin": 1.4319882247067948,
+   "V_onset_kV": 18.880055243740927
+  },
+  "tab_crossing": {
+   "model": "a bore edge under the other comb's tab, its post 11 mm in front (a wall)",
+   "gap_mm": 11.0,
+   "E_kV_cm": 44.95440339209981,
+   "onset_kV_cm": 47.304905494100105,
+   "margin": 1.0522863596141812,
+   "V_onset_kV": 13.87387428120693
+  },
+  "hole_edge": {
+   "model": "the same edge round the post (axisymmetric, a hole all round)",
+   "gap_mm": 11.0,
+   "E_kV_cm": 39.947831341622326,
+   "onset_kV_cm": 47.304905494100105,
+   "margin": 1.1841670475065893,
+   "V_onset_kV": 15.612655808897946
+  },
+  "post": {
+   "model": "the post's own surface (axisymmetric, the hole all round)",
+   "radius_mm": 4.0,
+   "E_kV_cm": 9.633263596994247,
+   "onset_kV_cm": 39.182206517197265,
+   "margin": 4.067386521990619,
+   "V_onset_kV": 53.626476047701935
+  },
+  "sweep_tab_crossing": [
+   {
+    "gap_mm": 5.0,
+    "E_kV_cm": 53.387298844709775,
+    "onset_kV_cm": 47.304905494100105,
+    "margin": 0.8860704047173875,
+    "V_onset_kV": 11.682399269961524
+   },
+   {
+    "gap_mm": 6.0,
+    "E_kV_cm": 49.759286040822786,
+    "onset_kV_cm": 47.304905494100105,
+    "margin": 0.950674924380766,
+    "V_onset_kV": 12.534177852491194
+   },
+   {
+    "gap_mm": 7.0,
+    "E_kV_cm": 47.62541070219659,
+    "onset_kV_cm": 47.304905494100105,
+    "margin": 0.9932702898857794,
+    "V_onset_kV": 13.095776642192593
+   },
+   {
+    "gap_mm": 8.0,
+    "E_kV_cm": 46.43621070024139,
+    "onset_kV_cm": 47.304905494100105,
+    "margin": 1.0187072713461995,
+    "V_onset_kV": 13.431150639632468
+   },
+   {
+    "gap_mm": 9.0,
+    "E_kV_cm": 45.72022056715462,
+    "onset_kV_cm": 47.304905494100105,
+    "margin": 1.0346604829829698,
+    "V_onset_kV": 13.641485830816727
+   },
+   {
+    "gap_mm": 11.0,
+    "E_kV_cm": 44.95440339209981,
+    "onset_kV_cm": 47.304905494100105,
+    "margin": 1.0522863596141812,
+    "V_onset_kV": 13.87387428120693
+   },
+   {
+    "gap_mm": 13.0,
+    "E_kV_cm": 44.6437719614459,
+    "onset_kV_cm": 47.304905494100105,
+    "margin": 1.0596081696446336,
+    "V_onset_kV": 13.970408718763096
+   },
+   {
+    "gap_mm": 15.0,
+    "E_kV_cm": 44.509756862288285,
+    "onset_kV_cm": 47.304905494100105,
+    "margin": 1.062798559885643,
+    "V_onset_kV": 14.012472433366392
+   },
+   {
+    "gap_mm": 20.0,
+    "E_kV_cm": 44.42003742582678,
+    "onset_kV_cm": 47.304905494100105,
+    "margin": 1.0649451967052148,
+    "V_onset_kV": 14.040774776250577
+   }
+  ],
+  "criterion": "the handled-surface onset above the peak (margin >= 1), the record's rim criterion; reported against the C1 rims, which hold the same peak",
+  "ok": true,
+  "fringe": {
+   "q_aligned_per_V": 4.091797832615355,
+   "q_crossing_per_V": 4.380578110481794,
+   "dC_pF_per_mm": 0.005113829633724048
+  }
+ },
+ "ca_strays": {
+  "Ca": {
+   "laid_out_pF": 480.5,
+   "crossings_full_faces": 15.0,
+   "fringe_pF": 1.8409786681406575,
+   "with_mounts_pF": 482.3409786681407,
+   "ratio_to_C_max": 1.071868841484757,
+   "rule": 1.1,
+   "laid_out_ratio": 1.0677777777777777
+  },
+  "tab_area": {
+   "hull_mm2": 396.0043841457489,
+   "in_bore_mm2": 390.8900000000111
+  },
+  "strays": {
+   "node_1": {
+    "the node-1 comb's three columns (posts and tabs)": 4.452471831515181,
+    "the riser, ending at Ca_05": -0.6463381058609812
+   },
+   "node_2": {
+    "the node-2 comb's three columns": 3.8588089206464904,
+    "the three steatite standoffs": 0.43810595933259894,
+    "Ca_06's tabs over the can's disc": 0.34610134741454907
+   },
+   "d_node_1_pF": 3.8061337256542,
+   "d_node_2_pF": 4.643016227393638
+  },
+  "cp_layout_pF": {
+   "1": 70.8028697617453,
+   "4": 70.8028697617453,
+   "2": 13.655771588507035,
+   "3": 13.655771588507035
+  },
+  "cp_mounts_pF": {
+   "1": 74.6090034873995,
+   "4": 74.6090034873995,
+   "2": 18.298787815900674,
+   "3": 18.298787815900674
+  },
+  "deck_strays_pF": {
+   "r2": 1.4728739709124814,
+   "l2": 1.4728739709124814,
+   "xa": 1.1422348933662687,
+   "xb": 1.1422348933662687,
+   "l1": 3.307765722754778,
+   "r1": 3.307765722754778
+  }
+ },
+ "circuit": {
+  "layout, free": {
+   "z": 1.0163615580117713,
+   "V_A_kV": null,
+   "V_B_kV": null,
+   "settled": null,
+   "E_null_kV_cm": null,
+   "n_cyc": 40,
+   "run_s": 3.5
+  },
+  "mounts, free": {
+   "z": 1.0158863815472394,
+   "V_A_kV": null,
+   "V_B_kV": null,
+   "settled": null,
+   "E_null_kV_cm": null,
+   "n_cyc": 40,
+   "run_s": 3.5
+  },
+  "layout, clamped": {
+   "z": 1.0029877621677903,
+   "V_A_kV": -16.247581103137502,
+   "V_B_kV": 16.24762701745,
+   "settled": true,
+   "E_null_kV_cm": 8.272533139003665,
+   "n_cyc": 537,
+   "run_s": 42.9
+  },
+  "mounts, clamped": {
+   "z": 1.0030610665482171,
+   "V_A_kV": -16.238881653900002,
+   "V_B_kV": 16.238873897825002,
+   "settled": true,
+   "E_null_kV_cm": 8.268090116089642,
+   "n_cyc": 537,
+   "run_s": 43.1
+  },
+  "gate": {
+   "z_free": 1.0163615580117713,
+   "z_free_layout": 1.0163615580117713,
+   "rings": 16.24762701745,
+   "rings_layout": 16.24762701745,
+   "ok": true
+  },
+  "dz_free": -0.000475176464531879,
+  "d_rings_kV": -0.008753119624998362,
+  "ca_scale": 1.0038313812032065
+ },
+ "shafts": {
+  "layout": {
+   "rows": [
+    {
+     "d_mm": 25.0,
+     "k_b_N_per_m": 200000000.0,
+     "f_Hz": [
+      86.10035121202768,
+      162.40607818955093,
+      202.64076047539754
+     ],
+     "f1_Hz": 86.10035121202768,
+     "gap_change_um": [
+      1.617330646767258,
+      1.6170347419646562
+     ],
+     "defl_shaft_max_um": 38.917498236327155,
+     "bearing_loads_1g_N": {
+      "30": -365.145221654333,
+      "218": 199.02765814951837,
+      "796": 199.04224934092758,
+      "984": -365.15418892812323,
+      "10 (end)": 338.57375945872127,
+      "1004 (end)": 338.5786830296354
+     },
+     "m_rotor_kg": 35.08820187842508,
+     "m_counter_rotor_kg": 33.932300564849065,
+     "ok": true
+    },
+    {
+     "d_mm": 25.0,
+     "k_b_N_per_m": 86000000.0,
+     "f_Hz": [
+      82.23198648274126,
+      141.53900136436383,
+      191.17864666277617
+     ],
+     "f1_Hz": 82.23198648274126,
+     "gap_change_um": [
+      1.1313770311628113,
+      1.1311202810095171
+     ],
+     "defl_shaft_max_um": 47.400484315950116,
+     "bearing_loads_1g_N": {
+      "30": -363.89404060280316,
+      "218": 197.67929946252835,
+      "796": 197.69374283139587,
+      "984": -363.90304706586534,
+      "10 (end)": 338.57376040893877,
+      "1004 (end)": 338.5787971269722
+     },
+     "m_rotor_kg": 35.08820187842508,
+     "m_counter_rotor_kg": 33.932300564849065,
+     "ok": true
+    },
+    {
+     "d_mm": 30.0,
+     "k_b_N_per_m": 200000000.0,
+     "f_Hz": [
+      103.70445989952769,
+      188.37865157810413,
+      273.85698179689933
+     ],
+     "f1_Hz": 103.70445989952769,
+     "gap_change_um": [
+      0.3876295755906398,
+      0.3874923410979005
+     ],
+     "defl_shaft_max_um": 30.820135002148884,
+     "bearing_loads_1g_N": {
+      "30": -374.01378720876824,
+      "218": 207.65030486342275,
+      "796": 207.66507991487313,
+      "984": -374.0228988654764,
+      "10 (end)": 345.82229078144314,
+      "1004 (end)": 345.82726761422526
+     },
+     "m_rotor_kg": 36.56326798657887,
+     "m_counter_rotor_kg": 33.932300564849065,
+     "ok": true
+    },
+    {
+     "d_mm": 30.0,
+     "k_b_N_per_m": 86000000.0,
+     "f_Hz": [
+      95.1455604935271,
+      164.35504386926945,
+      213.18498551050752
+     ],
+     "f1_Hz": 95.1455604935271,
+     "gap_change_um": [
+      -0.11332445972424623,
+      -0.11343492007843958
+     ],
+     "defl_shaft_max_um": 39.85051801438023,
+     "bearing_loads_1g_N": {
+      "30": -371.6686931568528,
+      "218": 205.20498635054486,
+      "796": 205.2193418551494,
+      "984": -371.67757698837806,
+      "10 (end)": 345.82245494631326,
+      "1004 (end)": 345.8273503965025
+     },
+     "m_rotor_kg": 36.56326798657887,
+     "m_counter_rotor_kg": 33.932300564849065,
+     "ok": true
+    }
+   ],
+   "m_rotor_kg": 35.08820187842508,
+   "m_counter_rotor_kg": 33.932300564849065,
+   "n_solids": 386
+  },
+  "mounts": {
+   "rows": [
+    {
+     "d_mm": 25.0,
+     "k_b_N_per_m": 200000000.0,
+     "f_Hz": [
+      85.09348731472582,
+      158.72077233687617,
+      200.14622192025345
+     ],
+     "f1_Hz": 85.09348731472582,
+     "gap_change_um": [
+      1.615147138015865,
+      1.6149275917275145
+     ],
+     "defl_shaft_max_um": 40.53567285908244,
+     "bearing_loads_1g_N": {
+      "30": -384.11666666222936,
+      "218": 205.88723359695723,
+      "796": 205.90343541147968,
+      "984": -384.1398378233811,
+      "10 (end)": 354.5723150267491,
+      "1004 (end)": 354.58997243579967
+     },
+     "m_rotor_kg": 35.880696289034006,
+     "m_counter_rotor_kg": 36.40278624427481,
+     "ok": true
+    },
+    {
+     "d_mm": 25.0,
+     "k_b_N_per_m": 86000000.0,
+     "f_Hz": [
+      81.14570233925816,
+      138.5212210137024,
+      189.32815101242346
+     ],
+     "f1_Hz": 81.14570233925816,
+     "gap_change_um": [
+      1.0918895204150605,
+      1.0916833302459517
+     ],
+     "defl_shaft_max_um": 49.4106221203281,
+     "bearing_loads_1g_N": {
+      "30": -382.8096625049121,
+      "218": 204.47548105797955,
+      "796": 204.49154990024178,
+      "984": -382.83280979849746,
+      "10 (end)": 354.57245405270453,
+      "1004 (end)": 354.5900933439107
+     },
+     "m_rotor_kg": 35.880696289034006,
+     "m_counter_rotor_kg": 36.40278624427481,
+     "ok": true
+    },
+    {
+     "d_mm": 30.0,
+     "k_b_N_per_m": 200000000.0,
+     "f_Hz": [
+      102.3797906062069,
+      183.5480176532416,
+      269.57690105975945
+     ],
+     "f1_Hz": 102.3797906062069,
+     "gap_change_um": [
+      0.3671665791557064,
+      0.36705024697446503
+     ],
+     "defl_shaft_max_um": 32.130323413651915,
+     "bearing_loads_1g_N": {
+      "30": -392.9566251320031,
+      "218": 214.47761794718392,
+      "796": 214.49394080997595,
+      "984": -392.9798857243858,
+      "10 (end)": 361.82086734817784,
+      "1004 (end)": 361.8385318616658
+     },
+     "m_rotor_kg": 37.355762397187796,
+     "m_counter_rotor_kg": 36.40278624427481,
+     "ok": true
+    },
+    {
+     "d_mm": 30.0,
+     "k_b_N_per_m": 86000000.0,
+     "f_Hz": [
+      93.69240027746183,
+      160.86373270274868,
+      210.10481600611843
+     ],
+     "f1_Hz": 93.69240027746183,
+     "gap_change_um": [
+      -0.17176989116789165,
+      -0.17189917905942842
+     ],
+     "defl_shaft_max_um": 41.56548902374764,
+     "bearing_loads_1g_N": {
+      "30": -390.5092420270599,
+      "218": 211.922522051607,
+      "796": 211.93806543519474,
+      "984": -390.5320787141917,
+      "10 (end)": 361.8209742750964,
+      "1004 (end)": 361.8386091342733
+     },
+     "m_rotor_kg": 37.355762397187796,
+     "m_counter_rotor_kg": 36.40278624427481,
+     "ok": true
+    }
+   ],
+   "m_rotor_kg": 35.880696289034006,
+   "m_counter_rotor_kg": 36.40278624427481,
+   "n_solids": 552
+  },
+  "new_parts": [
+   {
+    "body": "rotor",
+    "material": "Al spacer EN AW-6082, \u00d88 x 15, M4 female",
+    "n": 24,
+    "kg": 0.04885804894862846
+   },
+   {
+    "body": "rotor",
+    "material": "Al spacer EN AW-6082, \u00d88 x 6, M4 female",
+    "n": 6,
+    "kg": 0.004885804894862847
+   },
+   {
+    "body": "rotor",
+    "material": "G10 dowel \u00d85, through the rotor vanes and their spacers",
+    "n": 6,
+    "kg": 0.020107334103674254
+   },
+   {
+    "body": "rotor",
+    "material": "G10 spacer ring between the rotor vanes, bonded",
+    "n": 10,
+    "kg": 0.5099982974021332
+   },
+   {
+    "body": "rotor",
+    "material": "glazed steatite C 221 standoff, M4 inserts",
+    "n": 6,
+    "kg": 0.10133521263419236
+   },
+   {
+    "body": "rotor",
+    "material": "silicone potting: a boot over the lug's joint",
+    "n": 4,
+    "kg": 0.009364459381820458
+   },
+   {
+    "body": "stator",
+    "material": "G10 end ring in the cage's bore, under the first stator vane",
+    "n": 2,
+    "kg": 0.634620958280143
+   },
+   {
+    "body": "stator",
+    "material": "G10 spacer tube \u00d816 / 8.5 x 12 on a tie rod",
+    "n": 12,
+    "kg": 0.03844602549646847
+   },
+   {
+    "body": "stator",
+    "material": "G10 spacer tube \u00d816 / 8.5 x 15 on a tie rod",
+    "n": 60,
+    "kg": 0.24028765935292795
+   },
+   {
+    "body": "stator",
+    "material": "G10-class glass-epoxy nut M8",
+    "n": 24,
+    "kg": 0.02773238519172367
+   },
+   {
+    "body": "stator",
+    "material": "G10-class glass-epoxy threaded rod M8",
+    "n": 12,
+    "kg": 0.151761544635493
+   }
+  ],
+  "changed_parts": {
+   "A_C1_r01": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.2382896916175096
+   },
+   "A_C1_r03": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23905666554152716
+   },
+   "A_C1_r05": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23905666554152716
+   },
+   "A_C1_r07": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23905666554152716
+   },
+   "A_C1_r09": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23905666554152716
+   },
+   "A_C1_r11": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23905666554152716
+   },
+   "A_C1_s02": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "A_C1_s04": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "A_C1_s06": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "A_C1_s08": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "A_C1_s10": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "A_C1_s12": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "A_Ca_01": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5180527106068793
+   },
+   "A_Ca_02": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5176722114841167
+   },
+   "A_Ca_03": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5180527106068793
+   },
+   "A_Ca_04": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5180527106068793
+   },
+   "A_Ca_05": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5177990445250373
+   },
+   "A_Ca_06": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.517797052632207
+   },
+   "A_can_disc": {
+    "kg_layout": 0.036435720357436384,
+    "kg_mounts": 0.03617807048993384
+   },
+   "A_riser": {
+    "kg_layout": 0.004332256815301443,
+    "kg_mounts": 0.0033939023596442092
+   },
+   "A_spider_Ca-reluctance": {
+    "kg_layout": 1.188798766311361,
+    "kg_mounts": 1.5036493391337622
+   },
+   "B_C2_r01": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23828969161750954
+   },
+   "B_C2_r03": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23905666554152716
+   },
+   "B_C2_r05": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23905666554152716
+   },
+   "B_C2_r07": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23905666554152716
+   },
+   "B_C2_r09": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23905666554152716
+   },
+   "B_C2_r11": {
+    "kg_layout": 0.23953379492579108,
+    "kg_mounts": 0.23905666554152716
+   },
+   "B_C2_s02": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "B_C2_s04": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "B_C2_s06": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "B_C2_s08": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "B_C2_s10": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "B_C2_s12": {
+    "kg_layout": 0.281883799073059,
+    "kg_mounts": 0.2978712097728525
+   },
+   "B_Cb_01": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5180527106068793
+   },
+   "B_Cb_02": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5176722114841161
+   },
+   "B_Cb_03": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5180527106068793
+   },
+   "B_Cb_04": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5180527106068793
+   },
+   "B_Cb_05": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5177990445250372
+   },
+   "B_Cb_06": {
+    "kg_layout": 0.5089380098815467,
+    "kg_mounts": 0.5177970526322072
+   },
+   "B_can_disc": {
+    "kg_layout": 0.036435720357436384,
+    "kg_mounts": 0.03617807048993384
+   },
+   "B_riser": {
+    "kg_layout": 0.004332256854885651,
+    "kg_mounts": 0.003393902402905556
+   },
+   "B_spider_Ca-reluctance": {
+    "kg_layout": 1.188798766311361,
+    "kg_mounts": 1.5036493391337622
+   },
+   "stator_cage": {
+    "kg_layout": 4.559913665898296,
+    "kg_mounts": 5.116000698324942
+   }
+  },
+  "gone_parts": [],
+  "d_rotor_kg": 0.7924944106089242,
+  "d_counter_rotor_kg": 2.4704856794257424,
+  "criterion_f1_Hz": 60.0,
+  "ok": true
+ },
+ "gates": {
+  "G1_rules": true,
+  "G2_fields": true,
+  "G3_Ca": true,
+  "G4_circuit_gate": true,
+  "G4_pumps": true,
+  "G5_shafts": true
+ },
+ "figure": "docs/figures/doubler-caps.png",
+ "run_s": 1
+}
