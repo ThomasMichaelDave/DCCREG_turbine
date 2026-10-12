@@ -41,6 +41,28 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The AH-drive parts placed on the rotor and the drive re-cut onto the layout (2026-10-12)
+The designer asked: "I want the AH parts locations proposed and positioned in an updated model and the bevel reverse
+too."
+
+- **`sim/rotor_parts_drive.py`** (new; its results, findings and `docs/figures/rotor-parts-drive.png`), PROPOSED:
+  - La / Lb, D1*–D4*, the eight snubbers, the two AH bypass capacitors and the K4 kick, in the reluctance bays' three
+    free wedges between the utrons, on G10 cradles between the carrier discs;
+  - brass ballast in two wedges a side, solved so each side balances alone with no couple (+9.74 kg on the rotor);
+  - two LV leads across the hub (b to bay A, d to bay B), in grooves in the flanges and along the coupler at r 39;
+  - the drive moved up 30.5 mm onto the bridge-ring bearing A: the counter-rotor's hub and end disc and the frame end
+    bearing A drop out, and the case floor's locating bearing becomes the frame bearing;
+  - the checks: no clash; every turning pair keeps 1.0 mm or more; the shafts' modes with the parts.
+- **`sim/tube_geometry.py`:** `LayoutMachine(pump_parts=True, drive=True)` and `--layout --full` build the full model:
+  `docs/geometry/tube/…-hub50-layout-full.{step,glb,parts.json}`, its section and
+  `sim/tube_geometry_layout_full_results.json` (663 solids, no clash, no sweep hit, the STEP read back). With the
+  options off, the layout and its STEP are unchanged.
+- **Found:** the bays' mode f2 falls to 108–117 Hz, near the pumps' 120 Hz (the ledger's §6 item 77, OPEN).
+- **Why:** the parts' places were OPEN (§6 item 75), and the drive stood on the record's stack-up (item 71).
+- **Records:** the ledger §3.9, §5.2, §6 items 71, 75 and 77, §7's notes and §8; `README.md`; the review guide.
+- **Not yet done:** the drawing set's sheets that this changes (the DRV sheets, SHF-305, BRG-811, P-001), the bundle's
+  sheets and the viewer still show the layout without these parts.
+
 ### A guide for review and for the scrutiny bench (2026-10-12)
 The designer asked which document to use to discuss the current proposal with a partner, and where the simulations,
 scripts, drawings and documents are, for a scrutiny test bench of the electrical and mechanical understanding.

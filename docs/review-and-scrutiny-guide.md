@@ -77,7 +77,7 @@ to regenerate them in.
 | `docs/` (top level) | the design documents (`rings-design.md`, `bench-test-rings.md`, `drive-gear-belt.md`), the schematics (`schematic-*.svg` / `.png`) and the generators (`make_*.py`) |
 | `docs/drawings/` | the manufacturing drawings of record (`DCCREG-UTR-101.pdf`, `DCCREG-HUB-201.pdf`, with the utron's STEP and DXF); the drawing set in `set/` and its order in `set-index.json` |
 | `docs/figures/` | the studies' figures (the layout, the bearings, the strays, the utrons in 3-D, the bench predictions, the drive's concept) |
-| `docs/geometry/tube/` | the machine in solids: the record (`…-hub50.step`, `.glb`, `.parts.json`), the redesign's layout (`…-hub50-layout.step`, `.glb`, `.parts.json`) and their sections and stills |
+| `docs/geometry/tube/` | the machine in solids: the record (`…-hub50.step`, `.glb`, `.parts.json`), the redesign's layout (`…-hub50-layout.step`, `.glb`, `.parts.json`), the full model with the AH-drive parts and the drive (`…-hub50-layout-full.step`, `.glb`, `.parts.json`) and their sections and stills |
 | `tools/step-viewer/` | the 3-D viewer: `layout.html` (the circuit running on the layout), `viewer.html`, and the scripts that feed them (`make_layout_data.py`, `shoot.py`) |
 | `presets/` | `hub-locked.json`, the hub's specification of record and the redesign's status |
 | `docs/cost/` | the cost sheet (placeholders) and its README |
@@ -96,7 +96,7 @@ The scripts are in `sim/`, each with its `_results.json` beside it.
 | **the electrostatic pump** | `air_stack_sizing.py`, `vane_matrix.py`, `core_field.py` (the deck), `tube_strays.py` | `air-stack-sizing-findings.md`, `vane-matrix-findings.md`, `core-field-findings.md`, `tube-strays-findings.md` |
 | the hub and its rings | `hub_rings_build.py`, `hub_drift.py`, `hub_revolution.py`, `hub_beads_settled.py`, `hub_thermal.py`, `hub_joints.py` | `hub-rings-build-findings.md`, `hub-beads-settled-findings.md`, `hub-thermal-findings.md`, `hub-joints-findings.md`; the bench plan `docs/bench-test-rings.md` |
 | **the redesign (the proposal)** | `integrated_multiplier.py`, `multiplier_layout.py`, `multiplier_waveforms.py`, `bridge_ring_bearings.py`, `doubler_caps.py` | `integrated-multiplier-findings.md`, `multiplier-layout-findings.md`, `multiplier-layout-3d-findings.md`, `multiplier-waveforms-findings.md`, `bridge-ring-bearings-findings.md`, `doubler-caps-findings.md` |
-| **the mechanics** | `rotor_mechanics.py`, `shaft_bearings.py`, `drive_sizing.py`, `unmodelled_parts.py` | `rotor-mechanics-findings.md`, `tube-shaft-findings.md`, `docs/drive-gear-belt.md`, `unmodelled-parts-findings.md` |
+| **the mechanics** | `rotor_mechanics.py`, `shaft_bearings.py`, `drive_sizing.py`, `unmodelled_parts.py`, `rotor_parts_drive.py` | `rotor-mechanics-findings.md`, `tube-shaft-findings.md`, `docs/drive-gear-belt.md`, `unmodelled-parts-findings.md`, `rotor-parts-drive-findings.md` |
 | the machine in solids | `tube_geometry.py` (`--record`, `--layout`), `step_to_glb.py` | `multiplier-layout-3d-findings.md` |
 
 ### 2.4 The schematics and drawings, with their generators
@@ -145,7 +145,8 @@ file that holds it. They are candidates; which of them the bench takes up is the
 | the bearings' preload | the record's 100 N, under SKF's 125–250 N rule for spring preloads at d 25 | the ledger §3.9, §5.2 | the designer's to set |
 | windage and bearing losses | about 12 W and 5 W | `sim/rotor-mechanics-findings.md` | the belt's power; a spin-down test measures both |
 | the drive | 0.48 / 0.52 N·m on the bodies, 1.00 N·m into the frame; the run-up 32 s; as drawn, the pinions' inner bearing takes 40 N steady and 195 N at the driver's limit | `docs/drive-gear-belt.md`; `sim/unmodelled-parts-findings.md` §2 | the five changes the drawings made to the drive's first cut (the ledger §6 item 74) |
-| the balance | G2.5 per body, after potting | `sim/rotor-mechanics-findings.md` §6 | the potted decks and the chokes move it |
+| the balance | G2.5 per body, after potting; the AH-drive parts placed so each side balances, with 3.27 kg of ballast a side | `sim/rotor-mechanics-findings.md` §6; `sim/rotor-parts-drive-findings.md` §2 | the potted decks and the chokes move it |
+| the bays' mode with the parts | f2 108–117 Hz, against the pumps' 120 Hz | `sim/rotor-parts-drive-findings.md`; the ledger §6 item 77 | a tap test on the rotor with the parts mounted |
 
 ### 3.3 To build the bench from
 - the drawings: the drawing set (`docs/drawings/set/`) and the rings' drawing (`docs/drawings/DCCREG-HUB-201.pdf`);

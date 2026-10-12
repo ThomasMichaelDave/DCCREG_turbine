@@ -16,6 +16,7 @@ fields come from charge pumps driven by the relative rotation of the machine's t
 | a guide for a reviewer and for the scrutiny bench: what to share, where every study, script, drawing and document lives, and what the models leave to measurement | `docs/review-and-scrutiny-guide.md` |
 | every technical drawing, one A3 sheet each, behind a register | `docs/ledger/DCCREG-drawings-bundle.pdf` (register: `docs/ledger/register.py`) |
 | the drawing set (PROPOSED, Rev A drafts): a drawing with a small 3-D view for every part, a source-control sheet for every bought part, the sub-assemblies and the general arrangement, of the layout and of the first cuts' parts outside it (the chokes, the kick, the drive) | `docs/drawings/set/` (its order: `docs/drawings/set-index.json`; generator `docs/make_drawing_set.py`; the first cuts in solids: `sim/unmodelled_parts.py`, `sim/unmodelled-parts-findings.md`); the bundle's Part D |
+| the whole machine in one 3-D model (PROPOSED): the layout with the magnetic pump's AH-drive parts in the reluctance bays and the drive at side A | `docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout-full.step` (`.glb`, `.parts.json`, `-section.png`); `sim/rotor_parts_drive.py`, `sim/rotor-parts-drive-findings.md` |
 | the hub's specification of record | `presets/hub-locked.json` |
 | the rings: design, manufacturing drawing, bench test | `docs/rings-design.md`, `docs/drawings/DCCREG-HUB-201.pdf`, `docs/bench-test-rings.md` |
 | the utron's manufacturing drawing | `docs/drawings/DCCREG-UTR-101.pdf` |

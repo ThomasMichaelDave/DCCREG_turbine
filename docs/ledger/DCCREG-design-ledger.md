@@ -853,7 +853,7 @@ viewer's "Ring bearing A"):
   - the top one floats on the record's 100 N preload (SKF's rule for spring preloads gives 125–250 N at d 25);
   - the pair adds 2.1 W of friction (6.1 W at the record's high end) and 0.06 W of windage.
 - **the drive's first cut** makes its gear-end bearing this pair's bottom one. But it seats it under an end disc on
-  the ring's face, on the record's 940 mm stack-up; to be re-cut on the layout (§6, item 71).
+  the ring's face, on the record's 940 mm stack-up. Re-cut on the layout 10-12 (PROPOSED; below, and §6, item 71).
 
 **The capacitors' mounts** (2026-10-11, PROPOSED; `sim/doubler-caps-findings.md`, `docs/figures/doubler-caps.png`; the
 drawing set's CAP-600 to CAP-617). The record leaves them undrawn; with the layout, Ca / Cb hold 13.2 kV DC.
@@ -896,7 +896,7 @@ drawing set's CAP-600 to CAP-617). The record leaves them undrawn; with the layo
   - 24 from the first cuts' parts outside the layout, put in solids by `sim/unmodelled_parts.py`
     (`sim/unmodelled-parts-findings.md`): the chokes La / Lb and the start kick K4 (REL-720 to REL-730), the 1 : −1
     bevel reverser and the belt drive (DRV-100 to DRV-190), and their bought parts (P-012 to P-019). Their places on
-    the rotor are OPEN.
+    the rotor were OPEN when drawn; they are PROPOSED since 10-12 (below).
 - **How they are drawn:** the views are hidden-line projections and exact sections of each part's own solid; the
   diameters, lengths and hole patterns are read off its faces, the masses and quantities counted from the model. The
   gears are drawn as blanks, as a gear drawing does; their 3-D views and the reverser's sections carry the teeth
@@ -909,8 +909,37 @@ drawing set's CAP-600 to CAP-617). The record leaves them undrawn; with the layo
   - the shaft is drawn at Ø25, as the model has it, against d 30 in `presets/hub-locked.json` (OPEN, §5.2);
   - the capacitor candidates (P-003, P-004) are taller than the layout's envelopes and over the deck's zone when
     standing (§6, item 72);
-  - the drive stands on the record's 940 mm stack-up and is to be re-cut on the layout (§6, item 71); drawn part by
-    part, its first cut needs five changes, drawn as PROPOSED (§6, item 74).
+  - the drive stands on the record's 940 mm stack-up (re-cut on the layout 10-12, below, and not yet redrawn); drawn
+    part by part, its first cut needs five changes, drawn as PROPOSED (§6, item 74).
+
+**The AH-drive parts on the rotor and the drive at side A** (2026-10-12, PROPOSED; `sim/rotor-parts-drive-findings.md`,
+`docs/figures/rotor-parts-drive.png`). The designer asked for the AH parts' places in an updated model, and the bevel
+reverser too.
+- **The places** [IR]: the reluctance bays' three free wedges between the utrons (60, 180, 300°), each a G10 cradle
+  between the bay's carrier discs: two end plates on the discs, a backplate at r 110–116 that takes the parts'
+  centrifugal load.
+  - Side A: S1 La; S2 D1*, D3*, the snubbers at a, d, x1, f2 and bypass A; S3 the K4 kick.
+  - Side B turned over: S1 Lb; S2 D2*, D4*, the snubbers at b, c, x2, f3 and bypass B; S3 ballast only.
+  - Brass ballast in S2 and S3 gives every wedge the choke wedge's m·r and m·r·z, so each side balances alone and the
+    rotor has no couple [OC].
+- **Two LV leads cross the hub** [IR]: b to bay A and d to bay B, in grooves in both flanges' faces and along the
+  coupler at r 39 in the can, far from the rings' leads. A coax estimate [RH] puts 1.34 kV/mm on their insulation,
+  against Peek's 5.55; their field solve is OPEN.
+- **The drive, re-cut** [IR]:
+  - the first cut moves up 30.5 mm, so that the bridge-ring bearing A takes its gear-end bearing; the counter-rotor's
+    hub and end disc drop out, and its side gear bolts under that bearing's cartridge;
+  - the case is cut under the spider (3.5 mm clear);
+  - the frame end bearing A goes: the locating bearing in the case floor is the frame bearing (z −56);
+  - the shaft runs on to z −102.5; the sleeve starts on the collar.
+- **In solids** (`sim/tube_geometry.py --layout --full`): 663 solids, the 113 new ones among them; no clash (1939
+  pairs), no sweep hit, the STEP reads back
+  (`docs/geometry/tube/tube-r150-n6-air6-wound-g0p5-6br-hub50-layout-full.step`). Every part that turns against
+  another keeps 1.0 mm or more (168 pairs).
+- **What it costs** [OC]:
+  - +9.74 kg on the rotor (4.88 kg a side, 3.27 kg of it ballast), +29 %;
+  - the shafts' f1 holds at 79–84 Hz, but f2 (the bays' mode) falls from 136–156 to 108–117 Hz, 3–10 % under the
+    pumps' 120 Hz (§6, item 77);
+  - the frame bearings are 1060 mm apart, the machine z −105.5 to 1014.
 
 ## 4. Fact sheet: the numbers of record, with their sources
 
@@ -1067,14 +1096,22 @@ drawing set's CAP-600 to CAP-617). The record leaves them undrawn; with the layo
   - the steatite standoffs are a custom part (no catalogue part at Ø16 × 30 with M4 threads was found); PTFE is the
     alternate;
 - **the drawing set** (§7, Part D, Rev A drafts): to be checked and approved before release. The shaft on it follows
-  the decision below. The first cuts' parts are drawn so they can be judged; their places on the rotor stay OPEN;
+  the decision below. The first cuts' parts are drawn so they can be judged; their places on the rotor are proposed
+  (below), and the sheets that the places and the drive's re-cut change are not yet redrawn;
+- **the AH-drive parts' places and the drive's re-cut** (§3.9, `sim/rotor-parts-drive-findings.md`, PROPOSED): accept
+  them or set them otherwise. Their consequences:
+  - +9.74 kg on the rotor, 3.27 kg of it ballast a side, to balance one choke; the compact choke (EI-66, 1.19 kg)
+    would cut it about a third;
+  - the bays' mode f2 at 108–117 Hz, near the pumps' 120 Hz (§6, item 77);
+  - OPEN with them: the cross leads' field solve; the chokes' coupling to the utrons; the carrier discs' new duty;
+    the bypass behind the bore's leads; where K4's reed magnet goes;
 - **the shaft and its bearings** (§3.1): six bearings with d 40 (65 Hz, the runout at 0.027 mm), or an eighth pair
   between the shaft and each bridge ring's outer end at d 25 (131–165 Hz, the runout at 0.05 mm; the layout +10–20 mm
   a side; stiff seats to keep it clear of 120 Hz). The redesign's layout removes the hub-face bearings and leaves
   only the second way (83–89 Hz; placed and named in §3.9);
 - **the drive's first cut** (§3.1, `docs/drive-gear-belt.md`; drawn on DRV-100 to DRV-190): accept it, or set the
-  gear and belt otherwise. Drawn part by part, it needs five changes (§6, item 74), and it is still to be re-cut on the
-  layout (§6, item 71);
+  gear and belt otherwise. Drawn part by part, it needs five changes (§6, item 74), and it is re-cut on the layout
+  since 10-12 (§6, item 71, PROPOSED);
 - **the bypass and the split**, both PROPOSED;
 - **the hub's first cuts** (§3.5): the grooves' full-round tops, the AH ends rounded to 1.5 mm (which also gives the
   polar beads 2.3–2.4 % of margin), the coupler as a tube with the flanges turned to Ø60, the leads' path;
@@ -1279,7 +1316,7 @@ and the corrected one stands beside it, dated, until the designer decides.
 | # | what | resolution |
 |:--|:--|:--|
 | 70 | the two-body model's rotor mass, 33.4 kg at d 25 (§4; `sim/tube-shaft-findings.md` §0) and 36.8 kg for the layout (`sim/multiplier-layout-findings.md` §7), counted the shaft halves twice: once as solids, once as the beam's steel | **corrected:** 30.4 and 33.8 kg. The model counted the shaft once, so its modes, deflections and loads stand (to 3e-8); `sim/shaft_bearings.py` fixed, `--record` and the layout study's shafts re-run, only the masses changed |
-| 71 | the drive's first cut seats its gear-end bearing (the bottom bridge-ring bearing) in a hub under a 10 mm G10 end disc on bridge ring A's face, 3 mm from the utrons' end turns, on the record's 940 mm stack-up (`docs/drive-gear-belt.md` §5, §8) | **open:** the layout's seat (an 8 mm spider centred in its slot, 9 mm clear, a 6 mm ring to the face) is PROPOSED; the drive's stack-up is to be re-cut on the layout, with its frame bearing in the gear case |
+| 71 | the drive's first cut seats its gear-end bearing (the bottom bridge-ring bearing) in a hub under a 10 mm G10 end disc on bridge ring A's face, 3 mm from the utrons' end turns, on the record's 940 mm stack-up (`docs/drive-gear-belt.md` §5, §8) | **proposed** (10-12, `sim/rotor-parts-drive-findings.md`): the drive moved up 30.5 mm onto the layout's seat. The bridge-ring bearing A and its cartridge take the gear-end bearing; the counter-rotor's hub and end disc drop out; its side gear bolts under the cartridge; the case is cut 3.5 mm under the spider; the frame end bearing A goes, the case floor's locating bearing taking its place; every turning pair keeps 1.0 mm or more |
 
 **Found by the capacitors' mounts and the drawing set** (`sim/doubler-caps-findings.md`, `docs/make_drawing_set.py`,
 2026-10-11)
@@ -1293,14 +1330,20 @@ and the corrected one stands beside it, dated, until the designer decides.
 
 | # | what | resolution |
 |:--|:--|:--|
-| 74 | drawn part by part, the drive's first cut does not close (`docs/drive-gear-belt.md` §5, §8): (1) the counter-rotor's hub holds the gear-end 6205-2Z over a lip below it, which cannot carry the counter-rotor's 350 N down into the outer ring; (2) the counter-rotor's side gear is "bolted under the hub", but its body (r ≤ 28.3) cannot reach the hub outside the bearing (r 26); (3) each pinion's two 6000-2Z sit 16 mm apart, which the first cut's own case cannot hold; (4) the bell continues the case wall (r 64–72) and would cut the belt's land (r 63.1–64.8); (5) the 80T pulley is "24 mm over the flanges", but the catalogue's TL80-5M-15 has none and is 25 mm through | **proposed** (drawn on DRV-100 to DRV-190): (1) the seat open below, a lip Ø44 at its top, the gear's flange closing it from below; (2) a back flange Ø80 × 3 on the gear, six M4 on PCD Ø70; (3) the bearings 12 mm apart: the inner one takes 40 N steady and 195 N at the driver's limit (the first cut's 29 / 141 N), a static safety of 10, L10 3 × 10⁷ h steady (`sim/unmodelled_parts_results.json` reverser.pinion_bearings); (4) the bell a C, Ø164 / Ø144 over 170°, open to the motor, the belt 7.2 mm clear; (5) the flanges on the 20T pulley, P20-5M-15F. The drive is still to be re-cut on the layout (item 71) |
-| 75 | the first cut's choke, 84 × 70 × 59 mm (`sim/parts_first_cut_results.json` la_lb.chosen.outline_mm), is the core and the winding's build | **noted:** with the bobbin's 1.0 mm wall and 1.5 mm flanges, 1 mm past the build [IR], La / Lb are 84 × 70 × 61 over all (`sim/unmodelled_parts_results.json` choke.data.outline_mm); their place on the rotor is OPEN |
+| 74 | drawn part by part, the drive's first cut does not close (`docs/drive-gear-belt.md` §5, §8): (1) the counter-rotor's hub holds the gear-end 6205-2Z over a lip below it, which cannot carry the counter-rotor's 350 N down into the outer ring; (2) the counter-rotor's side gear is "bolted under the hub", but its body (r ≤ 28.3) cannot reach the hub outside the bearing (r 26); (3) each pinion's two 6000-2Z sit 16 mm apart, which the first cut's own case cannot hold; (4) the bell continues the case wall (r 64–72) and would cut the belt's land (r 63.1–64.8); (5) the 80T pulley is "24 mm over the flanges", but the catalogue's TL80-5M-15 has none and is 25 mm through | **proposed** (drawn on DRV-100 to DRV-190): (1) the seat open below, a lip Ø44 at its top, the gear's flange closing it from below; (2) a back flange Ø80 × 3 on the gear, six M4 on PCD Ø70; (3) the bearings 12 mm apart: the inner one takes 40 N steady and 195 N at the driver's limit (the first cut's 29 / 141 N), a static safety of 10, L10 3 × 10⁷ h steady (`sim/unmodelled_parts_results.json` reverser.pinion_bearings); (4) the bell a C, Ø164 / Ø144 over 170°, open to the motor, the belt 7.2 mm clear; (5) the flanges on the 20T pulley, P20-5M-15F. The drive is re-cut on the layout since 10-12 (item 71, PROPOSED), not yet redrawn |
+| 75 | the first cut's choke, 84 × 70 × 59 mm (`sim/parts_first_cut_results.json` la_lb.chosen.outline_mm), is the core and the winding's build | **noted:** with the bobbin's 1.0 mm wall and 1.5 mm flanges, 1 mm past the build [IR], La / Lb are 84 × 70 × 61 over all (`sim/unmodelled_parts_results.json` choke.data.outline_mm); their place on the rotor is proposed (10-12): wedge S1 of each reluctance bay (`sim/rotor-parts-drive-findings.md`) |
 
 **Found by checking the schematics against the studies** (2026-10-11)
 
 | # | what | resolution |
 |:--|:--|:--|
 | 76 | the schematics lagged the studies: Figure 4's panel (b) said D1–D4 "parts not chosen" and drew no surge or chain-input resistors, though the parts' first cut chose them (`sim/parts-first-cut-findings.md` §2.2); Figure 7 drew neither those resistors nor the rings as built; Figure 10 predated the layout (24.5 pF strays assumed, the clamp trim open); Figure 4's notes put the rings among the parts the record's solids lack | **done:** the three redrawn by their scripts. The first cuts' parts and resistors are amber (PROPOSED), with the candidates named. Figure 10 is drawn as laid out (the clamps of 60 parts, `sim/multiplier_waveforms_results.json`), the study's values beside it. The note is corrected |
+
+**Found by placing the AH-drive parts** (2026-10-12)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 77 | with the AH-drive parts and the drive in the model, the rotor grows 38.2 → 50.4 kg as the two-body model reads the solids, and its second mode (the reluctance bays') falls from 136–156 Hz to 108–117 Hz, 3–10 % under the pumps' 120 Hz; §5.2 asks the bridge-ring bearings for stiff seats to keep the shaft clear of 120 Hz (`sim/rotor_parts_drive_results.json` shafts) | **open:** the levers are the parts' mass (the ballast exists only to balance one choke; the compact choke cuts it about a third), stiffer seats, or d 30. The utrons' pulls are three-fold symmetric, so they put no net side load on the shaft in the ideal; what an asymmetry excites there is to be checked |
 
 ## 7. Drawing register
 
@@ -1371,7 +1414,8 @@ redraw them (`docs/ledger/register.py`).
 sheets 61–161, each `docs/drawings/set/<drawing>.pdf` (`docs/make_drawing_set.py`, in the order of
 `docs/drawings/set-index.json`). Each title block carries the set's own sheet number, 1 to 103; the set's
 DCCREG-UTR-101 and DCCREG-HUB-201 are sheets 4 and 7 above. The first cuts' parts outside the layout come from
-`sim/unmodelled_parts.py` (`sim/unmodelled-parts-findings.md`); their places on the rotor are OPEN.
+`sim/unmodelled_parts.py` (`sim/unmodelled-parts-findings.md`); their places on the rotor are proposed since 10-12
+(`sim/rotor-parts-drive-findings.md`; not yet on the sheets).
 
 | sheets | drawings | what |
 |:--|:--|:--|
@@ -1408,7 +1452,8 @@ DCCREG-UTR-101 and DCCREG-HUB-201 are sheets 4 and 7 above. The first cuts' part
   - the designer's C-EM source, the two disc DXF layouts (r0.15, r0.6) and the KiCad source.
 - **Not drawn as manufacturing drawings** (every other part has its sheet in Part D):
   - the frame: the base plate, the columns, the top plate, the motor's bracket;
-  - the chokes' brackets, the electronics' boards and clamps (their places on the rotor are OPEN);
+  - the chokes' brackets, the electronics' boards and clamps (their places and cradles are proposed in
+    `sim/rotor-parts-drive-findings.md`, not yet drawn as sheets);
   - the potting moulds, the screws, studs and inserts (DCCREG-P-011 and DCCREG-DRV-190 list them).
 
 ## 8. Files, tools and how to regenerate
@@ -1429,6 +1474,8 @@ DCCREG-UTR-101 and DCCREG-HUB-201 are sheets 4 and 7 above. The first cuts' part
 - `sim/doubler_caps_results.json` (the capacitors' mounts, §3.9);
 - `sim/unmodelled_parts_results.json` (the first cuts' parts outside the layout, in solids: the chokes, the kick, the
   drive; §3.9, §6 items 74–75);
+- `sim/rotor_parts_drive_results.json` and `sim/tube_geometry_layout_full_results.json` (the AH-drive parts placed
+  and the drive re-cut, and the full model's gates; §3.9, §6 items 71, 77);
 - `docs/drawings/set-index.json` (the drawing set in its order, §7).
 
 **The findings,** one per study:
@@ -1442,6 +1489,7 @@ DCCREG-UTR-101 and DCCREG-HUB-201 are sheets 4 and 7 above. The first cuts' part
   `sim/multiplier-layout-3d-findings.md`, `sim/multiplier-waveforms-findings.md`,
   `sim/bridge-ring-bearings-findings.md` and `sim/doubler-caps-findings.md` (§3.9);
 - the drawing set's: `sim/unmodelled-parts-findings.md` (the first cuts' parts outside the layout, drawn);
+- `sim/rotor-parts-drive-findings.md` (their places on the rotor and the drive's re-cut, §3.9);
 - the design and test documents `docs/rings-design.md` and `docs/bench-test-rings.md`;
 - the cost guide `docs/cost/README.md`.
 
@@ -1457,7 +1505,9 @@ DCCREG-UTR-101 and DCCREG-HUB-201 are sheets 4 and 7 above. The first cuts' part
     layout), then `sim/tube_geometry.py --layout` and `sim/multiplier_waveforms.py` (the layout in solids, its circuit
     running), then `sim/bridge_ring_bearings.py` (its bridge-ring bearings, and `docs/figures/bridge-ring-bearings.png`)
     and `sim/doubler_caps.py --procs 4` (the capacitors' mounts, and `docs/figures/doubler-caps.png`).
-    `sim/tube_geometry.py --layout` imports both placements, so it runs again after them.
+    `sim/tube_geometry.py --layout` imports both placements, so it runs again after them. Then
+    `sim/rotor_parts_drive.py` (the AH-drive parts and the drive, and `docs/figures/rotor-parts-drive.png`) and
+    `sim/tube_geometry.py --layout --full` (the full model, its STEP; `sim/step_to_glb.py` makes its GLB).
 - **the drawings and figures:**
   - `docs/make_rings_drawing.py`;
   - `docs/make_rings_field_figure.py`;
