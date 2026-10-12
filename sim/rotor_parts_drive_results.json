@@ -1,0 +1,642 @@
+{
+ "note": "the magnetic pump's AH-drive parts placed on the rotor and the drive re-cut onto the layout's side A end (sim/rotor_parts_drive.py)",
+ "status": "PROPOSED (2026-10-12): the places and the re-cut are the designer's to decide",
+ "sources": {
+  "parts": "sim/parts_first_cut_results.json; sim/unmodelled_parts.py (the solids)",
+  "drive": "sim/drive_sizing_results.json; sim/unmodelled_parts.py reverser_sub, belt_sub",
+  "layout": "sim/tube_geometry.py LayoutMachine; sim/multiplier_layout_results.json; sim/bridge_ring_bearings.py"
+ },
+ "placements": {
+  "sectors": {
+   "S1": 60.0,
+   "S2": 180.0,
+   "S3": 300.0
+  },
+  "utrons": [
+   0.0,
+   120.0,
+   240.0
+  ],
+  "cradle": {
+   "end_plate_t": 6.0,
+   "end_plate_r": [
+    22.5,
+    122.0
+   ],
+   "band": [
+    40.0,
+    32.0
+   ],
+   "backplate": {
+    "u": [
+     110.0,
+     116.0
+    ],
+    "v": 32.0,
+    "z": [
+     67.0,
+     175.0
+    ]
+   },
+   "ballast": {
+    "v": 27.0,
+    "z": 102.0
+   },
+   "board_t": 3.0
+  },
+  "contents": {
+   "A": {
+    "S1": "La",
+    "S2": "D1*, D3*, snubbers a, d, x1, f2, bypass A",
+    "S3": "K4 kick + ballast"
+   },
+   "B": {
+    "S1": "Lb",
+    "S2": "D2*, D4*, snubbers b, c, x2, f3, bypass B",
+    "S3": "ballast"
+   }
+  },
+  "choke": {
+   "u_mm": [
+    26.0,
+    110.0
+   ],
+   "z_mm": [
+    86.0,
+    156.0
+   ],
+   "orientation": "x (84) radial, the stack tangential, the legs axial"
+  }
+ },
+ "balance": {
+  "sides": {
+   "A": {
+    "sectors": {
+     "S1": {
+      "m": 1.95462,
+      "mu": 138.04167,
+      "mv": -0.0,
+      "muz": 16707.0476,
+      "z_lever": 121.02902,
+      "r_cg_mm": 70.62,
+      "F_600rpm_N": 545.0,
+      "F_750rpm_N": 851.5
+     },
+     "S2": {
+      "m": 1.45775,
+      "mu": 138.04167,
+      "mv": -0.0,
+      "muz": 16707.04736,
+      "z_lever": 121.02902,
+      "ballast_t_mm": 23.19499,
+      "ballast_v_mm": 0.47746,
+      "ballast_zc_mm": 121.58549,
+      "ballast_kg": 1.08594,
+      "iterations": 4,
+      "r_cg_mm": 94.69,
+      "F_600rpm_N": 545.0,
+      "F_750rpm_N": 851.5
+     },
+     "S3": {
+      "m": 1.46518,
+      "mu": 138.04166,
+      "mv": -0.0,
+      "muz": 16707.04586,
+      "z_lever": 121.02902,
+      "ballast_t_mm": 21.81095,
+      "ballast_v_mm": 0.35974,
+      "ballast_zc_mm": 120.77595,
+      "ballast_kg": 1.02115,
+      "iterations": 4,
+      "r_cg_mm": 94.21,
+      "F_600rpm_N": 545.0,
+      "F_750rpm_N": 851.5
+     }
+    },
+    "mass_kg": 4.8776,
+    "residual_g_mm": 0.0131,
+    "residual_couple_g_mm2": 1.63
+   },
+   "B": {
+    "sectors": {
+     "S1": {
+      "m": 1.95462,
+      "mu": 138.04167,
+      "mv": 0.0,
+      "muz": 16707.0476,
+      "z_lever": 121.02902,
+      "r_cg_mm": 70.62,
+      "F_600rpm_N": 545.0,
+      "F_750rpm_N": 851.5
+     },
+     "S2": {
+      "m": 1.45775,
+      "mu": 138.04167,
+      "mv": 0.0,
+      "muz": 16707.04736,
+      "z_lever": 121.02902,
+      "ballast_t_mm": 23.19499,
+      "ballast_v_mm": 0.47746,
+      "ballast_zc_mm": 121.58549,
+      "ballast_kg": 1.08594,
+      "iterations": 4,
+      "r_cg_mm": 94.69,
+      "F_600rpm_N": 545.0,
+      "F_750rpm_N": 851.5
+     },
+     "S3": {
+      "m": 1.44953,
+      "mu": 138.04167,
+      "mv": 0.0,
+      "muz": 16707.0476,
+      "z_lever": 121.02902,
+      "ballast_t_mm": 24.7725,
+      "ballast_v_mm": 0.0,
+      "ballast_zc_mm": 121.03538,
+      "ballast_kg": 1.1598,
+      "iterations": 2,
+      "r_cg_mm": 95.23,
+      "F_600rpm_N": 545.0,
+      "F_750rpm_N": 851.5
+     }
+    },
+    "mass_kg": 4.8619,
+    "residual_g_mm": 0.0021,
+    "residual_couple_g_mm2": 0.23
+   }
+  },
+  "added_kg": 9.739,
+  "rotor_kg_before": 33.8,
+  "rotor_kg_after": 43.54,
+  "added_fraction": 0.288,
+  "G25_permissible_g_mm": 1732.0,
+  "note": "each wedge's m r, m v and m r z equal the choke wedge's, so each side sums to zero and the two sides leave no couple [OC]; the residual is the solver's. The as-built balance is the rotor's G2.5 at assembly (DCCREG-design-ledger.md \u00a73.6) [IR]"
+ },
+ "loads": {
+  "F_max_750rpm_N": 851.5,
+  "bolts_per_wedge": 8,
+  "M5_stress_area_mm2": 14.2,
+  "bolt_shear_MPa": 7.5,
+  "G10_bearing_MPa": 3.55,
+  "end_plate_tension_MPa": 1.77,
+  "note": "[RH] the bolts (8 per wedge, M5) and the end plates' least width (40 mm, in-plane tension); G10's shear and bearing strengths are some 100 MPa and more, so the cradle is lightly loaded; the carrier discs' extra duty is OPEN against sim/rotor-mechanics-findings.md"
+ },
+ "clash": {
+  "pairs_tested": 499,
+  "clashes": [],
+  "pass_": true
+ },
+ "turning": {
+  "pairs": 168,
+  "least": [
+   {
+    "a": "A_drv_gear_rotor",
+    "b": "A_drv_retaining_ring",
+    "bodies": "rotor | frame",
+    "least_mm": 1.0,
+    "how": "apart in z"
+   },
+   {
+    "a": "A_drv_gear_cr",
+    "b": "A_drv_spacer_A",
+    "bodies": "stator | rotor",
+    "least_mm": 1.25,
+    "how": "apart in r"
+   },
+   {
+    "a": "shaft_A",
+    "b": "A_drv_gear_cr",
+    "bodies": "rotor | stator",
+    "least_mm": 2.75,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_cartridge_bridge-ring",
+    "b": "A_drv_collar",
+    "bodies": "stator | rotor",
+    "least_mm": 2.95,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_spider_bridge-ring",
+    "b": "A_drv_case",
+    "bodies": "stator | frame",
+    "least_mm": 3.5,
+    "how": "apart in z"
+   },
+   {
+    "a": "A_drv_key",
+    "b": "A_drv_case",
+    "bodies": "rotor | frame",
+    "least_mm": 3.742,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_drv_case",
+    "b": "A_drv_spacer_B",
+    "bodies": "frame | rotor",
+    "least_mm": 3.75,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_drv_case",
+    "b": "A_drv_spacer_C",
+    "bodies": "frame | rotor",
+    "least_mm": 3.75,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_cartridge_bridge-ring",
+    "b": "A_drv_cartridge_1",
+    "bodies": "stator | frame",
+    "least_mm": 4.0,
+    "how": "apart in z"
+   },
+   {
+    "a": "A_cartridge_bridge-ring",
+    "b": "A_drv_cartridge_2",
+    "bodies": "stator | frame",
+    "least_mm": 4.0,
+    "how": "apart in z"
+   },
+   {
+    "a": "A_cartridge_bridge-ring",
+    "b": "A_drv_cartridge_3",
+    "bodies": "stator | frame",
+    "least_mm": 4.0,
+    "how": "apart in z"
+   },
+   {
+    "a": "A_drv_case",
+    "b": "A_drv_bush",
+    "bodies": "frame | rotor",
+    "least_mm": 4.6,
+    "how": "apart in z"
+   },
+   {
+    "a": "A_drv_case",
+    "b": "A_drv_pulley_80T",
+    "bodies": "frame | rotor",
+    "least_mm": 5.0,
+    "how": "apart in z"
+   },
+   {
+    "a": "A_drv_key",
+    "b": "A_drv_retaining_ring",
+    "bodies": "rotor | frame",
+    "least_mm": 5.742,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_drv_spacer_A",
+    "b": "A_drv_case",
+    "bodies": "rotor | frame",
+    "least_mm": 5.75,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_drv_spacer_B",
+    "b": "A_drv_retaining_ring",
+    "bodies": "rotor | frame",
+    "least_mm": 5.75,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_drv_gear_rotor",
+    "b": "A_drv_cartridge_1",
+    "bodies": "rotor | frame",
+    "least_mm": 6.641,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_drv_gear_rotor",
+    "b": "A_drv_cartridge_2",
+    "bodies": "rotor | frame",
+    "least_mm": 6.641,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_drv_gear_rotor",
+    "b": "A_drv_cartridge_3",
+    "bodies": "rotor | frame",
+    "least_mm": 6.641,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_drv_gear_rotor",
+    "b": "A_drv_case",
+    "bodies": "rotor | frame",
+    "least_mm": 6.708,
+    "at_deg": 0.0,
+    "how": "turned"
+   },
+   {
+    "a": "shaft_A",
+    "b": "A_drv_case",
+    "bodies": "rotor | frame",
+    "least_mm": 7.25,
+    "how": "apart in r"
+   },
+   {
+    "a": "A_drv_gear_cr",
+    "b": "A_drv_cartridge_1",
+    "bodies": "stator | frame",
+    "least_mm": 7.276,
+    "at_deg": 0.0,
+    "how": "turned"
+   },
+   {
+    "a": "A_drv_gear_cr",
+    "b": "A_drv_cartridge_2",
+    "bodies": "stator | frame",
+    "least_mm": 7.276,
+    "at_deg": 0.0,
+    "how": "turned"
+   },
+   {
+    "a": "A_drv_gear_cr",
+    "b": "A_drv_cartridge_3",
+    "bodies": "stator | frame",
+    "least_mm": 7.276,
+    "at_deg": 0.0,
+    "how": "turned"
+   },
+   {
+    "a": "A_spider_bridge-ring",
+    "b": "A_drv_cartridge_1",
+    "bodies": "stator | frame",
+    "least_mm": 7.5,
+    "how": "apart in z"
+   }
+  ],
+  "hits": [],
+  "pass_": true,
+  "note": "each pair of parts on different bodies (rotor, counter-rotor, frame) whose reach about the axis comes within 15 mm: where their r ranges or z ranges are apart, the gap (no turn brings them closer); else the one turned a full turn against the other (every 6 deg, refined to 1 deg), or once where either is a body of revolution. The gears and pulleys as their blanks. Pass: 1 mm or more [IR]"
+ },
+ "drive": {
+  "dz_mm": 30.5,
+  "dropped_first_cut": [
+   "shaft",
+   "bearing_gear_end",
+   "hub",
+   "end_disc"
+  ],
+  "dropped_layout": [
+   "A_bearing_end",
+   "A_spider_end"
+  ],
+  "case_top_mm": 22.5,
+  "shaft_A_from_mm": -102.5,
+  "sleeve_rel_A_from_mm": 47.5,
+  "z_mm": {
+   "b6000_1a": [
+    -18.5,
+    7.5
+   ],
+   "b6000_1b": [
+    -18.5,
+    7.5
+   ],
+   "b6000_2a": [
+    -18.5,
+    7.5
+   ],
+   "b6000_2b": [
+    -18.5,
+    7.5
+   ],
+   "b6000_3a": [
+    -18.5,
+    7.5
+   ],
+   "b6000_3b": [
+    -18.5,
+    7.5
+   ],
+   "bearing_locating": [
+    -63.5,
+    -48.5
+   ],
+   "bell": [
+    -105.5,
+    -65.5
+   ],
+   "belt": [
+    -90.5,
+    -75.5
+   ],
+   "bush": [
+    -95.5,
+    -70.1
+   ],
+   "cartridge_1": [
+    -29.5,
+    18.5
+   ],
+   "cartridge_2": [
+    -29.5,
+    18.5
+   ],
+   "cartridge_3": [
+    -29.5,
+    18.5
+   ],
+   "case": [
+    -65.5,
+    22.5
+   ],
+   "collar": [
+    37.5,
+    47.5
+   ],
+   "gear_cr": [
+    6.73,
+    22.5
+   ],
+   "gear_rotor": [
+    -45.5,
+    -17.73
+   ],
+   "key": [
+    -45.5,
+    -33.5
+   ],
+   "motor": [
+    -86.5,
+    53.5
+   ],
+   "motor_plate": [
+    -66.5,
+    -56.5
+   ],
+   "nut": [
+    -102.5,
+    -95.5
+   ],
+   "pinion_1": [
+    -27.16,
+    16.16
+   ],
+   "pinion_2": [
+    -27.16,
+    16.16
+   ],
+   "pinion_3": [
+    -27.16,
+    16.16
+   ],
+   "pulley_20T": [
+    -93.25,
+    -67.25
+   ],
+   "pulley_80T": [
+    -95.5,
+    -70.5
+   ],
+   "retaining_ring": [
+    -48.5,
+    -46.5
+   ],
+   "spacer_1": [
+    -12.5,
+    1.5
+   ],
+   "spacer_2": [
+    -12.5,
+    1.5
+   ],
+   "spacer_3": [
+    -12.5,
+    1.5
+   ],
+   "spacer_A": [
+    -20.51,
+    22.5
+   ],
+   "spacer_B": [
+    -48.5,
+    -45.5
+   ],
+   "spacer_C": [
+    -70.1,
+    -63.5
+   ],
+   "stub_1": [
+    -10.5,
+    -0.5
+   ],
+   "stub_2": [
+    -10.5,
+    -0.5
+   ],
+   "stub_3": [
+    -10.5,
+    -0.5
+   ]
+  },
+  "bridge_ring_bearing_A_mm": [
+   22.5,
+   37.5
+  ],
+  "frame_bearings_mm": [
+   -56.0,
+   1004.0
+  ],
+  "machine_z_mm": [
+   -105.5,
+   1014.0
+  ],
+  "frame_bearing_span_mm": 1060.0,
+  "frame_bearing_span_before_mm": 994.0
+ },
+ "cross_leads": {
+  "paths": {
+   "lv_cross_b": {
+    "theta_deg": -10.0,
+    "z_mm": [
+     433.5,
+     580.5
+    ],
+    "what": "b, AH_B's finish, to bay A (D1*, D4*)"
+   },
+   "lv_cross_d": {
+    "theta_deg": -30.0,
+    "z_mm": [
+     433.5,
+     580.5
+    ],
+    "what": "d, AH_A's finish, to bay B (D2*)"
+   }
+  },
+  "r_mm": 39.0,
+  "wire_r_mm": 1.25,
+  "V_ring_kV": 14.93,
+  "E_coax_at_r39_kV_mm": 0.628,
+  "V_local_kV": 4.04,
+  "E_surface_kV_mm": 1.34,
+  "Peek_onset_kV_mm": 5.55,
+  "note": "[RH] a coax estimate: the rings (+/-14.9 kV, r 25) inside the grounded can (r 46), the lead at about 0 V where the field would put it at the local potential; its surface field a line charge's over the can 7 mm away. A field solve of the hub with the leads is OPEN; so is what the leads do to the rings' field on the coupler"
+ },
+ "shafts": {
+  "layout": {
+   "rows": [
+    {
+     "k_b_N_per_m": 200000000.0,
+     "f_Hz": [
+      83.87,
+      155.79,
+      195.27,
+      222.33
+     ],
+     "m_rotor_kg": 38.2,
+     "m_counter_rotor_kg": 37.32
+    },
+    {
+     "k_b_N_per_m": 86000000.0,
+     "f_Hz": [
+      79.79,
+      136.16,
+      185.89,
+      193.86
+     ],
+     "m_rotor_kg": 38.2,
+     "m_counter_rotor_kg": 37.32
+    }
+   ],
+   "default_density": []
+  },
+  "full": {
+   "rows": [
+    {
+     "k_b_N_per_m": 200000000.0,
+     "f_Hz": [
+      83.87,
+      116.8,
+      164.71,
+      202.49
+     ],
+     "m_rotor_kg": 50.4,
+     "m_counter_rotor_kg": 37.54
+    },
+    {
+     "k_b_N_per_m": 86000000.0,
+     "f_Hz": [
+      79.29,
+      107.86,
+      149.06,
+      191.91
+     ],
+     "m_rotor_kg": 50.4,
+     "m_counter_rotor_kg": 37.54
+    }
+   ],
+   "default_density": []
+  },
+  "criterion_Hz": 60.0,
+  "note": "the layout as drawn now (its mounts in) against the same with the AH-drive parts, the drive and the frame bearing A at the case floor; the pinions, the case and the belt are the frame's"
+ },
+ "figure": "docs/figures/rotor-parts-drive.png",
+ "n_parts_layout_full": 663,
+ "n_new": 113,
+ "run_s": 83.8
+}

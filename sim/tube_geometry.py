@@ -462,7 +462,8 @@ class Machine:
                    f"borosilicate vessel, OD {2 * Ro:g} mm, wall {wall:g} mm (vacuum inside)")
         self.proto("hub_gel", gel_shape, COL["gel"], f"silicone gel, {gel['t_mm']:g} mm, vacuum-cast")
         self.proto("hub_retainer", retainer, COL["peek"], "PEEK retainer, unfilled")
-        self.proto("hub_coupler", lambda: cut(sector(r_ret, r_ret + cpl["wall_mm"], -z_cpl, z_cpl), *chans()), COL["g10"],
+        self.proto("hub_coupler", lambda: cut(sector(r_ret, r_ret + cpl["wall_mm"], -z_cpl, z_cpl), *chans(),
+                                              *opts.get("extra_cuts", ())), COL["g10"],
                    cpl_mat)
         self.add("hub_vessel", "hub_vessel", "rotor", "", "hub", join="hub-vessel", dz=zc,
                  desc="the vessel: borosilicate sphere, vacuum inside")
@@ -596,7 +597,7 @@ class LayoutMachine(Machine):
     the magnetic pump's LV cable in its bore [IR; the parts' envelopes and the junctions RH]. self.nets: each
     conductor's net (or its two nets and the line or arc it grades along) for the viewer."""
 
-    def __init__(self, pick="g 0.5 / 6 bridges / 1200 rpm", ring_bearings=True, mounts=True):
+    def __init__(self, pick="g 0.5 / 6 bridges / 1200 rpm", ring_bearings=True, mounts=True, pump_parts=False, drive=False):
         import copy
         import bridge_ring_bearings as BRB               # the bridge-ring bearings' placement and part
         import doubler_caps as DC                        # the capacitors' mounts (PROPOSED)
@@ -631,6 +632,10 @@ class LayoutMachine(Machine):
             self.el.append(q)
         self.lad["tube_geometry"]["L_total_mm"] = self.L_mm
         self.nets = {}
+        # with pump_parts / drive (sim/rotor_parts_drive.py, PROPOSED): the magnetic pump's AH-drive parts in the
+        # reluctance bays and the cross-hub leads; the drive re-cut onto side A's end (the frame end bearing A dropped)
+        self.pump_parts, self.drive = pump_parts, drive and ring_bearings
+        self.rpd_names, self.rpd_rows, self.rpd_blank, self.rpd_cross, self.rpd_mass = [], {}, {}, [], {}
 
     def zz(self, side, h):
         return self.zc - h if side == "A" else self.zc + h
@@ -684,6 +689,9 @@ class LayoutMachine(Machine):
         self.hub_opts = dict(coupler_absz=cpl["h1"], channels=[(-1, th_lead["A"]), (1, th_lead["B"])],
                              coupler_material="G10 shaft coupler: a straight tube over the retainer and both flanges "
                                               "(docs/rings-design.md §2, PROPOSED)")
+        if self.pump_parts:                              # the cross-hub leads' holes through the coupler
+            import rotor_parts_drive as RPD
+            self.hub_opts["extra_cuts"] = RPD.coupler_holes(fl["h0"])
         self.locked_hub(dict(z0=zc - fl["h0"], z1=zc + fl["h0"]))
         for nm in ("hub_ring_A", "hub_bead_A_pol", "hub_bead_A_eq"):
             self.nets[nm] = {"net": "ea"}
@@ -697,17 +705,29 @@ class LayoutMachine(Machine):
         sh = one("shaft")
         for s_ in "AB":
             z0, _ = self.zs(s_, fl["h0"], fl["h1"])
-            self.put(f"{s_}_flange", "flange_lv", None, None, None, "rotor", "hub", join="rotor-core", net="0", dz=z0,
+            key = "flange_lv"
+            if self.pump_parts:                          # the cross-hub leads' grooves in its inboard face
+                import rotor_parts_drive as RPD
+                key = f"flange_lv_{s_}"
+                self.proto(key, lambda s_=s_: _cut(self.protos["flange_lv"][0], *RPD.flange_grooves(s_, tf, fl["r1"])),
+                           COL["steel"], self.protos["flange_lv"][2] + "; two 3 x 3 grooves in its inboard face for the "
+                                                                      "cross-hub leads")
+            self.put(f"{s_}_flange", key, None, None, None, "rotor", "hub", join="rotor-core", net="0", dz=z0,
                      desc=f"shaft-half flange {s_}, bonded and pinned in the coupler")
             z0, z1 = self.zs(s_, sh["h0"], sh["h1"] + self.ring_slot)       # to the end bearing, one slot out
+            kw = []
+            if s_ == "A" and self.drive:                 # on to the drive end, the rotor gear's keyway in it
+                import rotor_parts_drive as RPD
+                z0, kw = RPD.SHAFT_A_Z0, [RPD.shaft_keyway()]
             ze, zf = self.zz(s_, LV_EXIT), self.zz(s_, sh["h0"])
             lo, hi = (ze - bore, zf + 1.0) if s_ == "A" else (zf - 1.0, ze + bore)     # the bore ends round its exit
 
-            def shaft_half(z0=z0, z1=z1, lo=lo, hi=hi, ze=ze):
+            def shaft_half(z0=z0, z1=z1, lo=lo, hi=hi, ze=ze, kw=kw):
                 return _cut(sector(0.0, S.SHAFT_R, z0, z1), cyl_z(0.0, 0.0, bore, lo, hi),
-                            cyl_between((0.0, 0.0, ze), (S.SHAFT_R + 1.0, 0.0, ze), bore))
+                            cyl_between((0.0, 0.0, ze), (S.SHAFT_R + 1.0, 0.0, ze), bore), *kw)
             self.put(f"shaft_{s_}", f"shaft_{s_}", shaft_half, COL["steel"], "austenitic stainless shaft half, non-magnetic",
-                     "rotor", "rotor", join="rotor-core", net="0", desc=f"shaft half {s_}, its LV bore 8 mm")
+                     "rotor", "rotor", join="rotor-core", net="0", desc=f"shaft half {s_}, its LV bore 8 mm"
+                     + (", on to its drive end (z -102.5), the rotor gear's keyway" if kw else ""))
             # the magnetic pump's LV cable: from the flange's face down the bore, out radially in the reluctance bay
             self.put_wire(f"{s_}_lv_cable", [(0.0, 0.0, self.zz(s_, fl["h0"])), (0.0, 0.0, ze), (S.SLEEVE_R + 3.5, 0.0, ze)],
                           "lv", "rotor", f"lv-{s_}", colour=COL["lv"], r=LV_R,
@@ -775,6 +795,9 @@ class LayoutMachine(Machine):
             ze = self.zz(s_, LV_EXIT)
             z0, z1 = (eb["z1"] + self.ring_slot, self.zz("A", hb + 0.5 * S.BEARING["slot"])) if s_ == "A" else \
                 (self.zz("B", hb + 0.5 * S.BEARING["slot"]), eb["z0"] - self.ring_slot)
+            if s_ == "A" and self.drive:                 # it starts on the drive's collar
+                import rotor_parts_drive as RPD
+                z0 = RPD.SLEEVE_A_Z0
             self.put(f"{s_}_rotor_sleeve_rel", f"sleeve_rel_{s_}",
                      lambda z0=z0, z1=z1, ze=ze: _cut(sector(S.SHAFT_R, S.SLEEVE_R, z0, z1),
                                                       cyl_between((S.SHAFT_R - 1.0, 0.0, ze), (S.SLEEVE_R + 1.0, 0.0, ze), bore)),
@@ -804,6 +827,8 @@ class LayoutMachine(Machine):
                      "bearings", join="cage", dz=zb - 0.5 * B["spider_t"],
                      desc="bearing hub, tied into the stator cage" + (" and the stator vanes' tie rods" if self.mounts else ""))
             eb = [e for e in self.el if e["kind"] == "bearing" and e["side"] == s_][0]
+            if s_ == "A" and self.drive:                 # the drive's locating bearing in the gear case takes its place
+                continue
             self.put(f"{s_}_bearing_end", "bearing", None, None, None, "bearing", "bearings", join=f"brg-{s_}-end", net="0",
                      dz=eb["zc"] - 0.5 * B["width"], desc="bearing, end (frame)")
             self.put(f"{s_}_spider_end", "spider", None, None, None, "stator", "bearings", join=f"brg-{s_}-end",
@@ -829,7 +854,43 @@ class LayoutMachine(Machine):
                 self.nets[nm] = {"net": "s" if pt["body"] == "stator" else "0"}
         # ---- the decks
         self.decks(ML, dk, st, kinds, one, mp, plan, th_lead, hv0)
+        if self.pump_parts or self.drive:
+            self.rotor_parts_drive(fl, tf)
         return self
+
+    def rotor_parts_drive(self, fl, tf):
+        """the magnetic pump's AH-drive parts in the reluctance bays' wedges (balanced), their harnesses, the cross-hub
+        leads, and the drive at side A's end (sim/rotor_parts_drive.py, PROPOSED). Each part its own prototype, placed
+        where the study puts it."""
+        import rotor_parts_drive as RPD
+
+        def spec(q):
+            self.put(q["name"], q["name"], lambda s=q["shape"]: s, q["colour"], q["material"], q["body"], q["group"],
+                     join=q["join"], net=q["net"], desc=q["desc"])
+            self.rpd_names.append(q["name"])
+            self.rpd_mass[q["name"]] = q["mass_kg"]
+        if self.pump_parts:
+            ze = self.zz("A", LV_EXIT)
+            for s_ in "AB":
+                secs, self.rpd_rows[s_] = RPD.balanced(s_, self.zc, log=lambda *_: None)
+                for key in secs:
+                    for q in secs[key]:
+                        spec(q)
+                for h in RPD.harness(s_, self.zc, ze):
+                    self.put_wire(h["name"], h["pts"], "lv", f"pump-{s_}", f"lv-{s_}", colour=COL["lv"], r=1.5,
+                                  material="LV harness: the bay's leads from the bore's cable to its wedge [IR]",
+                                  desc="the harness to a wedge, round the sleeve above the outer carrier disc")
+                    self.rpd_names.append(h["name"])
+            self.rpd_cross = RPD.cross_leads(self.zc, fl["h0"], tf)
+            for q in self.rpd_cross:
+                self.put_wire(q["name"], q["pts"], "lv", "hub", f"lv-cross", colour=COL["lv"], r=RPD.CROSS_WIRE_R,
+                              material="LV lead, 2.5 mm over its insulation [RH]",
+                              desc=f"the cross-hub lead {q['what']}: in the flanges' grooves, along the coupler at r 39")
+                self.rpd_names.append(q["name"])
+        if self.drive:
+            for q in RPD.drive_parts():
+                spec(q)
+                self.rpd_blank[q["name"]] = q["blank"]
 
     def ring_bearing_parts(self):
         """the bridge-ring bearings (sim/bridge_ring_bearings.py placement, PROPOSED): each bearing in its stainless
@@ -1627,6 +1688,9 @@ def main():
     ap.add_argument("--layout", action="store_true",
                     help="the multiplier laid out in the machine (sim/multiplier_layout_results.json, PROPOSED): the record "
                          "re-stacked round the decks and the grounded can, no hub-face bearings")
+    ap.add_argument("--full", action="store_true",
+                    help="with --layout: the magnetic pump's AH-drive parts in the reluctance bays, the cross-hub leads and "
+                         "the drive at side A's end (sim/rotor_parts_drive.py, PROPOSED); writes the '-full' model")
     a = ap.parse_args()
     if a.layout:
         return main_layout(a)
@@ -1681,14 +1745,17 @@ def main_layout(a):
     import time
     t0 = time.time()
     log = lambda s: print(s, flush=True)
-    m = LayoutMachine(a.pick).build()
+    full = getattr(a, "full", False)
+    m = LayoutMachine(a.pick, pump_parts=full, drive=full).build()
     rel = m.p["rel"]
     tag = (f"tube-r{m.p['r_outMm']:g}-n{m.p['n_plates']}-air{m.p['g_vMm']:g}-wound-g{str(rel['g']).replace('.', 'p')}-"
-           f"{rel['n_br']}br-hub50-layout")
+           f"{rel['n_br']}br-hub50-layout" + ("-full" if full else ""))
     m.lad["tube_geometry"]["tag"] = tag
     log(f"{tag}: {len(m.parts)} placed solids from {len(m.protos)} prototypes, {m.L_mm:.0f} mm")
     res = dict(tag=tag, source="sim/multiplier_layout_results.json (the stack, the decks' plans); the record's solids "
-                               "(record_plates); presets/hub-locked.json", status="PROPOSED (the layout, 2026-10-11)",
+                               "(record_plates); presets/hub-locked.json"
+                               + ("; sim/rotor_parts_drive.py (the AH-drive parts, the cross leads, the drive)" if full else ""),
+               status="PROPOSED (the layout, 2026-10-11" + ("; its rotor parts and drive, 2026-10-12)" if full else ")"),
                n_parts=len(m.parts), n_protos=len(m.protos), L_total_mm=m.L_mm, hub_centre_z_mm=m.zc)
     res.update(checks(m, log))
     res["G-LAYOUT"] = layout_checks(m, log)
@@ -1702,7 +1769,7 @@ def main_layout(a):
         res["step_read_back"] = rb = read_back(path)
         res["step_read_back"]["pass_"] = rb["instances"] == len(m.parts)
     res["run_s"] = round(time.time() - t0)
-    out = os.path.join(HERE, "tube_geometry_layout_results.json")
+    out = os.path.join(HERE, "tube_geometry_layout_full_results.json" if full else "tube_geometry_layout_results.json")
     json.dump(res, open(out, "w"), indent=1, default=float)
     for k, v in res.items():
         if k != "G-LAYOUT":
@@ -2032,7 +2099,8 @@ def renders_layout(m, out_dir, tag, log=print):
     ax = fig.add_axes((0.015, 0.04, 0.36, 0.9))
     _draw(ax, sec, lw=0.25)
     ax.axvline(0, color="#888", lw=0.5, ls="--")
-    ax.set_aspect("equal"); ax.set_xlim(-175, 175); ax.set_ylim(-10, L + 10)
+    z_lo = min(bbox(s)[0][2] for _, s in shapes)
+    ax.set_aspect("equal"); ax.set_xlim(-175, 175); ax.set_ylim(min(-10, z_lo - 5), L + 10)
     ax.set_xlabel("x [mm] (y = 0: 0 deg right, 180 deg left)", fontsize=8.5)
     ax.set_ylabel("z [mm] from side A's end (shaft vertical, side B above)", fontsize=8.5)
     ax.tick_params(labelsize=7.5)
@@ -2068,13 +2136,18 @@ def renders_layout(m, out_dir, tag, log=print):
         ae = fig.add_axes((0.745, 0.035, 0.245, 0.265))
         _draw(ae, sec, lw=0.5, keep=lambda n: not n.startswith(("B_", "shaft_B")))
         ae.axvline(0, color="#888", lw=0.5, ls="--")
-        ae.set_aspect("equal"); ae.set_xlim(-12, 238); ae.set_ylim(-4, 76); ae.tick_params(labelsize=6.5)
+        ae.set_aspect("equal"); ae.set_xlim(-12, 238); ae.set_ylim(-4 if not m.drive else -110, 76)
+        ae.tick_params(labelsize=6.5)
         ae.set_xticks([0, 25, 50, 75, 100, 125, 150])
         ae.set_ylabel("z [mm]", fontsize=7.5)
         pl, P = m.ring, m.ring["side_A"]
         SPIDER_T_ = P["spider"]["z1"] - P["spider"]["z0"]
         lab = dict(fontsize=6.3, va="center", ha="left", color="#222")
-        ae.text(165, pl["z_frame_mm"][0], f"end bearing (frame) on its\nspider, z {pl['z_frame_mm'][0]:.0f}", **lab)
+        if m.drive:
+            ae.text(120, -30, "the drive (sim/rotor_parts_drive.py):\nthe reverser's case, its pinions, the\nlocating "
+                    "bearing (frame) in its floor,\nthe 80T pulley in the bell", **lab)
+        else:
+            ae.text(165, pl["z_frame_mm"][0], f"end bearing (frame) on its\nspider, z {pl['z_frame_mm'][0]:.0f}", **lab)
         ae.text(165, pl["z_ring_mm"][0], f"the bridge-ring bearing's G10\nspider, {SPIDER_T_:.0f} mm, and the {pl['side_A']['adapter']['z1'] - pl['side_A']['adapter']['z0']:.0f} mm\nring to bridge ring A", **lab)
         ae.text(165, 60, "bridge ring A (the record's)", **lab)
         ae.annotate(f"bearing z {pl['z_ring_mm'][0]:.0f} in its stainless cartridge", (24.0, P["bearing"]["z0"] + 1.0),
@@ -2082,7 +2155,7 @@ def renders_layout(m, out_dir, tag, log=print):
         ae.text(60, P["spider"]["z1"] + 0.5 * pl["clear_spider_to_turns_mm"],
                 f"{pl['clear_spider_to_turns_mm']:.0f} mm to the utrons' end turns", **lab)
         ae.set_title(f"(e) side A's end: the bridge-ring bearing ({BRB.PART['maker']} {BRB.PART['designation']}), "
-                     f"z {pl['z_ring_mm'][0]:.0f}", fontsize=8.5, loc="left")
+                     f"z {pl['z_ring_mm'][0]:.0f}" + ("; the drive below it" if m.drive else ""), fontsize=8.5, loc="left")
     an = fig.add_axes((0.74, 0.33, 0.25, 0.62)); an.axis("off")
     an.legend(handles=[Patch(facecolor=COL[k_], label=t_) for k_, t_ in LAYOUT_LEGEND], loc="upper left", fontsize=8.5,
               frameon=False, ncol=1)
@@ -2092,10 +2165,12 @@ def renders_layout(m, out_dir, tag, log=print):
             "sim/bridge_ring_bearings.py places them (PROPOSED)"
             + (";\nthe capacitors' mounts as sim/doubler_caps.py places them\n(PROPOSED): Ca / Cb's combs on their posts, "
                "the vanes' spacers,\nlugs and tie rods, the cage at r 182.\n\nNot drawn: the decks' standoffs to the can, "
-               "the screws and\nstuds, the gear." if m.mounts else
+               "the screws and\nstuds" + ("." if m.drive else ", the gear.") if m.mounts else
                ".\n\nNot drawn: Ca / Cb's rods and mounts, the decks' standoffs to\nthe can, the plates' interconnections, "
-               "the gear."), fontsize=8.5, va="top",
-            transform=an.transAxes)
+               "the gear.")
+            + ("\n\nWith the magnetic pump's AH-drive parts in the\nreluctance bays, the cross-hub leads and the drive "
+               "at\nside A's end (sim/rotor_parts_drive.py, PROPOSED)." if m.drive or m.pump_parts else ""),
+            fontsize=8.5, va="top", transform=an.transAxes)
     fig.suptitle(f"{tag}: the multiplier laid out in the machine", fontsize=12, x=0.01, ha="left")
     f = os.path.join(out_dir, f"{tag}-section.png"); fig.savefig(f, dpi=100); plt.close(fig)
     return [os.path.relpath(f, ROOT)]
