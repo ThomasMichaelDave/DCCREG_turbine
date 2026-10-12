@@ -13,6 +13,7 @@ fields come from charge pumps driven by the relative rotation of the machine's t
 | what | where |
 |:--|:--|
 | the overview, the design logic, each component's working principle, the fact sheet, the status and open items, the known inconsistencies | `docs/ledger/DCCREG-design-ledger.md` (print form `.pdf`) |
+| a guide for a reviewer and for the scrutiny bench: what to share, where every study, script, drawing and document lives, and what the models leave to measurement | `docs/review-and-scrutiny-guide.md` |
 | every technical drawing, one A3 sheet each, behind a register | `docs/ledger/DCCREG-drawings-bundle.pdf` (register: `docs/ledger/register.py`) |
 | the drawing set (PROPOSED, Rev A drafts): a drawing with a small 3-D view for every part, a source-control sheet for every bought part, the sub-assemblies and the general arrangement, of the layout and of the first cuts' parts outside it (the chokes, the kick, the drive) | `docs/drawings/set/` (its order: `docs/drawings/set-index.json`; generator `docs/make_drawing_set.py`; the first cuts in solids: `sim/unmodelled_parts.py`, `sim/unmodelled-parts-findings.md`); the bundle's Part D |
 | the hub's specification of record | `presets/hub-locked.json` |

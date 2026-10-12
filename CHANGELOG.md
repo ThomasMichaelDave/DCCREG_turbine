@@ -41,6 +41,18 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### A guide for review and for the scrutiny bench (2026-10-12)
+The designer asked which document to use to discuss the current proposal with a partner, and where the simulations,
+scripts, drawings and documents are, for a scrutiny test bench of the electrical and mechanical understanding.
+
+- **`docs/review-and-scrutiny-guide.md`** (new):
+  - the document to share (the ledger's PDF, with a page map), its drawings and the interactive views;
+  - the repository's folders and the studies by subject, with their findings and the schematics' generators;
+  - the model values a bench could check, electrical and mechanical, each with the file that holds it. The rings'
+    bench plan exists; the rest are candidates for the designer to choose from.
+- **Why:** the record is spread over about 30 studies and the ledger; a reviewer needs one map into it.
+- **Records:** a row in `README.md`'s start-here table.
+
 ### The schematics redrawn to the latest studies (2026-10-11)
 The designer asked whether the theory and schematic book holds the latest versions. Its text did; its three schematics
 did not. Asked, the designer said: "Redraw indeed".
