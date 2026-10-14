@@ -5,286 +5,377 @@
 **Synthesis branch:** `claude/synthesis-phase1`
 **Agent:** core-engine-spec
 
+**Status legend.** The Status column carries the ledger's status of the *design choice* behind each value
+(`docs/ledger/DCCREG-design-ledger.md` §5.1–§5.2). A computed consequence of a choice carries that choice's status.
+This spec decides nothing; the designer does. **ANCHOR** marks a frozen-engine number of the superseded disc machine,
+kept as a regression anchor, not as a property of the tube.
+
 ## Purpose
 
-This specification formalises the validated Bennet doubler engine: its topology,
-growth factor z, efficiency eta, the equalization-is-the-pump principle, and the
-varicap/clamp/stray requirements that the tube-synth agent must satisfy. It does
-not specify individual components (that is the tube spec's job) or the spark-gap
-commutator (Phase 2). It depends on nothing from other specs -- it is the target.
+This spec states the electrostatic engine of the DCCREG tube: the 4-node symmetric Bennet doubler in de Queiroz's
+diode form, on the air vane stack of record. It gives the topology, the gain z, the efficiency and the principle that
+governs it, the charge and power at the operating point, what the engine needs from its varicaps, clamps and node
+strays, and a conservation ledger. Two engines carry the numbers [IR]:
+- **the frozen disc-machine engine** (`reference/doubler_core.py`, `sim/pump_engine.py`, `sim/pump_sizing.py`,
+  `sim/pump_synth.py`). It is the source of z 1.334 and η 0.386, and of the equalization principle;
+- **the tube's diode core** (`sim/core_field.py` and the studies built on it). This is the design of record.
+
+Excluded: the spark-gap commutator, the islands and the shuttle. The tube has none of them; they are superseded
+(ledger §2.4). They appear here only as anchors and as an interface for Phase 2. This spec depends on no other
+synthesis spec. tube-synth, electrical-integrity and conservation-auditor build on it.
 
 ## Governing constraints
 
-1. **The equalization-is-the-pump principle** (LOCKED). A resonant pump's own
-   equalization cannot be resonated for recovery -- the equalization IS the pump.
-   Only a downstream sink (the island) recovers freely. This was established by
-   the falsification of eta 0.70 via three independent methods: the diode alpha_max
-   ceiling, the S3 static-gap either/or, and the sequenced-statistical conservation
-   arbiter. Source: `reference/commutator_real_core.py` docstring,
-   `reference/doubler_resonant_core.py` docstring. [OC]
-
-2. **Conservation closure.** The power budget must close at every interface. The
-   belt power equals the sum of all losses (clamp dissipation, stick leakage,
-   chain losses, motor-circuit losses) plus the delivered ring power. [OC]
-
-3. **The frozen engine is read-only.** `reference/doubler_core.py`,
-   `sim/pump_engine.py`, `sim/pump_sizing.py`, `sim/pump_synth.py` are frozen
-   files and the anchors for all numerical values. Source: `CLAUDE.md` guardrail 1.
+1. **The equalization-is-the-pump principle (LOCKED).** A resonant pump's own equalization cannot be resonated for
+   energy recovery, because the equalization *is* the pump. Resonating it either clamps it (the ratchet holds and the
+   tax is lost) or breaks the ratchet (the pump dies). Sequencing and statistics only sample those two arms. **Only a
+   downstream sink transfer recovers freely.** Sources: `CONVENTIONS.md` (working rule); `docs/efficiency-resolution.md`
+   §2, §4. `[OC]`
+   - **What it means for the tube:**
+     - no spec may claim energy recovery from the rectifying transfers (D1–D4, Ca / Cb, the §3.9 ladder);
+     - the tube's only downstream sinks are the clamps Z1 / Z4 and the rings' leakage. Both dissipate: the belt's
+       power ends as heat (ledger §3.4; `CONVENTIONS.md`). `[OC]`
+2. **η ≈ 0.70 is forbidden.** It is falsified three independent ways (§2.3). Any spec that applies η 0.70, or η ≈ 0.50
+   (the disc machine's island-sink figure), to the diode tube fails its gate (`synthesis/synthesis-plan.md`, framing
+   condition). `[OC]`
+3. **Conservation closes at the engine's boundary.** At the steady state, belt power = clamps + leakage + diode/other
+   losses + the change in stored energy. The record's deck closes it to 4e-5 W in 2.14 W (§2.8). `[OC]`
+4. **The frozen files stay byte-identical** (`CLAUDE.md` guardrail 1). The numbers here are read from them and from
+   committed results; nothing was re-run.
+5. **The designer's DECIDED items bind this spec** (ledger §5.1, all as of 2026-10-09 unless dated):
+   - the stack of record (6 mm gaps, V_op = breakdown / 1.5, 22° / 22°, r 150, Ca = 1.1 C_max) and the clamps Z1 / Z4;
+   - the HV side on the rotor;
+   - the symmetric supply;
+   - the multiplier stacked into the doubler (10-10), and its circuit "for now" (10-11).
 
 ## Specification
 
-### 1. Topology
+### 2.1 Topology
 
 | Parameter | Value | Source / basis | Tag | Status |
 |:----------|:------|:---------------|:----|:-------|
-| Type | 4-node symmetric Bennet doubler | `reference/doubler_core.py` | `[OC]` | DECIDED |
-| Diode map | D1(2,0), D2(3,0), D3(1,3), D4(4,2) | `reference/doubler_core.py` DIODES | `[OC]` | DECIDED |
-| Outer nodes | 1, 4 (high-voltage, antisymmetric) | `reference/doubler_core.py` seed | `[OC]` | DECIDED |
-| Inner nodes | 2, 3 (low-voltage, clamped to rail) | `reference/doubler_core.py` seed | `[OC]` | DECIDED |
-| Seed voltage | V = [-1, 0, 0, -1] (normalised) | `reference/doubler_core.py` | `[OC]` | DECIDED |
-| Symmetry | Nodes 1/4 mirror, nodes 2/3 mirror; C1 = C2, Ca = Cb | layout | `[IR]` | DECIDED |
-| Phase sequence | (C1min, C2max) then (C1max, C2min) per cycle | `reference/doubler_core.py` | `[OC]` | DECIDED |
+| Type | 4-node symmetric Bennet doubler, de Queiroz diode form ("Fig. 1 with every diode reversed": negative polarity) | ledger §3.4; `sim/core_field.py` | `[OC]` | DECIDED |
+| Varicaps | C1 node 1 → REF (side A), C2 node 4 → REF (side B) | ledger §3.4 | `[OC]` | DECIDED |
+| Transfer caps | Ca node 1 – node 2, Cb node 3 – node 4 | ledger §3.4 | `[OC]` | DECIDED |
+| Diodes (canonical) | D1 2→0, D2 3→0 (rail return); D3 1→3, D4 4→2 (cross-couple) | `CONVENTIONS.md` §2; `reference/doubler_core.py` `DIODES` | `[OC]` | DECIDED |
+| Node roles | 1 / 4: HV varicap nodes, clamped; 2 / 3: inner nodes, swinging between REF and about −6.1 kV | `sim/core_field_results.json` row `none` | `[OC]` | DECIDED |
+| REF (node 0) | the rotor shaft. The stator vanes (counter-rotor) join it through one inner bearing; the redesign lets the counter-rotor float | ledger §3.4, §5.1; `sim/integrated-multiplier-findings.md` §6 | `[IR]` | DECIDED ("for now") |
+| HV parts' body | Ca / Cb, D1–D4, Z1 / Z4 on the rotor; the counter-rotor carries no HV | `sim/core-field-findings.md` §1, §7 | `[IR]` | DECIDED |
+| Varicap phasing, record | C1 / C2 half a pitch apart (antiphase), 6 swings per relative revolution | ledger §3.4, §6 item 58 | `[IR]` | DECIDED (record) |
+| Varicap phasing, redesign | C1 / C2 **in phase**, bipolar (chain 2 reversed); in antiphase the redesign does not pump (z 1.000 as built) | ledger §3.9 | `[OC]` | DECIDED for now (10-11) |
+| Rings' supply, record | 2 + 2 mirror Cockcroft–Walton chains from the shaft; ring A on node 1 (negative), ring B on node 4 (positive) | `sim/hub-rings-build-findings.md` §4; `docs/rings-design.md` | `[IR]` | DECIDED (superseded in circuit by §3.9) |
+| Rings' supply, redesign | each cross diode becomes a three-diode chain through a two-stage ladder (C3–C6 180 pF, D5–D8), plus one ring stage per side (C7 / C8, D9–D12); each ring on 100 pF to the shaft | ledger §3.9; `presets/hub-locked.json` pumps | `[OC]` | DECIDED for now (10-11) |
+| Commutation | **none**: ideal or real diodes, not spark gaps. The disc machine's 8-gap rotary spark-gap commutator at the DXF stations is superseded | ledger §2.4; `sim/diode-stack-findings.md` | `[IR]` | DECIDED |
+| Island / shuttle | **none** in the tube. With diodes, islands become voltage multipliers (island node 8 at 8× node 1) and the output collapses | `sim/diode-stack-findings.md` Reading 3 | `[OC]` | DECIDED (superseded) |
 
-**Rationale:** The 4-node Bennet doubler is the established pump topology. The
-diode map implements the ratchet: D1/D2 are rail-return (clamp v2, v3 to zero),
-D3/D4 are cross-coupled (transfer charge between outer nodes). The growth factor z
-depends only on capacitance ratios [OC] -- this is the scale-free property of
-electrostatic machines (`sim/pump_synth.py` line 36).
+**Rationale.** Between diode events the circuit is linear and scale-free, so z depends only on capacitance ratios
+`[OC]` (`sim/pump_synth.py` docstring; ledger §3.4). One half cycle runs in three steps:
+1. The shrinking varicap holds its charge (its diode blocks), so its voltage rises as Q / C.
+2. Through Ca or Cb that rise lifts the next node until a diode conducts.
+3. The charge pours onto the other varicap while it is large.
 
-### 2. Growth factor z
+Smooth C(θ) with diodes makes the transfer lossless (§2.3).
 
-| Parameter | Value | Source / basis | Tag | Status |
-|:----------|:------|:---------------|:----|:-------|
-| z (analytic, G3 caps) | 1.334 per cycle | `reference/doubler_core.py` anchors; G3 = {C1: 16-280, Ca: 309, Cpar: 20} | `[OC]` | DECIDED |
-| z (ngspice validation) | 1.3095 per cycle | `sim/core_field_results.json` row "free none" | `[OC]` | DECIDED |
-| z (analytic-ngspice gap) | ~4 % (1.334 vs 1.310) | comparison of frozen engine vs transient sim | `[OC]` | DECIDED |
-| z (as-built, bare) | 1.058 per cycle | `sim/tube_strays_results.json` decks "as built" pump | `[OC]` | DECIDED |
-| z (as-built, with chains) | 1.031 per cycle | `docs/ledger/DCCREG-design-ledger.md` §4 | `[OC]` | DECIDED |
-| G3 reference caps (pF) | C1min=16, C1max=280, Ca=Cb=309, Cpar=20 | `reference/doubler_resonant_core.py` G3 | `[IR]` | DECIDED |
+**Interface (Phase 2, excluded):** a spark-gap commutator, if it is ever reinstated. The frozen engine's DXF station
+phasing *binds*: armed at its stations, the galvanic doubler gives z 1.5225, not 1.3340
+(`sim/island-asdrawn-findings.md` H3). `solve_doubler4` is the anchor only for a machine whose switches settle
+together. `[OC]`
 
-**Rationale:** z = 1.334 is the 4-node galvanic ceiling at the G3 capacitance
-ratios. The frozen engine (`doubler_core.py`) computes it by iterative phase
-solving with galvanic equalization -- the reference anchor. The ngspice transient
-gives 1.3095 (the `core_field` study), a ~4 % gap attributed to the transient
-simulation's finite time step and SPICE solver tolerances [OC]. The as-built z of
-1.058 (bare) and 1.031 (with chains) reflects the devastating effect of the real
-geometry's strays (§5 below). The machine works but pumps slowly.
+---
 
-### 3. Efficiency eta
+### 2.2 Voltage gain z
 
 | Parameter | Value | Source / basis | Tag | Status |
 |:----------|:------|:---------------|:----|:-------|
-| eta (direct, no recovery) | 0.386 | `reference/commutator_real_core.py` DIRECT_ETA | `[OC]` | DECIDED |
-| eta (with island sink) | approx 0.50 | S2 island recovery, ngspice < 0.6 % | `[OC]` | DECIDED |
-| eta (claimed brigade) | 0.70 -- FALSIFIED | `reference/commutator_real_core.py` docstring | `[OC]` | DECIDED |
-| W_mech per cycle | 31.882 mJ (2 x 15.941 mJ/fire) | `reference/commutator_real_core.py` W_MECH_CYCLE_mJ | `[OC]` | DECIDED |
-| Direct tax per cycle | 19.577 mJ (2 x 9.789 mJ/fire) | `reference/commutator_real_core.py` DIRECT_TAX_CYCLE_mJ | `[OC]` | DECIDED |
+| z, frozen engine (G3: C 16–280 pF, Ca 309, Cpar 20) | **1.334** | `reference/commutator_real_core.py` `DIRECT_Z`; `reference/doubler_resonant_core.py` `G3`; island-asdrawn H3 1.3340016 | `[OC]` | ANCHOR |
+| validation of 1.334 | Queiroz eigen-matrix 0.002 %; ngspice transient 4.3 % | `docs/efficiency-resolution.md` §1 | `[OC]` | ANCHOR |
+| z, tube record (the eigen-cycle of the stack of record) | **1.3090** | `sim/core_field_results.json` `design.z` | `[OC]` | DECIDED |
+| z, tube record (ngspice transient, bare, 20 pF strays) | **1.3095** (Δ 0.04 % on the eigen-cycle) | `sim/core_field_results.json` row `free none`; `sim/core-field-findings.md` §1 | `[OC]` | DECIDED |
+| z with the record's 2 + 2 chains, start-up | 1.1907 | `sim/hub_rings_build_results.json` `record_supply_free`; `sim/tube-strays-findings.md` §5 | `[OC]` | DECIDED |
+| z as built (every capacitance solved), bare / with the chains | **1.0579 / 1.0310** | `sim/tube-strays-findings.md` §5 | `[OC]` solve; `[IR]` model | OPEN (accept or remedy, ledger §5.2) |
+| z, redesign as built (record V_op), ideal diodes | 1.0142 | ledger §3.9; `sim/integrated-multiplier-findings.md` | `[OC]` deck; `[RH]` new-node strays | DECIDED for now |
+| z, redesign as laid out / with the capacitors' mounts | 1.0164 / 1.01589 | `sim/multiplier-layout-findings.md`; `sim/doubler-caps-findings.md` §5 | `[OC]` deck; `[RH]` strays | PROPOSED |
+| z with real HV sticks from 1 kV, record supply as built: typical / max / hot leakage | 1.0244 / 1.0038 / **0.9672** | `sim/integrated-multiplier-findings.md` table; `sim/diodes-real-findings.md` §6 | `[OC]` deck; `[RH]` hot leakage | OPEN |
+| the same, redesign as built | 1.0129 / 1.0039 / **0.9870** | the same | `[OC]` / `[RH]` | OPEN |
 
-**Rationale:** The direct eta of 0.386 means 61.4 % of the mechanical work is
-consumed by the equalization tax -- the diodes equalise charge to the mean, and
-the energy difference is dissipated. The island (a downstream, true-sink resonant
-recovery) recovers roughly half of this tax, lifting eta to approximately 0.50.
-The brigade (doubler-core) tax is NOT recoverable because the equalization IS the
-pump (the diode alpha_max ceiling is structural: the rail-return diodes D1/D2
-re-conduct and clamp when the over-transfer drives v2, v3 positive). This is the
-load-bearing physics, validated three ways. [OC]
+**z against κ** (bare, the record's 20 pF on every node, Ca = 1.1 C_max; `sim/core_swing_grid.json` rows; the grid is
+`sim/core-field-findings.md` §3) `[OC]` deck, `[IR]` cosine C(θ):
 
-### 4. The equalization-is-the-pump principle
+| C_max \ κ | 3 | 5 | 8 | 13 | 22 |
+|--:|--:|--:|--:|--:|--:|
+| 250 pF | 1.046 | 1.171 | 1.265 | 1.339 | 1.393 |
+| 450 pF | 1.083 | 1.224 | 1.332 | 1.417 | 1.482 |
+| 800 pF | 1.105 | 1.255 | 1.373 | — | — |
 
-This is the governing constraint of the synthesis. Stated precisely:
+- At r 150 the record's κ 7.47 gives z 1.309. Radius buys κ and z: κ 9.0 / 10.5 / 17.7 give z 1.375 / 1.426 / 1.552
+  at r 175 / 200 / 300 (`sim/vane-matrix-findings.md` §1) `[OC]` deck; `[IR]` the 2-D cell.
+- **As built** (`sim/tube-strays-findings.md` §4–§5): the varicap's own κ falls from 7.47 to 3.51, and the node-1
+  total (varicap plus strays) from 5.74 to 2.57. So z bare falls from 1.3095 to 1.0579. The varicap as solved with
+  20 pF strays elsewhere gives z 1.1307. `[OC]`
+- **The governing ratio is the node total** (C_max + strays) / (C_min + strays), not the varicap's own κ [IR, read from
+  the grid rows]:
+  - node total 2.37 → z 0.995 (C_max 130, κ 3);
+  - 2.61 → 1.046;
+  - 2.76 → 1.083;
+  - as built, 2.57 → 1.058.
+  - **The bare self-excitation threshold therefore sits near a node-total ratio of 2.4** (ideal diodes, this Ca rule).
 
-> **The equalization-is-the-pump principle** [OC]: In a Bennet doubler, the
-> charge-equalizing diodes (D1-D4) implement the ratchet that produces net
-> charge transfer. The energy dissipated in equalization (the two-cap tax
-> 1/2 C_eff dV^2) is the thermodynamic cost of the pumping action. Resonating
-> the equalization (adding inductors to recover the dV^2 energy) attempts to
-> recover the pump's own operating cost. The rectification clamp (alpha_max)
-> prevents this: the over-transfer drives inner nodes positive, forward-biasing
-> the rail-return diodes, which re-conduct and cap the recovery. Alpha_max is
-> structural (set by v2, v3 approaching 0), not a tuning artefact.
->
-> Only a **downstream sink** -- a separate load circuit that receives the
-> pumped charge and has its own equalization -- recovers freely, because the
-> sink's equalization is not the pump's ratchet.
->
-> **Consequence:** eta from the doubler core alone cannot exceed approximately
-> 0.50 (direct 0.386 + island sink). Any model claiming eta > 0.50 from the
-> doubler must be checked for a conservation violation.
+**z against node strays:**
 
-Source: `reference/doubler_resonant_core.py` docstring (the physics),
-`reference/commutator_real_core.py` (the falsification), the sequenced-statistical
-conservation arbiter (the independent guard).
+| configuration | price per pF | Source | Tag |
+|:--|:--|:--|:--|
+| the record's caps, nodes 1 and 4 together | 0.0027 (≈ 0.003) | `sim/tube-strays-findings.md` §5; `sim/core-field-findings.md` §4 | `[RH]` linear price |
+| the record's caps, nodes 2 and 3 together | 0.0018 | `sim/tube-strays-findings.md` §5 | `[RH]` |
+| either way, for electrodes (the shaft-side + ring-to-ring table) | ≈ 0.003; z ≥ 1.30 allows about 2 pF each | `sim/core-field-findings.md` §4 | `[RH]` |
+| as built, nodes 1 / 4 (secant 66.7 → 104.9 pF), bare / with the chains | 0.00084 / 0.00060 | derived here from `sim/tube-strays-findings.md` §3 variants (1.058 → 1.026; 1.031 → 1.008) | `[IR]` two-point secant |
+| redesign layout (+3.81 pF on 1 / 4, +4.64 pF on 2 / 3) | 0.00048 for the set | `sim/doubler-caps-findings.md` §5 | `[OC]` deck; `[RH]` strays |
 
-### 5. Varicap requirement
+**Rationale.** z 1.334 belongs to the disc machine's stepped two-state schedule at G3. It does not describe the tube.
+The tube's validated number is 1.3095 bare, a second, independent validation: ngspice against the stack's eigen-cycle,
+Δ 0.04 %. As built the solved rims and strays take it to 1.058 / 1.031, and with real sticks hot it no longer
+self-excites. That loss of margin, not the gain of record, is the engine's binding fact.
 
-| Parameter | Value | Source / basis | Tag | Status |
-|:----------|:------|:---------------|:----|:-------|
-| kappa (deck) | 7.47 | `sim/core_field_results.json` design.kappa | `[OC]` | DECIDED |
-| kappa (as-built, 3-D solve) | 3.51 | `sim/tube_strays_results.json` "as built, the record" | `[OC]` | DECIDED |
-| C1 range, deck (pF) | 54.9 -- 409.9 | `sim/core_field_results.json` design | `[OC]` | DECIDED |
-| C1 range, as-built (pF) | 128.1 -- 450.2 | `sim/tube_strays_results.json` "as built, the record" | `[OC]` | DECIDED |
-| Ca = Cb, deck (pF) | 450.9 | `sim/core_field_results.json` design.Ca_pF | `[OC]` | DECIDED |
-| Ca = Cb, as-built (pF) | 480.4 | `sim/tube_strays_results.json` "as built, the record" Ca_pF | `[OC]` | DECIDED |
-| Ca rule | Ca = 1.1 x C_max | `sim/pump_sizing.py` CHOICE_DEFAULTS ratio_Ca | `[IR]` | DECIDED |
+---
 
-**Rationale:** The kappa discrepancy (7.47 deck vs 3.51 as-built) is the central
-design issue. The 3-D field solve shows that the vane rims and sleeve add parasitic
-capacitance to C_min (the unaligned position), raising it from 54.9 to 128.1 pF.
-C_max rises only slightly (409.9 to 450.2 pF) because the aligned capacitance is
-dominated by the plate area, which is the same. The result: kappa drops by more
-than 2x, z drops from 1.31 to 1.06, and belt power drops from 2.14 W to 0.64 W.
-
-The tube-spec must address this: either accept kappa 3.51 and the reduced
-performance, or redesign the vane geometry to recover kappa. The deck value of
-7.47 assumed minimal rim stray -- the 3-D solve refuted this. [OC]
-
-### 6. Stray budget
+### 2.3 Efficiency η
 
 | Parameter | Value | Source / basis | Tag | Status |
 |:----------|:------|:---------------|:----|:-------|
-| Node 1/4 stray (3-D solve) | 66.2 pF | `sim/tube_strays_results.json` decks.sets.strays Cp.1 | `[OC]` | DECIDED |
-| Node 2/3 stray (3-D solve) | 24.5 pF | `sim/tube_strays_results.json` decks.sets.strays Cp.2 | `[OC]` | DECIDED |
-| Placeholder (record) | 20 pF uniform | `sim/core_field_results.json` CPAR_pF | `[IR]` | DECIDED |
-| Cross-coupling 1-2 / 3-4 | 1.15 pF | `sim/tube_strays_results.json` decks.sets.strays Cx "1 2" | `[OC]` | DECIDED |
-| Cross-coupling 1-4 / 2-3 | < 0.05 pF | `sim/tube_strays_results.json` decks.sets.strays Cx | `[OC]` | DECIDED |
-| Effect on z | 1.31 (20 pF) -> 1.06 (as built) | comparison of record vs as-built pump | `[OC]` | DECIDED |
+| η direct, frozen engine (G3, simultaneous switching, the post-phase-A cut) | **0.386** (0.385956) | `reference/commutator_real_core.py` `DIRECT_ETA`; `sim/island-asdrawn-findings.md` H3 | `[OC]` | ANCHOR |
+| validation of 0.386 | Queiroz eigen-matrix 0.002 %; ngspice transient 4.3 % (S1) | `docs/efficiency-resolution.md` §1 | `[OC]` | ANCHOR |
+| η with the island sink (disc machine) | **≈ 0.45–0.50**; S2 island transfer validated in ngspice to < 0.6 % | `docs/efficiency-resolution.md` §1, §3 | `[OC]` | ANCHOR |
+| tax split (disc machine) | island ≈ 31 % (recoverable, a sink); doubler core / Ca–Cb brigade ≈ 69 % (not recoverable) | `docs/efficiency-resolution.md` §3 | `[OC]` | ANCHOR |
+| per-cycle energy (disc machine) | W_mech 31.882 mJ; direct tax 19.577 mJ | `reference/commutator_real_core.py` | `[OC]` | ANCHOR |
+| η 0.70 | **FALSIFIED** (three roads, below) | `docs/efficiency-resolution.md` §4 | `[OC]` | LOCKED |
+| cut dependence | η of a growing, unloaded pump depends on the cycle cut. Simultaneous doubler: 0.386 at every cut. Station-armed: 0.559 at 0°, 0.329 at 29° | `sim/island-asdrawn-findings.md` §2 | `[OC]` | — |
+| stepped-model qualification | 0.39–0.52 is a property of the two-state stepped schedule; with smooth C(θ) the same diode core is lossless | `sim/diode-stack-findings.md` Reading 2 | `[IR]` | — |
+| η of the transfer, tube diode core (smooth caps, ideal diodes) | **1.00** (de Queiroz core, tube ladder of that study: 3.01 W belt, 3.01 W surplus) | `sim/diode-stack-findings.md` table | `[OC]` deck; `[IR]` ideal diodes | DECIDED (the diode core) |
+| η of record for the tube | **none**. The products are static fields; the belt's power ends as heat | `CONVENTIONS.md`; ledger §6 item 12 | `[IR]` | — |
 
-**Rationale:** The strays are asymmetric -- nodes 1/4 (outer, high-voltage) see
-66.2 pF from the vane rims, shaft, and nearby conductors, while nodes 2/3 (inner)
-see only 24.5 pF. The record's 20 pF placeholder was optimistic by 3.3x on the
-outer nodes. The strays load the pump -- they participate in every equalization
-cycle, adding to the effective capacitance that must be equalised, increasing the
-tax. The cross-couplings (1-2, 3-4 at 1.15 pF) are small but not negligible at
-high voltage -- they reduce the effective swing. The tube-spec must allocate each
-stray to its physical source and state the stray budget for the redesigned geometry. [OC]
+**The three roads that falsify η 0.70** (`docs/efficiency-resolution.md` §4) `[OC]`:
+1. **The diode α_max ceiling** (`reference/doubler_resonant_core.py`). The rail-return diodes re-conduct and clamp the
+   over-transfer at α_max ≈ 0.28. z re-tunes 1.334 → 1.573, but η only reaches 0.404.
+2. **S3, a static gap in an independent engine** (ngspice). The clamping gap and the holding-off gap are one element:
+   - S3-A ratchets with no over-transfer (z 1.39);
+   - S3-B over-swings and breaks the pump (z 1.01).
+3. **The sequenced-statistical conservation arbiter.** Gaps fire at their DXF stations, with V_strike scatter and
+   formative lag Monte-Carlo'd. Every realisation lands on z ≈ 1.0 or z ≈ 1.32. The tax energy relocates and never
+   reaches the output.
 
-### 7. Clamp requirement
+**Rationale.** The disc machine's figures stay as anchors and as the proof of the principle. For the tube the
+principle takes this form:
+- the transfers are lossless with smooth C(θ) and diodes, so no tax exists to recover;
+- the surplus the engine makes above its losses must go to a sink, and the clamps are the sink of record;
+- the clamps are dissipative by design. A non-dissipative downstream sink for the tube is not in the record.
 
-| Parameter | Value | Source / basis | Tag | Status |
-|:----------|:------|:---------------|:----|:-------|
-| Clamp voltage BV | 13.1 kV (66 x 200 V TVS) | `docs/ledger/DCCREG-design-ledger.md` §3.4 | `[IR]` | DECIDED |
-| Clamp strings | Z1 (node 1), Z4 (node 4) | topology | `[OC]` | DECIDED |
-| Clamp power (each) | 1.07 W | `sim/core_field_results.json` clamped row Z1, Z4 | `[OC]` | DECIDED |
-| Total clamp power | 2.14 W (= belt power at operating point) | `sim/core_field_results.json` | `[OC]` | DECIDED |
-| PROPOSED trim | 66 -> 60 TVS (BV 11.9 kV) | `docs/ledger/DCCREG-design-ledger.md` §3.9 redesign | `[IR]` | PROPOSED |
+---
 
-**Rationale:** At steady state, ALL belt power goes into the clamps -- they are the
-load on the electrostatic pump (in the absence of the rings' real load). The clamp
-sets the operating voltage: V_op = BV / sqrt(2) approximately. The PROPOSED trim
-from 66 to 60 TVS (§3.9 redesign) would lower V_op but increase the rings' voltage
-fraction from the pump's perspective. The tube-spec must decide this or leave it
-OPEN. [OC/IR]
+### 2.4 Charge per cycle and power at the operating point
 
-### 8. Operating voltages and currents
+Operating point of record: the stack of record, clamped at V_op, 1200 rpm relative. Values are per side unless stated.
 
 | Parameter | Value | Source / basis | Tag | Status |
 |:----------|:------|:---------------|:----|:-------|
-| V_op (peak node 1/4) | 13.13 kV | `sim/core_field_results.json` design.V_op_kV | `[OC]` | DECIDED |
-| V1 swing | -5.70 to -13.23 kV (pp 7.53 kV) | `sim/core_field_results.json` clamped "none" V.1 | `[OC]` | DECIDED |
-| V2 swing | 0 to -6.12 kV (pp 6.12 kV) | `sim/core_field_results.json` clamped "none" V.2 | `[OC]` | DECIDED |
-| Diode reverse peaks | D1: 6.12, D2: 6.12, D3: 13.18, D4: 13.18 kV | `sim/core_field_results.json` clamped VR_pk_kV | `[OC]` | DECIDED |
-| Link current (rms AC) | 0.41 mA (deck), 0.34 mA (ngspice float) | `sim/core_field_results.json` link | `[OC]` | DECIDED |
-| V_rings (ideal) | +/- 14.96 kV | `docs/ledger/DCCREG-design-ledger.md` §4 | `[OC]` | DECIDED |
-| V_rings (as-built) | +/- 13.86 kV | `sim/tube_strays_results.json` as-built pump V_A/V_B | `[OC]` | DECIDED |
-| Operating frequency | 120 Hz (1200 rpm relative, 600 rpm each body) | `sim/core_field_results.json` F_Hz | `[IR]` | DECIDED |
+| speed | 600 rpm each body, opposite; 1200 rpm relative | ledger §4 | `[IR]` | DECIDED |
+| pump frequency | **120 Hz** = 6 sectors × 1200 rpm / 60. Not 3600 rpm or 2 × 60 Hz | ledger §4; `sim/core_field_results.json` `F_Hz`, `rpm_rel` | `[OC]` | DECIDED |
+| charge through each clamp per cycle (record) | **676 nC** (81.1 µA avg ÷ 120 Hz) | derived from `sim/core_field_results.json` row `none` `Z1.I_avg_mA` | `[OC]` | DECIDED |
+| clamp energy per cycle, each | 8.9 mJ | `sim/parts-first-cut-findings.md` §2.4 | `[OC]` | DECIDED |
+| clamp current waveform | 0.957 mA peak, 81 µA avg, 0.24 mA rms; conducts 14 % of each cycle, near minimum C | `sim/core_field_results.json` row `none`; `sim/parts-first-cut-findings.md` §2.4 | `[OC]` | DECIDED |
+| belt power into the ES engine, both sides (record, no rings) | **2.1423 W** (waveform check 2.1423 W) | `sim/core_field_results.json` row `none` `P_belt_W`, `P_belt_wave_W` | `[OC]` | DECIDED |
+| belt power, record with the symmetric rings' supply | 2.1438 W | `sim/hub_rings_build_results.json` `record_supply` | `[OC]` | DECIDED |
+| belt power as built: record supply / redesign | **0.646 W** / clamps 0.63 W | `sim/tube-strays-findings.md` §5; `sim/integrated-multiplier-findings.md` | `[OC]` deck; `[IR]` model | OPEN |
+| mean pull torque between the bodies | 17 mN·m at 2.14 W (P / ω_rel, ω_rel 125.7 rad/s); 5.1 / 5.0 mN·m as built, record / redesign | derived; `sim/integrated-multiplier-findings.md` §6 | `[OC]` | — |
+| varicaps' 120 Hz torque ripple | 63 mN·m p-p (record, antiphase); **191 mN·m p-p** (redesign, in phase) | `sim/integrated-multiplier-findings.md` | `[OC]` | DECIDED for now |
+| reference-link current (record) | 0.41 mA rms, 0.92 mA peak, pure AC (C1 / C2 displacement); 0.165 mA rms as built | `sim/core_field_results.json` row `none` `link`; `sim/integrated-multiplier-findings.md` | `[OC]` | DECIDED |
+| reference-link current (redesign) | 0.02 µA rms (Q1 = −Q2); the counter-rotor can float on 100 pF | `sim/integrated-multiplier-findings.md` §6 | `[OC]` | DECIDED for now |
+| redesign as laid out (60-part clamps, V_op 11.94 kV): charge per chain per cycle | 208.5 nC (25.0 µA); clamp 207.2 nC (24.9 µA); ring stage 1.27 nC (0.15 µA, its leakage) | `sim/multiplier-waveforms-findings.md` §2 | `[OC]` deck; `[RH]` strays | PROPOSED |
+| redesign diode currents, peak in 1° bins | D1 / D2 0.612 mA (22.7–26.3°); D3 / D4 0.229 mA (39.8–59.7°); clamps 0.516 mA (25.2–30.2°) | `sim/multiplier-waveforms-findings.md` §2 | `[OC]` | PROPOSED |
+| start-up, 95 % of the rings | record 0.24 s; as built 0.63 s (ideal) / 0.575 s (typical sticks, −1 kV); redesign 1.45 s; layout 1.22 s (cycle 146) | `sim/tube-strays-findings.md` §5; ledger §3.4, §3.9; `sim/multiplier-waveforms-findings.md` | `[OC]` | — |
 
-**Rationale:** These voltages define the insulation requirements for every component
-in the tube. D3/D4 see the full operating voltage (13.18 kV reverse); D1/D2 see
-half (6.12 kV). The rings sit at approximately V_op + V_supply_drop, ideally
-+/- 14.96 kV. The link current of 0.41 mA rms (at 120 Hz) is the AC shuttle
-current through the cone capacitors. [OC]
+**Rationale.** All of the belt's power to the engine leaves through the clamps; the rings take milliwatts (§2.8). The
+mean torque is small. The redesign's in-phase stacks triple the 120 Hz ripple, and how much of it reaches the gear was
+not run (ledger §3.9).
 
-### 9. Charge per cycle and power budget
+---
 
-| Parameter | Value | Source / basis | Tag | Status |
-|:----------|:------|:---------------|:----|:-------|
-| Q per transfer | 1.16 uC | `reference/commutator_real_core.py` Q_TRANSFER_C | `[OC]` | DECIDED |
-| Belt power (deck, clamped) | 2.14 W | `sim/core_field_results.json` design.P_clamped_W | `[OC]` | DECIDED |
-| Belt power (as-built) | 0.64 W | `sim/tube_strays_results.json` as-built pump P_clamped_W | `[OC]` | DECIDED |
-| LC half-cycle (brigade) | 0.82 us | `reference/commutator_real_core.py` T_HALF | `[OC]` | DECIDED |
-| SG window | 278 us (5 deg at 3000 rpm) | `reference/commutator_real_core.py` SG_WINDOW | `[IR]` | DECIDED |
-
-**Rationale:** The belt power is 2.14 W with the deck capacitances, dropping to
-0.64 W as-built due to the reduced kappa. At steady state with only the clamp as
-load, all belt power is dissipated in the clamp strings. With the rings connected,
-the power splits between clamp dissipation and ring supply. The tube-spec must
-account for every watt. [OC]
-
-### 10. Seed and start-up
+### 2.5 The varicap requirement
 
 | Parameter | Value | Source / basis | Tag | Status |
 |:----------|:------|:---------------|:----|:-------|
-| Seed threshold (ND model) | 122 V (kick frac 0.164) | `sim/diodes_real_results.json` thresholds ND none | `[OC]` | DECIDED |
-| Seed (real sticks, 25 C) | approx 1.0 kV | `sim/diodes-real-findings.md` | `[OC]` | DECIDED |
-| Seed (real sticks, hot) | 3.65 kV | `sim/diodes-real-findings.md` §6 | `[RH]` | OPEN |
-| Hot start failure | at 100 C, as-built does not start from -1 kV | `sim/diodes-real-findings.md` §6 | `[OC]` | OPEN |
-| K4 kick energy | 3.48 mJ | `sim/diodes_real_results.json` magnetic.kick_record.kick_mJ | `[IR]` | DECIDED |
+| stack | 6 stator (REF) + 6 rotor (node 1 / 4) Al vanes, 3 mm, full round R1.5; 11 gaps of 6 mm in air; 6 × 22° / 22° sectors on a 60° pitch, r 50–150 | ledger §3.4, §4 | `[IR]` | DECIDED |
+| C1 = C2, deck (the 2-D cell + 2 pF) | **54.9–409.9 pF, κ 7.47** | `sim/core_field_results.json` `design` | `[IR]` 2-D cell | DECIDED (the record) |
+| C1 = C2, as built (3-D solve) | **128.4–450.6 pF, κ 3.51**; the rims add 65 pF to C_min and 37 pF to C_max | `sim/tube-strays-findings.md` §4 | `[OC]` solve; `[IR]` solids | OPEN |
+| node 1 to REF in all, as built | 199.2–512.2 pF, ratio 2.57 (record 74.9–429.9, 5.74) | `sim/tube-strays-findings.md` §4 | `[OC]` | OPEN |
+| Ca = Cb | rule 1.1 C_max = 450.9 pF; laid out 480.5 pF (5 gaps, count rounded up); with the mounts 482.3 pF (1.072 C_max as solved). 1.1 × 450.6 = 495 pF needs a sixth gap | ledger §3.4; `sim/tube-strays-findings.md` §4; `sim/doubler-caps-findings.md` §4 | `[OC]` / `[IR]` rule | DECIDED (rule); OPEN (gap count) |
+| κ for z 1.31 (bare, 20 pF strays) | 7.47 at C_max 410 pF | `sim/core_field_results.json` | `[OC]` | DECIDED |
+| κ that can be lost before bare z < 1 | node total from 5.74 down to about 2.4 (§2.2); as built 2.57 leaves z 1.058 | `sim/core_swing_grid.json`; `sim/tube-strays-findings.md` §4 | `[IR]` grid reading | OPEN |
+| node-stray budget, record (z ≥ 1.30) | about 2 pF per electrode node | `sim/core-field-findings.md` §4 | `[RH]` | — |
+| node strays solved | 66.2 pF on 1 / 4 (40.2 sleeve-to-shaft, 14.6–23.1 Ca_01 through the last rotor vane, 7.0 other); 24.5 pF on 2 / 3 (11.5 to the utrons); across the hub ≤ 0.05 pF; 1–2 coupling 1.15 pF | `sim/tube-strays-findings.md` §3 | `[OC]` solve; `[IR]` model | OPEN |
+| stray headroom to z = 1 on nodes 1 / 4, ideal diodes, as built | ≈ 70 pF bare, ≈ 50 pF with the chains (secant extrapolation) | derived from `sim/tube-strays-findings.md` §3 | `[RH]` extrapolation | OPEN |
+| stray headroom with real HV sticks, hot | **none**: z 0.967 (record supply) / 0.987 (redesign) already | `sim/integrated-multiplier-findings.md` | `[OC]` deck; `[RH]` hot leakage | OPEN |
+| solved remedies (designer's options, not the record) | 6 / 12 mm rim clearance: z with the chains 1.046 / 1.041; PTFE sleeve 1.045; both 1.059, 0.91 W | `sim/tube-strays-findings.md` §6 | `[RH]` | PROPOSED by the study; not adopted |
 
-**Rationale:** The machine needs a seed voltage to start. With ideal diodes (ND
-model) the threshold is low (122 V), but real HV sticks with their leakage require
-approximately 1.0 kV at room temperature. At 100 C the leakage rises to 5 uA per
-stick and the machine may not start at all from the standard -1 kV seed -- this is
-an OPEN item that the bench must resolve. The K4 kick circuit provides the seed
-pulse. [OC/RH]
+**Rationale.** The engine needs the node-total ratio, not the varicap's own κ. The rims and the G10 sleeve take most
+of it: the sleeve alone gives 40 pF on node 1. A node-1 spacer ring mounting takes node 1 to 104.9 pF and z with the
+chains to 1.008, so the varicap's mounts must insulate, as the doubler-caps proposal does
+(`sim/doubler-caps-findings.md` §1). In a larger stack the fixed strays weigh less: at r 200, C_max 755 pF and κ 10.5
+(`sim/vane-matrix-findings.md` §1). The 6 + 6 cap and r 150 are the designer's.
 
-### 11. Supply chain interface
+---
+
+### 2.6 The clamp requirement
 
 | Parameter | Value | Source / basis | Tag | Status |
 |:----------|:------|:---------------|:----|:-------|
-| Chain diodes (per side) | 4 diodes at 7.5 kV reverse | `docs/ledger/DCCREG-design-ledger.md` §4 | `[IR]` | DECIDED |
-| Chain caps (per side) | 4 x 100 pF / 30 kV | `docs/ledger/DCCREG-design-ledger.md` §4 | `[IR]` | DECIDED |
-| Chain topology | CW multiplier, stacked into doubler (redesign) | `docs/ledger/DCCREG-design-ledger.md` §3.9 | `[IR]` | PROPOSED |
-| Null-field coefficient | k = 0.242 kV/cm per kV | `sim/hub_rings_build_results.json` record_in.k_kV_cm_per_kV | `[OC]` | DECIDED |
+| role | stops z > 1 growth: avalanche strings on nodes 1 / 4 to REF, conducting once a cycle near the peak; all surplus to heat | ledger §3.4 | `[OC]` | DECIDED |
+| target V_op (record) | **13.13 kV** = the 6 mm gap's 19.7 kV breakdown / 1.5 | `sim/core_field_results.json` `design.V_op_kV`; ledger §4 | `[RH]` margin | DECIDED |
+| string, record | 66 × 200 V (1.5KE200A class, VBR 190–210 V at 1 mA) = 13.2 kV nominal | `sim/parts-first-cut-findings.md` §2.4 | `[IR]` | PROPOSED (first cut) |
+| string, redesign layout | **60 parts, V_op 11.94 kV**. At 66 the layout's small strays raise the rings to ±16.25 kV; at 60 they hold ±14.77 kV | ledger §3.9; `sim/multiplier-waveforms-findings.md` | `[RH]` strays | PROPOSED |
+| dissipation, record | **1.07 W each** (2.14 W both); 0.95 mA peak; 16 mW avg / 0.19 W peak per part | `sim/core_field_results.json` row `none`; `sim/parts-first-cut-findings.md` §2.4 | `[OC]` | DECIDED |
+| dissipation, as built | about 0.32 W each (0.64 W record supply, 0.63 W redesign, both sides) | `sim/integrated-multiplier-findings.md` | `[OC]` | OPEN |
+| dissipation, redesign layout | about 0.30 W each (24.87 µA × 11.94 kV) | derived from `sim/multiplier-waveforms-findings.md` §2 | `[OC]` | PROPOSED |
+| BV tolerance | ±5 % parts → 12.54–13.86 kV at worst; a random lot ±47 V (σ 0.36 %). Sort by VBR at 1 mA; trim with whole parts (1.5 % a part); a lower-voltage part at the REF end | `sim/parts-first-cut-findings.md` §2.4 | `[IR]` | PROPOSED |
+| temperature | +0.1 %/K, +13 V/K for the string; +25 K lifts V_op 0.33 kV (gap margin 1.5 → 1.46; rim corona ×1.07 → ×1.04). Trim warm | `sim/parts-first-cut-findings.md` §2.4 | `[IR]` datasheet class | PROPOSED |
+| junction capacitance | C_j / 66 adds about 1–2 pF to node 1 / 4 (0.003–0.006 of z) | `sim/parts-first-cut-findings.md` §2.4 | `[RH]` | — |
+| clamps' leakage, hot | 5 µA a string; it sets the 3.65 kV hot seed | ledger §3.4 | `[RH]` | OPEN (bench) |
+| without clamps | relaxation oscillator: arcs at the stack, 25–47 A through D1–D4, 38 A peak / 1.8 A rms / 2.1 mC per strike through the bearing link. **The clamps are mandatory** | `sim/electrostatic-no-clamp-findings.md`; ledger §3.4 | `[OC]` | DECIDED |
 
-**Rationale:** The chain diodes and caps form the CW multiplier that supplies the
-rings from the doubler's operating voltage. The chain sees the same AC swing as
-the doubler nodes. The null-field coefficient k relates the ring voltage to the
-field at the hub's equatorial plane -- this governs the rings' insulation. [OC/IR]
+**Rationale.** The clamps are the engine's governor and its sink. The rings' level follows V_op through each stage's
+swing, so the bench trims the string length to the rings' target before the hub sees it (ledger §3.9).
+
+---
+
+### 2.7 The island requirement
+
+| Parameter | Value | Source / basis | Tag | Status |
+|:----------|:------|:---------------|:----|:-------|
+| island in the tube | **none** (superseded with the spark gaps, the shuttles and the resonant tank) | ledger §2.4 | `[IR]` | DECIDED |
+| why it cannot be carried over | with diodes the Cx / Lx islands become voltage multipliers (island node 8 at 8× node 1), and under the breakdown cap the output collapses | `sim/diode-stack-findings.md` Reading 3 | `[OC]` | — |
+| disc machine's island (anchor) | a downstream Cx / Lx sink; its LC transfer recovers ≈ 31 % of the combined tax, η 0.386 → ≈ 0.45–0.50; S2 to < 0.6 % (t½, i_pk, V_bank) | `docs/efficiency-resolution.md` §3; `sim/island-asdrawn-findings.md` H1 | `[OC]` | ANCHOR |
+| why a sink recovers | the sink's equalization is not the pump's ratchet, so resonating it breaks nothing (the principle, §Governing 1) | `docs/efficiency-resolution.md` §2 | `[OC]` | LOCKED |
+| as-drawn island harness | HARNESS-FAIL at H3 (station phasing binds). No as-drawn island z / η verdict exists | `sim/island-asdrawn-findings.md` | `[OC]` | — |
+| the tube's sink in its place | the clamps Z1 / Z4 (dissipative) and the rings' leakage (100 GΩ per ring) | §2.6, §2.8 | `[OC]` | DECIDED |
+| commutation interface | Phase 2. A reinstated spark-gap stage would have to re-anchor on the station-armed machine (z 1.5225 at the canary) and fix a cycle cut for η | `sim/island-asdrawn-findings.md` §Consequence | `[IR]` | OPEN (Phase 2) |
+
+---
+
+### 2.8 Conservation ledger (the engine at the operating point, both sides)
+
+Record's deck, the symmetric 2 + 2 supply at 100 GΩ per ring (`sim/hub_rings_build_results.json` `record_supply`):
+steady state, the last 8 cycles, 120 Hz.
+
+| term | W | per cycle | Source | Tag |
+|:--|--:|--:|:--|:--|
+| **in:** belt → varicaps (integrator) | **2.14381** | 17.87 mJ | `record_supply.P_belt_W` | `[OC]` |
+| in, cross-check from the waveforms (ΔC·ω·sin·(V1² − V4²)/4) | 2.14381 | — | `record_supply.P_belt_wave_W` | `[OC]` |
+| **out:** clamp Z1 | 1.06984 | 8.92 mJ | `record_supply.Z1.P_W` | `[OC]` |
+| out: clamp Z4 | 1.06945 | 8.91 mJ | `record_supply.Z4.P_W` | `[OC]` |
+| out: the rings' leakage (to the rings, the delivered product) | 0.00448 | 37 µJ | `record_supply.P_leak_W`; ledger §4 "4.5 mW" | `[OC]`; `[RH]` 100 GΩ |
+| out: other (the deck's diodes, the bearing link's 1 Ω, stored-energy drift) | 0.00004 | 0.3 µJ | `record_supply.P_other_W` | `[OC]` |
+| **residual** (in − out) | **≈ 0** by construction (P_other is the remainder); the independent check: the waveform belt agrees with the integrator to 5e-7 | — | `sim/core_field.py`:248–254 | `[OC]` |
+
+**Charge.** Each clamp passes 81.0 µA avg (675 nC a cycle, `record_supply.Z1.I_avg_mA`). The ring stages pass their
+leakage: 14.96 kV / 100 GΩ = 0.15 µA. The link carries 0.19 nA DC (`record_supply.link.I_avg_uA`), so no DC crosses
+the bearing. `[OC]`
+
+**As built** (`sim/tube-strays-findings.md` §5): belt 0.646 W, almost all into the clamps.
+**Redesign as laid out** (`sim/multiplier-waveforms-findings.md` §2, G2): the charge balance closes to 0.011 % per
+chain and to 0.009 % at nodes 1 / 4. `[OC]`
+
+**Does it close?** Yes `[OC]`:
+- the belt power equals clamps + leakage + others to 2e-5;
+- the delivered fraction (the rings' leakage) is 0.21 % of the belt power;
+- the rest is heat in the clamps, the dissipative sink the principle allows. No recovery term exists, and none may be
+  added.
+
+**Outside this boundary** (for the conservation-auditor, not part of the engine; ledger §4):
+- the magnetic pump: belt 17.6 W (18.1 with the bypass) + iron 1.25 W;
+- windage about 12 W; bearings 5 W;
+- the bridge-ring bearings +2.1 W (6.1 high).
 
 ## Evidence ledger
 
 | Item | Current design | Evidence | Issue (if any) |
 |:-----|:---------------|:---------|:---------------|
-| z | 1.334 (G3), 1.31 (deck), 1.06 (as-built) | `doubler_core.py`, `core_field_results.json`, `tube_strays_results.json` | As-built z devastated by strays |
-| kappa | 7.47 (deck) vs 3.51 (as-built) | `core_field_results.json`, `tube_strays_results.json` | Vane rims add 65/37 pF to C_min |
-| eta | 0.386 direct, approx 0.50 with island | `commutator_real_core.py`, S2 study | eta 0.70 falsified |
-| Strays | 20 pF placeholder vs 66.2/24.5 pF solved | `tube_strays_results.json` decks | 3.3x underestimate on outer nodes |
-| Belt power | 2.14 W (deck) vs 0.64 W (as-built) | `core_field_results.json`, `tube_strays_results.json` | 3.3x reduction from strays |
-| Seed voltage | 122 V (ND) vs 1.0 kV (real) vs 3.65 kV (hot) | `diodes_real_results.json` | Hot start failure OPEN |
-| Clamp trim | 66 TVS (13.1 kV) vs 60 TVS (11.9 kV) PROPOSED | `DCCREG-design-ledger.md` §3.9 | Redesign proposes 60 |
+| z anchor | 1.334 (frozen, G3) | `reference/commutator_real_core.py`; `docs/efficiency-resolution.md` | belongs to the disc machine's stepped schedule, not the tube |
+| z tube | 1.3095 bare / 1.191 chains (record); 1.058 / 1.031 as built | `sim/core_field_results.json`; `sim/tube-strays-findings.md` §5 | as built barely self-excites with ideal diodes; with hot sticks it does not (0.967) |
+| η | 0.386 / ≈ 0.50 disc; transfer 1.00 tube | `docs/efficiency-resolution.md`; `sim/diode-stack-findings.md` | 0.386 is stepped-model and cut-dependent; the tube has no η of record |
+| κ | 7.47 deck vs 3.51 as built | `sim/core_field_results.json`; `sim/tube-strays-findings.md` §4 | the 2-D cell's 2 pF rim floor is in fact +65 pF |
+| strays | 20 pF placeholder vs 66.2 / 24.5 pF solved | `sim/tube-strays-findings.md` §3 | the G10 sleeve is 40 pF of node 1's |
+| Ca | rule 1.1 C_max; laid out 1.068–1.072 C_max | `sim/tube-strays-findings.md` §4; `sim/doubler-caps-findings.md` §4 | the DECIDED rule needs a sixth gap (495 pF) |
+| clamps | 66 parts, V_op 13.13 kV (record); 60 parts, 11.94 kV (layout) | `sim/parts-first-cut-findings.md` §2.4; ledger §3.9 | the trim rests on estimated new-node strays [RH] |
+| belt power | 2.14 W record; 0.65 W as built | `sim/core_field_results.json`; `sim/tube-strays-findings.md` §5 | 3.3× loss to the strays |
+| seed | 122 V / 1.0 kV / 3.65 kV (record as built); 51 V / 947 V / 4.87 kV (redesign) | ledger §3.4, §5.2 | no seed source designed |
+| frozen engine's station phasing | z 1.5225 station-armed vs 1.3340 simultaneous | `sim/island-asdrawn-findings.md` H3 | binds for any Phase 2 commutator |
+| D1–D4 reverse | 6.1 / 6.1 / 13.2 / 13.2 kV (record); ≤ 6.11 kV (redesign layout) | `sim/core_field_results.json`; `sim/multiplier-waveforms-findings.md` | — |
+| varicap phase in the solids | the record drew C1 / C2 in phase against an antiphase circuit | ledger §6 item 58 | corrected for the record; the redesign wants in phase |
 
 ## Cross-spec dependencies
 
 | Item | Value | Needed by | Note |
 |:-----|:------|:----------|:-----|
-| Operating voltage V_op | 13.13 kV | tube-synth, electrical-integrity | Sets insulation requirements |
-| Node voltage swings | V1: 7.53 kV pp, V2: 6.12 kV pp | tube-synth | Sets component ratings |
-| Diode reverse peaks | D1/D2: 6.12 kV, D3/D4: 13.18 kV | tube-synth | Sets stick ratings |
-| Belt power | 2.14 W (deck) | conservation-auditor | Must equal losses + ring power |
-| eta ceiling | approx 0.50 | conservation-auditor | Any higher is a violation |
-| Operating frequency | 120 Hz | retainer-spec | 2x PRF for shaft excitation |
-| Stray budget | 66.2/24.5 pF | tube-synth | Must be allocated to physical sources |
-| Kappa discrepancy | 7.47 vs 3.51 | tube-synth | Must be resolved or documented |
+| z target and margin | 1.3095 bare (record); as built 1.058 / 1.031; redesign 1.0142–1.0164 | tube-synth | the tube must state its node-total ratio and z with real sticks hot |
+| node-total ratio threshold | ≈ 2.4 for bare z = 1 (ideal diodes, Ca 1.1 C_max) | tube-synth | `[IR]` grid reading |
+| varicap C | 54.9–409.9 pF (deck), 128.4–450.6 pF (as built) | tube-synth | solve what is built |
+| Ca / Cb | 1.1 C_max rule; 480.5–482.3 pF as laid out | tube-synth | gap count OPEN |
+| stray prices | 0.0027 / pF (1 / 4) and 0.0018 / pF (2 / 3) at the record's caps; 0.0006–0.0008 / pF as built | tube-synth | every lead and mount adds stray |
+| clamp BV / tolerance | 13.13 kV (66 parts) or 11.94 kV (60, layout); 1.5 % a part; σ 0.36 %; +13 V/K | tube-synth, electrical-integrity | trim warm on the bench |
+| operating current | clamp 81 µA avg, 0.95 mA peak (record); 24.9 µA (layout); link 0.41 mA rms (record) / 0.02 µA (redesign) | tube-synth, retainer-spec | the link's AC passes a bearing in the record |
+| node voltages, record | 1 / 4: −13.2 ↔ −5.7 kV (mean −8.6); 2 / 3: 0 ↔ −6.1 kV; V_Ca −5.7 ↔ −7.4 kV; V(1) − V(4) ±7.4 kV at 120 Hz; rings ∓14.96 kV | `sim/core_field_results.json`; `sim/hub_rings_build_results.json` | electrical-integrity |
+| node voltages, redesign layout | 1: −11.99 / −6.45; 2: 0 / +4.11; l1 −5.86 / −2.99; r1 +2.99 / +5.86; r2 −8.70 / −5.29; xa −14.77 / −11.40; ring A −14.77 kV (side B mirrored); Ca / Cb 13.2 kV DC | `sim/multiplier-waveforms-findings.md` §2; ledger §3.9 | electrical-integrity |
+| peak fields | gap face 21.9 kV/cm; rims 44.4 kV/cm (0.80 of Peek's 55.7 smooth); corona onset 16.5 kV smooth, 14.0 kV handled (×1.26 / ×1.07); tab crossings 1.052; G10 sleeve 2.1 kV/mm at the shaft, a bore air film about 10 kV/mm | ledger §3.4, §4; `sim/doubler-caps-findings.md` §3; `sim/core-field-findings.md` §7 | electrical-integrity |
+| flashover scenario | a vane flashover at node 4, at its lowest point, lifts ring B 14.96 → 19.03 kV (+27 %), 2 % over the bench's ±18.7 kV hold-off; not run with the redesign's ring stages | `sim/parts-first-cut-findings.md` §2.7; ledger §5.2 | electrical-integrity; OPEN |
+| no-clamp failure | 25–47 A diode surges; 38 A through the bearing | `sim/electrostatic-no-clamp-findings.md` | electrical-integrity |
+| conservation ledger | §2.8: 2.1438 W in, 2.1393 W clamps, 4.5 mW rings, 41 µW other | `sim/hub_rings_build_results.json` | conservation-auditor |
+| η ceiling | tube: no η of record; transfer 1.00 (ideal); disc anchors 0.386 / ≈ 0.50; 0.70 forbidden | §2.3 | conservation-auditor gates any η claim |
+| equalization principle | no recovery from rectifying transfers; sinks only | `CONVENTIONS.md`; `docs/efficiency-resolution.md` | conservation-auditor |
+| torque | mean 17 mN·m at 2.14 W (5 mN·m as built); 120 Hz ripple 63 (record) / 191 mN·m p-p (redesign) | §2.4 | retainer-spec (gear, the bays' mode near 120 Hz, ledger §6 item 77) |
+| pump frequency | 120 Hz at 600 rpm a body | ledger §4 | retainer-spec: f2 108–117 Hz sits near it |
 
 ## Items deferred to bench
 
 | Item | Why it is open | What the bench measures | Source |
 |:-----|:---------------|:-----------------------|:-------|
-| Hot start threshold | Stick leakage at temperature not reliably modelled | Minimum seed voltage vs temperature | `diodes-real-findings.md` §6 |
-| As-built z confirmation | 3-D solve vs reality | Voltage growth rate from seed | direct measurement |
-| Island sink eta | ngspice gives approx 0.50, bench confirms | Delivered ring power / shaft power | `bench-test-rings.md` |
+| HV sticks' and clamp strings' leakage, hot | the 5 µA hot string and the stick leakage are [RH]; they decide self-excitation | leakage vs temperature at working voltage; the smallest seed | ledger §3.4; `sim/diodes-real-findings.md` §6 |
+| as-built z | the 3-D solve omits leads, mounts and parts | growth per cycle from a known seed, clamps out | `sim/tube-strays-findings.md` caveats |
+| clamp string length | V_op and the rings' level rest on [RH] new-node strays | VBR of the sorted string, warm; the rings' level | ledger §3.9; `sim/parts-first-cut-findings.md` §2.4 |
+| corona onset at the rims and the tab crossings | margins 1.05–1.07 on a handled surface; Peek's m 0.85 is [RH] | onset of the assembled column at 1.45 × V_op | `sim/doubler-caps-findings.md` caveats |
+| the rings' hold-off and leakage | the 1 / 5 kV/mm ratings and 100 GΩ are [RH] | DC hold-off to ±20 kV; leakage | `docs/bench-test-rings.md` |
 
 ## Recommendations for the designer
 
-1. **PROPOSED:** The kappa discrepancy (3.51 vs 7.47) should drive the vane
-   geometry redesign. Reducing C_min (the unaligned parasitic) is the highest-
-   leverage improvement to the pump's performance. The tube-spec will address
-   geometry options.
+All PROPOSED. The designer decides.
 
-2. **PROPOSED:** The clamp trim (66 to 60 TVS) should be evaluated together with
-   the redesigned varicap kappa -- a lower clamp BV is acceptable if the higher
-   kappa delivers adequate belt power at the reduced voltage.
-
-3. **PROPOSED:** The hot-start problem (100 C, real sticks) may require a higher
-   seed voltage from K4, or a staged start-up sequence. This is deferred to the
-   bench but should be planned for in the K4 circuit design.
+1. **PROPOSED:** state which engine tube-synth builds against: the record's doubler with 2 + 2 chains, or the §3.9
+   redesign (DECIDED "for now", its layout PROPOSED). The numbers differ in z, Ca / Cb's DC, the clamp length and the
+   torque ripple.
+2. **DECIDED** (the designer, 2026-10-14): "the engine theory should keep both ideal and real HV diode simulation
+   records for the empirical proof to come." Every engine figure is carried in pairs: ideal-diode z (the theory's
+   limit) and real-HV-stick z at typical, maximum and hot leakage (`sim/diodes-real-findings.md` §4, §6), with
+   neither replacing the other; the bench (phase 4, `docs/bench-test-rings.md`) arbitrates. As built the real hot
+   values fall under 1 (0.967 / 0.987), which the record keeps beside the ideal 1.031 / 1.0164. The acceptance
+   criterion itself is not set by this decision.
+3. **PROPOSED:** specify the varicap by its node-total ratio (≥ the 2.4 bare threshold, plus a margin the designer
+   sets). Require insulating mounts on node 1 / 4; every mm of node-1 metal on the sleeve costs about 0.5 pF.
+4. **DECIDED** (the designer, 2026-10-14): "sixth gap ok". Ca / Cb take a sixth gap, 495 pF, which meets the
+   DECIDED 1.1 C_max rule (`sim/tube-strays-findings.md` §6), against the layout's 5 gaps (480.5 pF; 482.3 pF with the
+   mounts' tabs, `sim/doubler-caps-findings.md`). Consequences to carry [IR]: the column grows by one 6 mm gap and one
+   plate per side, so the tube length, the masses, the shaft modes and the strays of the layout studies shift; the
+   redesign's ring levels and clamp trim were computed on 5 gaps and need re-running.
+5. **DECIDED** (the designer, 2026-10-14): no HV seed source. The designer reports, as experimentally established,
+   that the simple de Queiroz doubler with four diodes self-starts without an HV seed impulse, in dry sunny weather
+   and in high humidity alike, the dry condition starting more easily. If it starts with difficulty, charge injection
+   from a rubbed PVC tube (triboelectric) starts it.
+   - **Status of the evidence:** the designer's experiment, not reproduced in this repository; no data file holds it
+     yet. It stands beside the model, as decision 2 requires, and the bench arbitrates.
+   - **What it contradicts in the model** [IR]: `sim/diodes-real-findings.md` §4.1 / §6 and the ledger's §6 items 46 / 65
+     ("a contact potential or a triboelectric charge does not start it"; seeds of 122 V / 1.0 kV / 3.65 kV as built,
+     4.87 kV hot for the redesign). The model's real-stick leakage and the clamps' hot 5 µA [RH] are the likely
+     points where the two part; the bench's phase 4 measures them.
+   - **What it does not yet cover** [IR]: the experiment is on the simple four-diode schematic. Whether the §3.9
+     redesign (bipolar, C1 / C2 in phase, the C3–C8 ladder, the solved strays, z 1.0164 ideal) self-starts the same
+     way is OPEN for the bench. A rubbed PVC tube charges to kV-class potentials [OC, order of magnitude], so as a
+     fallback it covers the model's hot seed too; the tube spec must give an accessible injection point and its
+     sign.
+6. **PROPOSED:** retire z 1.334 / η 0.386 / ≈ 0.50 from any tube-facing table, except as labelled anchors of the disc
+   machine.
