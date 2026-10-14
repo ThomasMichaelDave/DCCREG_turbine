@@ -41,6 +41,28 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The rebuild started: Stage 0, the base schematic (2026-10-14)
+The designer: "this paper's fig. 1 schematic is the new first schematic to create the doubler from. We then develop
+the actual 3d models according to the known tube layout. Design it through, scrutinize it, create it and test it.
+Basics first, with our lessons learned".
+
+- **`rebuild/README.md`** (new): the stages, from S0 (the schematic) to S5 (the bench). It also holds the freeze rule
+  and twelve lessons learned from the evidence.
+- **`rebuild/s0_base/`** (new):
+  - de Queiroz Fig. 1 as printed, at positive polarity. One topology generates both the ngspice deck and the
+    drawing.
+  - Ideal (LCP) and ngspice records with the paper's values: z 1.372169 ideal and 1.372037 in ngspice, against a
+    printed √z of 1.17138.
+  - Values, strays and real diodes are carried to S1.
+- **The designer's decisions (2026-10-14):**
+  - "Schematic ok": S0 is frozen.
+  - "Positive is ok": the polarity is positive.
+  - On the clamps: "I will not even decide if the clamps are necessary. We will evaluate this instead of injecting
+    prior work before evidence exists to prove its necessity." S1 therefore sizes the bare core and finds what limits
+    its voltage. No earlier part enters without evidence (`rebuild/README.md`, the rule of addition).
+  - "I meant branches": the rebuild's evidence includes the repo's other branches.
+- **Not changed:** the evidence, the ledger and the frozen files.
+
 ### de Queiroz's segment-matrix solver checked and generalised (2026-10-14)
 The designer asked for the paper's matrix solver to be checked and documented as a basis for future solvers.
 

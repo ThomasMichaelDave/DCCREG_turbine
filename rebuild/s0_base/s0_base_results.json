@@ -1,0 +1,141 @@
+{
+ "topology": {
+  "name": "S0 base: de Queiroz Fig. 1, symmetrical unipolar generator",
+  "polarity": "positive, as printed (all node voltages >= 0)",
+  "capacitors": {
+   "C1": {
+    "nodes": [
+     "1",
+     "0"
+    ],
+    "kind": "variable",
+    "role": "varicap A; C_max at phase 1"
+   },
+   "C2": {
+    "nodes": [
+     "4",
+     "0"
+    ],
+    "kind": "variable",
+    "role": "varicap B, antiphase to C1 (C1 + C2 constant)"
+   },
+   "Ca": {
+    "nodes": [
+     "1",
+     "2"
+    ],
+    "kind": "fixed",
+    "role": "transfer capacitor A"
+   },
+   "Cb": {
+    "nodes": [
+     "3",
+     "4"
+    ],
+    "kind": "fixed",
+    "role": "transfer capacitor B"
+   }
+  },
+  "diodes": {
+   "D1": [
+    "0",
+    "2"
+   ],
+   "D2": [
+    "0",
+    "3"
+   ],
+   "D3": [
+    "3",
+    "1"
+   ],
+   "D4": [
+    "2",
+    "4"
+   ]
+  }
+ },
+ "values": {
+  "Cmin": 6e-11,
+  "Cmax": 3.6e-10,
+  "Ca": 3.3e-10,
+  "Cb": 3.3e-10,
+  "F": 20.0
+ },
+ "alpha": 6.0,
+ "beta": 5.5,
+ "ideal": {
+  "solver": "sim/queiroz_matrix.py (LCP, exact ideal diodes), 8000 steps a half cycle",
+  "z_cycle": 1.372168781990326,
+  "sqrt_z_half_cycle": 1.171396082454746,
+  "a_e21_e11": 0.15967178478536295,
+  "b_e41_e11": 2.241176331545471,
+  "e_phase1": [
+   1.0,
+   0.15967178478536295,
+   0.9999999999999986,
+   2.241176331545471
+  ]
+ },
+ "ngspice": {
+  "deck": "rebuild/s0_base/s0_base.cir",
+  "diode": "ND: is 1e-12, n 0.005, rs 1e-3 (near-ideal)",
+  "z_cycle": 1.3720374091550418,
+  "z_history": [
+   1.3836652129334401,
+   1.3786366624439668,
+   1.375705007519351,
+   1.3740711718270495,
+   1.373152841014979,
+   1.3726379224208525,
+   1.3723543970546586,
+   1.3721970254952338,
+   1.372115605130708,
+   1.3720783847898916,
+   1.372056661107244,
+   1.3720333630358161,
+   1.3720292748353822,
+   1.3720374091550418,
+   1.3720378084049047
+  ],
+  "V1_peaks": [
+   1.39241962,
+   1.92664259,
+   2.65614011,
+   3.65406525,
+   5.02094572,
+   6.89452588,
+   9.46368768,
+   12.9875334,
+   17.8214547,
+   24.4530961,
+   33.5515646,
+   46.0346477,
+   63.1610725,
+   86.6588405,
+   118.899171,
+   163.134158
+  ],
+  "e_phase1": [
+   1.0,
+   0.15981103526201837,
+   1.0000198880363607,
+   2.2411464326090886
+  ],
+  "min_node_V": -0.00272245745
+ },
+ "paper": {
+  "sqrt_z": 1.17138,
+  "a": 0.159674,
+  "b": 2.24117,
+  "note": "the printed sqrt z is 1.6e-5 under the converged 1.171396 (sim/queiroz-matrix-findings.md)"
+ },
+ "real_diodes": "deferred to Stage 1 (tube values) [IR]",
+ "agreement": {
+  "ngspice_vs_ideal_z": -9.574101743792252e-05,
+  "ngspice_vs_ideal_a": 0.000139250476655417,
+  "ngspice_vs_ideal_b": -2.9898936382277697e-05,
+  "ideal_vs_paper_a": -2.215214637057983e-06,
+  "ideal_vs_paper_b": 6.331545471027766e-06
+ }
+}
