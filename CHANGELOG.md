@@ -41,6 +41,21 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The de Queiroz analysis paper added as evidence (2026-10-14)
+The designer supplied `analysis.pdf` and asked for it to be committed as evidence, for checking and documenting its
+matrix solver.
+
+- **`docs/reference/deQueiroz-2019-analysis-electronic-electrostatic-generators.pdf`** (new): the author's
+  manuscript, byte-identical as received. **`docs/reference/README.md`** (new) records its provenance, its SHA-256
+  and the numbers the repo uses from it.
+- **Found on reading it** [OC: the PDF]:
+  - The paper's 1.17138 is √z, the half-cycle factor; z = 1.37213 per cycle. `sim/queiroz_fig1_check.py` has the
+    right numbers but labels the half-cycle factor "z".
+  - The 1.1538 that `xsim_queiroz_matrix.py` targets is the paper's prediction for its Fig. 6 experiment, with
+    C_min ≈ 60 + 82 pF from the probes. It is not the α = 6, β = 5.5 case. That explains the harness's
+    `V0-SECONDARY-OPEN`.
+- **Why:** the paper was paywalled and unfetchable, and the repo's checks of it rested on secondary readings.
+
 ### The AH-drive parts placed on the rotor and the drive re-cut onto the layout (2026-10-12)
 The designer asked: "I want the AH parts locations proposed and positioned in an updated model and the bevel reverse
 too."
