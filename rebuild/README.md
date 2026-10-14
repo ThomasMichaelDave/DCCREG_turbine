@@ -50,9 +50,9 @@ or OPEN at each gate is the designer's call.
 **S0 is frozen** (the designer, 2026-10-14: "Schematic ok"). The freeze commit is recorded below, and this check must
 print 0:
 
-`git diff S0_FREEZE -- rebuild/s0_base/ | wc -l`
+`git diff 42747f4 -- rebuild/s0_base/ | wc -l`
 
-- S0_FREEZE: _pending_
+- S0_FREEZE: `42747f4` (2026-10-14)
 
 ## Lessons learned the stages must carry
 
