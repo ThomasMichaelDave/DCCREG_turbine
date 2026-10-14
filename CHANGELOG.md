@@ -41,6 +41,21 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### de Queiroz's segment-matrix solver checked and generalised (2026-10-14)
+The designer asked for the paper's matrix solver to be checked and documented as a basis for future solvers.
+
+- **`sim/queiroz_matrix.py`** (new; its results and `sim/queiroz-matrix-findings.md`). It checks the paper two ways:
+  - its closed forms (eqs. 11–14 for Fig. 3, eqs. 19–23 for Fig. 1);
+  - an independent ideal-diode solver, which treats charge conservation with the diodes as an LCP and needs no
+    segment order.
+- **Results:**
+  - Both routes reproduce every printed number to 6 digits: Fig. 1 gives √z 1.171396, a 0.159674, b 2.24117, so
+    z = 1.372170 per cycle.
+  - The paper's 1.1538 is its Fig. 6 experiment: z per cycle with 82 pF probes on C1 and C2 (1.15378).
+  - Eq. 14 as printed has a sign slip.
+- **Not changed:** no design value and no frozen file. `sim/queiroz_fig1_check.py` and `xsim_queiroz_matrix.py` are
+  left as they were. The findings record their mislabel and their misattributed target.
+
 ### The de Queiroz analysis paper added as evidence (2026-10-14)
 The designer supplied `analysis.pdf` and asked for it to be committed as evidence, for checking and documenting its
 matrix solver.
