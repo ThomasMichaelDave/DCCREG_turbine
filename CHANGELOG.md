@@ -41,6 +41,16 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The KiCad schematics of S0 and S1 (2026-10-15)
+The designer: "Both are ok, no need to add actual diagonals, that would be pure aesthetic."
+
+- **`rebuild/kicad/make_kicad.py`** (new; `kicad_check_results.json`, `kicad-findings.md`): the S0 and S1 sheets as
+  KiCad 10 projects, with every component explained on the sheet. Their netlists are exported with `kicad-cli`.
+- **The check:** S0 matches TOPOLOGY and `s0_base.cir`; S1 matches TOPOLOGY plus C_k, Cr1 and Cr4, and the
+  pulsed-core solver. The ERC is 0 / 0 on both.
+- **The layout:** accepted by the designer. The saved sheets are the drawings of record.
+- **`rebuild/README.md`:** KiCad 10.0.6, and this stage marked done.
+
 ### The KiCad netlist and the explained schematics (2026-10-15)
 The designer: "We will first install kicad on my machine so we can deliver the proper netlist"; "When you generate
 the schematic, provide the proper text in the schematic to explain all components."
