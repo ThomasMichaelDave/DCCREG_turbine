@@ -41,6 +41,51 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### Rebuild S1: the bare core at the tube's values (2026-10-14)
+The designer: "Start S1".
+
+- **`rebuild/s1_tube/s1_bare.py`** (new; its results and `s1-bare-findings.md`): the frozen S0 core at the tube's
+  C1 / C2 (128.4–450.6 pF, 3-D), Ca = Cb 495 pF and 120 Hz. Nothing is added to it.
+- **The gain:** z 1.18702 ideal, 1.18714 in ngspice, 1.1806 with real sticks.
+- **The limit:** the bare core limits itself only by D3 / D4 avalanche, at 29.7 kV on nodes 1 / 4. That is 1.51 × the
+  varicap gap's 19.70 kV breakdown, passed at cycle 17. So a limit under the air's is shown necessary; its kind is the
+  designer's choice among options (a)–(d).
+- **The start:** with typical stick leakage the core grows from a ≤ 1 V seed, the designer's self-start. With 2 / 5 µA
+  it needs 81 / 375 V.
+- **Ca:** z peaks at about 0.7 C_max (1.198, against 1.187 at the DECIDED 1.1 C_max). Noted for S2.
+- **The vacuum comparison** (the designer: "in parallel compare with the tube vacuum drawn"; `--case vacuum` →
+  `s1_bare_vacuum_results.json`). The tube drawn for vacuum gives:
+  - z 1.570, with κ 15.66 from the 2-D cell, an upper bound;
+  - a ceiling of 38.3 kV against the 30 kV breakdown;
+  - a self-start from ≤ 1 V, 9 V or 14 V by leakage class.
+  So the limit is necessary in vacuum too.
+- **The stress map** now divides out the growth inside the traced cycle: D3 / D4 0.956 (air), 0.880 (vacuum).
+- **`rebuild/s1_tube/s1_stress_options.py`** (new; its results and `s1-stress-options-findings.md`), for the designer's
+  question how to move the voltage stress off the discrete parts:
+  - D3 / D4 see ≈ 0.96 of the varicap voltage in the core;
+  - a two-phase Dickson chain divides the diodes' share (0.50 / 0.36 / 0.29 for N 2 / 3 / 4), but z falls
+    (1.080 / 1.042 / 1.026) and the coupling capacitors take 0.72–0.83;
+  - a Cockcroft-Walton on the core does not relieve D3 / D4;
+  - a finer gap lowers every part's voltage at the same power [OC, before plate thickness and rims].
+- **`rebuild/s1_tube/s1_multiplier_tap.py`** (new; its results and `s1-multiplier-tap-findings.md`), for the
+  designer's two-stage multiplier tapped into a buffer.
+  - **The buffer stores 99.6–99.96 % of the mechanical input** (ideal; the energy closes to 1e-5), which is recovery
+    at a sink.
+  - **The best floating tap** is across a positive ladder on node 1 and a negative one on node 4. It reads 0.92 of the
+    varicap peak. The largest node pair there is 1.58 × the tap, 19.2 kV at a 13.13 kV peak.
+  - **Two positive ladders step the voltage down.**
+  - **A real store must keep emptying,** through a converter, back to the drive.
+- **`rebuild/s1_tube/s1_pulsed_core.py`** (new; its results and `s1-pulsed-core-findings.md`), for the designer's
+  pulsed core ("top and bottom switch polarities ... is a mere phase shift ... enough?"):
+  - S0's 180° already makes V1 − V4 a pure alternating wave (mean ≤ 3e-6, no even harmonics). With the centre as the
+    neutral, top and bottom swap polarity every half cycle;
+  - z against the phase: 1.000 at 0°, 1.122 at 90°, 1.187 at 180°. In phase does not pump, which settles the §3.9
+    in-phase drawing against S0;
+  - the core enters the schematic as C_k across nodes 1–4: the record's ring strays cost 0.011 of z, and C_k = C_min
+    stops the pump;
+  - the direct tie gives ±0.54 of the varicap peak, ±1.80 kV/cm at the null at the 13.13 kV scale.
+- **Not changed:** the S0 freeze, the evidence and the frozen files.
+
 ### The rebuild started: Stage 0, the base schematic (2026-10-14)
 The designer: "this paper's fig. 1 schematic is the new first schematic to create the doubler from. We then develop
 the actual 3d models according to the known tube layout. Design it through, scrutinize it, create it and test it.
