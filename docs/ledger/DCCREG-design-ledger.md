@@ -110,7 +110,7 @@ in opposite directions through a 1 : −1 reversing gear.
   - the pump's nodes 1 and 4 then feed two mirrored Cockcroft-Walton chains standing on the shaft, which pump ring A
     to −15.0 kV and ring B to +15.0 kV.
 
-**The hub** is a 50 mm borosilicate vacuum sphere with a 1.5 mm wall.
+**The hub** is a 50 mm borosilicate vacuum sphere with a 2 mm wall (the designer, 2026-10-15; 1.5 mm until then).
 - The two MnZn AH cores sit on its axis.
 - The two copper-foil rings lie on the glass, under 0.5 mm of silicone gel in a PEEK retainer, with a G10 coupler
   outside.
@@ -193,6 +193,10 @@ commits' dates.
 | 10-10 | redesign the charge-pump multipliers so they stack into the doubler, not "a separate circuit tapping on node 1 and 4"; the design stack of the whole turbine will change; the magnetic pump, the sphere, its AH and the field interface untouched for now | §3.9 |
 | 10-10 | the sketch: C3–C6 and D5–D8 are the new parts (read back and confirmed); the clamps Z1 / Z4 stay on nodes 1 / 4; C3–C6 to be sized; the polarity free; the rings' supply to be worked out; the doubler, the rings and the magnetic pump's Schottky circuit on one revolving body | §3.9; `sim/integrated-multiplier-findings.md` |
 | 10-11 | "This unipolar setup will do for now": the proposal's circuit, for now (read here as Figure 10's: each chain one polarity, ring A's side negative). "Lay out the doubler capacitors in the multiplier top and bottom of the machine stack. Propose placement of the diodes. A mechanical layout." | §3.9; `sim/multiplier-layout-findings.md` |
+| 10-14 | the rebuild from de Queiroz Fig. 1 ("Schematic ok", S0 frozen at `42747f4`); positive polarity ("Positive is ok"); the clamps not assumed: "We will evaluate this instead of injecting prior work before evidence exists to prove its necessity" | `rebuild/README.md`; `rebuild/s0_base/s0-base-findings.md` |
+| 10-14 → 10-15 | the sixth Ca gap (Ca 495 pF, 1.1 C_max): "Sixth gap yes"; keep both records, ideal and real diodes; an HV seed source "only if it's not starting" (the designer's 4-diode build starts unaided, dry or humid, or with a rubbed PVC tube) | `rebuild/README.md`; `rebuild/s1_tube/s1-bare-findings.md` |
+| 10-15 | **the glass wall is 2 mm: "Glass wall is 2mm lock it"** (supersedes 10-09's 1.5 mm; the studies that read it are stale until re-run, §6 item 78) | `presets/hub-locked.json` vessel_wall |
+| 10-15 | the core is pulsed, the field reversing between the top and bottom sections; "ground floats in the core, or virtually made by using node 1 and 4 if necessary": the neutral is the core's midplane, floating, or a virtual midpoint of nodes 1 and 4; REF (the varicaps' stator side) is not the ground | `rebuild/s1_tube/s1-pulsed-core-findings.md` |
 
 ### 2.4 What was learned, and what it superseded
 - **Charge pumps pay their equalisation tax inside the core** [OC].
@@ -501,7 +505,7 @@ Source: `presets/hub-locked.json` (locked 2026-10-08; the decisions of 2026-10-0
 
 | layer, inside out | what | status |
 |:--|:--|:--|
-| the vessel | borosilicate sphere, OD 50.0 mm, wall 1.5 mm (R_in 23.5 mm), ε 4.6, vacuum inside; about 0.8 MPa shell stress | DECIDED |
+| the vessel | borosilicate sphere, OD 50.0 mm, wall 2.0 mm (R_in 23.0 mm; 1.5 mm / R_in 23.5 until 2026-10-15), ε 4.6, vacuum inside; about 0.61 MPa shell stress [OC: thin shell] | DECIDED (the wall: 2026-10-15) |
 | the rings | two copper-foil bands on the outer surface (§3.6) | DECIDED / DESIGN |
 | the AH | the MnZn rods with their 160-turn coils on the axis, PEEK seats at ±25–30.7 mm (§3.3) | DECIDED (placement) / REGISTER (dimensions) / DESIGN (the winding) / PROPOSED (the ends rounded to 1.5 mm) |
 | the retainer | unfilled PEEK, ε 3.2, r ≤ 30 mm, ±72 mm; a 0.5 mm pocket over the glass with grooves for the beads | DECIDED (role; material, 10-09) / PROPOSED (the grooves' full-round tops; the dimensions' first cut) |
@@ -1344,6 +1348,12 @@ and the corrected one stands beside it, dated, until the designer decides.
 | # | what | resolution |
 |:--|:--|:--|
 | 77 | with the AH-drive parts and the drive in the model, the rotor grows 38.2 → 50.4 kg as the two-body model reads the solids, and its second mode (the reluctance bays') falls from 136–156 Hz to 108–117 Hz, 3–10 % under the pumps' 120 Hz; §5.2 asks the bridge-ring bearings for stiff seats to keep the shaft clear of 120 Hz (`sim/rotor_parts_drive_results.json` shafts) | **open:** the levers are the parts' mass (the ballast exists only to balance one choke; the compact choke cuts it about a third), stiffer seats, or d 30. The utrons' pulls are three-fold symmetric, so they put no net side load on the shaft in the ideal; what an asymmetry excites there is to be checked |
+
+**Found by the glass wall's change** (2026-10-15)
+
+| # | what | resolution |
+|:--|:--|:--|
+| 78 | the designer set the glass wall to 2 mm (R_in 23.0), from 1.5 mm (R_in 23.5). The studies that take the wall from `presets/hub-locked.json` (directly or through `sim/hub_locked.py`) hold results at 1.5 mm: among them `sim/hub_rings_build.py`, `sim/hub_beads_settled.py`, `sim/hub_drift.py`, `sim/hub_thermal.py`, `sim/hub_joints.py`, `sim/core_rings.py`, `sim/ah_null.py`, and possibly `sim/tube_geometry.py`, `sim/tube_strays.py`, `sim/rotor_mechanics.py`, `sim/drive_sizing.py`; the field at the null (7.62 kV/cm, k_null 0.2546 (kV/cm)/kV), the rings' strays and edges, and the hub drawings (DCCREG-HUB-201) are the 1.5 mm wall's. | **open:** the rebuild's S2 re-solves the core at 2 mm; the record's 1.5 mm values stand as history until then |
 
 ## 7. Drawing register
 

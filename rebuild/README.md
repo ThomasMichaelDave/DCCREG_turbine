@@ -24,12 +24,14 @@ injecting prior work before evidence exists to prove its necessity."
 strays budget and the mounts. Each one enters only when a stage's evidence shows the bare circuit needs it, and the
 designer then decides. The lessons below say where to look; they do not license an addition.
 
-**Decisions so far** (the designer, 2026-10-14):
+**Decisions so far** (the designer, 2026-10-14 and 10-15):
 - the base schematic is de Queiroz Fig. 1 ("Schematic ok");
 - the polarity is positive ("Positive is ok");
-- the sixth Ca gap stands from earlier ("sixth Gap ok");
+- the sixth Ca gap stands ("sixth Gap ok"; 10-15: "Sixth gap yes");
 - ideal and real-diode records are both kept;
-- there is no HV seed source.
+- no HV seed source, "only if it's not starting" (10-15);
+- the glass wall is 2 mm ("Glass wall is 2mm lock it", 10-15);
+- the core is pulsed, its field reversing top ↔ bottom at S0's 180° (`s1_tube/s1-pulsed-core-findings.md`); the ground floats in the core, its midplane the neutral, or a virtual one made from nodes 1 and 4 if necessary (10-15).
 
 ## Stages
 

@@ -41,6 +41,24 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The designer's decisions of 2026-10-15: the glass wall 2 mm, the floating ground, the seed, the records
+The designer: "Glass wall is 2mm lock it, ground floats in the core, or virtually made by using node 1 and 4 if
+necessary, Sixth gap yes, HV seed only if it's not starting, keep both records ideal and real."
+
+- **`presets/hub-locked.json` vessel_wall:** 1.5 → 2.0 mm, DECIDED. R_in becomes 23.0 mm, and the shell stress falls
+  to about 0.61 MPa (thin shell, [OC]).
+- **The ledger:**
+  - the summary and §3.5 carry the 2 mm wall;
+  - §2.3 gains the rebuild's decisions of 10-14 and 10-15: S0 and its polarity, the clamps not assumed, the sixth
+    gap, both records, the seed only if the machine does not start, the wall, and the pulsed core with its floating
+    neutral;
+  - §6 gains **item 78**, OPEN: the studies that read the wall, the field at the null and the hub drawings still hold
+    1.5 mm values. They are stale until S2 re-solves the core at 2 mm.
+- **`rebuild/README.md`:** the decisions list carries the same.
+- **Why:** the designer's decisions. The wall's change is a change of the locked record (`09243c7`).
+- **`CLAUDE.md`:** the PDFs (the ledger, the drawings bundle) are built only when the designer asks ("you do not
+  need to output pdf's unless I ask for it"). This commit's PDFs were built before that instruction.
+
 ### Rebuild S1: the bare core at the tube's values (2026-10-14)
 The designer: "Start S1".
 

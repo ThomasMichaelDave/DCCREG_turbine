@@ -29,6 +29,9 @@ the locked baseline and recorded in `CHANGELOG.md` and the ledger.
 - **A study:** `python3 sim/<study>.py`; ngspice runs the circuit decks. Results go to `sim/<study>_results.json`.
 - **The ledger:** `python3 docs/ledger/make_ledger_figures.py`, then `python3 docs/ledger/make_ledger.py` (needs
   markdown-it-py, mdit-py-plugins, pypdf and playwright with Chromium). Look at the rendered pages before committing.
+  **Build the PDFs (the ledger, the drawings bundle) only when the designer asks for them** (the designer,
+  2026-10-15); otherwise edit the Markdown source only, and say the PDFs are behind it. Set `CHROMIUM` to the local
+  Chromium if the default path does not exist.
 - **The frozen-file check** prints 0.
 
 ## Commits

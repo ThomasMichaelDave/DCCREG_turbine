@@ -31,11 +31,11 @@
   },
   "vessel_wall": {
     "value": {
-      "t_mm": 1.5
+      "t_mm": 2.0
     },
     "unit": "mm",
     "status": "DECIDED",
-    "source": "designer, 2026-10-09 (shell stress about 0.8 MPa under vacuum)",
+    "source": "designer, 2026-10-15: 'Glass wall is 2mm lock it' (supersedes the 1.5 mm of 2026-10-09). Shell stress under vacuum about 0.61 MPa [OC: thin shell, p r_mean / 2t, 0.1013 MPa x 24.0 mm / 4 mm], against 0.82 MPa at 1.5 mm. R_in 23.0 mm. The studies that read this wall are stale until re-run (ledger §6 item 78).",
     "tag": "[IR]"
   },
   "vessel_resistivity": {
