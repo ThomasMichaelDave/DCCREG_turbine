@@ -1,0 +1,46 @@
+{
+ "kicad_cli": "C:\\Users\\Toki\\AppData\\Local\\Programs\\KiCad\\10.0\\bin\\kicad-cli.exe",
+ "version": "10.0.6",
+ "stages": {
+  "s0_base": {
+   "netlist": "rebuild/kicad/s0_base/s0_base.net",
+   "export_rc": 0,
+   "vs_topology": {
+    "match": true,
+    "diff": []
+   },
+   "vs_ngspice_deck": {
+    "match": true,
+    "deck": "rebuild/s0_base/s0_base.cir"
+   },
+   "erc": {
+    "rc": 0,
+    "report": "rebuild/kicad/s0_base/s0_base-erc.rpt",
+    "messages": 0,
+    "errors": 0,
+    "warnings": 0,
+    "kinds": []
+   }
+  },
+  "s1_tube": {
+   "netlist": "rebuild/kicad/s1_tube/s1_tube.net",
+   "export_rc": 0,
+   "vs_topology": {
+    "match": true,
+    "diff": []
+   },
+   "vs_solver": {
+    "match": true,
+    "solver": "rebuild/s1_tube/s1_pulsed_core.py core()"
+   },
+   "erc": {
+    "rc": 0,
+    "report": "rebuild/kicad/s1_tube/s1_tube-erc.rpt",
+    "messages": 0,
+    "errors": 0,
+    "warnings": 0,
+    "kinds": []
+   }
+  }
+ }
+}
