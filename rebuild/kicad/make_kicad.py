@@ -1,25 +1,28 @@
-"""rebuild/kicad/make_kicad.py -- the rebuild's schematics as KiCad 10 projects, and their netlist check.
+"""rebuild/kicad/make_kicad.py -- the rebuild's schematics as one KiCad 10 project, and its netlist check.
 
-The designer (2026-10-15): "We will first install kicad on my machine so we can deliver the proper netlist"; "When you
-generate the schematic, provide the proper text in the schematic to explain all components"; "when you are done with
-creating the schematic, open the GUI and let me reorganize so it becomes readable by a human too."
+The designer (2026-10-15/16): "We will first install kicad on my machine so we can deliver the proper netlist"; "When
+you generate the schematic, provide the proper text in the schematic to explain all components"; "please set
+everything up so the development stays in one project with all stages and changes in separate sheets".
 
-Two sheets, each its own KiCad project:
-  s0_base/s0_base.kicad_sch   S0: de Queiroz Fig. 1 at the paper's example values (frozen topology, 42747f4);
-  s1_tube/s1_tube.kicad_sch   S1: the S0 core at the tube's air values, plus the pulsed core's load: C_k across
+The project rebuild/kicad/dccreg_rebuild/:
+  dccreg_rebuild.kicad_sch    the root sheet: one box per stage, and an index of the stages, the naming and the check;
+  s0_base.kicad_sch           S0: de Queiroz Fig. 1 at the paper's example values (frozen topology, 42747f4);
+  s1_tube.kicad_sch           S1: the S0 core at the tube's air values, plus the pulsed core's load: C_k across
                               N1-N4 and each core electrode's stray to REF (rebuild/s1_tube/s1-pulsed-core-findings.md).
-Every component carries its explanation on the sheet (a legend keyed by reference, and the symbol's Description
-field); every net is named (REF, N1-N4).
+A new stage or change is a new entry in STAGES with its sheet function: its own sheet, its own hundred of part
+numbers (S0 1xx, S1 2xx, ...). The labels are local to their sheet, so the stages never connect.
+Every component carries its explanation on its sheet (a legend keyed by reference, with its name in the source in
+brackets, and the symbol's Description field); every net is named (REF, N1-N4).
 
-The layout is the generator's first placement. The designer rearranges it in the GUI and saves; from then on the
-saved sheet is the drawing of record and this script does not overwrite it (use --force to regenerate). What makes
-the netlist of record is the check, which runs on whatever sheet is there:
-  kicad-cli exports the netlist; its connectivity must equal the source topology node for node
-  (S0: rebuild/s0_base/s0_base.py TOPOLOGY and its deck s0_base.cir; S1: S0's TOPOLOGY plus the additions, and the
-  solver circuit of rebuild/s1_tube/s1_pulsed_core.py); kicad-cli's ERC is recorded alongside.
+The layout is the generator's first placement; the designer rearranges it in the GUI and saves. A saved sheet is the
+drawing of record: this script writes a sheet only if it is absent or with --force, and redraws the root only when a
+stage is added. What makes the netlist of record is the check, which runs on whatever is saved:
+  kicad-cli exports the project netlist; it is cut by sheet, and each stage's connectivity must equal its source node
+  for node (S0: rebuild/s0_base/s0_base.py TOPOLOGY and its deck s0_base.cir; S1: S0's TOPOLOGY plus the additions,
+  and the solver circuit of rebuild/s1_tube/s1_pulsed_core.py); kicad-cli's ERC on the project is recorded alongside.
 
-Writes the projects (if absent, or with --force), the exported netlists s*/s*.net, and
-rebuild/kicad/kicad_check_results.json.
+Writes the project (the parts absent, or all with --force), its netlist dccreg_rebuild.net, each stage's nets
+(netlists/<stage>.txt), the ERC report, and rebuild/kicad/kicad_check_results.json.
 Usage: python3 rebuild/kicad/make_kicad.py [--force] [--check-only]
 """
 import json
@@ -83,10 +86,22 @@ def pin_xy(sym, at, rot, pin):
 
 
 # ---------------------------------------------------------------- the sheets
+KEEP = "\x01"                                  # text between two KEEP marks is not renamed (the legend's "(C1)")
+
+
 class Sheet:
     def __init__(self, name, title, comment):
         self.name, self.title, self.comment = name, title, comment
         self.parts, self.wires, self.labels, self.texts = [], [], [], []
+        self.ren = {}                          # the stage's reference map, e.g. C1 -> C101 (set by stage_map)
+
+    def R(self, s):
+        """the text with every reference of this sheet renamed to its stage number; KEEP-marked text untouched."""
+        if not self.ren:
+            return s.replace(KEEP, "")
+        pat = re.compile(r"(?<![\w])(" + "|".join(sorted(map(re.escape, self.ren), key=len, reverse=True)) + r")(?![\w])")
+        parts = s.split(KEEP)
+        return "".join(p if i % 2 else pat.sub(lambda m: self.ren[m.group(1)], p) for i, p in enumerate(parts))
 
     def part(self, ref, sym, at, rot, value, desc, bom=True):
         at = ((at[0] + OX) * U, (at[1] + OY) * U)
@@ -135,7 +150,8 @@ class Sheet:
         junc = [p for p, n in cnt.items() if n + (1 if p in pins else 0) >= 3]
         return segs, junc
 
-    def render(self, project):
+    def render(self, project, inst_path):
+        """the sub-sheet file; inst_path is the sheet's place in the project, "/<root uuid>/<sheet symbol uuid>"."""
         segs, junc = self._resolve()
         root = uid(self.name, "sheet")
         out = ["(kicad_sch", "\t(version 20260101)", '\t(generator "eeschema")', '\t(generator_version "10.0")',
@@ -158,7 +174,7 @@ class Sheet:
                     "\t\t\t\t(size 1.524 1.524)", "\t\t\t\t(bold yes)", "\t\t\t)", "\t\t\t(justify left bottom)", "\t\t)",
                     f"\t\t(uuid {q(uid(self.name, 'l', name, at))})", "\t)"]
         for k, (s, at, size, bold) in enumerate(self.texts):
-            out += [f"\t(text {q(s)}", "\t\t(exclude_from_sim yes)", f"\t\t(at {at[0]:.2f} {at[1]:.2f} 0)",
+            out += [f"\t(text {q(self.R(s))}", "\t\t(exclude_from_sim yes)", f"\t\t(at {at[0]:.2f} {at[1]:.2f} 0)",
                     "\t\t(effects", "\t\t\t(font", f"\t\t\t\t(size {size} {size})"] + \
                    (["\t\t\t\t(bold yes)"] if bold else []) + \
                    ["\t\t\t)", "\t\t\t(justify left top)", "\t\t)", f"\t\t(uuid {q(uid(self.name, 't', k))})", "\t)"]
@@ -183,17 +199,27 @@ class Sheet:
                     "\t\t(unit 1)", "\t\t(body_style 1)", "\t\t(exclude_from_sim no)",
                     f"\t\t(in_bom {'yes' if p['bom'] else 'no'})", "\t\t(on_board yes)",
                     "\t\t(in_pos_files yes)", "\t\t(dnp no)", f"\t\t(uuid {q(uid(self.name, 'p', p['ref']))})"]
-            out += prop("Reference", p["ref"], rx, ry, size=1.524)
+            ref = self.R(p["ref"])
+            out += prop("Reference", ref, rx, ry, size=1.524)
             out += prop("Value", p["value"], vx, vy)
             out += prop("Footprint", "", x, y, hide=True)
             out += prop("Datasheet", "", x, y, hide=True)
-            out += prop("Description", p["desc"].replace("\n", " "), x, y, hide=True)
+            out += prop("Description", self.R(p["desc"]).replace("\n", " "), x, y, hide=True)
             for pn in PINS[p["sym"]]:
                 out += [f"\t\t(pin {q(pn)}", f"\t\t\t(uuid {q(uid(self.name, 'pin', p['ref'], pn))})", "\t\t)"]
-            out += ["\t\t(instances", f"\t\t\t(project {q(project)}", f"\t\t\t\t(path {q('/' + root)}",
-                    f"\t\t\t\t\t(reference {q(p['ref'])})", "\t\t\t\t\t(unit 1)", "\t\t\t\t)", "\t\t\t)", "\t\t)", "\t)"]
-        out += ["\t(sheet_instances", '\t\t(path "/"', '\t\t\t(page "1")', "\t\t)", "\t)", "\t(embedded_fonts no)", ")"]
+            out += ["\t\t(instances", f"\t\t\t(project {q(project)}", f"\t\t\t\t(path {q(inst_path)}",
+                    f"\t\t\t\t\t(reference {q(ref)})", "\t\t\t\t\t(unit 1)", "\t\t\t\t)", "\t\t\t)", "\t\t)", "\t)"]
+        out += [")"]
         return "\n".join(out) + "\n"
+
+
+def stage_map(sh, base):
+    """KiCad's multi-sheet numbering: each stage's parts in its own hundred (S0 1xx, S1 2xx); the letters stay.
+    C1 -> C101, Ca -> Ca101, D4 -> D104, Cr4 -> Cr104 (+100 per stage)."""
+    for p in sh.parts:
+        m = re.fullmatch(r"([A-Za-z]+)(\d*)", p["ref"])
+        sh.ren[p["ref"]] = f"{m.group(1)}{base + int(m.group(2) or 1)}"
+    return sh
 
 
 def core(sh, vals, desc):
@@ -231,7 +257,8 @@ def legend(sh, entries, at=(116, 6)):
     y += 2.5
     for ref, body in entries:
         sh.text(ref, (x, y), size=1.524, bold=True)
-        n = sh.text(" ".join(body.split("\n")), (x + 4, y), size=1.27, width=80)
+        body = f"{KEEP}[source: {ref}]{KEEP} " + " ".join(body.split("\n"))
+        n = sh.text(body, (x + 5, y), size=1.27, width=80)
         y += 1.6 + 0.62 * (n - 1) + 0.6
     return y
 
@@ -421,48 +448,131 @@ def field(node, key):
     return None
 
 
-def from_netlist(path):
-    tree = sexpr(open(path, encoding="utf-8").read())
-    pins = {}
-    for n in field(tree, "nets")[1:]:
-        name = field(n, "name")[1].lstrip("/")
-        for nd in n:
-            if isinstance(nd, list) and nd[0] == "node":
-                pins[(field(nd, "ref")[1], field(nd, "pin")[1])] = name
-    refs = sorted({r for r, _ in pins})
-    e = {}
-    for r in refs:
-        if r.startswith("D"):
-            e[r] = ("D", (pins[(r, "2")], pins[(r, "1")]))                # pin 2 = A, pin 1 = K
-        else:
-            e[r] = ("C", frozenset((pins[(r, "1")], pins[(r, "2")])))
-    return e
-
-
 def run(cmd):
     p = subprocess.run(cmd, capture_output=True, text=True)
     return p.returncode, (p.stdout + p.stderr).strip()
 
 
-def check(stage):
-    d = os.path.join(HERE, stage)
-    sch, net = os.path.join(d, stage + ".kicad_sch"), os.path.join(d, stage + ".net")
-    rc, msg = run([KICAD_CLI, "sch", "export", "netlist", "--format", "kicadsexpr", "-o", net, sch])
-    got = from_netlist(net)
-    want = expected(stage)
-    res = dict(netlist=os.path.relpath(net, ROOT).replace("\\", "/"), export_rc=rc,
-               vs_topology=dict(match=got == want,
-                                diff=sorted(set(map(str, got.items())) ^ set(map(str, want.items())))))
-    if stage == "s0_base":
-        deck = from_deck(os.path.join(ROOT, "rebuild", "s0_base", "s0_base.cir"))
-        res["vs_ngspice_deck"] = dict(match=deck == got, deck="rebuild/s0_base/s0_base.cir")
-    else:
-        caps, dio = from_solver()
-        gc = sorted(tuple(sorted(v[1])) for v in got.values() if v[0] == "C")
-        gd = sorted(v[1] for v in got.values() if v[0] == "D")
-        res["vs_solver"] = dict(match=(gc, gd) == (caps, dio), solver="rebuild/s1_tube/s1_pulsed_core.py core()")
-    erc = os.path.join(d, stage + "-erc.rpt")
-    rc, _ = run([KICAD_CLI, "sch", "erc", "--severity-all", "-o", erc, sch])
+# ---------------------------------------------------------------- the project: a root sheet indexing the stages
+PROJECT = "dccreg_rebuild"
+PROJ_DIR = os.path.join(HERE, PROJECT)
+STAGES = [  # one sheet per stage or change; add a new entry (and its sheet function) for each new one
+    dict(key="s0_base", name="S0 base", make=lambda: s0_sheet(), base=100,
+         status="FROZEN at 42747f4. de Queiroz Fig. 1 at the paper's example values.",
+         source="rebuild/s0_base/"),
+    dict(key="s1_tube", name="S1 tube", make=lambda: s1_sheet(), base=200,
+         status="The S0 core at the tube's air values; adds the pulsed core's load C_k (N1-N4) and the electrode "
+                "strays.", source="rebuild/s1_tube/"),
+]
+ROOT_UUID = uid(PROJECT, "root")
+
+
+def sheet_uuid(st):
+    return uid(PROJECT, "sheet-symbol", st["key"])
+
+
+def root_sheet():
+    out = ["(kicad_sch", "\t(version 20260101)", '\t(generator "eeschema")', '\t(generator_version "10.0")',
+           f"\t(uuid {q(ROOT_UUID)})", '\t(paper "A3")', "\t(title_block",
+           '\t\t(title "DCCREG rebuild - the stages")', '\t\t(date "2026-10-16")', '\t\t(rev "generated")',
+           '\t\t(company "DCCREG turbine rebuild")',
+           '\t\t(comment 1 "one sheet per stage or change; open a sheet from the hierarchy")',
+           '\t\t(comment 2 "generated by rebuild/kicad/make_kicad.py")', "\t)", "\t(lib_symbols", "\t)"]
+    x0, y0, w, h, gap = 30.48, 50.8, 76.2, 25.4, 15.24
+    for i, st in enumerate(STAGES):
+        y = y0 + i * (h + gap)
+        out += ["\t(sheet", f"\t\t(at {x0} {y:.2f})", f"\t\t(size {w} {h})", "\t\t(exclude_from_sim no)",
+                "\t\t(in_bom yes)", "\t\t(on_board yes)", "\t\t(dnp no)", "\t\t(stroke", "\t\t\t(width 0.3)",
+                "\t\t\t(type solid)", "\t\t)", "\t\t(fill", "\t\t\t(color 0 0 0 0)", "\t\t)",
+                f"\t\t(uuid {q(sheet_uuid(st))})",
+                f"\t\t(property \"Sheetname\" {q(st['name'])}", f"\t\t\t(at {x0} {y - 0.76:.2f} 0)",
+                "\t\t\t(show_name no)", "\t\t\t(do_not_autoplace no)", "\t\t\t(effects", "\t\t\t\t(font",
+                "\t\t\t\t\t(size 2 2)", "\t\t\t\t\t(bold yes)", "\t\t\t\t)", "\t\t\t\t(justify left bottom)", "\t\t\t)",
+                "\t\t)",
+                f"\t\t(property \"Sheetfile\" {q(st['key'] + '.kicad_sch')}", f"\t\t\t(at {x0} {y + h + 0.6:.2f} 0)",
+                "\t\t\t(show_name no)", "\t\t\t(do_not_autoplace no)", "\t\t\t(effects", "\t\t\t\t(font",
+                "\t\t\t\t\t(size 1.27 1.27)", "\t\t\t\t)", "\t\t\t\t(justify left top)", "\t\t\t)", "\t\t)",
+                "\t\t(instances", f"\t\t\t(project {q(PROJECT)}", f"\t\t\t\t(path {q('/' + ROOT_UUID)}",
+                f"\t\t\t\t\t(page {q(str(i + 2))})", "\t\t\t\t)", "\t\t\t)", "\t\t)", "\t)"]
+    lines = ["THE STAGES", "",
+             "Each stage, and each later change, is its own sheet in this one project. Open a sheet by",
+             "double-clicking its box, or from the hierarchy panel.", ""]
+    for i, st in enumerate(STAGES):
+        lines += [f"{st['name']} (sheet {i + 2}, parts {st['base'] + 1}-{st['base'] + 99}): {st['status']}",
+                  f"   source: {st['source']}", ""]
+    lines += ["PART NAMES: each stage numbers its parts in its own hundred, as KiCad does for multi-sheet",
+              "projects. S0 = 1xx, S1 = 2xx; the letters stay (C1 -> C101 in S0, C201 in S1; Ca -> Ca101;",
+              "D4 -> D104). Each sheet's legend gives every part's name in its source in brackets.",
+              "",
+              "NETS: the labels are local to their sheet (REF, N1-N4), so the stages never connect. In the",
+              "project netlist they read /S0 base/N1, /S1 tube/N1 ...",
+              "",
+              "CHECK: python3 rebuild/kicad/make_kicad.py --check-only exports the project netlist and",
+              "compares each sheet node for node with its source (rebuild/kicad/kicad_check_results.json)."]
+    out += [f"\t(text {q(chr(10).join(lines))}", "\t\t(exclude_from_sim yes)", "\t\t(at 127 50.8 0)", "\t\t(effects",
+            "\t\t\t(font", "\t\t\t\t(size 1.524 1.524)", "\t\t\t)", "\t\t\t(justify left top)", "\t\t)",
+            f"\t\t(uuid {q(uid(PROJECT, 'root-text'))})", "\t)"]
+    out += ["\t(sheet_instances", '\t\t(path "/"', '\t\t\t(page "1")', "\t\t)", "\t)", "\t(embedded_fonts no)", ")"]
+    return "\n".join(out) + "\n"
+
+
+# ---------------------------------------------------------------- the check, on the whole project
+def check(maps):
+    """export the project netlist; split it by sheet; compare each stage with its source under the stage's names."""
+    root = os.path.join(PROJ_DIR, PROJECT + ".kicad_sch")
+    net = os.path.join(PROJ_DIR, PROJECT + ".net")
+    rc, msg = run([KICAD_CLI, "sch", "export", "netlist", "--format", "kicadsexpr", "-o", net, root])
+    tree = sexpr(open(net, encoding="utf-8").read())
+    inv = {new: (st, old) for st, m in maps.items() for old, new in m.items()}
+    pins = {}                                                    # (stage, original ref, pin) -> local net name
+    for n in field(tree, "nets")[1:]:
+        name = field(n, "name")[1]
+        local = name.rsplit("/", 1)[-1]
+        for nd in n:
+            if isinstance(nd, list) and nd[0] == "node":
+                ref, pin = field(nd, "ref")[1], field(nd, "pin")[1]
+                st, old = inv.get(ref, (None, ref))
+                pins[(st, old, pin)] = (local, name)
+    res = dict(netlist=os.path.relpath(net, ROOT).replace("\\", "/"), export_rc=rc, stages={})
+    os.makedirs(os.path.join(PROJ_DIR, "netlists"), exist_ok=True)
+    unknown = sorted({k[1] for k in pins if k[0] is None})
+    for st in STAGES:
+        key = st["key"]
+        mine = {(old, pin): v for (s, old, pin), v in pins.items() if s == key}
+        got = {}
+        for old in sorted({o for o, _ in mine}):
+            if old.startswith("D"):
+                got[old] = ("D", (mine[(old, "2")][0], mine[(old, "1")][0]))        # pin 2 = A, pin 1 = K
+            else:
+                got[old] = ("C", frozenset((mine[(old, "1")][0], mine[(old, "2")][0])))
+        sheets = sorted({v[1].rsplit("/", 1)[0] for v in mine.values()})
+        want = expected(key)
+        r = dict(sheet_paths=sheets, names=maps[key],
+                 vs_topology=dict(match=got == want,
+                                  diff=sorted(set(map(str, got.items())) ^ set(map(str, want.items())))))
+        if key == "s0_base":
+            deck = from_deck(os.path.join(ROOT, "rebuild", "s0_base", "s0_base.cir"))
+            r["vs_ngspice_deck"] = dict(match=deck == got, deck="rebuild/s0_base/s0_base.cir")
+        elif key == "s1_tube":
+            caps, dio = from_solver()
+            gc = sorted(tuple(sorted(v[1])) for v in got.values() if v[0] == "C")
+            gd = sorted(v[1] for v in got.values() if v[0] == "D")
+            r["vs_solver"] = dict(match=(gc, gd) == (caps, dio), solver="rebuild/s1_tube/s1_pulsed_core.py core()")
+        # the stage's own netlist, as a readable listing (net: part.pin ...), cut from the project netlist
+        by_net = {}
+        for (old, pin), (local, _) in sorted(mine.items()):
+            by_net.setdefault(local, []).append(f"{maps[key][old]}.{pin}")
+        path = os.path.join(PROJ_DIR, "netlists", key + ".txt")
+        with open(path, "w", encoding="utf-8", newline="\n") as fh:
+            fh.write(f"# {st['name']}: the stage's nets, cut from {PROJECT}.net by rebuild/kicad/make_kicad.py\n")
+            fh.write("# part.pin; C pins 1 / 2; D pin 1 = K (cathode), pin 2 = A (anode)\n")
+            for nn in sorted(by_net):
+                fh.write(f"{nn}: {' '.join(by_net[nn])}\n")
+        r["stage_netlist"] = os.path.relpath(path, ROOT).replace("\\", "/")
+        res["stages"][key] = r
+    res["parts_outside_any_stage"] = unknown
+    erc = os.path.join(PROJ_DIR, PROJECT + "-erc.rpt")
+    rc, _ = run([KICAD_CLI, "sch", "erc", "--severity-all", "-o", erc, root])
     rpt = open(erc, encoding="utf-8").read() if os.path.exists(erc) else ""
     m = re.search(r"\*\* ERC messages: (\d+)\s+Errors (\d+)\s+Warnings (\d+)", rpt)
     res["erc"] = dict(rc=rc, report=os.path.relpath(erc, ROOT).replace("\\", "/"),
@@ -474,23 +584,37 @@ def check(stage):
 
 def main():
     force = "--force" in sys.argv
-    out = dict(kicad_cli=KICAD_CLI, version=run([KICAD_CLI, "version"])[1], stages={})
-    for stage, make in (("s0_base", s0_sheet), ("s1_tube", s1_sheet)):
-        d = os.path.join(HERE, stage)
-        os.makedirs(d, exist_ok=True)
-        sch = os.path.join(d, stage + ".kicad_sch")
-        if "--check-only" not in sys.argv and (force or not os.path.exists(sch)):
-            open(sch, "w", encoding="utf-8", newline="\n").write(make().render(stage))
-            pro = json.load(open(TEMPLATE_PRO, encoding="utf-8"))
-            pro.setdefault("meta", {})["filename"] = stage + ".kicad_pro"
-            json.dump(pro, open(os.path.join(d, stage + ".kicad_pro"), "w", encoding="utf-8", newline="\n"), indent=2)
-            open(os.path.join(d, "sym-lib-table"), "w", encoding="utf-8", newline="\n").write(
-                '(sym_lib_table\n\t(version 7)\n\t(lib (name "Device") (type "KiCad") '
-                '(uri "${KICAD10_SYMBOL_DIR}/Device.kicad_sym") (options "") (descr "KiCad Device symbols"))\n)\n')
+    write = "--check-only" not in sys.argv
+    os.makedirs(PROJ_DIR, exist_ok=True)
+    maps = {}
+    for st in STAGES:
+        sh = stage_map(st["make"](), st["base"])
+        maps[st["key"]] = dict(sh.ren)
+        sch = os.path.join(PROJ_DIR, st["key"] + ".kicad_sch")
+        if write and (force or not os.path.exists(sch)):
+            open(sch, "w", encoding="utf-8", newline="\n").write(
+                sh.render(PROJECT, f"/{ROOT_UUID}/{sheet_uuid(st)}"))
             print("wrote", os.path.relpath(sch, ROOT))
-        r = check(stage)
-        out["stages"][stage] = r
-        print(stage, json.dumps({k: v for k, v in r.items() if k != "netlist"}))
+    root = os.path.join(PROJ_DIR, PROJECT + ".kicad_sch")
+    have = open(root, encoding="utf-8").read() if os.path.exists(root) else ""
+    if write and (force or not all(f'"{st["key"]}.kicad_sch"' in have for st in STAGES)):
+        open(root, "w", encoding="utf-8", newline="\n").write(root_sheet())     # new stage: the index is redrawn
+        print("wrote", os.path.relpath(root, ROOT))
+    pro = os.path.join(PROJ_DIR, PROJECT + ".kicad_pro")
+    if write and (force or not os.path.exists(pro)):
+        p = json.load(open(TEMPLATE_PRO, encoding="utf-8"))
+        p.setdefault("meta", {})["filename"] = PROJECT + ".kicad_pro"
+        json.dump(p, open(pro, "w", encoding="utf-8", newline="\n"), indent=2)
+        open(os.path.join(PROJ_DIR, "sym-lib-table"), "w", encoding="utf-8", newline="\n").write(
+            '(sym_lib_table\n\t(version 7)\n\t(lib (name "Device") (type "KiCad") '
+            '(uri "${KICAD10_SYMBOL_DIR}/Device.kicad_sym") (options "") (descr "KiCad Device symbols"))\n)\n')
+    r = check(maps)
+    out = dict(kicad_cli=KICAD_CLI, version=run([KICAD_CLI, "version"])[1], project=os.path.relpath(
+        pro, ROOT).replace("\\", "/"), **r)
+    for k, v in r["stages"].items():
+        print(k, {kk: vv.get("match") for kk, vv in v.items() if isinstance(vv, dict) and "match" in vv})
+    print("erc", r["erc"]["errors"], "errors", r["erc"]["warnings"], "warnings", r["erc"]["kinds"],
+          "| parts outside any stage:", r["parts_outside_any_stage"])
     json.dump(out, open(os.path.join(HERE, "kicad_check_results.json"), "w", encoding="utf-8", newline="\n"), indent=1)
 
 

@@ -66,9 +66,13 @@ proper netlist").
   source (de Queiroz Fig. 1 for S0), the polarity, the 180° phase, and the decisions in force.
 - **The stages:** S0 first (Fig. 1, frozen), then S1's additions as their own sheet: C_k across nodes 1–4 and the
   electrodes' strays (`s1_tube/s1-pulsed-core-findings.md`).
-- **Done (2026-10-15):** `kicad/s0_base/` and `kicad/s1_tube/`, by `kicad/make_kicad.py`. Both netlists match their
-  sources and the ERC is clean (`kicad/kicad-findings.md`). The designer accepted the layout ("Both are ok"); the saved
-  sheets are the drawings of record, regenerated only with `--force`, re-checked with `--check-only`.
+- **One project, a sheet per stage** (the designer, 2026-10-16: "the development stays in one project with all stages
+  and changes in separate sheets"): `kicad/dccreg_rebuild/`, by `kicad/make_kicad.py`.
+  - The root sheet indexes the stages. S0 and S1 are sheets 2 and 3, and every later stage or change gets its own.
+  - Each stage numbers its parts in its own hundred: S0 1xx, S1 2xx.
+  - Each stage's nets match its source, and the ERC is clean (`kicad/kicad-findings.md`).
+  - The designer accepted the layout ("Both are ok"). The saved sheets are the drawings of record: they are
+    regenerated only with `--force`, and re-checked with `--check-only`.
 
 ## Freeze
 

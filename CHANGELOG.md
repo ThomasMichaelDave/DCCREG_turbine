@@ -41,6 +41,22 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The rebuild's schematics in one KiCad project (2026-10-16)
+The designer: "please set everything up so the development stays in one project with all stages and changes in
+separate sheets".
+
+- **`rebuild/kicad/dccreg_rebuild/`** (new) replaces the two separate projects `rebuild/kicad/s0_base/` and
+  `rebuild/kicad/s1_tube/` (removed).
+  - A root sheet indexes the stages; S0 and S1 are its sheets 2 and 3.
+  - Each stage numbers its parts in its own hundred (S0 1xx, S1 2xx), with its name in the source in brackets in the
+    legend. The nets are local to their sheet, so the stages never connect.
+  - The layout the designer accepted carries over unchanged.
+- **`rebuild/kicad/make_kicad.py`:** builds the project; a new stage is one entry in STAGES. The check exports the
+  project netlist, cuts it by sheet and compares each stage with its source. All match: S0 against TOPOLOGY and
+  `s0_base.cir`, S1 against TOPOLOGY plus the additions and the pulsed-core solver. The ERC is 0 / 0. Each stage's nets
+  are also written to `netlists/<stage>.txt`.
+- **`rebuild/README.md`, `rebuild/kicad/kicad-findings.md`:** updated to match.
+
 ### The KiCad schematics of S0 and S1 (2026-10-15)
 The designer: "Both are ok, no need to add actual diagonals, that would be pure aesthetic."
 

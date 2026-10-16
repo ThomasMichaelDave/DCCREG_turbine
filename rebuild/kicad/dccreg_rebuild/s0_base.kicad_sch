@@ -871,7 +871,7 @@
 		)
 		(uuid "e1a9d128-82e5-5c41-a669-31c911b8e5cd")
 	)
-	(text "C1"
+	(text "C101"
 		(exclude_from_sim yes)
 		(at 294.64 21.59 0)
 		(effects
@@ -883,9 +883,9 @@
 		)
 		(uuid "c77b4121-afc1-530b-bd4c-9bdeb019a30a")
 	)
-	(text "Varicap A, N1 to REF. Its capacitance swings with the rotor between C_min and\nC_max; C_max at phase 1. In the tube: the top vane stack. Values: the paper's\nexample [OC]."
+	(text "[source: C1] Varicap A, N1 to REF. Its capacitance swings with the rotor\nbetween C_min and C_max; C_max at phase 1. In the tube: the top vane stack.\nValues: the paper's example [OC]."
 		(exclude_from_sim yes)
-		(at 304.80 21.59 0)
+		(at 307.34 21.59 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -894,7 +894,7 @@
 		)
 		(uuid "73a4ebe4-2d45-5c93-a5a5-920e9be05aa4")
 	)
-	(text "C2"
+	(text "C102"
 		(exclude_from_sim yes)
 		(at 294.64 30.33 0)
 		(effects
@@ -906,9 +906,9 @@
 		)
 		(uuid "68992145-9eb8-5c60-aa33-e648a973558e")
 	)
-	(text "Varicap B, N4 to REF. The same swing, 180 deg after C1 (C1 + C2 constant). In\nthe tube: the bottom vane stack."
+	(text "[source: C2] Varicap B, N4 to REF. The same swing, 180 deg after C101 (C101 + C102\nconstant). In the tube: the bottom vane stack."
 		(exclude_from_sim yes)
-		(at 304.80 30.33 0)
+		(at 307.34 30.33 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -917,7 +917,7 @@
 		)
 		(uuid "9da532c8-f564-5fc9-97f7-0bf8118f5edb")
 	)
-	(text "Ca"
+	(text "Ca101"
 		(exclude_from_sim yes)
 		(at 294.64 37.49 0)
 		(effects
@@ -929,9 +929,9 @@
 		)
 		(uuid "238bdf21-b5e9-5382-aa6e-adec22f9357e")
 	)
-	(text "Transfer capacitor A, N1 to N2. Carries charge from varicap A's side to the\ncross diode D4. In the tube: a fixed plate stack on the rotor."
+	(text "[source: Ca] Transfer capacitor A, N1 to N2. Carries charge from varicap A's\nside to the cross diode D104. In the tube: a fixed plate stack on the rotor."
 		(exclude_from_sim yes)
-		(at 304.80 37.49 0)
+		(at 307.34 37.49 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -940,7 +940,7 @@
 		)
 		(uuid "463992fd-4df0-50d5-aabc-415313aab837")
 	)
-	(text "Cb"
+	(text "Cb101"
 		(exclude_from_sim yes)
 		(at 294.64 44.65 0)
 		(effects
@@ -952,9 +952,9 @@
 		)
 		(uuid "3ed1811b-26b0-54c3-8e85-cb77186d927d")
 	)
-	(text "Transfer capacitor B, N3 to N4. The mirror of Ca, toward the cross diode D3."
+	(text "[source: Cb] Transfer capacitor B, N3 to N4. The mirror of Ca101, toward the\ncross diode D103."
 		(exclude_from_sim yes)
-		(at 304.80 44.65 0)
+		(at 307.34 44.65 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -963,9 +963,9 @@
 		)
 		(uuid "bbfbb3fc-1402-507f-96b1-523366e6917d")
 	)
-	(text "D1"
+	(text "D101"
 		(exclude_from_sim yes)
-		(at 294.64 50.24 0)
+		(at 294.64 51.82 0)
 		(effects
 			(font
 				(size 1.524 1.524)
@@ -975,9 +975,9 @@
 		)
 		(uuid "0f3a142a-0474-54e2-8101-bb1333813502")
 	)
-	(text "Return diode, REF -> N2. Holds N2 at or above REF; refills Ca from REF each\ncycle."
+	(text "[source: D1] Return diode, REF -> N2. Holds N2 at or above REF; refills Ca101\nfrom REF each cycle."
 		(exclude_from_sim yes)
-		(at 304.80 50.24 0)
+		(at 307.34 51.82 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -986,9 +986,9 @@
 		)
 		(uuid "3a4f5fd9-abfb-552c-88ac-9bb4e870bb8f")
 	)
-	(text "D2"
+	(text "D102"
 		(exclude_from_sim yes)
-		(at 294.64 57.40 0)
+		(at 294.64 58.98 0)
 		(effects
 			(font
 				(size 1.524 1.524)
@@ -998,9 +998,9 @@
 		)
 		(uuid "2df49200-19f5-5c9b-8e2a-fd967bed2899")
 	)
-	(text "Return diode, REF -> N3. The mirror of D1, for Cb."
+	(text "[source: D2] Return diode, REF -> N3. The mirror of D101, for Cb101."
 		(exclude_from_sim yes)
-		(at 304.80 57.40 0)
+		(at 307.34 58.98 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1009,9 +1009,9 @@
 		)
 		(uuid "a1bc4520-e840-5559-8d6d-0fe5ae00d0d1")
 	)
-	(text "D3"
+	(text "D103"
 		(exclude_from_sim yes)
-		(at 294.64 62.99 0)
+		(at 294.64 64.57 0)
 		(effects
 			(font
 				(size 1.524 1.524)
@@ -1021,9 +1021,9 @@
 		)
 		(uuid "b5cc5d77-8674-5396-949a-acbc1430d226")
 	)
-	(text "Cross diode, N3 -> N1. Passes Cb's charge onto varicap A; holds N1 at or above\nN3."
+	(text "[source: D3] Cross diode, N3 -> N1. Passes Cb101's charge onto varicap A; holds\nN1 at or above N3."
 		(exclude_from_sim yes)
-		(at 304.80 62.99 0)
+		(at 307.34 64.57 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1032,9 +1032,9 @@
 		)
 		(uuid "b394e2a2-256d-5818-913d-eae366f98ca3")
 	)
-	(text "D4"
+	(text "D104"
 		(exclude_from_sim yes)
-		(at 294.64 70.15 0)
+		(at 294.64 71.73 0)
 		(effects
 			(font
 				(size 1.524 1.524)
@@ -1044,9 +1044,9 @@
 		)
 		(uuid "14ff2b30-ca1c-5aaa-a928-1b9494512dbd")
 	)
-	(text "Cross diode, N2 -> N4. Passes Ca's charge onto varicap B; holds N4 at or above\nN2."
+	(text "[source: D4] Cross diode, N2 -> N4. Passes Ca101's charge onto varicap B; holds\nN4 at or above N2."
 		(exclude_from_sim yes)
-		(at 304.80 70.15 0)
+		(at 307.34 71.73 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1057,7 +1057,7 @@
 	)
 	(text "NOTES"
 		(exclude_from_sim yes)
-		(at 294.64 79.86 0)
+		(at 294.64 81.43 0)
 		(effects
 			(font
 				(size 2.0 2.0)
@@ -1067,9 +1067,9 @@
 		)
 		(uuid "600969e7-ffbe-580c-bf04-63b5240a4653")
 	)
-	(text "Source: J. de Queiroz (2019), Fig. 1, the symmetrical unipolar generator\n  (docs/reference/deQueiroz-2019-analysis-electronic-electrostatic-generators.pdf).\nStage S0, frozen at commit 42747f4 (rebuild/s0_base/). REF = the paper's node 0, the\nvaricaps' common side.\nPolarity positive: every node at or above REF (DECIDED 2026-10-14).\nThe varicaps run 180 deg apart. In phase the doubler does not pump\n  (rebuild/s1_tube/s1-pulsed-core-findings.md).\nGain per cycle z = 1.372169 ideal, 1.372037 ngspice\n(rebuild/s0_base/s0_base_results.json).\nValues: the paper's example, 60-360 pF varicaps, Ca = Cb = 330 pF, 20 Hz. S1 gives\nthe tube's.\nNetlist checked node for node against TOPOLOGY (rebuild/s0_base/s0_base.py) and\ns0_base.cir\n  by rebuild/kicad/make_kicad.py (rebuild/kicad/kicad_check_results.json)."
+	(text "Source: J. de Queiroz (2019), Fig. 1, the symmetrical unipolar generator\n  (docs/reference/deQueiroz-2019-analysis-electronic-electrostatic-generators.pdf).\nStage S0, frozen at commit 42747f4 (rebuild/s0_base/). REF = the paper's node 0, the\nvaricaps' common side.\nPolarity positive: every node at or above REF (DECIDED 2026-10-14).\nThe varicaps run 180 deg apart. In phase the doubler does not pump\n  (rebuild/s1_tube/s1-pulsed-core-findings.md).\nGain per cycle z = 1.372169 ideal, 1.372037 ngspice\n(rebuild/s0_base/s0_base_results.json).\nValues: the paper's example, 60-360 pF varicaps, Ca101 = Cb101 = 330 pF, 20 Hz. S1 gives\nthe tube's.\nNetlist checked node for node against TOPOLOGY (rebuild/s0_base/s0_base.py) and\ns0_base.cir\n  by rebuild/kicad/make_kicad.py (rebuild/kicad/kicad_check_results.json)."
 		(exclude_from_sim yes)
-		(at 294.64 86.21 0)
+		(at 294.64 87.78 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1089,7 +1089,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "70762d0b-11ac-50c9-b4c6-e39050c753ab")
-		(property "Reference" "C1"
+		(property "Reference" "C101"
 			(at 74.93 166.37 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1154,9 +1154,9 @@
 			(uuid "f095fc8f-97a6-5544-bb9a-89b9fab21976")
 		)
 		(instances
-			(project "s0_base"
-				(path "/513ab1a3-b66f-5e44-932b-4c686474860c"
-					(reference "C1")
+			(project "dccreg_rebuild"
+				(path "/18804d6c-8df5-516d-ac91-9d2744fe7221/4b176d21-370c-5502-8ccd-6e2b60da8cb0"
+					(reference "C101")
 					(unit 1)
 				)
 			)
@@ -1173,7 +1173,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "d671f50c-fb62-5e19-94ca-ea32f236620f")
-		(property "Reference" "C2"
+		(property "Reference" "C102"
 			(at 227.33 166.37 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1219,7 +1219,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "Varicap B, N4 to REF. The same swing, 180 deg after C1 (C1 + C2 constant). In the tube: the bottom vane stack."
+		(property "Description" "Varicap B, N4 to REF. The same swing, 180 deg after C101 (C101 + C102 constant). In the tube: the bottom vane stack."
 			(at 223.52 167.64 0)
 			(hide yes)
 			(show_name no)
@@ -1238,9 +1238,9 @@
 			(uuid "2bf1270a-6895-5e8e-a41d-2e8e4e06da34")
 		)
 		(instances
-			(project "s0_base"
-				(path "/513ab1a3-b66f-5e44-932b-4c686474860c"
-					(reference "C2")
+			(project "dccreg_rebuild"
+				(path "/18804d6c-8df5-516d-ac91-9d2744fe7221/4b176d21-370c-5502-8ccd-6e2b60da8cb0"
+					(reference "C102")
 					(unit 1)
 				)
 			)
@@ -1257,7 +1257,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "01a2305b-ea51-5ecc-a194-70fb1aea53fe")
-		(property "Reference" "Ca"
+		(property "Reference" "Ca101"
 			(at 96.52 107.95 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1299,7 +1299,7 @@
 				)
 			)
 		)
-		(property "Description" "Transfer capacitor A, N1 to N2. Carries charge from varicap A's side to the cross diode D4. In the tube: a fixed plate stack on the rotor."
+		(property "Description" "Transfer capacitor A, N1 to N2. Carries charge from varicap A's side to the cross diode D104. In the tube: a fixed plate stack on the rotor."
 			(at 96.52 111.76 90)
 			(hide yes)
 			(show_name no)
@@ -1317,9 +1317,9 @@
 			(uuid "3b52726a-a8f8-54ec-a5a0-701ec0060ded")
 		)
 		(instances
-			(project "s0_base"
-				(path "/513ab1a3-b66f-5e44-932b-4c686474860c"
-					(reference "Ca")
+			(project "dccreg_rebuild"
+				(path "/18804d6c-8df5-516d-ac91-9d2744fe7221/4b176d21-370c-5502-8ccd-6e2b60da8cb0"
+					(reference "Ca101")
 					(unit 1)
 				)
 			)
@@ -1336,7 +1336,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "8f0e4d02-17a4-56c2-a313-827f67a795ea")
-		(property "Reference" "Cb"
+		(property "Reference" "Cb101"
 			(at 198.12 107.95 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1378,7 +1378,7 @@
 				)
 			)
 		)
-		(property "Description" "Transfer capacitor B, N3 to N4. The mirror of Ca, toward the cross diode D3."
+		(property "Description" "Transfer capacitor B, N3 to N4. The mirror of Ca101, toward the cross diode D103."
 			(at 198.12 111.76 90)
 			(hide yes)
 			(show_name no)
@@ -1396,9 +1396,9 @@
 			(uuid "058bae03-bd36-553d-b8c0-b0f3117d469c")
 		)
 		(instances
-			(project "s0_base"
-				(path "/513ab1a3-b66f-5e44-932b-4c686474860c"
-					(reference "Cb")
+			(project "dccreg_rebuild"
+				(path "/18804d6c-8df5-516d-ac91-9d2744fe7221/4b176d21-370c-5502-8ccd-6e2b60da8cb0"
+					(reference "Cb101")
 					(unit 1)
 				)
 			)
@@ -1415,7 +1415,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "42928f7e-57e0-5d36-b56f-faf1768bf4c3")
-		(property "Reference" "D1"
+		(property "Reference" "D101"
 			(at 125.73 148.59 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1461,7 +1461,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "Return diode, REF -> N2. Holds N2 at or above REF; refills Ca from REF each cycle."
+		(property "Description" "Return diode, REF -> N2. Holds N2 at or above REF; refills Ca101 from REF each cycle."
 			(at 121.92 149.86 90)
 			(hide yes)
 			(show_name no)
@@ -1480,9 +1480,9 @@
 			(uuid "6ef76acd-73eb-54e3-a6bd-3a04b857fd70")
 		)
 		(instances
-			(project "s0_base"
-				(path "/513ab1a3-b66f-5e44-932b-4c686474860c"
-					(reference "D1")
+			(project "dccreg_rebuild"
+				(path "/18804d6c-8df5-516d-ac91-9d2744fe7221/4b176d21-370c-5502-8ccd-6e2b60da8cb0"
+					(reference "D101")
 					(unit 1)
 				)
 			)
@@ -1499,7 +1499,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "b46444d9-868a-59a7-ac1d-34f01dd90c4d")
-		(property "Reference" "D2"
+		(property "Reference" "D102"
 			(at 176.53 148.59 90)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1545,7 +1545,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "Return diode, REF -> N3. The mirror of D1, for Cb."
+		(property "Description" "Return diode, REF -> N3. The mirror of D101, for Cb101."
 			(at 172.72 149.86 90)
 			(hide yes)
 			(show_name no)
@@ -1564,9 +1564,9 @@
 			(uuid "b20defe3-5088-5d22-a9b6-c1b4b1cd91f1")
 		)
 		(instances
-			(project "s0_base"
-				(path "/513ab1a3-b66f-5e44-932b-4c686474860c"
-					(reference "D2")
+			(project "dccreg_rebuild"
+				(path "/18804d6c-8df5-516d-ac91-9d2744fe7221/4b176d21-370c-5502-8ccd-6e2b60da8cb0"
+					(reference "D102")
 					(unit 1)
 				)
 			)
@@ -1583,7 +1583,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "e406944f-c204-58c6-9c7c-7783555339ca")
-		(property "Reference" "D4"
+		(property "Reference" "D104"
 			(at 147.32 82.55 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1625,7 +1625,7 @@
 				)
 			)
 		)
-		(property "Description" "Cross diode, N2 -> N4. Passes Ca's charge onto varicap B; holds N4 at or above N2."
+		(property "Description" "Cross diode, N2 -> N4. Passes Ca101's charge onto varicap B; holds N4 at or above N2."
 			(at 147.32 86.36 0)
 			(hide yes)
 			(show_name no)
@@ -1643,9 +1643,9 @@
 			(uuid "15e44791-fc88-5a0a-8897-486c251865f7")
 		)
 		(instances
-			(project "s0_base"
-				(path "/513ab1a3-b66f-5e44-932b-4c686474860c"
-					(reference "D4")
+			(project "dccreg_rebuild"
+				(path "/18804d6c-8df5-516d-ac91-9d2744fe7221/4b176d21-370c-5502-8ccd-6e2b60da8cb0"
+					(reference "D104")
 					(unit 1)
 				)
 			)
@@ -1662,7 +1662,7 @@
 		(in_pos_files yes)
 		(dnp no)
 		(uuid "ee0a4772-470a-5bd5-92c1-45c6514d07bb")
-		(property "Reference" "D3"
+		(property "Reference" "D103"
 			(at 121.92 62.23 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -1704,7 +1704,7 @@
 				)
 			)
 		)
-		(property "Description" "Cross diode, N3 -> N1. Passes Cb's charge onto varicap A; holds N1 at or above N3."
+		(property "Description" "Cross diode, N3 -> N1. Passes Cb101's charge onto varicap A; holds N1 at or above N3."
 			(at 121.92 66.04 0)
 			(hide yes)
 			(show_name no)
@@ -1722,18 +1722,12 @@
 			(uuid "a9204beb-9786-5cc5-b9f7-25fa4d80dfa6")
 		)
 		(instances
-			(project "s0_base"
-				(path "/513ab1a3-b66f-5e44-932b-4c686474860c"
-					(reference "D3")
+			(project "dccreg_rebuild"
+				(path "/18804d6c-8df5-516d-ac91-9d2744fe7221/4b176d21-370c-5502-8ccd-6e2b60da8cb0"
+					(reference "D103")
 					(unit 1)
 				)
 			)
 		)
 	)
-	(sheet_instances
-		(path "/"
-			(page "1")
-		)
-	)
-	(embedded_fonts no)
 )
