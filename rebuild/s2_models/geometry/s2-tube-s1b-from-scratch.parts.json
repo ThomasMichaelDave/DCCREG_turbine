@@ -9,7 +9,7 @@
 "join": "hub-vessel",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 0.0
 },
 "label": "hub / hub_vessel - the vessel: borosilicate sphere, vacuum inside [borosilicate vessel, OD 50 mm, wall 2 mm (vacuum inside), rotor]"
@@ -23,7 +23,7 @@
 "join": "hub-gel",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 0.0
 },
 "label": "hub / hub_gel - interface filler: silicone gel [silicone gel, 0.5 mm, vacuum-cast, rotor]"
@@ -37,7 +37,7 @@
 "join": "hub-retainer",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 0.0
 },
 "label": "hub / hub_retainer - retainer: PEEK, the pocket over the glass, the bead grooves, the AH bores and seats [PEEK retainer, unfilled, rotor]"
@@ -51,7 +51,7 @@
 "join": "hub-coupler",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 0.0
 },
 "label": "hub / hub_coupler - shaft coupler: G10 around the retainer, between the flanges [G10 shaft coupler: a tube over the retainer and both flanges, rotor]"
@@ -65,7 +65,7 @@
 "join": "ring-B",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 0.0
 },
 "label": "hub / hub_ring_B - ring B (+15.0 kV): the foil band, 26.25-55.71 deg [Cu-ETP foil 0.1 mm, a band, rotor]"
@@ -79,7 +79,7 @@
 "join": "ring-B",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 0.0
 },
 "label": "hub / hub_bead_B_pol - ring B's polar bead, soldered to the foil [Cu wire ring, 3 mm, rotor]"
@@ -93,7 +93,7 @@
 "join": "ring-B",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 0.0
 },
 "label": "hub / hub_bead_B_eq - ring B's equatorial bead, soldered to the foil [Cu wire ring, 2 mm, rotor]"
@@ -107,7 +107,7 @@
 "join": "ring-A",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 0.0
 },
 "label": "hub / hub_ring_A - ring A (-15.0 kV): the foil band, 26.25-55.71 deg [Cu-ETP foil 0.1 mm, a band, rotor]"
@@ -121,7 +121,7 @@
 "join": "ring-A",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 0.0
 },
 "label": "hub / hub_bead_A_pol - ring A's polar bead, soldered to the foil [Cu wire ring, 3 mm, rotor]"
@@ -135,7 +135,7 @@
 "join": "ring-A",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 0.0
 },
 "label": "hub / hub_bead_A_eq - ring A's equatorial bead, soldered to the foil [Cu wire ring, 2 mm, rotor]"
@@ -149,7 +149,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 210.0,
+"dz": 344.0,
 "rot": 0.0
 },
 "label": "hub / A_flange - shaft-half flange A (REF), bonded and pinned in the coupler [austenitic stainless flange, non-magnetic, \u00d860, rotor]"
@@ -183,6 +183,48 @@
 "label": "rotor / A_sleeve - the rotor sleeve under the column and the vanes [G10 rotor sleeve, rotor]"
 },
 {
+"name": "A_cover",
+"proto": "cover_A",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / A_cover - the sleeve's PTFE cover (PD2 creepage, group I) [extruded PTFE tube over the sleeve (stock, not machined): the creepage cover, rotor]"
+},
+{
+"name": "A_shed_1",
+"proto": "shed",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 169.0,
+"rot": 0.0
+},
+"label": "rotor / A_shed_1 - a shed on the cover at the bearing end (creepage) [PTFE shed, 10 mm, punched from stock sheet, rotor]"
+},
+{
+"name": "A_shed_2",
+"proto": "shed",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 160.0,
+"rot": 0.0
+},
+"label": "rotor / A_shed_2 - a shed on the cover at the bearing end (creepage) [PTFE shed, 10 mm, punched from stock sheet, rotor]"
+},
+{
 "name": "B_flange",
 "proto": "flange",
 "body": "rotor",
@@ -191,7 +233,7 @@
 "join": "rotor-core",
 "place": {
 "dx": 0.0,
-"dz": 362.0,
+"dz": 496.0,
 "rot": 0.0
 },
 "label": "hub / B_flange - shaft-half flange B (REF), bonded and pinned in the coupler [austenitic stainless flange, non-magnetic, \u00d860, rotor]"
@@ -225,6 +267,48 @@
 "label": "rotor / B_sleeve - the rotor sleeve under the column and the vanes [G10 rotor sleeve, rotor]"
 },
 {
+"name": "B_cover",
+"proto": "cover_B",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "rotor / B_cover - the sleeve's PTFE cover (PD2 creepage, group I) [extruded PTFE tube over the sleeve (stock, not machined): the creepage cover, rotor]"
+},
+{
+"name": "B_shed_1",
+"proto": "shed",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 677.0,
+"rot": 0.0
+},
+"label": "rotor / B_shed_1 - a shed on the cover at the bearing end (creepage) [PTFE shed, 10 mm, punched from stock sheet, rotor]"
+},
+{
+"name": "B_shed_2",
+"proto": "shed",
+"body": "rotor",
+"node": "",
+"group": "rotor",
+"join": "rotor-core",
+"place": {
+"dx": 0.0,
+"dz": 686.0,
+"rot": 0.0
+},
+"label": "rotor / B_shed_2 - a shed on the cover at the bearing end (creepage) [PTFE shed, 10 mm, punched from stock sheet, rotor]"
+},
+{
 "name": "A_ref_term_-28",
 "proto": "ref_term_A_-28",
 "body": "rotor",
@@ -254,87 +338,87 @@
 },
 {
 "name": "A_Ca_06",
-"proto": "ca_plate",
+"proto": "ca_n2_first_A",
 "body": "rotor",
 "node": "2",
 "group": "side-A",
-"join": "A_Ca_0",
+"join": "comb-2-A",
 "place": {
 "dx": 0.0,
-"dz": 196.0,
+"dz": 323.0,
 "rot": 0.0
 },
-"label": "side-A / A_Ca_06 - Ca plate, node 2 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-A / A_Ca_06 - Ca plate, node 2, on its comb [Al plate, 3 mm; tabs to the N2 comb; the riser's clearance hole \u00d830, rotor]"
 },
 {
 "name": "A_Ca_05",
-"proto": "ca_plate",
+"proto": "ca_n1_A",
 "body": "rotor",
 "node": "1",
 "group": "side-A",
-"join": "A_Ca_1",
+"join": "comb-1-A",
 "place": {
 "dx": 0.0,
-"dz": 187.0,
+"dz": 314.0,
 "rot": 0.0
 },
-"label": "side-A / A_Ca_05 - Ca plate, node 1 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-A / A_Ca_05 - Ca plate, node 1, on its comb [Al plate, 3 mm, full annulus; three tabs to the N1 comb, rotor]"
 },
 {
 "name": "A_Ca_04",
-"proto": "ca_plate",
+"proto": "ca_n2_A",
 "body": "rotor",
 "node": "2",
 "group": "side-A",
-"join": "A_Ca_2",
+"join": "comb-2-A",
 "place": {
 "dx": 0.0,
-"dz": 178.0,
+"dz": 305.0,
 "rot": 0.0
 },
-"label": "side-A / A_Ca_04 - Ca plate, node 2 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-A / A_Ca_04 - Ca plate, node 2, on its comb [Al plate, 3 mm, full annulus; three tabs to the N2 comb, rotor]"
 },
 {
 "name": "A_Ca_03",
-"proto": "ca_plate",
+"proto": "ca_n1_A",
 "body": "rotor",
 "node": "1",
 "group": "side-A",
-"join": "A_Ca_3",
+"join": "comb-1-A",
 "place": {
 "dx": 0.0,
-"dz": 169.0,
+"dz": 296.0,
 "rot": 0.0
 },
-"label": "side-A / A_Ca_03 - Ca plate, node 1 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-A / A_Ca_03 - Ca plate, node 1, on its comb [Al plate, 3 mm, full annulus; three tabs to the N1 comb, rotor]"
 },
 {
 "name": "A_Ca_02",
-"proto": "ca_plate",
+"proto": "ca_n2_A",
 "body": "rotor",
 "node": "2",
 "group": "side-A",
-"join": "A_Ca_4",
+"join": "comb-2-A",
 "place": {
 "dx": 0.0,
-"dz": 160.0,
+"dz": 287.0,
 "rot": 0.0
 },
-"label": "side-A / A_Ca_02 - Ca plate, node 2 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-A / A_Ca_02 - Ca plate, node 2, on its comb [Al plate, 3 mm, full annulus; three tabs to the N2 comb, rotor]"
 },
 {
 "name": "A_Ca_01",
-"proto": "ca_plate",
+"proto": "ca_n1_A",
 "body": "rotor",
 "node": "1",
 "group": "side-A",
-"join": "A_Ca_5",
+"join": "comb-1-A",
 "place": {
 "dx": 0.0,
-"dz": 151.0,
+"dz": 278.0,
 "rot": 0.0
 },
-"label": "side-A / A_Ca_01 - Ca plate, node 1 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-A / A_Ca_01 - Ca plate, node 1, on its comb [Al plate, 3 mm, full annulus; three tabs to the N1 comb, rotor]"
 },
 {
 "name": "A_C1_r01",
@@ -342,27 +426,13 @@
 "body": "rotor",
 "node": "1",
 "group": "side-A",
-"join": "rotor-vanes-A",
+"join": "comb-1-A",
 "place": {
 "dx": 0.0,
-"dz": 142.0,
+"dz": 269.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_r01 - C1 rotor vane, node 1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
-},
-{
-"name": "A_rotor_spacer_1",
-"proto": "rotor_spacer",
-"body": "rotor",
-"node": "",
-"group": "side-A",
-"join": "rotor-vanes-A",
-"place": {
-"dx": 0.0,
-"dz": 127.0,
-"rot": 0.0
-},
-"label": "side-A / A_rotor_spacer_1 - G10 spacer between two rotor vanes (placeholder) [G10 spacer ring between two rotor vanes [IR, placeholder], rotor]"
+"label": "side-A / A_C1_r01 - C1 rotor vane, node 1, on the N1 comb [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "A_C1_s02",
@@ -373,10 +443,10 @@
 "join": "stator-A",
 "place": {
 "dx": 0.0,
-"dz": 133.0,
+"dz": 260.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_s02 - C1 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-A / A_C1_s02 - C1 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
 "name": "A_C1_r03",
@@ -384,27 +454,13 @@
 "body": "rotor",
 "node": "1",
 "group": "side-A",
-"join": "rotor-vanes-A",
+"join": "comb-1-A",
 "place": {
 "dx": 0.0,
-"dz": 124.0,
+"dz": 251.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_r03 - C1 rotor vane, node 1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
-},
-{
-"name": "A_rotor_spacer_2",
-"proto": "rotor_spacer",
-"body": "rotor",
-"node": "",
-"group": "side-A",
-"join": "rotor-vanes-A",
-"place": {
-"dx": 0.0,
-"dz": 109.0,
-"rot": 0.0
-},
-"label": "side-A / A_rotor_spacer_2 - G10 spacer between two rotor vanes (placeholder) [G10 spacer ring between two rotor vanes [IR, placeholder], rotor]"
+"label": "side-A / A_C1_r03 - C1 rotor vane, node 1, on the N1 comb [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "A_C1_s04",
@@ -415,10 +471,10 @@
 "join": "stator-A",
 "place": {
 "dx": 0.0,
-"dz": 115.0,
+"dz": 242.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_s04 - C1 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-A / A_C1_s04 - C1 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
 "name": "A_C1_r05",
@@ -426,27 +482,13 @@
 "body": "rotor",
 "node": "1",
 "group": "side-A",
-"join": "rotor-vanes-A",
+"join": "comb-1-A",
 "place": {
 "dx": 0.0,
-"dz": 106.0,
+"dz": 233.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_r05 - C1 rotor vane, node 1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
-},
-{
-"name": "A_rotor_spacer_3",
-"proto": "rotor_spacer",
-"body": "rotor",
-"node": "",
-"group": "side-A",
-"join": "rotor-vanes-A",
-"place": {
-"dx": 0.0,
-"dz": 91.0,
-"rot": 0.0
-},
-"label": "side-A / A_rotor_spacer_3 - G10 spacer between two rotor vanes (placeholder) [G10 spacer ring between two rotor vanes [IR, placeholder], rotor]"
+"label": "side-A / A_C1_r05 - C1 rotor vane, node 1, on the N1 comb [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "A_C1_s06",
@@ -457,10 +499,10 @@
 "join": "stator-A",
 "place": {
 "dx": 0.0,
-"dz": 97.0,
+"dz": 224.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_s06 - C1 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-A / A_C1_s06 - C1 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
 "name": "A_C1_r07",
@@ -468,27 +510,13 @@
 "body": "rotor",
 "node": "1",
 "group": "side-A",
-"join": "rotor-vanes-A",
+"join": "comb-1-A",
 "place": {
 "dx": 0.0,
-"dz": 88.0,
+"dz": 215.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_r07 - C1 rotor vane, node 1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
-},
-{
-"name": "A_rotor_spacer_4",
-"proto": "rotor_spacer",
-"body": "rotor",
-"node": "",
-"group": "side-A",
-"join": "rotor-vanes-A",
-"place": {
-"dx": 0.0,
-"dz": 73.0,
-"rot": 0.0
-},
-"label": "side-A / A_rotor_spacer_4 - G10 spacer between two rotor vanes (placeholder) [G10 spacer ring between two rotor vanes [IR, placeholder], rotor]"
+"label": "side-A / A_C1_r07 - C1 rotor vane, node 1, on the N1 comb [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "A_C1_s08",
@@ -499,10 +527,10 @@
 "join": "stator-A",
 "place": {
 "dx": 0.0,
-"dz": 79.0,
+"dz": 206.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_s08 - C1 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-A / A_C1_s08 - C1 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
 "name": "A_C1_r09",
@@ -510,27 +538,13 @@
 "body": "rotor",
 "node": "1",
 "group": "side-A",
-"join": "rotor-vanes-A",
+"join": "comb-1-A",
 "place": {
 "dx": 0.0,
-"dz": 70.0,
+"dz": 197.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_r09 - C1 rotor vane, node 1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
-},
-{
-"name": "A_rotor_spacer_5",
-"proto": "rotor_spacer",
-"body": "rotor",
-"node": "",
-"group": "side-A",
-"join": "rotor-vanes-A",
-"place": {
-"dx": 0.0,
-"dz": 55.0,
-"rot": 0.0
-},
-"label": "side-A / A_rotor_spacer_5 - G10 spacer between two rotor vanes (placeholder) [G10 spacer ring between two rotor vanes [IR, placeholder], rotor]"
+"label": "side-A / A_C1_r09 - C1 rotor vane, node 1, on the N1 comb [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "A_C1_s10",
@@ -541,10 +555,10 @@
 "join": "stator-A",
 "place": {
 "dx": 0.0,
-"dz": 61.0,
+"dz": 188.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_s10 - C1 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-A / A_C1_s10 - C1 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
 "name": "A_C1_r11",
@@ -552,13 +566,13 @@
 "body": "rotor",
 "node": "1",
 "group": "side-A",
-"join": "rotor-vanes-A",
+"join": "comb-1-A",
 "place": {
 "dx": 0.0,
-"dz": 52.0,
+"dz": 179.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_r11 - C1 rotor vane, node 1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
+"label": "side-A / A_C1_r11 - C1 rotor vane, node 1, on the N1 comb [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "A_C1_s12",
@@ -569,16 +583,562 @@
 "join": "stator-A",
 "place": {
 "dx": 0.0,
-"dz": 43.0,
+"dz": 170.0,
 "rot": 0.0
 },
-"label": "side-A / A_C1_s12 - C1 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-A / A_C1_s12 - C1 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
-"name": "A_carrier",
-"proto": "carrier_A",
-"body": "stator",
+"name": "A_comb1_tube_1",
+"proto": "comb_tube_A_1_0",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_tube_1 - the N1 comb's tube 1: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N1 comb, rotor]"
+},
+{
+"name": "A_comb1_sp_1_107",
+"proto": "comb_sp_A_1_0_107",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_1_107 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_1_125",
+"proto": "comb_sp_A_1_0_125",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_1_125 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_1_143",
+"proto": "comb_sp_A_1_0_143",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_1_143 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_1_152",
+"proto": "comb_sp_A_1_0_152",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_1_152 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_1_170",
+"proto": "comb_sp_A_1_0_170",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_1_170 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_1_188",
+"proto": "comb_sp_A_1_0_188",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_1_188 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_1_206",
+"proto": "comb_sp_A_1_0_206",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_1_206 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_1_224",
+"proto": "comb_sp_A_1_0_224",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_1_224 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_tube_2",
+"proto": "comb_tube_A_1_1",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_tube_2 - the N1 comb's tube 2: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N1 comb, rotor]"
+},
+{
+"name": "A_comb1_sp_2_107",
+"proto": "comb_sp_A_1_1_107",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_2_107 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_2_125",
+"proto": "comb_sp_A_1_1_125",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_2_125 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_2_143",
+"proto": "comb_sp_A_1_1_143",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_2_143 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_2_152",
+"proto": "comb_sp_A_1_1_152",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_2_152 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_2_170",
+"proto": "comb_sp_A_1_1_170",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_2_170 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_2_188",
+"proto": "comb_sp_A_1_1_188",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_2_188 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_2_206",
+"proto": "comb_sp_A_1_1_206",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_2_206 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_2_224",
+"proto": "comb_sp_A_1_1_224",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_2_224 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_tube_3",
+"proto": "comb_tube_A_1_2",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_tube_3 - the N1 comb's tube 3: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N1 comb, rotor]"
+},
+{
+"name": "A_comb1_sp_3_107",
+"proto": "comb_sp_A_1_2_107",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_3_107 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_3_125",
+"proto": "comb_sp_A_1_2_125",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_3_125 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_3_143",
+"proto": "comb_sp_A_1_2_143",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_3_143 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_3_152",
+"proto": "comb_sp_A_1_2_152",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_3_152 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_3_170",
+"proto": "comb_sp_A_1_2_170",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_3_170 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_3_188",
+"proto": "comb_sp_A_1_2_188",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_3_188 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_3_206",
+"proto": "comb_sp_A_1_2_206",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_3_206 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb1_sp_3_224",
+"proto": "comb_sp_A_1_2_224",
+"body": "rotor",
+"node": "1",
+"group": "side-A",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb1_sp_3_224 - a spacer of the N1 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb2_tube_1",
+"proto": "comb_tube_A_2_0",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_tube_1 - the N2 comb's tube 1: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N2 comb, rotor]"
+},
+{
+"name": "A_comb2_sp_1_98",
+"proto": "comb_sp_A_2_0_98",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_sp_1_98 - a spacer of the N2 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb2_sp_1_116",
+"proto": "comb_sp_A_2_0_116",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_sp_1_116 - a spacer of the N2 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb2_tube_2",
+"proto": "comb_tube_A_2_1",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_tube_2 - the N2 comb's tube 2: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N2 comb, rotor]"
+},
+{
+"name": "A_comb2_sp_2_98",
+"proto": "comb_sp_A_2_1_98",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_sp_2_98 - a spacer of the N2 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb2_sp_2_116",
+"proto": "comb_sp_A_2_1_116",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_sp_2_116 - a spacer of the N2 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb2_tube_3",
+"proto": "comb_tube_A_2_2",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_tube_3 - the N2 comb's tube 3: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N2 comb, rotor]"
+},
+{
+"name": "A_comb2_sp_3_98",
+"proto": "comb_sp_A_2_2_98",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_sp_3_98 - a spacer of the N2 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb2_sp_3_116",
+"proto": "comb_sp_A_2_2_116",
+"body": "rotor",
+"node": "2",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_sp_3_116 - a spacer of the N2 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "A_comb2_standoff_1",
+"proto": "standoff_A_0",
+"body": "rotor",
 "node": "",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_standoff_1 - the N2 comb's standoff 1: glazed steatite onto the first rotor vane [glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue), rotor]"
+},
+{
+"name": "A_comb2_standoff_2",
+"proto": "standoff_A_1",
+"body": "rotor",
+"node": "",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_standoff_2 - the N2 comb's standoff 2: glazed steatite onto the first rotor vane [glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue), rotor]"
+},
+{
+"name": "A_comb2_standoff_3",
+"proto": "standoff_A_2",
+"body": "rotor",
+"node": "",
+"group": "side-A",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-A / A_comb2_standoff_3 - the N2 comb's standoff 3: glazed steatite onto the first rotor vane [glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue), rotor]"
+},
+{
+"name": "A_tie_1",
+"proto": "tie_A_0",
+"body": "stator",
+"node": "s",
 "group": "stator",
 "join": "stator-A",
 "place": {
@@ -586,91 +1146,665 @@
 "dz": 0.0,
 "rot": 0.0
 },
-"label": "stator / A_carrier - the counter-rotor's carrier: holds the stator vanes, ends on the spider [G10 carrier tube for the stator vanes [IR, placeholder], stator]"
+"label": "stator / A_tie_1 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_1_161",
+"proto": "tie_sp_A_0_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_1_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_1_179",
+"proto": "tie_sp_A_0_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_1_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_1_197",
+"proto": "tie_sp_A_0_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_1_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_1_215",
+"proto": "tie_sp_A_0_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_1_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_1_233",
+"proto": "tie_sp_A_0_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_1_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_1_251",
+"proto": "tie_sp_A_0_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_1_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_2",
+"proto": "tie_A_1",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_2 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_2_161",
+"proto": "tie_sp_A_1_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_2_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_2_179",
+"proto": "tie_sp_A_1_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_2_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_2_197",
+"proto": "tie_sp_A_1_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_2_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_2_215",
+"proto": "tie_sp_A_1_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_2_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_2_233",
+"proto": "tie_sp_A_1_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_2_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_2_251",
+"proto": "tie_sp_A_1_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_2_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_3",
+"proto": "tie_A_2",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_3 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_3_161",
+"proto": "tie_sp_A_2_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_3_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_3_179",
+"proto": "tie_sp_A_2_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_3_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_3_197",
+"proto": "tie_sp_A_2_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_3_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_3_215",
+"proto": "tie_sp_A_2_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_3_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_3_233",
+"proto": "tie_sp_A_2_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_3_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_3_251",
+"proto": "tie_sp_A_2_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_3_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_4",
+"proto": "tie_A_3",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_4 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_4_161",
+"proto": "tie_sp_A_3_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_4_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_4_179",
+"proto": "tie_sp_A_3_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_4_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_4_197",
+"proto": "tie_sp_A_3_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_4_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_4_215",
+"proto": "tie_sp_A_3_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_4_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_4_233",
+"proto": "tie_sp_A_3_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_4_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_4_251",
+"proto": "tie_sp_A_3_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_4_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_5",
+"proto": "tie_A_4",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_5 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_5_161",
+"proto": "tie_sp_A_4_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_5_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_5_179",
+"proto": "tie_sp_A_4_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_5_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_5_197",
+"proto": "tie_sp_A_4_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_5_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_5_215",
+"proto": "tie_sp_A_4_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_5_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_5_233",
+"proto": "tie_sp_A_4_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_5_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_5_251",
+"proto": "tie_sp_A_4_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_5_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_6",
+"proto": "tie_A_5",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_6 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_6_161",
+"proto": "tie_sp_A_5_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_6_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_6_179",
+"proto": "tie_sp_A_5_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_6_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_6_197",
+"proto": "tie_sp_A_5_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_6_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_6_215",
+"proto": "tie_sp_A_5_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_6_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_6_233",
+"proto": "tie_sp_A_5_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_6_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "A_tie_sp_6_251",
+"proto": "tie_sp_A_5_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / A_tie_sp_6_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
 },
 {
 "name": "B_Cb_06",
-"proto": "ca_plate",
+"proto": "ca_n2_first_B",
 "body": "rotor",
 "node": "3",
 "group": "side-B",
-"join": "B_Cb_0",
+"join": "comb-3-B",
 "place": {
 "dx": 0.0,
-"dz": 381.0,
+"dz": 522.0,
 "rot": 0.0
 },
-"label": "side-B / B_Cb_06 - Cb plate, node 3 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-B / B_Cb_06 - Cb plate, node 3, on its comb [Al plate, 3 mm; tabs to the N2 comb; the riser's clearance hole \u00d830, rotor]"
 },
 {
 "name": "B_Cb_05",
-"proto": "ca_plate",
+"proto": "ca_n1_B",
 "body": "rotor",
 "node": "4",
 "group": "side-B",
-"join": "B_Cb_1",
+"join": "comb-4-B",
 "place": {
 "dx": 0.0,
-"dz": 390.0,
+"dz": 531.0,
 "rot": 0.0
 },
-"label": "side-B / B_Cb_05 - Cb plate, node 4 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-B / B_Cb_05 - Cb plate, node 4, on its comb [Al plate, 3 mm, full annulus; three tabs to the N1 comb, rotor]"
 },
 {
 "name": "B_Cb_04",
-"proto": "ca_plate",
+"proto": "ca_n2_B",
 "body": "rotor",
 "node": "3",
 "group": "side-B",
-"join": "B_Cb_2",
+"join": "comb-3-B",
 "place": {
 "dx": 0.0,
-"dz": 399.0,
+"dz": 540.0,
 "rot": 0.0
 },
-"label": "side-B / B_Cb_04 - Cb plate, node 3 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-B / B_Cb_04 - Cb plate, node 3, on its comb [Al plate, 3 mm, full annulus; three tabs to the N2 comb, rotor]"
 },
 {
 "name": "B_Cb_03",
-"proto": "ca_plate",
+"proto": "ca_n1_B",
 "body": "rotor",
 "node": "4",
 "group": "side-B",
-"join": "B_Cb_3",
+"join": "comb-4-B",
 "place": {
 "dx": 0.0,
-"dz": 408.0,
+"dz": 549.0,
 "rot": 0.0
 },
-"label": "side-B / B_Cb_03 - Cb plate, node 4 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-B / B_Cb_03 - Cb plate, node 4, on its comb [Al plate, 3 mm, full annulus; three tabs to the N1 comb, rotor]"
 },
 {
 "name": "B_Cb_02",
-"proto": "ca_plate",
+"proto": "ca_n2_B",
 "body": "rotor",
 "node": "3",
 "group": "side-B",
-"join": "B_Cb_4",
+"join": "comb-3-B",
 "place": {
 "dx": 0.0,
-"dz": 417.0,
+"dz": 558.0,
 "rot": 0.0
 },
-"label": "side-B / B_Cb_02 - Cb plate, node 3 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-B / B_Cb_02 - Cb plate, node 3, on its comb [Al plate, 3 mm, full annulus; three tabs to the N2 comb, rotor]"
 },
 {
 "name": "B_Cb_01",
-"proto": "ca_plate",
+"proto": "ca_n1_B",
 "body": "rotor",
 "node": "4",
 "group": "side-B",
-"join": "B_Cb_5",
+"join": "comb-4-B",
 "place": {
 "dx": 0.0,
-"dz": 426.0,
+"dz": 567.0,
 "rot": 0.0
 },
-"label": "side-B / B_Cb_01 - Cb plate, node 4 (support OPEN) [Al plate, 3 mm, full annulus, rotor]"
+"label": "side-B / B_Cb_01 - Cb plate, node 4, on its comb [Al plate, 3 mm, full annulus; three tabs to the N1 comb, rotor]"
 },
 {
 "name": "B_C2_r01",
@@ -678,27 +1812,13 @@
 "body": "rotor",
 "node": "4",
 "group": "side-B",
-"join": "rotor-vanes-B",
+"join": "comb-4-B",
 "place": {
 "dx": 0.0,
-"dz": 435.0,
+"dz": 576.0,
 "rot": 30.0
 },
-"label": "side-B / B_C2_r01 - C2 rotor vane, node 4, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
-},
-{
-"name": "B_rotor_spacer_1",
-"proto": "rotor_spacer",
-"body": "rotor",
-"node": "",
-"group": "side-B",
-"join": "rotor-vanes-B",
-"place": {
-"dx": 0.0,
-"dz": 438.0,
-"rot": 0.0
-},
-"label": "side-B / B_rotor_spacer_1 - G10 spacer between two rotor vanes (placeholder) [G10 spacer ring between two rotor vanes [IR, placeholder], rotor]"
+"label": "side-B / B_C2_r01 - C2 rotor vane, node 4, on the N1 comb, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "B_C2_s02",
@@ -709,10 +1829,10 @@
 "join": "stator-B",
 "place": {
 "dx": 0.0,
-"dz": 444.0,
+"dz": 585.0,
 "rot": 0.0
 },
-"label": "side-B / B_C2_s02 - C2 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-B / B_C2_s02 - C2 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
 "name": "B_C2_r03",
@@ -720,27 +1840,13 @@
 "body": "rotor",
 "node": "4",
 "group": "side-B",
-"join": "rotor-vanes-B",
+"join": "comb-4-B",
 "place": {
 "dx": 0.0,
-"dz": 453.0,
+"dz": 594.0,
 "rot": 30.0
 },
-"label": "side-B / B_C2_r03 - C2 rotor vane, node 4, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
-},
-{
-"name": "B_rotor_spacer_2",
-"proto": "rotor_spacer",
-"body": "rotor",
-"node": "",
-"group": "side-B",
-"join": "rotor-vanes-B",
-"place": {
-"dx": 0.0,
-"dz": 456.0,
-"rot": 0.0
-},
-"label": "side-B / B_rotor_spacer_2 - G10 spacer between two rotor vanes (placeholder) [G10 spacer ring between two rotor vanes [IR, placeholder], rotor]"
+"label": "side-B / B_C2_r03 - C2 rotor vane, node 4, on the N1 comb, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "B_C2_s04",
@@ -751,10 +1857,10 @@
 "join": "stator-B",
 "place": {
 "dx": 0.0,
-"dz": 462.0,
+"dz": 603.0,
 "rot": 0.0
 },
-"label": "side-B / B_C2_s04 - C2 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-B / B_C2_s04 - C2 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
 "name": "B_C2_r05",
@@ -762,27 +1868,13 @@
 "body": "rotor",
 "node": "4",
 "group": "side-B",
-"join": "rotor-vanes-B",
+"join": "comb-4-B",
 "place": {
 "dx": 0.0,
-"dz": 471.0,
+"dz": 612.0,
 "rot": 30.0
 },
-"label": "side-B / B_C2_r05 - C2 rotor vane, node 4, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
-},
-{
-"name": "B_rotor_spacer_3",
-"proto": "rotor_spacer",
-"body": "rotor",
-"node": "",
-"group": "side-B",
-"join": "rotor-vanes-B",
-"place": {
-"dx": 0.0,
-"dz": 474.0,
-"rot": 0.0
-},
-"label": "side-B / B_rotor_spacer_3 - G10 spacer between two rotor vanes (placeholder) [G10 spacer ring between two rotor vanes [IR, placeholder], rotor]"
+"label": "side-B / B_C2_r05 - C2 rotor vane, node 4, on the N1 comb, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "B_C2_s06",
@@ -793,10 +1885,10 @@
 "join": "stator-B",
 "place": {
 "dx": 0.0,
-"dz": 480.0,
+"dz": 621.0,
 "rot": 0.0
 },
-"label": "side-B / B_C2_s06 - C2 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-B / B_C2_s06 - C2 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
 "name": "B_C2_r07",
@@ -804,27 +1896,13 @@
 "body": "rotor",
 "node": "4",
 "group": "side-B",
-"join": "rotor-vanes-B",
+"join": "comb-4-B",
 "place": {
 "dx": 0.0,
-"dz": 489.0,
+"dz": 630.0,
 "rot": 30.0
 },
-"label": "side-B / B_C2_r07 - C2 rotor vane, node 4, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
-},
-{
-"name": "B_rotor_spacer_4",
-"proto": "rotor_spacer",
-"body": "rotor",
-"node": "",
-"group": "side-B",
-"join": "rotor-vanes-B",
-"place": {
-"dx": 0.0,
-"dz": 492.0,
-"rot": 0.0
-},
-"label": "side-B / B_rotor_spacer_4 - G10 spacer between two rotor vanes (placeholder) [G10 spacer ring between two rotor vanes [IR, placeholder], rotor]"
+"label": "side-B / B_C2_r07 - C2 rotor vane, node 4, on the N1 comb, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "B_C2_s08",
@@ -835,10 +1913,10 @@
 "join": "stator-B",
 "place": {
 "dx": 0.0,
-"dz": 498.0,
+"dz": 639.0,
 "rot": 0.0
 },
-"label": "side-B / B_C2_s08 - C2 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-B / B_C2_s08 - C2 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
 "name": "B_C2_r09",
@@ -846,27 +1924,13 @@
 "body": "rotor",
 "node": "4",
 "group": "side-B",
-"join": "rotor-vanes-B",
+"join": "comb-4-B",
 "place": {
 "dx": 0.0,
-"dz": 507.0,
+"dz": 648.0,
 "rot": 30.0
 },
-"label": "side-B / B_C2_r09 - C2 rotor vane, node 4, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
-},
-{
-"name": "B_rotor_spacer_5",
-"proto": "rotor_spacer",
-"body": "rotor",
-"node": "",
-"group": "side-B",
-"join": "rotor-vanes-B",
-"place": {
-"dx": 0.0,
-"dz": 510.0,
-"rot": 0.0
-},
-"label": "side-B / B_rotor_spacer_5 - G10 spacer between two rotor vanes (placeholder) [G10 spacer ring between two rotor vanes [IR, placeholder], rotor]"
+"label": "side-B / B_C2_r09 - C2 rotor vane, node 4, on the N1 comb, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "B_C2_s10",
@@ -877,10 +1941,10 @@
 "join": "stator-B",
 "place": {
 "dx": 0.0,
-"dz": 516.0,
+"dz": 657.0,
 "rot": 0.0
 },
-"label": "side-B / B_C2_s10 - C2 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-B / B_C2_s10 - C2 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
 "name": "B_C2_r11",
@@ -888,13 +1952,13 @@
 "body": "rotor",
 "node": "4",
 "group": "side-B",
-"join": "rotor-vanes-B",
+"join": "comb-4-B",
 "place": {
 "dx": 0.0,
-"dz": 525.0,
+"dz": 666.0,
 "rot": 30.0
 },
-"label": "side-B / B_C2_r11 - C2 rotor vane, node 4, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring, rotor]"
+"label": "side-B / B_C2_r11 - C2 rotor vane, node 4, on the N1 comb, half a pitch on: antiphase to C1 [Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes, rotor]"
 },
 {
 "name": "B_C2_s12",
@@ -905,16 +1969,562 @@
 "join": "stator-B",
 "place": {
 "dx": 0.0,
-"dz": 534.0,
+"dz": 675.0,
 "rot": 0.0
 },
-"label": "side-B / B_C2_s12 - C2 stator vane, REF (the counter-rotor) [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, stator]"
+"label": "side-B / B_C2_s12 - C2 stator vane, REF, on the tie rods [Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs, stator]"
 },
 {
-"name": "B_carrier",
-"proto": "carrier_B",
-"body": "stator",
+"name": "B_comb4_tube_1",
+"proto": "comb_tube_B_4_0",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_tube_1 - the N4 comb's tube 1: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N4 comb, rotor]"
+},
+{
+"name": "B_comb4_sp_1_107",
+"proto": "comb_sp_B_4_0_107",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_1_107 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_1_125",
+"proto": "comb_sp_B_4_0_125",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_1_125 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_1_143",
+"proto": "comb_sp_B_4_0_143",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_1_143 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_1_152",
+"proto": "comb_sp_B_4_0_152",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_1_152 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_1_170",
+"proto": "comb_sp_B_4_0_170",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_1_170 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_1_188",
+"proto": "comb_sp_B_4_0_188",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_1_188 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_1_206",
+"proto": "comb_sp_B_4_0_206",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_1_206 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_1_224",
+"proto": "comb_sp_B_4_0_224",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_1_224 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_tube_2",
+"proto": "comb_tube_B_4_1",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_tube_2 - the N4 comb's tube 2: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N4 comb, rotor]"
+},
+{
+"name": "B_comb4_sp_2_107",
+"proto": "comb_sp_B_4_1_107",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_2_107 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_2_125",
+"proto": "comb_sp_B_4_1_125",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_2_125 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_2_143",
+"proto": "comb_sp_B_4_1_143",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_2_143 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_2_152",
+"proto": "comb_sp_B_4_1_152",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_2_152 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_2_170",
+"proto": "comb_sp_B_4_1_170",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_2_170 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_2_188",
+"proto": "comb_sp_B_4_1_188",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_2_188 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_2_206",
+"proto": "comb_sp_B_4_1_206",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_2_206 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_2_224",
+"proto": "comb_sp_B_4_1_224",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_2_224 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_tube_3",
+"proto": "comb_tube_B_4_2",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_tube_3 - the N4 comb's tube 3: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N4 comb, rotor]"
+},
+{
+"name": "B_comb4_sp_3_107",
+"proto": "comb_sp_B_4_2_107",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_3_107 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_3_125",
+"proto": "comb_sp_B_4_2_125",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_3_125 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_3_143",
+"proto": "comb_sp_B_4_2_143",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_3_143 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_3_152",
+"proto": "comb_sp_B_4_2_152",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_3_152 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_3_170",
+"proto": "comb_sp_B_4_2_170",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_3_170 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_3_188",
+"proto": "comb_sp_B_4_2_188",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_3_188 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_3_206",
+"proto": "comb_sp_B_4_2_206",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_3_206 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb4_sp_3_224",
+"proto": "comb_sp_B_4_2_224",
+"body": "rotor",
+"node": "4",
+"group": "side-B",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb4_sp_3_224 - a spacer of the N4 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb3_tube_1",
+"proto": "comb_tube_B_3_0",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_tube_1 - the N3 comb's tube 1: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N3 comb, rotor]"
+},
+{
+"name": "B_comb3_sp_1_98",
+"proto": "comb_sp_B_3_0_98",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_sp_1_98 - a spacer of the N3 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb3_sp_1_116",
+"proto": "comb_sp_B_3_0_116",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_sp_1_116 - a spacer of the N3 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb3_tube_2",
+"proto": "comb_tube_B_3_1",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_tube_2 - the N3 comb's tube 2: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N3 comb, rotor]"
+},
+{
+"name": "B_comb3_sp_2_98",
+"proto": "comb_sp_B_3_1_98",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_sp_2_98 - a spacer of the N3 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb3_sp_2_116",
+"proto": "comb_sp_B_3_1_116",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_sp_2_116 - a spacer of the N3 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb3_tube_3",
+"proto": "comb_tube_B_3_2",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_tube_3 - the N3 comb's tube 3: support and tie of its net's plates [Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N3 comb, rotor]"
+},
+{
+"name": "B_comb3_sp_3_98",
+"proto": "comb_sp_B_3_2_98",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_sp_3_98 - a spacer of the N3 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb3_sp_3_116",
+"proto": "comb_sp_B_3_2_116",
+"body": "rotor",
+"node": "3",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_sp_3_116 - a spacer of the N3 comb [Al spacer tube 12 x 1 on the comb, rotor]"
+},
+{
+"name": "B_comb3_standoff_1",
+"proto": "standoff_B_0",
+"body": "rotor",
 "node": "",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_standoff_1 - the N3 comb's standoff 1: glazed steatite onto the first rotor vane [glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue), rotor]"
+},
+{
+"name": "B_comb3_standoff_2",
+"proto": "standoff_B_1",
+"body": "rotor",
+"node": "",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_standoff_2 - the N3 comb's standoff 2: glazed steatite onto the first rotor vane [glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue), rotor]"
+},
+{
+"name": "B_comb3_standoff_3",
+"proto": "standoff_B_2",
+"body": "rotor",
+"node": "",
+"group": "side-B",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "side-B / B_comb3_standoff_3 - the N3 comb's standoff 3: glazed steatite onto the first rotor vane [glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue), rotor]"
+},
+{
+"name": "B_tie_1",
+"proto": "tie_B_0",
+"body": "stator",
+"node": "s",
 "group": "stator",
 "join": "stator-B",
 "place": {
@@ -922,7 +2532,595 @@
 "dz": 0.0,
 "rot": 0.0
 },
-"label": "stator / B_carrier - the counter-rotor's carrier: holds the stator vanes, ends on the spider [G10 carrier tube for the stator vanes [IR, placeholder], stator]"
+"label": "stator / B_tie_1 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_1_161",
+"proto": "tie_sp_B_0_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_1_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_1_179",
+"proto": "tie_sp_B_0_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_1_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_1_197",
+"proto": "tie_sp_B_0_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_1_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_1_215",
+"proto": "tie_sp_B_0_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_1_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_1_233",
+"proto": "tie_sp_B_0_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_1_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_1_251",
+"proto": "tie_sp_B_0_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_1_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_2",
+"proto": "tie_B_1",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_2 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_2_161",
+"proto": "tie_sp_B_1_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_2_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_2_179",
+"proto": "tie_sp_B_1_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_2_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_2_197",
+"proto": "tie_sp_B_1_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_2_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_2_215",
+"proto": "tie_sp_B_1_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_2_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_2_233",
+"proto": "tie_sp_B_1_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_2_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_2_251",
+"proto": "tie_sp_B_1_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_2_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_3",
+"proto": "tie_B_2",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_3 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_3_161",
+"proto": "tie_sp_B_2_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_3_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_3_179",
+"proto": "tie_sp_B_2_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_3_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_3_197",
+"proto": "tie_sp_B_2_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_3_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_3_215",
+"proto": "tie_sp_B_2_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_3_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_3_233",
+"proto": "tie_sp_B_2_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_3_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_3_251",
+"proto": "tie_sp_B_2_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_3_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_4",
+"proto": "tie_B_3",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_4 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_4_161",
+"proto": "tie_sp_B_3_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_4_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_4_179",
+"proto": "tie_sp_B_3_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_4_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_4_197",
+"proto": "tie_sp_B_3_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_4_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_4_215",
+"proto": "tie_sp_B_3_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_4_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_4_233",
+"proto": "tie_sp_B_3_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_4_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_4_251",
+"proto": "tie_sp_B_3_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_4_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_5",
+"proto": "tie_B_4",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_5 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_5_161",
+"proto": "tie_sp_B_4_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_5_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_5_179",
+"proto": "tie_sp_B_4_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_5_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_5_197",
+"proto": "tie_sp_B_4_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_5_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_5_215",
+"proto": "tie_sp_B_4_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_5_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_5_233",
+"proto": "tie_sp_B_4_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_5_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_5_251",
+"proto": "tie_sp_B_4_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_5_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_6",
+"proto": "tie_B_5",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_6 - a stator tie rod: the stator vanes' REF bus and support, into the spider [stainless M5 tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_6_161",
+"proto": "tie_sp_B_5_161",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_6_161 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_6_179",
+"proto": "tie_sp_B_5_179",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_6_179 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_6_197",
+"proto": "tie_sp_B_5_197",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_6_197 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_6_215",
+"proto": "tie_sp_B_5_215",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_6_215 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_6_233",
+"proto": "tie_sp_B_5_233",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_6_233 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "B_tie_sp_6_251",
+"proto": "tie_sp_B_5_251",
+"body": "stator",
+"node": "s",
+"group": "stator",
+"join": "stator-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / B_tie_sp_6_251 - a stator spacer between two stator vanes [Al spacer tube \u00d810 on a tie rod (REF), stator]"
+},
+{
+"name": "cage",
+"proto": "cage",
+"body": "stator",
+"node": "",
+"group": "stator",
+"join": "stator-cage",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "stator / cage - the counter-rotor's cage: joins its two halves across the hub [G10 cage tube, spider to spider across the hub (the counter-rotor's backbone), stator]"
 },
 {
 "name": "A_ref_bearing",
@@ -933,7 +3131,7 @@
 "join": "brg-A",
 "place": {
 "dx": 0.0,
-"dz": 10.0,
+"dz": 137.0,
 "rot": 0.0
 },
 "label": "ref-link / A_ref_bearing - the REF link: rotor (the shaft) to the counter-rotor, through the bearing (for now) [6205 class bearing: the REF link [placeholder, the 2026-10-08 decision], bearing]"
@@ -947,10 +3145,10 @@
 "join": "stator-A",
 "place": {
 "dx": 0.0,
-"dz": 13.5,
+"dz": 140.5,
 "rot": 0.0
 },
-"label": "ref-link / A_ref_spider - the REF link's spider: the bearing to the carrier (REF of the counter-rotor) [Al spider: the bearing's outer ring to the carrier, REF [placeholder], stator]"
+"label": "ref-link / A_ref_spider - the REF link's spider: the bearing to the carrier (REF of the counter-rotor) [Al spider: the bearing's outer ring to the cage's bore; the tie rods end in it (REF), stator]"
 },
 {
 "name": "B_ref_bearing",
@@ -961,7 +3159,7 @@
 "join": "brg-B",
 "place": {
 "dx": 0.0,
-"dz": 555.0,
+"dz": 696.0,
 "rot": 0.0
 },
 "label": "ref-link / B_ref_bearing - the REF link: rotor (the shaft) to the counter-rotor, through the bearing (for now) [6205 class bearing: the REF link [placeholder, the 2026-10-08 decision], bearing]"
@@ -975,10 +3173,10 @@
 "join": "stator-B",
 "place": {
 "dx": 0.0,
-"dz": 558.5,
+"dz": 699.5,
 "rot": 0.0
 },
-"label": "ref-link / B_ref_spider - the REF link's spider: the bearing to the carrier (REF of the counter-rotor) [Al spider: the bearing's outer ring to the carrier, REF [placeholder], stator]"
+"label": "ref-link / B_ref_spider - the REF link's spider: the bearing to the carrier (REF of the counter-rotor) [Al spider: the bearing's outer ring to the cage's bore; the tie rods end in it (REF), stator]"
 },
 {
 "name": "A_deck_plate",
@@ -989,7 +3187,7 @@
 "join": "hub-coupler",
 "place": {
 "dx": 0.0,
-"dz": 254.0,
+"dz": 388.0,
 "rot": 0.0
 },
 "label": "deck-A / A_deck_plate - deck A: the G10 plate on the coupler, |z| 30-36 [G10 deck plate, 6 mm, r 33-108, bonded on the coupler; the cross nets' and the ring lead's holes [IR], rotor]"
@@ -1003,7 +3201,7 @@
 "join": "deck-A",
 "place": {
 "dx": 71.11961754677819,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 27.64597536373868
 },
 "label": "deck-A / A_J_2 - junction N2: brass terminal in its block [brass junction terminal, rotor]"
@@ -1017,7 +3215,7 @@
 "join": "deck-A",
 "place": {
 "dx": 71.11961754677819,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 27.64597536373868
 },
 "label": "deck-A / A_J_2_pot - junction N2: potting [silicone potting, the junction's block, rotor]"
@@ -1031,7 +3229,7 @@
 "join": "deck-A",
 "place": {
 "dx": 71.11961754677819,
-"dz": 242.0,
+"dz": 376.0,
 "rot": -152.35402463626133
 },
 "label": "deck-A / A_J_3x - junction N3: brass terminal in its block [brass junction terminal, rotor]"
@@ -1045,7 +3243,7 @@
 "join": "deck-A",
 "place": {
 "dx": 71.11961754677819,
-"dz": 242.0,
+"dz": 376.0,
 "rot": -152.35402463626133
 },
 "label": "deck-A / A_J_3x_pot - junction N3: potting [silicone potting, the junction's block, rotor]"
@@ -1059,7 +3257,7 @@
 "join": "deck-A",
 "place": {
 "dx": 71.11961754677819,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 152.3540246362613
 },
 "label": "deck-A / A_J_1 - junction N1: brass terminal in its block [brass junction terminal, rotor]"
@@ -1073,7 +3271,7 @@
 "join": "deck-A",
 "place": {
 "dx": 71.11961754677819,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 152.3540246362613
 },
 "label": "deck-A / A_J_1_pot - junction N1: potting [silicone potting, the junction's block, rotor]"
@@ -1087,7 +3285,7 @@
 "join": "A_D1_body",
 "place": {
 "dx": 63.0,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 0.0
 },
 "label": "deck-A / A_D1_body - D1 (0 -> 2): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
@@ -1101,7 +3299,7 @@
 "join": "deck-A",
 "place": {
 "dx": 63.0,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 0.0
 },
 "label": "deck-A / A_D1_pot - D1: its potted housing [silicone potting, 8 mm over the part, rotor]"
@@ -1115,7 +3313,7 @@
 "join": "deck-A",
 "place": {
 "dx": 63.0,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 0.0
 },
 "label": "deck-A / A_D1_lead_neg - D1: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1129,7 +3327,7 @@
 "join": "deck-A",
 "place": {
 "dx": 63.0,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 0.0
 },
 "label": "deck-A / A_D1_lead_pos - D1: its lead, net 2 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1143,7 +3341,7 @@
 "join": "A_D3_body",
 "place": {
 "dx": 63.0,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 180.0
 },
 "label": "deck-A / A_D3_body - D3 (3 -> 1): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
@@ -1157,7 +3355,7 @@
 "join": "deck-A",
 "place": {
 "dx": 63.0,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 180.0
 },
 "label": "deck-A / A_D3_pot - D3: its potted housing [silicone potting, 8 mm over the part, rotor]"
@@ -1171,7 +3369,7 @@
 "join": "deck-A",
 "place": {
 "dx": 63.0,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 180.0
 },
 "label": "deck-A / A_D3_lead_neg - D3: its lead, net 1 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1185,7 +3383,7 @@
 "join": "deck-A",
 "place": {
 "dx": 63.0,
-"dz": 242.0,
+"dz": 376.0,
 "rot": 180.0
 },
 "label": "deck-A / A_D3_lead_pos - D3: its lead, net 3 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1199,7 +3397,7 @@
 "join": "A_Z1a_body",
 "place": {
 "dx": 0.0,
-"dz": 236.0,
+"dz": 370.0,
 "rot": 106.2197606127405
 },
 "label": "deck-A / A_Z1a_body - Z1a (1 - m1): half the clamp string: 33 x 1.5KE200A in a meander [half the clamp string: 33 x 1.5KE200A in a meander, rotor]"
@@ -1213,7 +3411,7 @@
 "join": "deck-A",
 "place": {
 "dx": 0.0,
-"dz": 236.0,
+"dz": 370.0,
 "rot": 106.2197606127405
 },
 "label": "deck-A / A_Z1a_pot - Z1a: its potted housing [silicone potting, 8 mm over the half module, rotor]"
@@ -1227,7 +3425,7 @@
 "join": "deck-A",
 "place": {
 "dx": 0.0,
-"dz": 236.0,
+"dz": 370.0,
 "rot": 106.2197606127405
 },
 "label": "deck-A / A_Z1a_lead_0 - Z1a: its lead, net m1 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1241,7 +3439,7 @@
 "join": "deck-A",
 "place": {
 "dx": 0.0,
-"dz": 236.0,
+"dz": 370.0,
 "rot": 106.2197606127405
 },
 "label": "deck-A / A_Z1a_lead_1 - Z1a: its lead, net 1 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1255,7 +3453,7 @@
 "join": "A_Z1b_body",
 "place": {
 "dx": 0.0,
-"dz": 236.0,
+"dz": 370.0,
 "rot": -73.78023938725951
 },
 "label": "deck-A / A_Z1b_body - Z1b (m1 - 0): half the clamp string: 33 x 1.5KE200A in a meander [half the clamp string: 33 x 1.5KE200A in a meander, rotor]"
@@ -1269,7 +3467,7 @@
 "join": "deck-A",
 "place": {
 "dx": 0.0,
-"dz": 236.0,
+"dz": 370.0,
 "rot": -73.78023938725951
 },
 "label": "deck-A / A_Z1b_pot - Z1b: its potted housing [silicone potting, 8 mm over the half module, rotor]"
@@ -1283,7 +3481,7 @@
 "join": "deck-A",
 "place": {
 "dx": 0.0,
-"dz": 236.0,
+"dz": 370.0,
 "rot": -73.78023938725951
 },
 "label": "deck-A / A_Z1b_lead_0 - Z1b: its lead, net m1 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1297,7 +3495,7 @@
 "join": "deck-A",
 "place": {
 "dx": 0.0,
-"dz": 236.0,
+"dz": 370.0,
 "rot": -73.78023938725951
 },
 "label": "deck-A / A_Z1b_lead_1 - Z1b: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1409,7 +3607,7 @@
 "join": "hub-coupler",
 "place": {
 "dx": 0.0,
-"dz": 320.0,
+"dz": 454.0,
 "rot": 0.0
 },
 "label": "deck-B / B_deck_plate - deck B: the G10 plate on the coupler, |z| 30-36 [G10 deck plate, 6 mm, r 33-108, bonded on the coupler; the cross nets' and the ring lead's holes [IR], rotor]"
@@ -1423,7 +3621,7 @@
 "join": "deck-B",
 "place": {
 "dx": 71.11961754677819,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -152.35402463626133
 },
 "label": "deck-B / B_J_3 - junction N3: brass terminal in its block [brass junction terminal, rotor]"
@@ -1437,7 +3635,7 @@
 "join": "deck-B",
 "place": {
 "dx": 71.11961754677819,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -152.35402463626133
 },
 "label": "deck-B / B_J_3_pot - junction N3: potting [silicone potting, the junction's block, rotor]"
@@ -1451,7 +3649,7 @@
 "join": "deck-B",
 "place": {
 "dx": 71.11961754677819,
-"dz": 338.0,
+"dz": 472.0,
 "rot": 27.64597536373867
 },
 "label": "deck-B / B_J_2x - junction N2: brass terminal in its block [brass junction terminal, rotor]"
@@ -1465,7 +3663,7 @@
 "join": "deck-B",
 "place": {
 "dx": 71.11961754677819,
-"dz": 338.0,
+"dz": 472.0,
 "rot": 27.64597536373867
 },
 "label": "deck-B / B_J_2x_pot - junction N2: potting [silicone potting, the junction's block, rotor]"
@@ -1479,7 +3677,7 @@
 "join": "deck-B",
 "place": {
 "dx": 71.11961754677819,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -27.645975363738685
 },
 "label": "deck-B / B_J_4 - junction N4: brass terminal in its block [brass junction terminal, rotor]"
@@ -1493,7 +3691,7 @@
 "join": "deck-B",
 "place": {
 "dx": 71.11961754677819,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -27.645975363738685
 },
 "label": "deck-B / B_J_4_pot - junction N4: potting [silicone potting, the junction's block, rotor]"
@@ -1507,7 +3705,7 @@
 "join": "B_D2_body",
 "place": {
 "dx": 63.0,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -180.0
 },
 "label": "deck-B / B_D2_body - D2 (0 -> 3): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
@@ -1521,7 +3719,7 @@
 "join": "deck-B",
 "place": {
 "dx": 63.0,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -180.0
 },
 "label": "deck-B / B_D2_pot - D2: its potted housing [silicone potting, 8 mm over the part, rotor]"
@@ -1535,7 +3733,7 @@
 "join": "deck-B",
 "place": {
 "dx": 63.0,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -180.0
 },
 "label": "deck-B / B_D2_lead_neg - D2: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1549,7 +3747,7 @@
 "join": "deck-B",
 "place": {
 "dx": 63.0,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -180.0
 },
 "label": "deck-B / B_D2_lead_pos - D2: its lead, net 3 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1563,7 +3761,7 @@
 "join": "B_D4_body",
 "place": {
 "dx": 63.0,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -7.016709298534876e-15
 },
 "label": "deck-B / B_D4_body - D4 (2 -> 4): HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche) [HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche), rotor]"
@@ -1577,7 +3775,7 @@
 "join": "deck-B",
 "place": {
 "dx": 63.0,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -7.016709298534876e-15
 },
 "label": "deck-B / B_D4_pot - D4: its potted housing [silicone potting, 8 mm over the part, rotor]"
@@ -1591,7 +3789,7 @@
 "join": "deck-B",
 "place": {
 "dx": 63.0,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -7.016709298534876e-15
 },
 "label": "deck-B / B_D4_lead_neg - D4: its lead, net 4 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1605,7 +3803,7 @@
 "join": "deck-B",
 "place": {
 "dx": 63.0,
-"dz": 338.0,
+"dz": 472.0,
 "rot": -7.016709298534876e-15
 },
 "label": "deck-B / B_D4_lead_pos - D4: its lead, net 2 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1619,7 +3817,7 @@
 "join": "B_Z4a_body",
 "place": {
 "dx": 0.0,
-"dz": 344.0,
+"dz": 478.0,
 "rot": -73.78023938725951
 },
 "label": "deck-B / B_Z4a_body - Z4a (4 - m4): half the clamp string: 33 x 1.5KE200A in a meander [half the clamp string: 33 x 1.5KE200A in a meander, rotor]"
@@ -1633,7 +3831,7 @@
 "join": "deck-B",
 "place": {
 "dx": 0.0,
-"dz": 344.0,
+"dz": 478.0,
 "rot": -73.78023938725951
 },
 "label": "deck-B / B_Z4a_pot - Z4a: its potted housing [silicone potting, 8 mm over the half module, rotor]"
@@ -1647,7 +3845,7 @@
 "join": "deck-B",
 "place": {
 "dx": 0.0,
-"dz": 344.0,
+"dz": 478.0,
 "rot": -73.78023938725951
 },
 "label": "deck-B / B_Z4a_lead_0 - Z4a: its lead, net m4 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1661,7 +3859,7 @@
 "join": "deck-B",
 "place": {
 "dx": 0.0,
-"dz": 344.0,
+"dz": 478.0,
 "rot": -73.78023938725951
 },
 "label": "deck-B / B_Z4a_lead_1 - Z4a: its lead, net 4 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1675,7 +3873,7 @@
 "join": "B_Z4b_body",
 "place": {
 "dx": 0.0,
-"dz": 344.0,
+"dz": 478.0,
 "rot": 106.2197606127405
 },
 "label": "deck-B / B_Z4b_body - Z4b (m4 - 0): half the clamp string: 33 x 1.5KE200A in a meander [half the clamp string: 33 x 1.5KE200A in a meander, rotor]"
@@ -1689,7 +3887,7 @@
 "join": "deck-B",
 "place": {
 "dx": 0.0,
-"dz": 344.0,
+"dz": 478.0,
 "rot": 106.2197606127405
 },
 "label": "deck-B / B_Z4b_pot - Z4b: its potted housing [silicone potting, 8 mm over the half module, rotor]"
@@ -1703,7 +3901,7 @@
 "join": "deck-B",
 "place": {
 "dx": 0.0,
-"dz": 344.0,
+"dz": 478.0,
 "rot": 106.2197606127405
 },
 "label": "deck-B / B_Z4b_lead_0 - Z4b: its lead, net m4 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1717,7 +3915,7 @@
 "join": "deck-B",
 "place": {
 "dx": 0.0,
-"dz": 344.0,
+"dz": 478.0,
 "rot": 106.2197606127405
 },
 "label": "deck-B / B_Z4b_lead_1 - Z4b: its lead, net 0 [tinned Cu lead, 1.2 mm, rotor]"
@@ -1913,7 +4111,7 @@
 "join": "xbracket",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 27.64597536373868
 },
 "label": "wiring / xbracket_arm_N2 - bracket B: the G10 arm carrying the cross wire N2 [G10 arm, 6 mm, 19 wide, one drilled wire seat, sawn slots for the mica (bracket B, one wire per arm), rotor]"
@@ -1927,7 +4125,7 @@
 "join": "xbracket",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 27.64597536373868
 },
 "label": "wiring / xbracket_arm_N2_mica - bracket B: its mica barriers [mica barriers, 0.3 mm muscovite: 4 across the arm, 8 mm proud (bracket B), rotor]"
@@ -1941,7 +4139,7 @@
 "join": "xbracket",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": 27.64597536373868
 },
 "label": "wiring / xbracket_collar_1 - bracket B: the split collar's half, on the coupler [G10 split collar half, 6 x 12 mm, clamped round the coupler (two screws across each split, not drawn), rotor]"
@@ -1955,7 +4153,7 @@
 "join": "xbracket",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": -152.35402463626133
 },
 "label": "wiring / xbracket_arm_N3 - bracket B: the G10 arm carrying the cross wire N3 [G10 arm, 6 mm, 19 wide, one drilled wire seat, sawn slots for the mica (bracket B, one wire per arm), rotor]"
@@ -1969,7 +4167,7 @@
 "join": "xbracket",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": -152.35402463626133
 },
 "label": "wiring / xbracket_arm_N3_mica - bracket B: its mica barriers [mica barriers, 0.3 mm muscovite: 4 across the arm, 8 mm proud (bracket B), rotor]"
@@ -1983,10 +4181,570 @@
 "join": "xbracket",
 "place": {
 "dx": 0.0,
-"dz": 290.0,
+"dz": 424.0,
 "rot": -152.35402463626133
 },
 "label": "wiring / xbracket_collar_2 - bracket B: the split collar's half, on the coupler [G10 split collar half, 6 x 12 mm, clamped round the coupler (two screws across each split, not drawn), rotor]"
+},
+{
+"name": "A_riser_deck",
+"proto": "A_riser_deck",
+"body": "rotor",
+"node": "1",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_riser_deck - node 1's riser, in the potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_riser",
+"proto": "A_riser",
+"body": "rotor",
+"node": "1",
+"group": "wiring",
+"join": "comb-1-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / A_riser - node 1's riser: up through the first plate's hole to the first N1 plate [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_tap_deck",
+"proto": "A_tap_deck",
+"body": "rotor",
+"node": "2",
+"group": "deck-A",
+"join": "deck-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-A / A_tap_deck - node 2's tap, in the potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "A_tap",
+"proto": "A_tap",
+"body": "rotor",
+"node": "2",
+"group": "wiring",
+"join": "comb-2-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / A_tap - node 2's tap: up to the column's first plate (N2) [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_riser_deck",
+"proto": "B_riser_deck",
+"body": "rotor",
+"node": "4",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_riser_deck - node 4's riser, in the potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_riser",
+"proto": "B_riser",
+"body": "rotor",
+"node": "4",
+"group": "wiring",
+"join": "comb-4-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / B_riser - node 4's riser: up through the first plate's hole to the first N4 plate [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_tap_deck",
+"proto": "B_tap_deck",
+"body": "rotor",
+"node": "3",
+"group": "deck-B",
+"join": "deck-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "deck-B / B_tap_deck - node 3's tap, in the potting [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "B_tap",
+"proto": "B_tap",
+"body": "rotor",
+"node": "3",
+"group": "wiring",
+"join": "comb-3-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "wiring / B_tap - node 3's tap: up to the column's first plate (N3) [PTFE HV wire, 1 mm Cu in 3 mm PTFE, rotor]"
+},
+{
+"name": "frame_post_1",
+"proto": "post_0",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / frame_post_1 - a corner post of the retainer [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "frame_post_2",
+"proto": "post_1",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / frame_post_2 - a corner post of the retainer [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "frame_post_3",
+"proto": "post_2",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / frame_post_3 - a corner post of the retainer [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "frame_post_4",
+"proto": "post_3",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / frame_post_4 - a corner post of the retainer [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "A_frame_beam_1",
+"proto": "beam_A_0",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_frame_beam_1 - a perimeter beam of the retainer's end A [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "A_frame_beam_2",
+"proto": "beam_A_1",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_frame_beam_2 - a perimeter beam of the retainer's end A [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "A_frame_beam_3",
+"proto": "beam_A_2",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_frame_beam_3 - a perimeter beam of the retainer's end A [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "A_frame_beam_4",
+"proto": "beam_A_3",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_frame_beam_4 - a perimeter beam of the retainer's end A [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "A_frame_cross_1",
+"proto": "cross_A_0",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_frame_cross_1 - a cross beam carrying the frame bearing's plate, end A [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "A_frame_cross_2",
+"proto": "cross_A_1",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_frame_cross_2 - a cross beam carrying the frame bearing's plate, end A [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "A_fb_plate",
+"proto": "fb_plate_A",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_fb_plate - the frame bearing's plate, end A [Al plate, 150 x 150 x 15, the frame bearing's housing, on the cross beams (earth), frame]"
+},
+{
+"name": "A_frame_bearing",
+"proto": "frame_bearing",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 50.0,
+"rot": 0.0
+},
+"label": "retainer / A_frame_bearing - the frame bearing, end A: the earthed stub in the retainer [6205 class frame bearing (earth), frame]"
+},
+{
+"name": "A_stub",
+"proto": "stub_A",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_stub - the earthed stub shaft, end A [steel stub shaft (earth): the coupling to the frame bearing, frame]"
+},
+{
+"name": "A_coupling",
+"proto": "coupling_A",
+"body": "rotor",
+"node": "",
+"group": "retainer",
+"join": "coupling-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_coupling - the insulating coupling, end A: REF to earth [G10 insulating coupling tube, bonded over the REF shaft and the earthed stub, rotor]"
+},
+{
+"name": "A_coupling_plug",
+"proto": "plug_A",
+"body": "rotor",
+"node": "",
+"group": "retainer",
+"join": "coupling-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_coupling_plug - the coupling's plug, 27 mm, end A [G10 plug, bonded: the coupling's solid gap (no inner surface), rotor]"
+},
+{
+"name": "A_coupling_cover",
+"proto": "ccover_A",
+"body": "rotor",
+"node": "",
+"group": "retainer",
+"join": "coupling-A",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / A_coupling_cover - the coupling's creepage cover [PTFE heat-shrink cover on the coupling (stock), rotor]"
+},
+{
+"name": "A_coupling_shed_1",
+"proto": "cshed",
+"body": "rotor",
+"node": "",
+"group": "retainer",
+"join": "coupling-A",
+"place": {
+"dx": 0.0,
+"dz": 104.0,
+"rot": 0.0
+},
+"label": "retainer / A_coupling_shed_1 - a shed on the coupling [PTFE shed on the coupling (punched from stock sheet), rotor]"
+},
+{
+"name": "A_coupling_shed_2",
+"proto": "cshed",
+"body": "rotor",
+"node": "",
+"group": "retainer",
+"join": "coupling-A",
+"place": {
+"dx": 0.0,
+"dz": 95.0,
+"rot": 0.0
+},
+"label": "retainer / A_coupling_shed_2 - a shed on the coupling [PTFE shed on the coupling (punched from stock sheet), rotor]"
+},
+{
+"name": "B_frame_beam_1",
+"proto": "beam_B_0",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_frame_beam_1 - a perimeter beam of the retainer's end B [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "B_frame_beam_2",
+"proto": "beam_B_1",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_frame_beam_2 - a perimeter beam of the retainer's end B [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "B_frame_beam_3",
+"proto": "beam_B_2",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_frame_beam_3 - a perimeter beam of the retainer's end B [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "B_frame_beam_4",
+"proto": "beam_B_3",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_frame_beam_4 - a perimeter beam of the retainer's end B [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "B_frame_cross_1",
+"proto": "cross_B_0",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_frame_cross_1 - a cross beam carrying the frame bearing's plate, end B [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "B_frame_cross_2",
+"proto": "cross_B_1",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_frame_cross_2 - a cross beam carrying the frame bearing's plate, end B [Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed, frame]"
+},
+{
+"name": "B_fb_plate",
+"proto": "fb_plate_B",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_fb_plate - the frame bearing's plate, end B [Al plate, 150 x 150 x 15, the frame bearing's housing, on the cross beams (earth), frame]"
+},
+{
+"name": "B_frame_bearing",
+"proto": "frame_bearing",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 783.0,
+"rot": 0.0
+},
+"label": "retainer / B_frame_bearing - the frame bearing, end B: the earthed stub in the retainer [6205 class frame bearing (earth), frame]"
+},
+{
+"name": "B_stub",
+"proto": "stub_B",
+"body": "frame",
+"node": "e",
+"group": "retainer",
+"join": "frame",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_stub - the earthed stub shaft, end B [steel stub shaft (earth): the coupling to the frame bearing, frame]"
+},
+{
+"name": "B_coupling",
+"proto": "coupling_B",
+"body": "rotor",
+"node": "",
+"group": "retainer",
+"join": "coupling-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_coupling - the insulating coupling, end B: REF to earth [G10 insulating coupling tube, bonded over the REF shaft and the earthed stub, rotor]"
+},
+{
+"name": "B_coupling_plug",
+"proto": "plug_B",
+"body": "rotor",
+"node": "",
+"group": "retainer",
+"join": "coupling-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_coupling_plug - the coupling's plug, 27 mm, end B [G10 plug, bonded: the coupling's solid gap (no inner surface), rotor]"
+},
+{
+"name": "B_coupling_cover",
+"proto": "ccover_B",
+"body": "rotor",
+"node": "",
+"group": "retainer",
+"join": "coupling-B",
+"place": {
+"dx": 0.0,
+"dz": 0.0,
+"rot": 0.0
+},
+"label": "retainer / B_coupling_cover - the coupling's creepage cover [PTFE heat-shrink cover on the coupling (stock), rotor]"
+},
+{
+"name": "B_coupling_shed_1",
+"proto": "cshed",
+"body": "rotor",
+"node": "",
+"group": "retainer",
+"join": "coupling-B",
+"place": {
+"dx": 0.0,
+"dz": 742.0,
+"rot": 0.0
+},
+"label": "retainer / B_coupling_shed_1 - a shed on the coupling [PTFE shed on the coupling (punched from stock sheet), rotor]"
+},
+{
+"name": "B_coupling_shed_2",
+"proto": "cshed",
+"body": "rotor",
+"node": "",
+"group": "retainer",
+"join": "coupling-B",
+"place": {
+"dx": 0.0,
+"dz": 751.0,
+"rot": 0.0
+},
+"label": "retainer / B_coupling_shed_2 - a shed on the coupling [PTFE shed on the coupling (punched from stock sheet), rotor]"
 }
 ],
 "nets": {
@@ -2080,6 +4838,240 @@
 "A_C1_s12": {
 "net": "s"
 },
+"A_comb1_tube_1": {
+"net": "1"
+},
+"A_comb1_sp_1_107": {
+"net": "1"
+},
+"A_comb1_sp_1_125": {
+"net": "1"
+},
+"A_comb1_sp_1_143": {
+"net": "1"
+},
+"A_comb1_sp_1_152": {
+"net": "1"
+},
+"A_comb1_sp_1_170": {
+"net": "1"
+},
+"A_comb1_sp_1_188": {
+"net": "1"
+},
+"A_comb1_sp_1_206": {
+"net": "1"
+},
+"A_comb1_sp_1_224": {
+"net": "1"
+},
+"A_comb1_tube_2": {
+"net": "1"
+},
+"A_comb1_sp_2_107": {
+"net": "1"
+},
+"A_comb1_sp_2_125": {
+"net": "1"
+},
+"A_comb1_sp_2_143": {
+"net": "1"
+},
+"A_comb1_sp_2_152": {
+"net": "1"
+},
+"A_comb1_sp_2_170": {
+"net": "1"
+},
+"A_comb1_sp_2_188": {
+"net": "1"
+},
+"A_comb1_sp_2_206": {
+"net": "1"
+},
+"A_comb1_sp_2_224": {
+"net": "1"
+},
+"A_comb1_tube_3": {
+"net": "1"
+},
+"A_comb1_sp_3_107": {
+"net": "1"
+},
+"A_comb1_sp_3_125": {
+"net": "1"
+},
+"A_comb1_sp_3_143": {
+"net": "1"
+},
+"A_comb1_sp_3_152": {
+"net": "1"
+},
+"A_comb1_sp_3_170": {
+"net": "1"
+},
+"A_comb1_sp_3_188": {
+"net": "1"
+},
+"A_comb1_sp_3_206": {
+"net": "1"
+},
+"A_comb1_sp_3_224": {
+"net": "1"
+},
+"A_comb2_tube_1": {
+"net": "2"
+},
+"A_comb2_sp_1_98": {
+"net": "2"
+},
+"A_comb2_sp_1_116": {
+"net": "2"
+},
+"A_comb2_tube_2": {
+"net": "2"
+},
+"A_comb2_sp_2_98": {
+"net": "2"
+},
+"A_comb2_sp_2_116": {
+"net": "2"
+},
+"A_comb2_tube_3": {
+"net": "2"
+},
+"A_comb2_sp_3_98": {
+"net": "2"
+},
+"A_comb2_sp_3_116": {
+"net": "2"
+},
+"A_tie_1": {
+"net": "s"
+},
+"A_tie_sp_1_161": {
+"net": "s"
+},
+"A_tie_sp_1_179": {
+"net": "s"
+},
+"A_tie_sp_1_197": {
+"net": "s"
+},
+"A_tie_sp_1_215": {
+"net": "s"
+},
+"A_tie_sp_1_233": {
+"net": "s"
+},
+"A_tie_sp_1_251": {
+"net": "s"
+},
+"A_tie_2": {
+"net": "s"
+},
+"A_tie_sp_2_161": {
+"net": "s"
+},
+"A_tie_sp_2_179": {
+"net": "s"
+},
+"A_tie_sp_2_197": {
+"net": "s"
+},
+"A_tie_sp_2_215": {
+"net": "s"
+},
+"A_tie_sp_2_233": {
+"net": "s"
+},
+"A_tie_sp_2_251": {
+"net": "s"
+},
+"A_tie_3": {
+"net": "s"
+},
+"A_tie_sp_3_161": {
+"net": "s"
+},
+"A_tie_sp_3_179": {
+"net": "s"
+},
+"A_tie_sp_3_197": {
+"net": "s"
+},
+"A_tie_sp_3_215": {
+"net": "s"
+},
+"A_tie_sp_3_233": {
+"net": "s"
+},
+"A_tie_sp_3_251": {
+"net": "s"
+},
+"A_tie_4": {
+"net": "s"
+},
+"A_tie_sp_4_161": {
+"net": "s"
+},
+"A_tie_sp_4_179": {
+"net": "s"
+},
+"A_tie_sp_4_197": {
+"net": "s"
+},
+"A_tie_sp_4_215": {
+"net": "s"
+},
+"A_tie_sp_4_233": {
+"net": "s"
+},
+"A_tie_sp_4_251": {
+"net": "s"
+},
+"A_tie_5": {
+"net": "s"
+},
+"A_tie_sp_5_161": {
+"net": "s"
+},
+"A_tie_sp_5_179": {
+"net": "s"
+},
+"A_tie_sp_5_197": {
+"net": "s"
+},
+"A_tie_sp_5_215": {
+"net": "s"
+},
+"A_tie_sp_5_233": {
+"net": "s"
+},
+"A_tie_sp_5_251": {
+"net": "s"
+},
+"A_tie_6": {
+"net": "s"
+},
+"A_tie_sp_6_161": {
+"net": "s"
+},
+"A_tie_sp_6_179": {
+"net": "s"
+},
+"A_tie_sp_6_197": {
+"net": "s"
+},
+"A_tie_sp_6_215": {
+"net": "s"
+},
+"A_tie_sp_6_233": {
+"net": "s"
+},
+"A_tie_sp_6_251": {
+"net": "s"
+},
 "B_Cb_06": {
 "net": "3"
 },
@@ -2134,6 +5126,240 @@
 "B_C2_s12": {
 "net": "s"
 },
+"B_comb4_tube_1": {
+"net": "4"
+},
+"B_comb4_sp_1_107": {
+"net": "4"
+},
+"B_comb4_sp_1_125": {
+"net": "4"
+},
+"B_comb4_sp_1_143": {
+"net": "4"
+},
+"B_comb4_sp_1_152": {
+"net": "4"
+},
+"B_comb4_sp_1_170": {
+"net": "4"
+},
+"B_comb4_sp_1_188": {
+"net": "4"
+},
+"B_comb4_sp_1_206": {
+"net": "4"
+},
+"B_comb4_sp_1_224": {
+"net": "4"
+},
+"B_comb4_tube_2": {
+"net": "4"
+},
+"B_comb4_sp_2_107": {
+"net": "4"
+},
+"B_comb4_sp_2_125": {
+"net": "4"
+},
+"B_comb4_sp_2_143": {
+"net": "4"
+},
+"B_comb4_sp_2_152": {
+"net": "4"
+},
+"B_comb4_sp_2_170": {
+"net": "4"
+},
+"B_comb4_sp_2_188": {
+"net": "4"
+},
+"B_comb4_sp_2_206": {
+"net": "4"
+},
+"B_comb4_sp_2_224": {
+"net": "4"
+},
+"B_comb4_tube_3": {
+"net": "4"
+},
+"B_comb4_sp_3_107": {
+"net": "4"
+},
+"B_comb4_sp_3_125": {
+"net": "4"
+},
+"B_comb4_sp_3_143": {
+"net": "4"
+},
+"B_comb4_sp_3_152": {
+"net": "4"
+},
+"B_comb4_sp_3_170": {
+"net": "4"
+},
+"B_comb4_sp_3_188": {
+"net": "4"
+},
+"B_comb4_sp_3_206": {
+"net": "4"
+},
+"B_comb4_sp_3_224": {
+"net": "4"
+},
+"B_comb3_tube_1": {
+"net": "3"
+},
+"B_comb3_sp_1_98": {
+"net": "3"
+},
+"B_comb3_sp_1_116": {
+"net": "3"
+},
+"B_comb3_tube_2": {
+"net": "3"
+},
+"B_comb3_sp_2_98": {
+"net": "3"
+},
+"B_comb3_sp_2_116": {
+"net": "3"
+},
+"B_comb3_tube_3": {
+"net": "3"
+},
+"B_comb3_sp_3_98": {
+"net": "3"
+},
+"B_comb3_sp_3_116": {
+"net": "3"
+},
+"B_tie_1": {
+"net": "s"
+},
+"B_tie_sp_1_161": {
+"net": "s"
+},
+"B_tie_sp_1_179": {
+"net": "s"
+},
+"B_tie_sp_1_197": {
+"net": "s"
+},
+"B_tie_sp_1_215": {
+"net": "s"
+},
+"B_tie_sp_1_233": {
+"net": "s"
+},
+"B_tie_sp_1_251": {
+"net": "s"
+},
+"B_tie_2": {
+"net": "s"
+},
+"B_tie_sp_2_161": {
+"net": "s"
+},
+"B_tie_sp_2_179": {
+"net": "s"
+},
+"B_tie_sp_2_197": {
+"net": "s"
+},
+"B_tie_sp_2_215": {
+"net": "s"
+},
+"B_tie_sp_2_233": {
+"net": "s"
+},
+"B_tie_sp_2_251": {
+"net": "s"
+},
+"B_tie_3": {
+"net": "s"
+},
+"B_tie_sp_3_161": {
+"net": "s"
+},
+"B_tie_sp_3_179": {
+"net": "s"
+},
+"B_tie_sp_3_197": {
+"net": "s"
+},
+"B_tie_sp_3_215": {
+"net": "s"
+},
+"B_tie_sp_3_233": {
+"net": "s"
+},
+"B_tie_sp_3_251": {
+"net": "s"
+},
+"B_tie_4": {
+"net": "s"
+},
+"B_tie_sp_4_161": {
+"net": "s"
+},
+"B_tie_sp_4_179": {
+"net": "s"
+},
+"B_tie_sp_4_197": {
+"net": "s"
+},
+"B_tie_sp_4_215": {
+"net": "s"
+},
+"B_tie_sp_4_233": {
+"net": "s"
+},
+"B_tie_sp_4_251": {
+"net": "s"
+},
+"B_tie_5": {
+"net": "s"
+},
+"B_tie_sp_5_161": {
+"net": "s"
+},
+"B_tie_sp_5_179": {
+"net": "s"
+},
+"B_tie_sp_5_197": {
+"net": "s"
+},
+"B_tie_sp_5_215": {
+"net": "s"
+},
+"B_tie_sp_5_233": {
+"net": "s"
+},
+"B_tie_sp_5_251": {
+"net": "s"
+},
+"B_tie_6": {
+"net": "s"
+},
+"B_tie_sp_6_161": {
+"net": "s"
+},
+"B_tie_sp_6_179": {
+"net": "s"
+},
+"B_tie_sp_6_197": {
+"net": "s"
+},
+"B_tie_sp_6_215": {
+"net": "s"
+},
+"B_tie_sp_6_233": {
+"net": "s"
+},
+"B_tie_sp_6_251": {
+"net": "s"
+},
 "A_ref_bearing": {
 "net": "0"
 },
@@ -2164,12 +5390,12 @@
 [
 63.0,
 -20.0,
-242.0
+376.0
 ],
 [
 63.0,
 20.0,
-242.0
+376.0
 ]
 ],
 "device": "D1"
@@ -2189,12 +5415,12 @@
 [
 -63.0,
 -19.999999999999993,
-242.0
+376.0
 ],
 [
 -63.0,
 20.000000000000007,
-242.0
+376.0
 ]
 ],
 "device": "D3"
@@ -2216,7 +5442,7 @@
 149.3776205057116,
 87.61723479680468
 ],
-"z": 236.0
+"z": 370.0
 },
 "device": "Z1a"
 },
@@ -2237,7 +5463,7 @@
 -92.38276520319533,
 -30.62237949428841
 ],
-"z": 236.0
+"z": 370.0
 },
 "device": "Z1b"
 },
@@ -2253,12 +5479,12 @@
 [
 -66.2618211547367,
 39.22207359711734,
-236.0
+370.0
 ],
 [
--62.99999999999999,
-33.00000000000001,
-236.0
+-65.32150910720077,
+37.42838519837468,
+370.0
 ]
 ]
 },
@@ -2268,17 +5494,17 @@
 [
 66.26182115473668,
 -39.22207359711734,
-236.0
+370.0
 ],
 [
 63.0,
 -33.0,
-236.0
+370.0
 ],
 [
 63.0,
 -33.0,
-242.0
+376.0
 ]
 ]
 },
@@ -2288,167 +5514,177 @@
 [
 3.2012836043828314,
 76.93342435693545,
-236.0
+370.0
 ],
 [
 3.2012836043828314,
 76.93342435693545,
-213.5
+347.5
 ],
 [
--4.857985984106528,
-76.84660026428121,
-213.5
+1.9751870513877268,
+47.467804289720746,
+347.5
 ],
 [
--12.86403046155511,
-75.91782873794654,
-213.5
+-2.9973698670412428,
+47.41423395833106,
+347.5
 ],
 [
--20.729133929295436,
-74.15728559313193,
-213.5
+-7.937086973966949,
+46.84118335762756,
+347.5
 ],
 [
--28.367124667856256,
-71.58425970894929,
-213.5
+-12.789843695063633,
+45.75493094991011,
+347.5
 ],
 [
--35.69431925235359,
-68.226941695426,
-213.5
+-17.50247221219034,
+44.16737794387059,
+347.5
 ],
 [
--42.63043940560562,
-64.1221150312822,
-213.5
+-22.023339981132523,
+42.09591790245998,
+347.5
 ],
 [
--49.099491543736846,
-59.31475305644047,
-213.5
+-26.302915428561242,
+39.56324617537287,
+347.5
 ],
 [
--55.030599377785734,
-53.85752623470232,
-213.5
+-30.29431063031571,
+36.597111244046864,
+347.5
 ],
 [
--60.35878044915836,
-47.81022508512481,
-213.5
+-33.95379502531238,
+33.23001070349321,
+347.5
 ],
 [
--65.02565809104317,
-41.239105104581874,
-213.5
+-37.241274536723346,
+29.498835211845268,
+347.5
 ],
 [
--68.98010101538873,
-34.21616085867563,
-213.5
+-40.12073085107225,
+25.444464308588227,
+347.5
 ],
 [
--72.17878351799557,
-26.818337194209718,
-213.5
+-42.56061604241411,
+21.111318529769843,
+347.5
 ],
 [
--74.58666016399773,
-19.126686215346183,
-213.5
+-44.534198218013806,
+16.54687272731186,
+347.5
 ],
 [
--76.17734975298106,
-11.22547925979095,
-213.5
+-46.019854398556824,
+11.80113592459772,
+347.5
 ],
 [
--76.93342435693545,
-3.201283604382853,
-213.5
+-47.0013074240356,
+6.926103407147252,
+347.5
 ],
 [
--76.84660026428121,
--4.857985984106523,
-213.5
+-47.467804289720746,
+1.97518705138774,
+347.5
 ],
 [
--75.91782873794655,
--12.864030461555071,
-213.5
+-47.41423395833106,
+-2.997369867041239,
+347.5
 ],
 [
--74.15728559313193,
--20.729133929295415,
-213.5
+-46.841183357627564,
+-7.937086973966925,
+347.5
 ],
 [
--71.58425970894929,
--28.367124667856253,
-213.5
+-45.75493094991011,
+-12.789843695063619,
+347.5
 ],
 [
--68.22694169542602,
--35.69431925235355,
-213.5
+-44.16737794387059,
+-17.50247221219034,
+347.5
 ],
 [
--64.12211503128223,
--42.630439405605586,
-213.5
+-42.09591790245999,
+-22.0233399811325,
+347.5
 ],
 [
--59.31475305644047,
--49.099491543736846,
-213.5
+-39.56324617537288,
+-26.30291542856122,
+347.5
 ],
 [
--53.85752623470232,
--55.03059937778573,
-213.5
+-36.597111244046864,
+-30.29431063031571,
+347.5
 ],
 [
--47.81022508512482,
--60.35878044915836,
-213.5
+-33.23001070349321,
+-33.953795025312374,
+347.5
 ],
 [
--41.23910510458191,
--65.02565809104316,
-213.5
+-29.498835211845275,
+-37.241274536723346,
+347.5
 ],
 [
--34.2161608586756,
--68.98010101538875,
-213.5
+-25.44446430858825,
+-40.12073085107224,
+347.5
 ],
 [
--26.81833719420972,
--72.17878351799557,
-213.5
+-21.11131852976983,
+-42.560616042414125,
+347.5
 ],
 [
--19.126686215346222,
--74.58666016399772,
-213.5
+-16.546872727311865,
+-44.534198218013806,
+347.5
 ],
 [
--11.22547925979092,
--76.17734975298106,
-213.5
+-11.801135924597745,
+-46.019854398556824,
+347.5
 ],
 [
--3.2012836043828576,
--76.93342435693545,
-213.5
+-6.9261034071472345,
+-47.00130742403561,
+347.5
+],
+[
+-1.9751870513877428,
+-47.467804289720746,
+347.5
 ],
 [
 -3.201283604382839,
 -76.93342435693545,
-236.0
+347.5
+],
+[
+-3.201283604382839,
+-76.93342435693545,
+370.0
 ]
 ]
 },
@@ -2458,167 +5694,177 @@
 [
 3.2012836043828314,
 76.93342435693545,
-236.0
+370.0
 ],
 [
 3.2012836043828314,
 76.93342435693545,
-213.5
+347.5
 ],
 [
-11.22547925979091,
-76.17734975298106,
-213.5
+1.9751870513877268,
+47.467804289720746,
+347.5
 ],
 [
-19.12668621534618,
-74.58666016399773,
-213.5
+6.926103407147229,
+47.00130742403561,
+347.5
 ],
 [
-26.818337194209697,
-72.17878351799557,
-213.5
+11.801135924597718,
+46.019854398556824,
+347.5
 ],
 [
-34.21616085867559,
-68.98010101538875,
-213.5
+16.54687272731185,
+44.53419821801381,
+347.5
 ],
 [
-41.239105104581874,
-65.02565809104318,
-213.5
+21.11131852976982,
+42.560616042414125,
+347.5
 ],
 [
-47.8102250851248,
-60.35878044915838,
-213.5
+25.444464308588227,
+40.12073085107225,
+347.5
 ],
 [
-53.85752623470229,
-55.030599377785755,
-213.5
+29.498835211845257,
+37.24127453672336,
+347.5
 ],
 [
-59.31475305644046,
-49.09949154373685,
-213.5
+33.23001070349319,
+33.953795025312395,
+347.5
 ],
 [
-64.1221150312822,
-42.63043940560561,
-213.5
+36.597111244046864,
+30.294310630315714,
+347.5
 ],
 [
-68.226941695426,
-35.69431925235359,
-213.5
+39.563246175372875,
+26.30291542856123,
+347.5
 ],
 [
-71.58425970894929,
-28.367124667856267,
-213.5
+42.09591790245998,
+22.023339981132523,
+347.5
 ],
 [
-74.15728559313193,
-20.729133929295436,
-213.5
+44.167377943870584,
+17.502472212190348,
+347.5
 ],
 [
-75.91782873794654,
-12.864030461555105,
-213.5
+45.75493094991011,
+12.789843695063633,
+347.5
 ],
 [
-76.84660026428121,
-4.857985984106536,
-213.5
+46.84118335762756,
+7.937086973966946,
+347.5
 ],
 [
-76.93342435693545,
--3.201283604382829,
-213.5
+47.41423395833106,
+2.997369867041247,
+347.5
 ],
 [
-76.17734975298106,
--11.225479259790912,
-213.5
+47.467804289720746,
+-1.9751870513877254,
+347.5
 ],
 [
-74.58666016399773,
--19.126686215346172,
-213.5
+47.00130742403561,
+-6.92610340714723,
+347.5
 ],
 [
-72.17878351799557,
--26.818337194209697,
-213.5
+46.019854398556824,
+-11.801135924597713,
+347.5
 ],
 [
-68.98010101538875,
--34.2161608586756,
-213.5
+44.53419821801381,
+-16.54687272731185,
+347.5
 ],
 [
-65.02565809104318,
--41.23910510458187,
-213.5
+42.560616042414125,
+-21.111318529769825,
+347.5
 ],
 [
-60.35878044915839,
--47.81022508512478,
-213.5
+40.12073085107225,
+-25.44446430858822,
+347.5
 ],
 [
-55.03059937778576,
--53.85752623470229,
-213.5
+37.24127453672336,
+-29.498835211845247,
+347.5
 ],
 [
-49.09949154373685,
--59.31475305644046,
-213.5
+33.953795025312395,
+-33.23001070349319,
+347.5
 ],
 [
-42.63043940560561,
--64.1221150312822,
-213.5
+30.294310630315714,
+-36.597111244046864,
+347.5
 ],
 [
-35.69431925235358,
--68.226941695426,
-213.5
+26.30291542856123,
+-39.563246175372875,
+347.5
 ],
 [
-28.367124667856267,
--71.58425970894929,
-213.5
+22.023339981132523,
+-42.09591790245998,
+347.5
 ],
 [
-20.729133929295447,
--74.15728559313193,
-213.5
+17.502472212190348,
+-44.167377943870584,
+347.5
 ],
 [
-12.864030461555101,
--75.91782873794654,
-213.5
+12.789843695063638,
+-45.754930949910104,
+347.5
 ],
 [
-4.857985984106537,
--76.84660026428121,
-213.5
+7.937086973966943,
+-46.84118335762756,
+347.5
 ],
 [
--3.2012836043828217,
--76.93342435693545,
-213.5
+2.9973698670412476,
+-47.41423395833106,
+347.5
+],
+[
+-1.9751870513877208,
+-47.467804289720746,
+347.5
 ],
 [
 -3.201283604382839,
 -76.93342435693545,
-236.0
+347.5
+],
+[
+-3.201283604382839,
+-76.93342435693545,
+370.0
 ]
 ]
 },
@@ -2628,27 +5874,27 @@
 [
 63.0,
 -33.0,
-242.0
+376.0
 ],
 [
 63.0,
 -33.0,
-230.0
+364.0
 ],
 [
 31.889935270085594,
 -16.70425180814007,
-230.0
+364.0
 ],
 [
 31.889935270085594,
 -16.70425180814007,
-215.5
+349.5
 ],
 [
 29.675356431885206,
 -15.544234321463678,
-215.5
+349.5
 ]
 ]
 },
@@ -2658,22 +5904,22 @@
 [
 -19.760517926128994,
 10.350747485115194,
-274.7886898069063
+408.7886898069063
 ],
 [
 -30.118272199525276,
 15.776237818798966,
-266.81546695184437
+400.81546695184437
 ],
 [
 -62.99999999999999,
 33.00000000000001,
-266.81546695184437
+400.81546695184437
 ],
 [
 -62.99999999999999,
 33.00000000000001,
-254.0
+388.0
 ]
 ]
 },
@@ -2683,12 +5929,12 @@
 [
 -62.99999999999999,
 33.00000000000001,
-254.0
+388.0
 ],
 [
 -62.99999999999999,
 33.00000000000001,
-248.0
+382.0
 ]
 ]
 },
@@ -2710,12 +5956,12 @@
 [
 -63.0,
 20.0,
-338.0
+472.0
 ],
 [
 -63.0,
 -20.0,
-338.0
+472.0
 ]
 ],
 "device": "D2"
@@ -2735,12 +5981,12 @@
 [
 63.0,
 19.999999999999993,
-338.0
+472.0
 ],
 [
 63.0,
 -20.000000000000007,
-338.0
+472.0
 ]
 ],
 "device": "D4"
@@ -2762,7 +6008,7 @@
 -30.622379494288403,
 -92.38276520319533
 ],
-"z": 344.0
+"z": 478.0
 },
 "device": "Z4a"
 },
@@ -2783,7 +6029,7 @@
 87.61723479680468,
 149.3776205057116
 ],
-"z": 344.0
+"z": 478.0
 },
 "device": "Z4b"
 },
@@ -2799,12 +6045,12 @@
 [
 66.2618211547367,
 -39.22207359711734,
-344.0
+478.0
 ],
 [
-62.99999999999999,
--33.00000000000001,
-344.0
+65.32150910720077,
+-37.42838519837468,
+478.0
 ]
 ]
 },
@@ -2814,17 +6060,17 @@
 [
 -66.26182115473668,
 39.22207359711734,
-344.0
+478.0
 ],
 [
 -63.0,
 33.0,
-344.0
+478.0
 ],
 [
 -63.0,
 33.0,
-338.0
+472.0
 ]
 ]
 },
@@ -2834,167 +6080,177 @@
 [
 -3.2012836043828314,
 -76.93342435693545,
-344.0
+478.0
 ],
 [
--3.201283604382839,
+-3.2012836043828314,
 -76.93342435693545,
-366.5
+500.5
 ],
 [
-4.857985984106519,
--76.84660026428121,
-366.5
+-1.9751870513877312,
+-47.467804289720746,
+500.5
 ],
 [
-12.864030461555085,
--75.91782873794655,
-366.5
+2.9973698670412374,
+-47.41423395833106,
+500.5
 ],
 [
-20.72913392929543,
--74.15728559313193,
-366.5
+7.937086973966934,
+-46.841183357627564,
+500.5
 ],
 [
-28.36712466785625,
--71.58425970894929,
-366.5
+12.789843695063627,
+-45.75493094991011,
+500.5
 ],
 [
-35.694319252353566,
--68.22694169542602,
-366.5
+17.502472212190337,
+-44.16737794387059,
+500.5
 ],
 [
-42.6304394056056,
--64.12211503128223,
-366.5
+22.023339981132512,
+-42.09591790245999,
+500.5
 ],
 [
-49.09949154373683,
--59.31475305644048,
-366.5
+26.302915428561228,
+-39.56324617537288,
+500.5
 ],
 [
-55.03059937778574,
--53.857526234702306,
-366.5
+30.294310630315703,
+-36.59711124404687,
+500.5
 ],
 [
-60.35878044915836,
--47.81022508512481,
-366.5
+33.95379502531239,
+-33.2300107034932,
+500.5
 ],
 [
-65.02565809104317,
--41.23910510458189,
-366.5
+37.241274536723346,
+-29.498835211845268,
+500.5
 ],
 [
-68.98010101538874,
--34.216160858675615,
-366.5
+40.12073085107225,
+-25.44446430858823,
+500.5
 ],
 [
-72.17878351799557,
--26.818337194209708,
-366.5
+42.56061604241412,
+-21.111318529769836,
+500.5
 ],
 [
-74.58666016399773,
--19.126686215346194,
-366.5
+44.534198218013806,
+-16.546872727311857,
+500.5
 ],
 [
-76.17734975298106,
--11.225479259790932,
-366.5
+46.019854398556824,
+-11.801135924597725,
+500.5
 ],
 [
-76.93342435693545,
--3.2012836043828483,
-366.5
+47.00130742403561,
+-6.926103407147242,
+500.5
 ],
 [
-76.84660026428121,
-4.8579859841065165,
-366.5
+47.467804289720746,
+-1.9751870513877372,
+500.5
 ],
 [
-75.91782873794655,
-12.864030461555085,
-366.5
+47.41423395833106,
+2.997369867041235,
+500.5
 ],
 [
-74.15728559313193,
-20.72913392929542,
-366.5
+46.841183357627564,
+7.937086973966934,
+500.5
 ],
 [
-71.58425970894929,
-28.367124667856245,
-366.5
+45.75493094991011,
+12.789843695063622,
+500.5
 ],
 [
-68.22694169542602,
-35.694319252353566,
-366.5
+44.16737794387059,
+17.502472212190334,
+500.5
 ],
 [
-64.12211503128223,
-42.63043940560557,
-366.5
+42.09591790245999,
+22.023339981132512,
+500.5
 ],
 [
-59.31475305644048,
-49.09949154373683,
-366.5
+39.56324617537289,
+26.30291542856121,
+500.5
 ],
 [
-53.85752623470231,
-55.03059937778574,
-366.5
+36.59711124404687,
+30.294310630315703,
+500.5
 ],
 [
-47.81022508512481,
-60.35878044915836,
-366.5
+33.23001070349321,
+33.95379502531239,
+500.5
 ],
 [
-41.23910510458189,
-65.02565809104317,
-366.5
+29.498835211845268,
+37.241274536723346,
+500.5
 ],
 [
-34.21616085867561,
-68.98010101538874,
-366.5
+25.44446430858823,
+40.12073085107225,
+500.5
 ],
 [
-26.818337194209708,
-72.17878351799557,
-366.5
+21.11131852976983,
+42.56061604241412,
+500.5
 ],
 [
-19.126686215346197,
-74.58666016399773,
-366.5
+16.546872727311857,
+44.534198218013806,
+500.5
 ],
 [
-11.225479259790927,
-76.17734975298106,
-366.5
+11.801135924597729,
+46.019854398556824,
+500.5
 ],
 [
-3.2012836043828483,
-76.93342435693545,
-366.5
+6.926103407147238,
+47.00130742403561,
+500.5
+],
+[
+1.9751870513877372,
+47.467804289720746,
+500.5
 ],
 [
 3.201283604382839,
 76.93342435693545,
-344.0
+500.5
+],
+[
+3.201283604382839,
+76.93342435693545,
+478.0
 ]
 ]
 },
@@ -3004,167 +6260,177 @@
 [
 -3.2012836043828314,
 -76.93342435693545,
-344.0
+478.0
 ],
 [
--3.201283604382839,
+-3.2012836043828314,
 -76.93342435693545,
-366.5
+500.5
 ],
 [
--11.225479259790934,
--76.17734975298106,
-366.5
+-1.9751870513877312,
+-47.467804289720746,
+500.5
 ],
 [
--19.12668621534619,
--74.58666016399773,
-366.5
+-6.926103407147243,
+-47.00130742403561,
+500.5
 ],
 [
--26.8183371942097,
--72.17878351799557,
-366.5
+-11.801135924597723,
+-46.019854398556824,
+500.5
 ],
 [
--34.216160858675615,
--68.98010101538874,
-366.5
+-16.54687272731185,
+-44.534198218013806,
+500.5
 ],
 [
--41.239105104581895,
--65.02565809104317,
-366.5
+-21.111318529769836,
+-42.56061604241412,
+500.5
 ],
 [
--47.810225085124806,
--60.358780449158374,
-366.5
+-25.444464308588238,
+-40.120730851072246,
+500.5
 ],
 [
--53.857526234702306,
--55.03059937778574,
-366.5
+-29.498835211845265,
+-37.24127453672335,
+500.5
 ],
 [
--59.31475305644048,
--49.099491543736825,
-366.5
+-33.2300107034932,
+-33.95379502531239,
+500.5
 ],
 [
--64.12211503128222,
--42.63043940560561,
-366.5
+-36.59711124404687,
+-30.2943106303157,
+500.5
 ],
 [
--68.22694169542602,
--35.694319252353566,
-366.5
+-39.56324617537288,
+-26.30291542856123,
+500.5
 ],
 [
--71.58425970894929,
--28.367124667856235,
-366.5
+-42.09591790245999,
+-22.023339981132512,
+500.5
 ],
 [
--74.15728559313193,
--20.729133929295436,
-366.5
+-44.16737794387059,
+-17.50247221219033,
+500.5
 ],
 [
--75.91782873794655,
--12.86403046155509,
-366.5
+-45.75493094991011,
+-12.789843695063633,
+500.5
 ],
 [
--76.84660026428121,
--4.857985984106508,
-366.5
+-46.841183357627564,
+-7.937086973966936,
+500.5
 ],
 [
--76.93342435693545,
-3.201283604382834,
-366.5
+-47.41423395833106,
+-2.99736986704123,
+500.5
 ],
 [
--76.17734975298106,
-11.22547925979093,
-366.5
+-47.467804289720746,
+1.9751870513877283,
+500.5
 ],
 [
--74.58666016399773,
-19.1266862153462,
-366.5
+-47.00130742403561,
+6.926103407147241,
+500.5
 ],
 [
--72.17878351799557,
-26.818337194209697,
-366.5
+-46.019854398556824,
+11.80113592459773,
+500.5
 ],
 [
--68.98010101538874,
-34.21616085867561,
-366.5
+-44.53419821801381,
+16.54687272731185,
+500.5
 ],
 [
--65.02565809104317,
-41.239105104581895,
-366.5
+-42.56061604241412,
+21.111318529769832,
+500.5
 ],
 [
--60.358780449158374,
-47.810225085124806,
-366.5
+-40.120730851072246,
+25.444464308588238,
+500.5
 ],
 [
--55.03059937778574,
-53.857526234702306,
-366.5
+-37.24127453672335,
+29.498835211845265,
+500.5
 ],
 [
--49.09949154373683,
-59.31475305644048,
-366.5
+-33.95379502531239,
+33.2300107034932,
+500.5
 ],
 [
--42.63043940560561,
-64.1221150312822,
-366.5
+-30.294310630315703,
+36.59711124404687,
+500.5
 ],
 [
--35.694319252353544,
-68.22694169542604,
-366.5
+-26.30291542856123,
+39.563246175372875,
+500.5
 ],
 [
--28.367124667856242,
-71.58425970894929,
-366.5
+-22.023339981132498,
+42.095917902459995,
+500.5
 ],
 [
--20.72913392929544,
-74.15728559313193,
-366.5
+-17.50247221219033,
+44.16737794387059,
+500.5
 ],
 [
--12.86403046155506,
-75.91782873794655,
-366.5
+-12.789843695063634,
+45.75493094991011,
+500.5
 ],
 [
--4.857985984106512,
-76.84660026428121,
-366.5
+-7.9370869739669185,
+46.841183357627564,
+500.5
 ],
 [
-3.201283604382829,
-76.93342435693545,
-366.5
+-2.9973698670412325,
+47.41423395833106,
+500.5
+],
+[
+1.9751870513877254,
+47.467804289720746,
+500.5
 ],
 [
 3.201283604382839,
 76.93342435693545,
-344.0
+500.5
+],
+[
+3.201283604382839,
+76.93342435693545,
+478.0
 ]
 ]
 },
@@ -3174,27 +6440,27 @@
 [
 -63.0,
 33.0,
-338.0
+472.0
 ],
 [
 -63.0,
 33.0,
-350.0
+484.0
 ],
 [
 -31.889935270085594,
 16.70425180814007,
-350.0
+484.0
 ],
 [
 -31.889935270085594,
 16.70425180814007,
-364.5
+498.5
 ],
 [
 -29.675356431885206,
 15.544234321463678,
-364.5
+498.5
 ]
 ]
 },
@@ -3204,22 +6470,22 @@
 [
 19.760517926128998,
 -10.35074748511519,
-305.2113101930937
+439.2113101930937
 ],
 [
 30.11827219952528,
 -15.77623781879896,
-313.18453304815563
+447.18453304815563
 ],
 [
 62.99999999999999,
 -33.00000000000001,
-313.18453304815563
+447.18453304815563
 ],
 [
 62.99999999999999,
 -33.00000000000001,
-326.0
+460.0
 ]
 ]
 },
@@ -3229,12 +6495,12 @@
 [
 62.99999999999999,
 -33.00000000000001,
-326.0
+460.0
 ],
 [
 62.99999999999999,
 -33.00000000000001,
-332.0
+466.0
 ]
 ]
 },
@@ -3244,12 +6510,12 @@
 [
 63.0,
 33.0,
-248.0
+382.0
 ],
 [
 63.0,
 33.0,
-254.0
+388.0
 ]
 ]
 },
@@ -3259,12 +6525,12 @@
 [
 63.0,
 33.0,
-254.0
+388.0
 ],
 [
 63.0,
 33.0,
-326.0
+460.0
 ]
 ]
 },
@@ -3274,12 +6540,12 @@
 [
 63.0,
 33.0,
-326.0
+460.0
 ],
 [
 63.0,
 33.0,
-332.0
+466.0
 ]
 ]
 },
@@ -3289,12 +6555,12 @@
 [
 -63.00000000000001,
 -32.99999999999999,
-248.0
+382.0
 ],
 [
 -63.00000000000001,
 -32.99999999999999,
-254.0
+388.0
 ]
 ]
 },
@@ -3304,12 +6570,12 @@
 [
 -63.00000000000001,
 -32.99999999999999,
-254.0
+388.0
 ],
 [
 -63.00000000000001,
 -32.99999999999999,
-326.0
+460.0
 ]
 ]
 },
@@ -3319,16 +6585,202 @@
 [
 -63.00000000000001,
 -32.99999999999999,
-326.0
+460.0
 ],
 [
 -63.00000000000001,
 -32.99999999999999,
-332.0
+466.0
 ]
 ]
+},
+"A_riser_deck": {
+"net": "1",
+"path": [
+[
+-62.99999999999999,
+33.00000000000001,
+370.0
+],
+[
+-62.99999999999999,
+33.00000000000001,
+346.0
+]
+]
+},
+"A_riser": {
+"net": "1",
+"path": [
+[
+-62.99999999999999,
+33.00000000000001,
+346.0
+],
+[
+-62.99999999999999,
+33.00000000000001,
+317.0
+]
+]
+},
+"A_tap_deck": {
+"net": "2",
+"path": [
+[
+63.0,
+33.0,
+370.0
+],
+[
+63.0,
+33.0,
+346.0
+]
+]
+},
+"A_tap": {
+"net": "2",
+"path": [
+[
+63.0,
+33.0,
+346.0
+],
+[
+63.0,
+33.0,
+326.0
+]
+]
+},
+"B_riser_deck": {
+"net": "4",
+"path": [
+[
+62.99999999999999,
+-33.00000000000001,
+478.0
+],
+[
+62.99999999999999,
+-33.00000000000001,
+502.0
+]
+]
+},
+"B_riser": {
+"net": "4",
+"path": [
+[
+62.99999999999999,
+-33.00000000000001,
+502.0
+],
+[
+62.99999999999999,
+-33.00000000000001,
+531.0
+]
+]
+},
+"B_tap_deck": {
+"net": "3",
+"path": [
+[
+-63.0,
+-33.0,
+478.0
+],
+[
+-63.0,
+-33.0,
+502.0
+]
+]
+},
+"B_tap": {
+"net": "3",
+"path": [
+[
+-63.0,
+-33.0,
+502.0
+],
+[
+-63.0,
+-33.0,
+522.0
+]
+]
+},
+"frame_post_1": {
+"net": "e"
+},
+"frame_post_2": {
+"net": "e"
+},
+"frame_post_3": {
+"net": "e"
+},
+"frame_post_4": {
+"net": "e"
+},
+"A_frame_beam_1": {
+"net": "e"
+},
+"A_frame_beam_2": {
+"net": "e"
+},
+"A_frame_beam_3": {
+"net": "e"
+},
+"A_frame_beam_4": {
+"net": "e"
+},
+"A_frame_cross_1": {
+"net": "e"
+},
+"A_frame_cross_2": {
+"net": "e"
+},
+"A_fb_plate": {
+"net": "e"
+},
+"A_frame_bearing": {
+"net": "e"
+},
+"A_stub": {
+"net": "e"
+},
+"B_frame_beam_1": {
+"net": "e"
+},
+"B_frame_beam_2": {
+"net": "e"
+},
+"B_frame_beam_3": {
+"net": "e"
+},
+"B_frame_beam_4": {
+"net": "e"
+},
+"B_frame_cross_1": {
+"net": "e"
+},
+"B_frame_cross_2": {
+"net": "e"
+},
+"B_fb_plate": {
+"net": "e"
+},
+"B_frame_bearing": {
+"net": "e"
+},
+"B_stub": {
+"net": "e"
 }
 },
-"zc_mm": 290.0,
-"L_mm": 580.0
+"zc_mm": 424.0,
+"L_mm": 848.0
 }

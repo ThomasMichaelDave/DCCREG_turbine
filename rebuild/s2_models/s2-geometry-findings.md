@@ -95,6 +95,11 @@ The designer: "Implement v1b".
 - **G-POT:** the potting rule holds for every conductor pair inside it, the midpoint ring included.
 - **Every gate passes, except G-CREEP on the rotor sleeve,** which stays OPEN for the designer.
 
+## The structural pass (2026-10-16)
+
+The structure, the outer retainer and the integrity checks are in `s2-structure-findings.md`. The model is now 339
+solids and 848 mm long. Every gate passes, the sleeve's G-CREEP included, now with the cover and sheds.
+
 ## Next
 
 - **The designer's review in FreeCAD,** and the decision on the sleeve's creepage.

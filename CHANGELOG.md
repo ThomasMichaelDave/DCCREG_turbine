@@ -41,6 +41,36 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### S2a: the structure filled in, the outer retainer, and the integrity checks (2026-10-16)
+The designer: "shall we fill in the missing structural components and check the structural and electrostatic
+integrity?" The choices: PD2; a stock cover with sheds on the sleeve; one G10 cage across the hub; the drive not yet;
+the column's internal combs kept as PROPOSED; then "The structural beams out of extruded parts are meant for the
+structural retainer that forms the most outer cage retainer": the retainer holds the frame bearings, 40 × 40 B-type
+T-slot, the frame earthed, REF floating.
+
+- **`rebuild/s2_models/s2_geometry.py`, the model,** gains:
+  - the column's two Al-tube combs (support and net ties), and the column moved to h 98 for the N1 comb's clearance to
+    the flange;
+  - the riser and the tap; the midpoint ring at r 45;
+  - the stator vanes' lugs, tie rods and spacers (the REF bus);
+  - one G10 cage and the spiders to it;
+  - the sleeve's PTFE cover and sheds;
+  - the outer retainer: per end an insulating G10 coupling (a solid plug, a PTFE cover and sheds), an earthed stub,
+    the frame bearing in its plate on 40 × 40 cross beams; four corner posts and perimeter beams, 390 × 390 mm.
+
+  It is 339 solids and 848 mm long. Every gate passes: G-CLASH, G-SWEEP, G-AIR (earth included), G-POT, the sleeve's
+  G-CREEP (72 / 67 mm against 60) and the couplings' (99 against 86 mm). REF against earth is taken as 13.8 kV DC
+  [IR]. The designer then decided it: "the ref floaths at the 13.8kV" (ledger §2.3).
+- **`rebuild/s2_models/s2_structure.py`** (new; `s2_structure_results.json`, `s2-structure-findings.md`):
+  - the masses: rotor 15.0 kg, counter-rotor 23.6 kg;
+  - spin stresses at 750 rpm, safety × 284 or more everywhere;
+  - bearing loads: 382 N axial, 6 N out of balance;
+  - the rotor's bending modes: 36.7 / 99.1 / 198 Hz. The second is 17 % under the pump's 120 Hz;
+  - the electrostatic pull: 1.5 N per plate at 120 Hz. The rotor sectors' first mode is about 141 Hz, the Ca plates'
+    lies below 251 Hz.
+
+  These are flagged for a modal FE in S3.
+
 ### The decks' symmetry along the axis (2026-10-16)
 The designer: "check if there is a way of creating more symmetry along the axis with regards to the component
 placement on the decks ... take your time."

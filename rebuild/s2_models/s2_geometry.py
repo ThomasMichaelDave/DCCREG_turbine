@@ -79,8 +79,27 @@ SHAFT_R, SLEEVE_R = ML.SHAFT_R, ML.SLEEVE_R          # 12.5, 20.5 (sim/stack_siz
 FL_Z0, FL_Z1, FL_R = ML.FL_Z0, ML.FL_Z1, ML.FL_R    # the flanges, h 72-80, r 30 (presets/hub-locked.json shaft)
 CPL_R1 = ML.CPL_R1                                   # the coupler's outer face, r 33
 STATOR_RING = (VANE["r_out"], VANE["r_out"] + 12.0)  # the stator vanes' outer ring, as the record (r 150-162)
-CARRIER = (STATOR_RING[1], STATOR_RING[1] + 4.0)     # the G10 carrier tube [IR, placeholder], as the record's cage
-SPACER_R = (SLEEVE_R, SLEEVE_R + 5.5)                # the rotor vanes' G10 spacer rings [IR, placeholder]
+# ---- the structural pass (the designer, 2026-10-16: "fill in the missing structural components"; the column on
+# "standardized extruded aluminium"; PD2 with a stock cover and sheds on the sleeve; one G10 cage across the hub)
+COVER_T = 2.0                                        # extruded PTFE tube over the G10 sleeve (stock, not machined) [IR]
+SLEEVE_OUT = SLEEVE_R + COVER_T                      # 22.5: the rotor vanes' rings sit on the cover
+SHED = dict(h=10.0, t=2.0, n=2)                      # PTFE sheds (punched from stock sheet) at the bearing end [IR]
+BAR = dict(od=10.0, wall=1.5, r=30.0)                # the column's combs: Al 6063-T6 round tube 10 x 1.5 (EN 755-8)
+BAR_SP = dict(od=12.0, wall=1.0)                     # spacer tubes between one net's plates, Al 12 x 1 [IR]
+TAB = dict(w=16.0, r0=SLEEVE_OUT + 1.0)              # each plate's tab into the bore, round its comb tube [IR]
+STANDOFF_S = dict(d=10.0, material="glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)")
+TH_N1 = 90.0                                         # the N1 combs' angle (side A), every 120 deg; N2 60 deg on
+LUG = dict(n=6, r1=190.0, w=20.0, th0=30.0)          # the stator vanes' lugs to the tie rods, between their sectors
+TIE = dict(r=182.0, d=5.0, sp_od=10.0)               # steel M5 tie rods (REF) and Al spacer tubes Ø10 [IR]
+CAGE = (192.0, 196.0)                                # one G10 cage tube from spider A to spider B, across the hub
+# ---- the outer retainer (the designer, 2026-10-16: "the structural beams out of extruded parts are meant for the
+# structural retainer that forms the most outer cage retainer"; it holds the frame bearings; the frame is earthed and
+# REF floats; 40 x 40 B-type T-slot)
+U_REF_EARTH = 13.8          # kV, REF against earth, as DC: DECIDED 2026-10-16 ("the ref floaths at the 13.8kV")
+PROFILE = 40.0              # 40 x 40 B-type T-slot (8 mm slot); drawn as a square bar with its centre bore [IR]
+COUPLING = dict(od=34.0, overlap=20.0, sheds=2, shed_h=8.0, cover_t=1.0)   # the insulating coupling, G10 [IR]
+FB = dict(od=52.0, width=15.0, name="6205 class")                        # the frame bearings [RH]
+FB_PLATE = dict(w=150.0, t=15.0)                                        # Al bearing plate on two cross beams [IR]
 BEARING = dict(od=52.0, width=15.0, name="6205 class")   # the REF link's bearing (the record's class) [RH]
 SPIDER_T = 8.0
 REF_TERM = (2.5, 74.5)                               # the REF terminals through the coupler into the flange
@@ -112,7 +131,10 @@ class S2Core(TG.Machine):
         dr = VANE["r_in"] - FL_R
         need = dict(deck=z_dk + DECK["stack"]["c_col_mm"],
                     n2_flange=FL_Z1 + math.sqrt(max(0.0, clr("0", "2") ** 2 - dr ** 2)),
-                    n1_flange=FL_Z1 + math.sqrt(max(0.0, clr("0", "1") ** 2 - dr ** 2)) - (t + g))
+                    n1_flange=FL_Z1 + math.sqrt(max(0.0, clr("0", "1") ** 2 - dr ** 2)) - (t + g),
+                    # the N1 combs and tabs in the bore reach in to r 23.5, inside the flange's corner (r 30): their
+                    # hub end, at the first N1 plate, must clear the corner by the full N1 clearance in z [OC]
+                    n1_comb_flange=FL_Z1 + clr("0", "1") - (t + g))
         self.h_col = float(math.ceil(max(need.values())))
         self.col_need = need
         self.h_vanes0 = self.h_col + ML.N_CA * t + (ML.N_CA - 1) * g + g      # the dead gap: node 1 against node 1
@@ -120,9 +142,27 @@ class S2Core(TG.Machine):
         last_rotor = self.h_vanes0 + (VANE["n_vanes"] - 2) * (t + g) + t        # the outermost rotor vane's outer face
         # the REF link: the bearing and its spider clear the outermost rotor vane (N1) in air [OC: the rule]
         self.h_brg0 = float(math.ceil(max(self.h_vanes1 + g, last_rotor + clr("0", "1"))))
-        self.h_end = self.h_brg0 + BEARING["width"] + 10.0
-        self.zc = self.h_end
-        self.L_mm = 2.0 * self.h_end
+        # the REF shaft's end: past the REF-link bearing by the coupling's overlap, the coupling clear of the bearing
+        self.h_end = self.h_brg0 + BEARING["width"] + 3.0 + COUPLING["overlap"]
+        # the insulating coupling: G10, bonded over the REF shaft's end and the earthed stub's, the gap between them a
+        # solid G10 plug (no inner surface) as long as REF-earth's clearance [IR]
+        u_re = ML.clearance(U_REF_EARTH)
+        self.g_plug = float(math.ceil(u_re))
+        self.h_c0 = self.h_end - COUPLING["overlap"]
+        self.h_stub0 = self.h_end + self.g_plug
+        self.h_c1 = self.h_stub0 + COUPLING["overlap"]
+        # the frame bearing's plate: in air at least REF-earth's clearance from the spider (REF) and from the coupling's
+        # REF end [OC: the rule]
+        spider_out = self.h_brg0 + 0.5 * BEARING["width"] + 0.5 * SPIDER_T
+        self.h_fb = float(math.ceil(max(self.h_c1 + 2.0, spider_out + u_re)))
+        self.h_beam0 = self.h_fb + FB_PLATE["t"]
+        self.h_frame = self.h_beam0 + PROFILE
+        self.h_stub1 = self.h_frame + 10.0
+        self.zc = self.h_stub1
+        self.L_mm = 2.0 * self.h_stub1
+        # the frame's corner posts: their inner corners at least REF-earth's clearance off the spiders' and the tie
+        # rods' reach (r 192) [OC]
+        self.frame_a = float(math.ceil(CAGE[0] / math.sqrt(2.0) + u_re / math.sqrt(2.0) + PROFILE))
 
     def zz(self, side, h):
         return self.zc - h if side == "A" else self.zc + h
@@ -155,7 +195,93 @@ class S2Core(TG.Machine):
         self.columns_and_vanes()
         self.ref_link()
         self.decks()
+        self.risers()
+        self.retainer()
         return self
+
+    def retainer(self):
+        """the outer retainer [IR, the first cut]: per end, the insulating coupling (G10 tube, solid plug, PTFE cover
+        and sheds), the earthed steel stub shaft, the frame bearing in its Al plate, the plate on two 40 x 40 cross beams,
+        a square of 40 x 40 perimeter beams; four 40 x 40 corner posts from end to end. Earth is net "e"."""
+        P = PROFILE
+        a = self.frame_a
+        bar = lambda x0, x1, y0, y1, z0, z1: TG._cut(TG.box(x0, x1, y0, y1, z0, z1),                    # noqa: E731
+                                                    TG.cyl_between(*(((0.5 * (x0 + x1), 0.5 * (y0 + y1), z0), (0.5 * (x0 + x1), 0.5 * (y0 + y1), z1))
+                                                                     if (z1 - z0) > max(x1 - x0, y1 - y0) else
+                                                                     (((x0, 0.5 * (y0 + y1), 0.5 * (z0 + z1)), (x1, 0.5 * (y0 + y1), 0.5 * (z0 + z1)))
+                                                                      if (x1 - x0) > (y1 - y0) else
+                                                                      ((0.5 * (x0 + x1), y0, 0.5 * (z0 + z1)), (0.5 * (x0 + x1), y1, 0.5 * (z0 + z1))))), 3.4))
+        mat_p = "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+        zb = self.zz("A", self.h_frame), self.zz("B", self.h_frame)
+        for i, (x, y) in enumerate(((a - P, a - P), (-a, a - P), (-a, -a), (a - P, -a))):
+            self.put(f"frame_post_{i + 1}", f"post_{i}", lambda x=x, y=y: bar(x, x + P, y, y + P, zb[0], zb[1]),
+                     COL["al"], mat_p, "frame", "retainer", join="frame", net="e", desc="a corner post of the retainer")
+        for s_ in "AB":
+            sg = -1 if s_ == "A" else 1
+            z0, z1 = self.zs(s_, self.h_beam0, self.h_frame)
+            for k, (x0, x1, y0, y1) in enumerate(((-a, a, a - P, a), (-a, a, -a, -a + P), (a - P, a, -a + P, a - P),
+                                                  (-a, -a + P, -a + P, a - P))):
+                self.put(f"{s_}_frame_beam_{k + 1}", f"beam_{s_}_{k}", lambda x0=x0, x1=x1, y0=y0, y1=y1, z0=z0, z1=z1:
+                         bar(x0, x1, y0, y1, z0, z1), COL["al"], mat_p, "frame", "retainer", join="frame", net="e",
+                         desc=f"a perimeter beam of the retainer's end {s_}")
+            yb = 0.5 * FB_PLATE["w"] - 0.5 * P
+            for k, yc in enumerate((-yb, yb)):
+                self.put(f"{s_}_frame_cross_{k + 1}", f"cross_{s_}_{k}", lambda yc=yc, z0=z0, z1=z1:
+                         bar(-a + P, a - P, yc - 0.5 * P, yc + 0.5 * P, z0, z1), COL["al"], mat_p, "frame", "retainer",
+                         join="frame", net="e", desc=f"a cross beam carrying the frame bearing's plate, end {s_}")
+            zp0, zp1 = self.zs(s_, self.h_fb, self.h_beam0)
+            w = 0.5 * FB_PLATE["w"]
+            self.put(f"{s_}_fb_plate", f"fb_plate_{s_}", lambda zp0=zp0, zp1=zp1, w=w: TG._cut(TG.box(-w, w, -w, w, zp0, zp1),
+                     TG.cyl_z(0.0, 0.0, 0.5 * FB["od"], zp0 - 1, zp1 + 1)), COL["al"],
+                     "Al plate, 150 x 150 x 15, the frame bearing's housing, on the cross beams (earth)", "frame",
+                     "retainer", join="frame", net="e", desc=f"the frame bearing's plate, end {s_}")
+            zf0, _ = self.zs(s_, self.h_fb, self.h_fb + FB["width"])
+            self.put(f"{s_}_frame_bearing", "frame_bearing", lambda: TG.sector(SHAFT_R, 0.5 * FB["od"], 0.0, FB["width"]),
+                     COL["steel"], f"{FB['name']} frame bearing (earth)", "frame", "retainer", join="frame", net="e",
+                     dz=zf0, desc=f"the frame bearing, end {s_}: the earthed stub in the retainer")
+            z0, z1 = self.zs(s_, self.h_stub0, self.h_stub1)
+            self.put(f"{s_}_stub", f"stub_{s_}", lambda z0=z0, z1=z1: TG.sector(0.0, SHAFT_R, z0, z1), COL["steel"],
+                     "steel stub shaft (earth): the coupling to the frame bearing", "frame", "retainer", join="frame",
+                     net="e", desc=f"the earthed stub shaft, end {s_}")
+            # the coupling: a G10 tube over both shaft ends, a solid G10 plug between them, a PTFE cover and sheds
+            z0, z1 = self.zs(s_, self.h_c0, self.h_c1)
+            ro_ = 0.5 * COUPLING["od"]
+            self.put(f"{s_}_coupling", f"coupling_{s_}", lambda z0=z0, z1=z1: TG.sector(SHAFT_R, ro_, z0, z1), COL["g10"],
+                     "G10 insulating coupling tube, bonded over the REF shaft and the earthed stub", "rotor", "retainer",
+                     join="coupling-" + s_, desc=f"the insulating coupling, end {s_}: REF to earth")
+            zq0, zq1 = self.zs(s_, self.h_end, self.h_stub0)
+            self.put(f"{s_}_coupling_plug", f"plug_{s_}", lambda zq0=zq0, zq1=zq1: TG.sector(0.0, SHAFT_R, zq0, zq1),
+                     COL["g10"], "G10 plug, bonded: the coupling's solid gap (no inner surface)", "rotor", "retainer",
+                     join="coupling-" + s_, desc=f"the coupling's plug, {self.g_plug:.0f} mm, end {s_}")
+            self.put(f"{s_}_coupling_cover", f"ccover_{s_}", lambda z0=z0, z1=z1: TG.sector(ro_, ro_ + COUPLING["cover_t"], z0, z1),
+                     COL["ptfe"], "PTFE heat-shrink cover on the coupling (stock)", "rotor", "retainer",
+                     join="coupling-" + s_, desc="the coupling's creepage cover")
+            for k in range(COUPLING["sheds"]):
+                hs = self.h_end + (k + 1) * self.g_plug / (COUPLING["sheds"] + 1)
+                zs0, _ = self.zs(s_, hs - 1.0, hs + 1.0)
+                self.put(f"{s_}_coupling_shed_{k + 1}", "cshed", lambda: TG.sector(ro_ + COUPLING["cover_t"],
+                                                                               ro_ + COUPLING["cover_t"] + COUPLING["shed_h"], 0.0, 2.0),
+                         COL["ptfe"], "PTFE shed on the coupling (punched from stock sheet)", "rotor", "retainer",
+                         join="coupling-" + s_, dz=zs0, desc="a shed on the coupling")
+
+    def risers(self):
+        """node 1's riser (4's) and node 2's tap (3's) [IR]: straight up from their deck junctions; the riser through
+        its clearance hole in the column's first plate (N2) to the first N1 plate's underside, the tap to the first
+        plate's underside."""
+        t, g = VANE["t"], VANE["g"]
+        j_top = ML.DECK_Z0 + ML.DECK_T + 0.5 * ML.PART["stick"]["d"] + 0.5 * TG.J_COND[1]
+        for s_, d in (("A", DECK["deck_A"]), ("B", DECK["deck_B"])):
+            n1, n2 = ("1", "2") if s_ == "A" else ("4", "3")
+            zh = lambda h, s_=s_: np.array([0.0, 0.0, self.zz(s_, h)])                              # noqa: E731
+            J1, J2 = (np.array([*d["junctions"][k], 0.0]) for k in (n1, n2))
+            z_pot = ML.DECK_Z0 + ML.DECK_T + ML.DECK_H                    # the potting's outer face (|z| 78)
+            for nm, J, net_, h_end, what in (("riser", J1, n1, self.h_col + t + g, "up through the first plate's hole "
+                                              f"to the first N{n1} plate"), ("tap", J2, n2, self.h_col,
+                                              f"up to the column's first plate (N{n2})")):
+                self.put_wire(f"{s_}_{nm}_deck", [J + zh(j_top), J + zh(z_pot)], net_, f"deck-{s_}", f"deck-{s_}",
+                              desc=f"node {net_}'s {nm}, in the potting")
+                self.put_wire(f"{s_}_{nm}", [J + zh(z_pot), J + zh(h_end)], net_, "wiring", f"comb-{net_}-{s_}",
+                              desc=f"node {net_}'s {nm}: {what}")
 
     def hub(self):
         # the coupler to the flanges' outer face (h 80), the ring leads' channels toward the N1 / N4 junctions, the REF
@@ -197,6 +323,16 @@ class S2Core(TG.Machine):
             self.put(f"{s_}_sleeve", f"sleeve_{s_}", lambda z0=z0, z1=z1: TG.sector(SHAFT_R, SLEEVE_R, z0, z1),
                      COL["g10"], "G10 rotor sleeve", "rotor", "rotor", join="rotor-core",
                      desc="the rotor sleeve under the column and the vanes")
+            self.put(f"{s_}_cover", f"cover_{s_}", lambda z0=z0, z1=z1: TG.sector(SLEEVE_R, SLEEVE_OUT, z0, z1),
+                     COL["ptfe"], "extruded PTFE tube over the sleeve (stock, not machined): the creepage cover",
+                     "rotor", "rotor", join="rotor-core", desc="the sleeve's PTFE cover (PD2 creepage, group I)")
+            last = self.h_vanes0 + (VANE["n_vanes"] - 2) * (VANE["t"] + VANE["g"]) + VANE["t"]
+            for k in range(SHED["n"]):
+                hs = last + (k + 1) * (self.h_brg0 - last) / (SHED["n"] + 1)
+                z0s, _ = self.zs(s_, hs - 0.5 * SHED["t"], hs + 0.5 * SHED["t"])
+                self.put(f"{s_}_shed_{k + 1}", "shed", lambda: TG.sector(SLEEVE_OUT, SLEEVE_OUT + SHED["h"], 0.0, SHED["t"]),
+                         COL["ptfe"], f"PTFE shed, {SHED['h']:g} mm, punched from stock sheet", "rotor", "rotor",
+                         join="rotor-core", dz=z0s, desc="a shed on the cover at the bearing end (creepage)")
         for s_, th in self.ref_terms:
             sg = -1 if s_ == "A" else 1
             u = TG._u(th)
@@ -207,51 +343,141 @@ class S2Core(TG.Machine):
                      join="rotor-core", net="0", desc="a deck's REF strap lands here: through the coupler into the flange")
 
     def columns_and_vanes(self):
+        """the column Ca (Cb) on its two Al combs, and the vane stacks on the cage's tie rods [IR, the structural pass]:
+        - each net of the column has its own comb: three Al 6063 round tubes (10 x 1.5) in the bore at r 30, 120 deg
+          apart (N2 60 deg on from N1), through holes in its own plates' tabs, with Al spacer tubes (12 x 1) between
+          them; a comb is that net's tie as well as its support; the other net's plates are not touched (their bore,
+          r 50, is 14 mm from the tubes' outside);
+        - the N1 comb runs on through the rotor vanes' rings to the outermost rotor vane: it ties the column's N1
+          plates and the rotor vanes, and carries them on the sleeve's cover;
+        - the N2 comb stands on three catalogue glazed-steatite standoffs on the first rotor vane (inorganic: its
+          creepage is its clearance, 12.9 mm for N1-N2);
+        - the stator vanes: the record's, with six lugs out to r 190 between their sectors, on six steel tie rods (REF)
+          with Al spacer tubes at r 182, 27 mm off the rotor vanes' tips; the rods end in the spiders."""
         t, g, ri, ro = VANE["t"], VANE["g"], VANE["r_in"], VANE["r_out"]
         n = VANE["n_sec"]
-        self.proto("ca_plate", lambda: TG.sector(ri, ro, 0.0, t), COL["fixed plate"], "Al plate, 3 mm, full annulus")
-        self.proto("rotor_vane", lambda: TG.fuse([TG.sector(ri, ro, 0.0, t, k * PITCH - 0.5 * VANE["wr"], VANE["wr"])
-                                                  for k in range(n)] + [TG.sector(SLEEVE_R, ri, 0.0, t)]),
-                   COL["rotor vane"], f"Al rotor vane, 3 mm, {n} sectors of {VANE['wr']:g} deg on its ring")
-        self.proto("stator_vane", lambda: TG.fuse([TG.sector(ri, ro, 0.0, t, k * PITCH - 0.5 * VANE["ws"], VANE["ws"])
-                                                   for k in range(n)] + [TG.sector(*STATOR_RING, 0.0, t)]),
-                   COL["stator vane"], f"Al stator vane, 3 mm, {n} sectors of {VANE['ws']:g} deg on its ring")
-        self.proto("rotor_spacer", lambda: TG.sector(*SPACER_R, 0.0, 2 * g + t), COL["g10"],
-                   "G10 spacer ring between two rotor vanes [IR, placeholder]")
+        rb, rbo = BAR["r"], 0.5 * BAR["od"]
+
+        def bar_xy(th):
+            return (rb * TG._u(th))[:2]
+
+        def with_tabs(base, angles, hole_angles):
+            tabs = [TG.sector(TAB["r0"], ri + 0.5, 0.0, t, a - math.degrees(0.5 * TAB["w"] / rb), math.degrees(TAB["w"] / rb))
+                    for a in angles]
+            shp = TG.fuse([base] + tabs) if tabs else base
+            return TG._cut(shp, *[TG.cyl_z(*bar_xy(a), rbo + 0.05, -1.0, t + 1.0) for a in hole_angles])
+
+        self.proto("rotor_vane", lambda: with_tabs(TG.fuse([TG.sector(ri, ro, 0.0, t, k * PITCH - 0.5 * VANE["wr"], VANE["wr"])
+                                                             for k in range(n)] + [TG.sector(SLEEVE_OUT, ri, 0.0, t)]),
+                                                    [], [TH_N1 + 120.0 * k for k in range(3)]),
+                   COL["rotor vane"], f"Al rotor vane, 3 mm, {n} sectors of {VANE['wr']:g} deg on its ring; the N1 comb's holes")
+        lug = lambda a: TG.sector(STATOR_RING[1] - 0.5, LUG["r1"], 0.0, t, a - math.degrees(0.5 * LUG["w"] / TIE["r"]),  # noqa
+                                  math.degrees(LUG["w"] / TIE["r"]))
+        lug_angles = [LUG["th0"] + k * 360.0 / LUG["n"] for k in range(LUG["n"])]
+        self.proto("stator_vane", lambda: TG._cut(TG.fuse([TG.sector(ri, ro, 0.0, t, k * PITCH - 0.5 * VANE["ws"], VANE["ws"])
+                                                           for k in range(n)] + [TG.sector(*STATOR_RING, 0.0, t)]
+                                                          + [lug(a) for a in lug_angles]),
+                                                  *[TG.cyl_z(*(TIE["r"] * TG._u(a))[:2], 0.5 * TIE["d"] + 0.05, -1.0, t + 1.0)
+                                                    for a in lug_angles]),
+                   COL["stator vane"], f"Al stator vane, 3 mm, {n} sectors of {VANE['ws']:g} deg on its ring, six lugs")
+        self.comb = {}
         for s_ in "AB":
             cn, vn = ("Ca", "C1") if s_ == "A" else ("Cb", "C2")
             n1, n2 = ("1", "2") if s_ == "A" else ("4", "3")
+            rot_b = 0.5 * PITCH if s_ == "B" else 0.0              # antiphase: side B's rotor half a pitch on
+            a1 = [TH_N1 + rot_b + 120.0 * k for k in range(3)]   # the N1 comb follows its side's rotor vanes
+            a2 = [x + 60.0 for x in a1]
+            self.comb[s_] = dict(n1_deg=a1, n2_deg=a2)
+            riser_xy = np.asarray(DECK["deck_A" if s_ == "A" else "deck_B"]["junctions"][n1])
+            r_hole = ML.clearance(ML.volt(self.V, n1, n2)["pk"]) + WIRE + 1.0
+            self.proto(f"ca_n1_{s_}", lambda a1=a1: with_tabs(TG.sector(ri, ro, 0.0, t), a1, a1), COL["fixed plate"],
+                       "Al plate, 3 mm, full annulus; three tabs to the N1 comb")
+            self.proto(f"ca_n2_{s_}", lambda a2=a2: with_tabs(TG.sector(ri, ro, 0.0, t), a2, a2), COL["fixed plate"],
+                       "Al plate, 3 mm, full annulus; three tabs to the N2 comb")
+            self.proto(f"ca_n2_first_{s_}", lambda a2=a2, xy=riser_xy, rh=r_hole: TG._cut(
+                with_tabs(TG.sector(ri, ro, 0.0, t), a2, a2), TG.cyl_z(xy[0], xy[1], rh, -1.0, t + 1.0)),
+                COL["fixed plate"], f"Al plate, 3 mm; tabs to the N2 comb; the riser's clearance hole Ø{2 * r_hole:.0f}")
             for k in range(ML.N_CA):                              # node 2 toward the deck, alternating
                 h0 = self.h_col + k * (t + g)
                 z0, _ = self.zs(s_, h0, h0 + t)
                 nd = n2 if k % 2 == 0 else n1
-                self.put(f"{s_}_{cn}_{ML.N_CA - k:02d}", "ca_plate", None, None, None, "rotor", f"side-{s_}", net=nd,
-                         join=f"{s_}_{cn}_{k}", dz=z0, desc=f"{cn} plate, node {nd} (support OPEN)")
-            rot_b = 0.5 * PITCH if s_ == "B" else 0.0              # antiphase: side B's rotor half a pitch on
+                key = (f"ca_n2_first_{s_}" if k == 0 else f"ca_n2_{s_}") if nd == n2 else f"ca_n1_{s_}"
+                self.put(f"{s_}_{cn}_{ML.N_CA - k:02d}", key, None, None, None, "rotor", f"side-{s_}", net=nd,
+                         join=f"comb-{n2}-{s_}" if nd == n2 else f"comb-{n1}-{s_}", dz=z0,
+                         desc=f"{cn} plate, node {nd}, on its comb")
             for k in range(VANE["n_vanes"]):
                 h0 = self.h_vanes0 + k * (t + g)
                 z0, _ = self.zs(s_, h0, h0 + t)
                 rotor = k % 2 == 0
                 self.put(f"{s_}_{vn}_{'r' if rotor else 's'}{k + 1:02d}", "rotor_vane" if rotor else "stator_vane",
                          None, None, None, "rotor" if rotor else "stator", f"side-{s_}",
-                         join="rotor-vanes-" + s_ if rotor else "stator-" + s_, net=n1 if rotor else "s",
+                         join=f"comb-{n1}-{s_}" if rotor else "stator-" + s_, net=n1 if rotor else "s",
                          dz=z0, rot=rot_b if rotor else 0.0,
-                         desc=f"{vn} {'rotor vane, node ' + n1 if rotor else 'stator vane, REF (the counter-rotor)'}"
+                         desc=f"{vn} {'rotor vane, node ' + n1 + ', on the N1 comb' if rotor else 'stator vane, REF, on the tie rods'}"
                               + (", half a pitch on: antiphase to C1" if rotor and s_ == "B" else ""))
-                if rotor and k + 2 < VANE["n_vanes"]:
-                    z0, _ = self.zs(s_, h0 + t, h0 + 2 * (t + g))
-                    self.put(f"{s_}_rotor_spacer_{k // 2 + 1}", "rotor_spacer", None, None, None, "rotor", f"side-{s_}",
-                             join="rotor-vanes-" + s_, dz=z0, desc="G10 spacer between two rotor vanes (placeholder)")
-            z0, z1 = self.zs(s_, self.h_vanes0 + t + g - 1.0, self.h_brg0 + 0.5 * BEARING["width"] + 0.5 * SPIDER_T)
-            self.put(f"{s_}_carrier", f"carrier_{s_}", lambda z0=z0, z1=z1: TG.sector(*CARRIER, z0, z1), COL["g10"],
-                     "G10 carrier tube for the stator vanes [IR, placeholder]", "stator", "stator",
-                     join="stator-" + s_, desc="the counter-rotor's carrier: holds the stator vanes, ends on the spider")
+            # the combs: the tubes, and spacer tubes between consecutive plates of one net
+            h_n1_0 = self.h_col + (t + g)                         # the first N1 plate (Ca_05)
+            h_n1_1 = self.h_vanes0 + (VANE["n_vanes"] - 2) * (t + g) + t   # the outermost rotor vane's outer face
+            h_n2_0, h_n2_1 = self.h_col, self.h_col + 4 * (t + g) + t        # Ca_06 to Ca_02
+            n1_planes = [self.h_col + k * (t + g) for k in (1, 3, 5)] + \
+                [self.h_vanes0 + k * (t + g) for k in range(0, VANE["n_vanes"], 2)]
+            n2_planes = [self.h_col + k * (t + g) for k in (0, 2, 4)]
+            for net_, angs, (hA, hB), planes in ((n1, a1, (h_n1_0, h_n1_1), n1_planes), (n2, a2, (h_n2_0, h_n2_1), n2_planes)):
+                for kk, a in enumerate(angs):
+                    xy = bar_xy(a)
+                    z0, z1 = self.zs(s_, hA, hB)
+                    self.put(f"{s_}_comb{net_}_tube_{kk + 1}", f"comb_tube_{s_}_{net_}_{kk}",
+                             lambda xy=xy, z0=z0, z1=z1: TG._cut(TG.cyl_z(xy[0], xy[1], rbo, z0, z1),
+                                                                TG.cyl_z(xy[0], xy[1], rbo - BAR["wall"], z0 - 1, z1 + 1)),
+                             COL["al"], f"Al 6063-T6 round tube {BAR['od']:g} x {BAR['wall']:g} (EN 755-8): the N{net_} comb",
+                             "rotor", f"side-{s_}", join=f"comb-{net_}-{s_}", net=net_,
+                             desc=f"the N{net_} comb's tube {kk + 1}: support and tie of its net's plates")
+                    for pa, pb in zip(planes[:-1], planes[1:]):
+                        z0, z1 = self.zs(s_, pa + t, pb)
+                        self.put(f"{s_}_comb{net_}_sp_{kk + 1}_{pa:.0f}", f"comb_sp_{s_}_{net_}_{kk}_{pa:.0f}",
+                                 lambda xy=xy, z0=z0, z1=z1: TG._cut(TG.cyl_z(xy[0], xy[1], 0.5 * BAR_SP["od"], z0, z1),
+                                                                    TG.cyl_z(xy[0], xy[1], rbo + 0.05, z0 - 1, z1 + 1)),
+                                 COL["al"], f"Al spacer tube {BAR_SP['od']:g} x {BAR_SP['wall']:g} on the comb",
+                                 "rotor", f"side-{s_}", join=f"comb-{net_}-{s_}", net=net_,
+                                 desc=f"a spacer of the N{net_} comb")
+            # the N2 comb's standoffs on the first rotor vane
+            for kk, a in enumerate(a2):
+                xy = bar_xy(a)
+                z0, z1 = self.zs(s_, h_n2_1, self.h_vanes0)
+                self.put(f"{s_}_comb{n2}_standoff_{kk + 1}", f"standoff_{s_}_{kk}",
+                         lambda xy=xy, z0=z0, z1=z1: TG.cyl_z(xy[0], xy[1], 0.5 * STANDOFF_S["d"], z0, z1),
+                         (0.92, 0.90, 0.84), STANDOFF_S["material"], "rotor", f"side-{s_}", join=f"comb-{n2}-{s_}",
+                         desc=f"the N{n2} comb's standoff {kk + 1}: glazed steatite onto the first rotor vane")
+            # the stator's tie rods and spacer tubes, from the first stator vane to the spider
+            hs0 = self.h_vanes0 + (t + g)
+            hb = self.h_brg0 + 0.5 * BEARING["width"]
+            s_planes = [self.h_vanes0 + k * (t + g) for k in range(1, VANE["n_vanes"], 2)]
+            for kk, a in enumerate(lug_angles):
+                xy = (TIE["r"] * TG._u(a))[:2]
+                z0, z1 = self.zs(s_, hs0, hb + 0.5 * SPIDER_T)
+                self.put(f"{s_}_tie_{kk + 1}", f"tie_{s_}_{kk}", lambda xy=xy, z0=z0, z1=z1: TG.cyl_z(xy[0], xy[1], 0.5 * TIE["d"], z0, z1),
+                         COL["steel"], "stainless M5 tie rod (REF)", "stator", "stator", join="stator-" + s_, net="s",
+                         desc="a stator tie rod: the stator vanes' REF bus and support, into the spider")
+                for pa, pb in list(zip(s_planes[:-1], s_planes[1:])) + [(s_planes[-1], hb - 0.5 * SPIDER_T - t)]:
+                    z0, z1 = self.zs(s_, pa + t, pb)
+                    self.put(f"{s_}_tie_sp_{kk + 1}_{pa:.0f}", f"tie_sp_{s_}_{kk}_{pa:.0f}",
+                             lambda xy=xy, z0=z0, z1=z1: TG._cut(TG.cyl_z(xy[0], xy[1], 0.5 * TIE["sp_od"], z0, z1),
+                                                                TG.cyl_z(xy[0], xy[1], 0.5 * TIE["d"] + 0.05, z0 - 1, z1 + 1)),
+                             COL["al"], f"Al spacer tube Ø{TIE['sp_od']:g} on a tie rod (REF)", "stator", "stator",
+                             join="stator-" + s_, net="s", desc="a stator spacer between two stator vanes")
+        z0, z1 = self.zs("A", self.h_brg0 + 0.5 * BEARING["width"] + 0.5 * SPIDER_T, 0.0)
+        z1 = self.zz("B", self.h_brg0 + 0.5 * BEARING["width"] + 0.5 * SPIDER_T)
+        self.put("cage", "cage", lambda z0=z0, z1=z1: TG.sector(*CAGE, z0, z1), COL["g10"],
+                 "G10 cage tube, spider to spider across the hub (the counter-rotor's backbone)", "stator", "stator",
+                 join="stator-cage", desc="the counter-rotor's cage: joins its two halves across the hub")
 
     def ref_link(self):
         self.proto("bearing", lambda: TG.sector(SHAFT_R, 0.5 * BEARING["od"], 0.0, BEARING["width"]), COL["steel"],
                    f"{BEARING['name']} bearing: the REF link [placeholder, the 2026-10-08 decision]")
-        self.proto("spider", lambda: TG.sector(0.5 * BEARING["od"], CARRIER[1], 0.0, SPIDER_T), COL["al"],
-                   "Al spider: the bearing's outer ring to the carrier, REF [placeholder]")
+        self.proto("spider", lambda: TG._cut(TG.sector(0.5 * BEARING["od"], CAGE[0], 0.0, SPIDER_T),
+                                             *[TG.cyl_z(*(TIE["r"] * TG._u(LUG["th0"] + k * 360.0 / LUG["n"]))[:2],
+                                                        0.5 * TIE["d"] + 0.05, -1.0, SPIDER_T + 1.0) for k in range(LUG["n"])]),
+                   COL["al"], "Al spider: the bearing's outer ring to the cage's bore; the tie rods end in it (REF)")
         for s_ in "AB":
             z0, _ = self.zs(s_, self.h_brg0, self.h_brg0 + BEARING["width"])
             self.put(f"{s_}_ref_bearing", "bearing", None, None, None, "bearing", "ref-link", join=f"brg-{s_}", net="0",
@@ -367,15 +593,23 @@ class S2Core(TG.Machine):
                     # a short joint (V1b): the half's terminal to the stick's end beside it, in the potting; onto the
                     # junction's terminal (N1 / N4) or the stick's REF end
                     on_block = L["net"] in ("1", "4")
+                    if on_block:
+                        u_ = (a - b) / max(1e-9, float(np.linalg.norm(a - b)))
+                        b = b + 5.0 * u_
                     end = b + zh(j_top if on_block else h_ax("stick"))
                     self.put_wire(f"{s_}_joint_{i}_{L['net']}", [a + zh(h_ax("clamp_half")), b + zh(h_ax("clamp_half")), end],
                                   L["net"], g, jn, desc=f"joint, net {L['net']}: the clamp half to the stick's end beside it")
                     continue
                 ta, tb = TG._ang(a), TG._ang(b)
                 dtt = (tb - ta) % 360.0 if L.get("dir", 1) > 0 else (tb - ta) % 360.0 - 360.0
-                ra, rb = float(np.linalg.norm(a)), float(np.linalg.norm(b))
                 n_pt = max(2, int(abs(dtt) / 6.0) + 1)
-                arc = [TG._u(ta + dtt * f) * (ra + (rb - ra) * f) + zh(TG.Z_OVER) for f in np.linspace(0, 1, n_pt)]
+                # the ring runs at r 45: inside the sticks' lane and every junction, and 11.5 mm of air (its peak
+                # against the coupler's ring and flange) off the coupler's face [IR]
+                R_RING = CPL_R1 + ML.clearance(ML.volt(self.V, "0", L["net"])["pk"]) + WIRE + 1.5
+                arc = [TG._u(ta) * R_RING + zh(TG.Z_OVER)] + \
+                      [TG._u(ta + dtt * f) * R_RING + zh(TG.Z_OVER) for f in np.linspace(0, 1, n_pt)] + \
+                      [TG._u(tb) * R_RING + zh(TG.Z_OVER)]
+                arc = [a + zh(TG.Z_OVER)] + arc + [b + zh(TG.Z_OVER)]
                 self.put_wire(f"{s_}_ring_m_{i}", [a + zh(h_ax("clamp_half"))] + arc + [b + zh(h_ax("clamp_half"))],
                               L["net"], g, jn, desc=f"the midpoint ring {L['net']}, its {'+' if dtt > 0 else '-'} half, "
                                                     "over the parts in the potting")
@@ -531,7 +765,12 @@ def checks(m, log=print):
                           note="each rotor solid revolved into an annulus against every counter-rotor solid")
     log(f"G-SWEEP: {len(hits)} hits")
     # G-AIR
-    V = m.V
+    V = dict(m.V, pairs=dict(m.V["pairs"]))
+    # earth (net "e"): REF floats against it by up to U_REF_EARTH, taken as DC; every other net against earth is its
+    # peak against REF plus that, the rms likewise [IR, conservative]
+    for n_ in ("0", "1", "2", "3", "4", "m1", "m4"):
+        q0 = dict(pk=0.0, rms=0.0) if n_ == "0" else ML.volt(m.V, "0", n_)
+        V["pairs"][f"e|{n_}"] = dict(pk=q0["pk"] + U_REF_EARTH, rms=q0["rms"] + U_REF_EARTH)
     cond = []
     for k, (pt, s) in enumerate(shapes):
         nv = m.nets.get(pt["name"], {})
@@ -545,13 +784,43 @@ def checks(m, log=print):
     cell = lambda a, b: any(x in a["name"] for x in ("_C1_", "_C2_", "_Ca_", "_Cb_")) and \
         any(x in b["name"] for x in ("_C1_", "_C2_", "_Ca_", "_Cb_"))                       # the designed cells
     potted = lambda a: a["group"].startswith("deck-")                                       # inside the potting
-    on_sleeve = lambda a, b: {a["name"].split("_")[0], b["name"].split("_")[0]} & {"shaft"} and         any(("_C1_r" in x["name"] or "_C2_r" in x["name"]) for x in (a, b))               # through the G10 sleeve
+    # the shaft is wrapped in its G10 sleeve and PTFE cover from the flange to the bearing: a conductor facing it
+    # through them faces solid insulation, not air [IR]; the bore of the vane stack, between the N1 rotor rings, is
+    # the cell's own field region (field-judged, S2b), so the N1 comb there is not judged by case A [IR]
+    sl_lo, sl_hi = min(m.zz("A", FL_Z1), m.zz("A", m.h_brg0)), max(m.zz("B", FL_Z1), m.zz("B", m.h_brg0))
+    def on_sleeve(a, b):
+        sh = [x for x in (a, b) if x["name"].startswith("shaft_")]
+        if not sh:
+            return False
+        o = b if sh[0] is a else a
+        k = [pt["name"] for pt, _ in shapes].index(o["name"])
+        lo, hi = boxes[k]
+        mid = [m.zz("A", m.h_brg0 - 0.0), m.zz("A", FL_Z1)]
+        inside_A = min(mid) <= lo[2] and hi[2] <= max(mid)
+        midB = [m.zz("B", FL_Z1), m.zz("B", m.h_brg0)]
+        inside_B = min(midB) <= lo[2] and hi[2] <= max(midB)
+        return inside_A or inside_B
+    def in_bore(a, b):
+        names = (a["name"], b["name"])
+        comb = any("_comb" in x for x in names)
+        stator = any(("_C1_s" in x or "_C2_s" in x) for x in names)
+        rotor = any(("_C1_r" in x or "_C2_r" in x) for x in names)
+        return comb and (stator or rotor)
+
+    def shielded(a, b):
+        """a riser or tap against a column plate other than its first (the one it lands on or passes): the plate in
+        between shields it; that pair is the column's own 6 mm cell [IR]"""
+        w = [x for x in (a, b) if x["name"].endswith(("_riser", "_tap"))]
+        if not w:
+            return False
+        o = b if w[0] is a else a
+        return ("_Ca_" in o["name"] or "_Cb_" in o["name"]) and not o["name"].endswith("_06")
     rows, worst = [], None
     for ii in range(len(cond)):
         for jj in range(ii + 1, len(cond)):
             (i, ni), (j, nj) = cond[ii], cond[jj]
             a, b = shapes[i][0], shapes[j][0]
-            if cell(a, b) or (potted(a) and potted(b)) or on_sleeve(a, b):
+            if cell(a, b) or (potted(a) and potted(b)) or on_sleeve(a, b) or in_bore(a, b) or shielded(a, b):
                 continue
             na = ni if isinstance(ni, tuple) else (ni,)
             nb = nj if isinstance(nj, tuple) else (nj,)
@@ -567,12 +836,19 @@ def checks(m, log=print):
             # a diode or string body grades from its first net to its second along its axis (sim/multiplier_layout.py
             # pieces) [IR]: at the closest point the peak is the bound of the graded potential against the other
             for which, (k, nk, nother) in enumerate(((i, ni, nj), (j, nj, ni))):
-                ax = m.nets.get(shapes[k][0]["name"], {}).get("axis")
-                if ax and isinstance(nk, tuple):
+                info = m.nets.get(shapes[k][0]["name"], {})
+                ax, arc_ = info.get("axis"), info.get("arc")
+                if (ax or arc_) and isinstance(nk, tuple):
                     pnt = ext.PointOnShape1(1) if which == 0 else ext.PointOnShape2(1)
-                    p0, p1 = np.array(ax[0]), np.array(ax[1])
                     x = np.array([pnt.X(), pnt.Y(), pnt.Z()])
-                    f = float(np.clip((x - p0) @ (p1 - p0) / ((p1 - p0) @ (p1 - p0)), 0.0, 1.0))
+                    if ax:
+                        p0, p1 = np.array(ax[0]), np.array(ax[1])
+                        f = float(np.clip((x - p0) @ (p1 - p0) / ((p1 - p0) @ (p1 - p0)), 0.0, 1.0))
+                    else:                                  # along the arc, from its first terminal's angle to its second
+                        t0, t1 = arc_["th"]
+                        span_ = (t1 - t0 + 540.0) % 360.0 - 180.0
+                        tx = (math.degrees(math.atan2(x[1], x[0])) - t0 + 540.0) % 360.0 - 180.0
+                        f = float(np.clip(tx / span_ if abs(span_) > 1e-9 else 0.0, 0.0, 1.0))
                     other = nother if isinstance(nother, tuple) else (nother,)
                     u = max(ML.u_bound(V, {nk[0]: 1.0 - f, nk[1]: f}, {o: 1.0}) for o in other)
                     need = ML.clearance(u) if u > 0 else 0.0
@@ -606,12 +882,19 @@ def checks(m, log=print):
             ext = BRepExtrema_DistShapeShape(shapes[i][1], shapes[j][1])
             dd = ext.Value()
             for which, (k, nk, nother) in enumerate(((i, ni, nj), (j, nj, ni))):
-                ax = m.nets.get(shapes[k][0]["name"], {}).get("axis")
-                if ax and isinstance(nk, tuple):
+                info = m.nets.get(shapes[k][0]["name"], {})
+                ax, arc_ = info.get("axis"), info.get("arc")
+                if (ax or arc_) and isinstance(nk, tuple):
                     pnt = ext.PointOnShape1(1) if which == 0 else ext.PointOnShape2(1)
-                    p0, p1 = np.array(ax[0]), np.array(ax[1])
                     x = np.array([pnt.X(), pnt.Y(), pnt.Z()])
-                    f = float(np.clip((x - p0) @ (p1 - p0) / ((p1 - p0) @ (p1 - p0)), 0.0, 1.0))
+                    if ax:
+                        p0, p1 = np.array(ax[0]), np.array(ax[1])
+                        f = float(np.clip((x - p0) @ (p1 - p0) / ((p1 - p0) @ (p1 - p0)), 0.0, 1.0))
+                    else:                                  # along the arc, from its first terminal's angle to its second
+                        t0, t1 = arc_["th"]
+                        span_ = (t1 - t0 + 540.0) % 360.0 - 180.0
+                        tx = (math.degrees(math.atan2(x[1], x[0])) - t0 + 540.0) % 360.0 - 180.0
+                        f = float(np.clip(tx / span_ if abs(span_) > 1e-9 else 0.0, 0.0, 1.0))
                     other = nother if isinstance(nother, tuple) else (nother,)
                     u = max(ML.u_bound(V, {nk[0]: 1.0 - f, nk[1]: f}, {o: 1.0}) for o in other)
                     need = u / PF.E_POT
@@ -630,11 +913,21 @@ def checks(m, log=print):
     need_ptfe = PF.creepage(q["rms"], "I") * PF.DC_MARGIN
     t = VANE["t"]
     first, last = m.h_vanes0, m.h_vanes0 + (VANE["n_vanes"] - 2) * (t + VANE["g"]) + t
-    paths = dict(to_flange=first - FL_Z1, to_bearing=m.h_brg0 - last)
-    res["G_CREEP"] = dict(U_rms_kV=q["rms"], need_G10_mm=need_g10, need_PTFE_cover_mm=need_ptfe, paths_mm=paths,
-                          pass_=all(v >= need_g10 for v in paths.values()),
-                          note="the rotor vanes' rings sit on the sleeve; its surface runs to REF at both ends")
-    log(f"G-CREEP: sleeve paths {paths} mm against {need_g10:.0f} (G10) / {need_ptfe:.0f} (PTFE cover) needed")
+    # the cover (PTFE, group I) carries the rotor vanes' rings; the sheds add 2 x their height each (the designer:
+    # "Stock cover + sheds") [OC: the surface path]
+    paths = dict(to_flange=first - FL_Z1, to_bearing=m.h_brg0 - last + 2 * SHED["n"] * SHED["h"])
+    qe = ML.volt(V, "e", "0")
+    need_c = PF.creepage(qe["rms"], "I") * PF.DC_MARGIN
+    path_c = (m.h_c1 - m.h_c0) + 2 * COUPLING["sheds"] * COUPLING["shed_h"]
+    res["G_CREEP_COUPLING"] = dict(U_rms_kV=qe["rms"], surface="PTFE cover on the G10 coupling (group I)",
+                                   need_mm=need_c, path_mm=path_c, pass_=bool(path_c >= need_c),
+                                   note="REF (the shaft) to earth (the stub), over the coupling's cover and sheds")
+    log(f"G-CREEP coupling: {path_c:.0f} mm against {need_c:.0f} mm (REF-earth {qe['rms']:.1f} kV, PTFE)")
+    res["G_CREEP"] = dict(U_rms_kV=q["rms"], surface="extruded PTFE cover (group I)", need_mm=need_ptfe,
+                          need_bare_G10_mm=need_g10, paths_mm=paths, sheds=SHED,
+                          pass_=all(v >= need_ptfe for v in paths.values()),
+                          note="the rotor vanes' rings sit on the cover; its surface runs to REF at both ends")
+    log(f"G-CREEP: cover paths {paths} mm against {need_ptfe:.0f} mm needed (PTFE, PD2)")
     return res
 
 
@@ -646,7 +939,8 @@ def net_check(m):
     want = {"1": ["hub_ring_A", "A_J_1", "A_ring_lead", "A_C1_r01", "A_Ca_05"],
             "4": ["hub_ring_B", "B_J_4", "B_ring_lead", "B_C2_r01", "B_Cb_05"],
             "2": ["A_J_2", "cross_2", "B_J_2x", "A_Ca_06"], "3": ["B_J_3", "cross_3", "A_J_3x", "B_Cb_06"],
-            "0": ["shaft_A", "A_flange", "A_ref_bearing"], "s": ["A_C1_s02", "A_ref_spider"]}
+            "0": ["shaft_A", "A_flange", "A_ref_bearing"], "s": ["A_C1_s02", "A_ref_spider", "A_tie_1"],
+            "e": ["frame_post_1", "A_stub", "A_frame_bearing", "A_fb_plate"]}
     res = {n: dict(missing=[x for x in names if x not in set(groups.get(n, []))], n=len(groups.get(n, [])))
            for n, names in want.items()}
     res["pass_"] = all(not v["missing"] for v in res.values())

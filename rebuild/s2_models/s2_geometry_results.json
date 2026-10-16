@@ -2,23 +2,24 @@
  "tag": "s2-tube-s1b-from-scratch",
  "status": "PROPOSED (S2a from scratch, 2026-10-16)",
  "source": "rebuild/s2_models/s2_deck_bare_nocan_results.json (the decks, the bracket, the volts); sim/air_stack_sizing_results.json thick_vanes (the vane stack of record); presets/hub-locked.json (the hub, the 2 mm wall); sim/tube_geometry.py (primitives, locked_hub; the AH dropped)",
- "n_parts": 142,
- "n_protos": 66,
- "L_total_mm": 580.0,
- "hub_centre_z_mm": 290.0,
+ "n_parts": 339,
+ "n_protos": 270,
+ "L_total_mm": 848.0,
+ "hub_centre_z_mm": 424.0,
  "stack": {
-  "h_col_mm": 91.0,
+  "h_col_mm": 98.0,
   "column_needs_mm": {
    "deck": 91.0,
    "n2_flange": 80.0,
-   "n1_flange": 87.74814416790717
+   "n1_flange": 87.74814416790717,
+   "n1_comb_flange": 97.08640130545038
   },
   "h_vanes_mm": [
-   145.0,
-   247.0
+   152.0,
+   254.0
   ],
-  "h_ref_bearing_mm": 265.0,
-  "h_end_mm": 290.0
+  "h_ref_bearing_mm": 272.0,
+  "h_end_mm": 310.0
  },
  "open_items": [
   "the ties between the plates of one net (the column's node 1 / node 2, the rotor vanes to the column, the stator vanes' REF bus)",
@@ -31,19 +32,19 @@
  "NETS": {
   "1": {
    "missing": [],
-   "n": 18
+   "n": 47
   },
   "4": {
    "missing": [],
-   "n": 18
+   "n": 47
   },
   "2": {
    "missing": [],
-   "n": 10
+   "n": 21
   },
   "3": {
    "missing": [],
-   "n": 10
+   "n": 21
   },
   "0": {
    "missing": [],
@@ -51,12 +52,16 @@
   },
   "s": {
    "missing": [],
-   "n": 14
+   "n": 98
+  },
+  "e": {
+   "missing": [],
+   "n": 22
   },
   "pass_": true
  },
  "G_CLASH": {
-  "pairs_tested": 302,
+  "pairs_tested": 882,
   "n_clash": 0,
   "clashes": [],
   "pass_": true
@@ -133,30 +138,44 @@
   "pass_": true,
   "rule": "in the potting, U / 2 kV/mm (sim/parts_first_cut.py E_POT)"
  },
+ "G_CREEP_COUPLING": {
+  "U_rms_kV": 13.8,
+  "surface": "PTFE cover on the G10 coupling (group I)",
+  "need_mm": 86.25,
+  "path_mm": 99.0,
+  "pass_": true,
+  "note": "REF (the shaft) to earth (the stub), over the coupling's cover and sheds"
+ },
  "G_CREEP": {
   "U_rms_kV": 9.643307271004048,
-  "need_G10_mm": 120.5413408875506,
-  "need_PTFE_cover_mm": 60.2706704437753,
+  "surface": "extruded PTFE cover (group I)",
+  "need_mm": 60.2706704437753,
+  "need_bare_G10_mm": 120.5413408875506,
   "paths_mm": {
-   "to_flange": 65.0,
-   "to_bearing": 27.0
+   "to_flange": 72.0,
+   "to_bearing": 67.0
   },
-  "pass_": false,
-  "note": "the rotor vanes' rings sit on the sleeve; its surface runs to REF at both ends"
+  "sheds": {
+   "h": 10.0,
+   "t": 2.0,
+   "n": 2
+  },
+  "pass_": true,
+  "note": "the rotor vanes' rings sit on the cover; its surface runs to REF at both ends"
  },
  "step": "rebuild/s2_models/geometry/s2-tube-s1b-from-scratch.step",
- "step_bytes": 2702429,
+ "step_bytes": 5617895,
  "step_read_back": {
-  "instances": 142,
-  "assemblies": 10,
-  "products": 60,
+  "instances": 339,
+  "assemblies": 11,
+  "products": 264,
   "pass_": true
  },
  "fcstd": {
   "ok": true,
-  "result": "objects 297",
+  "result": "objects 503",
   "still": "rebuild/s2_models/geometry/s2-tube-s1b-from-scratch-view.png",
   "path": "rebuild/s2_models/geometry/s2-tube-s1b-from-scratch.FCStd"
  },
- "run_s": 214
+ "run_s": 354
 }
