@@ -27,7 +27,7 @@ Then the stack: the column's node-2 plate moves to the clearance its peak agains
 redesign's stack() does), which is what the smaller deck buys axially.
 
 Writes rebuild/s2_models/s2_deck_results.json and rebuild/s2_models/s2-deck-plan.png.
-Usage: python3 rebuild/s2_models/s2_deck.py [--reuse-volts] [--bare-can]   (--reuse-volts: the ngspice runs' pairs from the last
+Usage: python3 rebuild/s2_models/s2_deck.py [--reuse-volts] [--bare-can] [--no-can]   (--reuse-volts: the ngspice runs' pairs from the last
        results file)
 """
 
@@ -206,6 +206,9 @@ def junction_net(n):
 
 
 BARE_CAN = False      # --bare-can: every part's body also clears the can (REF) by the bare clearance, as if unpotted
+NO_CAN = False        # --no-can: no can round the hub (the designer, 2026-10-16); the deck's inner edge is the hub's
+                      # coupler (sim/multiplier_layout.py CPL_R1, r 33), its REF straps land on a terminal through the
+                      # coupler into the shaft flange, the bracket stands on the coupler
 
 
 def check(dk, V):
@@ -249,9 +252,35 @@ def check(dk, V):
                  ok=bool(g_x >= ML.clearance(u_x)))
     c.update(junctions=rows, junctions_ok=all(r["ok"] for r in rows), cross=cross)
     ok = c["all_solid"] and c["all_can"] and c["junctions_ok"] and cross["ok"]
-    if BARE_CAN:
+    if NO_CAN:
+        c["inner"] = inner_check(dk, V)
+        if BARE_CAN:
+            ok = ok and all(q["ok_bare"] for q in c["inner"])
+    elif BARE_CAN:
         ok = ok and all(q["ok_bare"] for q in c["to_can"])
     return ok, c
+
+
+def inner_check(dk, V):
+    """with no can (the designer, 2026-10-16), the deck's inner edge faces the hub's G10 coupler (r 33); behind it sit
+    the deck's own ring (N1 for deck A, N4 for deck B) and the shaft flange (REF). [IR, conservative] Each part's body
+    against the coupler's outer face, its peak taken against the worst of the two, the bare clearance as if the
+    conductors were at the coupler's face; the potting's rule as well."""
+    ring = "1" if any("1" in q["nets"] for q in dk["parts"]) else "4"
+    body_r = lambda q: 0.5 * (ML.PART[q["kind"]].get("body_d") or ML.PART[q["kind"]]["body_w"])  # noqa: E731
+    rows = []
+    for q in dk["parts"]:
+        worst = None
+        for pa, sa in ML.pieces(q):
+            u = max(max(ML.u_bound(V, x, {"0": 1.0}), ML.u_bound(V, x, {ring: 1.0})) for x in sa)
+            g = min(float(np.linalg.norm(e)) for e in pa) - body_r(q) - ML.CAN_R
+            m = g - ML.clearance(u)
+            if worst is None or m < worst["m"]:
+                worst = dict(m=m, u=u, g=g)
+        rows.append(dict(part=q["name"], U_pk_kV=worst["u"], body_to_coupler_mm=worst["g"],
+                         clearance_mm=ML.clearance(worst["u"]), solid_mm=worst["u"] / PF.E_POT,
+                         ok_bare=bool(worst["m"] >= 0.0), ok_solid=bool(worst["g"] >= worst["u"] / PF.E_POT)))
+    return rows
 
 
 def bracket(dk, V, rpm=600.0):
@@ -397,9 +426,13 @@ def figure(dkA, dkB, path):
 
 
 def main():
-    global BARE_CAN
+    global BARE_CAN, NO_CAN
     BARE_CAN = "--bare-can" in sys.argv
-    tag = "_bare" if BARE_CAN else ""
+    NO_CAN = "--no-can" in sys.argv
+    if NO_CAN:                                # the inner boundary: the coupler's face; the plate 2 mm off it
+        ML.CAN_R = ML.CPL_R1
+        ML.DECK_R0 = ML.CPL_R1 + 2.0
+    tag = ("_bare" if BARE_CAN else "") + ("_nocan" if NO_CAN else "")
     res_path = os.path.join(HERE, f"s2_deck{tag}_results.json")
     old = json.load(open(res_path)) if "--reuse-volts" in sys.argv and os.path.exists(res_path) else {}
     V = old.get("volts_design") or volts(DESIGN_CASE["zscale"])
@@ -451,6 +484,10 @@ def main():
                volts_design=V, volts_nominal=Vn, deck_A=dkA, deck_B=dkB, check_A=cA, check_B=cB, stack=st, balance=bal, balance_chain=bal_chain, bracket=br,
                redesign=dict(parts_per_deck=13, junctions=10, deck_r=(ML.DECK_R0, ML.DECK_R1), lane_r=(ML.R_I, ML.R_O)))
     out["inputs"]["bare_clearance_to_can_required"] = BARE_CAN
+    out["inputs"]["no_can"] = NO_CAN
+    if NO_CAN:
+        out["inputs"]["inner_boundary"] = dict(what="the hub's G10 coupler, its outer face", r_mm=ML.CAN_R,
+                                               behind=["the deck's own ring (N1 / N4)", "the shaft flange (REF)"])
     json.dump(out, open(res_path, "w"), indent=1, default=float)
 
 

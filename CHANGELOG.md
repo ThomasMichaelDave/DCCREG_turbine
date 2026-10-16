@@ -41,6 +41,73 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The decks' symmetry along the axis (2026-10-16)
+The designer: "check if there is a way of creating more symmetry along the axis with regards to the component
+placement on the decks ... take your time."
+
+- **`rebuild/s2_models/s2_deck_symmetry.py`** (new; `s2_deck_symmetry_results.json`, `s2-deck-symmetry.png`,
+  `s2-deck-symmetry-findings.md`) compares three layouts by the static moment of each deck and the couple the two
+  decks make (the rotor is 13.9 kg; G2.5 at 600 rpm allows 552 g·mm):
+  - V0, the deck of record: B mirrored;
+  - V1, a cross: B turned 180°;
+  - V1b, a cross whose wiring is symmetric too: the halves against the stick ends they join, an m1 ring.
+- **V1b balances each deck by its own symmetry:** 41 g·mm per deck against V0's 268, and a couple of 5,000 g·mm²
+  against 18,100. Every rule passes at the same r 102. The cross wires move to opposite sides. B mirrored about the
+  midplane cannot keep the cross nets straight [OC].
+- **Adopted** (the designer: "Implement v1b"): the S2a model now carries V1b's decks.
+  - Bracket B takes V1b's form: two single-wire G10 arms on opposite sides, the radial mica plates gone.
+  - Each arm gets four barriers across it, counted for the wires' r 71 (94.6 / 84.2 mm), not the three the study gave
+    at r 84.
+  - A new gate, G-POT, checks every conductor pair inside the potting against the 2 kV/mm solid rule, the midpoint
+    ring included: it passes.
+  - The model is 142 solids, and every gate passes but the sleeve's G-CREEP (OPEN).
+
+### The cross wires' support without machined PTFE: bracket B (2026-10-16)
+The designer: "I would like to see it design differently where it doesn't use PTFE machined parts. We could lengthen
+the creepage paths by adding more slots with for instance thin mica plates ... Let's try some things out"; then "go with
+B and model it in 3D".
+
+- **`rebuild/s2_models/s2_bracket.py`** (new; `s2_bracket_results.json`, `s2-bracket-variants.png`,
+  `s2-bracket-findings.md`) compares four supports:
+  - A, the machined PTFE arm;
+  - B, G10 collar and arms with mica barriers;
+  - C, G10 with catalogue steatite posts;
+  - D, moulded glass-bonded mica.
+
+  The loads are tiny (about 0.04 MPa at the root), so creepage and making decide. B passes at 70.8 / 63.3 mm wire to
+  wire and 91.3 / 84.2 mm wire to coupler, rated as G10 because the path crosses it. C is short. D passes but needs a
+  mould and is brittle.
+- **The S2a model carries B:** a split G10 collar on the coupler, a G10 arm and its twin, three plus three mica
+  barriers per arm. A 3-D coverage check confirms they cut every path (8 mm proud of each face, the tip and both edges).
+  The gates still pass; the model is 142 solids.
+
+### S2a: the tube as solids for the S1b circuit, built from scratch (2026-10-16)
+The designer: "commit this, then build the 3D model"; then, on the first model, "we explicitely agreed to build from
+scratch, then why am I seeing the entire build again with reluctance sections and all?"
+
+- **The first model is withdrawn** (never committed). It subclassed the 10-11 redesign's whole machine: the magnetic
+  pump, the AH, the can, the mounts, the bearings and the frame, none of them earned by a rebuild stage.
+- **`rebuild/s2_models/s2_geometry.py`** (new; `s2_geometry_results.json`, `s2-geometry-findings.md`; the model in
+  `rebuild/s2_models/geometry/` as STEP, parts list, FreeCAD document and a still). It holds only what the S1b circuit
+  needs, plus the bare-minimum mechanics (the designer's choices: no can, the decks beside the hub, the hub without
+  the AH):
+  - the hub at the 2 mm wall;
+  - the shaft and its sleeve;
+  - the decks, the cross wires on their bracket and its twin, the ring leads to N1 / N4;
+  - Ca / Cb;
+  - the record's vane stacks, C2 in antiphase;
+  - a stator carrier tube;
+  - the REF link as a placeholder bearing.
+
+  It is 138 solids and 580 mm long. G-CLASH, G-SWEEP and G-AIR pass, and every net is complete.
+- **G-CREEP fails, and is left for the designer:** the rotor sleeve's surface from the rotor vanes to REF is 65 /
+  27 mm against 121 mm needed on G10, or 60 mm under a PTFE cover. The plates' ties, the column's support, the riser
+  and the tap are left OPEN.
+- **`rebuild/s2_models/s2_deck.py`:** gains `--no-can`. The deck's inner edge is the hub's coupler (r 33), with the
+  worst of the ring and the flange behind it. The deck of record is `s2_deck_bare_nocan_results.json`: lane r 77,
+  plate r 33–111, 4 g residual, cross wires 22.8 mm apart, the bracket r 33–91 on the coupler. The can-based variants
+  are superseded.
+
 ### The rebuild's S2 begins: the plan and its starting choices (2026-10-16)
 The designer: "commit this, then start S2 I also want you to download and install the freecad package so we have the
 3d modelling software on the same machine as the schematic editor."

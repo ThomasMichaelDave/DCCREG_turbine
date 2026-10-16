@@ -1,5 +1,14 @@
 # S2a, step 1 — the compact deck for the S1b circuit: findings
 
+> **Superseded in part (2026-10-16):** the designer chose no can round the hub. The deck of record is now
+> `s2_deck_bare_nocan_results.json` (`--bare-can --no-can`):
+> - the inner edge on the hub's coupler (r 33), checked against the worst of the ring and the flange behind it;
+> - lane r 77, plate r 33–111, 4 g residual;
+> - cross wires 22.8 mm apart; the bracket r 33–91 on the coupler.
+>
+> Everything below about the can (r 48), and the stack finding, belongs to the withdrawn model; see
+> `s2-geometry-findings.md`.
+
 **Source:** `rebuild/s2_models/s2_deck.py`. It writes two variants:
 - relying on the potting: `s2_deck_results.json`, figure `s2-deck-plan.png`;
 - also clearing the can in bare air (`--bare-can`): `s2_deck_bare_results.json`, figure `s2-deck-plan_bare.png`.
@@ -30,7 +39,8 @@ The rules this plan adds [IR]:
 ## Headline
 
 **The S1b deck fits a ring of r 50–109 mm (redesign: r 50–150) and balances itself to 3 g.** The column moves from
-39 mm to 13 mm off the deck, so each side of the stack is 26 mm shorter. This is the variant that relies on the
+39 mm to 13 mm off the deck; with the can's end disc the column sits at |z| 107 (finding 4), so each side is 10 mm
+shorter. This is the variant that relies on the
 potting, as the redesign did.
 
 **One decision is the designer's: whether the HV parts must also clear the grounded can in bare air** (as if the
@@ -71,11 +81,17 @@ potting had a void). That variant needs r 50–125 and 135 g more plate.
 
    - Both pass the potting rule everywhere.
    - In the default, Z1a and D3 rely on the potting for their clearance to the can, as the redesign's decks did.
-4. **The stack:**
-   - The column's node-2 plate needs 13 mm from the deck's parts (N2 against N1, 7.38 kV), not the redesign's 39 mm
-     (its ladder nets).
-   - So each side's column, vanes, bearing and reluctance section move 26 mm toward the hub: about 52 mm off the
-     machine's 1014 mm [IR: the redesign's stack otherwise unchanged; S2a's geometry sets the final length].
+4. **The stack** (corrected 2026-10-16 by S2a's geometry, `s2_geometry.py` column()):
+   - **The deck alone** lets the column's node-2 plate sit 13 mm off the deck's parts (N2 against N1, 7.38 kV), not
+     the redesign's 39 mm.
+   - **But the column also stands on the grounded can's end disc** (|z| 87), on steatite standoffs. The redesign's own
+     mount rules (`sim/doubler_caps.py` rules()) then bind:
+     - N2 against the disc in air: |z| ≥ 97.8;
+     - the column's first node-1 plate (Ca_05) against the disc in air, 13.8 kV: |z| ≥ 104.1;
+     - the standoffs at a 20 mm catalogue length (the redesign's 30): |z| 107.
+   - **So the column sits at |z| 107** (the redesign: 117). **Each side is 10 mm shorter, and the machine is 994 mm**
+     (the redesign: 1014).
+   - The 26 mm first stated here counted the deck only.
 
 ## The designer's decisions (2026-10-16)
 

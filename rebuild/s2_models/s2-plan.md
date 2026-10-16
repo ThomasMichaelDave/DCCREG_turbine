@@ -1,5 +1,14 @@
 # Stage S2 — the 3-D models: plan
 
+> **Corrected 2026-10-16:**
+> - **From scratch:** the designer: "we explicitely agreed to build from scratch". S2a is built from the S1b circuit
+>   up, not from the redesign's machine, by the rule of addition.
+> - **The designer's choices:** bare-minimum mechanics; no can; the decks beside the hub; the hub without the AH.
+> - **Read with this:** the table "What changes from the redesign layout" below holds for the deck, the rings, the
+>   antiphase and the wall. Its last row ("kept as drawn": the can, the reluctance sections, the bearings, the
+>   drive) is withdrawn.
+> - See `s2-geometry-findings.md`.
+
 **The designer (2026-10-16):** "commit this, then start S2". The four choices made at the start of S2:
 
 | choice | the designer's answer |
@@ -34,7 +43,8 @@ KiCad sheet *S1b clamp*). So, per side:
 - **The designer:** "option 2 ... A bigger deck then required would insert an unnecessary compromise for no reason";
   then "Also clear the can in air (r 50–125)"; and the cross wires need a bracket.
 - **The deck of record:** the S1b parts only, every HV part clear of the can in air as well. It runs r 50–125,
-  balances itself to 9 g, and moves the column to 13 mm off the deck (each side 26 mm shorter).
+  balances itself to 9 g. The column stands at |z| 107 on 20 mm steatite standoffs, bound by the can's end disc
+  (each side 10 mm shorter, 994 mm; `s2-deck-findings.md` finding 4).
 - **The split strings:** each clamp string is split into two balanced series halves.
 - **The bracket:** a PTFE bracket at the midplane holds the two cross wires.
 - See `s2-deck-findings.md`.

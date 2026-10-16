@@ -2,7 +2,7 @@
 	(version "E")
 	(design
 		(source "C:\\Users\\Toki\\projects\\DCCREG_turbine\\rebuild\\kicad\\dccreg_rebuild\\dccreg_rebuild.kicad_sch")
-		(date "2026-10-16T16:16:55")
+		(date "2026-10-16T20:55:09")
 		(tool "Eeschema 10.0.6")
 		(sheet
 			(number "1")
