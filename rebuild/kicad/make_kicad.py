@@ -274,9 +274,9 @@ def s0_sheet():
                 D1="ideal", D2="ideal", D3="ideal", D4="ideal")
     desc = dict(
         C1="Varicap A, N1 to REF. Its capacitance swings with the rotor between C_min and C_max; C_max at phase 1.\n"
-           "In the tube: the top vane stack. Values: the paper's example [OC].",
+           "In the tube: side A's vane stack, below the hub. Values: the paper's example [OC].",
         C2="Varicap B, N4 to REF. The same swing, 180 deg after C1 (C1 + C2 constant).\n"
-           "In the tube: the bottom vane stack.",
+           "In the tube: side B's vane stack, above the hub.",
         Ca="Transfer capacitor A, N1 to N2. Carries charge from varicap A's side to the cross diode D4.\n"
            "In the tube: a fixed plate stack on the rotor.",
         Cb="Transfer capacitor B, N3 to N4. The mirror of Ca, toward the cross diode D3.",
@@ -339,10 +339,10 @@ def s1_sheet(stage="s1_tube"):
                 Cr4=f"stray (record {pc.C_RREF:g} pF)")
     st = "rebuild/s1_tube/s1-bare-findings.md"
     desc = dict(
-        C1=f"Varicap A, N1 to REF: the top vane stack, 6 mm air gaps. {so.CMIN:g}-{so.CMAX:g} pF from the 3-D solve\n"
+        C1=f"Varicap A, N1 to REF: side A's vane stack (below the hub), 6 mm air gaps. {so.CMIN:g}-{so.CMAX:g} pF from the 3-D solve\n"
            "(sim/tube-strays-findings.md section 4; kappa 3.51) [IR: S2 re-solves it]. Carries the full node voltage:\n"
            "the gap breaks down at 19.70 kV (sim/air_stack_sizing_results.json).",
-        C2="Varicap B, N4 to REF: the bottom vane stack, 180 deg after C1. The same values and limit.",
+        C2="Varicap B, N4 to REF: side B's vane stack (above the hub), 180 deg after C1. The same values and limit.",
         Ca=f"Transfer capacitor A, N1 to N2: a plate stack on the rotor, {so.CA:g} pF = 1.1 C_max (the sixth gap,\n"
            f"DECIDED). Sees 0.528 of the varicap peak ({st}).",
         Cb="Transfer capacitor B, N3 to N4: the mirror of Ca. The same value and stress.",
@@ -352,13 +352,13 @@ def s1_sheet(stage="s1_tube"):
         D3=f"Cross diode N3 -> N1: the same stick. Reverse 0.956 of the varicap peak, the most stressed part.\n"
            f"With no limit added, its avalanche is the bare core's only ceiling: 29.7 kV on N1 ({st}).",
         D4="Cross diode N2 -> N4: the mirror of D3. The same stick and stress.",
-        Ck="The core's electrode pair, N1 (top) to N4 (bottom). The field across the core reverses every half\n"
+        Ck="The core's electrode pair, N1 (side A's ring, below) to N4 (side B's ring, above). The field across the core reverses every half\n"
            f"cycle: V1 - V4 swings +/-{dif:.2f} of the varicap peak. A load on the pump, its energy reactive\n"
            "(it returns to the varicaps) [OC: ideal]. Value from the S2 field solve; the record's rings 1.1 pF\n"
            "(sim/hub-rings-build-findings.md). Not a bought part.",
-        Cr1="Stray of the top core electrode (on N1) to REF. Record 5.1 pF; S2 re-solves it at the 2 mm wall.\n"
+        Cr1="Stray of side A's core electrode (on N1) to REF. Record 5.1 pF; S2 re-solves it at the 2 mm wall.\n"
             "Not a bought part.",
-        Cr4="Stray of the bottom core electrode (on N4) to REF. The mirror of Cr1.")
+        Cr4="Stray of side B's core electrode (on N4) to REF. The mirror of Cr1.")
     if stage == "s1b_clamp":
         sh = Sheet("s1b_clamp", "S1b - the S1 core with the zener clamp",
                    "one string per node, Z1 on N1 and Z4 on N4, at 13.13 kV (DECIDED 2026-10-16)", date="2026-10-16")

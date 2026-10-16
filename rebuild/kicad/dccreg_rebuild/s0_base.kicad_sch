@@ -883,7 +883,7 @@
 		)
 		(uuid "c77b4121-afc1-530b-bd4c-9bdeb019a30a")
 	)
-	(text "[source: C1] Varicap A, N1 to REF. Its capacitance swings with the rotor\nbetween C_min and C_max; C_max at phase 1. In the tube: the top vane stack.\nValues: the paper's example [OC]."
+	(text "[source: C1] Varicap A, N1 to REF. Its capacitance swings with the rotor\nbetween C_min and C_max; C_max at phase 1. In the tube: side A's vane stack,\nbelow the hub. Values: the paper's example [OC]."
 		(exclude_from_sim yes)
 		(at 307.34 21.59 0)
 		(effects
@@ -906,7 +906,7 @@
 		)
 		(uuid "68992145-9eb8-5c60-aa33-e648a973558e")
 	)
-	(text "[source: C2] Varicap B, N4 to REF. The same swing, 180 deg after C101 (C101 + C102\nconstant). In the tube: the bottom vane stack."
+	(text "[source: C2] Varicap B, N4 to REF. The same swing, 180 deg after C101 (C101 + C102\nconstant). In the tube: side B's vane stack, above the hub."
 		(exclude_from_sim yes)
 		(at 307.34 30.33 0)
 		(effects
@@ -1135,7 +1135,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "Varicap A, N1 to REF. Its capacitance swings with the rotor between C_min and C_max; C_max at phase 1. In the tube: the top vane stack. Values: the paper's example [OC]."
+		(property "Description" "Varicap A, N1 to REF. Its capacitance swings with the rotor between C_min and C_max; C_max at phase 1. In the tube: side A's vane stack, below the hub. Values: the paper's example [OC]."
 			(at 71.12 167.64 0)
 			(hide yes)
 			(show_name no)
@@ -1219,7 +1219,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "Varicap B, N4 to REF. The same swing, 180 deg after C101 (C101 + C102 constant). In the tube: the bottom vane stack."
+		(property "Description" "Varicap B, N4 to REF. The same swing, 180 deg after C101 (C101 + C102 constant). In the tube: side B's vane stack, above the hub."
 			(at 223.52 167.64 0)
 			(hide yes)
 			(show_name no)

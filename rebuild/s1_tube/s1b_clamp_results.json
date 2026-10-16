@@ -97,7 +97,7 @@
       "4"
      ],
      "kind": "fixed",
-     "role": "the core's electrode pair (N1 top, N4 bottom)"
+     "role": "the core's electrode pair (N1 side A below, N4 side B above)"
     },
     "Cr1": {
      "nodes": [
@@ -105,7 +105,7 @@
       "0"
      ],
      "kind": "fixed",
-     "role": "the top core electrode's stray to REF"
+     "role": "side A's core electrode's stray to REF"
     },
     "Cr4": {
      "nodes": [
@@ -113,7 +113,7 @@
       "0"
      ],
      "kind": "fixed",
-     "role": "the bottom core electrode's stray to REF"
+     "role": "side B's core electrode's stray to REF"
     }
    },
    "diodes": {

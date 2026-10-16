@@ -41,6 +41,39 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The rebuild's S2 begins: the plan and its starting choices (2026-10-16)
+The designer: "commit this, then start S2 I also want you to download and install the freecad package so we have the
+3d modelling software on the same machine as the schematic editor."
+
+- **`rebuild/s2_models/s2-plan.md`** (new): S2's sub-stages:
+  - S2a, the geometry;
+  - S2b, the field solve;
+  - S2c, back into S1 / S1b;
+  - S2d, the rim variant.
+  It also lists what changes from the 10-11 redesign layout:
+  - C2 returns to antiphase;
+  - the decks hold only the S1b parts;
+  - the rings are wired straight to N1 / N4;
+  - the 2 mm wall;
+  - no surge resistors.
+- **The designer's starting choices:** the redesign layout stripped to S1b; N1 on side A, below; a rim variant; the
+  repo's finite-volume solver. Recorded in ledger §2.3 and `rebuild/README.md` (Markdown only).
+- **FreeCAD 1.1.4** installed (winget, per user) as the 3-D modelling tool beside KiCad 10.0.6.
+- **`rebuild/s2_models/s2_deck.py`** (new; `s2_deck_results.json`, `s2_deck_bare_results.json`, the figures
+  `s2-deck-plan.png` / `s2-deck-plan_bare.png`, `s2-deck-findings.md`). This is S2a's compact deck for the S1b parts
+  only (the designer: option 2), planned on the redesign study's rules:
+  - **The deck of record:** the designer's choice, every HV part clear of the can in air as well. It runs r 50–125
+    (the redesign's r 50–150).
+  - **Balance:** each clamp string is split into two series halves placed against the sticks. The deck balances to
+    9 g, where a chain plan would need a 388 g balance mass.
+  - **The column:** 13 mm off the deck, not 39, so each side is 26 mm shorter.
+  - **The cross wires:** they run straight across, 21.9 mm apart (10.3 mm needed), held at the midplane by a PTFE
+    bracket (the designer: "for now it requires a support"). The bracket has two ribs: 41.9 mm of creepage against
+    31.6 mm needed. A twin arm balances it.
+- **The S1 texts:** N1 is side A, below the hub, as the record and the designer's choice. This corrects the "N1 top"
+  wording in `s1-pulsed-core-findings.md`, `s1b_clamp.py` (re-run; the results are unchanged) and the KiCad sheets'
+  legends (regenerated; the netlists still match, ERC 0 / 0).
+
 ### The rebuild's voltage limit: a zener clamp, for now (2026-10-16)
 The designer: "For now we are going to deside the zener voltage clamp. Not using it on the physical bench is just matter of disconnecting it. Technically is rather easy to implement the design. All other options have relatively higher challenge curve regarding design and downstream implications for the turbine. The other options are to be revisited when called for."
 

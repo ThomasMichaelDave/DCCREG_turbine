@@ -57,9 +57,9 @@ VT = sb.VT
 TOPOLOGY = dict(
     name="S1b: the S1 core with the zener clamp, one string per node",
     capacitors={**{k: dict(v) for k, v in S0["capacitors"].items()},
-                "Ck": dict(nodes=("1", "4"), kind="fixed", role="the core's electrode pair (N1 top, N4 bottom)"),
-                "Cr1": dict(nodes=("1", "0"), kind="fixed", role="the top core electrode's stray to REF"),
-                "Cr4": dict(nodes=("4", "0"), kind="fixed", role="the bottom core electrode's stray to REF")},
+                "Ck": dict(nodes=("1", "4"), kind="fixed", role="the core's electrode pair (N1 side A below, N4 side B above)"),
+                "Cr1": dict(nodes=("1", "0"), kind="fixed", role="side A's core electrode's stray to REF"),
+                "Cr4": dict(nodes=("4", "0"), kind="fixed", role="side B's core electrode's stray to REF")},
     diodes=dict(S0["diodes"]),                                      # (anode, cathode)
     clamps={"Z1": ("0", "1"), "Z4": ("0", "4")},                   # (anode, cathode): avalanche when the node rises
 )

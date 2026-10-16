@@ -35,6 +35,8 @@ designer then decides. The lessons below say where to look; they do not license 
 - the voltage limit is a zener (avalanche) clamp, for now (10-16): "Not using it on the physical bench is just matter of
   disconnecting it." The buffer + converter, the 6BK4C, the sphere gap and the inductive gap are to be revisited
   when called for (`s1_tube/s1-bare-findings.md` options; the limiter discussion of 10-15/16).
+- S2's starting choices (10-16, `s2_models/s2-plan.md`): the 10-11 redesign layout stripped back to the S1b circuit;
+  N1 on side A, below the hub, as the record; a rim variant to win back κ; the repo's finite-volume field solver.
 
 ## Stages
 

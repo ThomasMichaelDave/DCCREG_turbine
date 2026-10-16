@@ -1349,7 +1349,7 @@
 		)
 		(uuid "b517f2d7-69c4-5113-950f-93bdded64896")
 	)
-	(text "[source: C1] Varicap A, N1 to REF: the top vane stack, 6 mm air gaps.\n128.4-450.6 pF from the 3-D solve (sim/tube-strays-findings.md section 4; kappa\n3.51) [IR: S2 re-solves it]. Carries the full node voltage: the gap breaks down\nat 19.70 kV (sim/air_stack_sizing_results.json)."
+	(text "[source: C1] Varicap A, N1 to REF: side A's vane stack (below the hub), 6 mm\nair gaps. 128.4-450.6 pF from the 3-D solve (sim/tube-strays-findings.md section\n4; kappa 3.51) [IR: S2 re-solves it]. Carries the full node voltage: the gap\nbreaks down at 19.70 kV (sim/air_stack_sizing_results.json)."
 		(exclude_from_sim yes)
 		(at 307.34 21.59 0)
 		(effects
@@ -1372,7 +1372,7 @@
 		)
 		(uuid "75424f8c-9841-5c25-968c-6001dee5eccf")
 	)
-	(text "[source: C2] Varicap B, N4 to REF: the bottom vane stack, 180 deg after C301.\nThe same values and limit."
+	(text "[source: C2] Varicap B, N4 to REF: side B's vane stack (above the hub), 180\ndeg after C301. The same values and limit."
 		(exclude_from_sim yes)
 		(at 307.34 31.90 0)
 		(effects
@@ -1533,7 +1533,7 @@
 		)
 		(uuid "467b2e81-9379-50de-ac67-7b750909eb13")
 	)
-	(text "[source: Ck] The core's electrode pair, N1 (top) to N4 (bottom). The field\nacross the core reverses every half cycle: V1 - V4 swings +/-0.54 of the varicap\npeak. A load on the pump, its energy reactive (it returns to the varicaps) [OC:\nideal]. Value from the S2 field solve; the record's rings 1.1 pF (sim/hub-rings-\nbuild-findings.md). Not a bought part."
+	(text "[source: Ck] The core's electrode pair, N1 (side A's ring, below) to N4 (side\nB's ring, above). The field across the core reverses every half cycle: V1 - V4\nswings +/-0.54 of the varicap peak. A load on the pump, its energy reactive (it\nreturns to the varicaps) [OC: ideal]. Value from the S2 field solve; the\nrecord's rings 1.1 pF (sim/hub-rings-build-findings.md). Not a bought part."
 		(exclude_from_sim yes)
 		(at 307.34 86.77 0)
 		(effects
@@ -1556,7 +1556,7 @@
 		)
 		(uuid "a8c579a7-8c3b-50d0-8640-843c64e6bab1")
 	)
-	(text "[source: Cr1] Stray of the top core electrode (on N1) to REF. Record 5.1 pF;\nS2 re-solves it at the 2 mm wall. Not a bought part."
+	(text "[source: Cr1] Stray of side A's core electrode (on N1) to REF. Record 5.1 pF;\nS2 re-solves it at the 2 mm wall. Not a bought part."
 		(exclude_from_sim yes)
 		(at 307.34 98.65 0)
 		(effects
@@ -1579,7 +1579,7 @@
 		)
 		(uuid "2969cf19-cdc3-5048-a7c8-e5115367d071")
 	)
-	(text "[source: Cr4] Stray of the bottom core electrode (on N4) to REF. The mirror of\nCr301."
+	(text "[source: Cr4] Stray of side B's core electrode (on N4) to REF. The mirror of\nCr301."
 		(exclude_from_sim yes)
 		(at 307.34 105.82 0)
 		(effects
@@ -1716,7 +1716,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "Varicap A, N1 to REF: the top vane stack, 6 mm air gaps. 128.4-450.6 pF from the 3-D solve (sim/tube-strays-findings.md section 4; kappa 3.51) [IR: S2 re-solves it]. Carries the full node voltage: the gap breaks down at 19.70 kV (sim/air_stack_sizing_results.json)."
+		(property "Description" "Varicap A, N1 to REF: side A's vane stack (below the hub), 6 mm air gaps. 128.4-450.6 pF from the 3-D solve (sim/tube-strays-findings.md section 4; kappa 3.51) [IR: S2 re-solves it]. Carries the full node voltage: the gap breaks down at 19.70 kV (sim/air_stack_sizing_results.json)."
 			(at 71.12 167.64 0)
 			(hide yes)
 			(show_name no)
@@ -1800,7 +1800,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "Varicap B, N4 to REF: the bottom vane stack, 180 deg after C301. The same values and limit."
+		(property "Description" "Varicap B, N4 to REF: side B's vane stack (above the hub), 180 deg after C301. The same values and limit."
 			(at 223.52 167.64 0)
 			(hide yes)
 			(show_name no)
@@ -2364,7 +2364,7 @@
 				)
 			)
 		)
-		(property "Description" "The core's electrode pair, N1 (top) to N4 (bottom). The field across the core reverses every half cycle: V1 - V4 swings +/-0.54 of the varicap peak. A load on the pump, its energy reactive (it returns to the varicaps) [OC: ideal]. Value from the S2 field solve; the record's rings 1.1 pF (sim/hub-rings-build-findings.md). Not a bought part."
+		(property "Description" "The core's electrode pair, N1 (side A's ring, below) to N4 (side B's ring, above). The field across the core reverses every half cycle: V1 - V4 swings +/-0.54 of the varicap peak. A load on the pump, its energy reactive (it returns to the varicaps) [OC: ideal]. Value from the S2 field solve; the record's rings 1.1 pF (sim/hub-rings-build-findings.md). Not a bought part."
 			(at 147.32 45.72 90)
 			(hide yes)
 			(show_name no)
@@ -2447,7 +2447,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "Stray of the top core electrode (on N1) to REF. Record 5.1 pF; S2 re-solves it at the 2 mm wall. Not a bought part."
+		(property "Description" "Stray of side A's core electrode (on N1) to REF. Record 5.1 pF; S2 re-solves it at the 2 mm wall. Not a bought part."
 			(at 33.02 167.64 0)
 			(hide yes)
 			(show_name no)
@@ -2531,7 +2531,7 @@
 				(justify left)
 			)
 		)
-		(property "Description" "Stray of the bottom core electrode (on N4) to REF. The mirror of Cr301."
+		(property "Description" "Stray of side B's core electrode (on N4) to REF. The mirror of Cr301."
 			(at 261.62 167.64 0)
 			(hide yes)
 			(show_name no)
