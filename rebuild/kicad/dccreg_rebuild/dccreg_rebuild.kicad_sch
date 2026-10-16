@@ -106,7 +106,53 @@
 			)
 		)
 	)
-	(text "THE STAGES\n\nEach stage, and each later change, is its own sheet in this one project. Open a sheet by\ndouble-clicking its box, or from the hierarchy panel.\n\nS0 base (sheet 2, parts 101-199): FROZEN at 42747f4. de Queiroz Fig. 1 at the paper's example values.\n   source: rebuild/s0_base/\n\nS1 tube (sheet 3, parts 201-299): The S0 core at the tube's air values; adds the pulsed core's load C_k (N1-N4) and the electrode strays.\n   source: rebuild/s1_tube/\n\nPART NAMES: each stage numbers its parts in its own hundred, as KiCad does for multi-sheet\nprojects. S0 = 1xx, S1 = 2xx; the letters stay (C1 -> C101 in S0, C201 in S1; Ca -> Ca101;\nD4 -> D104). Each sheet's legend gives every part's name in its source in brackets.\n\nNETS: the labels are local to their sheet (REF, N1-N4), so the stages never connect. In the\nproject netlist they read /S0 base/N1, /S1 tube/N1 ...\n\nCHECK: python3 rebuild/kicad/make_kicad.py --check-only exports the project netlist and\ncompares each sheet node for node with its source (rebuild/kicad/kicad_check_results.json)."
+	(sheet
+		(at 30.48 132.08)
+		(size 76.2 25.4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0.3)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0)
+		)
+		(uuid "630e6aa4-aa5e-5867-a090-4b71f46ddfba")
+		(property "Sheetname" "S1b clamp"
+			(at 30.48 131.32 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 2 2)
+					(bold yes)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "s1b_clamp.kicad_sch"
+			(at 30.48 158.08 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "dccreg_rebuild"
+				(path "/18804d6c-8df5-516d-ac91-9d2744fe7221"
+					(page "4")
+				)
+			)
+		)
+	)
+	(text "THE STAGES\n\nEach stage, and each later change, is its own sheet in this one project. Open a sheet by\ndouble-clicking its box, or from the hierarchy panel.\n\nS0 base (sheet 2, parts 101-199): FROZEN at 42747f4. de Queiroz Fig. 1 at the paper's example values.\n   source: rebuild/s0_base/\n\nS1 tube (sheet 3, parts 201-299): The S0 core at the tube's air values; adds the pulsed core's load C_k (N1-N4) and the electrode strays.\n   source: rebuild/s1_tube/\n\nS1b clamp (sheet 4, parts 301-399): S1 plus the zener clamp: Z1 on N1, Z4 on N4, 66 x 200 V each, at 13.13 kV (DECIDED 2026-10-16).\n   source: rebuild/s1_tube/s1b_clamp.py\n\nPART NAMES: each stage numbers its parts in its own hundred, as KiCad does for multi-sheet\nprojects. S0 = 1xx, S1 = 2xx; the letters stay (C1 -> C101 in S0, C201 in S1; Ca -> Ca101;\nD4 -> D104). Each sheet's legend gives every part's name in its source in brackets.\n\nNETS: the labels are local to their sheet (REF, N1-N4), so the stages never connect. In the\nproject netlist they read /S0 base/N1, /S1 tube/N1 ...\n\nCHECK: python3 rebuild/kicad/make_kicad.py --check-only exports the project netlist and\ncompares each sheet node for node with its source (rebuild/kicad/kicad_check_results.json)."
 		(exclude_from_sim yes)
 		(at 127 50.8 0)
 		(effects

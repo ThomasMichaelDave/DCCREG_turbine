@@ -41,6 +41,24 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### The rebuild's voltage limit: a zener clamp, for now (2026-10-16)
+The designer: "For now we are going to deside the zener voltage clamp. Not using it on the physical bench is just matter of disconnecting it. Technically is rather easy to implement the design. All other options have relatively higher challenge curve regarding design and downstream implications for the turbine. The other options are to be revisited when called for."
+
+- **The decision:** S1's limit (`rebuild/s1_tube/s1-bare-findings.md`: a limit under the 19.70 kV gap breakdown is
+  needed) is a zener / avalanche clamp. The alternatives are kept for later: the buffer + converter, the 6BK4C shunt
+  triode, the sphere gap and the inductive gap across N1–N4.
+- **Recorded in:** ledger §2.3 and `rebuild/README.md` (Markdown only; the PDFs are behind it, built when asked).
+- **Next:** the clamp's design study on the S1 core, as its own sheet in the KiCad project.
+- **`rebuild/s1_tube/s1b_clamp.py`** (new; `s1b_clamp_results.json`, `s1b-clamp-findings.md`, the deck
+  `s1b_clamp.cir`). It puts the clamp on the S1 core at the designer's 13.13 kV, one 66 × 200 V string per node:
+  - the nodes hold at 13.13 kV, × 1.50 under the gap's 19.70 kV;
+  - each string takes 0.79 W (12 mW per part), close to the ideal limit's total 1.63 W;
+  - V1 − V4 still swings ±7.04 kV;
+  - the ±5 % spread keeps the margin at ≥ × 1.43; a mismatched pair makes the core field asymmetric;
+  - self-start: ≤ 1 V with typical leakage, about 0.7 kV with hot strings, 1.3 kV with everything hot.
+- **The KiCad project gains the sheet S1b clamp** (parts 3xx: Z301, Z304 and the S1 circuit). Its netlist matches
+  the study's TOPOLOGY node for node; the ERC is 0 / 0. The S0 and S1 sheets are unchanged.
+
 ### The rebuild's schematics in one KiCad project (2026-10-16)
 The designer: "please set everything up so the development stays in one project with all stages and changes in
 separate sheets".

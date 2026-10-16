@@ -32,6 +32,9 @@ designer then decides. The lessons below say where to look; they do not license 
 - no HV seed source, "only if it's not starting" (10-15);
 - the glass wall is 2 mm ("Glass wall is 2mm lock it", 10-15);
 - the core is pulsed, its field reversing top ↔ bottom at S0's 180° (`s1_tube/s1-pulsed-core-findings.md`); the ground floats in the core, its midplane the neutral, or a virtual one made from nodes 1 and 4 if necessary (10-15).
+- the voltage limit is a zener (avalanche) clamp, for now (10-16): "Not using it on the physical bench is just matter of
+  disconnecting it." The buffer + converter, the 6BK4C, the sphere gap and the inductive gap are to be revisited
+  when called for (`s1_tube/s1-bare-findings.md` options; the limiter discussion of 10-15/16).
 
 ## Stages
 
@@ -68,7 +71,8 @@ proper netlist").
   electrodes' strays (`s1_tube/s1-pulsed-core-findings.md`).
 - **One project, a sheet per stage** (the designer, 2026-10-16: "the development stays in one project with all stages
   and changes in separate sheets"): `kicad/dccreg_rebuild/`, by `kicad/make_kicad.py`.
-  - The root sheet indexes the stages. S0 and S1 are sheets 2 and 3, and every later stage or change gets its own.
+  - The root sheet indexes the stages. S0 and S1 are sheets 2 and 3, S1b (the zener clamp, 2026-10-16) is sheet 4,
+    and every later stage or change gets its own.
   - Each stage numbers its parts in its own hundred: S0 1xx, S1 2xx.
   - Each stage's nets match its source, and the ERC is clean (`kicad/kicad-findings.md`).
   - The designer accepted the layout ("Both are ok"). The saved sheets are the drawings of record: they are

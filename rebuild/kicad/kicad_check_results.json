@@ -55,6 +55,31 @@
     "solver": "rebuild/s1_tube/s1_pulsed_core.py core()"
    },
    "stage_netlist": "rebuild/kicad/dccreg_rebuild/netlists/s1_tube.txt"
+  },
+  "s1b_clamp": {
+   "sheet_paths": [
+    "/S1b clamp"
+   ],
+   "names": {
+    "C1": "C301",
+    "C2": "C302",
+    "Ca": "Ca301",
+    "Cb": "Cb301",
+    "D1": "D301",
+    "D2": "D302",
+    "D4": "D304",
+    "D3": "D303",
+    "Ck": "Ck301",
+    "Cr1": "Cr301",
+    "Cr4": "Cr304",
+    "Z1": "Z301",
+    "Z4": "Z304"
+   },
+   "vs_topology": {
+    "match": true,
+    "diff": []
+   },
+   "stage_netlist": "rebuild/kicad/dccreg_rebuild/netlists/s1b_clamp.txt"
   }
  },
  "parts_outside_any_stage": [],

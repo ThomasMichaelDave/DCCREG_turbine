@@ -22,6 +22,7 @@ project netlist `dccreg_rebuild.net`, each stage's nets in `netlists/<stage>.txt
 | `dccreg_rebuild.kicad_sch` (root) | a box per stage, and the index: the stages, the naming, the check | — | — |
 | `s0_base.kicad_sch` (sheet 2) | de Queiroz Fig. 1 at the paper's values; nets REF, N1–N4 | C101, C102 (varicaps), Ca101, Cb101, D101–D104 | `rebuild/s0_base/s0_base.py` TOPOLOGY: match; the deck `s0_base.cir`: match |
 | `s1_tube.kicad_sch` (sheet 3) | the S0 core at the tube's air values, plus the core's electrode pair across N1–N4 and each electrode's stray to REF | C201, C202, Ca201, Cb201, D201–D204, Ck201, Cr201, Cr204 | S0's TOPOLOGY plus the three additions: match; the solver circuit of `rebuild/s1_tube/s1_pulsed_core.py`: match |
+| `s1b_clamp.kicad_sch` (sheet 4, 2026-10-16) | S1 plus the zener clamp: one 66 × 200 V string per node to REF, at 13.13 kV | the S1 parts as 3xx, plus Z301, Z304 | `rebuild/s1_tube/s1b_clamp.py` TOPOLOGY (the study's deck is written from it): match |
 
 - **The naming:** each stage numbers its parts in its own hundred, as KiCad does for multi-sheet projects. The
   letters stay: C1 is C101 in S0 and C201 in S1. Each legend gives a part's name in its source in brackets, so the

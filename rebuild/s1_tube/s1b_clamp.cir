@@ -1,0 +1,44 @@
+* S1b: the S1 core with the zener clamp, one string per node -- rebuild/s1_tube/s1b_clamp.py (generated from TOPOLOGY)
+C1v 1 0 Q='(1.2840e-10+3.2220e-10*(0.5*(1+cos(7.53982237e+02*time))))*V(1)'
+C2v 4 0 Q='(1.2840e-10+3.2220e-10*(0.5*(1-cos(7.53982237e+02*time))))*V(4)'
+Ca 1 2 4.9500e-10
+Cb 3 4 4.9500e-10
+Ck 1 4 1.1000e-12
+Cr1 1 0 5.1000e-12
+Cr4 4 0 5.1000e-12
+.model DS D(is=1.762169e-11 n=36 rs=0 cjo=4.01364e-12 m=0.33 vj=0.7 tt=1e-07 bv=24000 ibv=1e-05 nbv=20)
+.model DL D(is=2.5e-08 n=9665.599 rs=0 cjo=0)
+.model ZL D(is=1e-08 n=9665.599 rs=0 cjo=0)
+VamD1 0 d1a 0
+RD1 d1a d1j 375.348
+D1 d1j 2 DS
+D1L d1a 2 DL
+VamD2 0 d2a 0
+RD2 d2a d2j 375.348
+D2 d2j 3 DS
+D2L d2a 3 DL
+VamD3 3 d3a 0
+RD3 d3a d3j 375.348
+D3 d3j 1 DS
+D3L d3a 1 DL
+VamD4 2 d4a 0
+RD4 d4a d4j 375.348
+D4 d4j 4 DS
+D4L d4a 4 DL
+.model MZZ1 D(is=1e-12 n=66 rs=0 cjo=4.772e-12 m=0.4 vj=0.7 bv=13200 ibv=1e-3 nbv=6379.2953)
+VamZ1 0 z1a 0
+RZ1 z1a z1j 660
+DZ1 z1j 1 MZZ1
+DZ1L z1a 1 ZL
+.model MZZ4 D(is=1e-12 n=66 rs=0 cjo=4.772e-12 m=0.4 vj=0.7 bv=13200 ibv=1e-3 nbv=6379.2953)
+VamZ4 0 z4a 0
+RZ4 z4a z4j 660
+DZ4 z4j 4 MZZ4
+DZ4L z4a 4 ZL
+.ic v(1)=1000 v(4)=1000 v(2)=0 v(3)=0 v(d1j)=0 v(d1a)=0 v(d2j)=0 v(d2a)=0 v(d3j)=0 v(d3a)=0 v(d4j)=0 v(d4a)=0 v(z1j)=0 v(z1a)=0 v(z4j)=0 v(z4a)=0
+.control
+tran 4.1667e-06 5.000000e-01 uic
+wrdata out.dat v(1) v(2) v(3) v(4) i(VamD1) i(VamD2) i(VamD3) i(VamD4) i(VamZ1) i(VamZ4)
+.endc
+.options reltol=1e-5 abstol=1e-14 vntol=1e-6 maxstep=4.1667e-06 method=gear itl4=200
+.end
