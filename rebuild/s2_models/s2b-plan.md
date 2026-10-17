@@ -152,4 +152,18 @@ symmetries, so it is cut into models that each keep one exactly [OC: by inspecti
 |:--|:--|:--|
 | S2b-1, the adapter (`s2_fv.py` → `s2_fv_results.json`) | **done, gates pass** | 339 parts: 280 conductors, 8 graded parts, 77 dielectrics; the nets N1–N4, m1, m4, REF and earth all present. **G-GEOM:** 274 prototypes, 2000 points each, **0 disagreements**; the 7 thin parts (the foils, the midpoint rings, a lead) again at 20000 points, 0. **G-PLACE:** 12 rotated or lifted parts, 0 |
 | S2b-2, the cell (`s2_strays.py --cell` → `s2_strays_results.json`) | **done, G-CELL passes** | the record's 3 mm cell reproduced to 0.000 % at every spacing, with and without rims. With the rims, per gap: 3 \| 3 mm, κ 3.694 (40.995 / 11.098 pF); the first rotor vane's gap, 4 \| 3 mm, κ 3.584 (41.196 / 11.494); the last stator vane's, 3 \| 4.5 mm, κ 3.534 (41.099 / 11.629). Over the 11 gaps of a side, the two end gaps cost κ 0.7 % (3.694 → 3.669) [IR: the gaps summed, the stack's ends left to W] |
-| S2b-3 … 8 | next | the stack W, the hub H, the axisymmetric A, the whole F, the profile, the fields, the assembly |
+| S2b-3 … 5, the models (`s2_strays.py --models W H F`) | **built; the overnight run started 2026-10-17** | Changes from §3, by evidence:
+- **A is dropped.** An axisymmetric model can't hold the non-axisymmetric parts, except by smearing them, which overstates them. C_k comes from H at the hub's resolution (0.35–0.5 mm), and the earth pairs from F.
+- **H's fine level is 1.5 mm** (8.8 M nodes), not 1.25 (17 M) [IR: the cost, about 15 h in one process].
+- **H's and F's solves are split** over 3 processes each, every part driving its share of the conductors.
+- **The full-360° models are periodic in θ:** `PProblem` merges the seam's nodes after assembly.
+- **G-SHORT** (no conductor nodes of two nets touching on the grid) runs in every solve. It caught the riser through Ca_06's hole, which the rounded plate had filled; the fix is the round taken as an erosion of the model's own solid, and W, H and F are now clean.
+
+**The trial at level 0 (W):**
+- C1 446.9 / 125.7 pF (the record 450.6 / 128.4), κ 3.55, Ca 485.0 pF (the record 480.5).
+- N1 to REF strays 53 / 65 pF:
+  - the rotor vanes to the shaft through the sleeve, 27 pF;
+  - **Ca_01 (N1) to the stator vanes, 13 / 21 pF, through the gaps between the first rotor vane's sectors**, in antiphase to C1.
+- N2 to REF 10 pF; N1 to N2, beyond Ca, 3.5 pF.
+- Memory about 0.32 GB per M nodes. |
+| S2b-6 … 8 | next | the profile, the fields, the assembly |

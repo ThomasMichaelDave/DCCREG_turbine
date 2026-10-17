@@ -252,9 +252,9 @@ def rounded(m, proto, sh):
     def f(X, Y, Z):
         R = np.hypot(X, Y)
         band = (R >= ri - 1e-6) & (R <= ro + 1e-6)
-        own = sh.inside(X, Y, Z) & ~band
-        rv = v.inside(R, np.arctan2(Y, X), Z) & band
-        return own | rv
+        # the rounds only take material off the square-edged solid, so the rounded part is the model's solid (its
+        # tabs, lugs and holes) where the round agrees [OC: the round is an erosion]
+        return sh.inside(X, Y, Z) & (~band | v.inside(R, np.arctan2(Y, X), Z))
     return Sh(f, sh.lo, sh.hi, "rounded " + proto)
 
 
@@ -268,14 +268,15 @@ def roles(m):
             sh0 = rounded(m, p["proto"], sh0)
         sh = placed(sh0, p["place"])
         nt = m.nets.get(p["name"], {})
-        row = dict(name=p["name"], proto=p["proto"], group=p["group"], material=mat, sh=sh)
+        row = dict(name=p["name"], proto=p["proto"], group=p["group"], body=p["body"], material=mat, sh=sh)
         if "nets" in nt:
             row.update(kind="graded", nets=[REF.get(x, x) for x in nt["nets"]], axis=nt.get("axis"), arc=nt.get("arc"))
         elif "net" in nt:
             net = REF.get(nt["net"], nt["net"])
             if "PTFE HV wire" in mat:
-                core = wire([placed_pt(q, p["place"]) for q in nt["path"]], WIRE_CORE)
-                out.append(dict(row, name=p["name"] + "_core", kind="cond", net=net, sh=core))
+                path = [placed_pt(q, p["place"]) for q in nt["path"]]
+                core = wire(path, WIRE_CORE)
+                out.append(dict(row, name=p["name"] + "_core", kind="cond", net=net, sh=core, path=path, core_r=WIRE_CORE))
                 row.update(kind="diel", eps=eps_of("PTFE"))
             else:
                 row.update(kind="cond", net=net)
