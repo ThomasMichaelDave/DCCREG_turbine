@@ -41,6 +41,34 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### Drafting infrastructure, Phase 0: guardrails, correction intake, baseline (2026-10-17)
+The brief: `docs/brief-drafting-infra-phase0.md`. Corrections were written down but nothing moved them from prose
+to enforcement, so they recurred. This phase builds the intake and the guardrails; it adds no drafting knowledge.
+Branch `claude/drafting-infra`, PR into `claude/synthesis-phase1`; the frozen set and `rebuild/s0_base/` untouched.
+
+- **The freeze, enforced** (`.claude/settings.json`, `.claude/hooks/`). The frozen set now lives in one place,
+  `.claude/frozen-paths.txt`: README's `b33baa2` set and the rebuild's S0 (`rebuild/s0_base/`, `42747f4`). README's
+  check becomes `python3 .claude/hooks/frozen_check.py` (the same `git diff … | wc -l`, also where `wc` is absent).
+  A PreToolUse hook denies Edit / Write on a frozen path, naming its freeze commit; a Stop and SubagentStop hook
+  blocks a turn that leaves the check non-zero (shell writes) and respects `stop_hook_active`. Hooks run through bash
+  on Windows (Git Bash) as in the cloud; each is called `python3 … || python …` against the Windows Store stub.
+  A subagent's worktree under `.claude/worktrees/` first slipped past the guard (paths were taken against the main
+  checkout); the guard now matches each path in the checkout that holds it.
+- **The agent roster** (`.claude/agents/`): no agent hard-codes `claude/new-session-0az7f9`; each takes its branch
+  and baseline from `CLAUDE.md`, which now names the live branch. The four scrutiny specialists are read-only and
+  return their findings; the scrutiny-director writes `scrutiny/` (the designer's choice).
+- **The correction log** (`.claude/corrections.jsonl`, its schema, `.claude/corrections.py`): 38 seeds, each citing
+  its source: rebuild L1–L12, ledger §2.4 and the drafting- and wiring-relevant items of §6, `dxf_flags.md`, and the
+  plan report's defect table as the brief quotes it (the report is not in the repo; the designer chose to cite the
+  brief). All at rung 0, origin `designer`.
+- **`/log-correction`** (`.claude/skills/log-correction/`): bumps a matching entry's count or appends a valid one;
+  `CLAUDE.md` gains the line that offers it.
+- **Pinned dependencies** (`requirements.txt`): the drawing, ledger and check path's imports and their installed
+  closure. `Makefile` and `sim/run_pyodide_parity.sh` find a Windows venv's `Scripts/python.exe`, and the CLI run
+  uses an active venv's interpreter, so `make pyodide-parity` runs on Windows; `.pyodide-parity/` is ignored.
+- **The CLAUDE.md trim**, proposed, not applied: `docs/proposals/claude-md-trim.diff`.
+- **Noted, not changed:** `dxf_flags.md` carries its GEOM-VALIDATE section four times over.
+
 ### S2b begins: the plan, the geometry adapter and the cell (2026-10-17)
 The designer: "Commit the findings and start s2b. Make sure to plan in advance."
 
