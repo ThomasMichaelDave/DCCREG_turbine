@@ -31,7 +31,7 @@ OUTSIDE the tube that the tube needs to operate.
 ## Baseline
 
 - **Evidence ledger:** design state `09243c7`, locked 2026-10-09
-- **Branch:** `claude/new-session-0az7f9`
+- **Branch:** the working branch and baseline that `CLAUDE.md` names (never a hard-coded branch)
 - **Prerequisite:** `synthesis/tube-spec.md` must exist before you start
   (you need the tube's envelope, mass, and shaft interface)
 - **Output:** write your specification to `synthesis/retainer-spec.md`

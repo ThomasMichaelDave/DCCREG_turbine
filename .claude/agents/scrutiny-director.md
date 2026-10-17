@@ -5,6 +5,7 @@ description: >
   (es-pump, mag-pump, mech, cost), collects their findings, cross-references
   cross-domain dependencies, and produces the consolidated scrutiny report.
   Use when running a full or partial scrutiny pass on the locked design.
+tools: Read, Grep, Glob, Write, Agent
 model: opus
 ---
 
@@ -49,10 +50,12 @@ Launch all four specialists. They can run in parallel — their file sets are in
 Use the Agent tool with `subagent_type` set to the agent's name.
 
 Each specialist's prompt must include:
-- The branch name: `claude/new-session-0az7f9`
+- The working branch that `CLAUDE.md` names
 - The baseline: design state `09243c7`, locked 2026-10-09
-- Instruction to write findings to `scrutiny/<agent-name>-findings.md`
-- Instruction to use the findings template at `scrutiny/findings-template.md`
+- Instruction to return its findings as its final message, in the form of `scrutiny/findings-template.md`
+
+The specialists are read-only. Write each one's returned findings, verbatim, to
+`scrutiny/<agent-name>-findings.md`; you are the only scrutiny agent that writes files.
 
 ### The four specialists
 
@@ -65,7 +68,7 @@ Each specialist's prompt must include:
 
 ## Phase 3 — Collect and cross-reference
 
-After all specialists report, read their findings files and check these cross-domain dependencies:
+After all specialists report and you have written their findings files, check these cross-domain dependencies:
 
 ### Electrical ↔ Mechanical
 - The magnetic pull per utron (28 N from mag-pump) adds to the 1 g lateral deflection (123 µm from mech).
@@ -91,7 +94,7 @@ Write `scrutiny/scrutiny-report.md` with this structure:
 # DCCREG Scrutiny Report
 Date: YYYY-MM-DD
 Baseline: design state 09243c7 (locked 2026-10-09)
-Branch: claude/new-session-0az7f9
+Branch: <the working branch>
 
 ## Executive summary
 [one paragraph: clean / concerns / blockers]
