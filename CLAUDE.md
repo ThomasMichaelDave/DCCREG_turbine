@@ -21,6 +21,9 @@ the locked baseline and recorded in `CHANGELOG.md` and the ledger.
 5. **The designer decides.** What is DECIDED, PROPOSED or OPEN is the designer's call; the presets and the ledger
    record it. When a choice is the designer's, ask; don't infer.
 
+When the designer corrects a drafting, wiring or documentation convention, offer to log it with `/log-correction`
+(`.claude/corrections.jsonl`).
+
 ## Read order
 `README.md` → `CONVENTIONS.md` → `docs/ledger/DCCREG-design-ledger.md` → the findings it cites →
 `presets/hub-locked.json`.
