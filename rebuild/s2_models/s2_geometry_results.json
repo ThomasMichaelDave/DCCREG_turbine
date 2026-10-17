@@ -1,0 +1,181 @@
+{
+ "tag": "s2-tube-s1b-from-scratch",
+ "status": "PROPOSED (S2a from scratch, 2026-10-16)",
+ "source": "rebuild/s2_models/s2_deck_bare_nocan_results.json (the decks, the bracket, the volts); sim/air_stack_sizing_results.json thick_vanes (the vane stack of record); presets/hub-locked.json (the hub, the 2 mm wall); sim/tube_geometry.py (primitives, locked_hub; the AH dropped)",
+ "n_parts": 339,
+ "n_protos": 274,
+ "L_total_mm": 852.0,
+ "hub_centre_z_mm": 426.0,
+ "stack": {
+  "h_col_mm": 97.0,
+  "column_needs_mm": {
+   "deck": 91.0,
+   "n2_flange": 80.0,
+   "n1_flange": 86.74814416790717,
+   "n1_comb_flange": 96.08640130545038
+  },
+  "h_vanes_mm": [
+   153.0,
+   257.5
+  ],
+  "h_ref_bearing_mm": 274.0,
+  "h_end_mm": 312.0
+ },
+ "open_items": [
+  "the ties between the plates of one net (the column's node 1 / node 2, the rotor vanes to the column, the stator vanes' REF bus)",
+  "the column's mechanical support",
+  "the riser and the tap from the deck to the column",
+  "the joint between the counter-rotor's halves",
+  "the drive",
+  "the decks' plate fixing on the coupler"
+ ],
+ "NETS": {
+  "1": {
+   "missing": [],
+   "n": 47
+  },
+  "4": {
+   "missing": [],
+   "n": 47
+  },
+  "2": {
+   "missing": [],
+   "n": 21
+  },
+  "3": {
+   "missing": [],
+   "n": 21
+  },
+  "0": {
+   "missing": [],
+   "n": 16
+  },
+  "s": {
+   "missing": [],
+   "n": 98
+  },
+  "e": {
+   "missing": [],
+   "n": 22
+  },
+  "pass_": true
+ },
+ "G_CLASH": {
+  "pairs_tested": 882,
+  "n_clash": 0,
+  "clashes": [],
+  "pass_": true
+ },
+ "G_SWEEP": {
+  "n_hits": 0,
+  "hits": [],
+  "pass_": true,
+  "note": "each rotor solid revolved into an annulus against every counter-rotor solid"
+ },
+ "bracket_B": {
+  "form": "one wire per arm (V1b)",
+  "arm_mm": {
+   "r": [
+    39.0,
+    80.61961754677819
+   ],
+   "width": 19.0,
+   "thickness": 6.0
+  },
+  "collar_mm": {
+   "r": [
+    33.0,
+    39.0
+   ],
+   "h": 12.0
+  },
+  "arms_deg": [
+   27.64597536373868,
+   -152.35402463626133
+  ],
+  "wires_apart_mm": 142.23923509355637,
+  "barriers": {
+   "across": 4,
+   "proud_mm": 8.0,
+   "t_mm": 0.3,
+   "x_mm": [
+    45.123923509355635,
+    51.247847018711276,
+    57.37177052806691,
+    63.49569403742255
+   ]
+  },
+  "P2": {
+   "have_mm": 94.61961754677819,
+   "need_mm": 84.24548768768148,
+   "plain_mm": 30.619617546778187,
+   "group": "IIIa",
+   "ok": true
+  },
+  "P1": "none: the wires are on opposite sides",
+  "coverage": {
+   "proud_of_faces_mm": [
+    7.999999949999999,
+    7.999999949999999
+   ],
+   "past_edges_mm": [
+    7.999999950000001,
+    7.999999950000001
+   ],
+   "pass_": true
+  },
+  "source": "rebuild/s2_models/s2_bracket_results.json variant B; s2_deck_symmetry V1b"
+ },
+ "G_AIR": {
+  "n_short": 0,
+  "shorts": [],
+  "pass_": true,
+  "rule": "IEC 60664-1 case A at 1.5 x the peak (sim/multiplier_layout.py clearance); the 6 mm cells (vanes, Ca) and potted-to-potted pairs excepted"
+ },
+ "G_POT": {
+  "n_short": 0,
+  "shorts": [],
+  "pass_": true,
+  "rule": "in the potting, U / 2 kV/mm (sim/parts_first_cut.py E_POT)"
+ },
+ "G_CREEP_COUPLING": {
+  "U_rms_kV": 13.8,
+  "surface": "PTFE cover on the G10 coupling (group I)",
+  "need_mm": 86.25,
+  "path_mm": 99.0,
+  "pass_": true,
+  "note": "REF (the shaft) to earth (the stub), over the coupling's cover and sheds"
+ },
+ "G_CREEP": {
+  "U_rms_kV": 9.643307271004048,
+  "surface": "extruded PTFE cover (group I)",
+  "need_mm": 60.2706704437753,
+  "need_bare_G10_mm": 120.5413408875506,
+  "paths_mm": {
+   "to_flange": 73.0,
+   "to_bearing": 67.0
+  },
+  "sheds": {
+   "h": 10.0,
+   "t": 2.0,
+   "n": 2
+  },
+  "pass_": true,
+  "note": "the rotor vanes' rings sit on the cover; its surface runs to REF at both ends"
+ },
+ "step": "rebuild/s2_models/geometry/s2-tube-s1b-from-scratch.step",
+ "step_bytes": 6104552,
+ "step_read_back": {
+  "instances": 339,
+  "assemblies": 11,
+  "products": 268,
+  "pass_": true
+ },
+ "fcstd": {
+  "ok": true,
+  "result": "objects 503",
+  "still": "rebuild/s2_models/geometry/s2-tube-s1b-from-scratch-view.png",
+  "path": "rebuild/s2_models/geometry/s2-tube-s1b-from-scratch.FCStd"
+ },
+ "run_s": 346
+}

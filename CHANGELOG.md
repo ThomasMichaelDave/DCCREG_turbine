@@ -41,6 +41,281 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### Drafting infrastructure, Phase 0: guardrails, correction intake, baseline (2026-10-17)
+The brief: `docs/brief-drafting-infra-phase0.md`. Corrections were written down but nothing moved them from prose
+to enforcement, so they recurred. This phase builds the intake and the guardrails; it adds no drafting knowledge.
+Branch `claude/drafting-infra`, PR into `claude/synthesis-phase1`; the frozen set and `rebuild/s0_base/` untouched.
+
+- **The freeze, enforced** (`.claude/settings.json`, `.claude/hooks/`). The frozen set now lives in one place,
+  `.claude/frozen-paths.txt`: README's `b33baa2` set and the rebuild's S0 (`rebuild/s0_base/`, `42747f4`). README's
+  check becomes `python3 .claude/hooks/frozen_check.py` (the same `git diff … | wc -l`, also where `wc` is absent).
+  A PreToolUse hook denies Edit / Write on a frozen path, naming its freeze commit; a Stop and SubagentStop hook
+  blocks a turn that leaves the check non-zero (shell writes) and respects `stop_hook_active`. Hooks run through bash
+  on Windows (Git Bash) as in the cloud; each is called `python3 … || python …` against the Windows Store stub.
+  A subagent's worktree under `.claude/worktrees/` first slipped past the guard (paths were taken against the main
+  checkout); the guard now matches each path in the checkout that holds it.
+  H-WIN's cloud run then failed: the cloud clone is shallow, `b33baa2` was absent, and the Stop hook crashed into a
+  silent, non-blocking error, so a shell write went unreported (the Edit guard held). The list's headers now hold the
+  full hashes, the check fetches a missing freeze commit (`git fetch --depth=1 origin <hash>`), and if it cannot it
+  fails closed: the check exits 2 and the Stop hook blocks (the designer's choice). Re-run in the cloud at `e4a6d33`:
+  the commits were fetched, the check printed 0, the Edit was denied and the shell write was blocked at Stop.
+- **The agent roster** (`.claude/agents/`): no agent hard-codes `claude/new-session-0az7f9`; each takes its branch
+  and baseline from `CLAUDE.md`, which now names the live branch. The four scrutiny specialists are read-only and
+  return their findings; the scrutiny-director writes `scrutiny/` (the designer's choice).
+- **The correction log** (`.claude/corrections.jsonl`, its schema, `.claude/corrections.py`): 38 seeds, each citing
+  its source: rebuild L1–L12, ledger §2.4 and the drafting- and wiring-relevant items of §6, `dxf_flags.md`, and the
+  plan report's defect table as the brief quotes it (the report is not in the repo; the designer chose to cite the
+  brief). All at rung 0, origin `designer`.
+- **`/log-correction`** (`.claude/skills/log-correction/`): bumps a matching entry's count or appends a valid one;
+  `CLAUDE.md` gains the line that offers it.
+- **Pinned dependencies** (`requirements.txt`): the drawing, ledger and check path's imports and their installed
+  closure. `Makefile` and `sim/run_pyodide_parity.sh` find a Windows venv's `Scripts/python.exe`, and the CLI run
+  uses an active venv's interpreter, so `make pyodide-parity` runs on Windows; `.pyodide-parity/` is ignored.
+- **The CLAUDE.md trim**, proposed, not applied: `docs/proposals/claude-md-trim.diff`.
+- **Noted, not changed:** `dxf_flags.md` carries its GEOM-VALIDATE section four times over.
+
+### S2b begins: the plan, the geometry adapter and the cell (2026-10-17)
+The designer: "Commit the findings and start s2b. Make sure to plan in advance."
+
+- **`rebuild/s2_models/s2b-plan.md`** (new): S2b's aims (the circuit's values solved on the S2a model, the fields at
+  its hot spots, one reduced matrix for S2c). The method is the record's finite-volume solver, imported unchanged. The
+  machine is split into four models:
+  - W, the stack, a 60° mirror wedge;
+  - H, the hub and the decks, full 360°;
+  - A, axisymmetric;
+  - F, the whole machine, coarse.
+
+  Each pair comes from one model only. The steps S2b-1 to S2b-8 with their gates; then S2c, S2d and S3.
+- **`rebuild/s2_models/s2_fv.py`** (new; `s2_fv_results.json`): every primitive of the S2a model shadowed by an
+  analytic inside test; each part's role (conductor, graded, dielectric).
+  - G-GEOM: 274 prototypes against OpenCascade, 0 disagreements (the thin parts at 20000 points, 0).
+  - G-PLACE: 12 placed parts, 0.
+  - Every net present.
+- **`rebuild/s2_models/s2_strays.py --cell`** (new; `s2_strays_results.json`): the periodic cell with each vane's
+  own thickness.
+  - G-CELL: the record's 3 mm cell reproduced to 0.000 %.
+  - With the rims, κ per gap: 3.694 (3 | 3 mm), 3.584 (4 | 3), 3.534 (3 | 4.5). The two end gaps cost the side's κ
+    0.7 %.
+
+### S2a: the plates' thickness, the best compromise (2026-10-17)
+The designer: "Decide what the overal best compromise is when considering priority on functional behavior and overall
+performance".
+
+- **`rebuild/s2_models/s2_thickness.py`** (new; `s2_thickness_results.json`, `s2-thickness-findings.md`) weighs four
+  options:
+  - A: the record, all 3 mm;
+  - B: every plate thickened (the previous entry's fix);
+  - C: only the four driven end plates per side;
+  - D: as B, with the stator vanes at 4 mm.
+
+  The criteria: the gain (κ, z, power; the 2-D cell), the rims against Peek's onset, the deflection at 120 Hz, the mass
+  and the length.
+- **Chosen, C** (decided by delegation): Ca_06 / Ca_01 4.0 mm, the first rotor vane 4.0 mm, the last stator vane
+  4.5 mm; every other plate 3 mm.
+  - κ −1.2 % (B −11.9 %), power −0.3 % (B −3.7 %), +1.1 kg (B +4.7), +4.5 mm a side (B +21).
+  - The driven plates' modes are clear of 120 / 240 Hz. The inner plates' modes stay near 120 Hz, but the tolerance
+    residual moves them 3–10 µm (49 µm exactly on resonance, 0.8 % of the gap).
+- **The model** (`s2_geometry.py`): `T_CA_END`, `T_ROT_END`, `T_STA_END`, with the end plates as their own prototypes.
+  It is 852 mm long (884 with B) and every gate passes; STEP, FCStd and view regenerated. `s2_structure.py` re-run.
+- `s2_modes.py --campbell` redraws the chart with the inner plates' modes marked "tolerance only".
+- **Records:** `s2-modes-findings.md` and `s2-geometry-findings.md` point to step 5; ledger §6 item 79 updated.
+
+### S2a: the plates' modes against the pump's 120 Hz, and the plates thickened (2026-10-16)
+The designer: "the 120 Hz margins, how do we move away from that frequency? extra tabs on Ca and Cb? hyperaccelerate
+our way outside of that band?", then "yes, run s2_modes and bring the fixes into the model".
+
+- **`rebuild/s2_models/s2_modes.py`** (new; `s2_modes_results.json`, `s2-modes-campbell.png`,
+  `s2-modes-findings.md`): each plate's drive, a modal FE (Gmsh → CalculiX) of each plate on its seats against its
+  thickness, and a Campbell check.
+  - Only the stacks' end plates carry a net pull (0.42–0.54 N).
+  - At 3 mm the pull-excited modes sit at 115–131 Hz, and 600 rpm is not clear.
+  - The stator vane's hand estimate (424 Hz, `s2_structure.py`) was wrong: it is held at six lugs, not round its
+    rim. The FE supersedes the hand estimates.
+- **The model, PROPOSED:** Ca / Cb 4.0 mm, rotor vanes 4.0 mm, stator vanes 4.5 mm (`T_CA`, `T_ROT`, `T_STA` in
+  `s2_geometry.py`).
+  - The modes move to 168–174 Hz; 600 rpm lies in the clear 480–670 rpm band.
+  - The model is 884 mm long (848 before) and every gate passes; STEP, FCStd and view regenerated.
+  - `s2_structure.py` re-run: rotor 18.2 kg (15.0), counter-rotor 25.8 kg (23.6), 435 N axial, the rotor's bending
+    31.5 / 88.0 / 176.5 Hz. It now reads the FE modes from `s2_modes_results.json`.
+- **Corrected:** the structural pass's flag on the rotor's 99 Hz second mode. The pump's pulls are axial and cancel
+  laterally, so they don't excite the bending.
+- **Still open:** the thicknesses (the designer's), their C1 / C2 in S2b, and torsion through the drive. Ledger §6
+  item 79.
+
+### S2a: the structure filled in, the outer retainer, and the integrity checks (2026-10-16)
+The designer: "shall we fill in the missing structural components and check the structural and electrostatic
+integrity?" The choices: PD2; a stock cover with sheds on the sleeve; one G10 cage across the hub; the drive not yet;
+the column's internal combs kept as PROPOSED; then "The structural beams out of extruded parts are meant for the
+structural retainer that forms the most outer cage retainer": the retainer holds the frame bearings, 40 × 40 B-type
+T-slot, the frame earthed, REF floating.
+
+- **`rebuild/s2_models/s2_geometry.py`, the model,** gains:
+  - the column's two Al-tube combs (support and net ties), and the column moved to h 98 for the N1 comb's clearance to
+    the flange;
+  - the riser and the tap; the midpoint ring at r 45;
+  - the stator vanes' lugs, tie rods and spacers (the REF bus);
+  - one G10 cage and the spiders to it;
+  - the sleeve's PTFE cover and sheds;
+  - the outer retainer: per end an insulating G10 coupling (a solid plug, a PTFE cover and sheds), an earthed stub,
+    the frame bearing in its plate on 40 × 40 cross beams; four corner posts and perimeter beams, 390 × 390 mm.
+
+  It is 339 solids and 848 mm long. Every gate passes: G-CLASH, G-SWEEP, G-AIR (earth included), G-POT, the sleeve's
+  G-CREEP (72 / 67 mm against 60) and the couplings' (99 against 86 mm). REF against earth is taken as 13.8 kV DC
+  [IR]. The designer then decided it: "the ref floaths at the 13.8kV" (ledger §2.3).
+- **`rebuild/s2_models/s2_structure.py`** (new; `s2_structure_results.json`, `s2-structure-findings.md`):
+  - the masses: rotor 15.0 kg, counter-rotor 23.6 kg;
+  - spin stresses at 750 rpm, safety × 284 or more everywhere;
+  - bearing loads: 382 N axial, 6 N out of balance;
+  - the rotor's bending modes: 36.7 / 99.1 / 198 Hz. The second is 17 % under the pump's 120 Hz;
+  - the electrostatic pull: 1.5 N per plate at 120 Hz. The rotor sectors' first mode is about 141 Hz, the Ca plates'
+    lies below 251 Hz.
+
+  These are flagged for a modal FE in S3.
+
+### The decks' symmetry along the axis (2026-10-16)
+The designer: "check if there is a way of creating more symmetry along the axis with regards to the component
+placement on the decks ... take your time."
+
+- **`rebuild/s2_models/s2_deck_symmetry.py`** (new; `s2_deck_symmetry_results.json`, `s2-deck-symmetry.png`,
+  `s2-deck-symmetry-findings.md`) compares three layouts by the static moment of each deck and the couple the two
+  decks make (the rotor is 13.9 kg; G2.5 at 600 rpm allows 552 g·mm):
+  - V0, the deck of record: B mirrored;
+  - V1, a cross: B turned 180°;
+  - V1b, a cross whose wiring is symmetric too: the halves against the stick ends they join, an m1 ring.
+- **V1b balances each deck by its own symmetry:** 41 g·mm per deck against V0's 268, and a couple of 5,000 g·mm²
+  against 18,100. Every rule passes at the same r 102. The cross wires move to opposite sides. B mirrored about the
+  midplane cannot keep the cross nets straight [OC].
+- **Adopted** (the designer: "Implement v1b"): the S2a model now carries V1b's decks.
+  - Bracket B takes V1b's form: two single-wire G10 arms on opposite sides, the radial mica plates gone.
+  - Each arm gets four barriers across it, counted for the wires' r 71 (94.6 / 84.2 mm), not the three the study gave
+    at r 84.
+  - A new gate, G-POT, checks every conductor pair inside the potting against the 2 kV/mm solid rule, the midpoint
+    ring included: it passes.
+  - The model is 142 solids, and every gate passes but the sleeve's G-CREEP (OPEN).
+
+### The cross wires' support without machined PTFE: bracket B (2026-10-16)
+The designer: "I would like to see it design differently where it doesn't use PTFE machined parts. We could lengthen
+the creepage paths by adding more slots with for instance thin mica plates ... Let's try some things out"; then "go with
+B and model it in 3D".
+
+- **`rebuild/s2_models/s2_bracket.py`** (new; `s2_bracket_results.json`, `s2-bracket-variants.png`,
+  `s2-bracket-findings.md`) compares four supports:
+  - A, the machined PTFE arm;
+  - B, G10 collar and arms with mica barriers;
+  - C, G10 with catalogue steatite posts;
+  - D, moulded glass-bonded mica.
+
+  The loads are tiny (about 0.04 MPa at the root), so creepage and making decide. B passes at 70.8 / 63.3 mm wire to
+  wire and 91.3 / 84.2 mm wire to coupler, rated as G10 because the path crosses it. C is short. D passes but needs a
+  mould and is brittle.
+- **The S2a model carries B:** a split G10 collar on the coupler, a G10 arm and its twin, three plus three mica
+  barriers per arm. A 3-D coverage check confirms they cut every path (8 mm proud of each face, the tip and both edges).
+  The gates still pass; the model is 142 solids.
+
+### S2a: the tube as solids for the S1b circuit, built from scratch (2026-10-16)
+The designer: "commit this, then build the 3D model"; then, on the first model, "we explicitely agreed to build from
+scratch, then why am I seeing the entire build again with reluctance sections and all?"
+
+- **The first model is withdrawn** (never committed). It subclassed the 10-11 redesign's whole machine: the magnetic
+  pump, the AH, the can, the mounts, the bearings and the frame, none of them earned by a rebuild stage.
+- **`rebuild/s2_models/s2_geometry.py`** (new; `s2_geometry_results.json`, `s2-geometry-findings.md`; the model in
+  `rebuild/s2_models/geometry/` as STEP, parts list, FreeCAD document and a still). It holds only what the S1b circuit
+  needs, plus the bare-minimum mechanics (the designer's choices: no can, the decks beside the hub, the hub without
+  the AH):
+  - the hub at the 2 mm wall;
+  - the shaft and its sleeve;
+  - the decks, the cross wires on their bracket and its twin, the ring leads to N1 / N4;
+  - Ca / Cb;
+  - the record's vane stacks, C2 in antiphase;
+  - a stator carrier tube;
+  - the REF link as a placeholder bearing.
+
+  It is 138 solids and 580 mm long. G-CLASH, G-SWEEP and G-AIR pass, and every net is complete.
+- **G-CREEP fails, and is left for the designer:** the rotor sleeve's surface from the rotor vanes to REF is 65 /
+  27 mm against 121 mm needed on G10, or 60 mm under a PTFE cover. The plates' ties, the column's support, the riser
+  and the tap are left OPEN.
+- **`rebuild/s2_models/s2_deck.py`:** gains `--no-can`. The deck's inner edge is the hub's coupler (r 33), with the
+  worst of the ring and the flange behind it. The deck of record is `s2_deck_bare_nocan_results.json`: lane r 77,
+  plate r 33–111, 4 g residual, cross wires 22.8 mm apart, the bracket r 33–91 on the coupler. The can-based variants
+  are superseded.
+
+### The rebuild's S2 begins: the plan and its starting choices (2026-10-16)
+The designer: "commit this, then start S2 I also want you to download and install the freecad package so we have the
+3d modelling software on the same machine as the schematic editor."
+
+- **`rebuild/s2_models/s2-plan.md`** (new): S2's sub-stages:
+  - S2a, the geometry;
+  - S2b, the field solve;
+  - S2c, back into S1 / S1b;
+  - S2d, the rim variant.
+  It also lists what changes from the 10-11 redesign layout:
+  - C2 returns to antiphase;
+  - the decks hold only the S1b parts;
+  - the rings are wired straight to N1 / N4;
+  - the 2 mm wall;
+  - no surge resistors.
+- **The designer's starting choices:** the redesign layout stripped to S1b; N1 on side A, below; a rim variant; the
+  repo's finite-volume solver. Recorded in ledger §2.3 and `rebuild/README.md` (Markdown only).
+- **FreeCAD 1.1.4** installed (winget, per user) as the 3-D modelling tool beside KiCad 10.0.6.
+- **`rebuild/s2_models/s2_deck.py`** (new; `s2_deck_results.json`, `s2_deck_bare_results.json`, the figures
+  `s2-deck-plan.png` / `s2-deck-plan_bare.png`, `s2-deck-findings.md`). This is S2a's compact deck for the S1b parts
+  only (the designer: option 2), planned on the redesign study's rules:
+  - **The deck of record:** the designer's choice, every HV part clear of the can in air as well. It runs r 50–125
+    (the redesign's r 50–150).
+  - **Balance:** each clamp string is split into two series halves placed against the sticks. The deck balances to
+    9 g, where a chain plan would need a 388 g balance mass.
+  - **The column:** 13 mm off the deck, not 39, so each side is 26 mm shorter.
+  - **The cross wires:** they run straight across, 21.9 mm apart (10.3 mm needed), held at the midplane by a PTFE
+    bracket (the designer: "for now it requires a support"). The bracket has two ribs: 41.9 mm of creepage against
+    31.6 mm needed. A twin arm balances it.
+- **The S1 texts:** N1 is side A, below the hub, as the record and the designer's choice. This corrects the "N1 top"
+  wording in `s1-pulsed-core-findings.md`, `s1b_clamp.py` (re-run; the results are unchanged) and the KiCad sheets'
+  legends (regenerated; the netlists still match, ERC 0 / 0).
+
+### The rebuild's voltage limit: a zener clamp, for now (2026-10-16)
+The designer: "For now we are going to deside the zener voltage clamp. Not using it on the physical bench is just matter of disconnecting it. Technically is rather easy to implement the design. All other options have relatively higher challenge curve regarding design and downstream implications for the turbine. The other options are to be revisited when called for."
+
+- **The decision:** S1's limit (`rebuild/s1_tube/s1-bare-findings.md`: a limit under the 19.70 kV gap breakdown is
+  needed) is a zener / avalanche clamp. The alternatives are kept for later: the buffer + converter, the 6BK4C shunt
+  triode, the sphere gap and the inductive gap across N1–N4.
+- **Recorded in:** ledger §2.3 and `rebuild/README.md` (Markdown only; the PDFs are behind it, built when asked).
+- **Next:** the clamp's design study on the S1 core, as its own sheet in the KiCad project.
+- **`rebuild/s1_tube/s1b_clamp.py`** (new; `s1b_clamp_results.json`, `s1b-clamp-findings.md`, the deck
+  `s1b_clamp.cir`). It puts the clamp on the S1 core at the designer's 13.13 kV, one 66 × 200 V string per node:
+  - the nodes hold at 13.13 kV, × 1.50 under the gap's 19.70 kV;
+  - each string takes 0.79 W (12 mW per part), close to the ideal limit's total 1.63 W;
+  - V1 − V4 still swings ±7.04 kV;
+  - the ±5 % spread keeps the margin at ≥ × 1.43; a mismatched pair makes the core field asymmetric;
+  - self-start: ≤ 1 V with typical leakage, about 0.7 kV with hot strings, 1.3 kV with everything hot.
+- **The KiCad project gains the sheet S1b clamp** (parts 3xx: Z301, Z304 and the S1 circuit). Its netlist matches
+  the study's TOPOLOGY node for node; the ERC is 0 / 0. The S0 and S1 sheets are unchanged.
+
+### The rebuild's schematics in one KiCad project (2026-10-16)
+The designer: "please set everything up so the development stays in one project with all stages and changes in
+separate sheets".
+
+- **`rebuild/kicad/dccreg_rebuild/`** (new) replaces the two separate projects `rebuild/kicad/s0_base/` and
+  `rebuild/kicad/s1_tube/` (removed).
+  - A root sheet indexes the stages; S0 and S1 are its sheets 2 and 3.
+  - Each stage numbers its parts in its own hundred (S0 1xx, S1 2xx), with its name in the source in brackets in the
+    legend. The nets are local to their sheet, so the stages never connect.
+  - The layout the designer accepted carries over unchanged.
+- **`rebuild/kicad/make_kicad.py`:** builds the project; a new stage is one entry in STAGES. The check exports the
+  project netlist, cuts it by sheet and compares each stage with its source. All match: S0 against TOPOLOGY and
+  `s0_base.cir`, S1 against TOPOLOGY plus the additions and the pulsed-core solver. The ERC is 0 / 0. Each stage's nets
+  are also written to `netlists/<stage>.txt`.
+- **`rebuild/README.md`, `rebuild/kicad/kicad-findings.md`:** updated to match.
+
+### The KiCad schematics of S0 and S1 (2026-10-15)
+The designer: "Both are ok, no need to add actual diagonals, that would be pure aesthetic."
+
+- **`rebuild/kicad/make_kicad.py`** (new; `kicad_check_results.json`, `kicad-findings.md`): the S0 and S1 sheets as
+  KiCad 10 projects, with every component explained on the sheet. Their netlists are exported with `kicad-cli`.
+- **The check:** S0 matches TOPOLOGY and `s0_base.cir`; S1 matches TOPOLOGY plus C_k, Cr1 and Cr4, and the
+  pulsed-core solver. The ERC is 0 / 0 on both.
+- **The layout:** accepted by the designer. The saved sheets are the drawings of record.
+- **`rebuild/README.md`:** KiCad 10.0.6, and this stage marked done.
+
 ### The KiCad netlist and the explained schematics (2026-10-15)
 The designer: "We will first install kicad on my machine so we can deliver the proper netlist"; "When you generate
 the schematic, provide the proper text in the schematic to explain all components."

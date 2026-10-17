@@ -1,0 +1,7 @@
+# S0 base: the stage's nets, cut from dccreg_rebuild.net by rebuild/kicad/make_kicad.py
+# part.pin; C pins 1 / 2; D pin 1 = K (cathode), pin 2 = A (anode)
+N1: C101.1 Ca101.1 D103.1
+N2: Ca101.2 D101.1 D104.2
+N3: Cb101.1 D102.1 D103.2
+N4: C102.1 Cb101.2 D104.1
+REF: C101.2 C102.2 D101.2 D102.2

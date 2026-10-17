@@ -80,8 +80,9 @@ phase, and that drawing cannot pump in this topology [OC: this run].
 
 ## What this means for the build (PROPOSED, the designer decides)
 
-- **Keep 180°. No phase-shift part is needed.** Tie the top core electrode to node 1 (C1's swinging side) and the
-  bottom one to node 4. The field across the core then reverses every half cycle at the shaft's 120 Hz.
+- **Keep 180°. No phase-shift part is needed.** Tie each core electrode to its own side's varicap node: side A's
+  (below the hub) to node 1, side B's (above) to node 4. (Corrected 2026-10-16: this read "top" for node 1 until the
+  designer kept the record's sides, `rebuild/s2_models/s2-plan.md`.) The field across the core then reverses every half cycle at the shaft's 120 Hz.
 - **Add C_k and the electrodes' strays to the schematic** as S1's first addition (README's rule of addition): a
   capacitor 1–4 and one to REF on each. Its value comes from the S2 field solve of the core electrodes.
 - **The amplitude choice:**

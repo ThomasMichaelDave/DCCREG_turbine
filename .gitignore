@@ -16,3 +16,6 @@ spice/ia2_*.dat
 # three.js for tools/step-viewer (npm install there)
 tools/step-viewer/node_modules
 tools/step-viewer/package-lock.json
+
+# the Pyodide-numpy parity venv (Makefile)
+.pyodide-parity/

@@ -15,6 +15,12 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 PARITY_PY="$ROOT/.pyodide-parity/bin/python"
+[[ -x "$PARITY_PY" ]] || PARITY_PY="$ROOT/.pyodide-parity/Scripts/python.exe"   # a Windows venv
+# The CLI run: an active venv's interpreter (a Windows venv has no python3.exe), else python3.
+CLI_PY=python3
+if [[ -n "${VIRTUAL_ENV:-}" ]]; then
+  for p in "$VIRTUAL_ENV/bin/python" "$VIRTUAL_ENV/Scripts/python.exe"; do [[ -x "$p" ]] && { CLI_PY="$p"; break; }; done
+fi
 OUT="$ROOT/numpy_parity.txt"
 
 if [[ ! -x "$PARITY_PY" ]]; then
@@ -26,7 +32,7 @@ fi
 {
   echo "numpy_parity.txt -- the two-version Pyodide-numpy pass table  [numpy-pyodide-compat]"
   echo "generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)  by sim/run_pyodide_parity.sh"
-  echo "parity target: numpy 1.26.4 (Pyodide 0.26.2 bundle)  |  CLI: $(python3 -V 2>&1)"
+  echo "parity target: numpy 1.26.4 (Pyodide 0.26.2 bundle)  |  CLI: $("$CLI_PY" -V 2>&1)"
   echo
 } > "$OUT"
 
@@ -43,7 +49,7 @@ echo | tee -a "$OUT"
 echo "########################################################################" | tee -a "$OUT"
 echo "## B. CLI numpy  (the validation environment, numpy 2.x)              ##" | tee -a "$OUT"
 echo "########################################################################" | tee -a "$OUT"
-python3 "$ROOT/sim/pyodide_parity.py" 2>&1 | tee -a "$OUT"
+"$CLI_PY" "$ROOT/sim/pyodide_parity.py" 2>&1 | tee -a "$OUT"
 rc_cli=${PIPESTATUS[0]}
 [[ $rc_cli -ne 0 ]] && rc_total=1
 

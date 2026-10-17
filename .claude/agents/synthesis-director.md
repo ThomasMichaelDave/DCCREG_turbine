@@ -16,7 +16,7 @@ ledger. You sequence the specialist agents, gate each on conservation closure,
 and produce the consolidated synthesis report.
 
 **What the synthesis bench does:**
-- The current branch (`claude/new-session-0az7f9`, design state `09243c7`)
+- The baseline that `CLAUDE.md` names (design state `09243c7`)
   is the EVIDENCE LEDGER. It is read-only. The agents read from it but never
   write to it.
 - The synthesis agents produce SPECIFICATIONS for a ground-up design that

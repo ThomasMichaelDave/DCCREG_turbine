@@ -1,0 +1,104 @@
+{
+ "rpm": 600.0,
+ "overspeed": 1.25,
+ "masses_kg": {
+  "rotor": 15.851352840088191,
+  "stator": 23.89730759825158,
+  "bearing": 0.3869837392636809,
+  "frame": 36.99820598136406
+ },
+ "spin_stress_750rpm": {
+  "Ca plate (Al annulus r 50-150)": {
+   "MPa": 0.3189424347239533,
+   "limit_MPa": 160.0,
+   "safety": 501.65792500606267
+  },
+  "rotor vane ring (r 22.5-50)": {
+   "MPa": 0.03607541848766113,
+   "limit_MPa": 160.0,
+   "safety": 4435.152985258501
+  },
+  "rotor vane sector root (r 50-150)": {
+   "MPa": 0.4996487228051487,
+   "limit_MPa": 160.0,
+   "safety": 320.22497546220336
+  },
+  "stator vane ring with lugs (r 150-190)": {
+   "MPa": 0.5633039700905248,
+   "limit_MPa": 160.0,
+   "safety": 284.0384738887736
+  },
+  "stator vane sector (r 150 inward to 50): compression at its root, taken as tension's size": {
+   "MPa": 0.4996487228051487,
+   "limit_MPa": 160.0,
+   "safety": 320.22497546220336
+  },
+  "G10 cage (r 192-196)": {
+   "MPa": 0.4383930230897877,
+   "limit_MPa": 300.0,
+   "safety": 684.3174599029982
+  },
+  "Al spider (r 26-192)": {
+   "MPa": 0.5130144926897608,
+   "limit_MPa": 160.0,
+   "safety": 311.8820272720015
+  },
+  "G10 coupling (r 12.5-17)": {
+   "MPa": 0.0032979899956515164,
+   "limit_MPa": 300.0,
+   "safety": 90964.4966769328
+  },
+  "a tie rod's shear under one lug's pull": {
+   "MPa": 0.25080465126962614,
+   "limit_MPa": 118.89999999999999,
+   "safety": 474.0741425571777
+  }
+ },
+ "bearings": {
+  "axial_on_lower_frame_bearing_N": 393.7306693822906,
+  "radial_imbalance_N": 6.30449224477266,
+  "ref_link_axial_N": 234.4325875388481,
+  "rating": "6205 class: C 14.8 kN, C0 7.8 kN [IR: catalogue class]",
+  "note": "the axis vertical; the counter-rotor rides on the REF-link bearings, the whole on the lower frame bearing"
+ },
+ "rotor_modes": {
+  "f_Hz": [
+   35.55520995951645,
+   97.3075371059137,
+   194.97119035306866,
+   338.7312875639229
+  ],
+  "m_rotor_kg": 16.238336579351888,
+  "m_counter_rotor_kg": 23.89730759825158,
+  "k_frame_N_per_m": 15564432.211070461,
+  "span_mm": 737.0,
+  "weak_link": "the couplings' G10 plugs (\u00d825 G10, E 18 GPa)",
+  "note": "pinned at the frame bearings on the cross beams' stiffness; the counter-rotor's mass at the REF-link bearings; no gyroscopic stiffening (conservative for the forward modes) [IR]"
+ },
+ "electrostatic": {
+  "pressure_Pa": 23.418829999999996,
+  "force_per_plate_N": 1.4714484856733647,
+  "at": "13.8 kV across 6 mm, twice a cycle (120 Hz)",
+  "ca_plate_first_axial_Hz_if_clamped_round_its_bore": 250.93206392295943,
+  "ca_plate_note": "it is held by three tabs, not clamped all round: its first mode lies below this bound [IR]",
+  "rotor_sector_first_Hz": 141.42798161378386,
+  "stator_sector_first_Hz": 424.28394484135146,
+  "hand_estimates_note": "the hand estimates above are superseded by the modal FE (rebuild/s2_models/s2_modes_results.json)",
+  "fe_pull_excited_Hz": {
+   "ca_plate 4.0 mm": 170.0384,
+   "rotor_vane 4.0 mm": 174.0879,
+   "stator_vane 4.5 mm": 167.6861
+  },
+  "fe_windows_rpm": [
+   [
+    300.0,
+    375.0
+   ],
+   [
+    480.0,
+    670.0
+   ]
+  ],
+  "fe_600_clear": true
+ }
+}

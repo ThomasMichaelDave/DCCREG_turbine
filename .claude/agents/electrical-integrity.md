@@ -21,7 +21,7 @@ You do not change the design. You test it against the physics of breakdown.
 ## Baseline
 
 - **Evidence ledger:** design state `09243c7`, locked 2026-10-09
-- **Branch:** `claude/new-session-0az7f9`
+- **Branch:** the working branch and baseline that `CLAUDE.md` names (never a hard-coded branch)
 - **Prerequisites:**
   - `synthesis/core-engine-spec.md` (the operating voltages)
   - `synthesis/tube-spec.md` (the geometry and component placement)

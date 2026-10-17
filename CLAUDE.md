@@ -6,6 +6,9 @@ The DCCREG turbine's design is **LOCKED** (the designer, 2026-10-09; design stat
 (§6), and keeping the records, studies and drawings consistent with it. Every change of the record is made against
 the locked baseline and recorded in `CHANGELOG.md` and the ledger.
 
+**The live branch is `claude/synthesis-phase1`** (`main` is stale since 2026-06-20). Work branches are cut from it and
+PR'd into it; the designer merges. Agents take their baseline and branch from here.
+
 ## Guardrails (non-negotiable)
 1. **The frozen files stay byte-identical** with `b33baa2`: `shuttle_core.py`, `reference/`, `sim/pump_engine.py`,
    `sim/pump_sizing.py`, `sim/pump_synth.py`, `spice/`, `index.html`, `tools/pump-calc*`, `tools/pump-synth*`,
@@ -20,6 +23,9 @@ the locked baseline and recorded in `CHANGELOG.md` and the ledger.
    `*-findings.md`; every figure and drawing is redrawn by its script, never by hand.
 5. **The designer decides.** What is DECIDED, PROPOSED or OPEN is the designer's call; the presets and the ledger
    record it. When a choice is the designer's, ask; don't infer.
+
+When the designer corrects a drafting, wiring or documentation convention, offer to log it with `/log-correction`
+(`.claude/corrections.jsonl`).
 
 ## Read order
 `README.md` → `CONVENTIONS.md` → `docs/ledger/DCCREG-design-ledger.md` → the findings it cites →

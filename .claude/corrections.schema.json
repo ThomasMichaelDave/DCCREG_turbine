@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "corrections.schema.json",
+  "title": "One line of .claude/corrections.jsonl: a correction, and how far it has been enforced",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "date", "domain", "wrong", "rule", "source", "tag", "count", "rung", "enforced_by", "fixture", "origin"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^C-[0-9]{3,}$", "description": "C-001, C-002, ... in order; never reused"},
+    "date": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$", "description": "the date the entry was logged"},
+    "domain": {"type": "string", "enum": ["mech", "elec", "doc", "process"]},
+    "wrong": {"type": "string", "minLength": 1, "description": "what was wrong"},
+    "rule": {"type": "string", "minLength": 1, "description": "the correct rule"},
+    "source": {"type": "string", "minLength": 1, "description": "the standard clause or repo file that holds the correction"},
+    "tag": {"type": "string", "enum": ["[OC]", "[IR]", "[RH]"], "description": "CONVENTIONS.md section 1"},
+    "count": {"type": "integer", "minimum": 1, "description": "occurrences seen; /log-correction increments it"},
+    "rung": {"type": "integer", "minimum": 0, "maximum": 3, "description": "0 logged, 1 scoped rule, 2 skill, 3 enforced check"},
+    "enforced_by": {"type": "string", "description": "the check that enforces it; empty until rung 3"},
+    "fixture": {"type": "string", "description": "path of the fixture that exercises the check; empty until there is one"},
+    "origin": {"type": "string", "enum": ["designer", "hook", "checker"]}
+  },
+  "if": {"properties": {"rung": {"const": 3}}},
+  "then": {"properties": {"enforced_by": {"minLength": 1}}},
+  "else": {"properties": {"enforced_by": {"maxLength": 0}}}
+}

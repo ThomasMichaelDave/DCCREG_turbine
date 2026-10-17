@@ -1,0 +1,175 @@
+{
+ "inputs": {
+  "geometry": {
+   "r_w": 83.77350416450298,
+   "sep": 25.796285490529407,
+   "r_cpl": 33.0
+  },
+  "pair_P1": {
+   "pk": 6.3789389043,
+   "rms": 5.062581866613363
+  },
+  "pair_P2": {
+   "pk": 7.3849762100000005,
+   "rms": 6.739639015014518
+  },
+  "rpm": 600.0,
+  "materials": {
+   "PTFE (machined)": {
+    "rho": 2.2,
+    "sigma": 10.0,
+    "group": "I",
+    "note": "yield ~10 MPa, creeps under load; machined"
+   },
+   "G10 / FR4": {
+    "rho": 1.85,
+    "sigma": 300.0,
+    "group": "IIIa",
+    "note": "glass-epoxy laminate; sawn and drilled"
+   },
+   "mica (muscovite sheet)": {
+    "rho": 2.8,
+    "sigma": null,
+    "group": "inorganic",
+    "note": "0.3 mm sheet, cut; a barrier only"
+   },
+   "glazed steatite C 221": {
+    "rho": 2.7,
+    "sigma": 120.0,
+    "group": "inorganic",
+    "note": "pressed and fired; catalogue posts"
+   },
+   "glass-bonded mica (moulded)": {
+    "rho": 3.0,
+    "sigma": 90.0,
+    "group": "inorganic",
+    "note": "moulded; non-tracking"
+   }
+  },
+  "rules": "IEC 60664-1 PD2 x 1.25 DC on the rms (sim/parts_first_cut.py creepage, DC_MARGIN); inorganic: creepage = clearance; mixed paths at the worst group [IR]; clearance case A at 1.5 x the peak (sim/multiplier_layout.py clearance)"
+ },
+ "variants": [
+  {
+   "name": "A: machined PTFE arm, bonded on the coupler (the S2a reference)",
+   "parts": [
+    "PTFE arm, machined, two ribs",
+    "its twin"
+   ],
+   "materials": [
+    "PTFE (machined)"
+   ],
+   "P1": {
+    "have_mm": 42.79628549052941,
+    "need_mm": 31.64113666633352,
+    "group": "I",
+    "ok": true
+   },
+   "P2": {
+    "have_mm": 49.27350416450298,
+    "need_mm": 42.12274384384074,
+    "group": "I",
+    "ok": true
+   },
+   "mass_g": 84.38645643748735,
+   "root_force_N": 10.764193081446301,
+   "root_stress_MPa": 0.03298153542662952,
+   "safety": 303.19995326615174,
+   "joint": "bonded to the coupler: the spin pulls the joint in tension (peel)",
+   "machined_ptfe": true
+  },
+  {
+   "name": "B: G10 collar and arms, mica barriers in sawn slots",
+   "parts": [
+    "G10 split collar 6 x 12 mm round the coupler, two screws",
+    "G10 arm and its twin, 6 mm, sawn",
+    "3 mica barrier(s) between the seats, 8 mm proud of each face",
+    "3 mica barrier(s) across each arm, 8 mm proud",
+    "the wires in drilled seats, tied"
+   ],
+   "materials": [
+    "G10 / FR4",
+    "mica (muscovite sheet)"
+   ],
+   "P1": {
+    "have_mm": 70.79628549052941,
+    "need_mm": 63.28227333266704,
+    "group": "IIIa",
+    "barriers": 3,
+    "ok": true
+   },
+   "P2": {
+    "have_mm": 91.27350416450298,
+    "need_mm": 84.24548768768148,
+    "group": "IIIa",
+    "barriers": 3,
+    "ok": true
+   },
+   "mass_g": 96.86184925610172,
+   "root_force_N": 9.12580909117435,
+   "root_stress_MPa": 0.03395299778112064,
+   "safety": 8835.744105246966,
+   "joint": "the collar clamps the coupler; the spin loads it in hoop tension",
+   "machined_ptfe": false
+  },
+  {
+   "name": "C: G10 collar and arm, catalogue glazed-steatite posts",
+   "parts": [
+    "G10 split collar 6 x 12 mm, two screws",
+    "G10 arm and its twin, 6 mm",
+    "2 glazed steatite posts \u00d816 x 25, M4 inserts (catalogue, IEC 60672 C 221)",
+    "the wires in clips on the posts' tops"
+   ],
+   "materials": [
+    "G10 / FR4",
+    "glazed steatite C 221"
+   ],
+   "P1": {
+    "have_mm": 59.79628549052941,
+    "need_mm": 63.28227333266704,
+    "group": "IIIa",
+    "ok": false
+   },
+   "P2": {
+    "have_mm": 61.77350416450298,
+    "need_mm": 84.24548768768148,
+    "group": "IIIa",
+    "ok": false
+   },
+   "mass_g": 138.32171076954546,
+   "root_force_N": 15.018858858798401,
+   "root_stress_MPa": 0.046530036791736,
+   "safety": 1152.7298241668123,
+   "post_bending_MPa": 0.10410071595634775,
+   "joint": "the collar clamps the coupler; the posts screw to the arm",
+   "machined_ptfe": false
+  },
+  {
+   "name": "D: one moulded glass-bonded-mica collar with both arms",
+   "parts": [
+    "glass-bonded mica, moulded in one: a split collar and the two arms, the wires' seats moulded in",
+    "two screws across the split (in the collar, away from the seats)"
+   ],
+   "materials": [
+    "glass-bonded mica (moulded)"
+   ],
+   "P1": {
+    "have_mm": 22.796285490529407,
+    "need_mm": 10.328768537920755,
+    "group": "inorganic",
+    "ok": true
+   },
+   "P2": {
+    "have_mm": 43.27350416450298,
+    "need_mm": 12.594335229659388,
+    "group": "inorganic",
+    "ok": true
+   },
+   "mass_g": 151.22115932392967,
+   "root_force_N": 13.575254241480367,
+   "root_stress_MPa": 0.0415946393104581,
+   "safety": 2163.740363950491,
+   "joint": "the collar clamps the coupler; brittle: a moulded part, a mould to make",
+   "machined_ptfe": false
+  }
+ ]
+}

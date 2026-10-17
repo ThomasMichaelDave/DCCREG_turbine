@@ -35,7 +35,7 @@ or OPEN (for the designer or the bench).
 ## Baseline
 
 - **Evidence ledger:** design state `09243c7`, locked 2026-10-09
-- **Branch:** `claude/new-session-0az7f9`
+- **Branch:** the working branch and baseline that `CLAUDE.md` names (never a hard-coded branch)
 - **Prerequisite:** `synthesis/core-engine-spec.md` must exist before you start
 - **Output:** write your specification to `synthesis/tube-spec.md`
   using the template at `synthesis/spec-template.md`

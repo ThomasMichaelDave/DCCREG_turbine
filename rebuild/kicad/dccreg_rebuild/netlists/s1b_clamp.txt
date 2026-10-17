@@ -1,0 +1,7 @@
+# S1b clamp: the stage's nets, cut from dccreg_rebuild.net by rebuild/kicad/make_kicad.py
+# part.pin; C pins 1 / 2; D pin 1 = K (cathode), pin 2 = A (anode)
+N1: C301.1 Ca301.1 Ck301.1 Cr301.1 D303.1 Z301.1
+N2: Ca301.2 D301.1 D304.2
+N3: Cb301.1 D302.1 D303.2
+N4: C302.1 Cb301.2 Ck301.2 Cr304.1 D304.1 Z304.1
+REF: C301.2 C302.2 Cr301.2 Cr304.2 D301.2 D302.2 Z301.2 Z304.2
