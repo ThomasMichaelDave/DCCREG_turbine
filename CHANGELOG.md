@@ -54,6 +54,10 @@ Branch `claude/drafting-infra`, PR into `claude/synthesis-phase1`; the frozen se
   on Windows (Git Bash) as in the cloud; each is called `python3 … || python …` against the Windows Store stub.
   A subagent's worktree under `.claude/worktrees/` first slipped past the guard (paths were taken against the main
   checkout); the guard now matches each path in the checkout that holds it.
+  H-WIN's cloud run then failed: the cloud clone is shallow, `b33baa2` was absent, and the Stop hook crashed into a
+  silent, non-blocking error, so a shell write went unreported (the Edit guard held). The list's headers now hold the
+  full hashes, the check fetches a missing freeze commit (`git fetch --depth=1 origin <hash>`), and if it cannot it
+  fails closed: the check exits 2 and the Stop hook blocks (the designer's choice).
 - **The agent roster** (`.claude/agents/`): no agent hard-codes `claude/new-session-0az7f9`; each takes its branch
   and baseline from `CLAUDE.md`, which now names the live branch. The four scrutiny specialists are read-only and
   return their findings; the scrutiny-director writes `scrutiny/` (the designer's choice).

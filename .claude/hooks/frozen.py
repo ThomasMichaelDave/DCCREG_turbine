@@ -7,7 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 LIST = ROOT / ".claude" / "frozen-paths.txt"
-README_FREEZE = "b33baa2"  # the freeze README's check reports
+README_FREEZE = "b33baa2ae67f0ba62356efadc17c783e252cecd1"  # the freeze README's check reports
 
 
 def freezes():
@@ -67,11 +67,37 @@ def freeze_of(path, cwd=None):
     return None
 
 
+def short(commit):
+    """The 7-character form every message names a freeze by."""
+    return commit[:7]
+
+
+class Unverifiable(Exception):
+    """A freeze that cannot be checked (its commit is absent and cannot be fetched): callers fail closed."""
+
+
+def _git(root, *args):
+    return subprocess.run(["git", *args], cwd=root, capture_output=True, text=True)
+
+
+def ensure_commit(commit, root=ROOT):
+    """Make `commit` present in checkout `root`, fetching it from origin if absent (a shallow cloud clone)."""
+    if _git(root, "cat-file", "-e", f"{commit}^{{commit}}").returncode == 0:
+        return
+    shallow = _git(root, "rev-parse", "--is-shallow-repository").stdout.strip() == "true"
+    fetch = _git(root, "fetch", "--quiet", *(["--depth=1"] if shallow else []), "origin", commit)
+    if _git(root, "cat-file", "-e", f"{commit}^{{commit}}").returncode != 0:
+        raise Unverifiable(f"freeze commit {short(commit)} is not in {root} and `git fetch origin {commit}` "
+                           f"failed: {fetch.stderr.strip() or 'no output'}")
+
+
 def diff_lines(commit, root=ROOT):
     """`git diff <commit> -- <its paths> | wc -l` in checkout `root`, as README's check counts it."""
     specs = freezes()[commit]
-    r = subprocess.run(["git", "diff", commit, "--", *specs], cwd=root,
-                       capture_output=True, check=True)
+    ensure_commit(commit, root)
+    r = subprocess.run(["git", "diff", commit, "--", *specs], cwd=root, capture_output=True)
+    if r.returncode:
+        raise Unverifiable(f"`git diff {short(commit)}` failed in {root}: {r.stderr.decode(errors='replace').strip()}")
     return len(r.stdout.splitlines())
 
 

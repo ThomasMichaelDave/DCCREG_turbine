@@ -15,7 +15,7 @@ if commit:
         "hookEventName": "PreToolUse",
         "permissionDecision": "deny",
         "permissionDecisionReason": (
-            f"{path} is frozen: byte-identical with commit {commit} (.claude/frozen-paths.txt). "
+            f"{path} is frozen: byte-identical with commit {frozen.short(commit)} (.claude/frozen-paths.txt). "
             "Only the designer lifts a freeze; do not edit it or work around this."),
     }}))
 sys.exit(0)

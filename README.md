@@ -114,7 +114,9 @@ python3 .claude/hooks/frozen_check.py --all    # every freeze in the list
 ```
 
 Two Claude Code hooks enforce the same list (`.claude/settings.json`): a PreToolUse guard denies Edit / Write on a
-frozen path, and a Stop hook blocks the end of a turn while the check is non-zero (it catches shell writes).
+frozen path, and a Stop hook blocks the end of a turn while the check is non-zero (it catches shell writes). In a
+shallow clone (a cloud session) the check fetches a missing freeze commit from `origin`; if it cannot, it fails
+(exit 2, and the Stop hook blocks) rather than pass.
 
 ## History
 
