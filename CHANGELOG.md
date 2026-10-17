@@ -41,6 +41,29 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### S2b begins: the plan, the geometry adapter and the cell (2026-10-17)
+The designer: "Commit the findings and start s2b. Make sure to plan in advance."
+
+- **`rebuild/s2_models/s2b-plan.md`** (new): S2b's aims (the circuit's values solved on the S2a model, the fields at
+  its hot spots, one reduced matrix for S2c). The method is the record's finite-volume solver, imported unchanged. The
+  machine is split into four models:
+  - W, the stack, a 60° mirror wedge;
+  - H, the hub and the decks, full 360°;
+  - A, axisymmetric;
+  - F, the whole machine, coarse.
+
+  Each pair comes from one model only. The steps S2b-1 to S2b-8 with their gates; then S2c, S2d and S3.
+- **`rebuild/s2_models/s2_fv.py`** (new; `s2_fv_results.json`): every primitive of the S2a model shadowed by an
+  analytic inside test; each part's role (conductor, graded, dielectric).
+  - G-GEOM: 274 prototypes against OpenCascade, 0 disagreements (the thin parts at 20000 points, 0).
+  - G-PLACE: 12 placed parts, 0.
+  - Every net present.
+- **`rebuild/s2_models/s2_strays.py --cell`** (new; `s2_strays_results.json`): the periodic cell with each vane's
+  own thickness.
+  - G-CELL: the record's 3 mm cell reproduced to 0.000 %.
+  - With the rims, κ per gap: 3.694 (3 | 3 mm), 3.584 (4 | 3), 3.534 (3 | 4.5). The two end gaps cost the side's κ
+    0.7 %.
+
 ### S2a: the plates' thickness, the best compromise (2026-10-17)
 The designer: "Decide what the overal best compromise is when considering priority on functional behavior and overall
 performance".

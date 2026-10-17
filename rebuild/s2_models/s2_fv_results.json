@@ -1,0 +1,5458 @@
+{
+ "note": "S2b-1: the S2a model's parts as analytic inside tests for the field solve (s2b-plan.md)",
+ "eps_r": {
+  "borosilicate": 4.6,
+  "silicone gel": 2.9,
+  "PEEK": 3.2,
+  "G10": 4.7,
+  "PTFE": 2.1,
+  "steatite": 6.0,
+  "mica": 6.5,
+  "silicone potting": 2.8
+ },
+ "graded_slices": 4,
+ "wire_core_mm": 0.5,
+ "roles": {
+  "diel": 77,
+  "cond": 280,
+  "graded": 8
+ },
+ "parts": [
+  {
+   "name": "hub_vessel",
+   "proto": "hub_vessel",
+   "group": "hub",
+   "material": "borosilicate vessel, OD 50 mm, wall 2 mm (vacuum inside)",
+   "kind": "diel",
+   "eps": 4.6
+  },
+  {
+   "name": "hub_gel",
+   "proto": "hub_gel",
+   "group": "hub",
+   "material": "silicone gel, 0.5 mm, vacuum-cast",
+   "kind": "diel",
+   "eps": 2.9
+  },
+  {
+   "name": "hub_retainer",
+   "proto": "hub_retainer",
+   "group": "hub",
+   "material": "PEEK retainer, unfilled",
+   "kind": "diel",
+   "eps": 3.2
+  },
+  {
+   "name": "hub_coupler",
+   "proto": "hub_coupler",
+   "group": "hub",
+   "material": "G10 shaft coupler: a tube over the retainer and both flanges",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "hub_ring_B",
+   "proto": "hub_ring_B",
+   "group": "hub",
+   "material": "Cu-ETP foil 0.1 mm, a band",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "hub_bead_B_pol",
+   "proto": "hub_bead_B_pol",
+   "group": "hub",
+   "material": "Cu wire ring, 3 mm",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "hub_bead_B_eq",
+   "proto": "hub_bead_B_eq",
+   "group": "hub",
+   "material": "Cu wire ring, 2 mm",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "hub_ring_A",
+   "proto": "hub_ring_A",
+   "group": "hub",
+   "material": "Cu-ETP foil 0.1 mm, a band",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "hub_bead_A_pol",
+   "proto": "hub_bead_A_pol",
+   "group": "hub",
+   "material": "Cu wire ring, 3 mm",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "hub_bead_A_eq",
+   "proto": "hub_bead_A_eq",
+   "group": "hub",
+   "material": "Cu wire ring, 2 mm",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_flange",
+   "proto": "flange",
+   "group": "hub",
+   "material": "austenitic stainless flange, non-magnetic, \u00d860",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "shaft_A",
+   "proto": "shaft_A",
+   "group": "rotor",
+   "material": "austenitic stainless shaft half, non-magnetic",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_sleeve",
+   "proto": "sleeve_A",
+   "group": "rotor",
+   "material": "G10 rotor sleeve",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "A_cover",
+   "proto": "cover_A",
+   "group": "rotor",
+   "material": "extruded PTFE tube over the sleeve (stock, not machined): the creepage cover",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_shed_1",
+   "proto": "shed",
+   "group": "rotor",
+   "material": "PTFE shed, 10 mm, punched from stock sheet",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_shed_2",
+   "proto": "shed",
+   "group": "rotor",
+   "material": "PTFE shed, 10 mm, punched from stock sheet",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_flange",
+   "proto": "flange",
+   "group": "hub",
+   "material": "austenitic stainless flange, non-magnetic, \u00d860",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "shaft_B",
+   "proto": "shaft_B",
+   "group": "rotor",
+   "material": "austenitic stainless shaft half, non-magnetic",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_sleeve",
+   "proto": "sleeve_B",
+   "group": "rotor",
+   "material": "G10 rotor sleeve",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "B_cover",
+   "proto": "cover_B",
+   "group": "rotor",
+   "material": "extruded PTFE tube over the sleeve (stock, not machined): the creepage cover",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_shed_1",
+   "proto": "shed",
+   "group": "rotor",
+   "material": "PTFE shed, 10 mm, punched from stock sheet",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_shed_2",
+   "proto": "shed",
+   "group": "rotor",
+   "material": "PTFE shed, 10 mm, punched from stock sheet",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_ref_term_-28",
+   "proto": "ref_term_A_-28",
+   "group": "hub",
+   "material": "brass REF terminal through the coupler into the flange [IR]",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_ref_term_152",
+   "proto": "ref_term_B_152",
+   "group": "hub",
+   "material": "brass REF terminal through the coupler into the flange [IR]",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_Ca_06",
+   "proto": "ca_n2_first_A",
+   "group": "side-A",
+   "material": "Al plate, 4 mm; tabs to the N2 comb; the riser's clearance hole \u00d830; the column's end plate",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_Ca_05",
+   "proto": "ca_n1_A",
+   "group": "side-A",
+   "material": "Al plate, 3 mm, full annulus; three tabs to the N1 comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_Ca_04",
+   "proto": "ca_n2_A",
+   "group": "side-A",
+   "material": "Al plate, 3 mm, full annulus; three tabs to the N2 comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_Ca_03",
+   "proto": "ca_n1_A",
+   "group": "side-A",
+   "material": "Al plate, 3 mm, full annulus; three tabs to the N1 comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_Ca_02",
+   "proto": "ca_n2_A",
+   "group": "side-A",
+   "material": "Al plate, 3 mm, full annulus; three tabs to the N2 comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_Ca_01",
+   "proto": "ca_n1_end_A",
+   "group": "side-A",
+   "material": "Al plate, 4 mm, full annulus; three tabs to the N1 comb; the column's end plate",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_C1_r01",
+   "proto": "rotor_vane_end",
+   "group": "side-A",
+   "material": "Al rotor vane, 4 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes; the stack's end vane",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_C1_s02",
+   "proto": "stator_vane",
+   "group": "side-A",
+   "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_C1_r03",
+   "proto": "rotor_vane",
+   "group": "side-A",
+   "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_C1_s04",
+   "proto": "stator_vane",
+   "group": "side-A",
+   "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_C1_r05",
+   "proto": "rotor_vane",
+   "group": "side-A",
+   "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_C1_s06",
+   "proto": "stator_vane",
+   "group": "side-A",
+   "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_C1_r07",
+   "proto": "rotor_vane",
+   "group": "side-A",
+   "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_C1_s08",
+   "proto": "stator_vane",
+   "group": "side-A",
+   "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_C1_r09",
+   "proto": "rotor_vane",
+   "group": "side-A",
+   "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_C1_s10",
+   "proto": "stator_vane",
+   "group": "side-A",
+   "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_C1_r11",
+   "proto": "rotor_vane",
+   "group": "side-A",
+   "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_C1_s12",
+   "proto": "stator_vane_end",
+   "group": "side-A",
+   "material": "Al stator vane, 4.5 mm, 6 sectors of 22 deg on its ring, six lugs; the stack's end vane",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_comb1_tube_1",
+   "proto": "comb_tube_A_1_0",
+   "group": "side-A",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N1 comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_1_107",
+   "proto": "comb_sp_A_1_0_107",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_1_125",
+   "proto": "comb_sp_A_1_0_125",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_1_143",
+   "proto": "comb_sp_A_1_0_143",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_1_153",
+   "proto": "comb_sp_A_1_0_153",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_1_172",
+   "proto": "comb_sp_A_1_0_172",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_1_190",
+   "proto": "comb_sp_A_1_0_190",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_1_208",
+   "proto": "comb_sp_A_1_0_208",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_1_226",
+   "proto": "comb_sp_A_1_0_226",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_tube_2",
+   "proto": "comb_tube_A_1_1",
+   "group": "side-A",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N1 comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_2_107",
+   "proto": "comb_sp_A_1_1_107",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_2_125",
+   "proto": "comb_sp_A_1_1_125",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_2_143",
+   "proto": "comb_sp_A_1_1_143",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_2_153",
+   "proto": "comb_sp_A_1_1_153",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_2_172",
+   "proto": "comb_sp_A_1_1_172",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_2_190",
+   "proto": "comb_sp_A_1_1_190",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_2_208",
+   "proto": "comb_sp_A_1_1_208",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_2_226",
+   "proto": "comb_sp_A_1_1_226",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_tube_3",
+   "proto": "comb_tube_A_1_2",
+   "group": "side-A",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N1 comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_3_107",
+   "proto": "comb_sp_A_1_2_107",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_3_125",
+   "proto": "comb_sp_A_1_2_125",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_3_143",
+   "proto": "comb_sp_A_1_2_143",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_3_153",
+   "proto": "comb_sp_A_1_2_153",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_3_172",
+   "proto": "comb_sp_A_1_2_172",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_3_190",
+   "proto": "comb_sp_A_1_2_190",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_3_208",
+   "proto": "comb_sp_A_1_2_208",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb1_sp_3_226",
+   "proto": "comb_sp_A_1_2_226",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_comb2_tube_1",
+   "proto": "comb_tube_A_2_0",
+   "group": "side-A",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N2 comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_comb2_sp_1_97",
+   "proto": "comb_sp_A_2_0_97",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_comb2_sp_1_116",
+   "proto": "comb_sp_A_2_0_116",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_comb2_tube_2",
+   "proto": "comb_tube_A_2_1",
+   "group": "side-A",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N2 comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_comb2_sp_2_97",
+   "proto": "comb_sp_A_2_1_97",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_comb2_sp_2_116",
+   "proto": "comb_sp_A_2_1_116",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_comb2_tube_3",
+   "proto": "comb_tube_A_2_2",
+   "group": "side-A",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N2 comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_comb2_sp_3_97",
+   "proto": "comb_sp_A_2_2_97",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_comb2_sp_3_116",
+   "proto": "comb_sp_A_2_2_116",
+   "group": "side-A",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_comb2_standoff_1",
+   "proto": "standoff_A_0",
+   "group": "side-A",
+   "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)",
+   "kind": "diel",
+   "eps": 6.0
+  },
+  {
+   "name": "A_comb2_standoff_2",
+   "proto": "standoff_A_1",
+   "group": "side-A",
+   "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)",
+   "kind": "diel",
+   "eps": 6.0
+  },
+  {
+   "name": "A_comb2_standoff_3",
+   "proto": "standoff_A_2",
+   "group": "side-A",
+   "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)",
+   "kind": "diel",
+   "eps": 6.0
+  },
+  {
+   "name": "A_tie_1",
+   "proto": "tie_A_0",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_1_163",
+   "proto": "tie_sp_A_0_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_1_181",
+   "proto": "tie_sp_A_0_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_1_199",
+   "proto": "tie_sp_A_0_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_1_217",
+   "proto": "tie_sp_A_0_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_1_235",
+   "proto": "tie_sp_A_0_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_1_253",
+   "proto": "tie_sp_A_0_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_2",
+   "proto": "tie_A_1",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_2_163",
+   "proto": "tie_sp_A_1_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_2_181",
+   "proto": "tie_sp_A_1_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_2_199",
+   "proto": "tie_sp_A_1_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_2_217",
+   "proto": "tie_sp_A_1_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_2_235",
+   "proto": "tie_sp_A_1_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_2_253",
+   "proto": "tie_sp_A_1_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_3",
+   "proto": "tie_A_2",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_3_163",
+   "proto": "tie_sp_A_2_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_3_181",
+   "proto": "tie_sp_A_2_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_3_199",
+   "proto": "tie_sp_A_2_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_3_217",
+   "proto": "tie_sp_A_2_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_3_235",
+   "proto": "tie_sp_A_2_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_3_253",
+   "proto": "tie_sp_A_2_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_4",
+   "proto": "tie_A_3",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_4_163",
+   "proto": "tie_sp_A_3_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_4_181",
+   "proto": "tie_sp_A_3_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_4_199",
+   "proto": "tie_sp_A_3_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_4_217",
+   "proto": "tie_sp_A_3_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_4_235",
+   "proto": "tie_sp_A_3_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_4_253",
+   "proto": "tie_sp_A_3_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_5",
+   "proto": "tie_A_4",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_5_163",
+   "proto": "tie_sp_A_4_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_5_181",
+   "proto": "tie_sp_A_4_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_5_199",
+   "proto": "tie_sp_A_4_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_5_217",
+   "proto": "tie_sp_A_4_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_5_235",
+   "proto": "tie_sp_A_4_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_5_253",
+   "proto": "tie_sp_A_4_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_6",
+   "proto": "tie_A_5",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_6_163",
+   "proto": "tie_sp_A_5_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_6_181",
+   "proto": "tie_sp_A_5_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_6_199",
+   "proto": "tie_sp_A_5_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_6_217",
+   "proto": "tie_sp_A_5_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_6_235",
+   "proto": "tie_sp_A_5_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_tie_sp_6_253",
+   "proto": "tie_sp_A_5_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_Cb_06",
+   "proto": "ca_n2_first_B",
+   "group": "side-B",
+   "material": "Al plate, 4 mm; tabs to the N2 comb; the riser's clearance hole \u00d830; the column's end plate",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_Cb_05",
+   "proto": "ca_n1_B",
+   "group": "side-B",
+   "material": "Al plate, 3 mm, full annulus; three tabs to the N1 comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_Cb_04",
+   "proto": "ca_n2_B",
+   "group": "side-B",
+   "material": "Al plate, 3 mm, full annulus; three tabs to the N2 comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_Cb_03",
+   "proto": "ca_n1_B",
+   "group": "side-B",
+   "material": "Al plate, 3 mm, full annulus; three tabs to the N1 comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_Cb_02",
+   "proto": "ca_n2_B",
+   "group": "side-B",
+   "material": "Al plate, 3 mm, full annulus; three tabs to the N2 comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_Cb_01",
+   "proto": "ca_n1_end_B",
+   "group": "side-B",
+   "material": "Al plate, 4 mm, full annulus; three tabs to the N1 comb; the column's end plate",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_C2_r01",
+   "proto": "rotor_vane_end",
+   "group": "side-B",
+   "material": "Al rotor vane, 4 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes; the stack's end vane",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_C2_s02",
+   "proto": "stator_vane",
+   "group": "side-B",
+   "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_C2_r03",
+   "proto": "rotor_vane",
+   "group": "side-B",
+   "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_C2_s04",
+   "proto": "stator_vane",
+   "group": "side-B",
+   "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_C2_r05",
+   "proto": "rotor_vane",
+   "group": "side-B",
+   "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_C2_s06",
+   "proto": "stator_vane",
+   "group": "side-B",
+   "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_C2_r07",
+   "proto": "rotor_vane",
+   "group": "side-B",
+   "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_C2_s08",
+   "proto": "stator_vane",
+   "group": "side-B",
+   "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_C2_r09",
+   "proto": "rotor_vane",
+   "group": "side-B",
+   "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_C2_s10",
+   "proto": "stator_vane",
+   "group": "side-B",
+   "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_C2_r11",
+   "proto": "rotor_vane",
+   "group": "side-B",
+   "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_C2_s12",
+   "proto": "stator_vane_end",
+   "group": "side-B",
+   "material": "Al stator vane, 4.5 mm, 6 sectors of 22 deg on its ring, six lugs; the stack's end vane",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_comb4_tube_1",
+   "proto": "comb_tube_B_4_0",
+   "group": "side-B",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N4 comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_1_107",
+   "proto": "comb_sp_B_4_0_107",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_1_125",
+   "proto": "comb_sp_B_4_0_125",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_1_143",
+   "proto": "comb_sp_B_4_0_143",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_1_153",
+   "proto": "comb_sp_B_4_0_153",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_1_172",
+   "proto": "comb_sp_B_4_0_172",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_1_190",
+   "proto": "comb_sp_B_4_0_190",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_1_208",
+   "proto": "comb_sp_B_4_0_208",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_1_226",
+   "proto": "comb_sp_B_4_0_226",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_tube_2",
+   "proto": "comb_tube_B_4_1",
+   "group": "side-B",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N4 comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_2_107",
+   "proto": "comb_sp_B_4_1_107",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_2_125",
+   "proto": "comb_sp_B_4_1_125",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_2_143",
+   "proto": "comb_sp_B_4_1_143",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_2_153",
+   "proto": "comb_sp_B_4_1_153",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_2_172",
+   "proto": "comb_sp_B_4_1_172",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_2_190",
+   "proto": "comb_sp_B_4_1_190",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_2_208",
+   "proto": "comb_sp_B_4_1_208",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_2_226",
+   "proto": "comb_sp_B_4_1_226",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_tube_3",
+   "proto": "comb_tube_B_4_2",
+   "group": "side-B",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N4 comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_3_107",
+   "proto": "comb_sp_B_4_2_107",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_3_125",
+   "proto": "comb_sp_B_4_2_125",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_3_143",
+   "proto": "comb_sp_B_4_2_143",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_3_153",
+   "proto": "comb_sp_B_4_2_153",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_3_172",
+   "proto": "comb_sp_B_4_2_172",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_3_190",
+   "proto": "comb_sp_B_4_2_190",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_3_208",
+   "proto": "comb_sp_B_4_2_208",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb4_sp_3_226",
+   "proto": "comb_sp_B_4_2_226",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_comb3_tube_1",
+   "proto": "comb_tube_B_3_0",
+   "group": "side-B",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N3 comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_comb3_sp_1_97",
+   "proto": "comb_sp_B_3_0_97",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_comb3_sp_1_116",
+   "proto": "comb_sp_B_3_0_116",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_comb3_tube_2",
+   "proto": "comb_tube_B_3_1",
+   "group": "side-B",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N3 comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_comb3_sp_2_97",
+   "proto": "comb_sp_B_3_1_97",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_comb3_sp_2_116",
+   "proto": "comb_sp_B_3_1_116",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_comb3_tube_3",
+   "proto": "comb_tube_B_3_2",
+   "group": "side-B",
+   "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N3 comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_comb3_sp_3_97",
+   "proto": "comb_sp_B_3_2_97",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_comb3_sp_3_116",
+   "proto": "comb_sp_B_3_2_116",
+   "group": "side-B",
+   "material": "Al spacer tube 12 x 1 on the comb",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_comb3_standoff_1",
+   "proto": "standoff_B_0",
+   "group": "side-B",
+   "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)",
+   "kind": "diel",
+   "eps": 6.0
+  },
+  {
+   "name": "B_comb3_standoff_2",
+   "proto": "standoff_B_1",
+   "group": "side-B",
+   "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)",
+   "kind": "diel",
+   "eps": 6.0
+  },
+  {
+   "name": "B_comb3_standoff_3",
+   "proto": "standoff_B_2",
+   "group": "side-B",
+   "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)",
+   "kind": "diel",
+   "eps": 6.0
+  },
+  {
+   "name": "B_tie_1",
+   "proto": "tie_B_0",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_1_163",
+   "proto": "tie_sp_B_0_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_1_181",
+   "proto": "tie_sp_B_0_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_1_199",
+   "proto": "tie_sp_B_0_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_1_217",
+   "proto": "tie_sp_B_0_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_1_235",
+   "proto": "tie_sp_B_0_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_1_253",
+   "proto": "tie_sp_B_0_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_2",
+   "proto": "tie_B_1",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_2_163",
+   "proto": "tie_sp_B_1_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_2_181",
+   "proto": "tie_sp_B_1_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_2_199",
+   "proto": "tie_sp_B_1_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_2_217",
+   "proto": "tie_sp_B_1_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_2_235",
+   "proto": "tie_sp_B_1_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_2_253",
+   "proto": "tie_sp_B_1_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_3",
+   "proto": "tie_B_2",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_3_163",
+   "proto": "tie_sp_B_2_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_3_181",
+   "proto": "tie_sp_B_2_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_3_199",
+   "proto": "tie_sp_B_2_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_3_217",
+   "proto": "tie_sp_B_2_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_3_235",
+   "proto": "tie_sp_B_2_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_3_253",
+   "proto": "tie_sp_B_2_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_4",
+   "proto": "tie_B_3",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_4_163",
+   "proto": "tie_sp_B_3_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_4_181",
+   "proto": "tie_sp_B_3_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_4_199",
+   "proto": "tie_sp_B_3_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_4_217",
+   "proto": "tie_sp_B_3_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_4_235",
+   "proto": "tie_sp_B_3_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_4_253",
+   "proto": "tie_sp_B_3_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_5",
+   "proto": "tie_B_4",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_5_163",
+   "proto": "tie_sp_B_4_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_5_181",
+   "proto": "tie_sp_B_4_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_5_199",
+   "proto": "tie_sp_B_4_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_5_217",
+   "proto": "tie_sp_B_4_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_5_235",
+   "proto": "tie_sp_B_4_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_5_253",
+   "proto": "tie_sp_B_4_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_6",
+   "proto": "tie_B_5",
+   "group": "stator",
+   "material": "stainless M5 tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_6_163",
+   "proto": "tie_sp_B_5_163",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_6_181",
+   "proto": "tie_sp_B_5_181",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_6_199",
+   "proto": "tie_sp_B_5_199",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_6_217",
+   "proto": "tie_sp_B_5_217",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_6_235",
+   "proto": "tie_sp_B_5_235",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_tie_sp_6_253",
+   "proto": "tie_sp_B_5_253",
+   "group": "stator",
+   "material": "Al spacer tube \u00d810 on a tie rod (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "cage",
+   "proto": "cage",
+   "group": "stator",
+   "material": "G10 cage tube, spider to spider across the hub (the counter-rotor's backbone)",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "A_ref_bearing",
+   "proto": "bearing",
+   "group": "ref-link",
+   "material": "6205 class bearing: the REF link [placeholder, the 2026-10-08 decision]",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_ref_spider",
+   "proto": "spider",
+   "group": "ref-link",
+   "material": "Al spider: the bearing's outer ring to the cage's bore; the tie rods end in it (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_ref_bearing",
+   "proto": "bearing",
+   "group": "ref-link",
+   "material": "6205 class bearing: the REF link [placeholder, the 2026-10-08 decision]",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_ref_spider",
+   "proto": "spider",
+   "group": "ref-link",
+   "material": "Al spider: the bearing's outer ring to the cage's bore; the tie rods end in it (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_deck_plate",
+   "proto": "deck_plate_A",
+   "group": "deck-A",
+   "material": "G10 deck plate, 6 mm, r 33-108, bonded on the coupler; the cross nets' and the ring lead's holes [IR]",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "A_J_2",
+   "proto": "j_cond",
+   "group": "deck-A",
+   "material": "brass junction terminal",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_J_2_pot",
+   "proto": "j_pot",
+   "group": "deck-A",
+   "material": "silicone potting, the junction's block",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "A_J_3x",
+   "proto": "j_cond",
+   "group": "deck-A",
+   "material": "brass junction terminal",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "A_J_3x_pot",
+   "proto": "j_pot",
+   "group": "deck-A",
+   "material": "silicone potting, the junction's block",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "A_J_1",
+   "proto": "j_cond",
+   "group": "deck-A",
+   "material": "brass junction terminal",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_J_1_pot",
+   "proto": "j_pot",
+   "group": "deck-A",
+   "material": "silicone potting, the junction's block",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "A_D1_body",
+   "proto": "stick_body",
+   "group": "deck-A",
+   "material": "HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche)",
+   "kind": "graded",
+   "nets": [
+    "REF",
+    "2"
+   ],
+   "axis": [
+    [
+     63.0,
+     -20.0,
+     378.0
+    ],
+    [
+     63.0,
+     20.0,
+     378.0
+    ]
+   ],
+   "arc": null
+  },
+  {
+   "name": "A_D1_pot",
+   "proto": "stick_pot",
+   "group": "deck-A",
+   "material": "silicone potting, 8 mm over the part",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "A_D1_lead_neg",
+   "proto": "stick_lead_neg",
+   "group": "deck-A",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_D1_lead_pos",
+   "proto": "stick_lead_pos",
+   "group": "deck-A",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_D3_body",
+   "proto": "stick_body",
+   "group": "deck-A",
+   "material": "HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche)",
+   "kind": "graded",
+   "nets": [
+    "3",
+    "1"
+   ],
+   "axis": [
+    [
+     -63.0,
+     -19.999999999999993,
+     378.0
+    ],
+    [
+     -63.0,
+     20.000000000000007,
+     378.0
+    ]
+   ],
+   "arc": null
+  },
+  {
+   "name": "A_D3_pot",
+   "proto": "stick_pot",
+   "group": "deck-A",
+   "material": "silicone potting, 8 mm over the part",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "A_D3_lead_neg",
+   "proto": "stick_lead_neg",
+   "group": "deck-A",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_D3_lead_pos",
+   "proto": "stick_lead_pos",
+   "group": "deck-A",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "A_Z1a_body",
+   "proto": "clamph_body",
+   "group": "deck-A",
+   "material": "half the clamp string: 33 x 1.5KE200A in a meander",
+   "kind": "graded",
+   "nets": [
+    "1",
+    "m1"
+   ],
+   "axis": null,
+   "arc": {
+    "r": 77.0,
+    "th": [
+     149.3776205057116,
+     87.61723479680468
+    ],
+    "z": 372.0
+   }
+  },
+  {
+   "name": "A_Z1a_pot",
+   "proto": "clamph_pot",
+   "group": "deck-A",
+   "material": "silicone potting, 8 mm over the half module",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "A_Z1a_lead_0",
+   "proto": "clamph_lead_0",
+   "group": "deck-A",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "m1"
+  },
+  {
+   "name": "A_Z1a_lead_1",
+   "proto": "clamph_lead_1",
+   "group": "deck-A",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_Z1b_body",
+   "proto": "clamph_body",
+   "group": "deck-A",
+   "material": "half the clamp string: 33 x 1.5KE200A in a meander",
+   "kind": "graded",
+   "nets": [
+    "m1",
+    "REF"
+   ],
+   "axis": null,
+   "arc": {
+    "r": 77.0,
+    "th": [
+     -92.38276520319533,
+     -30.62237949428841
+    ],
+    "z": 372.0
+   }
+  },
+  {
+   "name": "A_Z1b_pot",
+   "proto": "clamph_pot",
+   "group": "deck-A",
+   "material": "silicone potting, 8 mm over the half module",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "A_Z1b_lead_0",
+   "proto": "clamph_lead_0",
+   "group": "deck-A",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "m1"
+  },
+  {
+   "name": "A_Z1b_lead_1",
+   "proto": "clamph_lead_1",
+   "group": "deck-A",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_joint_0_1_core",
+   "proto": "A_joint_0_1",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_joint_0_1",
+   "proto": "A_joint_0_1",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_joint_1_0_core",
+   "proto": "A_joint_1_0",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_joint_1_0",
+   "proto": "A_joint_1_0",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_ring_m_2_core",
+   "proto": "A_ring_m_2",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "m1"
+  },
+  {
+   "name": "A_ring_m_2",
+   "proto": "A_ring_m_2",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_ring_m_3_core",
+   "proto": "A_ring_m_3",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "m1"
+  },
+  {
+   "name": "A_ring_m_3",
+   "proto": "A_ring_m_3",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_strap_-28",
+   "proto": "A_strap_-28",
+   "group": "deck-A",
+   "material": "Cu strap (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "A_ring_lead_core",
+   "proto": "A_ring_lead",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_ring_lead",
+   "proto": "A_ring_lead",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_ring_lead_deck_core",
+   "proto": "A_ring_lead_deck",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_ring_lead_deck",
+   "proto": "A_ring_lead_deck",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_deck_plate",
+   "proto": "deck_plate_B",
+   "group": "deck-B",
+   "material": "G10 deck plate, 6 mm, r 33-108, bonded on the coupler; the cross nets' and the ring lead's holes [IR]",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "B_J_3",
+   "proto": "j_cond",
+   "group": "deck-B",
+   "material": "brass junction terminal",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_J_3_pot",
+   "proto": "j_pot",
+   "group": "deck-B",
+   "material": "silicone potting, the junction's block",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "B_J_2x",
+   "proto": "j_cond",
+   "group": "deck-B",
+   "material": "brass junction terminal",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "B_J_2x_pot",
+   "proto": "j_pot",
+   "group": "deck-B",
+   "material": "silicone potting, the junction's block",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "B_J_4",
+   "proto": "j_cond",
+   "group": "deck-B",
+   "material": "brass junction terminal",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_J_4_pot",
+   "proto": "j_pot",
+   "group": "deck-B",
+   "material": "silicone potting, the junction's block",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "B_D2_body",
+   "proto": "stick_body",
+   "group": "deck-B",
+   "material": "HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche)",
+   "kind": "graded",
+   "nets": [
+    "REF",
+    "3"
+   ],
+   "axis": [
+    [
+     -63.0,
+     20.0,
+     474.0
+    ],
+    [
+     -63.0,
+     -20.0,
+     474.0
+    ]
+   ],
+   "arc": null
+  },
+  {
+   "name": "B_D2_pot",
+   "proto": "stick_pot",
+   "group": "deck-B",
+   "material": "silicone potting, 8 mm over the part",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "B_D2_lead_neg",
+   "proto": "stick_lead_neg",
+   "group": "deck-B",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_D2_lead_pos",
+   "proto": "stick_lead_pos",
+   "group": "deck-B",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_D4_body",
+   "proto": "stick_body",
+   "group": "deck-B",
+   "material": "HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche)",
+   "kind": "graded",
+   "nets": [
+    "2",
+    "4"
+   ],
+   "axis": [
+    [
+     63.0,
+     19.999999999999993,
+     474.0
+    ],
+    [
+     63.0,
+     -20.000000000000007,
+     474.0
+    ]
+   ],
+   "arc": null
+  },
+  {
+   "name": "B_D4_pot",
+   "proto": "stick_pot",
+   "group": "deck-B",
+   "material": "silicone potting, 8 mm over the part",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "B_D4_lead_neg",
+   "proto": "stick_lead_neg",
+   "group": "deck-B",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_D4_lead_pos",
+   "proto": "stick_lead_pos",
+   "group": "deck-B",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "B_Z4a_body",
+   "proto": "clamph_body",
+   "group": "deck-B",
+   "material": "half the clamp string: 33 x 1.5KE200A in a meander",
+   "kind": "graded",
+   "nets": [
+    "4",
+    "m4"
+   ],
+   "axis": null,
+   "arc": {
+    "r": 77.0,
+    "th": [
+     -30.622379494288403,
+     -92.38276520319533
+    ],
+    "z": 480.0
+   }
+  },
+  {
+   "name": "B_Z4a_pot",
+   "proto": "clamph_pot",
+   "group": "deck-B",
+   "material": "silicone potting, 8 mm over the half module",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "B_Z4a_lead_0",
+   "proto": "clamph_lead_0",
+   "group": "deck-B",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "m4"
+  },
+  {
+   "name": "B_Z4a_lead_1",
+   "proto": "clamph_lead_1",
+   "group": "deck-B",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_Z4b_body",
+   "proto": "clamph_body",
+   "group": "deck-B",
+   "material": "half the clamp string: 33 x 1.5KE200A in a meander",
+   "kind": "graded",
+   "nets": [
+    "m4",
+    "REF"
+   ],
+   "axis": null,
+   "arc": {
+    "r": 77.0,
+    "th": [
+     87.61723479680468,
+     149.3776205057116
+    ],
+    "z": 480.0
+   }
+  },
+  {
+   "name": "B_Z4b_pot",
+   "proto": "clamph_pot",
+   "group": "deck-B",
+   "material": "silicone potting, 8 mm over the half module",
+   "kind": "diel",
+   "eps": 2.8
+  },
+  {
+   "name": "B_Z4b_lead_0",
+   "proto": "clamph_lead_0",
+   "group": "deck-B",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "m4"
+  },
+  {
+   "name": "B_Z4b_lead_1",
+   "proto": "clamph_lead_1",
+   "group": "deck-B",
+   "material": "tinned Cu lead, 1.2 mm",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_joint_0_4_core",
+   "proto": "B_joint_0_4",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_joint_0_4",
+   "proto": "B_joint_0_4",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_joint_1_0_core",
+   "proto": "B_joint_1_0",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_joint_1_0",
+   "proto": "B_joint_1_0",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_ring_m_2_core",
+   "proto": "B_ring_m_2",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "m4"
+  },
+  {
+   "name": "B_ring_m_2",
+   "proto": "B_ring_m_2",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_ring_m_3_core",
+   "proto": "B_ring_m_3",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "m4"
+  },
+  {
+   "name": "B_ring_m_3",
+   "proto": "B_ring_m_3",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_strap_152",
+   "proto": "B_strap_152",
+   "group": "deck-B",
+   "material": "Cu strap (REF)",
+   "kind": "cond",
+   "net": "REF"
+  },
+  {
+   "name": "B_ring_lead_core",
+   "proto": "B_ring_lead",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_ring_lead",
+   "proto": "B_ring_lead",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_ring_lead_deck_core",
+   "proto": "B_ring_lead_deck",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_ring_lead_deck",
+   "proto": "B_ring_lead_deck",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_cross_2_core",
+   "proto": "A_cross_2",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_cross_2",
+   "proto": "A_cross_2",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "cross_2_core",
+   "proto": "cross_2",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "cross_2",
+   "proto": "cross_2",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_cross_2_core",
+   "proto": "B_cross_2",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "B_cross_2",
+   "proto": "B_cross_2",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_cross_3_core",
+   "proto": "A_cross_3",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "A_cross_3",
+   "proto": "A_cross_3",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "cross_3_core",
+   "proto": "cross_3",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "cross_3",
+   "proto": "cross_3",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_cross_3_core",
+   "proto": "B_cross_3",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_cross_3",
+   "proto": "B_cross_3",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "xbracket_arm_N2",
+   "proto": "brk_arm",
+   "group": "wiring",
+   "material": "G10 arm, 6 mm, 19 wide, one drilled wire seat, sawn slots for the mica (bracket B, one wire per arm)",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "xbracket_arm_N2_mica",
+   "proto": "brk_mica",
+   "group": "wiring",
+   "material": "mica barriers, 0.3 mm muscovite: 4 across the arm, 8 mm proud (bracket B)",
+   "kind": "diel",
+   "eps": 6.5
+  },
+  {
+   "name": "xbracket_collar_1",
+   "proto": "brk_collar_half",
+   "group": "wiring",
+   "material": "G10 split collar half, 6 x 12 mm, clamped round the coupler (two screws across each split, not drawn)",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "xbracket_arm_N3",
+   "proto": "brk_arm",
+   "group": "wiring",
+   "material": "G10 arm, 6 mm, 19 wide, one drilled wire seat, sawn slots for the mica (bracket B, one wire per arm)",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "xbracket_arm_N3_mica",
+   "proto": "brk_mica",
+   "group": "wiring",
+   "material": "mica barriers, 0.3 mm muscovite: 4 across the arm, 8 mm proud (bracket B)",
+   "kind": "diel",
+   "eps": 6.5
+  },
+  {
+   "name": "xbracket_collar_2",
+   "proto": "brk_collar_half",
+   "group": "wiring",
+   "material": "G10 split collar half, 6 x 12 mm, clamped round the coupler (two screws across each split, not drawn)",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "A_riser_deck_core",
+   "proto": "A_riser_deck",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_riser_deck",
+   "proto": "A_riser_deck",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_riser_core",
+   "proto": "A_riser",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "1"
+  },
+  {
+   "name": "A_riser",
+   "proto": "A_riser",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_tap_deck_core",
+   "proto": "A_tap_deck",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_tap_deck",
+   "proto": "A_tap_deck",
+   "group": "deck-A",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_tap_core",
+   "proto": "A_tap",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "2"
+  },
+  {
+   "name": "A_tap",
+   "proto": "A_tap",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_riser_deck_core",
+   "proto": "B_riser_deck",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_riser_deck",
+   "proto": "B_riser_deck",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_riser_core",
+   "proto": "B_riser",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "4"
+  },
+  {
+   "name": "B_riser",
+   "proto": "B_riser",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_tap_deck_core",
+   "proto": "B_tap_deck",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_tap_deck",
+   "proto": "B_tap_deck",
+   "group": "deck-B",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_tap_core",
+   "proto": "B_tap",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "cond",
+   "net": "3"
+  },
+  {
+   "name": "B_tap",
+   "proto": "B_tap",
+   "group": "wiring",
+   "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "frame_post_1",
+   "proto": "post_0",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "frame_post_2",
+   "proto": "post_1",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "frame_post_3",
+   "proto": "post_2",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "frame_post_4",
+   "proto": "post_3",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "A_frame_beam_1",
+   "proto": "beam_A_0",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "A_frame_beam_2",
+   "proto": "beam_A_1",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "A_frame_beam_3",
+   "proto": "beam_A_2",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "A_frame_beam_4",
+   "proto": "beam_A_3",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "A_frame_cross_1",
+   "proto": "cross_A_0",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "A_frame_cross_2",
+   "proto": "cross_A_1",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "A_fb_plate",
+   "proto": "fb_plate_A",
+   "group": "retainer",
+   "material": "Al plate, 150 x 150 x 15, the frame bearing's housing, on the cross beams (earth)",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "A_frame_bearing",
+   "proto": "frame_bearing",
+   "group": "retainer",
+   "material": "6205 class frame bearing (earth)",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "A_stub",
+   "proto": "stub_A",
+   "group": "retainer",
+   "material": "steel stub shaft (earth): the coupling to the frame bearing",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "A_coupling",
+   "proto": "coupling_A",
+   "group": "retainer",
+   "material": "G10 insulating coupling tube, bonded over the REF shaft and the earthed stub",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "A_coupling_plug",
+   "proto": "plug_A",
+   "group": "retainer",
+   "material": "G10 plug, bonded: the coupling's solid gap (no inner surface)",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "A_coupling_cover",
+   "proto": "ccover_A",
+   "group": "retainer",
+   "material": "PTFE heat-shrink cover on the coupling (stock)",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_coupling_shed_1",
+   "proto": "cshed",
+   "group": "retainer",
+   "material": "PTFE shed on the coupling (punched from stock sheet)",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "A_coupling_shed_2",
+   "proto": "cshed",
+   "group": "retainer",
+   "material": "PTFE shed on the coupling (punched from stock sheet)",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_frame_beam_1",
+   "proto": "beam_B_0",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "B_frame_beam_2",
+   "proto": "beam_B_1",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "B_frame_beam_3",
+   "proto": "beam_B_2",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "B_frame_beam_4",
+   "proto": "beam_B_3",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "B_frame_cross_1",
+   "proto": "cross_B_0",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "B_frame_cross_2",
+   "proto": "cross_B_1",
+   "group": "retainer",
+   "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "B_fb_plate",
+   "proto": "fb_plate_B",
+   "group": "retainer",
+   "material": "Al plate, 150 x 150 x 15, the frame bearing's housing, on the cross beams (earth)",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "B_frame_bearing",
+   "proto": "frame_bearing",
+   "group": "retainer",
+   "material": "6205 class frame bearing (earth)",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "B_stub",
+   "proto": "stub_B",
+   "group": "retainer",
+   "material": "steel stub shaft (earth): the coupling to the frame bearing",
+   "kind": "cond",
+   "net": "e"
+  },
+  {
+   "name": "B_coupling",
+   "proto": "coupling_B",
+   "group": "retainer",
+   "material": "G10 insulating coupling tube, bonded over the REF shaft and the earthed stub",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "B_coupling_plug",
+   "proto": "plug_B",
+   "group": "retainer",
+   "material": "G10 plug, bonded: the coupling's solid gap (no inner surface)",
+   "kind": "diel",
+   "eps": 4.7
+  },
+  {
+   "name": "B_coupling_cover",
+   "proto": "ccover_B",
+   "group": "retainer",
+   "material": "PTFE heat-shrink cover on the coupling (stock)",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_coupling_shed_1",
+   "proto": "cshed",
+   "group": "retainer",
+   "material": "PTFE shed on the coupling (punched from stock sheet)",
+   "kind": "diel",
+   "eps": 2.1
+  },
+  {
+   "name": "B_coupling_shed_2",
+   "proto": "cshed",
+   "group": "retainer",
+   "material": "PTFE shed on the coupling (punched from stock sheet)",
+   "kind": "diel",
+   "eps": 2.1
+  }
+ ],
+ "G_GEOM": {
+  "prototypes": 274,
+  "failed": [],
+  "pass_": true,
+  "tol_mm": 0.05,
+  "rows": {
+   "hub_vessel": {
+    "points": 2000,
+    "inside_occ": 217,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 14484.836528151332,
+    "material": "borosilicate vessel, OD 50 mm, wall 2 mm (vacuum inside)"
+   },
+   "hub_gel": {
+    "points": 2000,
+    "inside_occ": 43,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 3490.0663310473237,
+    "material": "silicone gel, 0.5 mm, vacuum-cast"
+   },
+   "hub_retainer": {
+    "points": 2000,
+    "inside_occ": 1110,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 301893.56401723286,
+    "material": "PEEK retainer, unfilled"
+   },
+   "hub_coupler": {
+    "points": 2000,
+    "inside_occ": 261,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 94825.64797409542,
+    "material": "G10 shaft coupler: a tube over the retainer and both flanges"
+   },
+   "hub_ring_B": {
+    "points": 2000,
+    "inside_occ": 9,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 131.4859334236653,
+    "material": "Cu-ETP foil 0.1 mm, a band"
+   },
+   "hub_bead_B_pol": {
+    "points": 2000,
+    "inside_occ": 354,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 520.5518176218468,
+    "material": "Cu wire ring, 3 mm"
+   },
+   "hub_bead_B_eq": {
+    "points": 2000,
+    "inside_occ": 133,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 424.0201655294749,
+    "material": "Cu wire ring, 2 mm"
+   },
+   "hub_ring_A": {
+    "points": 2000,
+    "inside_occ": 7,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 131.48593342366712,
+    "material": "Cu-ETP foil 0.1 mm, a band"
+   },
+   "hub_bead_A_pol": {
+    "points": 2000,
+    "inside_occ": 320,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 520.551817621847,
+    "material": "Cu wire ring, 3 mm"
+   },
+   "hub_bead_A_eq": {
+    "points": 2000,
+    "inside_occ": 113,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 424.02016552947475,
+    "material": "Cu wire ring, 2 mm"
+   },
+   "ah_core_B": {
+    "points": 2000,
+    "inside_occ": 1322,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 4907.385280198519,
+    "material": "77 MnZn rod (Fair-Rite 4077484611)"
+   },
+   "ah_former_B": {
+    "points": 2000,
+    "inside_occ": 465,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2919.3249733483176,
+    "material": "G-10 former"
+   },
+   "ah_coil_B": {
+    "points": 2000,
+    "inside_occ": 673,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 7921.840035292017,
+    "material": "Cu coil, 160 turns"
+   },
+   "ah_core_A": {
+    "points": 2000,
+    "inside_occ": 1280,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 4907.385280198518,
+    "material": "77 MnZn rod (Fair-Rite 4077484611)"
+   },
+   "ah_former_A": {
+    "points": 2000,
+    "inside_occ": 450,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2919.3249733483176,
+    "material": "G-10 former"
+   },
+   "ah_coil_A": {
+    "points": 2000,
+    "inside_occ": 715,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 7921.840035292017,
+    "material": "Cu coil, 160 turns"
+   },
+   "flange": {
+    "points": 2000,
+    "inside_occ": 1361,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 22619.467105846514,
+    "material": "austenitic stainless flange, non-magnetic, \u00d860"
+   },
+   "shaft_A": {
+    "points": 2000,
+    "inside_occ": 1436,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 113882.73369263,
+    "material": "austenitic stainless shaft half, non-magnetic"
+   },
+   "sleeve_A": {
+    "points": 2000,
+    "inside_occ": 930,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 160070.42888570717,
+    "material": "G10 rotor sleeve"
+   },
+   "cover_A": {
+    "points": 2000,
+    "inside_occ": 255,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 52144.154864283366,
+    "material": "extruded PTFE tube over the sleeve (stock, not machined): the creepage cover"
+   },
+   "shed": {
+    "points": 2000,
+    "inside_occ": 526,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 3455.751918948773,
+    "material": "PTFE shed, 10 mm, punched from stock sheet"
+   },
+   "shaft_B": {
+    "points": 2000,
+    "inside_occ": 1480,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 113882.73369263,
+    "material": "austenitic stainless shaft half, non-magnetic"
+   },
+   "sleeve_B": {
+    "points": 2000,
+    "inside_occ": 960,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 160070.42888570717,
+    "material": "G10 rotor sleeve"
+   },
+   "cover_B": {
+    "points": 2000,
+    "inside_occ": 236,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 52144.154864283366,
+    "material": "extruded PTFE tube over the sleeve (stock, not machined): the creepage cover"
+   },
+   "ref_term_A_-28": {
+    "points": 2000,
+    "inside_occ": 538,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 88.35729338221311,
+    "material": "brass REF terminal through the coupler into the flange [IR]"
+   },
+   "ref_term_B_152": {
+    "points": 2000,
+    "inside_occ": 554,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 88.3572933822131,
+    "material": "brass REF terminal through the coupler into the flange [IR]"
+   },
+   "rotor_vane": {
+    "points": 2000,
+    "inside_occ": 436,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 87184.62323842588,
+    "material": "Al rotor vane, 3 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes"
+   },
+   "rotor_vane_end": {
+    "points": 2000,
+    "inside_occ": 531,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 116246.16431790116,
+    "material": "Al rotor vane, 4 mm, 6 sectors of 22 deg on its ring; the N1 comb's holes; the stack's end vane"
+   },
+   "stator_vane": {
+    "points": 2000,
+    "inside_occ": 400,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 113781.39165965185,
+    "material": "Al stator vane, 3 mm, 6 sectors of 22 deg on its ring, six lugs"
+   },
+   "stator_vane_end": {
+    "points": 2000,
+    "inside_occ": 445,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 170672.08748947748,
+    "material": "Al stator vane, 4.5 mm, 6 sectors of 22 deg on its ring, six lugs; the stack's end vane"
+   },
+   "ca_n1_A": {
+    "points": 2000,
+    "inside_occ": 1050,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 192449.09301555398,
+    "material": "Al plate, 3 mm, full annulus; three tabs to the N1 comb"
+   },
+   "ca_n1_end_A": {
+    "points": 2000,
+    "inside_occ": 1183,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 256598.79068740527,
+    "material": "Al plate, 4 mm, full annulus; three tabs to the N1 comb; the column's end plate"
+   },
+   "ca_n2_A": {
+    "points": 2000,
+    "inside_occ": 1066,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 192449.093015554,
+    "material": "Al plate, 3 mm, full annulus; three tabs to the N2 comb"
+   },
+   "ca_n2_first_A": {
+    "points": 2000,
+    "inside_occ": 1086,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 253735.68192560214,
+    "material": "Al plate, 4 mm; tabs to the N2 comb; the riser's clearance hole \u00d830; the column's end plate"
+   },
+   "comb_tube_A_1_0": {
+    "points": 2000,
+    "inside_occ": 676,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 5607.742886657779,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N1 comb"
+   },
+   "comb_sp_A_1_0_107": {
+    "points": 2000,
+    "inside_occ": 366,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_0_125": {
+    "points": 2000,
+    "inside_occ": 354,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_0_143": {
+    "points": 2000,
+    "inside_occ": 322,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 197.87321328635312,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_0_153": {
+    "points": 2000,
+    "inside_occ": 362,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_0_172": {
+    "points": 2000,
+    "inside_occ": 352,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_0_190": {
+    "points": 2000,
+    "inside_occ": 382,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_0_208": {
+    "points": 2000,
+    "inside_occ": 378,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_0_226": {
+    "points": 2000,
+    "inside_occ": 365,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_tube_A_1_1": {
+    "points": 2000,
+    "inside_occ": 667,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 5607.742886657779,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N1 comb"
+   },
+   "comb_sp_A_1_1_107": {
+    "points": 2000,
+    "inside_occ": 380,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_1_125": {
+    "points": 2000,
+    "inside_occ": 374,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_1_143": {
+    "points": 2000,
+    "inside_occ": 331,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 197.87321328635318,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_1_153": {
+    "points": 2000,
+    "inside_occ": 379,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_1_172": {
+    "points": 2000,
+    "inside_occ": 386,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_1_190": {
+    "points": 2000,
+    "inside_occ": 372,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_1_208": {
+    "points": 2000,
+    "inside_occ": 370,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_1_226": {
+    "points": 2000,
+    "inside_occ": 336,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_tube_A_1_2": {
+    "points": 2000,
+    "inside_occ": 677,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 5607.742886657779,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N1 comb"
+   },
+   "comb_sp_A_1_2_107": {
+    "points": 2000,
+    "inside_occ": 361,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_2_125": {
+    "points": 2000,
+    "inside_occ": 390,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_2_143": {
+    "points": 2000,
+    "inside_occ": 319,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 197.87321328635312,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_2_153": {
+    "points": 2000,
+    "inside_occ": 340,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_2_172": {
+    "points": 2000,
+    "inside_occ": 383,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_2_190": {
+    "points": 2000,
+    "inside_occ": 364,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_2_208": {
+    "points": 2000,
+    "inside_occ": 381,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_1_2_226": {
+    "points": 2000,
+    "inside_occ": 364,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_tube_A_2_0": {
+    "points": 2000,
+    "inside_occ": 641,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1602.2122533307943,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N2 comb"
+   },
+   "comb_sp_A_2_0_97": {
+    "points": 2000,
+    "inside_occ": 387,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_2_0_116": {
+    "points": 2000,
+    "inside_occ": 374,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_tube_A_2_1": {
+    "points": 2000,
+    "inside_occ": 612,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1602.2122533307945,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N2 comb"
+   },
+   "comb_sp_A_2_1_97": {
+    "points": 2000,
+    "inside_occ": 361,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_2_1_116": {
+    "points": 2000,
+    "inside_occ": 397,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_tube_A_2_2": {
+    "points": 2000,
+    "inside_occ": 638,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1602.2122533307947,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N2 comb"
+   },
+   "comb_sp_A_2_2_97": {
+    "points": 2000,
+    "inside_occ": 397,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_A_2_2_116": {
+    "points": 2000,
+    "inside_occ": 363,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "standoff_A_0": {
+    "points": 2000,
+    "inside_occ": 1199,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1256.637061435917,
+    "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)"
+   },
+   "standoff_A_1": {
+    "points": 2000,
+    "inside_occ": 1260,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1256.637061435917,
+    "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)"
+   },
+   "standoff_A_2": {
+    "points": 2000,
+    "inside_occ": 1219,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1256.637061435917,
+    "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)"
+   },
+   "tie_A_0": {
+    "points": 2000,
+    "inside_occ": 1075,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.281875404686,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_A_0_163": {
+    "points": 2000,
+    "inside_occ": 878,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_0_181": {
+    "points": 2000,
+    "inside_occ": 896,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_0_199": {
+    "points": 2000,
+    "inside_occ": 925,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_0_217": {
+    "points": 2000,
+    "inside_occ": 897,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_0_235": {
+    "points": 2000,
+    "inside_occ": 874,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_0_253": {
+    "points": 2000,
+    "inside_occ": 919,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015465,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_A_1": {
+    "points": 2000,
+    "inside_occ": 1086,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.2818754046834,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_A_1_163": {
+    "points": 2000,
+    "inside_occ": 926,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_1_181": {
+    "points": 2000,
+    "inside_occ": 849,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_1_199": {
+    "points": 2000,
+    "inside_occ": 905,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_1_217": {
+    "points": 2000,
+    "inside_occ": 867,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_1_235": {
+    "points": 2000,
+    "inside_occ": 917,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_1_253": {
+    "points": 2000,
+    "inside_occ": 903,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015467,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_A_2": {
+    "points": 2000,
+    "inside_occ": 1096,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.281875404686,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_A_2_163": {
+    "points": 2000,
+    "inside_occ": 888,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_2_181": {
+    "points": 2000,
+    "inside_occ": 880,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_2_199": {
+    "points": 2000,
+    "inside_occ": 908,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_2_217": {
+    "points": 2000,
+    "inside_occ": 870,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_2_235": {
+    "points": 2000,
+    "inside_occ": 861,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_2_253": {
+    "points": 2000,
+    "inside_occ": 879,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015464,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_A_3": {
+    "points": 2000,
+    "inside_occ": 1090,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.281875404686,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_A_3_163": {
+    "points": 2000,
+    "inside_occ": 900,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_3_181": {
+    "points": 2000,
+    "inside_occ": 922,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_3_199": {
+    "points": 2000,
+    "inside_occ": 904,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_3_217": {
+    "points": 2000,
+    "inside_occ": 922,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_3_235": {
+    "points": 2000,
+    "inside_occ": 922,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_3_253": {
+    "points": 2000,
+    "inside_occ": 864,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015464,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_A_4": {
+    "points": 2000,
+    "inside_occ": 1078,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.2818754046834,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_A_4_163": {
+    "points": 2000,
+    "inside_occ": 874,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_4_181": {
+    "points": 2000,
+    "inside_occ": 886,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_4_199": {
+    "points": 2000,
+    "inside_occ": 899,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_4_217": {
+    "points": 2000,
+    "inside_occ": 896,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_4_235": {
+    "points": 2000,
+    "inside_occ": 874,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_4_253": {
+    "points": 2000,
+    "inside_occ": 933,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015467,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_A_5": {
+    "points": 2000,
+    "inside_occ": 1115,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.281875404686,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_A_5_163": {
+    "points": 2000,
+    "inside_occ": 876,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_5_181": {
+    "points": 2000,
+    "inside_occ": 885,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_5_199": {
+    "points": 2000,
+    "inside_occ": 924,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_5_217": {
+    "points": 2000,
+    "inside_occ": 924,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_5_235": {
+    "points": 2000,
+    "inside_occ": 885,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_A_5_253": {
+    "points": 2000,
+    "inside_occ": 889,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015464,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "ca_n1_B": {
+    "points": 2000,
+    "inside_occ": 1040,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 192449.09301555436,
+    "material": "Al plate, 3 mm, full annulus; three tabs to the N1 comb"
+   },
+   "ca_n1_end_B": {
+    "points": 2000,
+    "inside_occ": 1138,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 256598.79068740577,
+    "material": "Al plate, 4 mm, full annulus; three tabs to the N1 comb; the column's end plate"
+   },
+   "ca_n2_B": {
+    "points": 2000,
+    "inside_occ": 1095,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 192449.09301555384,
+    "material": "Al plate, 3 mm, full annulus; three tabs to the N2 comb"
+   },
+   "ca_n2_first_B": {
+    "points": 2000,
+    "inside_occ": 1110,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 253735.68195127478,
+    "material": "Al plate, 4 mm; tabs to the N2 comb; the riser's clearance hole \u00d830; the column's end plate"
+   },
+   "comb_tube_B_4_0": {
+    "points": 2000,
+    "inside_occ": 658,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 5607.742886657779,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N4 comb"
+   },
+   "comb_sp_B_4_0_107": {
+    "points": 2000,
+    "inside_occ": 388,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_0_125": {
+    "points": 2000,
+    "inside_occ": 375,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_0_143": {
+    "points": 2000,
+    "inside_occ": 346,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 197.87321328635312,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_0_153": {
+    "points": 2000,
+    "inside_occ": 334,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_0_172": {
+    "points": 2000,
+    "inside_occ": 361,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_0_190": {
+    "points": 2000,
+    "inside_occ": 372,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_0_208": {
+    "points": 2000,
+    "inside_occ": 361,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_0_226": {
+    "points": 2000,
+    "inside_occ": 372,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_tube_B_4_1": {
+    "points": 2000,
+    "inside_occ": 645,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 5607.742886657779,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N4 comb"
+   },
+   "comb_sp_B_4_1_107": {
+    "points": 2000,
+    "inside_occ": 346,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_1_125": {
+    "points": 2000,
+    "inside_occ": 356,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_1_143": {
+    "points": 2000,
+    "inside_occ": 331,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 197.87321328635312,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_1_153": {
+    "points": 2000,
+    "inside_occ": 354,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_1_172": {
+    "points": 2000,
+    "inside_occ": 381,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_1_190": {
+    "points": 2000,
+    "inside_occ": 367,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_1_208": {
+    "points": 2000,
+    "inside_occ": 350,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_1_226": {
+    "points": 2000,
+    "inside_occ": 376,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.6830332158828,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_tube_B_4_2": {
+    "points": 2000,
+    "inside_occ": 632,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 5607.742886657779,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N4 comb"
+   },
+   "comb_sp_B_4_2_107": {
+    "points": 2000,
+    "inside_occ": 376,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588314,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_2_125": {
+    "points": 2000,
+    "inside_occ": 342,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588314,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_2_143": {
+    "points": 2000,
+    "inside_occ": 320,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 197.87321328635323,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_2_153": {
+    "points": 2000,
+    "inside_occ": 370,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588314,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_2_172": {
+    "points": 2000,
+    "inside_occ": 358,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588314,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_2_190": {
+    "points": 2000,
+    "inside_occ": 379,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588314,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_2_208": {
+    "points": 2000,
+    "inside_occ": 363,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588314,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_4_2_226": {
+    "points": 2000,
+    "inside_occ": 346,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588314,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_tube_B_3_0": {
+    "points": 2000,
+    "inside_occ": 605,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1602.2122533307943,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N3 comb"
+   },
+   "comb_sp_B_3_0_97": {
+    "points": 2000,
+    "inside_occ": 370,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_3_0_116": {
+    "points": 2000,
+    "inside_occ": 362,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_tube_B_3_1": {
+    "points": 2000,
+    "inside_occ": 649,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1602.2122533307947,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N3 comb"
+   },
+   "comb_sp_B_3_1_97": {
+    "points": 2000,
+    "inside_occ": 347,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588326,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_3_1_116": {
+    "points": 2000,
+    "inside_occ": 399,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588326,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_tube_B_3_2": {
+    "points": 2000,
+    "inside_occ": 618,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1602.2122533307943,
+    "material": "Al 6063-T6 round tube 10 x 1.5 (EN 755-8): the N3 comb"
+   },
+   "comb_sp_B_3_2_97": {
+    "points": 2000,
+    "inside_occ": 350,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "comb_sp_B_3_2_116": {
+    "points": 2000,
+    "inside_occ": 363,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 494.68303321588303,
+    "material": "Al spacer tube 12 x 1 on the comb"
+   },
+   "standoff_B_0": {
+    "points": 2000,
+    "inside_occ": 1217,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1256.637061435917,
+    "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)"
+   },
+   "standoff_B_1": {
+    "points": 2000,
+    "inside_occ": 1248,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1256.6370614359175,
+    "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)"
+   },
+   "standoff_B_2": {
+    "points": 2000,
+    "inside_occ": 1246,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1256.637061435917,
+    "material": "glazed steatite C 221 standoff, M4 inserts (IEC 60672, catalogue)"
+   },
+   "tie_B_0": {
+    "points": 2000,
+    "inside_occ": 1123,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.281875404686,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_B_0_163": {
+    "points": 2000,
+    "inside_occ": 910,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_0_181": {
+    "points": 2000,
+    "inside_occ": 876,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_0_199": {
+    "points": 2000,
+    "inside_occ": 904,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_0_217": {
+    "points": 2000,
+    "inside_occ": 917,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_0_235": {
+    "points": 2000,
+    "inside_occ": 938,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_0_253": {
+    "points": 2000,
+    "inside_occ": 894,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015465,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_B_1": {
+    "points": 2000,
+    "inside_occ": 1097,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.2818754046834,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_B_1_163": {
+    "points": 2000,
+    "inside_occ": 920,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_1_181": {
+    "points": 2000,
+    "inside_occ": 829,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_1_199": {
+    "points": 2000,
+    "inside_occ": 879,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_1_217": {
+    "points": 2000,
+    "inside_occ": 846,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_1_235": {
+    "points": 2000,
+    "inside_occ": 920,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_1_253": {
+    "points": 2000,
+    "inside_occ": 882,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015467,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_B_2": {
+    "points": 2000,
+    "inside_occ": 1082,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.281875404686,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_B_2_163": {
+    "points": 2000,
+    "inside_occ": 910,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_2_181": {
+    "points": 2000,
+    "inside_occ": 884,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_2_199": {
+    "points": 2000,
+    "inside_occ": 900,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_2_217": {
+    "points": 2000,
+    "inside_occ": 882,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_2_235": {
+    "points": 2000,
+    "inside_occ": 905,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_2_253": {
+    "points": 2000,
+    "inside_occ": 871,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015464,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_B_3": {
+    "points": 2000,
+    "inside_occ": 1044,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.281875404686,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_B_3_163": {
+    "points": 2000,
+    "inside_occ": 904,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_3_181": {
+    "points": 2000,
+    "inside_occ": 884,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_3_199": {
+    "points": 2000,
+    "inside_occ": 916,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_3_217": {
+    "points": 2000,
+    "inside_occ": 903,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_3_235": {
+    "points": 2000,
+    "inside_occ": 908,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_3_253": {
+    "points": 2000,
+    "inside_occ": 926,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015464,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_B_4": {
+    "points": 2000,
+    "inside_occ": 1123,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.2818754046834,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_B_4_163": {
+    "points": 2000,
+    "inside_occ": 912,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_4_181": {
+    "points": 2000,
+    "inside_occ": 877,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_4_199": {
+    "points": 2000,
+    "inside_occ": 880,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_4_217": {
+    "points": 2000,
+    "inside_occ": 912,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_4_235": {
+    "points": 2000,
+    "inside_occ": 892,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.674151646658,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_4_253": {
+    "points": 2000,
+    "inside_occ": 920,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015467,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_B_5": {
+    "points": 2000,
+    "inside_occ": 1065,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2405.281875404686,
+    "material": "stainless M5 tie rod (REF)"
+   },
+   "tie_sp_B_5_163": {
+    "points": 2000,
+    "inside_occ": 912,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_5_181": {
+    "points": 2000,
+    "inside_occ": 904,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_5_199": {
+    "points": 2000,
+    "inside_occ": 898,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_5_217": {
+    "points": 2000,
+    "inside_occ": 911,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_5_235": {
+    "points": 2000,
+    "inside_occ": 900,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 871.6741516466577,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "tie_sp_B_5_253": {
+    "points": 2000,
+    "inside_occ": 932,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 900.7299567015464,
+    "material": "Al spacer tube \u00d810 on a tie rod (REF)"
+   },
+   "cage": {
+    "points": 2000,
+    "inside_occ": 70,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2784054.2768700495,
+    "material": "G10 cage tube, spider to spider across the hub (the counter-rotor's backbone)"
+   },
+   "bearing": {
+    "points": 2000,
+    "inside_occ": 1094,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 24492.641725549423,
+    "material": "6205 class bearing: the REF link [placeholder, the 2026-10-08 decision]"
+   },
+   "spider": {
+    "points": 2000,
+    "inside_occ": 1369,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 908523.0856858207,
+    "material": "Al spider: the bearing's outer ring to the cage's bore; the tie rods end in it (REF)"
+   },
+   "deck_plate_A": {
+    "points": 2000,
+    "inside_occ": 1219,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 198825.11586039086,
+    "material": "G10 deck plate, 6 mm, r 33-108, bonded on the coupler; the cross nets' and the ring lead's holes [IR]"
+   },
+   "deck_plate_B": {
+    "points": 2000,
+    "inside_occ": 1180,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 198825.11586039088,
+    "material": "G10 deck plate, 6 mm, r 33-108, bonded on the coupler; the cross nets' and the ring lead's holes [IR]"
+   },
+   "stick_body": {
+    "points": 2000,
+    "inside_occ": 1189,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2010.6192982974671,
+    "material": "HV rectifier stick, 2CL77 class (20 kV, 5 mA, avalanche)"
+   },
+   "stick_pot": {
+    "points": 2000,
+    "inside_occ": 1132,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 24198.574209456303,
+    "material": "silicone potting, 8 mm over the part"
+   },
+   "stick_lead_neg": {
+    "points": 2000,
+    "inside_occ": 427,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 14.702653618800234,
+    "material": "tinned Cu lead, 1.2 mm"
+   },
+   "stick_lead_pos": {
+    "points": 2000,
+    "inside_occ": 425,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 14.702653618800234,
+    "material": "tinned Cu lead, 1.2 mm"
+   },
+   "clamph_body": {
+    "points": 2000,
+    "inside_occ": 99,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 40598.405537749,
+    "material": "half the clamp string: 33 x 1.5KE200A in a meander"
+   },
+   "clamph_pot": {
+    "points": 2000,
+    "inside_occ": 125,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 89471.16500600283,
+    "material": "silicone potting, 8 mm over the half module"
+   },
+   "clamph_lead_0": {
+    "points": 2000,
+    "inside_occ": 279,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 8.132081009264919,
+    "material": "tinned Cu lead, 1.2 mm"
+   },
+   "clamph_lead_1": {
+    "points": 2000,
+    "inside_occ": 150,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 8.132081009264931,
+    "material": "tinned Cu lead, 1.2 mm"
+   },
+   "j_cond": {
+    "points": 2000,
+    "inside_occ": 1223,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 942.4777960769378,
+    "material": "brass junction terminal"
+   },
+   "j_pot": {
+    "points": 2000,
+    "inside_occ": 1202,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 6597.3445725385645,
+    "material": "silicone potting, the junction's block"
+   },
+   "A_joint_0_1": {
+    "points": 2000,
+    "inside_occ": 346,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 14.31541701856877,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "A_joint_1_0": {
+    "points": 2000,
+    "inside_occ": 340,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 91.10412691306294,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "A_ring_m_2": {
+    "points": 2000,
+    "inside_occ": 8,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1785.8909185767045,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "A_ring_m_3": {
+    "points": 2000,
+    "inside_occ": 9,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1785.890944576369,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "A_strap_-28": {
+    "points": 2000,
+    "inside_occ": 51,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 450.33774394444947,
+    "material": "Cu strap (REF)"
+   },
+   "A_ring_lead": {
+    "points": 2000,
+    "inside_occ": 21,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 452.0005319950279,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "A_ring_lead_deck": {
+    "points": 2000,
+    "inside_occ": 762,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 42.4115008234622,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_joint_0_4": {
+    "points": 2000,
+    "inside_occ": 364,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 14.31541701856877,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_joint_1_0": {
+    "points": 2000,
+    "inside_occ": 306,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 91.10412693154923,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_ring_m_2": {
+    "points": 2000,
+    "inside_occ": 16,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1785.8909401617182,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_ring_m_3": {
+    "points": 2000,
+    "inside_occ": 16,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1785.890939795749,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_strap_152": {
+    "points": 2000,
+    "inside_occ": 39,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 450.33774394434846,
+    "material": "Cu strap (REF)"
+   },
+   "B_ring_lead": {
+    "points": 2000,
+    "inside_occ": 35,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 452.00056902626784,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_ring_lead_deck": {
+    "points": 2000,
+    "inside_occ": 802,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 42.4115008234622,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "A_cross_2": {
+    "points": 2000,
+    "inside_occ": 806,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 42.411500823462184,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "cross_2": {
+    "points": 2000,
+    "inside_occ": 875,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 508.93800988154624,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_cross_2": {
+    "points": 2000,
+    "inside_occ": 793,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 42.411500823462184,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "A_cross_3": {
+    "points": 2000,
+    "inside_occ": 775,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 42.4115008234622,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "cross_3": {
+    "points": 2000,
+    "inside_occ": 883,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 508.9380098815464,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_cross_3": {
+    "points": 2000,
+    "inside_occ": 730,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 42.4115008234622,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "brk_arm": {
+    "points": 2000,
+    "inside_occ": 1531,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 4516.950342231213,
+    "material": "G10 arm, 6 mm, 19 wide, one drilled wire seat, sawn slots for the mica (bracket B, one wire per arm)"
+   },
+   "brk_mica": {
+    "points": 2000,
+    "inside_occ": 123,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 923.9999999999908,
+    "material": "mica barriers, 0.3 mm muscovite: 4 across the arm, 8 mm proud (bracket B)"
+   },
+   "brk_collar_half": {
+    "points": 2000,
+    "inside_occ": 191,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 8076.546619643206,
+    "material": "G10 split collar half, 6 x 12 mm, clamped round the coupler (two screws across each split, not drawn)"
+   },
+   "A_riser_deck": {
+    "points": 2000,
+    "inside_occ": 821,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 169.6460032938488,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "A_riser": {
+    "points": 2000,
+    "inside_occ": 862,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 204.98892064673396,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "A_tap_deck": {
+    "points": 2000,
+    "inside_occ": 810,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 169.64600329384882,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "A_tap": {
+    "points": 2000,
+    "inside_occ": 859,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 134.30308594096365,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_riser_deck": {
+    "points": 2000,
+    "inside_occ": 846,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 169.6460032938488,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_riser": {
+    "points": 2000,
+    "inside_occ": 857,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 204.98892064673396,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_tap_deck": {
+    "points": 2000,
+    "inside_occ": 852,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 169.64600329384882,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "B_tap": {
+    "points": 2000,
+    "inside_occ": 835,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 134.30308594096365,
+    "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+   },
+   "post_0": {
+    "points": 2000,
+    "inside_occ": 1843,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1300984.4131851855,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "post_1": {
+    "points": 2000,
+    "inside_occ": 1854,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1300984.4131851855,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "post_2": {
+    "points": 2000,
+    "inside_occ": 1851,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1300984.4131851855,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "post_3": {
+    "points": 2000,
+    "inside_occ": 1851,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 1300984.4131851855,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "beam_A_0": {
+    "points": 2000,
+    "inside_occ": 1849,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 609836.4436805557,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "beam_A_1": {
+    "points": 2000,
+    "inside_occ": 1845,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 609836.4436805557,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "beam_A_2": {
+    "points": 2000,
+    "inside_occ": 1849,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 484741.7885665955,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "beam_A_3": {
+    "points": 2000,
+    "inside_occ": 1853,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 484741.7885665955,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "cross_A_0": {
+    "points": 2000,
+    "inside_occ": 1858,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 484741.7885665955,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "cross_A_1": {
+    "points": 2000,
+    "inside_occ": 1851,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 484741.7885665955,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "fb_plate_A": {
+    "points": 2000,
+    "inside_occ": 1680,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 305644.2504925995,
+    "material": "Al plate, 150 x 150 x 15, the frame bearing's housing, on the cross beams (earth)"
+   },
+   "frame_bearing": {
+    "points": 2000,
+    "inside_occ": 1109,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 24492.641725549423,
+    "material": "6205 class frame bearing (earth)"
+   },
+   "stub_A": {
+    "points": 2000,
+    "inside_occ": 1446,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 42706.02513473625,
+    "material": "steel stub shaft (earth): the coupling to the frame bearing"
+   },
+   "coupling_A": {
+    "points": 2000,
+    "inside_occ": 650,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 27942.11045919101,
+    "material": "G10 insulating coupling tube, bonded over the REF shaft and the earthed stub"
+   },
+   "plug_A": {
+    "points": 2000,
+    "inside_occ": 1393,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 13253.594007331942,
+    "material": "G10 plug, bonded: the coupling's solid gap (no inner surface)"
+   },
+   "ccover_A": {
+    "points": 2000,
+    "inside_occ": 158,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 7367.034772668063,
+    "material": "PTFE heat-shrink cover on the coupling (stock)"
+   },
+   "cshed": {
+    "points": 2000,
+    "inside_occ": 524,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 2211.681228127215,
+    "material": "PTFE shed on the coupling (punched from stock sheet)"
+   },
+   "beam_B_0": {
+    "points": 2000,
+    "inside_occ": 1842,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 609836.4436805559,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "beam_B_1": {
+    "points": 2000,
+    "inside_occ": 1840,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 609836.4436805559,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "beam_B_2": {
+    "points": 2000,
+    "inside_occ": 1878,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 484741.78856659564,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "beam_B_3": {
+    "points": 2000,
+    "inside_occ": 1842,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 484741.78856659564,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "cross_B_0": {
+    "points": 2000,
+    "inside_occ": 1843,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 484741.7885665957,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "cross_B_1": {
+    "points": 2000,
+    "inside_occ": 1841,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 484741.7885665957,
+    "material": "Al 40 x 40 B-type T-slot profile, 8 mm slot (slots not drawn), earthed"
+   },
+   "fb_plate_B": {
+    "points": 2000,
+    "inside_occ": 1663,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 305644.2504925995,
+    "material": "Al plate, 150 x 150 x 15, the frame bearing's housing, on the cross beams (earth)"
+   },
+   "stub_B": {
+    "points": 2000,
+    "inside_occ": 1451,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 42706.02513473625,
+    "material": "steel stub shaft (earth): the coupling to the frame bearing"
+   },
+   "coupling_B": {
+    "points": 2000,
+    "inside_occ": 678,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 27942.11045919101,
+    "material": "G10 insulating coupling tube, bonded over the REF shaft and the earthed stub"
+   },
+   "plug_B": {
+    "points": 2000,
+    "inside_occ": 1409,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 13253.594007331942,
+    "material": "G10 plug, bonded: the coupling's solid gap (no inner surface)"
+   },
+   "ccover_B": {
+    "points": 2000,
+    "inside_occ": 129,
+    "disagree": 0,
+    "disagree_far": 0,
+    "volume_occ_mm3": 7367.034772668063,
+    "material": "PTFE heat-shrink cover on the coupling (stock)"
+   }
+  },
+  "thin": {
+   "points": 20000,
+   "rows": {
+    "hub_ring_B": {
+     "points": 20000,
+     "inside_occ": 116,
+     "disagree": 0,
+     "disagree_far": 0,
+     "volume_occ_mm3": 131.4859334236653,
+     "material": "Cu-ETP foil 0.1 mm, a band"
+    },
+    "hub_ring_A": {
+     "points": 20000,
+     "inside_occ": 83,
+     "disagree": 0,
+     "disagree_far": 0,
+     "volume_occ_mm3": 131.48593342366712,
+     "material": "Cu-ETP foil 0.1 mm, a band"
+    },
+    "A_ring_m_2": {
+     "points": 20000,
+     "inside_occ": 170,
+     "disagree": 0,
+     "disagree_far": 0,
+     "volume_occ_mm3": 1785.8909185767045,
+     "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+    },
+    "A_ring_m_3": {
+     "points": 20000,
+     "inside_occ": 148,
+     "disagree": 0,
+     "disagree_far": 0,
+     "volume_occ_mm3": 1785.890944576369,
+     "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+    },
+    "A_ring_lead": {
+     "points": 20000,
+     "inside_occ": 323,
+     "disagree": 0,
+     "disagree_far": 0,
+     "volume_occ_mm3": 452.0005319950279,
+     "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+    },
+    "B_ring_m_2": {
+     "points": 20000,
+     "inside_occ": 148,
+     "disagree": 0,
+     "disagree_far": 0,
+     "volume_occ_mm3": 1785.8909401617182,
+     "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+    },
+    "B_ring_m_3": {
+     "points": 20000,
+     "inside_occ": 169,
+     "disagree": 0,
+     "disagree_far": 0,
+     "volume_occ_mm3": 1785.890939795749,
+     "material": "PTFE HV wire, 1 mm Cu in 3 mm PTFE"
+    }
+   },
+   "failed": [],
+   "pass_": true
+  }
+ },
+ "G_PLACE": {
+  "parts": 12,
+  "failed": [],
+  "pass_": true,
+  "rows": {
+   "B_D4_pot": {
+    "place": {
+     "dx": 63.0,
+     "dz": 474.0,
+     "rot": -7.016709298534876e-15
+    },
+    "inside": 861,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "A_D3_body": {
+    "place": {
+     "dx": 63.0,
+     "dz": 378.0,
+     "rot": 180.0
+    },
+    "inside": 894,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "A_flange": {
+    "place": {
+     "dx": 0.0,
+     "dz": 346.0,
+     "rot": 0.0
+    },
+    "inside": 1014,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "B_D2_pot": {
+    "place": {
+     "dx": 63.0,
+     "dz": 474.0,
+     "rot": -180.0
+    },
+    "inside": 861,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "A_C1_s10": {
+    "place": {
+     "dx": 0.0,
+     "dz": 188.0,
+     "rot": 0.0
+    },
+    "inside": 298,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "B_C2_s10": {
+    "place": {
+     "dx": 0.0,
+     "dz": 661.0,
+     "rot": 0.0
+    },
+    "inside": 306,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "A_C1_s06": {
+    "place": {
+     "dx": 0.0,
+     "dz": 224.0,
+     "rot": 0.0
+    },
+    "inside": 300,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "B_C2_r05": {
+    "place": {
+     "dx": 0.0,
+     "dz": 616.0,
+     "rot": 30.0
+    },
+    "inside": 195,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "B_D2_body": {
+    "place": {
+     "dx": 63.0,
+     "dz": 474.0,
+     "rot": -180.0
+    },
+    "inside": 885,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "B_Cb_03": {
+    "place": {
+     "dx": 0.0,
+     "dz": 551.0,
+     "rot": 0.0
+    },
+    "inside": 772,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "A_shed_1": {
+    "place": {
+     "dx": 0.0,
+     "dz": 169.0,
+     "rot": 0.0
+    },
+    "inside": 407,
+    "disagree": 0,
+    "disagree_far": 0
+   },
+   "B_J_2x_pot": {
+    "place": {
+     "dx": 71.11961754677819,
+     "dz": 474.0,
+     "rot": 27.64597536373867
+    },
+    "inside": 506,
+    "disagree": 0,
+    "disagree_far": 0
+   }
+  }
+ },
+ "nets": {
+  "nets": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "REF",
+   "e",
+   "m1",
+   "m4"
+  ],
+  "missing": [],
+  "pass_": true
+ }
+}
