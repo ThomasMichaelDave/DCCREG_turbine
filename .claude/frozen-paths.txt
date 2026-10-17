@@ -1,0 +1,21 @@
+# The frozen set: the one definition of "frozen", read by README's check (.claude/hooks/frozen_check.py),
+# the PreToolUse guard (.claude/hooks/guard_frozen_edit.py) and the Stop hook (.claude/hooks/stop_frozen_check.py).
+# Each [commit] header opens a freeze: the paths below it stay byte-identical with that commit.
+# Entries are git pathspecs (a trailing / is a directory, * a glob). Only the designer lifts a freeze.
+
+[b33baa2]
+shuttle_core.py
+reference/
+sim/pump_engine.py
+sim/pump_sizing.py
+sim/pump_synth.py
+spice/
+index.html
+tools/pump-calc*
+tools/pump-synth*
+tools/charge-pump-synth-live.html
+tools/schematic.svg
+
+# The rebuild's stage 0, frozen at its commit (rebuild/README.md, S0).
+[42747f4]
+rebuild/s0_base/

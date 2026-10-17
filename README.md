@@ -104,12 +104,17 @@ mdit-py-plugins, pypdf and playwright with Chromium). The circuit studies need n
 
 These stay byte-identical with commit `b33baa2`: `shuttle_core.py`, `reference/`, `sim/pump_engine.py`,
 `sim/pump_sizing.py`, `sim/pump_synth.py`, `spice/`, `index.html`, `tools/pump-calc*`, `tools/pump-synth*`,
-`tools/charge-pump-synth-live.html`, `tools/schematic.svg`. The check, which must print 0:
+`tools/charge-pump-synth-live.html`, `tools/schematic.svg`. The list itself lives in one place,
+`.claude/frozen-paths.txt`, which also holds the rebuild's S0 freeze (`rebuild/s0_base/` at `42747f4`). The check
+reads that list and must print 0:
 
 ```
-git diff b33baa2 -- shuttle_core.py reference/ sim/pump_engine.py sim/pump_sizing.py sim/pump_synth.py spice/ \
-  index.html tools/pump-calc* tools/pump-synth* tools/charge-pump-synth-live.html tools/schematic.svg | wc -l
+python3 .claude/hooks/frozen_check.py          # git diff b33baa2 -- <the list> | wc -l
+python3 .claude/hooks/frozen_check.py --all    # every freeze in the list
 ```
+
+Two Claude Code hooks enforce the same list (`.claude/settings.json`): a PreToolUse guard denies Edit / Write on a
+frozen path, and a Stop hook blocks the end of a turn while the check is non-zero (it catches shell writes).
 
 ## History
 
