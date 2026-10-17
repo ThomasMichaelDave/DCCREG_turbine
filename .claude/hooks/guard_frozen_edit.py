@@ -9,7 +9,7 @@ import frozen  # noqa: E402
 event = json.load(sys.stdin)
 args = event.get("tool_input") or {}
 path = args.get("file_path") or args.get("notebook_path")
-commit = frozen.freeze_of(path) if path else None
+commit = frozen.freeze_of(path, event.get("cwd")) if path else None
 if commit:
     print(json.dumps({"hookSpecificOutput": {
         "hookEventName": "PreToolUse",

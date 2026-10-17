@@ -40,34 +40,40 @@ def _matches(rel, spec):
     return rel == spec or rel.startswith(spec + "/")
 
 
-def freeze_of(path):
-    """The commit that freezes `path` (absolute or relative to the repo root), or None."""
+def checkout_of(path):
+    """The git checkout (main or worktree, wherever it lives) that holds `path`, or None."""
+    p = Path(os.path.realpath(path))
+    for d in (p, *p.parents):
+        if (d / ".git").exists():
+            return d
+    return None
+
+
+def freeze_of(path, cwd=None):
+    """The commit that freezes `path` in whichever checkout holds it, or None.
+
+    A relative path is taken against `cwd` (the hook event's) or the repo root. Matching is per checkout, so a
+    worktree's copy of a frozen file (e.g. under .claude/worktrees/) is frozen too."""
     p = Path(path)
     if not p.is_absolute():
-        p = ROOT / p
-    try:
-        rel = Path(os.path.realpath(p)).relative_to(Path(os.path.realpath(ROOT)))
-    except ValueError:
-        if sys.platform != "win32":
-            return None
-        try:  # a drive letter or case mismatch on Windows
-            rel = Path(_norm(os.path.realpath(p))).relative_to(Path(_norm(os.path.realpath(ROOT))))
-        except ValueError:
-            return None
-    rel = rel.as_posix()
+        p = Path(cwd or ROOT) / p
+    root = checkout_of(p)
+    if root is None:
+        return None
+    rel = Path(_norm(os.path.realpath(p))).relative_to(Path(_norm(str(root)))).as_posix()
     for commit, specs in freezes().items():
         if any(_matches(rel, s) for s in specs):
             return commit
     return None
 
 
-def diff_lines(commit):
-    """`git diff <commit> -- <its paths> | wc -l`, as README's check counts it."""
+def diff_lines(commit, root=ROOT):
+    """`git diff <commit> -- <its paths> | wc -l` in checkout `root`, as README's check counts it."""
     specs = freezes()[commit]
-    r = subprocess.run(["git", "diff", commit, "--", *specs], cwd=ROOT,
+    r = subprocess.run(["git", "diff", commit, "--", *specs], cwd=root,
                        capture_output=True, check=True)
     return len(r.stdout.splitlines())
 
 
-def all_diff_lines():
-    return {c: diff_lines(c) for c in freezes()}
+def all_diff_lines(root=ROOT):
+    return {c: diff_lines(c, root) for c in freezes()}

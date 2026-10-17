@@ -1,4 +1,6 @@
-"""Stop hook: block the end of a turn while any freeze's diff is non-empty (catches shell writes)."""
+"""Stop / SubagentStop hook: block the end of a turn while any freeze's diff is non-empty (catches shell writes).
+
+It checks the main checkout and, when the event's cwd is another checkout (a subagent's worktree), that one too."""
 import json
 import sys
 from pathlib import Path
@@ -9,9 +11,13 @@ import frozen  # noqa: E402
 event = json.load(sys.stdin)
 if event.get("stop_hook_active"):  # already blocked once this stop: never loop
     sys.exit(0)
-dirty = {c: n for c, n in frozen.all_diff_lines().items() if n}
+roots = [frozen.ROOT]
+here = frozen.checkout_of(event["cwd"]) if event.get("cwd") else None
+if here and frozen._norm(str(here)) != frozen._norm(str(frozen.ROOT)):
+    roots.append(here)
+dirty = {(r, c): n for r in roots for c, n in frozen.all_diff_lines(r).items() if n}
 if dirty:
-    which = ", ".join(f"{n} diff lines against {c}" for c, n in dirty.items())
+    which = ", ".join(f"{n} diff lines against {c} in {r}" for (r, c), n in dirty.items())
     print(json.dumps({"decision": "block", "reason": (
         f"Frozen files changed ({which}; .claude/frozen-paths.txt). Only the designer lifts a freeze: "
         "restore them (git checkout <commit> -- <path>) until `python3 .claude/hooks/frozen_check.py --all` "
