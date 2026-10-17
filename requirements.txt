@@ -1,0 +1,36 @@
+# The drawing, ledger and check path, pinned at the versions installed when Phase 0 recorded them
+# (2026-10-17, CPython 3.12.10, Windows 11), so a canary failure points at the design, not at a library drift.
+# Scope: every third-party import of docs/make_*.py, docs/ledger/*.py and sim/pyodide_parity.py, followed through
+# the repo's own modules, and the installed closure of their requirements. The parity venv's own numpy 1.26.4
+# (Pyodide 0.26.2) is pinned in the Makefile, not here. Playwright also needs its browser: `playwright install
+# chromium`. Fresh venv: python3 -m venv .venv, then .venv's pip install -r requirements.txt.
+
+# Imported directly
+cadquery-ocp==8.0.1.1.0
+ezdxf==1.4.4
+markdown-it-py==4.2.0
+matplotlib==3.11.2
+mdit-py-plugins==0.6.1
+numpy==2.5.4
+openpyxl==3.1.5
+playwright==1.64.0
+pypdf==6.20.1
+scipy==1.18.1
+
+# Their requirements, as installed
+cadquery-ocp-proxy==8.0.1.1.0  # via cadquery-ocp
+contourpy==1.4.0               # via matplotlib
+cycler==0.12.1                 # via matplotlib
+et_xmlfile==2.0.0              # via openpyxl
+fonttools==4.66.1              # via matplotlib
+greenlet==3.5.6                # via playwright
+kiwisolver==1.5.1              # via matplotlib
+mdurl==0.1.2                   # via markdown-it-py
+packaging==26.3                # via matplotlib
+pillow==12.3.0                 # via matplotlib
+pyee==14.0.0                   # via playwright
+pyparsing==3.3.3               # via matplotlib
+python-dateutil==2.9.0.post0   # via matplotlib
+six==1.17.0                    # via python-dateutil
+typing_extensions==4.16.0      # via pyee
+vtk==9.6.2                     # via cadquery-ocp

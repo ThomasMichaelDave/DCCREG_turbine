@@ -6,18 +6,24 @@
 
 PARITY_VENV := .pyodide-parity
 PARITY_NUMPY := numpy==1.26.4   # Pyodide 0.26.2 pyodide-lock.json bundle
+# A venv keeps its interpreter in bin/ on POSIX and in Scripts/ on Windows.
+ifeq ($(OS),Windows_NT)
+PARITY_PY := $(PARITY_VENV)/Scripts/python.exe
+else
+PARITY_PY := $(PARITY_VENV)/bin/python
+endif
 
 .PHONY: pyodide-parity pyodide-parity-venv
 
 # Run the standing parity check under both numpy 1.26 (Pyodide proxy) and the CLI numpy.
-pyodide-parity: $(PARITY_VENV)/bin/python
+pyodide-parity: $(PARITY_PY)
 	bash sim/run_pyodide_parity.sh
 
 # Create the numpy-1.26 parity venv (the local Pyodide-numpy proxy) if it is missing.
-$(PARITY_VENV)/bin/python:
+$(PARITY_PY):
 	python3 -m venv $(PARITY_VENV)
-	$(PARITY_VENV)/bin/pip install --quiet --upgrade pip
-	$(PARITY_VENV)/bin/pip install --quiet '$(PARITY_NUMPY)'
+	$(PARITY_PY) -m pip install --quiet --upgrade pip
+	$(PARITY_PY) -m pip install --quiet '$(PARITY_NUMPY)'
 
-pyodide-parity-venv: $(PARITY_VENV)/bin/python
-	@$(PARITY_VENV)/bin/python -c "import numpy; print('parity venv numpy', numpy.__version__)"
+pyodide-parity-venv: $(PARITY_PY)
+	@$(PARITY_PY) -c "import numpy; print('parity venv numpy', numpy.__version__)"
