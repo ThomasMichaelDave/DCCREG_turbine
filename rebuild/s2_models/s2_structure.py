@@ -245,7 +245,15 @@ def main():
                                 ca_plate_first_axial_Hz_if_clamped_round_its_bore=f_ca_clamped,
                                 ca_plate_note="it is held by three tabs, not clamped all round: its first mode lies below "
                                               "this bound [IR]",
-                                rotor_sector_first_Hz=f_rotor_sector, stator_sector_first_Hz=f_stator_sector)
+                                rotor_sector_first_Hz=f_rotor_sector, stator_sector_first_Hz=f_stator_sector,
+                                hand_estimates_note="the hand estimates above are superseded by the modal FE "
+                                                    "(rebuild/s2_models/s2_modes_results.json)")
+    try:
+        cb = json.load(open(os.path.join(HERE, "s2_modes_results.json")))["campbell"]["after"]
+        out["electrostatic"]["fe_pull_excited_Hz"] = dict(cb["modes"])
+        out["electrostatic"]["fe_windows_rpm"], out["electrostatic"]["fe_600_clear"] = cb["windows_rpm"], cb["at_600"]
+    except (OSError, KeyError):
+        pass
     print("electrostatic:", {k: (round(v, 2) if isinstance(v, float) else v) for k, v in out["electrostatic"].items()})
     json.dump(out, open(os.path.join(HERE, "s2_structure_results.json"), "w"), indent=1, default=float)
 

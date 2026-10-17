@@ -75,6 +75,13 @@ _REC = [q for q in json.load(open(os.path.join(ROOT, "sim", "air_stack_sizing_re
 VANE = dict(t=_REC["t_vaneMm"], g=_REC["gap_mm"], ws=_REC["ws_deg"], wr=_REC["wr_deg"], n_sec=_REC["sectors"],
             r_in=ML.R_IN, r_out=ML.R_OUT, n_vanes=ML.N_VANES)
 PITCH = 360.0 / VANE["n_sec"]
+# the thicknesses (rebuild/s2_models/s2_thickness.py, s2-thickness-findings.md; the designer, 2026-10-17: "Decide what
+# the overal best compromise is"): only the stacks' end plates carry a net pull at 120 Hz (s2_modes.py drive()), so
+# only they are thickened, their pull-driven modes to 168-174 Hz, between the pump's 120 Hz (+-20 %) and its 240 Hz
+# (+-10 %): Ca_06 / Ca_01 4 mm, the first rotor vane 4 mm, the last stator vane 4.5 mm. Every other plate keeps the
+# record's 3 mm, and with it the pump's gain (kappa -1.2 % against -11.9 % with every plate thickened)
+T_CA, T_ROT, T_STA = 3.0, 3.0, 3.0                    # the inner plates, the record's
+T_CA_END, T_ROT_END, T_STA_END = 4.0, 4.0, 4.5        # the driven end plates
 SHAFT_R, SLEEVE_R = ML.SHAFT_R, ML.SLEEVE_R          # 12.5, 20.5 (sim/stack_sizing.py)
 FL_Z0, FL_Z1, FL_R = ML.FL_Z0, ML.FL_Z1, ML.FL_R    # the flanges, h 72-80, r 30 (presets/hub-locked.json shaft)
 CPL_R1 = ML.CPL_R1                                   # the coupler's outer face, r 33
@@ -123,7 +130,7 @@ class S2Core(TG.Machine):
 
     # ---- the stack, h from the hub's centre (side A; side B its mirror)
     def plan(self):
-        t, g = VANE["t"], VANE["g"]
+        t, g = T_CA_END, VANE["g"]                                    # the column's first plate (Ca_06) is an end plate
         z_dk = ML.DECK_Z0 + ML.DECK_T + ML.DECK_H                    # 78: the deck's parts' outer face
         clr = lambda a, b: ML.clearance(ML.volt(self.V, a, b)["pk"])  # noqa: E731
         # the column's node-2 plate: off the deck's parts (s2_deck.py), and both its first plates off the flange's
@@ -137,9 +144,22 @@ class S2Core(TG.Machine):
                     n1_comb_flange=FL_Z1 + clr("0", "1") - (t + g))
         self.h_col = float(math.ceil(max(need.values())))
         self.col_need = need
-        self.h_vanes0 = self.h_col + ML.N_CA * t + (ML.N_CA - 1) * g + g      # the dead gap: node 1 against node 1
-        self.h_vanes1 = self.h_vanes0 + VANE["n_vanes"] * t + (VANE["n_vanes"] - 1) * g
-        last_rotor = self.h_vanes0 + (VANE["n_vanes"] - 2) * (t + g) + t        # the outermost rotor vane's outer face
+        # the column's plates, Ca_06 (k 0) to Ca_01 (k 5): the two end plates T_CA_END, the rest T_CA
+        self.ca_h = []
+        h = self.h_col
+        for k in range(ML.N_CA):
+            tk = T_CA_END if k in (0, ML.N_CA - 1) else T_CA
+            self.ca_h.append((h, tk))
+            h += tk + g
+        self.h_vanes0 = h                                                     # the dead gap: node 1 against node 1
+        # the vanes alternate rotor and stator, 6 mm gaps; the first rotor vane and the last stator vane are end plates
+        self.vane_h = []
+        for k in range(VANE["n_vanes"]):
+            tk = (T_ROT_END if k == 0 else T_ROT) if k % 2 == 0 else (T_STA_END if k == VANE["n_vanes"] - 1 else T_STA)
+            self.vane_h.append((h, tk))
+            h += tk + g
+        self.h_vanes1 = h - g
+        last_rotor = sum(self.vane_h[VANE["n_vanes"] - 2])                     # the outermost rotor vane's outer face
         # the REF link: the bearing and its spider clear the outermost rotor vane (N1) in air [OC: the rule]
         self.h_brg0 = float(math.ceil(max(self.h_vanes1 + g, last_rotor + clr("0", "1"))))
         # the REF shaft's end: past the REF-link bearing by the coupling's overlap, the coupling clear of the bearing
@@ -268,14 +288,14 @@ class S2Core(TG.Machine):
         """node 1's riser (4's) and node 2's tap (3's) [IR]: straight up from their deck junctions; the riser through
         its clearance hole in the column's first plate (N2) to the first N1 plate's underside, the tap to the first
         plate's underside."""
-        t, g = VANE["t"], VANE["g"]
+        t, g = T_CA, VANE["g"]
         j_top = ML.DECK_Z0 + ML.DECK_T + 0.5 * ML.PART["stick"]["d"] + 0.5 * TG.J_COND[1]
         for s_, d in (("A", DECK["deck_A"]), ("B", DECK["deck_B"])):
             n1, n2 = ("1", "2") if s_ == "A" else ("4", "3")
             zh = lambda h, s_=s_: np.array([0.0, 0.0, self.zz(s_, h)])                              # noqa: E731
             J1, J2 = (np.array([*d["junctions"][k], 0.0]) for k in (n1, n2))
             z_pot = ML.DECK_Z0 + ML.DECK_T + ML.DECK_H                    # the potting's outer face (|z| 78)
-            for nm, J, net_, h_end, what in (("riser", J1, n1, self.h_col + t + g, "up through the first plate's hole "
+            for nm, J, net_, h_end, what in (("riser", J1, n1, self.ca_h[1][0], "up through the first plate's hole "
                                               f"to the first N{n1} plate"), ("tap", J2, n2, self.h_col,
                                               f"up to the column's first plate (N{n2})")):
                 self.put_wire(f"{s_}_{nm}_deck", [J + zh(j_top), J + zh(z_pot)], net_, f"deck-{s_}", f"deck-{s_}",
@@ -326,7 +346,7 @@ class S2Core(TG.Machine):
             self.put(f"{s_}_cover", f"cover_{s_}", lambda z0=z0, z1=z1: TG.sector(SLEEVE_R, SLEEVE_OUT, z0, z1),
                      COL["ptfe"], "extruded PTFE tube over the sleeve (stock, not machined): the creepage cover",
                      "rotor", "rotor", join="rotor-core", desc="the sleeve's PTFE cover (PD2 creepage, group I)")
-            last = self.h_vanes0 + (VANE["n_vanes"] - 2) * (VANE["t"] + VANE["g"]) + VANE["t"]
+            last = sum(self.vane_h[VANE["n_vanes"] - 2])
             for k in range(SHED["n"]):
                 hs = last + (k + 1) * (self.h_brg0 - last) / (SHED["n"] + 1)
                 z0s, _ = self.zs(s_, hs - 0.5 * SHED["t"], hs + 0.5 * SHED["t"])
@@ -354,32 +374,35 @@ class S2Core(TG.Machine):
           creepage is its clearance, 12.9 mm for N1-N2);
         - the stator vanes: the record's, with six lugs out to r 190 between their sectors, on six steel tie rods (REF)
           with Al spacer tubes at r 182, 27 mm off the rotor vanes' tips; the rods end in the spiders."""
-        t, g, ri, ro = VANE["t"], VANE["g"], VANE["r_in"], VANE["r_out"]
+        g, ri, ro = VANE["g"], VANE["r_in"], VANE["r_out"]
+        t = T_CA                                                  # the column's plates; the vanes their own below
         n = VANE["n_sec"]
         rb, rbo = BAR["r"], 0.5 * BAR["od"]
 
         def bar_xy(th):
             return (rb * TG._u(th))[:2]
 
-        def with_tabs(base, angles, hole_angles):
+        def with_tabs(base, angles, hole_angles, t=T_CA):
             tabs = [TG.sector(TAB["r0"], ri + 0.5, 0.0, t, a - math.degrees(0.5 * TAB["w"] / rb), math.degrees(TAB["w"] / rb))
                     for a in angles]
             shp = TG.fuse([base] + tabs) if tabs else base
             return TG._cut(shp, *[TG.cyl_z(*bar_xy(a), rbo + 0.05, -1.0, t + 1.0) for a in hole_angles])
 
-        self.proto("rotor_vane", lambda: with_tabs(TG.fuse([TG.sector(ri, ro, 0.0, t, k * PITCH - 0.5 * VANE["wr"], VANE["wr"])
-                                                             for k in range(n)] + [TG.sector(SLEEVE_OUT, ri, 0.0, t)]),
-                                                    [], [TH_N1 + 120.0 * k for k in range(3)]),
-                   COL["rotor vane"], f"Al rotor vane, 3 mm, {n} sectors of {VANE['wr']:g} deg on its ring; the N1 comb's holes")
-        lug = lambda a: TG.sector(STATOR_RING[1] - 0.5, LUG["r1"], 0.0, t, a - math.degrees(0.5 * LUG["w"] / TIE["r"]),  # noqa
-                                  math.degrees(LUG["w"] / TIE["r"]))
+        lug = lambda a, ts: TG.sector(STATOR_RING[1] - 0.5, LUG["r1"], 0.0, ts, a - math.degrees(0.5 * LUG["w"] / TIE["r"]),  # noqa
+                                      math.degrees(LUG["w"] / TIE["r"]))
         lug_angles = [LUG["th0"] + k * 360.0 / LUG["n"] for k in range(LUG["n"])]
-        self.proto("stator_vane", lambda: TG._cut(TG.fuse([TG.sector(ri, ro, 0.0, t, k * PITCH - 0.5 * VANE["ws"], VANE["ws"])
-                                                           for k in range(n)] + [TG.sector(*STATOR_RING, 0.0, t)]
-                                                          + [lug(a) for a in lug_angles]),
-                                                  *[TG.cyl_z(*(TIE["r"] * TG._u(a))[:2], 0.5 * TIE["d"] + 0.05, -1.0, t + 1.0)
-                                                    for a in lug_angles]),
-                   COL["stator vane"], f"Al stator vane, 3 mm, {n} sectors of {VANE['ws']:g} deg on its ring, six lugs")
+        for nm, tr, what in (("rotor_vane", T_ROT, ""), ("rotor_vane_end", T_ROT_END, "; the stack's end vane")):
+            self.proto(nm, lambda tr=tr: with_tabs(TG.fuse([TG.sector(ri, ro, 0.0, tr, k * PITCH - 0.5 * VANE["wr"], VANE["wr"])
+                                                            for k in range(n)] + [TG.sector(SLEEVE_OUT, ri, 0.0, tr)]),
+                                                   [], [TH_N1 + 120.0 * k for k in range(3)], t=tr),
+                       COL["rotor vane"], f"Al rotor vane, {tr:g} mm, {n} sectors of {VANE['wr']:g} deg on its ring; the N1 comb's holes{what}")
+        for nm, ts, what in (("stator_vane", T_STA, ""), ("stator_vane_end", T_STA_END, "; the stack's end vane")):
+            self.proto(nm, lambda ts=ts: TG._cut(TG.fuse([TG.sector(ri, ro, 0.0, ts, k * PITCH - 0.5 * VANE["ws"], VANE["ws"])
+                                                          for k in range(n)] + [TG.sector(*STATOR_RING, 0.0, ts)]
+                                                         + [lug(a, ts) for a in lug_angles]),
+                                                 *[TG.cyl_z(*(TIE["r"] * TG._u(a))[:2], 0.5 * TIE["d"] + 0.05, -1.0, ts + 1.0)
+                                                   for a in lug_angles]),
+                       COL["stator vane"], f"Al stator vane, {ts:g} mm, {n} sectors of {VANE['ws']:g} deg on its ring, six lugs{what}")
         self.comb = {}
         for s_ in "AB":
             cn, vn = ("Ca", "C1") if s_ == "A" else ("Cb", "C2")
@@ -391,37 +414,44 @@ class S2Core(TG.Machine):
             riser_xy = np.asarray(DECK["deck_A" if s_ == "A" else "deck_B"]["junctions"][n1])
             r_hole = ML.clearance(ML.volt(self.V, n1, n2)["pk"]) + WIRE + 1.0
             self.proto(f"ca_n1_{s_}", lambda a1=a1: with_tabs(TG.sector(ri, ro, 0.0, t), a1, a1), COL["fixed plate"],
-                       "Al plate, 3 mm, full annulus; three tabs to the N1 comb")
+                       f"Al plate, {t:g} mm, full annulus; three tabs to the N1 comb")
+            te = T_CA_END
+            self.proto(f"ca_n1_end_{s_}", lambda a1=a1, te=te: with_tabs(TG.sector(ri, ro, 0.0, te), a1, a1, t=te),
+                       COL["fixed plate"], f"Al plate, {te:g} mm, full annulus; three tabs to the N1 comb; the column's end plate")
             self.proto(f"ca_n2_{s_}", lambda a2=a2: with_tabs(TG.sector(ri, ro, 0.0, t), a2, a2), COL["fixed plate"],
-                       "Al plate, 3 mm, full annulus; three tabs to the N2 comb")
-            self.proto(f"ca_n2_first_{s_}", lambda a2=a2, xy=riser_xy, rh=r_hole: TG._cut(
-                with_tabs(TG.sector(ri, ro, 0.0, t), a2, a2), TG.cyl_z(xy[0], xy[1], rh, -1.0, t + 1.0)),
-                COL["fixed plate"], f"Al plate, 3 mm; tabs to the N2 comb; the riser's clearance hole Ø{2 * r_hole:.0f}")
+                       f"Al plate, {t:g} mm, full annulus; three tabs to the N2 comb")
+            self.proto(f"ca_n2_first_{s_}", lambda a2=a2, xy=riser_xy, rh=r_hole, te=te: TG._cut(
+                with_tabs(TG.sector(ri, ro, 0.0, te), a2, a2, t=te), TG.cyl_z(xy[0], xy[1], rh, -1.0, te + 1.0)),
+                COL["fixed plate"], f"Al plate, {te:g} mm; tabs to the N2 comb; the riser's clearance hole Ø{2 * r_hole:.0f}; "
+                                    "the column's end plate")
             for k in range(ML.N_CA):                              # node 2 toward the deck, alternating
-                h0 = self.h_col + k * (t + g)
-                z0, _ = self.zs(s_, h0, h0 + t)
+                h0, tk = self.ca_h[k]
+                z0, _ = self.zs(s_, h0, h0 + tk)
                 nd = n2 if k % 2 == 0 else n1
-                key = (f"ca_n2_first_{s_}" if k == 0 else f"ca_n2_{s_}") if nd == n2 else f"ca_n1_{s_}"
+                key = (f"ca_n2_first_{s_}" if k == 0 else f"ca_n2_{s_}") if nd == n2 else \
+                    (f"ca_n1_end_{s_}" if k == ML.N_CA - 1 else f"ca_n1_{s_}")
                 self.put(f"{s_}_{cn}_{ML.N_CA - k:02d}", key, None, None, None, "rotor", f"side-{s_}", net=nd,
                          join=f"comb-{n2}-{s_}" if nd == n2 else f"comb-{n1}-{s_}", dz=z0,
                          desc=f"{cn} plate, node {nd}, on its comb")
             for k in range(VANE["n_vanes"]):
-                h0 = self.h_vanes0 + k * (t + g)
-                z0, _ = self.zs(s_, h0, h0 + t)
+                h0, tk = self.vane_h[k]
+                z0, _ = self.zs(s_, h0, h0 + tk)
                 rotor = k % 2 == 0
-                self.put(f"{s_}_{vn}_{'r' if rotor else 's'}{k + 1:02d}", "rotor_vane" if rotor else "stator_vane",
+                end = k in (0, VANE["n_vanes"] - 1)
+                self.put(f"{s_}_{vn}_{'r' if rotor else 's'}{k + 1:02d}",
+                         ("rotor_vane" if rotor else "stator_vane") + ("_end" if end else ""),
                          None, None, None, "rotor" if rotor else "stator", f"side-{s_}",
                          join=f"comb-{n1}-{s_}" if rotor else "stator-" + s_, net=n1 if rotor else "s",
                          dz=z0, rot=rot_b if rotor else 0.0,
                          desc=f"{vn} {'rotor vane, node ' + n1 + ', on the N1 comb' if rotor else 'stator vane, REF, on the tie rods'}"
                               + (", half a pitch on: antiphase to C1" if rotor and s_ == "B" else ""))
             # the combs: the tubes, and spacer tubes between consecutive plates of one net
-            h_n1_0 = self.h_col + (t + g)                         # the first N1 plate (Ca_05)
-            h_n1_1 = self.h_vanes0 + (VANE["n_vanes"] - 2) * (t + g) + t   # the outermost rotor vane's outer face
-            h_n2_0, h_n2_1 = self.h_col, self.h_col + 4 * (t + g) + t        # Ca_06 to Ca_02
-            n1_planes = [self.h_col + k * (t + g) for k in (1, 3, 5)] + \
-                [self.h_vanes0 + k * (t + g) for k in range(0, VANE["n_vanes"], 2)]
-            n2_planes = [self.h_col + k * (t + g) for k in (0, 2, 4)]
+            h_n1_0 = self.ca_h[1][0]                               # the first N1 plate (Ca_05)
+            h_n1_1 = sum(self.vane_h[VANE["n_vanes"] - 2])         # the outermost rotor vane's outer face
+            h_n2_0, h_n2_1 = self.h_col, sum(self.ca_h[4])         # Ca_06 to Ca_02
+            # (plane, its thickness): the column's plates and the rotor vanes, each its own
+            n1_planes = [self.ca_h[k] for k in (1, 3, 5)] + [self.vane_h[k] for k in range(0, VANE["n_vanes"], 2)]
+            n2_planes = [self.ca_h[k] for k in (0, 2, 4)]
             for net_, angs, (hA, hB), planes in ((n1, a1, (h_n1_0, h_n1_1), n1_planes), (n2, a2, (h_n2_0, h_n2_1), n2_planes)):
                 for kk, a in enumerate(angs):
                     xy = bar_xy(a)
@@ -432,8 +462,8 @@ class S2Core(TG.Machine):
                              COL["al"], f"Al 6063-T6 round tube {BAR['od']:g} x {BAR['wall']:g} (EN 755-8): the N{net_} comb",
                              "rotor", f"side-{s_}", join=f"comb-{net_}-{s_}", net=net_,
                              desc=f"the N{net_} comb's tube {kk + 1}: support and tie of its net's plates")
-                    for pa, pb in zip(planes[:-1], planes[1:]):
-                        z0, z1 = self.zs(s_, pa + t, pb)
+                    for (pa, ta), (pb, _) in zip(planes[:-1], planes[1:]):
+                        z0, z1 = self.zs(s_, pa + ta, pb)
                         self.put(f"{s_}_comb{net_}_sp_{kk + 1}_{pa:.0f}", f"comb_sp_{s_}_{net_}_{kk}_{pa:.0f}",
                                  lambda xy=xy, z0=z0, z1=z1: TG._cut(TG.cyl_z(xy[0], xy[1], 0.5 * BAR_SP["od"], z0, z1),
                                                                     TG.cyl_z(xy[0], xy[1], rbo + 0.05, z0 - 1, z1 + 1)),
@@ -449,17 +479,18 @@ class S2Core(TG.Machine):
                          (0.92, 0.90, 0.84), STANDOFF_S["material"], "rotor", f"side-{s_}", join=f"comb-{n2}-{s_}",
                          desc=f"the N{n2} comb's standoff {kk + 1}: glazed steatite onto the first rotor vane")
             # the stator's tie rods and spacer tubes, from the first stator vane to the spider
-            hs0 = self.h_vanes0 + (t + g)
+            hs0 = self.vane_h[1][0]
             hb = self.h_brg0 + 0.5 * BEARING["width"]
-            s_planes = [self.h_vanes0 + k * (t + g) for k in range(1, VANE["n_vanes"], 2)]
+            s_planes = [self.vane_h[k][0] for k in range(1, VANE["n_vanes"], 2)]
+            s_t = {self.vane_h[k][0]: self.vane_h[k][1] for k in range(1, VANE["n_vanes"], 2)}
             for kk, a in enumerate(lug_angles):
                 xy = (TIE["r"] * TG._u(a))[:2]
                 z0, z1 = self.zs(s_, hs0, hb + 0.5 * SPIDER_T)
                 self.put(f"{s_}_tie_{kk + 1}", f"tie_{s_}_{kk}", lambda xy=xy, z0=z0, z1=z1: TG.cyl_z(xy[0], xy[1], 0.5 * TIE["d"], z0, z1),
                          COL["steel"], "stainless M5 tie rod (REF)", "stator", "stator", join="stator-" + s_, net="s",
                          desc="a stator tie rod: the stator vanes' REF bus and support, into the spider")
-                for pa, pb in list(zip(s_planes[:-1], s_planes[1:])) + [(s_planes[-1], hb - 0.5 * SPIDER_T - t)]:
-                    z0, z1 = self.zs(s_, pa + t, pb)
+                for pa, pb in list(zip(s_planes[:-1], s_planes[1:])) + [(s_planes[-1], hb - 0.5 * SPIDER_T - s_t[s_planes[-1]])]:
+                    z0, z1 = self.zs(s_, pa + s_t[pa], pb)
                     self.put(f"{s_}_tie_sp_{kk + 1}_{pa:.0f}", f"tie_sp_{s_}_{kk}_{pa:.0f}",
                              lambda xy=xy, z0=z0, z1=z1: TG._cut(TG.cyl_z(xy[0], xy[1], 0.5 * TIE["sp_od"], z0, z1),
                                                                 TG.cyl_z(xy[0], xy[1], 0.5 * TIE["d"] + 0.05, z0 - 1, z1 + 1)),
@@ -911,8 +942,7 @@ def checks(m, log=print):
     q = ML.volt(V, "0", "1")
     need_g10 = PF.creepage(q["rms"], "IIIa") * PF.DC_MARGIN
     need_ptfe = PF.creepage(q["rms"], "I") * PF.DC_MARGIN
-    t = VANE["t"]
-    first, last = m.h_vanes0, m.h_vanes0 + (VANE["n_vanes"] - 2) * (t + VANE["g"]) + t
+    first, last = m.h_vanes0, sum(m.vane_h[VANE["n_vanes"] - 2])
     # the cover (PTFE, group I) carries the rotor vanes' rings; the sheds add 2 x their height each (the designer:
     # "Stock cover + sheds") [OC: the surface path]
     paths = dict(to_flange=first - FL_Z1, to_bearing=m.h_brg0 - last + 2 * SHED["n"] * SHED["h"])

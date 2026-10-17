@@ -41,6 +41,51 @@ The entries below sit in one undated `[Unreleased]` block. The phases' dates and
 
 ## [Unreleased]
 
+### S2a: the plates' thickness, the best compromise (2026-10-17)
+The designer: "Decide what the overal best compromise is when considering priority on functional behavior and overall
+performance".
+
+- **`rebuild/s2_models/s2_thickness.py`** (new; `s2_thickness_results.json`, `s2-thickness-findings.md`) weighs four
+  options:
+  - A: the record, all 3 mm;
+  - B: every plate thickened (the previous entry's fix);
+  - C: only the four driven end plates per side;
+  - D: as B, with the stator vanes at 4 mm.
+
+  The criteria: the gain (κ, z, power; the 2-D cell), the rims against Peek's onset, the deflection at 120 Hz, the mass
+  and the length.
+- **Chosen, C** (decided by delegation): Ca_06 / Ca_01 4.0 mm, the first rotor vane 4.0 mm, the last stator vane
+  4.5 mm; every other plate 3 mm.
+  - κ −1.2 % (B −11.9 %), power −0.3 % (B −3.7 %), +1.1 kg (B +4.7), +4.5 mm a side (B +21).
+  - The driven plates' modes are clear of 120 / 240 Hz. The inner plates' modes stay near 120 Hz, but the tolerance
+    residual moves them 3–10 µm (49 µm exactly on resonance, 0.8 % of the gap).
+- **The model** (`s2_geometry.py`): `T_CA_END`, `T_ROT_END`, `T_STA_END`, with the end plates as their own prototypes.
+  It is 852 mm long (884 with B) and every gate passes; STEP, FCStd and view regenerated. `s2_structure.py` re-run.
+- `s2_modes.py --campbell` redraws the chart with the inner plates' modes marked "tolerance only".
+- **Records:** `s2-modes-findings.md` and `s2-geometry-findings.md` point to step 5; ledger §6 item 79 updated.
+
+### S2a: the plates' modes against the pump's 120 Hz, and the plates thickened (2026-10-16)
+The designer: "the 120 Hz margins, how do we move away from that frequency? extra tabs on Ca and Cb? hyperaccelerate
+our way outside of that band?", then "yes, run s2_modes and bring the fixes into the model".
+
+- **`rebuild/s2_models/s2_modes.py`** (new; `s2_modes_results.json`, `s2-modes-campbell.png`,
+  `s2-modes-findings.md`): each plate's drive, a modal FE (Gmsh → CalculiX) of each plate on its seats against its
+  thickness, and a Campbell check.
+  - Only the stacks' end plates carry a net pull (0.42–0.54 N).
+  - At 3 mm the pull-excited modes sit at 115–131 Hz, and 600 rpm is not clear.
+  - The stator vane's hand estimate (424 Hz, `s2_structure.py`) was wrong: it is held at six lugs, not round its
+    rim. The FE supersedes the hand estimates.
+- **The model, PROPOSED:** Ca / Cb 4.0 mm, rotor vanes 4.0 mm, stator vanes 4.5 mm (`T_CA`, `T_ROT`, `T_STA` in
+  `s2_geometry.py`).
+  - The modes move to 168–174 Hz; 600 rpm lies in the clear 480–670 rpm band.
+  - The model is 884 mm long (848 before) and every gate passes; STEP, FCStd and view regenerated.
+  - `s2_structure.py` re-run: rotor 18.2 kg (15.0), counter-rotor 25.8 kg (23.6), 435 N axial, the rotor's bending
+    31.5 / 88.0 / 176.5 Hz. It now reads the FE modes from `s2_modes_results.json`.
+- **Corrected:** the structural pass's flag on the rotor's 99 Hz second mode. The pump's pulls are axial and cancel
+  laterally, so they don't excite the bending.
+- **Still open:** the thicknesses (the designer's), their C1 / C2 in S2b, and torsion through the drive. Ledger §6
+  item 79.
+
 ### S2a: the structure filled in, the outer retainer, and the integrity checks (2026-10-16)
 The designer: "shall we fill in the missing structural components and check the structural and electrostatic
 integrity?" The choices: PD2; a stock cover with sheds on the sleeve; one G10 cage across the hub; the drive not yet;

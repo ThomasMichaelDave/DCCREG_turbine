@@ -3,23 +3,23 @@
  "status": "PROPOSED (S2a from scratch, 2026-10-16)",
  "source": "rebuild/s2_models/s2_deck_bare_nocan_results.json (the decks, the bracket, the volts); sim/air_stack_sizing_results.json thick_vanes (the vane stack of record); presets/hub-locked.json (the hub, the 2 mm wall); sim/tube_geometry.py (primitives, locked_hub; the AH dropped)",
  "n_parts": 339,
- "n_protos": 270,
- "L_total_mm": 848.0,
- "hub_centre_z_mm": 424.0,
+ "n_protos": 274,
+ "L_total_mm": 852.0,
+ "hub_centre_z_mm": 426.0,
  "stack": {
-  "h_col_mm": 98.0,
+  "h_col_mm": 97.0,
   "column_needs_mm": {
    "deck": 91.0,
    "n2_flange": 80.0,
-   "n1_flange": 87.74814416790717,
-   "n1_comb_flange": 97.08640130545038
+   "n1_flange": 86.74814416790717,
+   "n1_comb_flange": 96.08640130545038
   },
   "h_vanes_mm": [
-   152.0,
-   254.0
+   153.0,
+   257.5
   ],
-  "h_ref_bearing_mm": 272.0,
-  "h_end_mm": 310.0
+  "h_ref_bearing_mm": 274.0,
+  "h_end_mm": 312.0
  },
  "open_items": [
   "the ties between the plates of one net (the column's node 1 / node 2, the rotor vanes to the column, the stator vanes' REF bus)",
@@ -152,7 +152,7 @@
   "need_mm": 60.2706704437753,
   "need_bare_G10_mm": 120.5413408875506,
   "paths_mm": {
-   "to_flange": 72.0,
+   "to_flange": 73.0,
    "to_bearing": 67.0
   },
   "sheds": {
@@ -164,11 +164,11 @@
   "note": "the rotor vanes' rings sit on the cover; its surface runs to REF at both ends"
  },
  "step": "rebuild/s2_models/geometry/s2-tube-s1b-from-scratch.step",
- "step_bytes": 5617895,
+ "step_bytes": 6104552,
  "step_read_back": {
   "instances": 339,
   "assemblies": 11,
-  "products": 264,
+  "products": 268,
   "pass_": true
  },
  "fcstd": {
@@ -177,5 +177,5 @@
   "still": "rebuild/s2_models/geometry/s2-tube-s1b-from-scratch-view.png",
   "path": "rebuild/s2_models/geometry/s2-tube-s1b-from-scratch.FCStd"
  },
- "run_s": 354
+ "run_s": 346
 }

@@ -97,8 +97,20 @@ The designer: "Implement v1b".
 
 ## The structural pass (2026-10-16)
 
-The structure, the outer retainer and the integrity checks are in `s2-structure-findings.md`. The model is now 339
+The structure, the outer retainer and the integrity checks are in `s2-structure-findings.md`. The model was 339
 solids and 848 mm long. Every gate passes, the sleeve's G-CREEP included, now with the cover and sheds.
+
+## The plates thickened (2026-10-16), then only the end plates (2026-10-17)
+
+**Superseded by step 5** (`s2-thickness-findings.md`): only the four driven end plates per side are thickened
+(`T_CA_END`, `T_ROT_END`, `T_STA_END` = 4.0 / 4.0 / 4.5 mm); every other plate keeps 3 mm. The model is 339 solids
+and 852 mm long: the column at h 97, the vanes at h 153–258, the REF link at h 274. Every gate passes: the
+sleeve's G-CREEP 73 / 67 mm against 60, the couplings' 99 against 86 mm. The first fix, below, is history.
+
+The plates' modes against the pump's 120 Hz are in `s2-modes-findings.md`. The model now carries Ca / Cb plates
+4.0 mm, rotor vanes 4.0 mm and stator vanes 4.5 mm (`T_CA`, `T_ROT`, `T_STA` in `s2_geometry.py`; PROPOSED). It is
+339 solids and 884 mm long: the column at h 97, the vanes at h 157–274, the REF link at h 290. Every gate passes:
+the sleeve's G-CREEP 77 / 66.5 mm against 60, the couplings' 99 against 86 mm.
 
 ## Next
 
